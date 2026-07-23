@@ -73,9 +73,16 @@ Plan was grilled. Decisions resolved:
 
 ## Verify verdict
 
-- **Screenshots:** NOT captured — `agent-browser` is not installed in this environment.
-  Width evidence at 360/768/1280 is a documented gap (LAY-2 unverified). Capture is a
-  prerequisite before this wireframe is treated as fully signed off.
+- **Screenshots:** CAPTURED after `agent-browser` was installed. Width evidence at
+  `docs/landing/screenshots/{320,360,768,1280}.png` (full-page; each frame's
+  `window.innerWidth` verified to match its filename before saving, per verify.md's
+  stale-viewport caution). LAY-2 confirmed: the page reflows to a single column at
+  320px with no page-level horizontal scroll and no loss of content.
+  - **Finding for #7 (not a wireframe blocker):** at 320px the install command
+    overflows the code block horizontally (`/plugin marketplace add trans…`). This is
+    the allowed code-block `overflow-x:auto` exception (WCAG 1.4.10), so it does not
+    fail LAY-2, but the real build should make the full command visible on mobile
+    (wrap, smaller mono size, or split the two commands).
 - **CMP-3 in scope:** No (no async actions) — state-frame evidence not required.
 - **Token block line range:** N/A — greyscale raw greys deferred to #7, not tokenised here.
 - **Dark mode:** N/A — single greyscale artifact, no dark layer or toggle.
@@ -90,7 +97,7 @@ Plan was grilled. Decisions resolved:
   | A11Y-7 | manual | h1→h2→h3 no skips; real `<ol>`/`<dl>`; sections `aria-labelledby` |
   | A11Y-9 | manual | descriptive `<title>`, `lang="en"` |
   | A11Y-10 | manual | skip link first in body, targets `#main` |
-  | LAY-2 | unverified | fluid single column, no grid/fixed-width hazard; needs a rendered 320px capture |
+  | LAY-2 | manual | screenshots at 320/360/768/1280 (`docs/landing/screenshots/`) — reflows to one column, no page-level h-scroll; code block scrolls internally (allowed exception) |
   | LAY-4 / TYP-6 | manual | `--measure: 42rem` (~70ch at 17px), inside ≤80ch |
   | LAY-7 | manual | hero sole focal region; reading order matches task priority |
   | SLP-5 / SLP-11 | manual | no card chrome; ordered list + grouped `<dl>`s |
@@ -176,8 +183,10 @@ a11y-static/content-lint/token-audit/type-scan against the artifact.]
   to h2. Re-ran `a11y-static.py` and `content-lint.py` after the change — both clean.
 - **TYP-3 scope gap — CLOSED.** TYP-2/TYP-3 added to the "Deferred to #7" list here and
   in `wireframe.md`, matching the TOK-1/TYP-1 rationale.
-- **LAY-2 — still open.** Remains unverified pending a rendered 320px capture; carried
-  forward, not claimed as passed.
+- **LAY-2 — now VERIFIED.** `agent-browser` was installed after the run; screenshots
+  captured at 320/360/768/1280 confirm a clean single-column reflow with no page-level
+  horizontal scroll. One mobile finding (install command overflows the code block)
+  logged for #7; not a wireframe blocker.
 
 ## Ratchet
 
