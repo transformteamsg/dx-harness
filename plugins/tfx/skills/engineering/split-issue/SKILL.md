@@ -121,4 +121,4 @@ Report:
 
 1. Child issues created: title and URL for each
 2. Dependency order: which must be implemented first, if any
-3. Next step: each child issue needs engineering grooming (technical sections and grooming checklist) before `/implement-issue` can be run on it
+3. Next step: each child issue needs engineering grooming (technical sections and grooming checklist) before `/tfx:implement-issue` can be run on it

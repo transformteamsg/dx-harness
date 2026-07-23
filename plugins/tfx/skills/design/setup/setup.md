@@ -25,7 +25,7 @@ the check.
 | agent-browser skill | Teaches the agent the CLI's full command set (recommended; the CLI alone is enough for capture) | ask the user: `/plugin list` shows `agent-browser` | the user types `/plugin marketplace add vercel-labs/agent-browser`, then `/plugin install agent-browser@agent-browser`, then `/reload-plugins` — Claude Code commands, not shell |
 | `gh` CLI, authenticated | The `feedback` skill files issues through `scripts/file-feedback-issue.py` | `gh auth status` | `brew install gh`, then the user runs `gh auth login` themselves (interactive — never run it for them) |
 | Python 3 + PyYAML | The `checks/*.py` scripts import `yaml` | `python3 -c "import yaml"` | `python3 -m pip install --user pyyaml` |
-| `tfx` plugin (product repos only) | The harness itself; in this repo the skills load from `.claude/skills/` with no install | ask the user: `/plugin list` shows `tfx` | the two commands in the README Install section (`../../../README.md`) |
+| `tfx` plugin (product repos only) | The harness itself; skills load from the installed `tfx` plugin, same as any product repo | ask the user: `/plugin list` shows `tfx` | the two commands in the README Install section (`../../../README.md`) |
 
 Close with one end-to-end health check:
 `agent-browser doctor --offline --quick` → exit 0. If it fails, plain
