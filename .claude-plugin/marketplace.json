@@ -1,0 +1,14 @@
+{
+  "name": "atelier",
+  "description": "Atelier — consolidated engineering and design skills for agentic product development.",
+  "owner": {
+    "name": "TransformX, GovTech Singapore"
+  },
+  "plugins": [
+    {
+      "name": "tfx",
+      "source": "./plugins/tfx",
+      "description": "Engineering + design skills: GitHub issue workflow, code review, lint/hooks setup, dependency hygiene, and the TFX design loop with standards catalog + evaluator agent."
+    }
+  ]
+}
