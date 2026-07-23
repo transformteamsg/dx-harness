@@ -2,7 +2,7 @@
 
 Harness *feedback* and *friction* — a confusing step, a missing or unbuilt check, a
 process gap, an onboarding nit — is filed as a **GitHub issue** on
-`transformteamsg/tfx-design-standard`. Issues are the system of record. Do not append to
+`transformteamsg/atelier`. Issues are the system of record. Do not append to
 a markdown feedback log; the old logs are archived (see "Archived logs" below).
 
 ## What goes here vs. the ratchet

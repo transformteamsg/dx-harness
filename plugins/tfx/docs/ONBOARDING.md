@@ -16,8 +16,8 @@ same loop automatically.
 Follow the two commands in the [README Install section](../README.md#install):
 
 ```
-/plugin marketplace add transformteamsg/tfx-design-standard
-/plugin install tfx@tfx
+/plugin marketplace add transformteamsg/atelier
+/plugin install tfx@atelier
 ```
 
 This installs the 11 skills (`start`, `setup`, `design`, `critique`,
@@ -28,12 +28,12 @@ plugin, not with your repo. `/tfx:start` is the front door: it orients you and r
 the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
-session in this repository directly: the skills load from `.claude/skills/`
+session in this repository directly: the skills load from `plugins/tfx/skills/`
 automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
 filing tools are per-person. Each teammate runs `/tfx:start` (or invokes the `setup`
-skill directly), which follows the checklist (`.claude/skills/setup/setup.md` in this
+skill directly), which follows the checklist (`plugins/tfx/skills/design/setup/setup.md` in this
 repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
 
