@@ -1,0 +1,13 @@
+{
+  "comment": "Catalog schema shared by harness/checks/validate.py and scripts/check-standards.mjs — edit here, never in the validators. Format prose: standards/README.md.",
+  "required_fields": ["id", "source", "title", "tier", "check", "phase", "applies_to", "verify", "waiver"],
+  "tier_waiver": { "L0": "none", "L1": "documented", "L2": "rationale" },
+  "checks": ["deterministic", "judgment", "hybrid"],
+  "phases": ["intent", "plan", "implement", "verify"],
+  "applies_to": ["page", "component", "flow", "content"],
+  "products": ["tw", "casesync", "glow"],
+  "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
+  "enforced": ["script", "partial", "manual", "evaluator"],
+  "status": ["proposed"],
+  "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"]
+}

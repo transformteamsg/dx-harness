@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>fail.html — token-audit fixture: violations expected</title>
+  <style>
+    /*
+     * Expected violations from <style> block:
+     *   TOK-1  raw hex in style block
+     *   TOK-2  off-scale spacing
+     *   TOK-3  off-scale radius
+     */
+
+    .violation-tok1-hex-in-style {
+      background-color: #abcdef;          /* expected: TOK-1 */
+    }
+
+    .violation-tok2-spacing {
+      gap: 11px;                          /* expected: TOK-2 (11 not in scale) */
+    }
+
+    .violation-tok3-radius {
+      border-radius: 5px;                 /* expected: TOK-3 (5 not in scale) */
+    }
+  </style>
+</head>
+<body>
+  <!--
+   * Expected violations from HTML attributes:
+   *   TOK-1  raw hex in inline style= attribute
+   *   COL-2  Tailwind palette class
+   -->
+
+  <!-- expected: TOK-1 (raw hex in inline style) -->
+  <div style="color: #ff6600;">Inline style violation</div>
+
+  <!-- expected: COL-2 (Tailwind palette class bypasses semantic layer) -->
+  <button class="btn bg-red-500 text-white">Delete</button>
+</body>
+</html>

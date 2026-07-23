@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>a11y-static pass fixtures — HTML</title></head>
+<body>
+
+<!-- Clean 1: A11Y-2 FOCUS (corrected) -->
+<!-- No outline removal used — a :focus-visible rule provides the ring. -->
+<!-- Note: the line-local FOCUS rule cannot see across separate CSS rules. -->
+<!-- A class="outline-none …" on an element whose focus-visible is defined in -->
+<!-- a shared stylesheet will still flag. That cross-file case needs axe-core. -->
+<style>
+.dropdown-option { padding: 8px; cursor: pointer; }
+.dropdown-option:focus-visible { outline: 2px solid var(--color-primary); }
+</style>
+<button class="dropdown-option">Option label</button>
+
+<!-- Clean 2: A11Y-2 KBD (corrected) -->
+<!-- div has role="button" and tabindex -->
+<div onclick="handleSelect()" role="button" tabindex="0" class="row">Row content</div>
+
+<!-- Clean 3: A11Y-3 NAME (corrected) -->
+<!-- button has aria-label -->
+<button aria-label="Search">
+  <svg aria-hidden="true" width="16" height="16"><use href="#search-icon"/></svg>
+</button>
+
+<!-- Clean 4: button with visible text (always clean) -->
+<button>Save</button>
+
+</body>
+</html>
