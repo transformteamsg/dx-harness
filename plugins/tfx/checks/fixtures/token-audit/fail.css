@@ -1,0 +1,50 @@
+/*
+ * fail.css — token-audit fixture: one violation per detection rule
+ *
+ * Each violation is on a line followed by a comment naming the expected
+ * control id.  The scanner must emit exactly those control ids.
+ *
+ * Expected violations (in order):
+ *   TOK-1  raw hex colour
+ *   TOK-1  rgb() colour
+ *   TOK-1  hsl() colour
+ *   TOK-1  oklch() colour
+ *   TOK-1  named colour
+ *   TOK-2  off-scale spacing (px)
+ *   TOK-2  off-scale spacing (rem)
+ *   TOK-3  off-scale radius (px)
+ */
+
+/* ── One raw value outside any token-definition block ──────────────────────── */
+
+.violation-tok1-hex {
+  color: #ff0000;               /* expected: TOK-1 */
+}
+
+.violation-tok1-rgb {
+  background-color: rgb(0, 100, 255);   /* expected: TOK-1 */
+}
+
+.violation-tok1-hsl {
+  border-color: hsl(200, 80%, 50%);     /* expected: TOK-1 */
+}
+
+.violation-tok1-oklch {
+  color: oklch(0.6 0.2 250);            /* expected: TOK-1 */
+}
+
+.violation-tok1-named {
+  color: red;                            /* expected: TOK-1 */
+}
+
+.violation-tok2-px {
+  padding: 15px;                         /* expected: TOK-2 (15 not in scale) */
+}
+
+.violation-tok2-rem {
+  margin: 0.9375rem;                     /* expected: TOK-2 (0.9375rem = 15px, off scale) */
+}
+
+.violation-tok3-px {
+  border-radius: 10px;                   /* expected: TOK-3 (10 not in scale) */
+}

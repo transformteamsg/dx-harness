@@ -1,0 +1,20 @@
+# Python (checks/ and scripts/ are Python 3)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*~
+
+# Subagent-driven-development process scratch (briefs, reports, review diffs, ledger)
+.superpowers/

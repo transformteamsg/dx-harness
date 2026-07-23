@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>a11y-static fail fixtures — HTML</title></head>
+<body>
+
+<!-- Violation 1: A11Y-2 FOCUS -->
+<!-- CSS outline: none with no :focus-visible recovery -->
+<style>
+.dropdown-option { outline: none; padding: 8px; cursor: pointer; }
+</style>
+<button class="dropdown-option">Option label</button>
+
+<!-- Violation 2: A11Y-2 KBD -->
+<!-- div with onclick, no role, no tabindex -->
+<div onclick="handleSelect()" class="row">Row content</div>
+
+<!-- Violation 3: A11Y-3 NAME -->
+<!-- button contains only an svg with aria-hidden, no accessible name (same-line) -->
+<button><svg aria-hidden="true" width="16" height="16"><use href="#search-icon"/></svg></button>
+
+</body>
+</html>

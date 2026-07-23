@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>pass.html — token-audit fixture: zero violations expected</title>
+  <style>
+    /* ── Token-definition block ─────────────────────────────────────────────
+       All raw colour values live here and ONLY here.
+       Exemption must hold: no TOK-1 violations inside this block.
+    ─────────────────────────────────────────────────────────────────────── */
+    :root {
+      --color-brand:    #0064FF;  /* TOK-1 exempt: token definition */
+      --color-surface:  #FFFFFF;  /* TOK-1 exempt: token definition */
+      --color-border:   #E4E4E7;  /* TOK-1 exempt: token definition */
+      --color-text:     #18181B;  /* TOK-1 exempt: token definition */
+
+      --space-2:   0.5rem;        /* TOK-2 exempt: token definition */
+      --space-4:   1rem;          /* TOK-2 exempt: token definition */
+      --space-6:   1.5rem;        /* TOK-2 exempt: token definition */
+
+      --radius-md: 0.375rem;      /* TOK-3 exempt: token definition */
+      --radius-lg: 0.5rem;        /* TOK-3 exempt: token definition */
+    }
+
+    /* ── Token usage — all via var() ─────────────────────────────────────── */
+    body {
+      color: var(--color-text);
+      background-color: var(--color-surface);
+      padding: var(--space-4);
+    }
+
+    .card {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);        /* var() passes TOK-3 */
+      padding: var(--space-4) var(--space-6); /* var() passes TOK-2 */
+      gap: var(--space-2);
+    }
+
+    .btn {
+      background-color: var(--color-brand);   /* var() passes TOK-1 */
+      padding: var(--space-2) var(--space-4); /* var() passes TOK-2 */
+      border-radius: var(--radius-md);         /* var() passes TOK-3 */
+    }
+
+    /* ── On-scale raw values ─────────────────────────────────────────────── */
+    .layout {
+      padding: 32px 16px;   /* both on spacing scale — no violation */
+      gap: 24px;            /* 24 on scale — no violation */
+      margin: 0 auto;       /* 0 and auto pass */
+    }
+
+    .chip {
+      border-radius: 4px;   /* 4 on radius scale — no violation */
+    }
+
+    /* ── Passthrough ─────────────────────────────────────────────────────── */
+    .overlay {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 5%;          /* percentage passes */
+    }
+  </style>
+</head>
+<body>
+  <!--
+    Semantic Tailwind classes (not palette classes) — should not trigger COL-2.
+    Classes like "bg-primary", "text-foreground" are semantic and pass.
+  -->
+  <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md">
+    Save
+  </button>
+  <span class="text-muted-foreground">Helper text</span>
+  <div class="border border-border rounded-lg p-4">Card</div>
+
+  <!--
+    Hex values in non-style contexts (HTML text content) must NOT be flagged.
+  -->
+  <p>The brand colour hex code is #0064FF.</p>
+  <p>Use <code>rgb(0, 100, 255)</code> as the fallback value.</p>
+</body>
+</html>
