@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>atelier — AI harness for agentic product development</title>
+  <style>
+    /*
+      LOW-FIDELITY GREYSCALE WIREFRAME MOCKUP — throwaway sign-off artifact for issue #3.
+      Not shipped code. Colour, real tokens, and the Plus Jakarta Sans / Inter fonts are
+      DEFERRED to the React build (#7); this mock uses a system font stack and AA-safe
+      greys only, to lock structure and hierarchy. Greys still meet WCAG AA (A11Y-1).
+    */
+    :root {
+      --ink: #1a1a1a;        /* body text on white: ~16:1 */
+      --muted: #595959;      /* secondary text on white: ~7:1 (AA for normal text) */
+      --hairline: #d9d9d9;   /* non-text dividers */
+      --surface: #f4f4f4;    /* code block tint */
+      --measure: 42rem;      /* ~66ch reading measure (LAY-4 / TYP-6) */
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      line-height: 1.55;
+      font-size: 17px;
+    }
+    .skip {
+      position: absolute; left: -9999px; top: 0;
+      background: var(--ink); color: #fff; padding: .5rem 1rem;
+    }
+    .skip:focus { left: 0; }
+    a { color: var(--ink); }
+    :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+    /* single reading column, capped at a comfortable measure */
+    .wrap { max-width: var(--measure); margin: 0 auto; padding: 0 1.25rem; }
+    header.site { border-bottom: 1px solid var(--hairline); }
+    header.site .wrap { display: flex; align-items: baseline; justify-content: space-between; padding-top: 1rem; padding-bottom: 1rem; }
+    .wordmark { font-weight: 700; letter-spacing: -0.01em; }
+    main .wrap > section { padding: 2.5rem 0; border-bottom: 1px solid var(--hairline); }
+
+    /* type hierarchy via size + weight (SLP-6), not decoration */
+    h1 { font-size: 2rem; line-height: 1.15; margin: 0 0 .5rem; letter-spacing: -0.02em; }
+    h2 { font-size: 1.25rem; margin: 0 0 1rem; }
+    /* group label: an eyebrow a full step below body (17/13.6 = 1.25x), so it does
+       not sit near-equal to h2 (SLP-6). Bold + muted, sentence case (TYP-4). */
+    .group h3 { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: .02em; margin: 0 0 .5rem; }
+    .lede { font-size: 1.125rem; color: var(--muted); margin: 0; }
+    p { margin: 0 0 1rem; }
+    .muted { color: var(--muted); }
+
+    /* install: the one primary focal action (CMP-5) */
+    .code {
+      background: var(--surface); border: 1px solid var(--hairline);
+      padding: 1rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .95rem; white-space: pre; overflow-x: auto; margin: 0 0 .75rem;
+    }
+    .btn {
+      display: inline-block; background: var(--ink); color: #fff;
+      border: 1px solid var(--ink); padding: .5rem 1rem; font: inherit;
+      font-weight: 600; cursor: pointer; min-height: 44px;
+    }
+
+    /* how it works: stepped-down prose points, NOT cards (SLP-5/11) */
+    ol.points { margin: 0; padding-left: 1.25rem; }
+    ol.points li { margin: 0 0 .75rem; }
+    ol.points strong { display: block; }
+
+    /* skill catalogue: grouped description lists, NOT a card grid (SLP-5/11) */
+    .group { margin: 0 0 2rem; }
+    .group:last-child { margin-bottom: 0; }
+    dl.skills { margin: 0; }
+    dl.skills div { padding: .6rem 0; border-bottom: 1px solid var(--hairline); }
+    dl.skills div:last-child { border-bottom: 0; }
+    dl.skills dt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
+    dl.skills dd { margin: .15rem 0 0; color: var(--muted); }
+
+    footer.site { padding: 2rem 0; }
+    footer.site .wrap { color: var(--muted); font-size: .95rem; }
+    footer.site a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site">
+    <div class="wrap">
+      <span class="wordmark">atelier</span>
+      <a href="https://github.com/transformteamsg/atelier">GitHub</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap">
+
+      <!-- 1. HERO — single focal region (LAY-7) -->
+      <section aria-labelledby="hero-h">
+        <h1 id="hero-h">One harness. Every skill under <code>/tfx:</code>.</h1>
+        <p class="lede">atelier bundles engineering and design skills into a single Claude Code
+        plugin, so a team builds and reviews product work the same way every time.</p>
+      </section>
+
+      <!-- 2. INSTALL — the one primary action (CMP-5) -->
+      <section aria-labelledby="install-h">
+        <h2 id="install-h">Install</h2>
+        <p>Add the marketplace, then install the plugin.</p>
+        <div class="code">/plugin marketplace add transformteamsg/atelier
+/plugin install tfx@atelier</div>
+        <button class="btn" type="button">Copy commands</button>
+        <p class="muted" style="margin-top:.75rem">Then run any skill as <code>/tfx:code-review</code>, <code>/tfx:design</code>, and so on.</p>
+      </section>
+
+      <!-- 3. HOW IT WORKS — stepped-down points, not cards -->
+      <section aria-labelledby="how-h">
+        <h2 id="how-h">How it works</h2>
+        <ol class="points">
+          <li><strong>One namespace.</strong> All 19 skills install together and run under a single <code>/tfx:</code> prefix.</li>
+          <li><strong>Standards, enforced.</strong> The design skills ship a control catalog and deterministic checks that run on every page.</li>
+          <li><strong>Generator and evaluator split.</strong> A separate evaluator agent grades design work, so the builder never marks its own homework.</li>
+        </ol>
+      </section>
+
+      <!-- 4. SKILL CATALOGUE — grouped description lists (locked at the plan gate) -->
+      <section aria-labelledby="cat-h">
+        <h2 id="cat-h">Skills</h2>
+
+        <div class="group">
+          <h3>Engineering (8)</h3>
+          <dl class="skills">
+            <div><dt>code-review</dt><dd>Review a diff and post findings as inline PR comments or a local branch review.</dd></div>
+            <div><dt>create-issue</dt><dd>Draft a well-structured GitHub issue ready for a coding agent.</dd></div>
+            <div><dt>groom-issue</dt><dd>Fill in an issue's technical sections before build.</dd></div>
+            <div><dt>split-issue</dt><dd>Break a large issue into atomic, single-PR child issues.</dd></div>
+            <div><dt>implement-issue</dt><dd>Implement a groomed issue end to end and open a pull request.</dd></div>
+            <div><dt>lint-setup</dt><dd>Detect project types and set up linting and formatting.</dd></div>
+            <div><dt>git-hooks-setup</dt><dd>Set up or audit pre-commit and pre-push hooks.</dd></div>
+            <div><dt>update-npm-dependencies</dt><dd>Audit and update vulnerable JavaScript dependencies safely.</dd></div>
+          </dl>
+        </div>
+
+        <div class="group">
+          <h3>Design (11)</h3>
+          <dl class="skills">
+            <div><dt>start</dt><dd>Orient and route to the right design skill.</dd></div>
+            <div><dt>setup</dt><dd>Install the per-user design tools and product context.</dd></div>
+            <div><dt>design</dt><dd>Run the full design loop from intent to verified UI.</dd></div>
+            <div><dt>critique</dt><dd>Grade an existing page and return ranked fixes.</dd></div>
+            <div><dt>standards</dt><dd>Read, apply, and grow the standards catalog.</dd></div>
+            <div><dt>copy</dt><dd>Write and review UI copy in the TFX voice.</dd></div>
+            <div><dt>layout</dt><dd>Tighten structure, hierarchy, and density.</dd></div>
+            <div><dt>polish</dt><dd>Refine a named visual dimension such as spacing or type.</dd></div>
+            <div><dt>motion</dt><dd>Smooth transitions, easing, and timing.</dd></div>
+            <div><dt>flow</dt><dd>Improve a multi-step task's path and states.</dd></div>
+            <div><dt>feedback</dt><dd>File harness feedback as a GitHub issue.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <a href="https://github.com/transformteamsg/atelier">github.com/transformteamsg/atelier</a>
+      <span aria-hidden="true"> · </span>
+      <a href="https://github.com/transformteamsg/atelier/blob/main/LICENSE">License</a>
+    </div>
+  </footer>
+</body>
+</html>
