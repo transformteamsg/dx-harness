@@ -1,0 +1,119 @@
+{
+  "skill_name": "updating-vulnerable-dependencies",
+  "notes": "Offline eval. The sandbox has no npm-registry access and yarn/bun are not installed, so these test DECISION/PROCESS behavior (Step 0 detection & abort, package-manager identification, 7-day cooldown), not live install success. Each fixture lives under evals/projects/<name>.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "abort-non-js-repo",
+      "fixture": "evals/projects/python-proj",
+      "prompt": "Hey, can you run a security pass on this repo and patch any vulnerable dependencies you find? CI started flagging something about deps the other day.",
+      "expected_output": "Agent detects there is no package.json (it's a Python/Flask project), reports there are no JS/npm dependencies to audit, and aborts cleanly without running an audit or inventing vulnerabilities.",
+      "assertions": [
+        {"text": "Detects there is no package.json / this is not a JS project", "passed": null, "evidence": ""},
+        {"text": "Aborts without running any audit command (npm/pnpm/yarn/bun)", "passed": null, "evidence": ""},
+        {"text": "Does not fabricate JS vulnerabilities or fixes", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "abort-no-deps",
+      "fixture": "evals/projects/empty-deps",
+      "prompt": "Before I publish this little CLI to npm, can you check it for vulnerable dependencies and fix anything that shows up?",
+      "expected_output": "Agent recognizes package.json declares no dependencies of any kind and there is no lockfile, so there is nothing to audit, and aborts cleanly.",
+      "assertions": [
+        {"text": "Recognizes the project declares zero dependencies and has no lockfile", "passed": null, "evidence": ""},
+        {"text": "Concludes there is nothing to audit and aborts without inventing work", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "detect-yarn-berry",
+      "fixture": "evals/projects/yarn-berry",
+      "prompt": "We just got a security advisory for node-fetch (an SSRF issue) that's pulled in transitively. Can you figure out how this repo manages dependencies and walk through resolving it, applying the fix the right way?",
+      "expected_output": "Agent identifies the package manager as Yarn berry (v2+) from yarn.lock's __metadata header / .yarnrc.yml / packageManager field, uses Yarn-appropriate commands (yarn npm audit, yarn up, and the resolutions field for a last-resort override) rather than pnpm/npm commands.",
+      "assertions": [
+        {"text": "Identifies the package manager as Yarn (berry / v2+)", "passed": null, "evidence": ""},
+        {"text": "Uses Yarn-correct commands (yarn npm audit / yarn up / yarn why)", "passed": null, "evidence": ""},
+        {"text": "Uses the 'resolutions' field for a last-resort override, NOT pnpm.overrides", "passed": null, "evidence": ""},
+        {"text": "Does not regress to pnpm-only commands (pnpm audit / pnpm.overrides)", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "detect-bun",
+      "fixture": "evals/projects/bun-app",
+      "prompt": "Our security scan flagged a vulnerability in a transitive package under hono. Can you sort out the dependency vuln in this project?",
+      "expected_output": "Agent identifies the package manager as Bun (from bun.lock), uses Bun-appropriate commands (bun audit / bun update / bun why) and the npm-style 'overrides' field for a last-resort override.",
+      "assertions": [
+        {"text": "Identifies the package manager as Bun (from bun.lock)", "passed": null, "evidence": ""},
+        {"text": "Uses Bun-correct commands (bun audit / bun update / bun why)", "passed": null, "evidence": ""},
+        {"text": "Uses the npm-style 'overrides' field for a last-resort override (not pnpm.overrides / resolutions)", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "cooldown-fresh-version",
+      "fixture": "evals/projects/npm-cooldown",
+      "prompt": "npm audit says fast-xml-parser has a high-severity ReDoS and we need 4.4.1 or newer. I checked the registry and 4.4.1 was published just 2 days ago; our current 4.2.5 is still vulnerable. Can you go ahead and upgrade us?",
+      "expected_output": "Agent applies the 7-day cooldown: recognizes 4.4.1 is only 2 days old, does NOT blindly install it, and surfaces the tradeoff to the human (stay on known-vulnerable 4.2.5 vs. adopt an un-aged release) rather than auto-installing either way.",
+      "assertions": [
+        {"text": "Recognizes the only patched version (4.4.1) is younger than 7 days", "passed": null, "evidence": ""},
+        {"text": "Does NOT blindly install the fresh version without caveat", "passed": null, "evidence": ""},
+        {"text": "Surfaces the tradeoff / asks the human before proceeding", "passed": null, "evidence": ""},
+        {"text": "Checks whether any aged (>=7 day) patched version exists first", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "run-tests-after-fix",
+      "fixture": "evals/projects/pnpm-with-tests",
+      "prompt": "fast-xml-parser 4.2.5 in our payments-service has a high-severity ReDoS. The fix is 4.4.1, which was released 3 months ago. Please patch it.",
+      "expected_output": "Agent detects pnpm (from pnpm-lock.yaml), applies the fix with pnpm, re-runs pnpm audit to verify, then runs pnpm test (the project has a test script) before declaring the work done. If tests can't run in the environment, the agent notes this rather than silently skipping.",
+      "assertions": [
+        {"text": "Identifies the package manager as pnpm (from pnpm-lock.yaml)", "passed": null, "evidence": ""},
+        {"text": "Applies the fix using pnpm (pnpm update or pnpm add fast-xml-parser@<safe>)", "passed": null, "evidence": ""},
+        {"text": "Runs pnpm audit after the fix to confirm the vulnerability is resolved", "passed": null, "evidence": ""},
+        {"text": "Runs pnpm test (or notes the test suite must be run) before declaring work complete", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "run-tests-no-suite",
+      "fixture": "evals/projects/npm-no-tests",
+      "prompt": "fast-xml-parser 4.2.5 in our data-pipeline has a ReDoS vulnerability. 4.4.1 is the fix and it's been out for 3 months. Please patch it.",
+      "expected_output": "Agent detects npm (package-lock.json), applies the fix, re-audits, then reaches the test step and — finding no 'test' script in package.json — explicitly flags that there is no test suite and notes this must be called out in the PR description rather than silently skipping the step.",
+      "assertions": [
+        {"text": "Identifies the package manager as npm (from package-lock.json)", "passed": null, "evidence": ""},
+        {"text": "Applies the fix using npm (npm install fast-xml-parser@<safe> or npm update)", "passed": null, "evidence": ""},
+        {"text": "Runs npm audit after the fix to verify the vulnerability is resolved", "passed": null, "evidence": ""},
+        {"text": "Detects there is no test script and explicitly flags this (does NOT silently skip or pretend tests passed)", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 7,
+      "name": "reconcile-stale-override",
+      "fixture": "evals/projects/npm-stale-override",
+      "prompt": "We're prepping reporting-api for a merge and want dependency hygiene clean. Can you run an audit, and also check whether that minimatch override we added months ago is still doing anything? The parents that originally needed it have moved on a lot since.",
+      "expected_output": "Agent detects npm, and BEFORE escalating anything treats the existing minimatch override as the first order of business (Step 4A reconcile): recognizes that npm why/ls with the override in place always shows the overridden version and cannot reveal staleness, so it must remove the override, reinstall, check natural resolution, and re-audit. It leaves the override removed if the tree resolves safe on its own, or restores/re-pins it if removal reintroduces a vulnerability. It does not blindly keep the override or escalate around it.",
+      "assertions": [
+        {"text": "Identifies the package manager as npm (from package-lock.json)", "passed": null, "evidence": ""},
+        {"text": "Reconciles the EXISTING override first (removes it, reinstalls, re-audits to test staleness) rather than escalating around it or leaving it untouched", "passed": null, "evidence": ""},
+        {"text": "Notes that the dependency-chain command with an override in place shows the overridden version and cannot reveal whether the override is still needed", "passed": null, "evidence": ""},
+        {"text": "States the decision rule: leave removed if audit is clean, restore/re-pin if removal reintroduces the vulnerability", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 8,
+      "name": "add-override-exact-pin",
+      "fixture": "evals/projects/pnpm-needs-override",
+      "prompt": "pnpm audit flags a high-severity path-traversal in `tar`, pulled in transitively by `legacy-xml-adapter`. legacy-xml-adapter is abandoned — last publish was 2019 and 1.4.0 is the newest release that exists, so it can't be upgraded. The patched tar is 6.2.1, which has been out for over a year. Please resolve it.",
+      "expected_output": "Agent detects pnpm, walks the escalation ladder (update-all, then confirms the parent legacy-xml-adapter cannot be upgraded because it is abandoned / already at its latest), and only then reaches for an override as a last resort. It adds a pnpm.overrides entry pinned to the EXACT patched version (6.2.1), NOT a caret or >= range. It then verifies compatibility — checking install output for ERESOLVE/peer warnings and the resolved tree for invalid markers — rather than assuming a clean audit means the forced version fits.",
+      "assertions": [
+        {"text": "Identifies the package manager as pnpm (from pnpm-lock.yaml)", "passed": null, "evidence": ""},
+        {"text": "Reaches an override only after confirming the parent cannot be upgraded (abandoned / at latest), not as the first move", "passed": null, "evidence": ""},
+        {"text": "Adds the override in the pnpm.overrides field pinned to the EXACT version (6.2.1), NOT a caret (^) or >= range", "passed": null, "evidence": ""},
+        {"text": "Verifies compatibility after applying the override (checks install output for ERESOLVE/peer warnings, dependency tree for invalid/unmet-peer markers) rather than trusting a clean audit alone", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "skill_name": "lint-setup",
+  "evals": [
+    {
+      "id": 1,
+      "name": "eval-greenfield-ts",
+      "prompt": "I have a new TypeScript React project with no linting or formatting set up. I want oxlint for linting and oxfmt for formatting.",
+      "expected_output": "Creates .oxlintrc.json and .oxfmtrc.json with correct default configs, adds lint and format scripts to package.json",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "name": "eval-partial-add-oxfmt",
+      "prompt": "Our JS/TS project already has oxlint configured. We want to add oxfmt for formatting.",
+      "expected_output": "Detects existing .oxlintrc.json and oxlint script, adds only .oxfmtrc.json and format script without touching existing lint setup",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "name": "eval-multi-ecosystem-go-shell",
+      "prompt": "Set up linting for our Go server and our shell deployment scripts.",
+      "expected_output": "Creates .golangci.yaml with formatters block, Makefile with tools and lint targets, .shellcheckrc",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 4,
+      "name": "eval-teacher-workspace",
+      "prompt": "Set up oxlint and oxfmt for the JS/TS workspace and golangci-lint for the Go server. We use pnpm.",
+      "expected_output": "Creates .oxlintrc.json, .oxfmtrc.json, .golangci.yaml, Makefile — all matching the skill's default configs. package.json gets lint and format scripts.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 6,
+      "name": "eval-switch-prettier-to-oxfmt",
+      "prompt": "We're moving from Prettier to oxfmt for formatting. Remove Prettier and replace it with oxfmt. Keep ESLint as-is. We use npm.",
+      "expected_output": "Creates .oxfmtrc.json, removes prettier from devDependencies, updates format script to use oxfmt, wires eslint-config-prettier for ESLint+oxfmt compatibility. Does NOT create .prettierignore.",
+      "files": [
+        "evals/files/eval-switch-prettier-to-oxfmt/package.json",
+        "evals/files/eval-switch-prettier-to-oxfmt/.prettierrc.json",
+        "evals/files/eval-switch-prettier-to-oxfmt/eslint.config.js"
+      ],
+      "assertions": [
+        ".prettierignore was NOT created",
+        ".oxfmtrc.json was created with correct default config",
+        "package.json format script uses oxfmt (not prettier)",
+        "eslint-config-prettier is present in devDependencies (ESLint+formatter wiring)"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "eval-eslint-oxfmt-no-prettierignore",
+      "prompt": "Our TypeScript project has no formatting set up yet. We want ESLint for linting and oxfmt for formatting. We use npm.",
+      "expected_output": "Creates eslint.config.js and .oxfmtrc.json, installs eslint-config-prettier for wiring, adds lint and format scripts to package.json. Does NOT create .prettierignore or .prettierrc.json.",
+      "files": [],
+      "assertions": [
+        ".prettierignore was NOT created",
+        ".prettierrc.json was NOT created",
+        ".oxfmtrc.json was created with correct default config",
+        "eslint.config.js was created",
+        "eslint-config-prettier was installed (for ESLint+formatter wiring)"
+      ]
+    }
+  ]
+}
