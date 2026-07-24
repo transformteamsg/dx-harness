@@ -16,7 +16,7 @@ Colour (COL-1/2), colour tokens (TOK-1), and the Plus Jakarta Sans / Inter fonts
 |---|---------|---------|-----------------------|----------|
 | — | Skip link + landmarks | "Skip to content"; `<header>/<main>/<footer>`; one `<h1>`; page `<title>` | Layout shell | A11Y-6, A11Y-7, A11Y-9, A11Y-10 |
 | 1 | Hero | Wordmark, `<h1>` tagline, one-line lede. The single focal region. | Section + heading + lede | LAY-7, TYP (hierarchy), SLP-6 |
-| 2 | Install | Two `/plugin` commands in a code block; a "Copy commands" button as the one primary action; a follow-up line on `/tfx:` usage. | shadcn Button (primary) + code block | CMP-5, A11Y-2, A11Y-4 (44px target), CNT-2 |
+| 2 | Install | Two labelled paths in one section: **Claude Code** (two `/plugin` commands in a code block + a "Copy commands" button as the one primary action) and **Claude Desktop or web** (a 3-step ordered list for the no-command-line plugin flow); a shared follow-up line on `/tfx:` usage. | shadcn Button (primary) + code block + ordered list | CMP-5, SLP-5, SLP-11, SLP-6, A11Y-7, A11Y-2, A11Y-4 (44px target), CNT-2 |
 | 3 | How it works | Three stepped-down points (one namespace; standards enforced; generator/evaluator split) as an ordered list, not cards. | Ordered list | SLP-5, SLP-11, SLP-6, SLP-7 |
 | 4 | Skill catalogue | Two groups (Engineering 8, Design 11), each a description list of name + one-line summary. Not a card grid. | Description list (`<dl>`) per group | SLP-5, SLP-11, A11Y-7 |
 | 5 | Footer | Repo link + license link. | Footer | A11Y-1, CNT-12 |
@@ -31,7 +31,8 @@ browse what it ships (catalogue) -> find the source (footer). One primary focal 
 ## Content inventory (issue #3 acceptance)
 
 - Hero: what atelier is. Present.
-- Install: the two `/plugin` commands. Present.
+- Install: the two `/plugin` commands (Claude Code) plus a no-command-line Claude
+  Desktop / web plugin path (3-step list). Present.
 - Skill catalogue: 19 skills, 8 engineering + 11 design, names matching `plugins/tfx/skills/`. Present.
 - How it works: one `/tfx:` namespace, standards + checks, evaluator split. Present.
 - Footer: repo link + license. Present.
@@ -43,8 +44,10 @@ browse what it ships (catalogue) -> find the source (footer). One primary focal 
 - **LAY-4 / TYP-6** (measure): body column capped at `--measure: 42rem` (~66ch).
 - **LAY-7** (one focal region, reading order): hero is the sole focal region; order
   above.
-- **SLP-5 / SLP-11** (no card slop): how-it-works is an ordered list; the catalogue is
-  grouped description lists. No card chrome anywhere.
+- **SLP-5 / SLP-11** (no card slop): the Claude Desktop install path and how-it-works
+  are ordered lists; the catalogue is grouped description lists. The two install paths
+  are grouped by spacing (`.path` margin only — no border/shadow/radius). No card chrome
+  anywhere.
 - **SLP-6 / SLP-7** (hierarchy, rhythm): hierarchy from size/weight; related items
   grouped tighter than unrelated (section padding vs in-list spacing).
 - **A11Y-1** (contrast): greys are AA on white (ink ~16:1, muted ~7:1); primary button

@@ -48,7 +48,7 @@
     h2 { font-size: 1.25rem; margin: 0 0 1rem; }
     /* group label: an eyebrow a full step below body (17/13.6 = 1.25x), so it does
        not sit near-equal to h2 (SLP-6). Bold + muted, sentence case (TYP-4). */
-    .group h3 { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: .02em; margin: 0 0 .5rem; }
+    .group h3, .path h3 { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: .02em; margin: 0 0 .5rem; }
     .lede { font-size: 1.125rem; color: var(--muted); margin: 0; }
     p { margin: 0 0 1rem; }
     .muted { color: var(--muted); }
@@ -64,6 +64,8 @@
       border: 1px solid var(--ink); padding: .5rem 1rem; font: inherit;
       font-weight: 600; cursor: pointer; min-height: 44px;
     }
+    /* two install paths stacked, grouped by proximity (SLP-11) — not cards */
+    .path { margin: 0 0 1.5rem; }
 
     /* how it works: stepped-down prose points, NOT cards (SLP-5/11) */
     ol.points { margin: 0; padding-left: 1.25rem; }
@@ -104,14 +106,29 @@
         plugin, so a team builds and reviews product work the same way every time.</p>
       </section>
 
-      <!-- 2. INSTALL — the one primary action (CMP-5) -->
-      <section aria-labelledby="install-h">
+      <!-- 2. INSTALL — two paths, one primary action (CMP-5) -->
+      <section class="paths" aria-labelledby="install-h">
         <h2 id="install-h">Install</h2>
-        <p>Add the marketplace, then install the plugin.</p>
-        <div class="code">/plugin marketplace add transformteamsg/atelier
+        <p>Add the atelier marketplace, then install the plugin — from the command line
+        or from the Claude apps.</p>
+
+        <div class="path">
+          <h3>Claude Code</h3>
+          <div class="code">/plugin marketplace add transformteamsg/atelier
 /plugin install tfx@atelier</div>
-        <button class="btn" type="button">Copy commands</button>
-        <p class="muted" style="margin-top:.75rem">Then run any skill as <code>/tfx:code-review</code>, <code>/tfx:design</code>, and so on.</p>
+          <button class="btn" type="button">Copy commands</button>
+        </div>
+
+        <div class="path">
+          <h3>Claude Desktop or web — no command line</h3>
+          <ol class="points">
+            <li>Open Customize in the sidebar, then Plugins.</li>
+            <li>Add a marketplace from a repository: <code>transformteamsg/atelier</code>.</li>
+            <li>Install the <code>tfx</code> plugin.</li>
+          </ol>
+        </div>
+
+        <p class="muted">Then run any skill as <code>/tfx:code-review</code>, <code>/tfx:design</code>, and so on.</p>
       </section>
 
       <!-- 3. HOW IT WORKS — stepped-down points, not cards -->

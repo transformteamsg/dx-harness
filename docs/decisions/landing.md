@@ -200,3 +200,167 @@ a11y-static/content-lint/token-audit/type-scan against the artifact.]
   2. `agent-browser` was not installed, so the verify phase could not capture the
      required width screenshots (LAY-2 left unverified). Onboarding/setup did not flag
      this before the design loop reached verify.
+
+---
+
+# Modification — 2026-07-24 — Install section: two install paths
+
+> Scoped `tfx:design` modification loop (structure fixed → diverge skipped). Triggered
+> by the README consolidation (PR #12): the README's Install section now documents a
+> no-command-line **Claude Desktop / web** plugin flow alongside the Claude Code CLI
+> commands, so the landing page's Install section was updated to match and re-verified.
+
+- **Date:** 2026-07-24
+- **Change type:** modification (install-section content + one CSS rule)
+- **Run type:** attended
+
+## Intent
+
+Update the Install section to reflect the new README: keep the Claude Code CLI commands
+and add the point-and-click Claude Desktop / web plugin path, so a non-technical visitor
+sees they can install without a terminal.
+
+## Sprint contract (done-criteria)
+
+1. Install section keeps the Claude Code CLI commands AND adds the no-command-line
+   Claude Desktop / web plugin path.
+2. A non-technical visitor can see they can install without a terminal.
+3. Standards floor held on the changed surface — no NEW violations vs the
+   deferred-to-#7 baseline.
+4. Exactly one primary action preserved (CMP-5).
+5. No anti-slop introduced (SLP-5 / SLP-6 / SLP-11).
+
+## Chosen approach
+
+Two labelled paths inside the *same* Install section (no new section, no cards):
+
+- **Claude Code** (`<h3>` eyebrow) — the existing two `/plugin` commands in a code block
+  + the existing single filled **"Copy commands"** button (the one primary action).
+- **Claude Desktop or web — no command line** (`<h3>` eyebrow) — a 3-step ordered list
+  reusing the existing `ol.points` pattern: open **Customize → Plugins**; add a
+  marketplace from the repository `transformteamsg/atelier`; install the **tfx** plugin.
+- The shared "Then run any skill as `/tfx:…`" line moved to the end of the section.
+
+CSS: the existing `.group h3` eyebrow rule was generalized to `.group h3, .path h3` so
+the new sub-path labels share the styled eyebrow (0.8rem bold muted) rather than falling
+to the UA default — avoiding the exact flat-`h3` slip caught at the baseline SLP-6
+finding. Added `.path { margin: 0 0 1.5rem }`. No colours, fonts, or type sizes added.
+
+Desktop-flow depth (concise 3-step vs one-line pointer vs full 5-step walkthrough) was
+put to the user at the plan gate; **concise 3-step chosen** (the fuller numbered steps
+live in the README).
+
+## Controls in scope (changed surface)
+
+CMP-5, SLP-5, SLP-11, SLP-6, A11Y-7, A11Y-1, A11Y-2, A11Y-4, CNT-2, SLP-9. Same fidelity
+and deferrals as baseline (COL-1/COL-2, TOK-1, TYP-1/TYP-2/TYP-3 deferred to #7;
+IDN + CaseSync N/A; CMP-2/CMP-3/A11Y-11 N/A — Copy button remains unwired).
+
+## Tradeoffs, named
+
+- The section is longer (two paths vs one). Accepted — serving non-code practitioners is
+  the explicit goal, and stacked labelled paths keep 320px reflow trivial (no columns,
+  no tabs).
+
+## Plan approval
+
+- **Approved by:** user (interactive Approve at the Phase 3 gate)
+- **Approved on:** 2026-07-24
+
+## Verify
+
+- **Deterministic checks** (against `docs/landing/mock.html`):
+  `a11y-static.py` clean; `content-lint.py` (SLP-9) clean; `token-audit.py` 3 raw `#fff`
+  hits and `type-scan.py` TYP-1/2/3 hits — all on pre-existing lines, none introduced by
+  this change, deferred to #7 per baseline.
+- **Screenshots:** RE-CAPTURED at 320/360/768/1280 (`docs/landing/screenshots/`), each
+  frame's `window.innerWidth` verified against its filename. LAY-2 confirmed: single-column
+  reflow at 320px, no page-level horizontal scroll; the two install paths stack cleanly
+  and the Desktop ordered list wraps. The install command still overflows the code block
+  horizontally at 320px — the allowed `overflow-x:auto` exception (WCAG 1.4.10), same
+  pre-existing finding logged for #7, not a blocker.
+- **CMP-5:** exactly one filled button on the whole page (`Copy commands`, mock.html) —
+  the Desktop path added no button.
+
+- **Evaluator verdict (pasted verbatim from the `tfx:evaluator` agent):**
+
+```
+VERDICT: pass
+
+BLOCKING (must fix before ship):
+- (none — no in-scope L0/L1 control failed on the changed surface with no deferral/waiver on file)
+
+ADVISORY (should fix):
+- (none new introduced by this modification. For continuity: the shared eyebrow rule at
+  `mock.html:51` — now generalized to `.group h3, .path h3` — renders the new sub-path
+  labels at 0.8rem/12.8px, which `type-scan` flags TYP-2 (below the 14px body floor, L1)
+  and TYP-3 (off-scale). This is the exact same eyebrow size already in use for the
+  catalogue group labels and already recorded as DEFERRED to #7 in both
+  docs/decisions/landing.md and docs/landing/wireframe.md. The modification reused an
+  established, already-deferred size — it did not introduce a new off-scale value — so it
+  does not breach contract criterion 3. Flagging only so #7 remembers these two new labels
+  are now inside the TYP-2/TYP-3 deferral scope and must be resolved there too when the
+  token/type infrastructure lands.)
+
+SUGGESTIONS (not violations — layout/pattern improvements the builder may take):
+- In #7, consider making the "Claude Code" and "Claude Desktop or web" eyebrows visually
+  parallel to the catalogue group eyebrows they now share a rule with, so the reuse is
+  intentional-looking rather than incidental — serves SLP-6 hierarchy legibility.
+- The intro line and the trailing "Then run any skill as…" line now bracket two paths; a
+  hair more vertical separation before the trailing line at 1280px would make it read as
+  "applies to both paths" rather than trailing the Desktop steps — serves LAY-7 grouping.
+  Minor.
+
+QUALITY GRADES (scoped to the Install section as changed):
+- Design quality: strong — the two labelled paths read in task order, the eyebrow labels
+  create a genuine step-down, and "no command line" directly answers the non-technical
+  visitor's question at the point of doubt; proximity/spacing groups each path without chrome.
+- Originality: strong — restrained and correct: reused the existing `ol.points` and eyebrow
+  patterns and grouped by spacing rather than inventing a card or a novel component; no SLP
+  tells introduced.
+- Craft: strong — deliberate reuse of established patterns, one CSS selector generalized
+  cleanly, an on-scale `.path` spacing rule added, no new colours/fonts/sizes; the unwired
+  Copy button is expected at this fidelity.
+- Functionality: acceptable — at wireframe fidelity both paths fully communicate the install
+  task with no dead ends; the Desktop path is instructional prose (no interactive step to
+  break), and the Copy button remains intentionally unwired (CMP-3/A11Y-11 out of scope).
+- Dark mode: N/A — product/artifact has no dark mode (single greyscale mockup, no `.dark`
+  layer or toggle).
+
+JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
+- [CMP-5] pass — exactly one filled/primary button on the whole page: <button class="btn">
+  Copy commands</button>; every other link is an <a> in body/muted ink, none filled. The
+  added Desktop path introduced no button.
+- [SLP-6] pass — new sub-path labels styled via `.path h3` at 0.8rem/12.8px = ~1.33x below
+  17px body and ~1.66x below the 1.25rem h2; without this rule they would have fallen to the
+  UA <h3> default (~19.9px, ~1.07x to h2), the exact flat-hierarchy slip caught at baseline —
+  the change prevents it rather than reintroducing it.
+- [SLP-5] pass — Desktop path is a real <ol class="points">; no icon-tile-above-heading
+  template, no identical-card grid.
+- [SLP-11] pass — the `.path` wrappers carry only margin, no border/shadow/radius/background;
+  static content grouped by spacing + eyebrow type, not boxed as cards.
+- [A11Y-7] pass — heading walk h1 (hero) → h2 "Install" → h3 "Claude Code" / h3 "Claude
+  Desktop or web — no command line" with no skipped level; both new headings describe their
+  content; list is a real <ol>.
+- [A11Y-1] pass — no colours changed; new eyebrow uses --muted #595959 on white = ~7.0:1 (AA
+  for 12.8px bold); a11y-static.py clean.
+- [A11Y-2] pass — only interactive control on the surface is the Copy button (unchanged);
+  global :focus-visible, no outline removal; no new focusable element added.
+- [A11Y-4] pass — Copy button min-height: 44px meets the mobile target; no new targets added.
+- [CNT-2] pass — new labels/steps are plain and function-named; "Customize"/"Plugins" mirror
+  the actual Claude app labels; no portmanteaus or codenames.
+- [SLP-9] pass — content-lint.py clean; the intro em-dash does real work (not a chain), no
+  buzzwords, no forced triad, one idea per list line.
+
+UNCOVERED (defects no control covers — feed the ratchet):
+- (none — every defect surface here is covered by an in-scope control or by the documented
+  #7 deferral. No new gap found in this scoped modification.)
+```
+
+## Ratchet (modification)
+
+- **No new catalog control proposed** — the modification introduced no uncovered defect;
+  every in-scope control passed and the only script hits are the documented #7 deferrals.
+- **Carried forward to #7:** the two new install sub-path eyebrows join the existing
+  TYP-2/TYP-3 deferral scope; the 320px code-block overflow finding still stands for the
+  React build.
