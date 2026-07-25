@@ -1,0 +1,28 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+  .:
+    dependencies:
+      legacy-xml-adapter:
+        specifier: 1.4.0
+        version: 1.4.0
+
+packages:
+
+  legacy-xml-adapter@1.4.0:
+    resolution: {integrity: sha512-stubstubstub}
+
+  tar@6.1.11:
+    resolution: {integrity: sha512-stubstubstub}
+
+snapshots:
+
+  legacy-xml-adapter@1.4.0:
+    dependencies:
+      tar: 6.1.11
+
+  tar@6.1.11: {}

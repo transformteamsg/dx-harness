@@ -1,0 +1,10 @@
+{
+  "name": "@tfx/roster-cli",
+  "version": "0.2.1",
+  "description": "Tiny CLI that prints a class roster as CSV.",
+  "type": "module",
+  "bin": { "roster": "./bin/roster.js" },
+  "scripts": {
+    "test": "node --test"
+  }
+}

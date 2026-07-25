@@ -1,54 +1,226 @@
 {
-  "skill_name": "code-review",
+  "skill": "code-review",
+  "notes": "Runs the Local Branch Review Path against a fixture whose branch diff contains five deliberately planted defects, one per review angle (off-by-one, N+1 I/O, swallowed error, removed validation guard, altitude violation in a shared helper). Grading a review against known-planted bugs is what makes detection objectively checkable rather than a judgement call about whether the prose sounds thorough. gh is absent from PATH in every eval here, which is the condition the skill documents as 'no PR found for this branch' -- the PR Review Path needs live GitHub and is out of scope for an offline suite. Because `claude -p` cannot answer the skill's interactive prompts, each prompt pre-answers them the way a user would. Note on one flaky assertion: `no-pr-skip-line` greps for a line the skill prints mid-flow, but output.md holds only the agent's final message, so it passes or fails depending on whether that run restated the line in its summary. Judge it accordingly and prefer the state-based assertions around it.",
+  "invocation": "explicit",
   "evals": [
     {
       "id": 1,
+      "name": "mode-selection-question",
       "prompt": "Review my code changes.",
-      "expected_output": "Skill asks 'Are you reviewing a PR or your local working branch?' before doing any diff or analysis. The mode selection question is the first substantive output. (In absence of a user response, the skill may default to local branch and proceed.)",
-      "files": [],
+      "expected_output": "Before running any diff or analysis, the skill asks whether the user is reviewing a PR or their local working branch. With no answer forthcoming in a non-interactive session it may then default to the local branch and proceed, but the mode question must come first.",
+      "fixture": "evals/fixtures/planted-bugs",
+      "setup": "setup.sh",
       "assertions": [
-        "Output contains a mode selection question referencing 'PR' and 'local' or 'branch'",
-        "Output contains at least one finding or a severity table (the review actually ran after mode selection)"
+        {
+          "id": "asks-pr-or-local",
+          "text": "Asks whether the review target is a PR or the local working branch",
+          "kind": "script",
+          "script": "grep -qiE '\\bPR\\b' output.md && grep -qiE 'local (working )?branch' output.md"
+        },
+        {
+          "id": "mode-question-precedes-findings",
+          "text": "The mode question is raised before any diff analysis or findings are presented",
+          "kind": "model"
+        }
       ]
     },
     {
       "id": 2,
-      "prompt": "Review my code on my local working branch. For any triage prompts asking 'Fix now or later?', answer 'later' for all findings. Do not generate a report at the end.",
-      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 7 review angles on the branch diff, triages all findings as 'To be fixed', prints a severity counts table and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped). No report file is written to the review/ directory.",
-      "files": [],
+      "name": "local-branch-no-report",
+      "prompt": "Review my code on my local working branch. Please don't pause to triage findings with me one by one: treat every finding as 'later' (to be fixed) and work straight through all the review angles to the complete summary in one go. Don't generate a report file at the end.",
+      "expected_output": "The skill states it is starting a fresh local branch review, finds no open PR (gh is unavailable) and prints the skip line, runs the 7 review angles over the branch diff, and surfaces the planted defects. It triages every finding as 'To be fixed', prints a severity counts table and a What Looks Good section, and writes no report file. There is no Reviewer To-Do section because the PR and issue check never ran.",
+      "fixture": "evals/fixtures/planted-bugs",
+      "setup": "setup.sh",
       "assertions": [
-        "Output contains 'No PR found for this branch' printed before the severity counts table",
-        "Output contains a severity counts table (🔴 Important / 🟡 Nit / 🟣 Pre-existing)",
-        "Output contains 'To be fixed' (triage status applied)",
-        "Output contains 'What Looks Good' section with at least one bullet",
-        "Output does NOT contain a 'Reviewer To-Do' section",
-        "No file created under review/ directory"
+        {
+          "id": "no-pr-skip-line",
+          "text": "Prints the 'No PR found for this branch' skip line",
+          "kind": "script",
+          "script": "grep -qi 'No PR found for this branch' output.md"
+        },
+        {
+          "id": "severity-table",
+          "text": "Prints a severity counts table using the skill's severity levels",
+          "kind": "script",
+          "script": "grep -q '\ud83d\udd34' output.md && grep -q '\ud83d\udfe1' output.md"
+        },
+        {
+          "id": "triage-applied",
+          "text": "Findings carry the 'To be fixed' triage status the user asked for",
+          "kind": "script",
+          "script": "grep -qi 'To be fixed' output.md"
+        },
+        {
+          "id": "what-looks-good",
+          "text": "Includes a What Looks Good section",
+          "kind": "script",
+          "script": "grep -qi 'what looks good' output.md"
+        },
+        {
+          "id": "no-reviewer-todo",
+          "text": "Omits the Reviewer To-Do section entirely rather than printing an empty heading",
+          "kind": "script",
+          "script": "! grep -qi 'reviewer to-do' output.md"
+        },
+        {
+          "id": "no-report-written",
+          "text": "Writes no report file under review/, since the user declined one",
+          "kind": "script",
+          "script": "! find sandbox/review -name 'report-*.md' 2>/dev/null | grep -q ."
+        },
+        {
+          "id": "finds-off-by-one",
+          "text": "Flags the off-by-one loop bound in src/submissions.js, where i <= subs.length reads one element past the end",
+          "kind": "model"
+        },
+        {
+          "id": "finds-n-plus-one",
+          "text": "Flags the N+1 query: db.findOne is called once per submission inside the loop",
+          "kind": "model"
+        },
+        {
+          "id": "finds-swallowed-error",
+          "text": "Flags the empty catch block in createAssignment that swallows the insert failure and returns undefined",
+          "kind": "model"
+        },
+        {
+          "id": "finds-removed-validation",
+          "text": "Flags that the title validation guard was removed from createAssignment",
+          "kind": "model"
+        },
+        {
+          "id": "finds-altitude-violation",
+          "text": "Flags the altitude problem: shared pageBounds now branches on a caller-specific callerContext value",
+          "kind": "model"
+        },
+        {
+          "id": "concrete-failure-scenarios",
+          "text": "Findings name a concrete failure (inputs leading to wrong output or a crash) rather than saying something could be a problem",
+          "kind": "model"
+        }
       ]
     },
     {
       "id": 3,
-      "prompt": "Review my code on my local working branch. For any triage prompts asking 'Fix now or later?', answer 'later' for all findings. Yes, generate a report at the end.",
-      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 7 review angles, triages findings as 'To be fixed', prints the summary, then writes a report file to review/<safe-branch>/report-<timestamp>.md. Report contains severity table, findings with Triage field, and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped).",
-      "files": [],
+      "name": "local-branch-with-report",
+      "prompt": "Review my code on my local working branch. Please don't pause to triage findings with me one by one: treat every finding as 'later' (to be fixed) and work straight through all the review angles to the complete summary in one go. Then yes, do generate the written report at the end.",
+      "expected_output": "As the no-report case, but after printing the summary the skill writes a report to review/<safe-branch>/report-<timestamp>.md containing the severity table, each finding's triage status, and the What Looks Good section, then prints the saved path.",
+      "fixture": "evals/fixtures/planted-bugs",
+      "setup": "setup.sh",
       "assertions": [
-        "Output contains 'No PR found for this branch' printed before the review angles run",
-        "A report file is created under review/ (path starts with review/)",
-        "Report contains a severity counts table",
-        "Report contains 'Triage:' field on at least one finding entry",
-        "Report contains 'What Looks Good' section",
-        "Report does NOT contain a 'Reviewer To-Do' section"
+        {
+          "id": "report-file-written",
+          "text": "Writes a report to review/<safe-branch>/report-<timestamp>.md",
+          "kind": "script",
+          "script": "find sandbox/review -name 'report-*.md' | grep -q ."
+        },
+        {
+          "id": "report-path-uses-safe-branch",
+          "text": "The report directory is the sanitised branch name feat-submission-listing, with the slash replaced",
+          "kind": "script",
+          "script": "test -d sandbox/review/feat-submission-listing"
+        },
+        {
+          "id": "report-has-severity-table",
+          "text": "The report contains a severity counts table",
+          "kind": "script",
+          "script": "find sandbox/review -name 'report-*.md' -exec grep -l '\ud83d\udd34' {} + | grep -q ."
+        },
+        {
+          "id": "report-has-triage",
+          "text": "The report records a triage status against findings",
+          "kind": "script",
+          "script": "find sandbox/review -name 'report-*.md' -exec grep -li 'triage' {} + | grep -q ."
+        },
+        {
+          "id": "report-has-what-looks-good",
+          "text": "The report contains a What Looks Good section",
+          "kind": "script",
+          "script": "find sandbox/review -name 'report-*.md' -exec grep -li 'what looks good' {} + | grep -q ."
+        },
+        {
+          "id": "prints-saved-path",
+          "text": "Prints the saved report path so the user can find it",
+          "kind": "script",
+          "script": "grep -qi 'review/feat-submission-listing' output.md"
+        }
       ]
     },
     {
       "id": 4,
-      "prompt": "Review my code on my local working branch. There's no PR open for this branch yet — I just want feedback before I push. For any triage prompts asking 'Fix now or later?', answer 'later' for all findings. Do not generate a report at the end.",
-      "expected_output": "Skill runs the Analysis Phase's PR & Issue Check first: it checks for an open PR on the current branch via `gh pr view`, finds none, and prints 'No PR found for this branch — skipping issue and test plan checks' — then proceeds straight to the 7 review angles without asking about a linked issue or a test plan. Findings are triaged as 'To be fixed', and the summary has no Reviewer To-Do section since the check that produces those items never ran.",
-      "files": [],
+      "name": "pr-check-skipped-cleanly",
+      "prompt": "Review my code on my local working branch. There's no PR open for this branch yet, I just want feedback before I push. Please don't pause to triage findings with me one by one: treat every finding as 'later' and go straight through to the complete summary. No report file at the end.",
+      "expected_output": "The PR and issue check resolves to no PR and is skipped in full: the skill does not go on to ask the reviewer for an issue number or evaluate a test plan, and produces no Reviewer To-Do section, because the check that generates those items never ran. The rest of the review proceeds normally.",
+      "fixture": "evals/fixtures/planted-bugs",
+      "setup": "setup.sh",
       "assertions": [
-        "Output contains 'No PR found for this branch' printed before any review angle findings",
-        "Output does NOT contain a reviewer prompt asking for an issue number (the PR & Issue Check is skipped entirely, not run to completion with no issue found)",
-        "Output does NOT contain a 'Reviewer To-Do' section",
-        "Output still contains a severity counts table and a 'What Looks Good' section (the rest of the review runs normally)"
+        {
+          "id": "no-pr-skip-line",
+          "text": "Prints the 'No PR found for this branch' skip line",
+          "kind": "script",
+          "script": "grep -qi 'No PR found for this branch' output.md"
+        },
+        {
+          "id": "does-not-ask-for-issue",
+          "text": "Does not go on to ask the reviewer to supply an issue number, since the whole check is skipped rather than run to completion",
+          "kind": "model"
+        },
+        {
+          "id": "no-reviewer-todo",
+          "text": "Produces no Reviewer To-Do section",
+          "kind": "script",
+          "script": "! grep -qi 'reviewer to-do' output.md"
+        },
+        {
+          "id": "review-still-runs",
+          "text": "The review itself still runs: a severity table and What Looks Good section are present",
+          "kind": "script",
+          "script": "grep -q '\ud83d\udd34' output.md && grep -qi 'what looks good' output.md"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "refuses-review-on-main",
+      "prompt": "Can you review my code changes on my local working branch please? Don't bother generating a report.",
+      "expected_output": "There are real uncommitted changes to review, but the current branch is main, which the skill treats as out of bounds: it stops immediately on the branch-name check and tells the user code reviews are for feature branches only, without producing findings, a severity table, or a report. The point of the eval is that the refusal is driven by the branch rule, not by an absence of anything to review, so it must not enumerate the defects sitting in the working tree.",
+      "fixture": "evals/fixtures/planted-bugs",
+      "setup": "setup-dirty-main.sh",
+      "assertions": [
+        {
+          "id": "refuses-on-trunk",
+          "text": "Stops and states that code reviews are for feature branches only",
+          "kind": "script",
+          "script": "grep -qi 'feature branch' output.md"
+        },
+        {
+          "id": "refusal-cites-branch-rule",
+          "text": "The stated reason for stopping is that the current branch is a trunk branch, not that there is nothing to review",
+          "kind": "model"
+        },
+        {
+          "id": "no-findings-produced",
+          "text": "Produces no severity counts table, having stopped before the review angles",
+          "kind": "script",
+          "script": "! grep -q '\ud83d\udd34' output.md"
+        },
+        {
+          "id": "does-not-review-anyway",
+          "text": "Does not review the uncommitted changes regardless: the off-by-one, N+1, and swallowed-error defects in the working tree go unenumerated",
+          "kind": "model"
+        },
+        {
+          "id": "no-report-written",
+          "text": "Writes no report file",
+          "kind": "script",
+          "script": "! find sandbox/review -name 'report-*.md' 2>/dev/null | grep -q ."
+        },
+        {
+          "id": "stays-on-main",
+          "text": "Does not silently switch branches or commit the changes to make the review possible",
+          "kind": "script",
+          "script": "test \"$(git -C sandbox rev-parse --abbrev-ref HEAD)\" = main && test -n \"$(git -C sandbox status --porcelain)\""
+        }
       ]
     }
   ]

@@ -1,0 +1,12 @@
+{
+  "name": "payments-service",
+  "version": "3.2.0",
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "fast-xml-parser": "4.2.5"
+  }
+}

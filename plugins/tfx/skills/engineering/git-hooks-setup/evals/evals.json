@@ -1,114 +1,266 @@
 {
-  "skill_name": "git-hooks-setup",
+  "skill": "git-hooks-setup",
+  "notes": "The skill documents its own audit criteria as concrete grep checks, so most assertions here are script assertions running those same checks against the sandbox. Fixtures cover both supported drivers (Husky and Lefthook) in both states (nothing installed, partially installed). Three caveats. The skill is graded on writing the correct hook content rather than on a successful install. gitleaks may or may not be on PATH, so assertions check that the hook invokes gitleaks rather than that the binary exists. And writes to git hook files are sometimes refused by the harness's own tool-permission guard, which fires on both configurations and is the main source of noise in this suite. Each prompt runs with the fixture as the working directory, so no project path is passed.",
+  "invocation": "explicit",
   "evals": [
     {
       "id": 1,
-      "prompt": "I have a new TypeScript project using npm and nvm. Please set up git hooks for it. The project is at: PROJECT_DIR",
-      "expected_output": "Husky installed, .husky/pre-commit created with lint-staged (using eslint --fix and prettier --write, which are already configured in the repo) + tsc --noEmit + gitleaks protect --staged, .husky/pre-push created with branch protection checks only, nvm bootstrap sourced at top of each hook, .lintstagedrc.json created with eslint and prettier commands (detected from existing devDependencies), .gitleaks.toml created, package.json updated with prepare script.",
-      "files": [],
-      "fixture": "fresh-install",
-      "expectations": [
-        "A .husky/pre-commit file is created",
-        "The pre-commit hook calls lint-staged",
-        "The pre-commit hook calls tsc --noEmit",
-        "The pre-commit hook calls gitleaks protect --staged",
-        "A .husky/pre-push file is created",
-        "The hook files source the nvm bootstrap snippet (NVM_DIR / nvm.sh) since .nvmrc is present",
-        "A lint-staged config is created covering *.{ts,tsx,js,jsx} files with eslint and prettier commands (detected from existing devDependencies)",
-        "The lint-staged config does NOT contain any commands for tools not already configured in the repo",
-        "A .gitleaks.toml is created containing useDefault = true",
-        "The hook files contain 'set -e' in the preamble so any step failure aborts the chain",
-        "The .husky/pre-commit file is executable (has execute permission set)",
-        "The .husky/pre-push file is executable (has execute permission set)",
-        "package.json contains a 'prepare' script that invokes husky",
-        "The skill does NOT install or configure eslint, prettier, or typescript — those are already present"
+      "name": "husky-fresh-install",
+      "prompt": "I have a new TypeScript project using npm and nvm. Please set up git hooks for it using Husky. Go ahead and apply the changes, no need to check back with me.",
+      "expected_output": "Husky v9 conventions: .husky/pre-commit runs the nvm bootstrap, lint-staged, tsc --noEmit, and gitleaks protect --staged; .husky/pre-push enforces branch protection (blocking main/master, checking branch naming via BRANCH_PATTERN and TRUNK_PATTERN). A .lintstagedrc.json is created with the eslint and prettier commands detected from the existing devDependencies, .gitleaks.toml is created, and package.json gains a prepare script. No husky install or husky add commands, and no _/husky.sh shim, since those were removed in v9.",
+      "fixture": "evals/fixtures/fresh-install",
+      "assertions": [
+        {
+          "id": "pre-commit-exists",
+          "text": "Creates .husky/pre-commit",
+          "kind": "script",
+          "script": "test -f sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "pre-commit-calls-lint-staged",
+          "text": "The pre-commit hook calls lint-staged",
+          "kind": "script",
+          "script": "grep -q 'lint-staged' sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "pre-commit-calls-tsc",
+          "text": "The pre-commit hook type-checks with tsc, this being a TypeScript project",
+          "kind": "script",
+          "script": "grep -q 'tsc' sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "pre-commit-calls-gitleaks",
+          "text": "The pre-commit hook scans staged changes with gitleaks",
+          "kind": "script",
+          "script": "grep -q 'gitleaks' sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "pre-push-blocks-trunk",
+          "text": "The pre-push hook blocks pushes to main/master",
+          "kind": "script",
+          "script": "test -f sandbox/.husky/pre-push && grep -qE 'main|master' sandbox/.husky/pre-push"
+        },
+        {
+          "id": "pre-push-enforces-branch-naming",
+          "text": "The pre-push hook enforces branch naming via BRANCH_PATTERN and TRUNK_PATTERN",
+          "kind": "script",
+          "script": "grep -q 'BRANCH_PATTERN' sandbox/.husky/pre-push && grep -q 'TRUNK_PATTERN' sandbox/.husky/pre-push"
+        },
+        {
+          "id": "lintstaged-config-created",
+          "text": "Creates a lint-staged config carrying the eslint and prettier commands detected from devDependencies",
+          "kind": "script",
+          "script": "F=$(ls sandbox/.lintstagedrc.json sandbox/.lintstagedrc.js 2>/dev/null | head -1); test -n \"$F\" && grep -q 'eslint' \"$F\" && grep -q 'prettier' \"$F\""
+        },
+        {
+          "id": "gitleaks-toml-created",
+          "text": "Creates .gitleaks.toml",
+          "kind": "script",
+          "script": "test -f sandbox/.gitleaks.toml"
+        },
+        {
+          "id": "prepare-script-added",
+          "text": "Adds a prepare script to package.json, the v9 way of wiring hooks on install",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; d=json.load(open('sandbox/package.json')); sys.exit(0 if 'husky' in d.get('scripts',{}).get('prepare','') else 1)\""
+        },
+        {
+          "id": "no-husky-v8-idioms",
+          "text": "Uses no removed Husky v8 idioms (husky install, husky add, or the _/husky.sh shim)",
+          "kind": "script",
+          "script": "! grep -rqE 'husky install|husky add|_/husky\\.sh' sandbox/.husky sandbox/package.json 2>/dev/null"
+        },
+        {
+          "id": "nvm-bootstrap",
+          "text": "Sources an nvm bootstrap in the hooks, the project having an .nvmrc",
+          "kind": "script",
+          "script": "grep -qE 'nvm' sandbox/.husky/pre-commit"
+        }
       ]
     },
     {
       "id": 2,
-      "prompt": "We have Husky already installed on our project but I think we're missing some checks. Can you audit the git hooks setup and fix any gaps you find? Project is at: PROJECT_DIR",
-      "expected_output": "Audit report listing which hook-level checks pass and which fail. Missing hook items fixed: tsc --noEmit added to pre-commit, gitleaks added to pre-commit, pre-push hook created with branch naming check and main/master block. Existing lint-staged line in pre-commit preserved. No changes to lint config files (eslintrc, lintstagedrc, prettierrc).",
-      "files": [],
-      "fixture": "audit-incomplete",
-      "expectations": [
-        "An audit report or summary is produced that lists which hook checks passed and which failed",
-        "tsc --noEmit is added to the pre-commit hook (it was missing)",
-        "gitleaks protect --staged is added to the pre-commit hook (it was missing)",
-        "A .husky/pre-push file is created (it was missing)",
-        "The pre-push hook contains a branch naming check (BRANCH_PATTERN and TRUNK_PATTERN)",
-        "The pre-push hook blocks direct pushes to main or master",
-        "The existing lint-staged line in pre-commit is preserved and not overwritten",
-        "The .lintstagedrc.json file is NOT modified (lint config is out of scope for this skill)",
-        "The .eslintrc.json file is NOT modified (lint config is out of scope for this skill)",
-        "The hook files contain 'set -e' in the preamble so any step failure aborts the chain",
-        "The .husky/pre-commit file is executable (has execute permission set)",
-        "The .husky/pre-push file is executable (has execute permission set)"
+      "name": "husky-audit-incomplete",
+      "prompt": "We have Husky already installed on our project but I think we're missing some checks. Can you audit the git hooks setup and fix any gaps you find? Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "An audit report naming which hook-level checks pass and which fail, then the gaps fixed: tsc --noEmit and gitleaks added to pre-commit, and a pre-push hook created with the trunk block and branch naming check. The existing lint-staged line in pre-commit is preserved. Lint configuration files (eslint.config.js, .lintstagedrc.json, .prettierrc.json) are left alone, since wiring hooks is this skill's job and configuring linters is not.",
+      "fixture": "evals/fixtures/audit-incomplete",
+      "assertions": [
+        {
+          "id": "reports-audit-findings",
+          "text": "Reports which hook checks passed and which failed before fixing anything",
+          "kind": "model"
+        },
+        {
+          "id": "preserves-lint-staged-line",
+          "text": "Preserves the existing lint-staged invocation in pre-commit",
+          "kind": "script",
+          "script": "grep -q 'lint-staged' sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "adds-tsc",
+          "text": "Adds the missing tsc type-check to pre-commit",
+          "kind": "script",
+          "script": "grep -q 'tsc' sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "adds-gitleaks",
+          "text": "Adds the missing gitleaks scan to pre-commit",
+          "kind": "script",
+          "script": "grep -q 'gitleaks' sandbox/.husky/pre-commit"
+        },
+        {
+          "id": "creates-pre-push",
+          "text": "Creates the missing pre-push hook with the trunk block and branch naming check",
+          "kind": "script",
+          "script": "test -f sandbox/.husky/pre-push && grep -qE 'main|master' sandbox/.husky/pre-push && grep -q 'BRANCH_PATTERN' sandbox/.husky/pre-push"
+        },
+        {
+          "id": "leaves-lint-config-alone",
+          "text": "Does not modify the lint or formatter configuration, which is out of this skill's scope",
+          "kind": "script",
+          "script": "! git -C sandbox status --porcelain | grep -qE 'eslint\\.config\\.js|\\.prettierrc\\.json|\\.lintstagedrc\\.json'"
+        }
       ]
     },
     {
       "id": 3,
-      "prompt": "Our hooks are working well but we need to add a new check to the pre-push hook. We have a script at scripts/check-api-docs.sh that validates API documentation and it should block the push if it fails. Can you wire that up? Project is at: PROJECT_DIR",
-      "expected_output": "Agent detects check-api-docs.sh is already referenced in .husky/pre-push (as './scripts/check-api-docs.sh') and does not add a duplicate. The idempotency check must be broad enough to match the existing './scripts/check-api-docs.sh' invocation when searching for 'check-api-docs'. Existing npm test and check-api-docs.sh lines both preserved exactly once.",
-      "files": [],
-      "fixture": "add-new-check-idempotency-v2",
-      "expectations": [
-        "scripts/check-api-docs.sh is referenced in the pre-push hook",
-        "The existing npm test line is preserved in the pre-push hook",
-        "The script is invoked in a way that blocks the push on failure (no '|| true' or equivalent bypass)",
-        "check-api-docs appears exactly once in the pre-push hook (not duplicated — idempotency holds even though existing invocation uses './scripts/check-api-docs.sh' path prefix)"
+      "name": "add-new-check-idempotently",
+      "prompt": "Our hooks are working well but we need to add a new check to the pre-push hook. We have a script at scripts/check-api-docs.sh that validates API documentation and it should block the push if it fails. Can you wire that up?",
+      "expected_output": "The check is already wired into .husky/pre-push as './scripts/check-api-docs.sh', so the skill recognises it and adds no duplicate. Recognising it requires matching on 'check-api-docs' rather than on an exact invocation string, since the existing line is path-prefixed. Both the existing npm test line and the check-api-docs line survive exactly once.",
+      "fixture": "evals/fixtures/add-new-check-idempotency",
+      "assertions": [
+        {
+          "id": "no-duplicate-added",
+          "text": "Adds no duplicate: check-api-docs is still referenced exactly once in pre-push",
+          "kind": "script",
+          "script": "test \"$(grep -c 'check-api-docs' sandbox/.husky/pre-push)\" = 1"
+        },
+        {
+          "id": "recognises-existing-wiring",
+          "text": "Reports that the check was already wired up rather than claiming to have added it",
+          "kind": "model"
+        },
+        {
+          "id": "preserves-npm-test",
+          "text": "Preserves the existing npm test line exactly once",
+          "kind": "script",
+          "script": "test \"$(grep -c 'npm test' sandbox/.husky/pre-push)\" = 1"
+        }
       ]
     },
     {
       "id": 4,
-      "prompt": "I want to set up git hooks on this project. Project is at: PROJECT_DIR",
-      "expected_output": "Skill detects no linters or formatters are configured in the repo. Tells the user to run lint-setup first. If user asks to proceed anyway, installs Husky and writes hooks with an empty lint-staged config, noting that lint-setup is needed to populate it.",
-      "files": [],
-      "fixture": "no-linters",
-      "expectations": [
-        "The skill detects that no linters or formatters are configured (no eslint, oxlint, biome, prettier, or oxfmt present)",
-        "The skill informs the user that no linters were found and recommends running lint-setup first",
-        "The skill either stops or asks the user whether to proceed before installing Husky",
-        "If Husky is installed, the lint-staged config is created with an empty commands array (not with made-up commands)",
-        "The skill does NOT install eslint, prettier, or any linter/formatter packages itself"
+      "name": "no-linters-defers-to-lint-setup",
+      "prompt": "I want to set up git hooks on this project.",
+      "expected_output": "No linters or formatters are configured anywhere in the repo, so rather than inventing a lint setup the skill says so and points the user at lint-setup first. This boundary is the whole reason the two skills are separate: this one wires hooks around tools that already exist.",
+      "fixture": "evals/fixtures/no-linters",
+      "assertions": [
+        {
+          "id": "detects-no-linters",
+          "text": "Detects that no linters or formatters are configured in the repo",
+          "kind": "model"
+        },
+        {
+          "id": "points-to-lint-setup",
+          "text": "Points the user to lint-setup rather than configuring linters itself",
+          "kind": "script",
+          "script": "grep -q 'lint-setup' output.md"
+        },
+        {
+          "id": "does-not-install-linters",
+          "text": "Adds no linter or formatter to devDependencies, staying inside its own scope",
+          "kind": "script",
+          "script": "! grep -qE '\"(eslint|prettier|oxlint|biome)\"' sandbox/package.json"
+        }
       ]
     },
     {
       "id": 5,
-      "prompt": "I have a new TypeScript project using npm and nvm. Please set up git hooks using Lefthook. The project is at: PROJECT_DIR",
-      "expected_output": "Lefthook installed, lefthook.yml created with pre-commit section (eslint + prettier commands with globs and stage_fixed, tsc, gitleaks) and pre-push section (block-main script, branch naming check only). scripts/hooks/check-push-target.sh created and made executable. No .husky/ directory, no lint-staged, no prepare script.",
-      "files": [],
-      "fixture": "lefthook-fresh-install",
-      "expectations": [
-        "lefthook is added to devDependencies in package.json",
-        "A lefthook.yml file is created at the repo root",
-        "The pre-commit section has a command targeting *.{js,jsx,ts,tsx} with eslint --fix (detected from devDependencies)",
-        "The pre-commit section has a command targeting *.{js,jsx,ts,tsx} with prettier --write (detected from devDependencies)",
-        "The pre-commit linter commands use {staged_files} placeholder and have stage_fixed: true",
-        "The pre-commit section has a tsc --noEmit command (TypeScript project)",
-        "The pre-commit section has a gitleaks protect --staged command",
-        "A .gitleaks.toml is created containing useDefault = true",
-        "The pre-push section has a command that blocks direct pushes to main or master",
-        "The pre-push section has a branch naming check",
-        "No .husky/ directory is created",
-        "lint-staged is NOT installed (Lefthook handles staged-file filtering natively)",
-        "The skill does NOT install or configure eslint, prettier, or typescript — those are already present"
+      "name": "lefthook-fresh-install",
+      "prompt": "I have a new TypeScript project using npm and nvm. Please set up git hooks using Lefthook. Go ahead and apply the changes, no need to check back with me.",
+      "expected_output": "A lefthook.yml with a pre-commit section (eslint and prettier commands with globs and stage_fixed, plus tsc --noEmit and gitleaks protect --staged) and a pre-push section (trunk block and branch naming check). No .husky directory, no lint-staged, and no prepare script, because Lefthook does its own staged-file filtering and wires hooks directly through lefthook install.",
+      "fixture": "evals/fixtures/lefthook-fresh-install",
+      "assertions": [
+        {
+          "id": "lefthook-yml-created",
+          "text": "Creates lefthook.yml",
+          "kind": "script",
+          "script": "test -f sandbox/lefthook.yml"
+        },
+        {
+          "id": "pre-commit-section",
+          "text": "lefthook.yml has a pre-commit section",
+          "kind": "script",
+          "script": "grep -q '^pre-commit:' sandbox/lefthook.yml"
+        },
+        {
+          "id": "pre-push-section",
+          "text": "lefthook.yml has a pre-push section",
+          "kind": "script",
+          "script": "grep -q '^pre-push:' sandbox/lefthook.yml"
+        },
+        {
+          "id": "uses-stage-fixed",
+          "text": "Uses Lefthook's native stage_fixed rather than reaching for lint-staged",
+          "kind": "script",
+          "script": "grep -q 'stage_fixed' sandbox/lefthook.yml"
+        },
+        {
+          "id": "tsc-and-gitleaks",
+          "text": "The pre-commit section runs tsc and gitleaks",
+          "kind": "script",
+          "script": "grep -q 'tsc' sandbox/lefthook.yml && grep -q 'gitleaks' sandbox/lefthook.yml"
+        },
+        {
+          "id": "no-husky-artifacts",
+          "text": "Creates no .husky directory, no lint-staged config, and no prepare script, none of which Lefthook needs",
+          "kind": "script",
+          "script": "! test -d sandbox/.husky && ! ls sandbox/.lintstagedrc* >/dev/null 2>&1 && ! python3 -c \"import json,sys; d=json.load(open('sandbox/package.json')); sys.exit(0 if 'prepare' in d.get('scripts',{}) else 1)\""
+        }
       ]
     },
     {
       "id": 6,
-      "prompt": "We have Lefthook already set up on our project but I think we're missing some checks. Can you audit the hooks and fix any gaps? Project is at: PROJECT_DIR",
-      "expected_output": "Audit report listing which Lefthook hook checks pass and fail. Missing items fixed: tsc command added to pre-commit section, gitleaks command added to pre-commit section, pre-push section created with block-main script and branch naming check. Existing eslint and prettier commands preserved.",
-      "files": [],
-      "fixture": "lefthook-audit-incomplete",
-      "expectations": [
-        "An audit report or summary is produced listing which checks passed and which failed",
-        "A tsc --noEmit command is added to the pre-commit section of lefthook.yml (it was missing)",
-        "A gitleaks protect --staged command is added to the pre-commit section of lefthook.yml (it was missing)",
-        "A pre-push section is added to lefthook.yml (it was missing)",
-        "The pre-push section blocks direct pushes to main or master",
-        "The pre-push section includes a branch naming check",
-        "The existing eslint and prettier commands in the pre-commit section are preserved and not overwritten",
-        "No .husky/ directory or lint-staged is introduced — this is a Lefthook project"
+      "name": "lefthook-audit-incomplete",
+      "prompt": "We have Lefthook already set up on our project but I think we're missing some checks. Can you audit the hooks and fix any gaps? Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "An audit report naming which Lefthook checks pass and fail, then the gaps fixed: tsc and gitleaks commands added to the pre-commit section, and a pre-push section created with the trunk block and branch naming check. The existing eslint and prettier commands are preserved.",
+      "fixture": "evals/fixtures/lefthook-audit-incomplete",
+      "assertions": [
+        {
+          "id": "reports-audit-findings",
+          "text": "Reports which Lefthook checks passed and which failed before fixing anything",
+          "kind": "model"
+        },
+        {
+          "id": "preserves-existing-commands",
+          "text": "Preserves the existing eslint and prettier commands",
+          "kind": "script",
+          "script": "grep -q 'eslint' sandbox/lefthook.yml && grep -q 'prettier' sandbox/lefthook.yml"
+        },
+        {
+          "id": "adds-tsc",
+          "text": "Adds the missing tsc command to the pre-commit section",
+          "kind": "script",
+          "script": "grep -q 'tsc' sandbox/lefthook.yml"
+        },
+        {
+          "id": "adds-gitleaks",
+          "text": "Adds the missing gitleaks command to the pre-commit section",
+          "kind": "script",
+          "script": "grep -q 'gitleaks' sandbox/lefthook.yml"
+        },
+        {
+          "id": "adds-pre-push-section",
+          "text": "Creates the missing pre-push section with the trunk block and branch naming check",
+          "kind": "script",
+          "script": "grep -q '^pre-push:' sandbox/lefthook.yml && grep -qE 'main|master' sandbox/lefthook.yml"
+        },
+        {
+          "id": "stays-on-lefthook",
+          "text": "Does not migrate the project to Husky, the driver already in use being Lefthook",
+          "kind": "script",
+          "script": "! test -d sandbox/.husky"
+        }
       ]
     }
   ]

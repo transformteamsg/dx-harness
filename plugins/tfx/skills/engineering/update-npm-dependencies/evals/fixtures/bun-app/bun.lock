@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "edge-gateway",
+      "dependencies": {
+        "hono": "^4.1.0"
+      }
+    }
+  },
+  "packages": {
+    "hono": ["hono@4.1.0", "", {}, "sha512-stubstubstub"]
+  }
+}

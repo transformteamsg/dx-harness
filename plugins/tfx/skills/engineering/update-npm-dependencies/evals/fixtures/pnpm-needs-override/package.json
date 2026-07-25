@@ -1,0 +1,11 @@
+{
+  "name": "archive-importer",
+  "version": "2.0.1",
+  "private": true,
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "legacy-xml-adapter": "1.4.0"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "gradebook-import",
+  "version": "0.9.4",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "fast-xml-parser": "4.2.5"
+  }
+}

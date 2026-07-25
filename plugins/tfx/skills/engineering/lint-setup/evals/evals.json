@@ -1,67 +1,268 @@
 {
-  "skill_name": "lint-setup",
+  "skill": "lint-setup",
+  "notes": "This skill's output is almost entirely files on disk, which makes it the best-suited engineering skill for script assertions: nearly every claim is decidable by reading the sandbox. The recurring theme across evals is restraint, and it is where the skill is most likely to slip. Two cases specifically guard against creating Prettier files when Prettier was not chosen: eslint-config-prettier is a compatibility shim that switches off ESLint's formatting rules, so installing it does not mean Prettier is in use, and .prettierrc.json or .prettierignore appearing alongside oxfmt is a real defect. Installs cannot complete (no network), so assertions check declared config and package.json rather than an installed node_modules. Wiring linters into git hooks belongs to git-hooks-setup, so hook artefacts appearing here are also a defect.",
+  "invocation": "explicit",
   "evals": [
     {
       "id": 1,
-      "name": "eval-greenfield-ts",
-      "prompt": "I have a new TypeScript React project with no linting or formatting set up. I want oxlint for linting and oxfmt for formatting.",
-      "expected_output": "Creates .oxlintrc.json and .oxfmtrc.json with correct default configs, adds lint and format scripts to package.json",
-      "files": [],
-      "assertions": []
+      "name": "greenfield-oxlint-oxfmt",
+      "prompt": "I have a new TypeScript React project with no linting or formatting set up. I want oxlint for linting and oxfmt for formatting. We use npm. Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "Creates .oxlintrc.json and .oxfmtrc.json with the skill's default configs, and adds lint and format scripts to package.json pointing at oxlint and oxfmt. No ESLint, Prettier, or Biome config appears, since none was asked for.",
+      "fixture": "evals/fixtures/greenfield-ts",
+      "assertions": [
+        {
+          "id": "oxlintrc-created",
+          "text": "Creates .oxlintrc.json",
+          "kind": "script",
+          "script": "test -f sandbox/.oxlintrc.json"
+        },
+        {
+          "id": "oxfmtrc-created",
+          "text": "Creates .oxfmtrc.json",
+          "kind": "script",
+          "script": "test -f sandbox/.oxfmtrc.json"
+        },
+        {
+          "id": "lint-script-uses-oxlint",
+          "text": "The package.json lint script runs oxlint",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); sys.exit(0 if 'oxlint' in s.get('lint','') else 1)\""
+        },
+        {
+          "id": "format-script-uses-oxfmt",
+          "text": "The package.json format script runs oxfmt",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); sys.exit(0 if 'oxfmt' in s.get('format','') else 1)\""
+        },
+        {
+          "id": "no-unrequested-tools",
+          "text": "Creates no ESLint, Prettier, or Biome config, none of which was requested",
+          "kind": "script",
+          "script": "! ls sandbox/eslint.config.js sandbox/.eslintrc* sandbox/biome.json sandbox/.prettierrc* sandbox/.prettierignore >/dev/null 2>&1"
+        },
+        {
+          "id": "no-hook-wiring",
+          "text": "Wires nothing into git hooks, that being git-hooks-setup's job",
+          "kind": "script",
+          "script": "! test -d sandbox/.husky && ! test -f sandbox/lefthook.yml"
+        }
+      ]
     },
     {
       "id": 2,
-      "name": "eval-partial-add-oxfmt",
-      "prompt": "Our JS/TS project already has oxlint configured. We want to add oxfmt for formatting.",
-      "expected_output": "Detects existing .oxlintrc.json and oxlint script, adds only .oxfmtrc.json and format script without touching existing lint setup",
-      "files": [],
-      "assertions": []
+      "name": "partial-add-oxfmt-only",
+      "prompt": "Our JS/TS project already has oxlint configured. We want to add oxfmt for formatting. We use npm. Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "The existing .oxlintrc.json and lint script are detected and left exactly as they are. Only .oxfmtrc.json and a format script are added, since the linting half of the setup is already done and rewriting it would be gratuitous churn.",
+      "fixture": "evals/fixtures/partial-oxlint",
+      "assertions": [
+        {
+          "id": "oxfmtrc-created",
+          "text": "Creates .oxfmtrc.json",
+          "kind": "script",
+          "script": "test -f sandbox/.oxfmtrc.json"
+        },
+        {
+          "id": "format-script-added",
+          "text": "Adds a format script running oxfmt",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); sys.exit(0 if 'oxfmt' in s.get('format','') else 1)\""
+        },
+        {
+          "id": "oxlintrc-untouched",
+          "text": "Leaves the existing .oxlintrc.json byte-for-byte unchanged",
+          "kind": "script",
+          "script": "git -C sandbox diff --quiet -- .oxlintrc.json"
+        },
+        {
+          "id": "lint-script-untouched",
+          "text": "Leaves the existing lint script unchanged",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); sys.exit(0 if s.get('lint')=='oxlint src' else 1)\""
+        }
+      ]
     },
     {
       "id": 3,
-      "name": "eval-multi-ecosystem-go-shell",
-      "prompt": "Set up linting for our Go server and our shell deployment scripts.",
-      "expected_output": "Creates .golangci.yaml with formatters block, Makefile with tools and lint targets, .shellcheckrc",
-      "files": [],
-      "assertions": []
+      "name": "multi-ecosystem-go-shell",
+      "prompt": "Set up linting for our Go server and our shell deployment scripts. Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "Creates .golangci.yaml including a formatters block with at least gofmt and goimports, a Makefile with pinned local golangci-lint install and lint targets, and a .shellcheckrc with shell=bash. Nothing JS-related is created, since there is no package.json in this repo at all.",
+      "fixture": "evals/fixtures/go-shell",
+      "assertions": [
+        {
+          "id": "golangci-created",
+          "text": "Creates .golangci.yaml",
+          "kind": "script",
+          "script": "test -f sandbox/.golangci.yaml || test -f sandbox/.golangci.yml"
+        },
+        {
+          "id": "golangci-has-formatters",
+          "text": "The golangci config includes a formatters block with gofmt and goimports",
+          "kind": "script",
+          "script": "F=$(ls sandbox/.golangci.y*ml | head -1); grep -q 'formatters' \"$F\" && grep -q 'gofmt' \"$F\" && grep -q 'goimports' \"$F\""
+        },
+        {
+          "id": "makefile-created",
+          "text": "Creates a Makefile with a lint target and a pinned golangci-lint version",
+          "kind": "script",
+          "script": "test -f sandbox/Makefile && grep -q 'lint' sandbox/Makefile && grep -qE 'GOLANGCI_VERSION|golangci-lint-' sandbox/Makefile"
+        },
+        {
+          "id": "makefile-uses-tabs",
+          "text": "Makefile recipe lines use real tab characters, without which make fails outright",
+          "kind": "script",
+          "script": "grep -qP '^\\t' sandbox/Makefile 2>/dev/null || grep -q \"$(printf '^\\t')\" sandbox/Makefile"
+        },
+        {
+          "id": "shellcheckrc-created",
+          "text": "Creates .shellcheckrc specifying bash",
+          "kind": "script",
+          "script": "test -f sandbox/.shellcheckrc && grep -q 'shell=bash' sandbox/.shellcheckrc"
+        },
+        {
+          "id": "no-js-config",
+          "text": "Creates no JS tooling, this repo having no package.json",
+          "kind": "script",
+          "script": "! ls sandbox/package.json sandbox/eslint.config.js sandbox/.oxlintrc.json >/dev/null 2>&1"
+        }
+      ]
     },
     {
       "id": 4,
-      "name": "eval-teacher-workspace",
-      "prompt": "Set up oxlint and oxfmt for the JS/TS workspace and golangci-lint for the Go server. We use pnpm.",
-      "expected_output": "Creates .oxlintrc.json, .oxfmtrc.json, .golangci.yaml, Makefile — all matching the skill's default configs. package.json gets lint and format scripts.",
-      "files": [],
-      "assertions": []
-    },
-    {
-      "id": 6,
-      "name": "eval-switch-prettier-to-oxfmt",
-      "prompt": "We're moving from Prettier to oxfmt for formatting. Remove Prettier and replace it with oxfmt. Keep ESLint as-is. We use npm.",
-      "expected_output": "Creates .oxfmtrc.json, removes prettier from devDependencies, updates format script to use oxfmt, wires eslint-config-prettier for ESLint+oxfmt compatibility. Does NOT create .prettierignore.",
-      "files": [
-        "evals/files/eval-switch-prettier-to-oxfmt/package.json",
-        "evals/files/eval-switch-prettier-to-oxfmt/.prettierrc.json",
-        "evals/files/eval-switch-prettier-to-oxfmt/eslint.config.js"
-      ],
+      "name": "mixed-workspace-js-and-go",
+      "prompt": "Set up oxlint and oxfmt for the JS/TS workspace and golangci-lint for the Go server. We use pnpm. Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "Both ecosystems are configured in one pass: .oxlintrc.json and .oxfmtrc.json for the JS workspace with lint and format scripts in package.json, plus .golangci.yaml and a Makefile for the Go server. Install commands use pnpm, matching the packageManager field and the pnpm-workspace.yaml.",
+      "fixture": "evals/fixtures/mixed-workspace",
       "assertions": [
-        ".prettierignore was NOT created",
-        ".oxfmtrc.json was created with correct default config",
-        "package.json format script uses oxfmt (not prettier)",
-        "eslint-config-prettier is present in devDependencies (ESLint+formatter wiring)"
+        {
+          "id": "js-configs-created",
+          "text": "Creates both .oxlintrc.json and .oxfmtrc.json for the JS workspace",
+          "kind": "script",
+          "script": "test -f sandbox/.oxlintrc.json && test -f sandbox/.oxfmtrc.json"
+        },
+        {
+          "id": "go-config-created",
+          "text": "Creates the golangci config for the Go server",
+          "kind": "script",
+          "script": "ls sandbox/.golangci.y*ml sandbox/server/.golangci.y*ml >/dev/null 2>&1"
+        },
+        {
+          "id": "makefile-created",
+          "text": "Creates a Makefile with a lint target for the Go side",
+          "kind": "script",
+          "script": "test -f sandbox/Makefile || test -f sandbox/server/Makefile"
+        },
+        {
+          "id": "scripts-added",
+          "text": "Adds lint and format scripts to package.json",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); sys.exit(0 if 'lint' in s and 'format' in s else 1)\""
+        },
+        {
+          "id": "uses-pnpm",
+          "text": "Uses pnpm for install commands, matching the lockfile and packageManager field",
+          "kind": "script",
+          "script": "grep -qE 'pnpm (add|install)' output.md && ! grep -qE '\\bnpm install --save-dev\\b|\\byarn add\\b' output.md"
+        }
       ]
     },
     {
       "id": 5,
-      "name": "eval-eslint-oxfmt-no-prettierignore",
-      "prompt": "Our TypeScript project has no formatting set up yet. We want ESLint for linting and oxfmt for formatting. We use npm.",
-      "expected_output": "Creates eslint.config.js and .oxfmtrc.json, installs eslint-config-prettier for wiring, adds lint and format scripts to package.json. Does NOT create .prettierignore or .prettierrc.json.",
-      "files": [],
+      "name": "eslint-oxfmt-no-prettier-files",
+      "prompt": "Our TypeScript project has no formatting set up yet. We want ESLint for linting and oxfmt for formatting. We use npm. Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "Creates eslint.config.js and .oxfmtrc.json, adds eslint-config-prettier to disable ESLint's formatting rules and places it last in the ESLint config, and adds lint and format scripts. Critically it creates no .prettierrc.json and no .prettierignore: eslint-config-prettier is only a compatibility shim, and Prettier was never selected as the formatter.",
+      "fixture": "evals/fixtures/eslint-oxfmt",
       "assertions": [
-        ".prettierignore was NOT created",
-        ".prettierrc.json was NOT created",
-        ".oxfmtrc.json was created with correct default config",
-        "eslint.config.js was created",
-        "eslint-config-prettier was installed (for ESLint+formatter wiring)"
+        {
+          "id": "no-prettierignore",
+          "text": "Does not create .prettierignore",
+          "kind": "script",
+          "script": "! test -f sandbox/.prettierignore"
+        },
+        {
+          "id": "no-prettierrc",
+          "text": "Does not create .prettierrc.json or any other Prettier config",
+          "kind": "script",
+          "script": "! ls sandbox/.prettierrc* sandbox/prettier.config.* >/dev/null 2>&1"
+        },
+        {
+          "id": "oxfmtrc-created",
+          "text": "Creates .oxfmtrc.json",
+          "kind": "script",
+          "script": "test -f sandbox/.oxfmtrc.json"
+        },
+        {
+          "id": "eslint-config-created",
+          "text": "Creates eslint.config.js",
+          "kind": "script",
+          "script": "test -f sandbox/eslint.config.js"
+        },
+        {
+          "id": "eslint-config-prettier-added",
+          "text": "Adds eslint-config-prettier for ESLint and formatter compatibility",
+          "kind": "script",
+          "script": "grep -q 'eslint-config-prettier' sandbox/package.json || grep -q 'eslint-config-prettier' sandbox/eslint.config.js"
+        },
+        {
+          "id": "shim-placed-last",
+          "text": "Places the eslint-config-prettier entry last in eslint.config.js, where it can actually override the formatting rules",
+          "kind": "model"
+        },
+        {
+          "id": "format-script-uses-oxfmt",
+          "text": "The format script runs oxfmt, not prettier",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); f=s.get('format',''); sys.exit(0 if 'oxfmt' in f and 'prettier' not in f else 1)\""
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "switch-prettier-to-oxfmt",
+      "prompt": "We're moving from Prettier to oxfmt for formatting. Remove Prettier and replace it with oxfmt. Keep ESLint as-is. We use npm. Apply the changes directly, you have my go-ahead, please don't stop to ask me to confirm.",
+      "expected_output": "Creates .oxfmtrc.json, removes prettier from devDependencies, deletes the now-orphaned .prettierrc.json, repoints the format script at oxfmt, and keeps eslint-config-prettier wired in so ESLint's formatting rules stay disabled under the new formatter. It does not create .prettierignore, which would be a Prettier artefact in a project that just dropped Prettier.",
+      "fixture": "evals/fixtures/switch-prettier-to-oxfmt",
+      "assertions": [
+        {
+          "id": "no-prettierignore",
+          "text": "Does not create .prettierignore",
+          "kind": "script",
+          "script": "! test -f sandbox/.prettierignore"
+        },
+        {
+          "id": "oxfmtrc-created",
+          "text": "Creates .oxfmtrc.json",
+          "kind": "script",
+          "script": "test -f sandbox/.oxfmtrc.json"
+        },
+        {
+          "id": "prettier-dep-removed",
+          "text": "Removes the prettier dependency, while keeping the eslint-config-prettier shim",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; d=json.load(open('sandbox/package.json')).get('devDependencies',{}); sys.exit(0 if 'prettier' not in d else 1)\""
+        },
+        {
+          "id": "format-script-uses-oxfmt",
+          "text": "The format script runs oxfmt rather than prettier",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; s=json.load(open('sandbox/package.json')).get('scripts',{}); f=s.get('format',''); sys.exit(0 if 'oxfmt' in f and 'prettier' not in f else 1)\""
+        },
+        {
+          "id": "eslint-config-prettier-kept",
+          "text": "Keeps eslint-config-prettier present, since ESLint's formatting rules still need disabling under oxfmt",
+          "kind": "script",
+          "script": "grep -q 'eslint-config-prettier' sandbox/package.json || grep -q 'eslint-config-prettier' sandbox/eslint.config.js"
+        },
+        {
+          "id": "prettierrc-removed",
+          "text": "Removes the orphaned .prettierrc.json rather than leaving dead config behind",
+          "kind": "script",
+          "script": "! test -f sandbox/.prettierrc.json"
+        },
+        {
+          "id": "eslint-rules-preserved",
+          "text": "Leaves the ESLint rule set itself alone, the user having asked to keep ESLint as-is",
+          "kind": "model"
+        }
       ]
     }
   ]

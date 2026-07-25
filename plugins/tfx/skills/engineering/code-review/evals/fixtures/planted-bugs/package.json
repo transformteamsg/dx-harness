@@ -1,0 +1,12 @@
+{
+  "name": "teacher-workspace-api",
+  "version": "1.4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "better-sqlite3": "9.4.0"
+  }
+}
