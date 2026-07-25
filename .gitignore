@@ -18,3 +18,9 @@ Thumbs.db
 
 # Subagent-driven-development process scratch (briefs, reports, review diffs, ledger)
 .superpowers/
+
+# Skill eval run output (sandboxes, transcripts, gradings, benchmarks) and the
+# logs of runner/grader invocations. The eval suites and fixtures under
+# skills/*/*/evals/ are committed; the runs and their logs are not.
+plugins/tfx/evals/workspace/
+plugins/tfx/evals/*.log

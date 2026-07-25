@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/transformteamsg/atelier/plugins/tfx/evals/schema.json",
+  "title": "TFX skill eval suite",
+  "description": "One evals.json per skill, living at skills/<group>/<skill>/evals/evals.json. Declares the test prompts and the objectively checkable assertions for each. Results are never stored here -- they land in a run workspace so the suite definition stays a clean spec.",
+  "type": "object",
+  "required": ["skill", "evals"],
+  "additionalProperties": false,
+  "properties": {
+    "skill": {
+      "type": "string",
+      "description": "Must match the `name:` in the sibling SKILL.md frontmatter. The runner verifies this so a renamed skill cannot silently orphan its suite."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Context for a human reading the suite: what these evals do and do not cover, and any environment caveats."
+    },
+    "invocation": {
+      "enum": ["explicit", "auto"],
+      "default": "explicit",
+      "description": "How the with-skill run reaches the skill. 'explicit' prefixes the prompt with /tfx:<skill>, isolating behaviour from triggering. 'auto' passes the bare prompt and lets the model decide, which measures the description's pull instead."
+    },
+    "evals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "prompt", "expected_output", "assertions"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Stable identifier, unique within the suite. Never renumber -- run history references it."
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "kebab-case label naming the behaviour under test, e.g. 'abort-non-js-repo'. Used as the run directory name and shown in reports."
+          },
+          "prompt": {
+            "type": "string",
+            "description": "What the user says. Write it the way a real person would, including the incidental detail and mess of a genuine request."
+          },
+          "expected_output": {
+            "type": "string",
+            "description": "Prose description of correct behaviour. Read by the grader as context; not itself asserted."
+          },
+          "fixture": {
+            "type": "string",
+            "description": "Path (relative to the skill directory) of a directory copied into the sandbox before the run. Omit for evals that need no starting files."
+          },
+          "git": {
+            "type": "boolean",
+            "default": true,
+            "description": "Initialise a git repo in the sandbox and commit the fixture. Most skills shell out to git and behave oddly outside a repo."
+          },
+          "setup": {
+            "type": "string",
+            "pattern": "^setup(-[a-z0-9-]+)?\\.sh$",
+            "description": "Shell script in the fixture directory, run with the sandbox as cwd after the fixture is copied and git initialised. Use it to build branch history that a diff-reading skill needs. Must be named setup.sh or setup-<variant>.sh: the runner excludes that whole pattern when copying a fixture, so the script never lands in the repo the skill is about to inspect. Fixtures are shared across evals, so the exclusion applies whether or not a given eval runs the script."
+          },
+          "gh_fixture": {
+            "type": "string",
+            "description": "Path relative to the skill directory of a gh stub fixture JSON. When set, the hermetic gh stub is put on PATH. When omitted, gh is absent from PATH entirely, which exercises the skills' documented 'gh is not installed' fallback."
+          },
+          "assertions": {
+            "type": "array",
+            "minItems": 1,
+            "description": "The quantitative half of the eval. Each assertion must be decidable from the transcript, the sandbox, or the recorded gh calls -- if two careful reviewers could disagree, it belongs in expected_output instead.",
+            "items": {
+              "type": "object",
+              "required": ["id", "text"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                  "description": "Short stable slug, unique within the eval, e.g. 'detects-pnpm'."
+                },
+                "text": {
+                  "type": "string",
+                  "description": "The claim being checked, phrased so it reads clearly in a report."
+                },
+                "kind": {
+                  "enum": ["model", "script"],
+                  "default": "model",
+                  "description": "'model' assertions are judged by a grader model against the transcript and sandbox. 'script' assertions run a shell command in the run directory and pass on exit 0 -- prefer these whenever the check is mechanical, since they are free, instant, and never flaky."
+                },
+                "script": {
+                  "type": "string",
+                  "description": "Required when kind is 'script'. Runs with the run directory as cwd, so it can read output.md, gh-calls.jsonl, and sandbox/."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

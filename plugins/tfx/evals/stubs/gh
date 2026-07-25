@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+"""Hermetic stand-in for the `gh` CLI, used by skill evals.
+
+Four of the engineering skills (`create-issue`, `groom-issue`, `split-issue`,
+`implement-issue`) drive GitHub through `gh`. Running their evals against the
+real CLI would file real issues and open real PRs, so evals put this script on
+PATH ahead of the real binary instead.
+
+Two things make it useful beyond "don't touch the network":
+
+- **Reads are deterministic.** Issue bodies come from a fixture file, so an
+  eval can assert on how the skill handled a *specific* issue rather than
+  whatever happens to be in a live backlog.
+- **Writes are recorded, not performed.** Every mutating subcommand appends a
+  JSON line to $TFX_GH_CALLS describing what the skill tried to do, including
+  the resolved body text. Assertions then inspect the recorded call, which is
+  far more reliable than grepping the agent's prose for a claim that it
+  created an issue.
+
+Environment:
+  TFX_GH_FIXTURE  path to the fixture JSON (see evals/README.md for the shape)
+  TFX_GH_CALLS    path to the JSONL file recording attempted mutations
+
+To eval the "gh is not installed" fallback branches, simply don't put this
+script on PATH -- the skills key off the shell's own "command not found".
+"""
+
+import json
+import os
+import sys
+from pathlib import Path
+
+FIXTURE = os.environ.get("TFX_GH_FIXTURE")
+CALLS = os.environ.get("TFX_GH_CALLS")
+
+# Mutating subcommands are recorded and faked; anything else is a read we must
+# be able to answer from the fixture, or an honest failure.
+MUTATIONS = {
+    ("issue", "create"),
+    ("issue", "edit"),
+    ("issue", "comment"),
+    ("issue", "close"),
+    ("issue", "reopen"),
+    ("issue", "develop"),
+    ("pr", "create"),
+    ("pr", "edit"),
+    ("pr", "comment"),
+    ("pr", "review"),
+    ("label", "create"),
+    ("api", "graphql"),
+}
+
+
+def load_fixture():
+    if not FIXTURE:
+        return {}
+    path = Path(FIXTURE)
+    if not path.is_file():
+        return {}
+    with path.open() as handle:
+        return json.load(handle)
+
+
+def fixture_dir():
+    return Path(FIXTURE).parent if FIXTURE else Path.cwd()
+
+
+def die(message, code=1):
+    sys.stderr.write(message.rstrip() + "\n")
+    sys.exit(code)
+
+
+def record(kind, argv, extra=None):
+    """Append an attempted mutation to the call log."""
+    if not CALLS:
+        return
+    entry = {"kind": kind, "argv": argv}
+    if extra:
+        entry.update(extra)
+    path = Path(CALLS)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as handle:
+        handle.write(json.dumps(entry) + "\n")
+
+
+def flag(argv, *names):
+    """Value of the first of `names` present as `--flag value` or `--flag=value`."""
+    for name in names:
+        for i, token in enumerate(argv):
+            if token == name and i + 1 < len(argv):
+                return argv[i + 1]
+            if token.startswith(name + "="):
+                return token.split("=", 1)[1]
+    return None
+
+
+def flags_all(argv, *names):
+    """Every value supplied for `names` (labels can repeat)."""
+    found = []
+    for name in names:
+        for i, token in enumerate(argv):
+            if token == name and i + 1 < len(argv):
+                found.append(argv[i + 1])
+            elif token.startswith(name + "="):
+                found.append(token.split("=", 1)[1])
+    return found
+
+
+def resolve_body(argv):
+    """Body text from --body, or read through from --body-file.
+
+    The skills deliberately prefer --body-file because issue bodies contain
+    backticks that a shell would treat as command substitution. Following the
+    file here means assertions see the same text GitHub would have received.
+    """
+    body = flag(argv, "--body", "-b")
+    if body is not None:
+        return body, None
+    body_file = flag(argv, "--body-file", "-F")
+    if body_file is None:
+        return None, None
+    path = Path(body_file)
+    if not path.is_file():
+        return None, str(path)
+    return path.read_text(), None
+
+
+def issue_record(fixture, number):
+    issues = fixture.get("issues", {})
+    issue = issues.get(str(number))
+    if issue is None:
+        return None
+    issue = dict(issue)
+    # Long bodies live in a sibling markdown file so fixtures stay readable.
+    body_path = issue.pop("body_path", None)
+    if body_path and "body" not in issue:
+        candidate = fixture_dir() / body_path
+        if not candidate.is_file():
+            die(f"eval fixture error: body_path {candidate} not found")
+        issue["body"] = candidate.read_text()
+    issue.setdefault("body", "")
+    issue.setdefault("title", "")
+    issue.setdefault("state", "OPEN")
+    issue.setdefault("labels", [])
+    issue.setdefault("comments", [])
+    issue.setdefault("number", int(number))
+    issue.setdefault("id", f"I_stub{number}")
+    issue.setdefault(
+        "url", f"https://github.com/{fixture.get('repo', 'acme/repo')}/issues/{number}"
+    )
+    return issue
+
+
+def project(issue, fields):
+    if not fields:
+        return issue
+    return {key: issue.get(key) for key in fields}
+
+
+def apply_jq(data, expr):
+    """Support only the handful of --jq expressions the skills actually use.
+
+    Implementing jq is out of scope; guessing at an unsupported filter would
+    silently feed a skill the wrong shape, so unknown filters fail loudly.
+    """
+    expr = expr.strip()
+    if expr == ".id":
+        return data.get("id", "")
+    if expr in (".comments[].body", ".comments[] .body"):
+        return "\n".join(c.get("body", "") for c in data.get("comments", []))
+    if expr == ".number":
+        return str(data.get("number", ""))
+    if expr == ".title":
+        return data.get("title", "")
+    if expr == ".body":
+        return data.get("body", "")
+    if expr in (".[].number", ".[] .number"):
+        return "\n".join(str(item.get("number", "")) for item in data)
+    die(f"gh stub: unsupported --jq expression {expr!r}")
+
+
+def emit(value):
+    if isinstance(value, str):
+        print(value)
+    else:
+        print(json.dumps(value))
+
+
+def json_fields(argv):
+    raw = flag(argv, "--json")
+    if not raw:
+        return None
+    return [f.strip() for f in raw.split(",") if f.strip()]
+
+
+def main():
+    argv = sys.argv[1:]
+    fixture = load_fixture()
+
+    if not argv:
+        die("gh stub: no subcommand given")
+
+    # `gh --version` and auth probes should look healthy.
+    if argv[0] in ("--version", "version"):
+        print("gh version 2.60.0 (tfx-eval-stub)")
+        return
+    if argv[0] == "auth" and len(argv) > 1 and argv[1] == "status":
+        print(f"Logged in to github.com as eval-stub")
+        return
+
+    head = tuple(argv[:2])
+
+    # Let a fixture force a failure, to eval the "surface the real error and
+    # stop" branches that are distinct from "gh is not installed".
+    failure = fixture.get("fail")
+    if failure and (failure.get("on") in (None, " ".join(head))):
+        die(failure.get("stderr", "gh: unexpected error"), failure.get("code", 1))
+
+    if head in MUTATIONS:
+        body, missing = resolve_body(argv)
+        extra = {
+            "title": flag(argv, "--title", "-t"),
+            "body": body,
+            "labels": flags_all(argv, "--label", "--add-label", "-l"),
+            "draft": "--draft" in argv,
+            "reason": flag(argv, "--reason"),
+        }
+        if missing:
+            extra["body_file_missing"] = missing
+        target = next((a for a in argv[2:] if a.isdigit()), None)
+        if target:
+            extra["target"] = target
+        record(" ".join(head), argv, extra)
+
+        repo = fixture.get("repo", "acme/repo")
+        if head == ("issue", "create"):
+            number = fixture.get("next_issue_number", 900)
+            fixture["next_issue_number"] = number + 1
+            print(f"https://github.com/{repo}/issues/{number}")
+        elif head == ("pr", "create"):
+            number = fixture.get("next_pr_number", 500)
+            print(f"https://github.com/{repo}/pull/{number}")
+        elif head == ("label", "create"):
+            # Real gh exits non-zero when the label exists; the skills wrap the
+            # call in `|| true`, so honour the fixture's choice either way.
+            if fixture.get("label_exists"):
+                die("gh: label already exists", 1)
+            print("label created")
+        elif head == ("api", "graphql"):
+            print(json.dumps({"data": {"addBlockedBy": {"clientMutationId": "stub"}}}))
+        elif target:
+            print(f"https://github.com/{repo}/issues/{target}")
+        return
+
+    if head == ("issue", "view"):
+        number = next((a for a in argv[2:] if not a.startswith("-")), None)
+        if number is None:
+            die("gh: issue view requires an issue number")
+        issue = issue_record(fixture, number)
+        if issue is None:
+            die(
+                f"gh: could not resolve to an Issue with the number of {number}",
+                1,
+            )
+        data = project(issue, json_fields(argv))
+        jq = flag(argv, "--jq", "-q")
+        emit(apply_jq(data, jq) if jq else data)
+        return
+
+    if head == ("issue", "list"):
+        listing = fixture.get("issue_list", [])
+        fields = json_fields(argv)
+        rows = [project(dict(item), fields) for item in listing]
+        jq = flag(argv, "--jq", "-q")
+        emit(apply_jq(rows, jq) if jq else rows)
+        return
+
+    if head == ("pr", "list"):
+        emit(fixture.get("pr_list", []))
+        return
+
+    if head == ("pr", "view"):
+        pr = fixture.get("pr")
+        if not pr:
+            die("gh: no pull requests found", 1)
+        emit(project(dict(pr), json_fields(argv)))
+        return
+
+    if head == ("repo", "view"):
+        emit({"nameWithOwner": fixture.get("repo", "acme/repo")})
+        return
+
+    die(f"gh stub: unhandled subcommand {' '.join(argv[:3])}", 1)
+
+
+if __name__ == "__main__":
+    main()

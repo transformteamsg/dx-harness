@@ -1,0 +1,22 @@
+{
+  "$comment": "Permissions for eval runs, passed to `claude -p --settings`. Eval agents run unattended, so anything that prompts would hang the run. Rather than a blanket bypass, this grants exactly the tools the engineering skills need and denies network egress. Every run is confined to a throwaway sandbox directory that the runner creates and the agent is pointed at; the real repo is never the working directory. Web tools are denied so that a run cannot reach the live GitHub API or npm registry -- eval results have to be reproducible, and a skill that silently depends on the network would produce different grades on different days.",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Skill",
+      "TodoWrite",
+      "NotebookEdit"
+    ],
+    "deny": [
+      "WebFetch",
+      "WebSearch"
+    ]
+  },
+  "includeCoAuthoredBy": false
+}
