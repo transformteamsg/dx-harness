@@ -1,0 +1,132 @@
+{
+  "skill": "create-issue",
+  "notes": "The skill is interactive by design, so each prompt supplies the author sections up front the way a prepared author would; otherwise a non-interactive run would either stall or invent answers, and inventing answers is precisely what the skill forbids. Assertions read the recorded `gh issue create` call, which carries the exact title, body, and labels that would have reached GitHub. That is a much better source of truth than the agent's own summary, and it lets the suite check the body text directly, including the requirement that implementer sections stay at their placeholder and that no em-dashes appear.",
+  "invocation": "explicit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "creates-issue-from-template",
+      "prompt": "I need a GitHub issue for a feature. Type is feat, scope is `assignments`. User story: as a teacher, I want to set a due date on an assignment, so that students see a deadline and late submissions get flagged. Background: teachers track deadlines in a separate spreadsheet today and it drifts out of sync, support gets about 15 tickets a month from teachers asking why a submission was not flagged late, spec is at https://example.com/specs/due-dates. Acceptance criteria, happy path: given a teacher is editing an assignment, when they set a due date and save, then the due date is stored and shown on the assignment list. Error case: given a teacher is editing an assignment, when they set a due date in the past and save, then the assignment is not saved and an error explains the due date must be in the future. Out of scope: per-course timezone selection, and notifying students when a due date changes. No Figma yet, N/A for design assets. Engineers will fill in the technical sections during grooming later. Neither of the open issues in the backlog is a dependency, go ahead and create it. Please go ahead and apply it without stopping to show me a preview for confirmation.",
+      "expected_output": "The issue is created with a title following <type>(<scope>): <description> with the scope in backticks, a body containing every template section, and the implementer sections left at their _Pending grooming._ placeholder because grooming has not happened. The body is passed via --body-file rather than inline, since it contains backticks a shell would treat as command substitution. The skill:create-issue label is applied. No em-dashes appear in the title or body.",
+      "fixture": "evals/fixtures/repo",
+      "gh_fixture": "evals/gh/backlog.json",
+      "assertions": [
+        {
+          "id": "issue-created",
+          "text": "Attempts to create the issue",
+          "kind": "script",
+          "script": "grep -q '\"issue create\"' gh-calls.jsonl"
+        },
+        {
+          "id": "title-follows-commit-convention",
+          "text": "The title follows <type>(<scope>): <description> with the scope in backticks, so it works as a squash-merge commit message",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,re,sys; rows=[json.loads(l) for l in sys.stdin]; sys.exit(0 if rows and re.match(r'^feat\\\\(\\`assignments\\`\\\\): .+', rows[0].get('title') or '') else 1)\""
+        },
+        {
+          "id": "body-passed-via-file",
+          "text": "Passes the body via --body-file rather than inline, so backticks are not interpreted by the shell",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | grep -q 'body-file'"
+        },
+        {
+          "id": "all-author-sections-present",
+          "text": "The body contains every author section: user story, background, acceptance criteria, out of scope, design assets",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; need=['## User story','## Background','## Acceptance criteria','## Out of scope','## Design assets']; sys.exit(0 if all(n in b for n in need) else 1)\""
+        },
+        {
+          "id": "implementer-sections-pending",
+          "text": "Implementer sections are present but left at the _Pending grooming._ placeholder, grooming not having happened yet",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; sys.exit(0 if b.count('_Pending grooming._') >= 5 else 1)\""
+        },
+        {
+          "id": "given-when-then-format",
+          "text": "Acceptance criteria use Given-When-Then and cover both a happy path and an error case",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; b=([json.loads(l) for l in sys.stdin][0].get('body') or '').lower(); sys.exit(0 if b.count('given')>=2 and b.count('when')>=2 and b.count('then')>=2 else 1)\""
+        },
+        {
+          "id": "no-em-dashes",
+          "text": "Neither the title nor the body contains an em-dash",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; r=[json.loads(l) for l in sys.stdin][0]; sys.exit(1 if '\\u2014' in (r.get('title') or '')+(r.get('body') or '') else 0)\""
+        },
+        {
+          "id": "usage-label-applied",
+          "text": "Applies the skill:create-issue label so usage stays queryable",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | grep -q 'skill:create-issue'"
+        },
+        {
+          "id": "outcome-first-scenario-names",
+          "text": "Scenario headings are named outcome-first (\"Due date is saved\") rather than imperative (\"Save the due date\")",
+          "kind": "model"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "surfaces-split-signal",
+      "prompt": "I need a GitHub issue. Type feat, scope `admin`. User story: as a school administrator, I want to manage the teaching roster and export attendance reports, so that staffing and compliance reporting both live in the admin console. Background: the admin console is being consolidated and both of these manual processes are moving into it, they were requested in the same planning round. Acceptance criteria. First: given an administrator is viewing a class with no assigned teacher, when they select a teacher and save, then the teacher appears as that class's assigned teacher. Second: given a teacher is already at their maximum number of classes, when an administrator tries to assign them another, then the assignment is rejected with a capacity error. Third: given an administrator is viewing the attendance page for a term, when they request an export, then a CSV of per-student attendance downloads. Fourth: given a term with no attendance records, when an administrator requests an export, then no file is produced and a message explains there is nothing to export. Out of scope: bulk teacher import, scheduled report delivery. Design assets N/A. Engineers will groom the technical sections later.",
+      "expected_output": "The split evaluation fires: these scenarios describe two unrelated capabilities (assigning teachers to classes, and exporting attendance reports) with different starting states and what would become unrelated endpoints. The skill pauses and surfaces the split, naming both capabilities and asking whether to create two linked issues, rather than quietly creating one oversized issue that no coding agent could implement in a single PR.",
+      "fixture": "evals/fixtures/repo",
+      "gh_fixture": "evals/gh/backlog.json",
+      "assertions": [
+        {
+          "id": "surfaces-split",
+          "text": "Pauses and surfaces that the scenarios describe two separate capabilities",
+          "kind": "model"
+        },
+        {
+          "id": "names-both-capabilities",
+          "text": "Names both capabilities: roster/teacher assignment and attendance export",
+          "kind": "model"
+        },
+        {
+          "id": "asks-before-creating",
+          "text": "Asks whether to create two linked issues instead of proceeding unilaterally",
+          "kind": "model"
+        },
+        {
+          "id": "no-single-oversized-issue",
+          "text": "Does not silently create one issue containing all four scenarios",
+          "kind": "script",
+          "script": "! test -f gh-calls.jsonl || ! grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; rows=[json.loads(l) for l in sys.stdin]; b=(rows[0].get('body') or '').lower() if rows else ''; sys.exit(0 if 'attendance' in b and 'teacher' in b and 'capacity' in b else 1)\""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "gh-absent-renders-for-manual-creation",
+      "prompt": "Please write up a GitHub issue for this. Type fix, scope `submissions`. User story: as a teacher, I want the submission list to show the correct late flag, so that I can trust it when chasing students. Background: the late flag is currently computed in the browser's timezone rather than the course timezone, so evening submissions show as late a day early, affecting every course outside UTC. Acceptance criteria, happy path: given a course in a non-UTC timezone, when a student submits before the due date in course time, then the submission shows as on time. Error case: given a course in a non-UTC timezone, when a student submits after the due date in course time, then the submission shows as late. Out of scope: changing how due dates are entered. Design assets N/A. Technical sections will be groomed later.",
+      "expected_output": "gh is not installed, so the skill cannot create the issue or scan the backlog for dependencies. It renders the complete issue title and body as markdown and tells the user to create it manually through the GitHub web interface, rather than reporting success it could not have achieved.",
+      "fixture": "evals/fixtures/repo",
+      "assertions": [
+        {
+          "id": "renders-title-and-body",
+          "text": "Renders the complete issue title and body as markdown for manual creation",
+          "kind": "script",
+          "script": "grep -q '## User story' output.md && grep -q '## Acceptance criteria' output.md"
+        },
+        {
+          "id": "instructs-manual-creation",
+          "text": "Tells the user to create the issue manually via the GitHub web interface",
+          "kind": "model"
+        },
+        {
+          "id": "does-not-claim-creation",
+          "text": "Does not claim to have created an issue or report an issue URL",
+          "kind": "model"
+        },
+        {
+          "id": "implementer-sections-pending",
+          "text": "The rendered body still leaves the implementer sections at their placeholder",
+          "kind": "script",
+          "script": "test \"$(grep -c '_Pending grooming._' output.md)\" -ge 5"
+        }
+      ]
+    }
+  ]
+}

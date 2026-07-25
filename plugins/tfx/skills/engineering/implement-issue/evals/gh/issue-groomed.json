@@ -1,0 +1,15 @@
+{
+  "repo": "acme/teacher-workspace",
+  "next_pr_number": 501,
+  "issues": {
+    "55": {
+      "number": 55,
+      "title": "feat(`submissions`): flag submissions made after the due date as late",
+      "state": "OPEN",
+      "labels": [{ "name": "skill:groom-issue" }],
+      "body_path": "issue-55-groomed.md",
+      "comments": []
+    }
+  },
+  "pr_list": []
+}

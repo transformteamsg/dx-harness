@@ -1,0 +1,11 @@
+{
+  "repo": "acme/teacher-workspace",
+  "fail": {
+    "on": "issue view",
+    "code": 1,
+    "stderr": "error connecting to api.github.com: HTTP 401: Bad credentials (https://api.github.com/graphql)\nTry authenticating with: gh auth login"
+  },
+  "issues": {
+    "42": { "number": 42, "title": "feat(`assignments`): set a due date", "body": "unused" }
+  }
+}

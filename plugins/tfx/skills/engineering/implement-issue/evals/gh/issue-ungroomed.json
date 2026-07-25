@@ -1,0 +1,15 @@
+{
+  "repo": "acme/teacher-workspace",
+  "next_pr_number": 502,
+  "issues": {
+    "56": {
+      "number": 56,
+      "title": "feat(`assignments`): reorder assignments within a course",
+      "state": "OPEN",
+      "labels": [{ "name": "skill:create-issue" }],
+      "body_path": "issue-56-ungroomed.md",
+      "comments": []
+    }
+  },
+  "pr_list": []
+}

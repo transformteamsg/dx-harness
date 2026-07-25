@@ -1,0 +1,139 @@
+{
+  "skill": "split-issue",
+  "notes": "The parent fixture (issue 77) deliberately holds two unrelated capabilities with four acceptance criteria between them, so the correct grouping is 2 + 2 and a wrong split is visible rather than arguable. Assertions read the recorded gh calls: how many child issues were created, which scenarios landed in each body, whether children went out with implementer sections still pending and an unchecked grooming checklist, and whether the parent was commented on and closed. The most important negative assertion is that nothing is created before the developer confirms the grouping, since an unconfirmed split leaves a backlog of issues nobody agreed to.",
+  "invocation": "explicit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "proposes-split-before-creating",
+      "prompt": "77",
+      "expected_output": "The skill reads issue 77, groups the four acceptance criteria into two coherent capabilities (teacher assignment to classes, and attendance export), and presents the proposed split with the scenarios under each and any dependency between them. It then asks the developer to confirm or adjust the grouping, and creates nothing at all until that confirmation comes.",
+      "gh_fixture": "evals/gh/issue-multi-capability.json",
+      "assertions": [
+        {
+          "id": "presents-proposed-split",
+          "text": "Presents a proposed split naming each child capability and the scenarios it would carry",
+          "kind": "model"
+        },
+        {
+          "id": "groups-into-two",
+          "text": "Groups the four scenarios into two capabilities, teacher assignment and attendance export, rather than splitting per scenario",
+          "kind": "model"
+        },
+        {
+          "id": "asks-for-confirmation",
+          "text": "Asks the developer to confirm or adjust the grouping before acting",
+          "kind": "model"
+        },
+        {
+          "id": "creates-nothing-unconfirmed",
+          "text": "Creates no child issue before the grouping is confirmed",
+          "kind": "script",
+          "script": "! test -f gh-calls.jsonl || ! grep -q '\"issue create\"' gh-calls.jsonl"
+        },
+        {
+          "id": "does-not-close-parent",
+          "text": "Does not close the parent issue before the split has actually happened",
+          "kind": "script",
+          "script": "! test -f gh-calls.jsonl || ! grep -q '\"issue close\"' gh-calls.jsonl"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "creates-children-and-closes-parent",
+      "prompt": "77 - go ahead and split this one. Your proposed grouping is fine, I approve it in advance, so please create the child issues, comment on the original, and close it.",
+      "expected_output": "Two child issues are created, each carrying only its own acceptance criteria scenarios, the parent's background, a user story narrowed to its scope, an out-of-scope list that names the sibling child, implementer sections still at their placeholder, an unchecked grooming checklist, and the split-issue attribution footer. The skill:split-issue label is applied. The parent then gets a comment listing the children and is closed as not planned.",
+      "gh_fixture": "evals/gh/issue-multi-capability.json",
+      "assertions": [
+        {
+          "id": "creates-two-children",
+          "text": "Creates exactly two child issues",
+          "kind": "script",
+          "script": "test \"$(grep -c '\"issue create\"' gh-calls.jsonl)\" = 2"
+        },
+        {
+          "id": "children-split-scenarios",
+          "text": "The two children partition the scenarios: one covers teacher assignment, the other attendance export, and neither carries both",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; bs=[(json.loads(l).get('body') or '').lower() for l in sys.stdin]; roster=[('teacher' in b and 'capacity' in b) for b in bs]; exp=[('attendance' in b and 'export' in b) for b in bs]; sys.exit(0 if sorted(roster)==[False,True] and sorted(exp)==[False,True] and not any(r and e for r,e in zip(roster,exp)) else 1)\""
+        },
+        {
+          "id": "children-keep-placeholders",
+          "text": "Both children go out with implementer sections still at _Pending grooming._, since they must be groomed before implementation",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; bs=[json.loads(l).get('body') or '' for l in sys.stdin]; sys.exit(0 if all(b.count('_Pending grooming._')>=5 for b in bs) else 1)\""
+        },
+        {
+          "id": "grooming-checklist-unchecked",
+          "text": "The children's grooming checklists are unchecked",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; bs=[json.loads(l).get('body') or '' for l in sys.stdin]; sys.exit(0 if all('[x]' not in b.lower() for b in bs) else 1)\""
+        },
+        {
+          "id": "out-of-scope-names-sibling",
+          "text": "Each child's out-of-scope list points at the capability split into the other issue",
+          "kind": "model"
+        },
+        {
+          "id": "titles-follow-convention",
+          "text": "Both child titles follow <type>(<scope>): <description> with the scope in backticks",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,re,sys; ts=[json.loads(l).get('title') or '' for l in sys.stdin]; sys.exit(0 if all(re.match(r'^(feat|fix|docs|refactor|chore|test)\\\\(\\`[^\\`]+\\`\\\\): .+', t) for t in ts) else 1)\""
+        },
+        {
+          "id": "attribution-footer",
+          "text": "Each child body ends with the split-issue attribution footer",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | python3 -c \"import json,sys; bs=[json.loads(l).get('body') or '' for l in sys.stdin]; sys.exit(0 if all('Generated with split-issue' in b for b in bs) else 1)\""
+        },
+        {
+          "id": "usage-label-applied",
+          "text": "Applies the skill:split-issue label to the children",
+          "kind": "script",
+          "script": "grep '\"issue create\"' gh-calls.jsonl | grep -q 'skill:split-issue'"
+        },
+        {
+          "id": "parent-commented",
+          "text": "Comments on the parent issue listing the child issues",
+          "kind": "script",
+          "script": "grep -q '\"issue comment\"' gh-calls.jsonl"
+        },
+        {
+          "id": "parent-closed-not-planned",
+          "text": "Closes the parent with reason not planned",
+          "kind": "script",
+          "script": "grep '\"issue close\"' gh-calls.jsonl | python3 -c \"import json,sys; rows=[json.loads(l) for l in sys.stdin]; sys.exit(0 if rows and rows[0].get('reason')=='not planned' else 1)\""
+        },
+        {
+          "id": "reports-next-step-grooming",
+          "text": "Reports that each child needs grooming before implement-issue can run on it",
+          "kind": "model"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "gh-absent-requires-manual-confirmation",
+      "prompt": "77",
+      "expected_output": "gh is not installed, so the skill cannot fetch the issue. It asks the user to paste the issue body, and because creating the children and closing the parent will also have to happen by hand, it asks the user to confirm up front that they are prepared to do that through the web interface before continuing. It does not proceed to invent an issue body.",
+      "assertions": [
+        {
+          "id": "asks-for-paste",
+          "text": "Asks the user to paste the issue body, gh being unavailable",
+          "kind": "model"
+        },
+        {
+          "id": "flags-manual-steps",
+          "text": "Flags that creating the children and closing the parent will also need doing manually, and asks the user to confirm they are prepared for that",
+          "kind": "model"
+        },
+        {
+          "id": "does-not-invent-issue",
+          "text": "Does not invent the issue contents and split something it never read",
+          "kind": "model"
+        }
+      ]
+    }
+  ]
+}

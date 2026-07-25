@@ -1,0 +1,17 @@
+{
+  "repo": "acme/teacher-workspace",
+  "next_issue_number": 901,
+  "issues": {
+    "42": {
+      "number": 42,
+      "title": "feat(`assignments`): set a due date on an assignment",
+      "state": "OPEN",
+      "labels": [{ "name": "skill:create-issue" }],
+      "body_path": "issue-42-ungroomed.md",
+      "comments": []
+    }
+  },
+  "issue_list": [
+    { "number": 42, "title": "feat(`assignments`): set a due date on an assignment" }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "skill": "groom-issue",
+  "notes": "Assertions read the recorded `gh issue edit` call, which carries the exact body that would have reached GitHub. Two behaviours matter most and both are checkable from that body: the author sections must survive untouched (grooming fills in the technical half and has no business rewriting the user story or acceptance criteria), and the groom attribution must join the existing footer block rather than starting a competing divider. The suite also covers the distinction the skill draws between gh being absent, where falling back to paste mode is correct, and gh being present but erroring, where falling back would paper over a problem that needs fixing.",
+  "invocation": "explicit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "fills-implementer-sections",
+      "prompt": "Let's groom issue 42. Relevant area of the codebase: src/assignments/. New files go in src/assignments/ named after the behaviour, so dueDate.js. Follow the pattern in src/assignments/create.js: guard clauses at the top, thrown Error with a plain message. Data model: add a dueAt field to the assignment record, an ISO 8601 timestamp string, nullable, and it must be strictly in the future when set. API contract: PATCH /api/assignments/:id, request body is a JSON object with dueAt as an ISO 8601 string, response 200 returns the full updated assignment object. Error contract: a due date in the past returns 422 with a JSON body of code DUE_DATE_IN_PAST and a human readable message; a malformed timestamp returns 400 with code INVALID_TIMESTAMP; an unknown assignment id returns 404 with code NOT_FOUND. Additional test scenarios: given two teachers editing the same assignment, when both save a different due date, then the last write wins and no error is raised. Hard constraints: do not add a new npm dependency, and do not change the existing assignment list endpoint's response shape. Please go ahead and apply it without stopping to show me a preview for confirmation.",
+      "expected_output": "The skill fetches issue 42, fills every implementer section from what the user supplied (technical context, data model, API contract, error contract, additional test scenarios, hard constraints), leaves the author sections exactly as they were, adds the groom attribution beneath the existing create-issue footer inside the same block rather than opening a new divider, and updates the issue via --body-file with the skill:groom-issue label applied.",
+      "gh_fixture": "evals/gh/issue-ungroomed.json",
+      "assertions": [
+        {
+          "id": "issue-edited",
+          "text": "Attempts to update issue 42",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; rows=[json.loads(l) for l in sys.stdin]; sys.exit(0 if rows and rows[0].get('target')=='42' else 1)\""
+        },
+        {
+          "id": "body-passed-via-file",
+          "text": "Passes the body via --body-file, the body containing backticks a shell would interpret",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | grep -q 'body-file'"
+        },
+        {
+          "id": "no-pending-placeholders-left",
+          "text": "No implementer section is still reading _Pending grooming._",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; sys.exit(1 if '_Pending grooming._' in b else 0)\""
+        },
+        {
+          "id": "api-contract-filled",
+          "text": "The API contract section carries the actual endpoint and shapes given",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; sys.exit(0 if 'PATCH' in b and '/api/assignments/' in b else 1)\""
+        },
+        {
+          "id": "error-contract-filled",
+          "text": "The error contract section lists each error case with its status and code",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; need=['422','DUE_DATE_IN_PAST','400','INVALID_TIMESTAMP','404']; sys.exit(0 if all(n in b for n in need) else 1)\""
+        },
+        {
+          "id": "hard-constraints-filled",
+          "text": "The hard constraints section records both stated constraints",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=([json.loads(l) for l in sys.stdin][0].get('body') or '').lower(); sys.exit(0 if 'dependency' in b and 'response shape' in b else 1)\""
+        },
+        {
+          "id": "author-sections-unchanged",
+          "text": "The author sections survive verbatim: the user story and both acceptance criteria scenario headings are unchanged",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; need=['As a teacher, I want to set a due date on an assignment, so that students see a deadline and late submissions are flagged.','### Due date is saved on an assignment','### Due date in the past is rejected','Timezone selection per course (assume the course timezone)']; sys.exit(0 if all(n in b for n in need) else 1)\""
+        },
+        {
+          "id": "groom-footer-joins-existing-block",
+          "text": "The groom attribution sits beneath the existing create-issue footer in the same block, not under a new divider",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; i=b.find('Generated with create-issue'); j=b.find('Groomed with groom-issue'); sys.exit(0 if i>=0 and j>i and '---' not in b[i:j] else 1)\""
+        },
+        {
+          "id": "usage-label-applied",
+          "text": "Applies the skill:groom-issue label",
+          "kind": "script",
+          "script": "grep -q 'skill:groom-issue' gh-calls.jsonl"
+        },
+        {
+          "id": "no-em-dashes",
+          "text": "Introduces no em-dash into the body",
+          "kind": "script",
+          "script": "grep '\"issue edit\"' gh-calls.jsonl | python3 -c \"import json,sys; b=[json.loads(l) for l in sys.stdin][0].get('body') or ''; sys.exit(1 if '\\u2014' in b else 0)\""
+        },
+        {
+          "id": "grooming-checklist-checked",
+          "text": "Checks off the grooming checklist items now that API contract, data model, and patterns are all filled",
+          "kind": "model"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "surfaces-gh-error-without-paste-fallback",
+      "prompt": "Can you groom issue 42 for me? The technical context is that this lives in src/assignments/ and should follow the pattern in src/assignments/create.js.",
+      "expected_output": "gh is installed but returns an authentication error. This is explicitly not the paste-mode case: the skill surfaces the real error message and stops, because a 401 needs resolving rather than working around. Falling back to asking for a paste would hide a broken credential and leave the issue silently un-updated.",
+      "gh_fixture": "evals/gh/auth-failure.json",
+      "assertions": [
+        {
+          "id": "surfaces-real-error",
+          "text": "Surfaces the actual error, naming the authentication failure rather than a generic problem",
+          "kind": "model"
+        },
+        {
+          "id": "stops-rather-than-pasting",
+          "text": "Stops instead of falling back to paste mode, this being an error that needs resolving",
+          "kind": "model"
+        },
+        {
+          "id": "no-edit-attempted",
+          "text": "Attempts no issue edit against an issue it could not read",
+          "kind": "script",
+          "script": "! test -f gh-calls.jsonl || ! grep -q '\"issue edit\"' gh-calls.jsonl"
+        },
+        {
+          "id": "suggests-auth-fix",
+          "text": "Points at the authentication problem as the thing to fix, for instance gh auth login",
+          "kind": "model"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "asks-for-missing-technical-detail",
+      "prompt": "Let's groom issue 42. It's in src/assignments/ somewhere, just fill in whatever makes sense for the rest.",
+      "expected_output": "The user supplied only a vague area of the codebase and explicitly invited the skill to invent the remainder. The skill must not: its whole value is that a groomed issue does not leave a coding agent guessing at field names, endpoint shapes, and status codes. It asks for the missing data model, API contract, and error contract rather than fabricating them, and does not check off grooming checklist items it cannot honestly check.",
+      "gh_fixture": "evals/gh/issue-ungroomed.json",
+      "assertions": [
+        {
+          "id": "asks-rather-than-inventing",
+          "text": "Asks for the missing technical detail instead of inventing a data model, API contract, and error contract",
+          "kind": "model"
+        },
+        {
+          "id": "no-fabricated-update",
+          "text": "Does not push an update populated with invented specifics",
+          "kind": "script",
+          "script": "! test -f gh-calls.jsonl || ! grep -q '\"issue edit\"' gh-calls.jsonl"
+        },
+        {
+          "id": "names-what-is-missing",
+          "text": "Names specifically which sections it still needs",
+          "kind": "model"
+        }
+      ]
+    }
+  ]
+}

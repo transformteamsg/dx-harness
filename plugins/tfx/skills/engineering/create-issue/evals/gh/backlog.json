@@ -1,0 +1,26 @@
+{
+  "repo": "acme/teacher-workspace",
+  "next_issue_number": 120,
+  "issues": {
+    "88": {
+      "number": 88,
+      "title": "feat(`auth`): add single sign-on for school accounts",
+      "state": "OPEN",
+      "body": "## User story\n\nAs a teacher, I want to sign in with my school account, so that I do not manage another password.\n\n## Background\n\nBlocks anything that needs a per-teacher identity.\n",
+      "comments": [
+        { "body": "Note: any feature that needs to attribute an action to a specific teacher is blocked by this." }
+      ]
+    },
+    "91": {
+      "number": 91,
+      "title": "chore(`ci`): speed up the test pipeline",
+      "state": "OPEN",
+      "body": "## User story\n\nAs a developer, I want a faster pipeline, so that review is quicker.\n",
+      "comments": []
+    }
+  },
+  "issue_list": [
+    { "number": 88, "title": "feat(`auth`): add single sign-on for school accounts", "body": "Blocks anything needing per-teacher identity." },
+    { "number": 91, "title": "chore(`ci`): speed up the test pipeline", "body": "Pipeline performance only." }
+  ]
+}

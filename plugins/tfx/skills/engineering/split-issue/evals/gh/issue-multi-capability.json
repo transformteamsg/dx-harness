@@ -1,0 +1,17 @@
+{
+  "repo": "acme/teacher-workspace",
+  "next_issue_number": 78,
+  "issues": {
+    "77": {
+      "number": 77,
+      "title": "feat(`admin`): manage teaching roster and export attendance reports",
+      "state": "OPEN",
+      "labels": [{ "name": "skill:create-issue" }],
+      "body_path": "issue-77-multi.md",
+      "comments": []
+    }
+  },
+  "issue_list": [
+    { "number": 77, "title": "feat(`admin`): manage teaching roster and export attendance reports" }
+  ]
+}

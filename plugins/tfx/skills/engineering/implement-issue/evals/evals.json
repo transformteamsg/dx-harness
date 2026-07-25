@@ -1,0 +1,164 @@
+{
+  "skill": "implement-issue",
+  "notes": "The strongest assertions here read the sandbox git history and the recorded gh calls rather than the agent's summary, because this skill's failure mode is reporting work it did not do. Whether a branch exists, whether commits landed one per scenario, and whether a draft PR was attempted with the right title are all facts on disk. The grooming gate is the most valuable eval in the suite: a skill that implements an ungroomed issue anyway has skipped its own stop condition, and that is mechanically checkable (no branch, no commits, no PR). The fixture repo runs `node --test`, which works offline, so the test-suite step is genuinely executable.",
+  "invocation": "explicit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "blocks-on-unchecked-grooming",
+      "prompt": "56",
+      "expected_output": "Step 2 finds all three grooming checklist items unchecked and the implementer sections still reading _Pending grooming._, so the skill stops and reports which items are outstanding, telling the developer to complete grooming first. It creates no branch, writes no code, makes no commit, and opens no PR.",
+      "fixture": "evals/fixtures/app",
+      "gh_fixture": "evals/gh/issue-ungroomed.json",
+      "assertions": [
+        {
+          "id": "stops-before-implementing",
+          "text": "Stops at the grooming gate and reports the unchecked checklist items",
+          "kind": "model"
+        },
+        {
+          "id": "no-branch-created",
+          "text": "Creates no feature branch, still sitting on main",
+          "kind": "script",
+          "script": "test \"$(git -C sandbox rev-parse --abbrev-ref HEAD)\" = main"
+        },
+        {
+          "id": "no-commits-made",
+          "text": "Makes no commit beyond the fixture's own",
+          "kind": "script",
+          "script": "test \"$(git -C sandbox rev-list --count HEAD)\" = 1"
+        },
+        {
+          "id": "no-code-written",
+          "text": "Writes no production code: the source files are untouched",
+          "kind": "script",
+          "script": "test -z \"$(git -C sandbox status --porcelain -- src)\""
+        },
+        {
+          "id": "no-pr-opened",
+          "text": "Attempts no pull request",
+          "kind": "script",
+          "script": "! test -f gh-calls.jsonl || ! grep -q '\"pr create\"' gh-calls.jsonl"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "implements-groomed-issue",
+      "prompt": "55",
+      "expected_output": "The grooming checklist is fully checked, so the skill proceeds: it reads the referenced pattern file, creates a branch named <type>/<kebab-description>, works the two acceptance criteria scenarios in order committing after each, adds the additional boundary test scenario, runs the test suite, and opens a draft PR whose title matches the issue title verbatim and whose body closes issue 55. It respects the hard constraints: no new dependency and no change to the listAssignments signature.",
+      "fixture": "evals/fixtures/app",
+      "gh_fixture": "evals/gh/issue-groomed.json",
+      "assertions": [
+        {
+          "id": "branch-created-with-convention",
+          "text": "Creates a branch named <type>/<kebab-description>, following the convention in CLAUDE.md",
+          "kind": "script",
+          "script": "git -C sandbox rev-parse --abbrev-ref HEAD | grep -qE '^(feat|fix|docs|refactor|chore|test)/[a-z0-9-]+$'"
+        },
+        {
+          "id": "commits-per-scenario",
+          "text": "Lands more than one commit, rather than squashing all the work into a single change",
+          "kind": "script",
+          "script": "test \"$(git -C sandbox rev-list --count HEAD)\" -ge 3"
+        },
+        {
+          "id": "commit-message-convention",
+          "text": "Commit subjects follow <type>(<scope>): <message> with the scope in backticks",
+          "kind": "script",
+          "script": "git -C sandbox log --format=%s -n 3 | grep -qE '^(feat|fix|docs|refactor|chore|test)\\(`[^`]+`\\): '"
+        },
+        {
+          "id": "implements-is-late",
+          "text": "Records lateness on the submission per the data model, comparing submittedAt against the assignment due date",
+          "kind": "script",
+          "script": "grep -q 'isLate' sandbox/src/submissions.js"
+        },
+        {
+          "id": "boundary-is-inclusive",
+          "text": "Treats a submission exactly at the due date as on time, the boundary the additional test scenario specifies",
+          "kind": "model"
+        },
+        {
+          "id": "tests-added",
+          "text": "Adds tests covering the new behaviour",
+          "kind": "script",
+          "script": "grep -qi 'late' sandbox/src/submissions.test.js"
+        },
+        {
+          "id": "test-suite-passes",
+          "text": "The project's test suite passes against the finished branch",
+          "kind": "script",
+          "script": "cd sandbox && node --test src/ >/dev/null 2>&1"
+        },
+        {
+          "id": "respects-no-new-dependency",
+          "text": "Honours the hard constraint against adding a dependency",
+          "kind": "script",
+          "script": "python3 -c \"import json,sys; d=json.load(open('sandbox/package.json')); sys.exit(0 if not d.get('dependencies') and not d.get('devDependencies') else 1)\""
+        },
+        {
+          "id": "listassignments-signature-unchanged",
+          "text": "Honours the hard constraint against changing the listAssignments signature",
+          "kind": "script",
+          "script": "grep -q 'export function listAssignments(courseId)' sandbox/src/assignments.js"
+        },
+        {
+          "id": "draft-pr-attempted",
+          "text": "Attempts a draft pull request",
+          "kind": "script",
+          "script": "grep '\"pr create\"' gh-calls.jsonl | python3 -c \"import json,sys; rows=[json.loads(l) for l in sys.stdin]; sys.exit(0 if rows and rows[0]['draft'] else 1)\""
+        },
+        {
+          "id": "pr-title-matches-issue",
+          "text": "The PR title matches the issue title verbatim, it being the squash-merge commit message",
+          "kind": "script",
+          "script": "grep '\"pr create\"' gh-calls.jsonl | python3 -c \"import json,sys; rows=[json.loads(l) for l in sys.stdin]; sys.exit(0 if rows and rows[0].get('title')=='feat(\\`submissions\\`): flag submissions made after the due date as late' else 1)\""
+        },
+        {
+          "id": "pr-closes-issue",
+          "text": "The PR body closes issue 55, linking the work back to the issue",
+          "kind": "script",
+          "script": "grep '\"pr create\"' gh-calls.jsonl | python3 -c \"import json,sys; rows=[json.loads(l) for l in sys.stdin]; sys.exit(0 if rows and 'Closes #55' in (rows[0].get('body') or '') else 1)\""
+        },
+        {
+          "id": "pr-labelled",
+          "text": "The PR carries the skill:implement-issue usage label",
+          "kind": "script",
+          "script": "grep -q 'skill:implement-issue' gh-calls.jsonl"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "gh-absent-asks-for-paste",
+      "prompt": "55",
+      "expected_output": "An issue number was given but gh is not installed, so the skill cannot fetch it. Rather than guessing at the issue contents or implementing something plausible, it asks the user to paste the issue body, and creates no branch or code in the meantime. Inventing an issue here would be the worst possible failure, since the work would look complete and address nothing.",
+      "fixture": "evals/fixtures/app",
+      "assertions": [
+        {
+          "id": "asks-for-paste",
+          "text": "Asks the user to paste the issue body, gh being unavailable",
+          "kind": "model"
+        },
+        {
+          "id": "does-not-invent-issue",
+          "text": "Does not invent issue contents and implement against them",
+          "kind": "model"
+        },
+        {
+          "id": "no-branch-created",
+          "text": "Creates no branch while waiting for the issue body",
+          "kind": "script",
+          "script": "test \"$(git -C sandbox rev-parse --abbrev-ref HEAD)\" = main"
+        },
+        {
+          "id": "no-code-written",
+          "text": "Writes no production code",
+          "kind": "script",
+          "script": "test -z \"$(git -C sandbox status --porcelain -- src)\""
+        }
+      ]
+    }
+  ]
+}
