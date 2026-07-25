@@ -11,11 +11,23 @@ Reviews code changes using 7 structured angles across the diff. Posts findings a
 
 ## Mode Selection
 
-**Before spawning a subagent**, ask the user:
+The two paths source their diff differently and end differently, so the mode has to be settled before anything else happens. Read the request first and take the mode from it when it is there:
 
-> "Are you reviewing a PR or your local working branch?"
-> - **PR** — if a PR link or number wasn't provided, ask for it now.
-> - **Local branch** — proceed.
+- **Names a PR** — a PR number or URL, "review this PR", "post findings to the pull request", "add review comments" → PR Review Path. If the mode is clear but the PR number isn't, ask for the number rather than the mode.
+- **Names local work** — "my local working branch", "my working copy", "this branch", "my changes before I push" → Local Branch Review Path. State in one line which path you're taking, then run it.
+- **Names neither** — "review my code", "review my changes", "give me feedback on this", with nothing pointing either way → **ask, and stop there.** Wait for the answer before you read a diff or produce a single finding:
+
+  > "Are you reviewing a PR or your local working branch?"
+  > - **PR** — if a PR link or number wasn't provided, ask for it now.
+  > - **Local branch** — proceed.
+
+This split matters in both directions, and the two mistakes look nothing alike.
+
+Re-asking a reviewer who already said "my local working branch" reads as though you didn't read the request, and when this skill runs non-interactively it is fatal: nobody is there to answer, so the question ends the turn and no review happens at all.
+
+Guessing on a bare request is the opposite failure and just as real. The reviewer may have a PR open and want these findings posted as inline comments on it; running a local review instead hands them the wrong artefact and quietly wastes the pass. A bare "review my code changes" is genuinely underdetermined, and the question is the correct output for it, not a dead end to be avoided.
+
+So infer only from what the request actually says. When it says neither, ask.
 
 - **PR** → spawn a fresh subagent and pass it: this `SKILL.md`, [references/pr-review-path.md](references/pr-review-path.md), the selected mode, and the PR number. The subagent runs the PR Review Path from scratch — no user interaction is needed.
 - **Local branch** → before doing anything else, explicitly state: *"Starting fresh local branch review — all prior session context discarded."* Then treat every subsequent step as if this were the first message in a new conversation: no prior analysis, no prior findings, no prior assumptions. Read [references/local-branch-review-path.md](references/local-branch-review-path.md) and run its Steps from step 1. (Interactive triage in step 4 means this path cannot run as a subagent.)
