@@ -12,6 +12,8 @@
 - **Change type:** new page | modification
 - **Page type:** workspace view | form | flow step | dashboard | settings | empty state | onboarding
 - **Run type:** attended | unattended (operator-proxy approvals)
+- **Hand-off:** solo (default) | pending engineer implementation — issue #NNN,
+  branch \`<name>\`
 - **The teacher and the moment:** (name the specific workflow this serves)
 
 ## Sprint contract (done-criteria)
@@ -19,6 +21,24 @@
 1.
 2.
 3.
+
+## Acceptance criteria → E2E mapping
+
+> Only when the run was issue-initiated. Otherwise: N/A — conversational run, no
+> issue.
+
+| Scenario | E2E test file | Passed / failed |
+|----------|----------------|------------------|
+| | | |
+
+## Reviewer routing
+
+> Only when the run was issue-initiated. Otherwise: N/A — conversational run, no
+> issue.
+
+| Scenario | Recommendation | Reason |
+|----------|----------------|--------|
+| | strongly recommended / can defer | |
 
 ## Chosen approach
 

@@ -27,7 +27,7 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
 4. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour.
 5. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
-6. **Design assets**: Figma links or screenshots. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
+6. **Design assets**: first, does this issue add or change a user-facing screen, page, flow, or component? If yes, ask for Figma links or screenshots; if none are available, offer to produce a Mermaid diagram based on the described flow (state diagrams suit multi-step forms; sequence diagrams suit actor interactions). If the issue is user-facing and no assets exist yet, say so explicitly in the section rather than defaulting to N/A — a UI-facing issue with nothing to show may need a design pass before implementation, not a direct implementation run. If the issue is not user-facing (backend, data, infra), mark this section N/A.
 
 ### Step 1b: Evaluate for split
 

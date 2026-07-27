@@ -80,11 +80,44 @@ Run in this order; do not present output to the user while a step is failing:
      init-script that sets `.dark` / the theme attribute *before* load, or the
      app's own toggle); a token-resolution argument alone is not evidence that
      the mode renders.
-3. **Evaluator review** — run the reviewer dispatch in
-   `../../../procedures/design-review.md`: it holds who spawns the `dx-design-review`
-   subagent, the inputs to pass (contract, approved plan, screenshots, component
-   inventory, in-scope judgment/hybrid controls, and the absolute `standards/` path),
-   the cannot-spawn rule, the verbatim-verdict rule, and the verdict re-check from
-   new screenshots. You never write the verdict yourself, and never present
-   unverified work as verified while waiting.
-4. Address findings; re-run from step 1 after changes.
+3. **Evaluator review** — spawn the `dx-evaluator` subagent (a genuinely separate
+   agent — do not write the verdict yourself) with: the sprint contract, the approved
+   plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
+   controls in scope, **and the absolute path to the harness's `standards/` directory**
+   (the evaluator cannot resolve it from the product cwd). **If you cannot spawn subagents** (you are yourself a
+   subagent, or running unattended), stop at this step and report — the proven
+   pattern is *orchestrator dispatch*: whoever orchestrates you spawns the evaluator
+   and routes its verdict back to you. Never write the verdict yourself, and never
+   present unverified work as verified while waiting.
+   **Paste the full verdict verbatim into the decision record** — the record is the
+   durable artifact; a summary in its place is a defect ("full text in the session
+   log" does not survive the session). You never grade your own design work. Note
+   the shared limit honestly: the evaluator runs the same model on the same
+   standards, so it is a second read, not a fully independent one — treat split
+   findings and any control you could not mechanically verify as candidates for
+   human review.
+4. **E2E suite and accessibility scan.** If the product repo has an existing E2E
+   suite, run it in full — not just the tests for this change — and triage every
+   failure before proceeding:
+
+   | Failure cause | Action |
+   |---|---|
+   | Outdated test — design changed the copy/layout/element the test covered | Update the test, record the update in the decision record |
+   | Real regression — design broke behaviour that should still work | Fix the implementation, not the test |
+   | Flaky, unrelated to this change | Note explicitly; don't block on it, don't silently ignore it |
+
+   Do not consider this phase complete with a failing suite. If the product repo has
+   no E2E suite, record **N/A — product has no E2E suite** in the decision record
+   (same honesty rule as the dark-mode check above) — never treat the absence as a
+   pass.
+
+   **Accessibility scan, same Playwright run.** If `@axe-core/playwright` is
+   available, run `AxeBuilder` against each page/viewport/state already captured
+   above and fold its findings into the verification ledger — this converts the
+   `manual`/`unverified` rows for inherited-background contrast (A11Y-1), alt text
+   (A11Y-6), heading structure (A11Y-7), title/lang (A11Y-9), and skip-link (A11Y-10)
+   into `script`-verified rows. If axe-core is not installed, those stay on the
+   manual pass, as today — never claim a `script` row without one having actually
+   run.
+
+5. Address findings; re-run from step 1 after changes.
