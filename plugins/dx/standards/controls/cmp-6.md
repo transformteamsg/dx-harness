@@ -98,4 +98,4 @@ where a real table belongs; a table that can be empty or slow with no designed s
   shared columns) — that is correct pattern choice, not a table violation.
 
 This is L2: a reasoned deviation (an identifier column, a deliberately card-based layout
-for non-tabular records) takes an inline `tfx-waive CMP-6 reason="…"`.
+for non-tabular records) takes an inline `dx-waive CMP-6 reason="…"`.

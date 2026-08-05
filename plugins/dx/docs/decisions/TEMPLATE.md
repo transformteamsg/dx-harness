@@ -41,7 +41,7 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
 
 | Control | Tier | Reason | Approver | Where recorded |
 |---------|------|--------|----------|----------------|
-| | | | | inline `tfx-waive` / this record |
+| | | | | inline `dx-waive` / this record |
 
 > L0 controls are never waivable. L1 waivers need a named human approver. L2 waivers
 > need a specific, real reason.
@@ -62,7 +62,7 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
   covering all three states, or a named human reviewer's attestation that they witnessed
   the live render of all three. Note explicitly which of the three (frame / video /
   attestation) covers each state.
-- **Token block line range:** (the `tfx-tokens` region exempt from token-audit, e.g.
+- **Token block line range:** (the `dx-tokens` region exempt from token-audit, e.g.
   `attendance.html:12-68`)
 - **Dark mode:** supported (dark frame captured at <path>) | N/A — product has no
   dark mode

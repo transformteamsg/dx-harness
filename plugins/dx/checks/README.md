@@ -46,7 +46,7 @@ prebuild/CI runner was considered and rejected for now.
 
 **Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
 the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
-crashed, or `.tfx/config.json` is invalid). A wrapped script's exit 1 (violations) maps
+crashed, or `.dx/config.json` is invalid). A wrapped script's exit 1 (violations) maps
 to detect's exit 2; detect reserves exit 1 for crashes and misconfiguration. A script
 that exits 1 with a stderr traceback, exits with a code outside {0,1}, or exits 1 with
 no parseable `ERROR` line is treated as a crash — detect fails loud rather than passing
@@ -57,7 +57,7 @@ silently.
 `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
 recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
 full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
-only when a `.tfx/component-manifest.json` exists; otherwise it is reported skipped).
+only when a `.dx/component-manifest.json` exists; otherwise it is reported skipped).
 
 **Output.** Text mode groups each script's findings under a `── <check> ──` header and
 passes through its `ERROR`/`NOTE` lines. `--json` emits
@@ -68,7 +68,7 @@ does not carry a `[<CTL>]` bracket (operational errors like path-not-found, and
 as a **control-less finding** — captured, counted toward exit 2, and printed; never
 dropped or silently passed.
 
-**Config ignores (`.tfx/config.json` at the target repo root).**
+**Config ignores (`.dx/config.json` at the target repo root).**
 
 ```json
 {"detector": {"ignoreFiles": ["legacy/*"], "ignoreValues": ["amber-11"], "ignoreRules": ["TYP-2"]}}
@@ -81,7 +81,7 @@ dropped or silently passed.
 - `ignoreRules` — drops configured L1/L2 control ids from the run (post-parse; L0 and
   operational, control-less findings are never dropped).
 
-`--no-config` bypasses the file entirely. An invalid or wrong-shaped `.tfx/config.json` is
+`--no-config` bypasses the file entirely. An invalid or wrong-shaped `.dx/config.json` is
 a misconfiguration → exit 1. `--tokens <css>` overrides the contrast token map (default:
 auto-discover `app/globals.css` under the repo root).
 
@@ -98,7 +98,7 @@ curated or `--all` set). It never reports an unbuilt or un-run control as "passe
 its output as "the built checks found nothing", not "the design is compliant". Per-control
 coverage and the always-manual gaps are in the sections below.
 
-**Design-context freshness.** When `.tfx/design.json` exists at the target repo root and
+**Design-context freshness.** When `.dx/design.json` exists at the target repo root and
 058's generator (`scripts/generate-design-json.py`) is present, detect also runs the
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
@@ -114,7 +114,7 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- tfx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
 
 **Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (63 cases)`.
 
@@ -138,13 +138,13 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-2 (Tailwind palette utility classes bypassing the semantic layer; COL-1 partial — palette bypass only, product-primary resolution is judgment). Suggests the nearest scale value or token pattern on every violation.
 
-**Token-definition exemption:** raw values inside a `:root { --*: … }` custom-property block or a `/* tfx-tokens */` … `/* /tfx-tokens */` region are exempt — tokens must be defined somewhere.
+**Token-definition exemption:** raw values inside a `:root { --*: … }` custom-property block or a `/* dx-tokens */` … `/* /dx-tokens */` region are exempt — tokens must be defined somewhere.
 
 **Project-token awareness (COL-2):** The scanner reads `--color-<name>: …` declarations from the CSS files it scans (Tailwind v4 `@theme` convention) to build an allowlist of *theme-defined* colour names (e.g. `--color-amber-11` licences `text-amber-11`). A Tailwind palette class whose name is in the allowlist is **not** flagged as a COL-2 bypass. Pass additional names via `--allow name1,name2,…` or a `checks/token-audit.allow` file (one name per line, `#` comments). Without an explicit allowlist the scanner flags all palette classes.
 
 **Arbitrary-value scanning (TOK-1):** In addition to style-context raw colours, the scanner checks the bracket contents of Tailwind arbitrary-value utilities (`bg-[…]`, `text-[…]`, `border-[…]`, etc.) for raw colour on **all** line types (not just style contexts). A raw hex, rgb/rgba, hsl, oklch, or standalone named colour (white, black, red, …) inside the brackets — excluding `var(--…)` references — emits `[TOK-1] raw colour '…' in arbitrary value`. For example, `hover:bg-[color-mix(in_oklab,var(--tw-blue)_88%,black)]` flags `black`.
 
-**L1 waiver behaviour:** TOK and COL are all L1; an inline `tfx-waive TOK-…` or `tfx-waive COL-…` comment does NOT suppress the violation. It downgrades the output line to `ERROR …:[line] [CTL-ID][waiver-claimed] … — verify approver in decision record` and still exits 1. The scanner never silences L1 violations; a human closes the decision-record loop.
+**L1 waiver behaviour:** TOK and COL are all L1; an inline `dx-waive TOK-…` or `dx-waive COL-…` comment does NOT suppress the violation. It downgrades the output line to `ERROR …:[line] [CTL-ID][waiver-claimed] … — verify approver in decision record` and still exits 1. The scanner never silences L1 violations; a human closes the decision-record loop.
 
 **Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
 
@@ -192,7 +192,7 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 - ARIA state tracking — `aria-expanded`/`aria-pressed`/`aria-checked` updating to match visual state (A11Y-8 state half) — cannot be detected statically without cross-file variable mutation tracking. Deferred; manual pass required.
 - Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core.
 
-**Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `tfx-waive` markers; every violation is a hard ERROR.
+**Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
 
 **Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (18 cases)` (includes the `fixtures/a11y-static/` pass/fail files).
 
@@ -218,14 +218,14 @@ Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the defa
 
 ## Waiver reconcile (built)
 
-`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `tfx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
+`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `dx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
 
 **ERROR (exit 1) vs NOTE (exit 0):**
 
-- **ERROR — inline tfx-waive on an L0 control** (any prefix): L0 is never waivable, so an inline waiver on `A11Y-1/2/3` or `CMP-2` is always a hard failure. This generalises the L0-never rule beyond the TOK/COL controls `token-audit` already guards.
-- **ERROR — orphan inline waiver:** an inline `tfx-waive <id>` (L1/L2) with no matching recorded waiver row for `<id>` in any scanned record — claimed in code, never approved in a record. Add it to a decision record with a named approver.
-- **ERROR — unknown control id:** a `tfx-waive` whose id is not in `standards/catalog.yaml`.
-- **NOTE — stale recorded waiver:** a recorded waiver row for `<id>` with no inline `tfx-waive <id>` in the scanned source — confirm it is still needed. A **NOTE, not an ERROR**, because the source set scanned may be partial: a recorded waiver looks "stale" only relative to the `--src` paths given, and a partial scan must never be turned into a false hard failure.
+- **ERROR — inline dx-waive on an L0 control** (any prefix): L0 is never waivable, so an inline waiver on `A11Y-1/2/3` or `CMP-2` is always a hard failure. This generalises the L0-never rule beyond the TOK/COL controls `token-audit` already guards.
+- **ERROR — orphan inline waiver:** an inline `dx-waive <id>` (L1/L2) with no matching recorded waiver row for `<id>` in any scanned record — claimed in code, never approved in a record. Add it to a decision record with a named approver.
+- **ERROR — unknown control id:** a `dx-waive` whose id is not in `standards/catalog.yaml`.
+- **NOTE — stale recorded waiver:** a recorded waiver row for `<id>` with no inline `dx-waive <id>` in the scanned source — confirm it is still needed. A **NOTE, not an ERROR**, because the source set scanned may be partial: a recorded waiver looks "stale" only relative to the `--src` paths given, and a partial scan must never be turned into a false hard failure.
 
 A row counts as a recorded waiver only when column 0 holds a control id (`^[A-Z0-9]+-\d+$`); TEMPLATE-style empty / descriptive placeholder rows are ignored, so they raise no false stale NOTE.
 
@@ -254,7 +254,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 `python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-5, CNT-6, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- tfx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-5 device-verb list is read the same way from `cnt-5.md` (`<!-- tfx-sync:cnt5-verbs -->`), and the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- tfx-sync:cnt6-openers -->`, `<!-- tfx-sync:cnt6-filler -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
+**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- dx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-5 device-verb list is read the same way from `cnt-5.md` (`<!-- dx-sync:cnt5-verbs -->`), and the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- dx-sync:cnt6-openers -->`, `<!-- dx-sync:cnt6-filler -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
 
 **Rules:**
 
@@ -302,7 +302,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 ## Component manifest (built)
 
-`python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.tfx/component-manifest.json` against the DX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
+`python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.dx/component-manifest.json` against the DX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
 
 **CMP-1 import-diff — only when `coverage: "complete"`:** the diff flags any component import in changed source that resolves outside the manifest. When `coverage` is `"partial"` (or absent) the diff stays **off** and the script reports `partial manifest — diff not run` — a team that declares complete coverage is asserting the manifest is reliable enough to diff against.
 
@@ -352,7 +352,7 @@ harness rule "never wire a failing check into the build," `content-lint` surface
 pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/`, and
 `contrast` surfaces a pre-existing sub-AA pair in `components/ui/button.tsx` (A11Y-1);
 neither is wired until that content is fixed or waived. `component-manifest` targets a
-product's `.tfx/component-manifest.json`, which this repo (the harness/site itself)
+product's `.dx/component-manifest.json`, which this repo (the harness/site itself)
 does not have — wiring it here would have nothing to check.
 
 The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control claiming
@@ -361,7 +361,7 @@ The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control cla
 `WIRING_EXEMPT` says. Stamping a control `enforced: script` without wiring the script
 or adding an exemption now fails validation; that friction is the point.
 
-Waiver handling: checks must respect inline `tfx-waive <CTL-ID> reason="..."`
+Waiver handling: checks must respect inline `dx-waive <CTL-ID> reason="..."`
 comments for L2 controls only — a waiver on an L0/L1 control is itself reported as a
 violation unless it appears in the decision record with a named approver (L1; L0 is
 never waivable).

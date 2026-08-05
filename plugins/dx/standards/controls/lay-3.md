@@ -73,4 +73,4 @@ shell where a known template clearly applies; a hierarchy that fights the page t
 **Deconfliction.** LAY-3 is the positive statement; SLP-10 is the specific anti-pattern
 (a multi-section task must be a page, not a modal). A11Y-7 is HTML-element semantics —
 a page can pass A11Y-7 (correct headings/lists) yet fail LAY-3 (wrong IA template).
-This is L2: a reasoned deviation takes an inline `tfx-waive LAY-3 reason="…"`.
+This is L2: a reasoned deviation takes an inline `dx-waive LAY-3 reason="…"`.

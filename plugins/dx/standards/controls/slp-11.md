@@ -71,5 +71,5 @@ spacing, type, and dividers instead.
   it genuinely aids comprehension.
 
 This is L2: a reasoned deviation (a platform pattern, a deliberate emphasis the team
-tested) takes an inline `tfx-waive SLP-11 reason="…"`. "Looks more designed" is not a
+tested) takes an inline `dx-waive SLP-11 reason="…"`. "Looks more designed" is not a
 reason.

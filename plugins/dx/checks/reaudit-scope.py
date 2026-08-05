@@ -83,7 +83,7 @@ _AR = _load_audit_record()
 
 def _load_checklib():
     path = os.path.join(CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

@@ -57,9 +57,9 @@ makes sense out of context) on the content side.
 
 **Deterministic half (lint):** case-insensitive, word-boundaried scan of user-facing
 copy for the device-verb list —
-<!-- tfx-sync:cnt5-verbs source -->
+<!-- dx-sync:cnt5-verbs source -->
 click, clicks, clicked, clicking, tap, taps, tapped, tapping, swipe, swipes, swiped, swiping
-<!-- /tfx-sync:cnt5-verbs -->
+<!-- /dx-sync:cnt5-verbs -->
 — each hit is a candidate finding. The list is read at runtime by
 `checks/content-lint.py` from this file, so the lint and the catalog never diverge.
 The lint stays out of code identifiers (`onClick`, `element.click()`) by scanning
@@ -85,7 +85,7 @@ Quote the offending copy in every finding.
 - Incidental, non-UI prose where the word is not an instruction: "press release",
   "the press", "click rate", "tap water", "a firm tap on the shoulder". The lint
   will surface these as candidates; dismiss them — they are advisories, not blocks.
-- Device verbs inside a waiver (`tfx-waive CNT-5 reason="..."`) — e.g. quoting a
+- Device verbs inside a waiver (`dx-waive CNT-5 reason="..."`) — e.g. quoting a
   third-party UI or OS gesture that must be named verbatim.
 - Code identifiers and API names (`onClick`, `onTap`, event names) — these are not
   copy.

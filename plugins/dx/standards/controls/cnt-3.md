@@ -73,7 +73,7 @@ Quote the offending sentence in every finding. Do not paraphrase.
 - Settled product names (Teacher Workspace, CaseSync, Glow, SEAB, CCE) — these are
   identities, not copy failures.
 - Quoted ministry or programme text: copy that must appear verbatim and carries an
-  inline `tfx-waive CNT-3 reason="..."` is out of scope — confirm the waiver is
+  inline `dx-waive CNT-3 reason="..."` is out of scope — confirm the waiver is
   present and move on.
 - Labels and fragments: "Save", "Class Planner", "Due date" are not sentences and
   the 25-word and voice rules do not apply.
@@ -83,5 +83,5 @@ Quote the offending sentence in every finding. Do not paraphrase.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-3 reason="..."` at the deviation site.
+`rationale` (L2) — inline `dx-waive CNT-3 reason="..."` at the deviation site.
 Ministry-mandated copy that must appear verbatim is the canonical waiver case.

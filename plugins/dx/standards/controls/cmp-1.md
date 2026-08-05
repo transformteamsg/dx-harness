@@ -35,7 +35,7 @@ a stack component exists is a finding, not a feature.
 
 - Each interactive or display need is served by a stack component, possibly
   composed with other stack components into a new layout.
-- A one-off element carries a recorded `tfx-waive CMP-1` with a named approver and
+- A one-off element carries a recorded `dx-waive CMP-1` with a named approver and
   a stated reason (e.g. a product-specific pattern awaiting DS promotion).
 - Composition — arranging existing components in a layout not used before — is
   present and unremarkable.
@@ -46,7 +46,7 @@ a stack component exists is a finding, not a feature.
   with no waiver.
 - A component is copy-pasted and locally modified instead of using the stack
   component and overriding via props or tokens.
-- A one-off exists and no `tfx-waive CMP-1` annotation can be found.
+- A one-off exists and no `dx-waive CMP-1` annotation can be found.
 
 ## How to verify
 
@@ -64,27 +64,27 @@ the need" edge cases described below.
   functional overlap, not visual match.
 - Copy-pasted variants of an existing component — a button with an inlined hover
   colour, a modal with a hand-rolled close gesture.
-- Any one-off without a traceable `tfx-waive CMP-1` annotation carrying a named
+- Any one-off without a traceable `dx-waive CMP-1` annotation carrying a named
   approver.
 
 **Do not flag**:
 
 - Composition: arranging existing components in a new layout is not a custom
   component. Wrapping a `<Button>` and a `<Dialog>` into a `<ConfirmRow>` is fine.
-- A one-off that carries `tfx-waive CMP-1` with a named approver — the waiver
+- A one-off that carries `dx-waive CMP-1` with a named approver — the waiver
   process worked; record the waiver is present, do not re-flag the deviation.
 
 **CMP-1 verdict vocabulary.** Any record that lists CMP-1 in scope must carry
 **exactly one** of these three fixed forms in its Verify verdict section:
 
-- `CMP-1: verified against .tfx/component-manifest.json (generated: <date>, coverage: <complete|partial>)`
+- `CMP-1: verified against .dx/component-manifest.json (generated: <date>, coverage: <complete|partial>)`
 - `CMP-1: asserted, no manifest — manifest absent for <product>`
-- `CMP-1: waived — tfx-waive CMP-1 reason="..."`
+- `CMP-1: waived — dx-waive CMP-1 reason="..."`
 
 Zero forms → `audit-record.py` reports an error; two or more forms → error. This is
 machine-checkable via `audit-record.py`; a paraphrase fails the check.
 
-**Products with a manifest.** For a product that has adopted `.tfx/component-manifest.json`,
+**Products with a manifest.** For a product that has adopted `.dx/component-manifest.json`,
 the evaluator uses the "verified against …" verdict form — stating the `generated` date
 and `coverage` level — and the three-surrogate fallback is retired for that product:
 the manifest is the evidence source. Run `checks/component-manifest.py <manifest.json>`
@@ -102,4 +102,4 @@ available indefinitely for products that have not yet authored a manifest.
 ## Waiver
 
 `documented` (L1) — one-offs that pass design-lead review enter the waiver registry
-with a named approver. Inline: `<!-- tfx-waive CMP-1 approver="..." reason="..." -->`.
+with a named approver. Inline: `<!-- dx-waive CMP-1 approver="..." reason="..." -->`.

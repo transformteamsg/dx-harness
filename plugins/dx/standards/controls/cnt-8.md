@@ -90,7 +90,7 @@ Quote the offending phrase in every finding and give the plain-verb rewrite.
   "Glow", "Transmission" (product or programme names). These are identities, not
   nominalised verbs.
 - Quoted ministry or programme text that must appear verbatim and carries an inline
-  `tfx-waive CNT-8 reason="..."`.
+  `dx-waive CNT-8 reason="..."`.
 - Cases where the noun form is the natural, established term and pulling the verb out
   would sound unnatural or change the meaning (rare — document the exception with a
   waiver).
@@ -99,5 +99,5 @@ Quote the offending phrase in every finding and give the plain-verb rewrite.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-8 reason="..."` at the deviation site.
+`rationale` (L2) — inline `dx-waive CNT-8 reason="..."` at the deviation site.
 Verbatim ministry or programme text is the canonical waiver case.

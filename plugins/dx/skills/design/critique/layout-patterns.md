@@ -37,7 +37,7 @@ read looser and more spacious by design.
    of shared vertical lines. Count the distinct left edges at 1280 — more
    than about four usually means the composition is drifting (LAY-6). Grid
    coherence is checkable where the product declares a grid (LAY-1, via
-   `.tfx/design.json` `layout_system`); N/A otherwise.
+   `.dx/design.json` `layout_system`); N/A otherwise.
 8. **Restraint is the taste.** When in doubt, remove: decoration that doesn't
    encode hierarchy or state is a cost, not a bonus. This is the impeccable
    principle — restraint as the core of taste — and also SLP-1..11's positive

@@ -10,7 +10,7 @@ Validates standards/catalog.yaml for internal consistency:
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
-  8. tfx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
+  8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html must equal the catalog's actual
      control count), [WIRING-SYNC] (enforced:script|partial claims actually run
      in prebuild/CI or are exempted), and [SKILL-SYNC] (every catalog id is
@@ -30,7 +30,7 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _load_checklib():
     path = os.path.join(_CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -229,11 +229,11 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
     return errors
 
 
-# ── tfx-sync parity sub-checks ──────────────────────────────────────────────────
+# ── dx-sync parity sub-checks ──────────────────────────────────────────────────
 # Some fragments are restated in prose across files that must each ship in their
 # own context (the plugin SKILL.md + the project-root CLAUDE.md; the skill summary +
 # the canonical control). A whole-file read-through can't fix a fragment inside a
-# larger file, so each restatement is wrapped in <!-- tfx-sync:NAME -->…<!-- /tfx-sync:NAME -->
+# larger file, so each restatement is wrapped in <!-- dx-sync:NAME -->…<!-- /dx-sync:NAME -->
 # markers and compared against its source here. See docs/SYNC.md.
 
 # REQUIRED_CORE — a hard-coded floor of buzzwords that must appear in BOTH the
@@ -248,12 +248,12 @@ _BUZZWORD_NOISE = {"and", "kin", "the", "plus", "list", "buzzword", ""}
 
 def extract_sync_block(text, name):
     """
-    Return the inner span between <!-- tfx-sync:NAME … --> and
-    <!-- /tfx-sync:NAME --> (DOTALL), or None if the block is absent / unclosed.
+    Return the inner span between <!-- dx-sync:NAME … --> and
+    <!-- /dx-sync:NAME --> (DOTALL), or None if the block is absent / unclosed.
     The open marker tolerates extra attributes (e.g. `source`, `source=catalog`).
     """
-    pattern = (r"<!-- tfx-sync:" + re.escape(name) + r"\b[^>]*-->"
-               r"(.*?)<!-- /tfx-sync:" + re.escape(name) + r" -->")
+    pattern = (r"<!-- dx-sync:" + re.escape(name) + r"\b[^>]*-->"
+               r"(.*?)<!-- /dx-sync:" + re.escape(name) + r" -->")
     match = re.search(pattern, text, re.DOTALL)
     return match.group(1) if match else None
 
@@ -297,7 +297,7 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
             text = fh.read()
         span = extract_sync_block(text, "L0")
         if span is None:
-            errors.append(f"ERROR {rel} [L0-SYNC]: missing tfx-sync:L0 markers")
+            errors.append(f"ERROR {rel} [L0-SYNC]: missing dx-sync:L0 markers")
             continue
         inline = {m.group(0) for m in xref_re.finditer(span)}
         if inline != source:
@@ -330,7 +330,7 @@ def lay_parity_errors(repo_root, catalog_by_id, xref_re):
             text = fh.read()
         span = extract_sync_block(text, "lay-controls")
         if span is None:
-            errors.append(f"ERROR {rel} [LAY-SYNC]: missing tfx-sync:lay-controls markers")
+            errors.append(f"ERROR {rel} [LAY-SYNC]: missing dx-sync:lay-controls markers")
             continue
         inline = {m.group(0) for m in xref_re.finditer(span)}
         if inline != source:
@@ -497,7 +497,7 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
 WIRING_EXEMPT = {
     "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
     "checks/contrast.py": "pre-existing A11Y-1 finding (components/ui/button.tsx) — wire after cleanup",
-    "checks/component-manifest.py": "validates a product's .tfx/component-manifest.json; this repo has none to validate",
+    "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
 }
 
 
@@ -682,15 +682,15 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
 def extract_sync_block_any(text, name):
     """
     Like extract_sync_block, but also recognizes the MDX comment form
-    {/* tfx-sync:NAME … */} … {/* /tfx-sync:NAME */}. Tries the HTML form first
+    {/* dx-sync:NAME … */} … {/* /dx-sync:NAME */}. Tries the HTML form first
     (plain-markdown sources), then the MDX form (website consumers). Returns the
     inner span, or None if neither form is present / closed.
     """
     html = extract_sync_block(text, name)
     if html is not None:
         return html
-    pattern = (r"\{/\* tfx-sync:" + re.escape(name) + r"\b.*?\*/\}"
-               r"(.*?)\{/\* /tfx-sync:" + re.escape(name) + r" \*/\}")
+    pattern = (r"\{/\* dx-sync:" + re.escape(name) + r"\b.*?\*/\}"
+               r"(.*?)\{/\* /dx-sync:" + re.escape(name) + r" \*/\}")
     match = re.search(pattern, text, re.DOTALL)
     return match.group(1) if match else None
 
@@ -748,7 +748,7 @@ def _table_parity_errors(repo_root, name, tag, consumer_rel):
         src_span = extract_sync_block_any(fh.read(), name)
     if src_span is None:
         errors.append(
-            f"ERROR .claude/skills/copy/SKILL.md [{tag}]: missing tfx-sync:{name} source markers")
+            f"ERROR .claude/skills/copy/SKILL.md [{tag}]: missing dx-sync:{name} source markers")
         return errors
 
     if not os.path.isfile(consumer_path):
@@ -756,7 +756,7 @@ def _table_parity_errors(repo_root, name, tag, consumer_rel):
     with open(consumer_path) as fh:
         con_span = extract_sync_block_any(fh.read(), name)
     if con_span is None:
-        errors.append(f"ERROR {consumer_rel} [{tag}]: missing tfx-sync:{name} consumer markers")
+        errors.append(f"ERROR {consumer_rel} [{tag}]: missing dx-sync:{name} consumer markers")
         return errors
 
     src_rows = _normalize_table_rows(src_span)
@@ -801,7 +801,7 @@ def uitext_parity_errors(repo_root):
     if src_span is None:
         errors.append(
             "ERROR .claude/skills/copy/SKILL.md [UITEXT-SYNC]: missing "
-            "tfx-sync:uitext-sequence source markers")
+            "dx-sync:uitext-sequence source markers")
         return errors
 
     if not os.path.isfile(consumer_path):
@@ -809,7 +809,7 @@ def uitext_parity_errors(repo_root):
     with open(consumer_path) as fh:
         con_span = extract_sync_block_any(fh.read(), "uitext-sequence")
     if con_span is None:
-        errors.append(f"ERROR {consumer_rel} [UITEXT-SYNC]: missing tfx-sync:uitext-sequence consumer markers")
+        errors.append(f"ERROR {consumer_rel} [UITEXT-SYNC]: missing dx-sync:uitext-sequence consumer markers")
         return errors
 
     missing = _editing_step_names(src_span) - _section_heading_words(con_span)
@@ -1051,7 +1051,7 @@ def collect_errors(repo_root, _return_count=False):
             content = fh.read()
         errors.extend(cross_ref_errors(rel, content, catalog_by_id, xref_re))
 
-    # ── Step 8: tfx-sync parity sub-checks ───────────────────────────────────
+    # ── Step 8: dx-sync parity sub-checks ───────────────────────────────────
     # Inline restatements (L0 list, SLP-9 buzzwords) must not drift from source.
     errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(slp9_parity_errors(repo_root))
@@ -1172,7 +1172,7 @@ def run_self_test():
     if not any(e.startswith("ERROR scratch.md:2:") for e in line_errs):
         failures.append(f"FAIL unknown id line number: expected line 2 — got: {line_errs}")
 
-    # ── tfx-sync parity cases (pure helpers) ─────────────────────────────────
+    # ── dx-sync parity cases (pure helpers) ─────────────────────────────────
 
     def assert_clean(name, errs):
         nonlocal case_count
@@ -1189,10 +1189,10 @@ def run_self_test():
     # extract_sync_block: well-formed block returns the inner span; missing close
     # marker returns None.
     case_count += 1
-    if extract_sync_block("<!-- tfx-sync:X source -->inner<!-- /tfx-sync:X -->", "X") != "inner":
+    if extract_sync_block("<!-- dx-sync:X source -->inner<!-- /dx-sync:X -->", "X") != "inner":
         failures.append("FAIL extractor well-formed: expected 'inner' span")
     case_count += 1
-    if extract_sync_block("<!-- tfx-sync:X -->inner (no close)", "X") is not None:
+    if extract_sync_block("<!-- dx-sync:X -->inner (no close)", "X") is not None:
         failures.append("FAIL extractor unclosed: expected None")
 
     L0_SOURCE = {"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"}
@@ -1200,7 +1200,7 @@ def run_self_test():
     def l0_errs_for_span(span_text):
         """Drive the L0 parity comparison against a synthetic consumer span."""
         if span_text is None:
-            return ["ERROR scratch.md [L0-SYNC]: missing tfx-sync:L0 markers"]
+            return ["ERROR scratch.md [L0-SYNC]: missing dx-sync:L0 markers"]
         inline = {m.group(0) for m in xref_re.finditer(span_text)}
         if inline != L0_SOURCE:
             return [f"ERROR scratch.md [L0-SYNC]: inline L0 list != catalog L0 set"]
@@ -1221,7 +1221,7 @@ def run_self_test():
     # L0 missing markers: extract_sync_block None → missing-markers error.
     assert_error("L0 missing markers",
                  l0_errs_for_span(extract_sync_block("no markers here", "L0")),
-                 "missing tfx-sync:L0 markers")
+                 "missing dx-sync:L0 markers")
 
     # The detector is an executable L0 consumer. A malformed fixture must be
     # reported; this fails if its path is silently skipped by l0_parity_errors.
@@ -1231,14 +1231,14 @@ def run_self_test():
             fh.write("# no L0 marker")
         assert_error("L0 detector consumer is not skipped",
                      l0_parity_errors(td, {cid: {"tier": "L0"} for cid in L0_SOURCE}, xref_re),
-                     "checks/detect.py [L0-SYNC]: missing tfx-sync:L0 markers")
+                     "checks/detect.py [L0-SYNC]: missing dx-sync:L0 markers")
 
     LAY_SOURCE = {"LAY-1", "LAY-2", "LAY-3", "LAY-4", "LAY-5", "LAY-6", "LAY-7"}
 
     def lay_errs_for_span(span_text):
         """Drive the LAY parity comparison against a synthetic consumer span."""
         if span_text is None:
-            return ["ERROR scratch.md [LAY-SYNC]: missing tfx-sync:lay-controls markers"]
+            return ["ERROR scratch.md [LAY-SYNC]: missing dx-sync:lay-controls markers"]
         inline = {m.group(0) for m in xref_re.finditer(span_text)}
         if inline != LAY_SOURCE:
             return [f"ERROR scratch.md [LAY-SYNC]: inline LAY list != catalog LAY set"]
@@ -1257,7 +1257,7 @@ def run_self_test():
     # LAY missing markers: extract_sync_block None → missing-markers error.
     assert_error("LAY missing markers",
                  lay_errs_for_span(extract_sync_block("no markers here", "lay-controls")),
-                 "missing tfx-sync:lay-controls markers")
+                 "missing dx-sync:lay-controls markers")
 
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
@@ -1576,18 +1576,18 @@ def run_self_test():
         uitext_path = os.path.join(guide_dir, "ui-text.mdx")
 
         skill_md = (
-            "<!-- tfx-sync:voice-attributes source -->\n"
+            "<!-- dx-sync:voice-attributes source -->\n"
             "| We are | We are not |\n|---|---|\n"
             "| Clear but not cold | Robotic or detached |\n"
-            "<!-- /tfx-sync:voice-attributes -->\n\n"
-            "<!-- tfx-sync:tone-context source -->\n"
+            "<!-- /dx-sync:voice-attributes -->\n\n"
+            "<!-- dx-sync:tone-context source -->\n"
             "| Context | Tone | Direction |\n|---|---|---|\n"
             "| Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |\n"
-            "<!-- /tfx-sync:tone-context -->\n\n"
-            "<!-- tfx-sync:uitext-sequence source -->\n"
+            "<!-- /dx-sync:tone-context -->\n\n"
+            "<!-- dx-sync:uitext-sequence source -->\n"
             "1. **Draft.** a\n2. **Purposeful.** b\n3. **Concise.** c\n"
             "4. **Conversational.** d\n5. **Clear.** e\n"
-            "<!-- /tfx-sync:uitext-sequence -->\n"
+            "<!-- /dx-sync:uitext-sequence -->\n"
         )
         with open(skill_path, "w") as fh:
             fh.write(skill_md)
@@ -1595,24 +1595,24 @@ def run_self_test():
         # Consumer voice-tone.mdx: identical rows; the tone cell wraps CMP-2 in a
         # markdown link, which normalization must reduce to bare CMP-2.
         good_voice_mdx = (
-            "{/* tfx-sync:voice-attributes */}\n"
+            "{/* dx-sync:voice-attributes */}\n"
             "| We are | We are not |\n| --- | --- |\n"
             "| Clear but not cold | Robotic or detached |\n"
-            "{/* /tfx-sync:voice-attributes */}\n\n"
-            "{/* tfx-sync:tone-context */}\n"
+            "{/* /dx-sync:voice-attributes */}\n\n"
+            "{/* dx-sync:tone-context */}\n"
             "| Context | Tone | Direction |\n| --- | --- | --- |\n"
             "| Destructive action | Sober, precise | Plain consequences, no drama "
             "([CMP-2](/standards/catalog/cmp-2)) |\n"
-            "{/* /tfx-sync:tone-context */}\n"
+            "{/* /dx-sync:tone-context */}\n"
         )
         good_uitext_mdx = (
-            "{/* tfx-sync:uitext-sequence */}\n"
+            "{/* dx-sync:uitext-sequence */}\n"
             "## 1. Clarify the context, then draft\n"
             "## 2. Edit to be purposeful\n"
             "## 3. Edit to be concise\n"
             "## 4. Edit to be conversational\n"
             "## 5. Edit to be clear\n"
-            "{/* /tfx-sync:uitext-sequence */}\n"
+            "{/* /dx-sync:uitext-sequence */}\n"
             "## 6. Check consistency\n"
         )
         with open(voice_path, "w") as fh:
@@ -1646,7 +1646,7 @@ def run_self_test():
             fh.write("no markers here")
         assert_error("voice-sync missing consumer markers",
                      voice_parity_errors(harness_dir),
-                     "missing tfx-sync:voice-attributes consumer markers")
+                     "missing dx-sync:voice-attributes consumer markers")
         with open(voice_path, "w") as fh:
             fh.write(good_voice_mdx)
 

@@ -46,7 +46,7 @@ The voice is **Clear, Thoughtful, Approachable** — the three attributes the
 [voice & tone guideline](/guidelines/voice-tone) defines and CNT-14 grades. Its
 "we are / we are not" table is the boundary to hold:
 
-<!-- tfx-sync:voice-attributes source -->
+<!-- dx-sync:voice-attributes source -->
 | We are | We are not |
 |---|---|
 | Clear but not cold | Robotic or detached |
@@ -55,11 +55,11 @@ The voice is **Clear, Thoughtful, Approachable** — the three attributes the
 | Helpful but not overbearing | Patronising or overly prescriptive |
 | Approachable but not careless | Corporate speak or overly casual |
 | Reassuring but not sappy | Alarmist or dramatic |
-<!-- /tfx-sync:voice-attributes -->
+<!-- /dx-sync:voice-attributes -->
 
 ## Tone (adapts by context)
 
-<!-- tfx-sync:tone-context source -->
+<!-- dx-sync:tone-context source -->
 | Context | Tone | Direction |
 |---|---|---|
 | Success | Affirming, brief | Acknowledge, don't gush |
@@ -68,7 +68,7 @@ The voice is **Clear, Thoughtful, Approachable** — the three attributes the
 | Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |
 | Empty state | Inviting | Lead with the next action |
 | Permission / data request | Transparent, respectful | Say what's collected, why, and how it's used — before asking |
-<!-- /tfx-sync:tone-context -->
+<!-- /dx-sync:tone-context -->
 
 ## Writing mechanics (CNT-3)
 
@@ -96,8 +96,8 @@ The voice is **Clear, Thoughtful, Approachable** — the three attributes the
   report", never "click here" or "read more". Teachers reach these products on
   laptops, tablets, phones, and screen readers; device-agnostic verbs are correct
   for all of them at once.
-- No marketing buzzwords (SLP-9): <!-- tfx-sync:slp9-buzzwords --> streamline, empower, supercharge, effortless,
-  seamless, world-class <!-- /tfx-sync:slp9-buzzwords --> and kin describe nothing — say what the thing does. No
+- No marketing buzzwords (SLP-9): <!-- dx-sync:slp9-buzzwords --> streamline, empower, supercharge, effortless,
+  seamless, world-class <!-- /dx-sync:slp9-buzzwords --> and kin describe nothing — say what the thing does. No
   em-dash chains standing in for sentence structure, and no label/sublabel/helper
   triplets that restate each other — if removing one line loses nothing, remove it.
 - **Plain action verbs, not nominalisations (CNT-8).** Pull the verb out of the
@@ -128,7 +128,7 @@ what "good" is; this is the working order that gets you there. It is a method �
 of these passes is itself a control, and none fails a check. Draft first, then edit
 in passes:
 
-<!-- tfx-sync:uitext-sequence source -->
+<!-- dx-sync:uitext-sequence source -->
 1. **Draft.** Write what you want to say to the teacher. Don't polish yet.
 2. **Purposeful.** Keep only words that serve the teacher's goal or the product's.
    Lead with the most important idea (CNT-7, lead with purpose).
@@ -138,7 +138,7 @@ in passes:
    action, not the device (CNT-5).
 5. **Clear.** Simple words, simple present tense; no double negatives or noun
    stacks; every acronym defined on the surface (CNT-9).
-<!-- /tfx-sync:uitext-sequence -->
+<!-- /dx-sync:uitext-sequence -->
 6. **Check.** One term per thing (CNT-10) using the word teachers already know
    (CNT-11), clear names (CNT-2), sentence case (CNT-12), Singapore English
    spelling and a proofread (CNT-13), plain error anatomy (CNT-1), and a last
@@ -221,5 +221,5 @@ around case data):
 ## What to do on conflict
 
 Mandated programme names and legally vetted text win over style rules — record a
-waiver (`tfx-waive CNT-2 reason="..."` inline, or in the decision record for
+waiver (`dx-waive CNT-2 reason="..."` inline, or in the decision record for
 non-markup content) rather than rewording.

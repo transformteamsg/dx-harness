@@ -16,7 +16,7 @@ Profiles
 - `--all` = every page-check script: the curated set with type-scan's full rule set
   plus content-lint and (when a manifest exists) component-manifest.
 
-Config ignores (`.tfx/config.json` at the target repo root)
+Config ignores (`.dx/config.json` at the target repo root)
 ───────────────────────────────────────────────────────────
     {"detector": {"ignoreFiles": [globs], "ignoreValues": [strings], "ignoreRules": [ids]}}
 - ignoreFiles — glob-filters the scanned targets (a legacy folder).
@@ -41,7 +41,7 @@ Usage
     python3 checks/detect.py [<path>...]         # curated profile (default .)
     python3 checks/detect.py --all <path>...     # every page-check script
     python3 checks/detect.py --json <path>...    # machine-readable findings
-    python3 checks/detect.py --no-config <path>  # ignore .tfx/config.json
+    python3 checks/detect.py --no-config <path>  # ignore .dx/config.json
     python3 checks/detect.py --tokens app/globals.css <path>   # contrast token map
     python3 checks/detect.py --self-test
 """
@@ -74,9 +74,9 @@ PRUNE_DIRS = {"node_modules", "dist", "build", "out", "coverage", "vendor", "__p
 SCAN_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue",
                    ".svelte", ".md", ".mdx"}
 
-# <!-- tfx-sync:L0 source=catalog -->
+# <!-- dx-sync:L0 source=catalog -->
 L0_CONTROL_IDS = frozenset({"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"})
-# <!-- /tfx-sync:L0 -->
+# <!-- /dx-sync:L0 -->
 
 # ERROR-line convention (checks/README.md):
 #   ERROR <file>:<line> [<CTL>] <message>
@@ -93,38 +93,38 @@ TRACEBACK_MARKER = "Traceback (most recent call last)"
 
 
 class ConfigError(Exception):
-    """Raised for a malformed `.tfx/config.json` — a misconfiguration (exit 1)."""
+    """Raised for a malformed `.dx/config.json` — a misconfiguration (exit 1)."""
 
 
 # ── Config ───────────────────────────────────────────────────────────────────────
 
 def load_config(repo_root, no_config=False):
-    """Read `<repo_root>/.tfx/config.json`'s `detector` block. Returns a dict with
+    """Read `<repo_root>/.dx/config.json`'s `detector` block. Returns a dict with
     ignoreFiles / ignoreValues / ignoreRules (each a list of strings). Missing file
     → empty ignores. `--no-config` → empty ignores. Malformed file → ConfigError."""
     empty = {"ignoreFiles": [], "ignoreValues": [], "ignoreRules": []}
     if no_config:
         return dict(empty)
-    path = os.path.join(repo_root, ".tfx", "config.json")
+    path = os.path.join(repo_root, ".dx", "config.json")
     if not os.path.isfile(path):
         return dict(empty)
     try:
         with open(path, encoding="utf-8") as fh:
             data = json.load(fh)
     except (ValueError, OSError) as exc:
-        raise ConfigError(f"invalid .tfx/config.json: {exc}")
+        raise ConfigError(f"invalid .dx/config.json: {exc}")
     if not isinstance(data, dict):
-        raise ConfigError(".tfx/config.json must be a JSON object")
+        raise ConfigError(".dx/config.json must be a JSON object")
     det = data.get("detector", {})
     if not isinstance(det, dict):
-        raise ConfigError('.tfx/config.json "detector" must be an object')
+        raise ConfigError('.dx/config.json "detector" must be an object')
     out = dict(empty)
     for key in ("ignoreFiles", "ignoreValues", "ignoreRules"):
         val = det.get(key, [])
         if val is None:
             val = []
         if not isinstance(val, list) or not all(isinstance(x, str) for x in val):
-            raise ConfigError(f".tfx/config.json detector.{key} must be a list of strings")
+            raise ConfigError(f".dx/config.json detector.{key} must be a list of strings")
         out[key] = val
     return out
 
@@ -132,7 +132,7 @@ def load_config(repo_root, no_config=False):
 # ── Targets ────────────────────────────────────────────────────────────────────
 
 def find_repo_root(target):
-    """Walk up from `target` to the nearest dir holding `.git` or `.tfx`; fall back
+    """Walk up from `target` to the nearest dir holding `.git` or `.dx`; fall back
     to the target dir (or its parent for a file), then cwd."""
     p = os.path.abspath(target)
     if os.path.isfile(p):
@@ -140,7 +140,7 @@ def find_repo_root(target):
     cur = p
     while True:
         if os.path.isdir(os.path.join(cur, ".git")) or os.path.isfile(os.path.join(cur, ".git")) \
-                or os.path.isdir(os.path.join(cur, ".tfx")):
+                or os.path.isdir(os.path.join(cur, ".dx")):
             return cur
         parent = os.path.dirname(cur)
         if parent == cur:
@@ -198,7 +198,7 @@ def expand_targets(paths, ignore_globs, repo_root):
 def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     """Return the ordered list of check specs for the chosen profile. Each spec:
     {"name", "args" (script + flags, before targets), "mode"}. mode "targets"
-    appends the scanned targets; mode "manifest" runs against `.tfx/component-
+    appends the scanned targets; mode "manifest" runs against `.dx/component-
     manifest.json`."""
     allow = list(allow_values or [])
     specs = []
@@ -320,10 +320,10 @@ def run_checks(specs, targets, ignore_rules, repo_root):
     for spec in specs:
         name = spec["name"]
         if spec["mode"] == "manifest":
-            manifest = os.path.join(repo_root, ".tfx", "component-manifest.json")
+            manifest = os.path.join(repo_root, ".dx", "component-manifest.json")
             if not os.path.isfile(manifest):
                 results.append({"name": name, "kind": "skipped",
-                                "reason": "no .tfx/component-manifest.json",
+                                "reason": "no .dx/component-manifest.json",
                                 "error_lines": [], "note_lines": [], "findings": []})
                 continue
             argv = [sys.executable, os.path.join(CHECKS_DIR, spec["args"][0]),
@@ -351,9 +351,9 @@ def run_checks(specs, targets, ignore_rules, repo_root):
 
 
 def run_generator_check(repo_root, findings, results):
-    """If `.tfx/design.json` exists and the 058 generator is present, run it in
+    """If `.dx/design.json` exists and the 058 generator is present, run it in
     `--check` mode. Staleness (exit 2) is a finding, never a crash."""
-    design_json = os.path.join(repo_root, ".tfx", "design.json")
+    design_json = os.path.join(repo_root, ".dx", "design.json")
     if not os.path.isfile(design_json) or not os.path.isfile(GENERATOR):
         return
     rc, out, _err = _run_subprocess([sys.executable, GENERATOR, repo_root, "--check"])
@@ -452,7 +452,7 @@ def run(argv):
                         help="run every page-check script (not just the curated subset)")
     parser.add_argument("--json", action="store_true", help="emit JSON on stdout")
     parser.add_argument("--no-config", action="store_true",
-                        help="ignore .tfx/config.json")
+                        help="ignore .dx/config.json")
     parser.add_argument("--tokens", metavar="CSS",
                         help="token CSS file for contrast (default: auto-discover app/globals.css)")
     args = parser.parse_args(argv)
@@ -657,8 +657,8 @@ def run_self_test():
     with tempfile.TemporaryDirectory() as td:
         check("no config file -> empty ignores", load_config(td) == {
             "ignoreFiles": [], "ignoreValues": [], "ignoreRules": []})
-        os.makedirs(os.path.join(td, ".tfx"))
-        cfg = os.path.join(td, ".tfx", "config.json")
+        os.makedirs(os.path.join(td, ".dx"))
+        cfg = os.path.join(td, ".dx", "config.json")
         with open(cfg, "w", encoding="utf-8") as fh:
             json.dump({"detector": {"ignoreFiles": ["legacy/*"], "ignoreRules": ["TYP-2"]}}, fh)
         loaded = load_config(td)

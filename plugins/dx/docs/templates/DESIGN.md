@@ -28,7 +28,7 @@ Follows content §6. Teacher Workspace: neutral, steady, quietly confident.
 - state-change: cross-fade, 120ms
 
 ## Layout system
-<!-- The declared column grid (absorbs the LAY-1 proposal's .tfx/layout-system.json;
+<!-- The declared column grid (absorbs the LAY-1 proposal's .dx/layout-system.json;
      see docs/catalog-changes/lay-1-grid.md). Absent = grades N/A. gutter/margins are
      TOK-2 spacing-scale tokens, never raw values. -->
 - columns: 12

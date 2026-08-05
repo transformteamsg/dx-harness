@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-generate-design-json.py — generate a product repo's `.tfx/design.json` from its `DESIGN.md`.
+generate-design-json.py — generate a product repo's `.dx/design.json` from its `DESIGN.md`.
 
 `DESIGN.md` is the human-owned per-product context file (visual parameters only, never
-catalog-rule restatements); `.tfx/design.json` is its machine twin that checks and hooks
+catalog-rule restatements); `.dx/design.json` is its machine twin that checks and hooks
 read. Spec — read it first: `docs/DESIGN-CONTEXT.md`.
 
 The parse is deterministic (stdlib only):
@@ -16,14 +16,14 @@ The parse is deterministic (stdlib only):
     becomes its prose verbatim; an empty section produces no key.
 
 Usage:
-  python3 scripts/generate-design-json.py <repo-root>            # write .tfx/design.json
+  python3 scripts/generate-design-json.py <repo-root>            # write .dx/design.json
   python3 scripts/generate-design-json.py <repo-root> --check    # exit 2 if stale (CI)
   python3 scripts/generate-design-json.py --self-test            # pure, no external writes
 
 Exit codes:
   0  wrote the file / it is up to date
   1  no DESIGN.md (nothing to generate — portfolio defaults apply; not a failure)
-  2  --check: .tfx/design.json is stale vs DESIGN.md
+  2  --check: .dx/design.json is stale vs DESIGN.md
 """
 
 import argparse
@@ -34,7 +34,7 @@ import re
 import sys
 
 DESIGN_MD = "DESIGN.md"
-DESIGN_JSON = os.path.join(".tfx", "design.json")
+DESIGN_JSON = os.path.join(".dx", "design.json")
 GENERATED_FROM = "DESIGN.md"
 
 # Canonical heading -> json key (lower-cased lookup). Unknown headings are slugified.
@@ -139,7 +139,7 @@ def parse_sections(text):
 
 
 def build_document(text, *, now=None):
-    """Full .tfx/design.json document: header keys, then one key per section."""
+    """Full .dx/design.json document: header keys, then one key per section."""
     ts = now or datetime.datetime.now(datetime.timezone.utc)
     doc = {
         "generated_from": GENERATED_FROM,
@@ -162,7 +162,7 @@ def read_design_md(repo_root):
 
 
 def write_design_json(repo_root, doc):
-    out_dir = os.path.join(repo_root, ".tfx")
+    out_dir = os.path.join(repo_root, ".dx")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "design.json")
     with open(out_path, "w", encoding="utf-8") as fh:
@@ -172,9 +172,9 @@ def write_design_json(repo_root, doc):
 
 
 def is_stale(repo_root, text):
-    """True if .tfx/design.json is missing, unreadable, or differs from a fresh generation
+    """True if .dx/design.json is missing, unreadable, or differs from a fresh generation
     (ignoring the always-changing generated_at timestamp)."""
-    out_path = os.path.join(repo_root, ".tfx", "design.json")
+    out_path = os.path.join(repo_root, ".dx", "design.json")
     fresh = _without_ts(build_document(text))
     if not os.path.isfile(out_path):
         return True
@@ -192,11 +192,11 @@ def main(argv=None):
         return run_self_test()
 
     p = argparse.ArgumentParser(
-        description="Generate .tfx/design.json from a product repo's DESIGN.md."
+        description="Generate .dx/design.json from a product repo's DESIGN.md."
     )
     p.add_argument("repo_root", help="product repo root (the directory containing DESIGN.md)")
     p.add_argument("--check", action="store_true",
-                   help="exit 2 if .tfx/design.json is stale vs DESIGN.md; write nothing (CI)")
+                   help="exit 2 if .dx/design.json is stale vs DESIGN.md; write nothing (CI)")
     p.add_argument("--self-test", action="store_true", help="run the pure self-test")
     args = p.parse_args(argv)
 
@@ -318,7 +318,7 @@ def run_self_test():
         with open(os.path.join(td, DESIGN_MD), "w", encoding="utf-8") as fh:
             fh.write(sample)
         rc = quiet(main, [td])
-        out = os.path.join(td, ".tfx", "design.json")
+        out = os.path.join(td, ".dx", "design.json")
         parsed = None
         if os.path.isfile(out):
             with open(out, encoding="utf-8") as fh:

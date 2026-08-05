@@ -37,7 +37,7 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _load_checklib():
     path = os.path.join(_CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -262,18 +262,18 @@ def audit_record(text, name, repo_root):
         verdict_section = find_section(sections, "Verify verdict")
         if verdict_section is not None:
             cmp1_forms = [
-                "CMP-1: verified against .tfx/component-manifest.json",
+                "CMP-1: verified against .dx/component-manifest.json",
                 "CMP-1: asserted, no manifest",
-                "CMP-1: waived — tfx-waive CMP-1",
+                "CMP-1: waived — dx-waive CMP-1",
             ]
             found_forms = [f for f in cmp1_forms if f in verdict_section]
             if len(found_forms) == 0:
                 messages.append(
                     "record claims CMP-1 but carries no CMP-1 verdict line — "
                     "use one of the three fixed forms: "
-                    "'CMP-1: verified against .tfx/component-manifest.json (…)', "
+                    "'CMP-1: verified against .dx/component-manifest.json (…)', "
                     "'CMP-1: asserted, no manifest — manifest absent for <product>', "
-                    "or 'CMP-1: waived — tfx-waive CMP-1 reason=\"...\"'"
+                    "or 'CMP-1: waived — dx-waive CMP-1 reason=\"...\"'"
                 )
             elif len(found_forms) > 1:
                 messages.append(
@@ -544,7 +544,7 @@ def run_self_test():
         PASSING_RECORD.replace(
             "| CMP-1 | L1 | No component manifest in harness v0 "
             "| Reza Ilmi (user) | this record |",
-            "| | | | | inline `tfx-waive` / this record |",
+            "| | | | | inline `dx-waive` / this record |",
         ),
     )
 

@@ -98,7 +98,7 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _load_checklib():
     path = os.path.join(_CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -285,7 +285,7 @@ def load_slp9_lists(path=SLP9_PATH):
     # Prefer the marked span if present (post plan-035). The opening marker may
     # carry extra text (e.g. "source") after the name; the span may cross lines.
     marker = re.search(
-        r"<!--\s*tfx-sync:slp9-buzzwords\b[^>]*-->(.*?)<!--\s*/tfx-sync:slp9-buzzwords\s*-->",
+        r"<!--\s*dx-sync:slp9-buzzwords\b[^>]*-->(.*?)<!--\s*/dx-sync:slp9-buzzwords\s*-->",
         section, flags=re.DOTALL,
     )
     if marker:
@@ -338,7 +338,7 @@ def load_slp9_lists(path=SLP9_PATH):
 
 def load_cnt5_verbs(path=CNT5_PATH):
     """
-    Parse the CNT-5 device-verb list from cnt-5.md's <!-- tfx-sync:cnt5-verbs -->
+    Parse the CNT-5 device-verb list from cnt-5.md's <!-- dx-sync:cnt5-verbs -->
     span. Returns (verbs_list, used_fallback, note) — mirrors load_slp9_lists so
     the lint and the catalog can never diverge. Falls back to the embedded copy
     (with a NOTE) if the file is missing, the marker is absent, or the list is empty.
@@ -354,7 +354,7 @@ def load_cnt5_verbs(path=CNT5_PATH):
         )
 
     marker = re.search(
-        r"<!--\s*tfx-sync:cnt5-verbs\b[^>]*-->(.*?)<!--\s*/tfx-sync:cnt5-verbs\s*-->",
+        r"<!--\s*dx-sync:cnt5-verbs\b[^>]*-->(.*?)<!--\s*/dx-sync:cnt5-verbs\s*-->",
         text, flags=re.DOTALL,
     )
     verbs = _split_list_items(marker.group(1)) if marker else []
@@ -370,7 +370,7 @@ def load_cnt5_verbs(path=CNT5_PATH):
 def load_cnt6_lists(path=CNT6_PATH):
     """
     Parse the CNT-6 empty-opener and filler-word lists from cnt-6.md's
-    <!-- tfx-sync:cnt6-openers --> and <!-- tfx-sync:cnt6-filler --> spans.
+    <!-- dx-sync:cnt6-openers --> and <!-- dx-sync:cnt6-filler --> spans.
     Returns (lists_dict, used_fallback, note) with keys "openers" and "filler" —
     mirrors load_cnt5_verbs so the lint and the catalog can never diverge.
     """
@@ -390,7 +390,7 @@ def load_cnt6_lists(path=CNT6_PATH):
 
     def _span(name):
         m = re.search(
-            r"<!--\s*tfx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/tfx-sync:" + name + r"\s*-->",
+            r"<!--\s*dx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/dx-sync:" + name + r"\s*-->",
             text, flags=re.DOTALL,
         )
         return _split_list_items(m.group(1)) if m else []
@@ -429,7 +429,7 @@ def _parse_spelling_map(text):
 def load_cnt13_lists(path=CNT13_PATH):
     """
     Parse the CNT-13 US→British spelling map and common-misspelling map from
-    cnt-13.md's <!-- tfx-sync:cnt13-usuk --> and <!-- tfx-sync:cnt13-typos -->
+    cnt-13.md's <!-- dx-sync:cnt13-usuk --> and <!-- dx-sync:cnt13-typos -->
     spans. Returns (lists_dict, used_fallback, note) with keys "usuk" and "typos"
     — mirrors load_cnt6_lists so the lint and the catalog can never diverge.
     """
@@ -446,7 +446,7 @@ def load_cnt13_lists(path=CNT13_PATH):
 
     def _span(name):
         m = re.search(
-            r"<!--\s*tfx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/tfx-sync:" + name + r"\s*-->",
+            r"<!--\s*dx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/dx-sync:" + name + r"\s*-->",
             text, flags=re.DOTALL,
         )
         return _parse_spelling_map(m.group(1)) if m else {}

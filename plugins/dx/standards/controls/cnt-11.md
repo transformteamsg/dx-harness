@@ -74,10 +74,10 @@ Quote the term used and name the established convention it should match.
 - A concept with no settled external convention, where the product's own plain term is
   reasonable.
 - A term dictated by a ministry or programme that must appear verbatim and carries an
-  inline `tfx-waive CNT-11 reason="..."`.
+  inline `dx-waive CNT-11 reason="..."`.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-11 reason="..."` at the deviation site. A
+`rationale` (L2) — inline `dx-waive CNT-11 reason="..."` at the deviation site. A
 domain term more precise than the generic convention, or a mandated programme term, is
 the canonical waiver case.

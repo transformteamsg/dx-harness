@@ -66,4 +66,4 @@ longer than a comfortable measure.
 **Do not flag:** headings, table cells, data grids, code blocks, or short labels; a
 deliberately full-width layout element that is not running prose. This is L2 — a reasoned
 deviation (e.g. a two-column reading layout, or a narrow aside below the target) takes an
-inline `tfx-waive TYP-6 reason="…"`; "forgot to cap it" is not a reason.
+inline `dx-waive TYP-6 reason="…"`; "forgot to cap it" is not a reason.

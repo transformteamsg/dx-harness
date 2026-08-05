@@ -118,7 +118,7 @@ Give the rewrite.
 **Do not flag:**
 
 - Settled product names, programme names, or quoted ministry text carrying a
-  `tfx-waive CNT-9 reason="..."` — confirm the waiver and move on.
+  `dx-waive CNT-9 reason="..."` — confirm the waiver and move on.
 - Labels and fragments for clauses 1–3 — "Save", "Due date", "Class Planner" are not
   sentences.
 - Technical terms with no plain equivalent — "utilise" flagged only when "use" works;
@@ -131,6 +131,6 @@ Give the rewrite.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-9 reason="..."` at the deviation site. Name
+`rationale` (L2) — inline `dx-waive CNT-9 reason="..."` at the deviation site. Name
 the clause being waived in the reason. Ministry-mandated verbatim text is the
 canonical case.

@@ -76,8 +76,8 @@ negative-parallelism density. See `docs/catalog-changes/slp-9-ai-writing-tells.m
 
 **Deterministic half (lint):** case-insensitive scan of user-facing strings for:
 
-- the buzzword list — <!-- tfx-sync:slp9-buzzwords source --> streamline(d), empower, supercharge, effortless(ly),
-  seamless(ly), world-class, revolutionise, leverage, unlock, elevate <!-- /tfx-sync:slp9-buzzwords --> — plus the
+- the buzzword list — <!-- dx-sync:slp9-buzzwords source --> streamline(d), empower, supercharge, effortless(ly),
+  seamless(ly), world-class, revolutionise, leverage, unlock, elevate <!-- /dx-sync:slp9-buzzwords --> — plus the
   AI-vocabulary list: delve, robust, intricate, foster, vibrant, pivotal,
   testament, "landscape" as an abstract noun;
 - the filler list — "in order to", "it is important to note", "at this point in
@@ -124,7 +124,7 @@ Quote the offending sentence in every finding. Do not paraphrase.
 - Single em dashes doing real work (one nested clause), and structural dashes
   in headings, table cells, and labels ("01 — Utility by Default").
 - Settled product names and quoted ministry/programme text carrying a waiver
-  (`tfx-waive SLP-9 reason="..."`).
+  (`dx-waive SLP-9 reason="..."`).
 - "Unlock" and kin used literally (a locked record, a locked term) — close
   calls are advisories, not blocks.
 

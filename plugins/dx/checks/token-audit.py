@@ -28,11 +28,11 @@ Token-definition blocks are exempt from all raw-value rules.  A block is:
   (a) A contiguous run of CSS custom-property declarations (--*: value;) — the
       scanner detects an open block when it sees "--<name>:" and closes it when
       it finds a non-blank line that is neither a comment nor a --*: declaration.
-  (b) An explicit /* tfx-tokens */ … /* /tfx-tokens */ region.
+  (b) An explicit /* dx-tokens */ … /* /dx-tokens */ region.
 
 L1 waiver handling
 ──────────────────
-TOK and COL controls are all L1.  An inline `tfx-waive TOK-…` or `tfx-waive COL-…`
+TOK and COL controls are all L1.  An inline `dx-waive TOK-…` or `dx-waive COL-…`
 comment does NOT suppress the violation; it downgrades the output line to:
   ERROR <file>:<line> [<CTL-ID>][waiver-claimed] <found> — verify approver in decision record
 and still exits 1.  Decision-record lookup is out of scope; humans close that loop.
@@ -54,7 +54,7 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _load_checklib():
     path = os.path.join(_CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -131,14 +131,14 @@ VAR_RE = re.compile(r"var\s*\(--")
 NUM_VAL_RE = re.compile(r"([\d.]+)\s*(px|rem)\b")
 
 # ── Waiver marker ─────────────────────────────────────────────────────────────
-WAIVER_RE = re.compile(r"tfx-waive\s+(TOK-\d+|COL-\d+)", re.IGNORECASE)
+WAIVER_RE = re.compile(r"dx-waive\s+(TOK-\d+|COL-\d+)", re.IGNORECASE)
 
 # ── Custom property declaration (token definition) ────────────────────────────
 CUSTOM_PROP_RE = re.compile(r"^\s*--[\w-]+\s*:")
 
-# ── tfx-tokens region markers ─────────────────────────────────────────────────
-DX_TOKENS_OPEN_RE = re.compile(r"/\*\s*tfx-tokens\s*\*/")
-DX_TOKENS_CLOSE_RE = re.compile(r"/\*\s*/tfx-tokens\s*\*/")
+# ── dx-tokens region markers ─────────────────────────────────────────────────
+DX_TOKENS_OPEN_RE = re.compile(r"/\*\s*dx-tokens\s*\*/")
+DX_TOKENS_CLOSE_RE = re.compile(r"/\*\s*/dx-tokens\s*\*/")
 
 
 def collect_theme_color_names(css_paths, extra_names=None):
@@ -255,16 +255,16 @@ class StyleContextTracker:
         self.file_ext = file_ext
         self.in_style_tag = file_ext == ".css"
         self.in_template_literal = False
-        self.in_tfx_tokens_region = False
+        self.in_dx_tokens_region = False
         self.in_custom_prop_block = False
 
     def update(self, line):
         """Update state from the given raw line. Returns (in_style, in_token_def)."""
-        # tfx-tokens region markers (can appear anywhere in file)
+        # dx-tokens region markers (can appear anywhere in file)
         if DX_TOKENS_OPEN_RE.search(line):
-            self.in_tfx_tokens_region = True
+            self.in_dx_tokens_region = True
         if DX_TOKENS_CLOSE_RE.search(line):
-            self.in_tfx_tokens_region = False
+            self.in_dx_tokens_region = False
             return (self.in_style_tag or self.in_template_literal, True)
 
         # HTML/Vue/Svelte: <style> tags
@@ -302,12 +302,12 @@ class StyleContextTracker:
                     if not CUSTOM_PROP_RE.match(line):
                         self.in_custom_prop_block = False
 
-        in_token_def = self.in_tfx_tokens_region or self.in_custom_prop_block
+        in_token_def = self.in_dx_tokens_region or self.in_custom_prop_block
         return (in_style, in_token_def)
 
 
 def extract_waived_ctl(line):
-    """Return the control id from a tfx-waive marker, or None."""
+    """Return the control id from a dx-waive marker, or None."""
     m = WAIVER_RE.search(line)
     if m:
         return m.group(1).upper()
@@ -684,7 +684,7 @@ def run_self_test():
     # ── Case 10: waiver-claimed marker appears and still exits 1 ───────────────
     assert_violations(
         "waiver-claimed still errors",
-        "/* tfx-waive TOK-1 reason=\"approved\" */ .foo { color: #ff0000; }",
+        "/* dx-waive TOK-1 reason=\"approved\" */ .foo { color: #ff0000; }",
         ".css",
         ["TOK-1"],
         expect_waiver_claimed=True
@@ -704,10 +704,10 @@ def run_self_test():
         ".css"
     )
 
-    # ── Case 13: tfx-tokens region exempt ──────────────────────────────────────
+    # ── Case 13: dx-tokens region exempt ──────────────────────────────────────
     assert_clean(
-        "tfx-tokens region exemption",
-        "/* tfx-tokens */\n.root { --c: #ff0000; }\n/* /tfx-tokens */\n.foo { color: var(--c); }\n",
+        "dx-tokens region exemption",
+        "/* dx-tokens */\n.root { --c: #ff0000; }\n/* /dx-tokens */\n.foo { color: var(--c); }\n",
         ".css"
     )
 

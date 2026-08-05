@@ -1,16 +1,16 @@
-# Per-product context layer — `DESIGN.md` + `.tfx/design.json`
+# Per-product context layer — `DESIGN.md` + `.dx/design.json`
 
 The control catalog is portfolio-wide and product-agnostic on purpose (see
 `standards/README.md` rule 5: no per-product control overlays). But real products differ
 in ways the catalog deliberately does not encode: which primary they anchor on, how they
 weight tone, their motion conventions, their column grid. Those **parameters** used to be
 scattered — per-product primary in `standards/controls/col-1.md`, tone weighting in the
-content skill's §6, motion nowhere, grid in a separate proposed `.tfx/layout-system.json`.
+content skill's §6, motion nowhere, grid in a separate proposed `.dx/layout-system.json`.
 
 This layer gives each product repo one place for "what makes this product this product":
 
 - **`DESIGN.md`** — human-owned, at the product repo root. Per-product visual parameters.
-- **`.tfx/design.json`** — its machine twin, **generated** from `DESIGN.md` by
+- **`.dx/design.json`** — its machine twin, **generated** from `DESIGN.md` by
   `scripts/generate-design-json.py`, so checks and hooks can read the same parameters the
   agent reads. Never hand-edited.
 
@@ -33,7 +33,7 @@ Omit any section that does not differ from the portfolio default. An absent sect
 
 ## `DESIGN.md` — sections (all optional)
 
-Each `## ` heading below maps to one top-level key in `.tfx/design.json`. Cite the
+Each `## ` heading below maps to one top-level key in `.dx/design.json`. Cite the
 normative source in each section you keep.
 
 | Section (`## `) | json key | Carries | Normative source to cite |
@@ -44,7 +44,7 @@ normative source in each section you keep.
 | `Layout system` | `layout_system` | the declared column grid (see below) | LAY-1 proposal (`docs/catalog-changes/lay-1-grid.md`) |
 | `Components` | `components` | product-specific component notes (e.g. AvatarFallback default) | CMP-1, CMP-7 |
 
-**Layout system** absorbs the `.tfx/layout-system.json` proposed in
+**Layout system** absorbs the `.dx/layout-system.json` proposed in
 `docs/catalog-changes/lay-1-grid.md` (plan 053): its object (`columns`, `gutter`,
 `margins`, `breakpoints`, `maxContentWidth`) becomes the `layout_system` key here.
 That control's gate status is unchanged — it still grades **N/A where no grid is
@@ -53,7 +53,7 @@ declared**; declaring one here only moves the declaration's location.
 A `register:` field (brand-register impact) is **reserved for the future** and is not used
 today — brand impact is carried by the colour parameters plus COL-1. Do not add it now.
 
-## `.tfx/design.json` — the generated twin
+## `.dx/design.json` — the generated twin
 
 Generated only, never hand-edited. Shape:
 
@@ -109,11 +109,11 @@ After editing `DESIGN.md`, regenerate and commit both files:
 python3 scripts/generate-design-json.py <product-repo-root>
 ```
 
-CI can assert freshness with `--check` (exit 2 when `.tfx/design.json` is stale vs the
+CI can assert freshness with `--check` (exit 2 when `.dx/design.json` is stale vs the
 markdown).
 
 The unified detector consumes this: `checks/detect.py` (plan 059) runs the generator in
-`--check` mode whenever a `.tfx/design.json` exists at the target repo root, so a stale
+`--check` mode whenever a `.dx/design.json` exists at the target repo root, so a stale
 twin surfaces as a detector finding (exit 2), never a crash. A repo with no
-`.tfx/design.json` skips the check entirely — a missing context layer is a valid, complete
+`.dx/design.json` skips the check entirely — a missing context layer is a valid, complete
 state, never graded as a failure.

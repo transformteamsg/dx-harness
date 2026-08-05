@@ -2,7 +2,7 @@
 """
 Component manifest validator — checks/component-manifest.py
 
-Validates a product's .tfx/component-manifest.json against the DX SPEC
+Validates a product's .dx/component-manifest.json against the DX SPEC
 (docs/spikes/component-manifest/SPEC.md).
 
 Usage:

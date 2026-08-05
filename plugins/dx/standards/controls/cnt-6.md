@@ -59,14 +59,14 @@ words.
 lists from this file at runtime, so the lint and the catalog never diverge.
 
 Empty openers — flagged only at the start of a sentence:
-<!-- tfx-sync:cnt6-openers source -->
+<!-- dx-sync:cnt6-openers source -->
 there is, there are, it is, this is
-<!-- /tfx-sync:cnt6-openers -->
+<!-- /dx-sync:cnt6-openers -->
 
 Filler words — flagged word-boundaried, any position:
-<!-- tfx-sync:cnt6-filler source -->
+<!-- dx-sync:cnt6-filler source -->
 just, really, very, please
-<!-- /tfx-sync:cnt6-filler -->
+<!-- /dx-sync:cnt6-filler -->
 
 Deliberately NOT in the lint lists:
 
@@ -106,4 +106,4 @@ exception can be judged on the spot.
   skips these; the evaluator does too.
 
 This is L2 — a deliberate deviation carries an inline rationale
-(`tfx-waive CNT-6 reason="..."`), not a rewrite war.
+(`dx-waive CNT-6 reason="..."`), not a rewrite war.

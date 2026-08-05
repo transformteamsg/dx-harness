@@ -88,4 +88,4 @@ proportionality*, not copy grammar — CNT-1 covers copy.
 `documented` (L1) — unusual interaction patterns (e.g. a real-time collaborative
 surface where conventional loading states conflict with the live-update model) may
 be waived with a named approver and a stated alternative. Inline:
-`<!-- tfx-waive CMP-3 approver="..." reason="..." -->`.
+`<!-- dx-waive CMP-3 approver="..." reason="..." -->`.

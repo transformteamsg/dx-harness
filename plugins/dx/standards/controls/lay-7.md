@@ -61,7 +61,7 @@ scorable without a gaze model.
 
 **Do not flag:** a deliberate multi-region comparison view where the task has no single
 priority region; a single-region-by-design page; a reasoned deviation carrying an inline
-`tfx-waive LAY-7 reason="…"` (L2).
+`dx-waive LAY-7 reason="…"` (L2).
 
 **Deconfliction.** CMP-5 is a component rule (one filled button per view); this is the
 whole-page composition outcome. SLP-6 is one mechanism (type-scale contrast) hierarchy can

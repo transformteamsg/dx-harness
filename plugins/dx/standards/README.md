@@ -86,7 +86,7 @@ Two optional per-control fields scope a control to part of the portfolio:
 |---|---|---|---|
 | **L0** | Non-negotiable — trust, safety, accessibility floor | Blocking — a failed check stops the loop; output cannot ship | `none`. Ever. |
 | **L1** | Mandatory — consistency and quality | Must pass in the verify phase; failure sends the agent back to implement | `documented` — named human approver, recorded in the decision record and waiver registry |
-| **L2** | Recommended — strong default, deliberate deviation allowed | Finding, not a block | `rationale` — inline waiver at the deviation site, like an eslint-disable: `<!-- tfx-waive CNT-3 reason="ministry programme name must appear verbatim" -->` |
+| **L2** | Recommended — strong default, deliberate deviation allowed | Finding, not a block | `rationale` — inline waiver at the deviation site, like an eslint-disable: `<!-- dx-waive CNT-3 reason="ministry programme name must appear verbatim" -->` |
 
 A waiver without a specific reason is a violation, not a waiver. L0+L1 are the
 *required* contents of the standard; L2 (plus the DX-DS guidelines) are the

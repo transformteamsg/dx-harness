@@ -92,6 +92,6 @@ Quote the offending string in every finding and give the sentence-case rewrite.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-12 reason="..."` at the deviation site. A
+`rationale` (L2) — inline `dx-waive CNT-12 reason="..."` at the deviation site. A
 ministry-mandated title or programme name that must appear verbatim in Title Case is the
 canonical waiver case.

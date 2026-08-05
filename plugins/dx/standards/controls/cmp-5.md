@@ -85,5 +85,5 @@ surface where every button is the same weight.
   has two balanced outcomes — provided it reads as intentional.
 
 This is L2: a reasoned deviation (the co-equal pair above, a platform pattern) takes an
-inline `tfx-waive CMP-5 reason="…"`. "Both felt important" is not a reason — decide
+inline `dx-waive CMP-5 reason="…"`. "Both felt important" is not a reason — decide
 which one leads.

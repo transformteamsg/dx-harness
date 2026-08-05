@@ -68,7 +68,7 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _load_checklib():
     path = os.path.join(_CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

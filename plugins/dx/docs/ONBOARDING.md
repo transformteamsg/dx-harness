@@ -83,7 +83,7 @@ must be consistent across TW, CaseSync, and Glow.
 **What it means:** The catalog is portfolio-wide and product-agnostic on purpose. A
 `DESIGN.md` at your repo root records the few *visual parameters* that make your product
 itself — its primary colour, tone weighting, motion conventions, and column grid — and its
-generated twin `.tfx/design.json` lets the check scripts and the design loop read them.
+generated twin `.dx/design.json` lets the check scripts and the design loop read them.
 This is the one item that is **optional** and not counted among the six: a repo with no
 `DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
 is never graded as a failure. Add one only if your product's parameters actually differ.
@@ -162,7 +162,7 @@ it needs to know where to point humans for approval and audit.
 
 L1 waivers live in the decision records until a central waiver registry exists. When
 you grant a waiver, record it in the `## Waivers granted` table of the decision record
-with a named approver, a specific reason, and the `tfx-waive` inline marker in the
+with a named approver, a specific reason, and the `dx-waive` inline marker in the
 code. L0 controls are never waivable. A waiver without a named human approver is not a
 valid L1 waiver.
 

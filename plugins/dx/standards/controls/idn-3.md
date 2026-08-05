@@ -32,7 +32,7 @@ colour rule — one control, a per-product table.
 
 Source of truth for this table is this file; the `copy` skill's per-product tone section
 points here rather than restating it (per `docs/SYNC.md`). If the two drift in practice,
-add a `tfx-sync:idn-register` block and a parity sub-check in `validate.py` — deferred for
+add a `dx-sync:idn-register` block and a parity sub-check in `validate.py` — deferred for
 v1, pointer suffices.
 
 ## Rationale
@@ -59,7 +59,7 @@ TW-adjacent surface carrying nuance instead of plain TW voice.
 
 **Do not flag:** a product using the shared voice character (that is correct, not a
 finding); calibrated weight within the shared system; a deliberate, reasoned deviation
-carrying an inline `tfx-waive IDN-3 reason="…"` (L2).
+carrying an inline `dx-waive IDN-3 reason="…"` (L2).
 
 **Deconfliction.** COL-1 is the per-product *colour* register; this is the per-product
 *tone* register — orthogonal (a surface can pass one and fail the other). CNT-2/CNT-3 are

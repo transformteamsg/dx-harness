@@ -68,4 +68,4 @@ ask whether a counter would jitter as it changes.
 **Do not flag:** a single number embedded in a sentence; a number rendered in a
 display face purely as a one-off hero stat where alignment is not in play. This is
 L2 — a deliberate, reasoned deviation (e.g. a brand display numeral) takes an inline
-`tfx-waive TYP-5 reason="…"`; "forgot" is not a reason.
+`dx-waive TYP-5 reason="…"`; "forgot" is not a reason.

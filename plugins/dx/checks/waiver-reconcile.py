@@ -3,7 +3,7 @@
 Waiver reconcile — checks/waiver-reconcile.py
 Reconciles the two places a DX waiver can live so neither drifts from the
 other:
-  1. inline, as `tfx-waive <CTL-ID> reason="..."` comments in source/CSS;
+  1. inline, as `dx-waive <CTL-ID> reason="..."` comments in source/CSS;
   2. in a decision record, as a "## Waivers granted" table row with a named
      approver.
 
@@ -13,11 +13,11 @@ paths it is given.
 
 Findings
 ────────
-  ERROR <file>:<line> [<id>] inline tfx-waive on an L0 control — L0 is never
+  ERROR <file>:<line> [<id>] inline dx-waive on an L0 control — L0 is never
         waivable               (an L0 may never be waived, by any prefix)
   ERROR <file>:<line> [<id>] inline waiver has no recorded waiver row (named
         approver) — add it to a decision record     (orphan; L1/L2 only)
-  ERROR <file>:<line> [<id>] tfx-waive references an unknown control id
+  ERROR <file>:<line> [<id>] dx-waive references an unknown control id
         (the id is not in standards/catalog.yaml)
   NOTE  <record> [<id>] recorded waiver has no inline usage in the scanned
         source — confirm it is still needed          (stale; never an ERROR)
@@ -61,10 +61,10 @@ CATALOG_PATH = os.path.join(REPO_ROOT, "standards", "catalog.yaml")
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
 # Inline waiver syntax (CLAUDE.md "Always-on rules" / checks/README.md):
-#   tfx-waive <CTL-ID> reason="..."
+#   dx-waive <CTL-ID> reason="..."
 # Generalised to ALL control prefixes (token-audit only matches TOK/COL).
 INLINE_WAIVE_RE = re.compile(
-    r'tfx-waive\s+([A-Z0-9]+-\d+)(?:\s+reason="([^"]*)")?'
+    r'dx-waive\s+([A-Z0-9]+-\d+)(?:\s+reason="([^"]*)")?'
 )
 
 
@@ -89,7 +89,7 @@ column_index = _AR.column_index
 # ── Reuse checklib's walker ────────────────────────────────────────────────────
 def _load_checklib():
     path = os.path.join(CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -112,7 +112,7 @@ def _iter_source_files(src_paths):
 
 
 def find_inline_waivers(src_paths):
-    """Return [(file, line, ctl_id, reason)] for every inline `tfx-waive`.
+    """Return [(file, line, ctl_id, reason)] for every inline `dx-waive`.
 
     Inline waivers ARE comments, so comment text is NOT stripped — the marker
     is matched directly wherever it appears.
@@ -196,13 +196,13 @@ def reconcile(inline_waivers, recorded_waivers, tiers, rel=None):
         tier = tiers.get(ctl_id)
         if tier is None:
             errors.append(
-                f"ERROR {loc} [{ctl_id}] tfx-waive references an unknown "
+                f"ERROR {loc} [{ctl_id}] dx-waive references an unknown "
                 f"control id"
             )
             continue
         if tier == "L0":
             errors.append(
-                f"ERROR {loc} [{ctl_id}] inline tfx-waive on an L0 control — "
+                f"ERROR {loc} [{ctl_id}] inline dx-waive on an L0 control — "
                 f"L0 is never waivable"
             )
             continue  # L0 already errored — do not also report it as an orphan
@@ -293,26 +293,26 @@ def run_self_test():
                 f"notes={notes}"
             )
 
-    # Case 1: inline tfx-waive A11Y-1 (L0) → L0 error.
+    # Case 1: inline dx-waive A11Y-1 (L0) → L0 error.
     run_case(
         "L0 inline waiver",
-        '<div className="x">{/* tfx-waive A11Y-1 reason="x" */}</div>',
+        '<div className="x">{/* dx-waive A11Y-1 reason="x" */}</div>',
         [],
-        expect_errors=["[A11Y-1] inline tfx-waive on an L0 control"],
+        expect_errors=["[A11Y-1] inline dx-waive on an L0 control"],
         expect_notes=[],
     )
 
-    # Case 2: inline tfx-waive TOK-1 (L1) WITH a matching record row → clean.
+    # Case 2: inline dx-waive TOK-1 (L1) WITH a matching record row → clean.
     assert_clean(
         "TOK-1 inline with matching record row",
-        '<div className="x">{/* tfx-waive TOK-1 reason="x" */}</div>',
+        '<div className="x">{/* dx-waive TOK-1 reason="x" */}</div>',
         ["| TOK-1 | L1 | reason | Reza Ilmi (user) | this record |"],
     )
 
-    # Case 3: inline tfx-waive TOK-1 with NO record row → orphan ERROR.
+    # Case 3: inline dx-waive TOK-1 with NO record row → orphan ERROR.
     run_case(
         "TOK-1 inline orphan (no record row)",
-        '<div className="x">{/* tfx-waive TOK-1 reason="x" */}</div>',
+        '<div className="x">{/* dx-waive TOK-1 reason="x" */}</div>',
         [],
         expect_errors=["[TOK-1] inline waiver has no recorded waiver row"],
         expect_notes=[],
@@ -350,10 +350,10 @@ def run_self_test():
             f"got exit {exit_code}"
         )
 
-    # Case 5: inline tfx-waive ZZZ-9 (unknown id) → unknown-id ERROR; exit 1.
+    # Case 5: inline dx-waive ZZZ-9 (unknown id) → unknown-id ERROR; exit 1.
     case_count += 1
     _src = write_temp(
-        '<div>{/* tfx-waive ZZZ-9 reason="x" */}</div>', ".tsx"
+        '<div>{/* dx-waive ZZZ-9 reason="x" */}</div>', ".tsx"
     )
     _rec = write_temp(
         record_template.format(rows="| | | | | placeholder |"), ".md"
@@ -367,7 +367,7 @@ def run_self_test():
         os.unlink(_src)
         os.unlink(_rec)
     if not any(
-        "[ZZZ-9] tfx-waive references an unknown control id" in e
+        "[ZZZ-9] dx-waive references an unknown control id" in e
         for e in errors
     ):
         failures.append(
@@ -384,7 +384,7 @@ def run_self_test():
     case_count += 1
     _src = write_temp("<div>nothing</div>", ".tsx")
     _rec = write_temp(
-        record_template.format(rows="| | | | | inline `tfx-waive` / this record |"),
+        record_template.format(rows="| | | | | inline `dx-waive` / this record |"),
         ".md",
     )
     try:
@@ -405,10 +405,10 @@ def run_self_test():
             f"errors={errors} notes={notes}"
         )
 
-    # Case 7: reason="" omitted entirely still matches (bare tfx-waive TOK-1).
+    # Case 7: reason="" omitted entirely still matches (bare dx-waive TOK-1).
     run_case(
         "bare inline waiver without reason",
-        "/* tfx-waive TOK-1 */",
+        "/* dx-waive TOK-1 */",
         [],
         expect_errors=["[TOK-1] inline waiver has no recorded waiver row"],
         expect_notes=[],

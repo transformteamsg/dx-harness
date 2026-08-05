@@ -72,7 +72,7 @@ reading task, not a grep.
 **Do not flag:** decorative motion with no informational content (a fade, a
 lift) — there is nothing to lose; a static surface with no animation at all —
 this control binds only surfaces that animate; a reasoned deviation carrying an
-inline `tfx-waive MOT-3 reason="…"` (L2).
+inline `dx-waive MOT-3 reason="…"` (L2).
 
 **Deconfliction.** A11Y-5 asks whether a reduced-motion variant exists; MOT-3
 asks whether that variant loses information. MOT-1 bounds how long motion runs

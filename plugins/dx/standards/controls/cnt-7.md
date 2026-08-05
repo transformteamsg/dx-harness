@@ -85,4 +85,4 @@ Quote the offending first line in every finding, and give the purpose-first rewr
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-7 reason="..."` at the deviation site.
+`rationale` (L2) — inline `dx-waive CNT-7 reason="..."` at the deviation site.

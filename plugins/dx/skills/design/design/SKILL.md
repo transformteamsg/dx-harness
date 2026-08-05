@@ -15,11 +15,11 @@ The harness's one promise: **intent without loss**. What the builder means is wr
 down as a contract in Phase 1; every later phase is graded against that contract;
 drift from it is a defect.
 
-<!-- tfx-sync:L0 source=catalog -->
+<!-- dx-sync:L0 source=catalog -->
 **Non-negotiables (L0), binding even outside the loop:** AA contrast (A11Y-1); keyboard
 reach with visible focus (A11Y-2); a visible label on every field (A11Y-3); destructive
 actions show consequences and offer undo or confirm (CMP-2).
-<!-- /tfx-sync:L0 -->
+<!-- /dx-sync:L0 -->
 These never bend — if one
 seems impossible, that is a blocking question for the user, not a judgment call. (The
 catalog carries the rest; these four are restated here because this SKILL.md travels in
@@ -54,15 +54,15 @@ reference point like SGDS and GOV.UK, never a checkable standard: principles set
 trade-offs; they are not used to "check" work. The phase notes below name the ones
 that recur in this portfolio.
 
-<!-- tfx-sync:lay-controls -->
+<!-- dx-sync:lay-controls -->
 **Layout controls.** Layout has seven controls: LAY-1 (the product's declared
-column grid and gutter scale — N/A where no grid is declared in `.tfx/design.json`
+column grid and gutter scale — N/A where no grid is declared in `.dx/design.json`
 `layout_system`; L2), LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3
 (page-template fit, L2), LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2),
 LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
 LAY-7 (one primary focal region; visual reading order matches the task's
 priority order — L2).
-<!-- /tfx-sync:lay-controls -->
+<!-- /dx-sync:lay-controls -->
 
 ## New page vs. modification
 
@@ -212,7 +212,7 @@ layout structure, which existing components it composes, how the flow splits acr
 steps, a one-line **visual thesis** (the mood and energy it carries — stated as an
 extension of the product's existing system, never an invented new aesthetic), and one
 sentence on the trade-off. Use the product's component manifest
-(`.tfx/component-manifest.json`, filtered to `status: "stable"` entries) —
+(`.dx/component-manifest.json`, filtered to `status: "stable"` entries) —
 options may only compose components that exist in the manifest (CMP-1 applies from
 here on). If the product has no manifest yet, fall back to the v0-limit procedure
 in `standards/controls/cmp-1.md` and note "asserted, no manifest".
@@ -347,7 +347,7 @@ Build exactly the approved plan. Constraints, non-negotiable:
   per-section semantic colour-coded icons that are decorative `aria-hidden` wayfinding
   are **not** SLP-1 "rainbow slop" — preserve them; neutralising them is a restyle to
   flag, not a default.)
-- Compose only manifest components (`status: "stable"` from `.tfx/component-manifest.json`
+- Compose only manifest components (`status: "stable"` from `.dx/component-manifest.json`
   if the product has one; CMP-1); semantic shadcn tokens only — no raw
   colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
   Inter only, on-scale sizes (TYP-1..3).

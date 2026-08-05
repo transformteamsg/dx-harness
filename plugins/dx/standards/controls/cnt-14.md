@@ -120,4 +120,4 @@ is judged against a concrete alternative.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-14 reason="..."` at the deviation site.
+`rationale` (L2) — inline `dx-waive CNT-14 reason="..."` at the deviation site.

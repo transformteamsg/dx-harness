@@ -48,7 +48,7 @@ What this script does NOT verify
 Waiver suppression
 ──────────────────
 A11Y-2 and A11Y-3 are L0 — never waivable. This script does NOT parse
-tfx-waive markers for these controls; every violation is emitted as a hard ERROR.
+dx-waive markers for these controls; every violation is emitted as a hard ERROR.
 A11Y-8 (KBD sub-rule) is L1; waiver parsing is also omitted here because the
 static check is a subset — the full evaluation still goes through the manual
 pass. Implementing waiver parsing for a partial check risks creating a false
@@ -72,7 +72,7 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _load_checklib():
     path = os.path.join(_CHECKS_DIR, "checklib.py")
-    spec = importlib.util.spec_from_file_location("_tfx_checklib", path)
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

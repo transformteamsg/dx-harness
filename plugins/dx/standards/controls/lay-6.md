@@ -72,4 +72,4 @@ optical centres visibly off.
 LAY-6 covers edge/baseline alignment across the layout — a surface can pass TOK-3 (all
 radii on scale) yet fail LAY-6 (edges wobble). LAY-1 (a declared column grid) is
 deferred; LAY-6 stands on its own until it lands. This is L2: a reasoned deviation
-takes an inline `tfx-waive LAY-6 reason="…"`.
+takes an inline `dx-waive LAY-6 reason="…"`.

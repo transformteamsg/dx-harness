@@ -71,7 +71,7 @@ CNT-6), so a bare one-word identifier in code is not flagged — a single-word l
 to the evaluator.
 
 US → British spelling map — flagged word-boundaried, any position:
-<!-- tfx-sync:cnt13-usuk source -->
+<!-- dx-sync:cnt13-usuk source -->
 color -> colour, colors -> colours, colored -> coloured, coloring -> colouring,
 behavior -> behaviour, behaviors -> behaviours, favorite -> favourite,
 favorites -> favourites, favor -> favour, honor -> honour, labor -> labour,
@@ -87,10 +87,10 @@ defense -> defence, offense -> offence,
 gray -> grey, canceled -> cancelled, canceling -> cancelling,
 traveler -> traveller, modeling -> modelling, labeled -> labelled,
 enroll -> enrol, fulfill -> fulfil, skillful -> skilful,
-<!-- /tfx-sync:cnt13-usuk -->
+<!-- /dx-sync:cnt13-usuk -->
 
 Common misspellings — flagged word-boundaried, any position:
-<!-- tfx-sync:cnt13-typos source -->
+<!-- dx-sync:cnt13-typos source -->
 recieve -> receive, recieved -> received, seperate -> separate,
 seperately -> separately, occured -> occurred, occurence -> occurrence,
 definately -> definitely, accomodate -> accommodate, wich -> which,
@@ -98,7 +98,7 @@ teh -> the, adress -> address, calender -> calendar, cancelation -> cancellation
 existance -> existence, neccessary -> necessary, occassion -> occasion,
 publically -> publicly, recomend -> recommend, refered -> referred,
 succesful -> successful, tommorow -> tomorrow, untill -> until,
-<!-- /tfx-sync:cnt13-typos -->
+<!-- /dx-sync:cnt13-typos -->
 
 Judgment half — the evaluator proofreads for what no list catches: contextual typos and
 homophones ("their/there", "form/from", "its/it's"), doubled words, wrong-word slips that
@@ -120,7 +120,7 @@ Quote the offending word in every finding and give the correct spelling.
 
 - A word inside quoted or waived text, a code span, or a table cell — the lint skips these;
   the evaluator does too.
-- A branded, product, or ministry term with a fixed spelling (a `tfx-waive CNT-13`
+- A branded, product, or ministry term with a fixed spelling (a `dx-waive CNT-13`
   reason covers a legitimate exception).
 - Grammar, word choice, sentence structure, or capitalisation — those are CNT-3, CNT-8,
   CNT-9, and CNT-12, not this control.
@@ -129,6 +129,6 @@ Quote the offending word in every finding and give the correct spelling.
 
 ## Waiver
 
-`rationale` (L2) — inline `tfx-waive CNT-13 reason="..."` at the deviation site. A branded
+`rationale` (L2) — inline `dx-waive CNT-13 reason="..."` at the deviation site. A branded
 or ministry term whose fixed spelling differs from the house dialect is the canonical
 waiver case.

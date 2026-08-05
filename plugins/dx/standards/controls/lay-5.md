@@ -67,4 +67,4 @@ too cramped to scan without error. Name the surface and the task it serves.
 that density *fit the task* — they point in different directions and both can apply.
 SLP-5 targets the identical-card-grid template; LAY-5 targets the density mismatch when
 a template is applied to the wrong task. This is L2: a reasoned deviation takes an
-inline `tfx-waive LAY-5 reason="…"`.
+inline `dx-waive LAY-5 reason="…"`.

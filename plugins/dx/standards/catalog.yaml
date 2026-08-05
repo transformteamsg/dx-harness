@@ -13,7 +13,7 @@
 meta:
   version: "0.1"
   updated: "2026-07-12"
-  waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
+  waiver_syntax: 'dx-waive <ID> reason="<specific reason>"'
   categories:
     A11Y: Accessibility
     TOK: Tokens & theming
@@ -1174,7 +1174,7 @@ controls:
 
   # ── Layout (LAY) ──────────────────────────────────────────────────────
   # LAY-1: grid control activated via the ratchet 2026-07-06 (plan 053) — closes the
-  # spike's deferred grid slot; declaration lives in .tfx/design.json layout_system
+  # spike's deferred grid slot; declaration lives in .dx/design.json layout_system
   # (plan 058). N/A where no grid is declared. Design-lead approved: Reza Ilmi, 2026-07-06.
   - id: LAY-1
     source: DX-DS
@@ -1183,7 +1183,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Where a product declares a grid (.tfx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
+    verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
     waiver: rationale
     fails_when:
       - a declared grid exists and the layout uses an ad-hoc column count not drawn from it

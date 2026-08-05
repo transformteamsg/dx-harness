@@ -92,5 +92,5 @@ should stand.
 
 `documented` (L1) — a retained inconsistency needs a named human approver and the
 reason recorded in the decision record and waiver registry (e.g. a ministry-mandated
-term that must appear verbatim on one surface). An inline `tfx-waive CNT-10
+term that must appear verbatim on one surface). An inline `dx-waive CNT-10
 reason="..."` alone is not sufficient at L1.
