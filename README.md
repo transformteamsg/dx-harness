@@ -1,14 +1,15 @@
 # dx-harness
 
 AI harness for agentic-driven product development — a single Claude Code plugin
-bundling engineering-workflow skills and design skills under one `/dx:` namespace.
+bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
-- **19 skills** in two groups: 8 engineering (`code-review`, `create-issue`,
-  `groom-issue`, `split-issue`, `implement-issue`, `lint-setup`, `git-hooks-setup`,
-  `update-npm-dependencies`) and 11 design (`start`, `setup`, `design`, `critique`,
-  `standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`).
-- The design skills ship with their standards catalog (`plugins/dx/standards/`),
-  deterministic checks (`plugins/dx/checks/`), and an `evaluator` agent.
+- **19 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
+  `dx-groom-issue`, `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`,
+  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 11 design (`dx-start`,
+  `dx-setup`, `dx-design`, `dx-critique`, `dx-standards`, `dx-copy`, `dx-polish`,
+  `dx-motion`, `dx-flow`, `dx-layout`, `dx-feedback`).
+- The design skills ship with their standards catalog (`plugins/dx-harness/standards/`),
+  deterministic checks (`plugins/dx-harness/checks/`), and an `evaluator` agent.
 
 **DX Harness: one prefix, every discipline.** A harness for digital excellence — born in
 DXD Xperience Studio, built for everyone.
@@ -22,20 +23,24 @@ Studio, which keeps the origin story without hard-coding the brand into an
 open-source plugin.
 
 The `dx` prefix is the part that matters most: type `/dx` and every skill
-auto-surfaces. Plugin names can evolve; the prefix shouldn't.
+auto-surfaces. Plugin names can evolve; the prefix shouldn't. That is why the prefix
+lives in the skill names themselves (`dx-code-review`) and not only in the plugin
+namespace — a skill copied out of the plugin into a bare `.claude/skills/` folder
+still announces where it came from.
 
 ## Install
 
 ### Claude Code (plugin marketplace) — primary
 
     /plugin marketplace add transformteamsg/dx-harness
-    /plugin install dx@dx-harness
+    /plugin install dx-harness@dx-harness
 
-Skills appear as `/dx:<name>` (e.g. `/dx:code-review`, `/dx:design`). Update with
-`/plugin marketplace update dx-harness` then `/reload-plugins`.
+Skills appear as `/dx-harness:dx-<name>` (e.g. `/dx-harness:dx-code-review`,
+`/dx-harness:dx-design`). Update with `/plugin marketplace update dx-harness` then
+`/reload-plugins`.
 
-The design skills need Python 3 + PyYAML for the `checks/` scripts. Run `/dx:setup`
-(or `/dx:start`) for the per-user tool checklist.
+The design skills need Python 3 + PyYAML for the `checks/` scripts. Run `/dx-harness:dx-setup`
+(or `/dx-harness:dx-start`) for the per-user tool checklist.
 
 ### Claude Desktop / web app (plugin marketplace)
 
@@ -46,14 +51,14 @@ clicks. Available on paid plans in the Claude web app, Claude Desktop, and Cowor
 2. Under **Personal plugins**, click **"+"** and choose **Add marketplace →
    Add from a repository**.
 3. Enter the repository `transformteamsg/dx-harness` and confirm.
-4. Find the **dx** plugin in the marketplace and click **Install**.
+4. Find the **dx-harness** plugin in the marketplace and click **Install**.
 5. Use any skill by typing **/** (or clicking the **"+"** button) in a chat — e.g.
-   `/dx:code-review`, `/dx:design`.
+   `/dx-harness:dx-code-review`, `/dx-harness:dx-design`.
 
 ### Other harnesses (Pi, OSS agents)
 
 The canonical, tool-neutral sources are the `SKILL.md` files under
-`plugins/dx/skills/`. Point your harness at those directories directly; the
+`plugins/dx-harness/skills/`. Point your harness at those directories directly; the
 `.claude-plugin/*.json` manifests are a Claude-specific adapter and can be ignored.
 
 ## Migrating from `tfx`
@@ -63,14 +68,14 @@ old plugin, re-add the marketplace under its new name:
 
     /plugin marketplace remove atelier
     /plugin marketplace add transformteamsg/dx-harness
-    /plugin install dx@dx-harness
+    /plugin install dx-harness@dx-harness
 
 Then rename these in **your product repo** — the checks no longer recognise the old
 spellings:
 
 | Old | New | Where it lives |
 |---|---|---|
-| `/tfx:<skill>` | `/dx:<skill>` | how you invoke a skill |
+| `/tfx:<skill>` | `/dx-harness:dx-<skill>` | how you invoke a skill |
 | `.tfx/` | `.dx/` | `config.json`, `design.json`, `component-manifest.json` |
 | `tfx-waive CTL-1` | `dx-waive CTL-1` | inline waiver comments in source |
 | `<!-- tfx-sync:… -->` | `<!-- dx-sync:… -->` | fragment-parity markers in docs |
