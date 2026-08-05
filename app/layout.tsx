@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 THESIS: the harness demonstrated in its own material — a print-flat spec sheet for a design loop, refusing the SaaS hero-gradient-and-card-grid arrangement.
 OWN-WORLD: near-black canvas ruled with hairline grid; oversized white grotesk display; flat vivid tape strips (pink/yellow/green/blue, plus orange — the loop's five-phase truth forces a fifth tape colour) carrying mono sentence-case phase labels (caps traded for TYP-4 compliance); no gradients, no glows, no cards.
 STORY: a designer arrives skeptical, reads "design skills your agent runs", sees the loop phases as labeled tape, copies two install commands, leaves able to say what the loop does.
-FIRST VIEWPORT: landing nav (wordmark left; Docs / Quick start / GitHub right); giant two-line headline crossed by phase-label tape strips; one-line lede; terminal block with the two commands and the single primary Copy action.
+FIRST VIEWPORT: landing nav (wordmark left; Quick start / Docs / GitHub right); giant two-line headline crossed by phase-label tape strips; one-line lede; terminal block with the two commands and the single primary Copy action.
 FORM: pinned by brief — Hex×Grafana identity system (user-supplied reference); no seed roll, pinned direction beats it.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
 `,

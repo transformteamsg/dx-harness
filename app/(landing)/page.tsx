@@ -83,6 +83,7 @@ export default function Landing() {
       {/* ── Hero — the single focal region ── */}
       <section className="relative overflow-hidden border-b border-canvas-line">
         <div className="mx-auto w-full max-w-[1200px] px-6 pt-[72px] pb-[72px] sm:pt-[144px] sm:pb-[144px]">
+          {/* dx-waive TYP-1 reason="landing display weights 700/800 (family unchanged: Plus Jakarta Sans) — the design owner pinned the Hex×Grafana direction, whose oversized grotesk display needs the heavier cut; approved by reza.ilmi (design owner), 2026-08-05" */}
           <div className="relative">
             <h1 className="font-display text-6xl leading-[0.95] font-extrabold tracking-[-0.03em] text-canvas-ink sm:text-8xl lg:text-9xl">
               Design
@@ -92,7 +93,7 @@ export default function Landing() {
             <TapeStrip tape="pink" className="top-[72px] left-[calc(50%-58vw)] w-[76vw] max-sm:top-[26%]">
               Intent → Diverge → Plan gate → Implement → Verify
             </TapeStrip>
-            <TapeStrip tape="yellow" className="top-[144px] tape-strip-2 left-[calc(50%-24vw)] w-[74vw] max-sm:top-[70%] max-sm:w-[86vw]">
+            <TapeStrip tape="yellow" className="top-[144px] tape-strip-2 left-[calc(50%-24vw)] w-[74vw] max-sm:top-[104%] max-sm:w-[86vw]">
               Your agent + the catalog = ships on standard
             </TapeStrip>
             <TapeStrip tape="green" className="top-[216px] tape-strip-3 left-[calc(50%-52vw)] w-[64vw] max-sm:hidden">
@@ -115,12 +116,17 @@ export default function Landing() {
                 </span>
                 <CopyCommands commands={INSTALL_COMMANDS} />
               </div>
-              <pre className="overflow-x-auto px-4 py-4 font-mono text-sm leading-[1.6] text-canvas-ink">
+              <pre
+                tabIndex={0}
+                role="region"
+                aria-label="Install commands"
+                className="overflow-x-auto px-4 py-4 font-mono text-sm leading-[1.6] text-canvas-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)"
+              >
                 <code>{INSTALL_COMMANDS}</code>
               </pre>
             </div>
             <p className="mt-3 text-sm text-canvas-muted">
-              Then type <span className="font-mono text-canvas-ink">/dx</span> —
+              Then type <span className="font-mono text-canvas-ink">/dx</span> and
               every skill surfaces.{" "}
               <a
                 href="#no-cli"
@@ -140,8 +146,9 @@ export default function Landing() {
             One loop, five phases.
           </h2>
           <p className="mt-4 max-w-[58ch] text-canvas-muted">
-            The harness makes one promise — intent without loss. What you mean is
-            written down first, and every phase after is graded against it.
+            The harness makes one promise: intent without loss. What you mean is
+            written down first, and every phase after — 70 checkable controls
+            deep — is graded against it.
           </p>
           <ol className="mt-10">
             {PHASES.map((phase) => (
@@ -171,7 +178,7 @@ export default function Landing() {
           </h2>
           <p className="mt-4 max-w-[58ch] text-canvas-muted">
             The catalog and the evaluator travel inside the plugin, so any repo
-            you open holds the same bar. Skill names are exact — type them after{" "}
+            you open holds the same bar. Skill names are exact; type them after{" "}
             <span className="font-mono text-canvas-ink">/dx-harness:</span>.
           </p>
           <div className="mt-10">
