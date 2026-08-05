@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SlopCompare } from "@/components/compare";
 import { CopyCommands } from "@/components/landing/copy-commands";
 import {
   DESIGN_SKILLS,
@@ -195,6 +196,16 @@ export default function Landing() {
           <div className="mt-6">
             <SkillList skills={ENGINEERING_SKILLS} quiet label="Engineering skills" />
           </div>
+        </div>
+      </section>
+
+      {/* ── The bar, shown ── */}
+      <section className="border-b border-canvas-line">
+        <div className="mx-auto w-full max-w-[1200px] px-6 py-[72px] sm:py-[144px]">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-canvas-ink sm:text-5xl">
+            The bar, shown.
+          </h2>
+          <SlopCompare variant="canvas" />
         </div>
       </section>
 

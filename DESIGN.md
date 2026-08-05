@@ -124,7 +124,8 @@ no glow anywhere.
 
 Landing chrome is square-cornered (radius 0) — buttons, chips, terminal
 block. Docs keep the incumbent `--radius: 0.5rem` family. The wordmark glyph
-is a 2×2 grid of 8px tape-coloured squares (pure geometry, not an icon).
+is five 6px squares in a quincunx on a 3×3 grid — one square per loop phase
+(pure geometry, not an icon).
 
 ## Components
 

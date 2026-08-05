@@ -19,11 +19,18 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             href="/"
             className="flex min-h-11 items-center gap-2.5 font-display text-lg font-semibold tracking-tight whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)"
           >
-            <span aria-hidden className="grid grid-cols-2 gap-px">
-              <span className="size-2 bg-tape-pink" />
-              <span className="size-2 bg-tape-yellow" />
-              <span className="size-2 bg-tape-blue" />
-              <span className="size-2 bg-tape-green" />
+            {/* The mark: five squares in a quincunx — one per loop phase
+                (intent, diverge, plan gate, implement, verify). */}
+            <span aria-hidden className="grid grid-cols-3 gap-[2px]">
+              <span className="size-1.5 bg-tape-pink" />
+              <span className="size-1.5" />
+              <span className="size-1.5 bg-tape-yellow" />
+              <span className="size-1.5" />
+              <span className="size-1.5 bg-tape-blue" />
+              <span className="size-1.5" />
+              <span className="size-1.5 bg-tape-green" />
+              <span className="size-1.5" />
+              <span className="size-1.5 bg-tape-orange" />
             </span>
             dx-harness
           </Link>

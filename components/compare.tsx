@@ -167,7 +167,13 @@ function AfterPanel() {
   );
 }
 
-export function SlopCompare() {
+/* variant="canvas" adapts the figure chrome (frame border, hint/caption ink,
+   link colour) to the landing's dark world so the caption text keeps AA on
+   --canvas (A11Y-1); the specimen panels themselves render unchanged — a lit
+   slide on the dark ground. Recorded CMP-7 variant, not an override. */
+export function SlopCompare({ variant = "docs" }: { variant?: "docs" | "canvas" } = {}) {
+  const onCanvas = variant === "canvas";
+  const captionInk = onCanvas ? "text-canvas-muted" : "text-muted-foreground";
   const id = useId();
   const reduced = useReducedMotionSafe();
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -225,7 +231,7 @@ export function SlopCompare() {
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
            the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        className="relative aspect-[16/10] w-full max-w-[760px] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
+        className={`relative aspect-[16/10] w-full max-w-[760px] rounded-lg border bg-surface [clip-path:inset(0_round_var(--radius))] ${onCanvas ? "border-canvas-line" : "border-border"}`}
         style={{ "--exposure": "50%" } as CSSProperties}
       >
         <BeforePanel />
@@ -258,15 +264,15 @@ export function SlopCompare() {
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
+      <p className={`mt-2 text-xs ${captionInk}`}>
         Drag the handle — or focus it and use arrow keys.
       </p>
-      <figcaption className="mt-2 max-w-[62ch] text-xs leading-normal text-muted-foreground">
+      <figcaption className={`mt-2 max-w-[62ch] text-xs leading-normal ${captionInk}`}>
         The same screen twice: what defaults produce, and what ships under the
         standard. Every chip is a control ID from the{" "}
         <Link
           href="/standards/catalog"
-          className="text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          className={onCanvas ? "text-tape-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)" : "text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"}
         >
           catalog
         </Link>
