@@ -31,3 +31,5 @@ catalog (`standards/`), with deterministic `checks/` and a generator/evaluator s
 | `/dx-harness:dx-standards` | How to read, filter, and apply the control catalog. |
 | `/dx-harness:dx-copy` · `dx-polish` · `dx-motion` · `dx-flow` · `dx-layout` | Focused single-dimension passes. |
 | `/dx-harness:dx-feedback` | Captures harness feedback mid-turn and files it as an issue. |
+| `/dx-harness:dx-git-buddy` | Gitty (🦔) — a friendly git companion for designers who design in code. |
+| `/dx-harness:dx-research-brief` | Builds a user research plan/brief that aligns a study before recruitment. |
