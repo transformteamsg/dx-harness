@@ -72,7 +72,7 @@ def _load_audit_record():
     by path (its filename has a hyphen, and its main() is guarded by
     `if __name__ == '__main__'`, so importing it does not run anything)."""
     path = os.path.join(CHECKS_DIR, "audit-record.py")
-    spec = importlib.util.spec_from_file_location("_tfx_audit_record", path)
+    spec = importlib.util.spec_from_file_location("_dx_audit_record", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -436,7 +436,7 @@ def run_self_test():
 
     # ── Case 7: a missing records dir → FileNotFoundError (usage error → exit 1).
     case_count += 1
-    missing = os.path.join(tempfile.gettempdir(), "tfx-reaudit-no-such-dir-xyz")
+    missing = os.path.join(tempfile.gettempdir(), "dx-reaudit-no-such-dir-xyz")
     try:
         record_controls(missing)
         failures.append(

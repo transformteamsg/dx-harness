@@ -1,13 +1,13 @@
 {
-  "name": "atelier",
-  "description": "Atelier — consolidated engineering and design skills for agentic product development.",
+  "name": "dx-harness",
+  "description": "DX Harness — consolidated engineering and design skills for agentic product development.",
   "owner": {
     "name": "TransformX, GovTech Singapore"
   },
   "plugins": [
     {
-      "name": "tfx",
-      "source": "./plugins/tfx",
+      "name": "dx",
+      "source": "./plugins/dx",
       "description": "Engineering + design skills: GitHub issue workflow, code review, lint/hooks setup, dependency hygiene, and the DX design loop with standards catalog + evaluator agent."
     }
   ]

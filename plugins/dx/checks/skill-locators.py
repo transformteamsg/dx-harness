@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Resolve every ../../../<path> locator mentioned in the plugin's skill docs.
 
-Walks every SKILL.md and other *.md file under plugins/tfx/skills/, finds each
+Walks every SKILL.md and other *.md file under plugins/dx/skills/, finds each
 `../../../<something>` relative locator, resolves it against the containing
 file's directory, and checks that the resolved path exists on disk.
 
-Usage (from the plugin root, i.e. plugins/tfx/):
+Usage (from the plugin root, i.e. plugins/dx/):
     python3 checks/skill-locators.py
 
 Prints `OK: <n> locators resolved` and exits 0 if every locator resolves.

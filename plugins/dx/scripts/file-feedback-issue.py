@@ -35,7 +35,7 @@ from collections import namedtuple
 MARKER = "[harness-feedback]"
 SEVERITIES = ("L0-risk", "high", "med", "low")
 CATEGORIES = ("a11y", "tooling", "standards", "harness-ux", "onboarding")
-DEFAULT_REPO = "transformteamsg/atelier"
+DEFAULT_REPO = "transformteamsg/dx-harness"
 
 GhResult = namedtuple("GhResult", ["returncode", "stdout", "stderr"])
 Preflight = namedtuple("Preflight", ["available", "reason"])

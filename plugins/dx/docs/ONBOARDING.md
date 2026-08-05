@@ -16,24 +16,24 @@ same loop automatically.
 Follow the two commands in the [README Install section](../README.md#install):
 
 ```
-/plugin marketplace add transformteamsg/atelier
-/plugin install tfx@atelier
+/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx@dx-harness
 ```
 
 This installs the 11 skills (`start`, `setup`, `design`, `critique`,
 `standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `evaluator`
 subagent (which carries its own review procedure), and the control catalog
 (`standards/`) — the catalog ships with the
-plugin, not with your repo. `/tfx:start` is the front door: it orients you and routes to
+plugin, not with your repo. `/dx:start` is the front door: it orients you and routes to
 the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
-session in this repository directly: the skills load from `plugins/tfx/skills/`
+session in this repository directly: the skills load from `plugins/dx/skills/`
 automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
-filing tools are per-person. Each teammate runs `/tfx:start` (or invokes the `setup`
-skill directly), which follows the checklist (`plugins/tfx/skills/design/setup/setup.md` in this
+filing tools are per-person. Each teammate runs `/dx:start` (or invokes the `setup`
+skill directly), which follows the checklist (`plugins/dx/skills/design/setup/setup.md` in this
 repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
 
@@ -117,7 +117,7 @@ has no loop structure, no catalog filters, and no evaluator procedure to follow.
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
 The `design` loop must trigger and ask intent questions — purpose, the teacher
 and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
-`tfx` is enabled. If the plugin appears but the skill does not trigger,
+`dx` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
 
 ---

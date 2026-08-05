@@ -33,7 +33,7 @@ to this SKILL.md, three levels up — it ships with the plugin).
 5. **File via the helper, never raw `gh issue create`**:
    `python3 <this-skill-dir>/../../../scripts/file-feedback-issue.py --severity … --category … --title … --body …`
    It dedups, validates labels, targets the harness repo
-   (`transformteamsg/atelier`) regardless of the session's cwd, and fails
+   (`transformteamsg/dx-harness`) regardless of the session's cwd, and fails
    honestly. If it exits non-zero, relay its would-be-issue output and the reason
    verbatim — never claim an issue was filed when it wasn't, and never retry into the
    product repo.

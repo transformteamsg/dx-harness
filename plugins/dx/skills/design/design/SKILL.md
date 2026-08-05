@@ -29,7 +29,7 @@ the plugin while the harness's CLAUDE.md does not.)
 catalog ships with this harness, not with the product repo — resolve it relative to
 this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
 (the same path works in the harness dev repo and when installed as the
-`tfx` plugin; do not expect `standards/` in the project cwd). Filter
+`dx` plugin; do not expect `standards/` in the project cwd). Filter
 controls by `phase` and scope (`products`/`audiences` — absent = global) as you
 go; read a control's `detail` file (same `standards/`
 directory) before applying it. Also read the product's `DESIGN.md` (repo root)

@@ -91,7 +91,7 @@ If any signal is present, stop. Do not create a branch or write code. Report:
 
 1. The proposed split: capability A (these scenarios, these files) and capability B (these scenarios, these files)
 2. Which signal triggered the recommendation
-3. The instruction: run `/tfx:split-issue $ARGUMENTS` to decompose the issue, groom the child issues, then return to `/tfx:implement-issue` on each
+3. The instruction: run `/dx:split-issue $ARGUMENTS` to decompose the issue, groom the child issues, then return to `/dx:implement-issue` on each
 
 If no signal is present, proceed to Step 6.
 

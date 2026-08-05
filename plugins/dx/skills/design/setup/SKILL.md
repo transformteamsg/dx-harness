@@ -12,7 +12,7 @@ ask before you install.
 **New to the harness?** Two lines: the harness makes an agent follow the DX Design
 Standard whenever it builds Teacher & School UI — one promise, *intent without loss*,
 held by a six-phase loop and a tiered control catalog. For the full orientation and
-routing to the right skill, run `/tfx:start`; this skill's own job is getting your
+routing to the right skill, run `/dx:start`; this skill's own job is getting your
 machine and repo ready, so continue here for that.
 
 ## 1. Set up the per-user tools

@@ -155,7 +155,7 @@ em-dash-chain, and redundant-pair rules above are part of the same control. The
 canonical word lists and the full Flag / Do-not-flag calibration live in
 `slp-9.md`, resolved relative to this SKILL.md three levels up at
 `../../../standards/controls/slp-9.md` (it ships with the harness — the same path works in
-the harness dev repo and when installed as the `tfx` plugin; do not expect
+the harness dev repo and when installed as the `dx` plugin; do not expect
 `standards/` in the project cwd) — that file wins if this summary drifts.
 
 - **Copula avoidance.** "Glow serves as the encouragement layer" → "Glow is the
