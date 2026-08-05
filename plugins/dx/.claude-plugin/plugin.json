@@ -1,0 +1,10 @@
+{
+  "name": "tfx",
+  "displayName": "Atelier (DX)",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Engineering + design skills for agentic product development: issue workflow, code review, lint/hooks, dependency hygiene, and the DX design loop with standards catalog + evaluator agent.",
+  "keywords": ["skills", "design", "engineering", "code-review", "design-system", "tfx"],
+  "skills": ["./skills/engineering/", "./skills/design/"],
+  "agents": ["./agents/evaluator.md"]
+}

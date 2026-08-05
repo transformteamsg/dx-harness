@@ -1,0 +1,1291 @@
+# DX Design Standard — control catalog (single source of truth)
+# Normative source: DX Design Standard (DX-DS) v0.1 seed catalog.
+# Consumers: the design harness (agent enforcement — this repo's skills/checks)
+# and the DX-DS website (human presentation — renders and serves this file raw).
+# Format: standards/README.md. Detail files: standards/controls/<id>.md
+# Scope: optional per-control products:/audiences: fields — absent = global (all). See standards/README.md §Scope.
+# WCAG 2.2 AA is the self-imposed accessibility floor (kept because it's right,
+# not because it's mandated). SGDS / GOV.UK are reference points, not rules.
+# Consolidated 2026-06-11 from the harness catalog (28 controls, operational
+# schema) and the site seed catalog (32 controls, incl. SLP-1..10): union of
+# both, harness schema, site fails_when bullets carried per entry.
+
+meta:
+  version: "0.1"
+  updated: "2026-07-12"
+  waiver_syntax: 'tfx-waive <ID> reason="<specific reason>"'
+  categories:
+    A11Y: Accessibility
+    TOK: Tokens & theming
+    TYP: Typography
+    COL: Colour
+    CMP: Components & patterns
+    CNT: Content & naming
+    MOT: Motion
+    IDN: Identity
+    SLP: Anti-slop
+    LAY: Layout
+  products:
+    tw: Teacher Workspace   # TW-adjacent surfaces (Posts, PG Staff Portal) count as tw
+    casesync: CaseSync
+    glow: Glow
+  audiences:
+    teachers: Teachers & school staff
+    students-primary: Students — primary
+    students-secondary: Students — secondary and up
+    parents: Parents & guardians
+
+controls:
+  # ── Accessibility (WCAG 2.2 AA — self-imposed floor) ──────────────────
+  - id: A11Y-1
+    source: DX-DS
+    title: Text meets WCAG AA contrast — 4.5:1 body, 3:1 large text and UI components
+    tier: L0
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Contrast scan (axe or checks/contrast); zero violations"
+    waiver: none
+    fails_when:
+      - body copy under 4.5:1 against its background
+      - gray text on coloured backgrounds that fails AA
+    enforced: partial
+    script: checks/contrast.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: A11Y-2
+    source: DX-DS
+    title: Every interactive element is keyboard-reachable with a visible focus state
+    tier: L0
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Keyboard traversal covers all interactive elements; each shows a visible focus state"
+    waiver: none
+    fails_when:
+      - focus ring removed without replacement
+      - click handlers on non-focusable elements
+    enforced: partial
+    script: checks/a11y-static.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: A11Y-3
+    source: DX-DS
+    title: Every form field has a programmatically associated, visible label
+    tier: L0
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Every input has an associated visible label element; checks/a11y-static"
+    waiver: none
+    fails_when:
+      - placeholder used as the only label
+      - icon-only button without aria-label
+    enforced: partial
+    script: checks/a11y-static.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: A11Y-4
+    source: DX-DS
+    title: Interactive targets are at least 24x24px (44px on mobile)
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Computed hit area of interactive elements >= 24x24 CSS px (>= 44px at mobile widths)"
+    waiver: documented
+    fails_when:
+      - visual target smaller with no expanded hit area
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: A11Y-5
+    source: DX-DS
+    title: prefers-reduced-motion disables all non-essential animation
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "With prefers-reduced-motion set, non-essential animation does not run"
+    waiver: documented
+    fails_when:
+      - no reduced-motion variant provided
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # A11Y-6..11: ratchet additions 2026-06-11 from the GovTech accessibility
+  # checklist (a11y.tech.gov.sg, DSS-based) Essential tier + status-messages AA,
+  # merged with evidence from loop runs 1-2. Approved: harness lead (Reza Ilmi,
+  # direct instruction). A11Y-11 supersedes the pending "A11Y-6 focus movement"
+  # proposal in docs/decisions/attendance.md.
+  - id: A11Y-6
+    source: DX-DS
+    title: Essential non-text content has a text alternative; decorative content is hidden from assistive technology
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Every img/svg/icon either has a text alternative (alt, aria-label, aria-labelledby) or is marked decorative (aria-hidden, empty alt)"
+    waiver: documented
+    fails_when:
+      - informative image with an empty alt
+      - decorative icon exposed to assistive technology (no aria-hidden)
+    refs: [https://a11y.tech.gov.sg/checklist/]
+
+  - id: A11Y-7
+    source: DX-DS
+    title: Structure is programmatically determinable — semantic headings, lists, tables, and form groups; headings and labels describe their content
+    tier: L1
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page]
+    verify: "Script asserts semantic elements over styled divs (heading hierarchy, lists, fieldsets); evaluator judges headings/labels are descriptive and link text makes sense out of context"
+    waiver: documented
+    fails_when:
+      - styled divs standing in for headings, lists, or tables
+      - headings or labels that do not describe their content
+    detail: controls/a11y-7.md
+    refs: [https://a11y.tech.gov.sg/checklist/]
+
+  - id: A11Y-8
+    source: DX-DS
+    title: Custom components expose name, role, and value to assistive technology
+    tier: L1
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Script asserts custom controls carry role + accessible name + state (e.g. aria-pressed/expanded/checked); evaluator judges the exposed semantics match the visual behavior"
+    waiver: documented
+    fails_when:
+      - custom control with no role or accessible name
+      - visual state change with no ARIA state update
+    detail: controls/a11y-8.md
+    enforced: partial
+    script: checks/a11y-static.py
+    refs: [https://a11y.tech.gov.sg/checklist/]
+
+  - id: A11Y-9
+    source: DX-DS
+    title: Every page or distinct view has a descriptive title, and the main language is marked up
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page]
+    verify: "Document title describes the page purpose; html lang attribute present and correct; SPA views update the title"
+    waiver: documented
+    fails_when:
+      - every SPA view sharing one static document title
+      - missing or wrong html lang attribute
+    refs: [https://a11y.tech.gov.sg/checklist/]
+
+  - id: A11Y-10
+    source: DX-DS
+    title: Repeated blocks of content are bypassable — skip link or landmark navigation to main content
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page]
+    verify: "A skip-to-main link is the first focusable element, or main/nav landmarks allow AT users to bypass repeated chrome; n/a only for pages with no repeated chrome"
+    waiver: documented
+    fails_when:
+      - no skip link and no landmarks on a page with repeated chrome
+    refs: [https://a11y.tech.gov.sg/checklist/]
+
+  - id: A11Y-11
+    source: DX-DS
+    title: Async state changes are announced and focus is managed — transient status via live regions without stealing focus; context replacements move focus to the revealed surface, never both for the same message
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [flow, component]
+    verify: "Script asserts each async state change has either a live region or a focus target; evaluator judges the choice (transient → live region; context change → focus move) and that no message is announced twice"
+    waiver: documented
+    fails_when:
+      - message announced by both a live region and a focus move
+      - transient toast stealing focus
+    detail: controls/a11y-11.md
+    refs: [https://a11y.tech.gov.sg/checklist/]
+
+  # ── Tokens & theming (Base UI + Radix Colors + shadcn defaults) ───────
+  - id: TOK-1
+    source: DX-DS
+    title: UI code contains no raw colour values — semantic (shadcn) tokens only
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Scan changed files for raw hex/rgb/hsl; checks/token-audit; exit 1 on violation"
+    waiver: documented
+    fails_when:
+      - hex/rgb/hsl literals in component code
+    detail: controls/tok-1.md
+    enforced: script
+    script: checks/token-audit.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: TOK-2
+    source: DX-DS
+    title: All spacing values come from the shadcn default token scale
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "No off-scale margin/padding/gap values; checks/token-audit"
+    waiver: documented
+    fails_when:
+      - arbitrary pixel values for margin/padding/gap
+    enforced: script
+    script: checks/token-audit.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: TOK-3
+    source: DX-DS
+    title: Corner radii come from the shadcn default radius scale
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "No off-scale border-radius values; checks/token-audit"
+    waiver: documented
+    fails_when:
+      - ad-hoc radius values
+      - child radius larger than parent (non-concentric nesting)
+      - peer containers of the same kind use different corner radii — anchor to the product's Card/base radius
+    detail: controls/tok-3.md
+    enforced: partial
+    script: checks/token-audit.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # ── Typography ────────────────────────────────────────────────────────
+  # TYP-1 brand-wordmark exception added 2026-07-01 — ratchet, design-lead approved
+  # (Glow pilot: the Inria Sans wordmark is a deliberate brand lockup typeface with no
+  # registered exception, so it read as a hard third-typeface L1 violation. Add a
+  # per-product registered-wordmark registry, mirroring COL-1's per-product colour
+  # table.) See docs/catalog-changes/glow-pilot-col1-typ1-tok3.md
+  - id: TYP-1
+    source: DX-DS
+    title: Display text is Plus Jakarta Sans (600); body/UI text is Inter (400/500/600); no other typefaces
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Font-family scan; only Plus Jakarta Sans + Inter at approved weights, plus each product's registered brand-wordmark typeface used solely for its wordmark/logo lockup (see controls/typ-1.md); checks/type-scan"
+    waiver: documented
+    fails_when:
+      - any third typeface in product UI, except a product's registered brand-wordmark typeface confined to its wordmark/logo lockup (see controls/typ-1.md)
+    detail: controls/typ-1.md
+    enforced: partial
+    script: checks/type-scan.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # TYP-2: ratchet revision 2026-07-15 — label floor raised 11px→12px as part of the
+  # migration to Tailwind's default type scale (see TYP-3). Approved by: Reza Ilmi
+  # (design lead), 2026-07-15 — in-session decision (chose "Migrate to Tailwind
+  # defaults" over keeping the DX scale); recommended options adopted.
+  - id: TYP-2
+    source: DX-DS
+    title: Body text at least 14px; labels at least 12px; body line-height 1.5-1.6
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Type-scale scan; checks/type-scan"
+    waiver: documented
+    fails_when:
+      - body copy below 14px
+      - line-height under 1.5 on multi-line body text
+    detail: controls/typ-2.md
+    enforced: partial
+    script: checks/type-scan.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # TYP-3: ratchet revision 2026-07-15 — migrated the published scale from the
+  # custom DX pixel set to Tailwind's default type scale, adopted from the harness
+  # philosophy "the stack is fixed and boring on purpose: Base UI components, Radix
+  # Colors, shadcn/ui default tokens." Approved by: Reza Ilmi (design lead),
+  # 2026-07-15 — in-session decision (chose "Migrate to Tailwind defaults" over
+  # keeping the DX scale); recommended options adopted.
+  - id: TYP-3
+    source: DX-DS
+    title: Type sizes come from the Tailwind default type scale; no off-scale sizes
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Sizes in {128,96,72,60,48,36,30,24,20,18,16,14,12}; checks/type-scan"
+    waiver: documented
+    fails_when:
+      - font sizes not on the published scale
+    enforced: script
+    script: checks/type-scan.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: TYP-4
+    source: DX-DS
+    title: Text is never set in all-caps
+    tier: L2
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Uppercase text-transform or all-caps strings flagged anywhere (labels, headings, body); genuine acronyms exempt; checks/type-scan"
+    waiver: rationale
+    fails_when:
+      - all-caps text — labels, headings, or running text
+      - text-transform uppercase used for styling (genuine acronyms excepted)
+    enforced: script
+    script: checks/type-scan.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # TYP-5: ratchet addition 2026-06-17 — tabular figures for numbers that align or
+  # update, adopted from the make-interfaces-feel-better design-engineering skill;
+  # high value for this number-heavy portfolio (grade tables, attendance counts,
+  # live totals). Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: TYP-5
+    source: DX-DS
+    title: "Numbers that align in columns or update in place use tabular figures (font-variant-numeric: tabular-nums)"
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan tabular-nums subcheck (planned)"
+    waiver: rationale
+    fails_when:
+      - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
+      - a live counter, timer, or total that reflows horizontally as its digits change
+    detail: controls/typ-5.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # TYP-6: ratchet PROPOSAL 2026-07-09 — comfortable measure (line length), from the
+  # "Check readability" step of the writing guide. Fills the measure gap in the TYP
+  # family: TYP covers typeface, size floors, scale, all-caps, and tabular figures —
+  # nothing holds running prose to a comfortable characters-per-line. Hybrid: a static
+  # scan can flag full-viewport prose blocks with no max-width cap (planned type-scan
+  # subcheck); the evaluator judges which blocks are running prose versus headings,
+  # tables, and data grids, which are out of scope.
+  - id: TYP-6
+    source: DX-DS
+    title: "Running body text is held to a comfortable measure — roughly 45-75 characters per line (target 40-60), via a max-width in ch, not full-viewport paragraphs"
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure subcheck (planned)"
+    waiver: rationale
+    fails_when:
+      - a paragraph that spans the full viewport width with no measure cap
+      - body copy running well past ~75ch per line
+    detail: controls/typ-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # ── Colour ────────────────────────────────────────────────────────────
+  # COL-1 re-tagged deterministic → hybrid 2026-07-01 — ratchet, design-lead
+  # approved (Glow pilot audit HF: the mechanical half — colour resolves to a
+  # token — passes trivially; the real failure is a neutral variant sitting
+  # where the brand primary belongs, which is judgment. Glow primary confirmed
+  # #F76B15; foreground-pairing + same-hue-collision guidance added).
+  # See docs/catalog-changes/glow-pilot-col1-typ1-tok3.md
+  - id: COL-1
+    source: DX-DS
+    title: Primary actions and brand moments use the product's own primary brand colour (or its ramp)
+    tier: L1
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Deterministic half: primary-action and brand-moment colours resolve to the active product's primary token or its ramp (checks/token-audit). Judgment half: the evaluator confirms the view's single primary action is the product primary (dovetails CMP-5) and no other product's primary appears for emphasis; see controls/col-1.md for the per-product table and the foreground pairing"
+    waiver: documented
+    fails_when:
+      - primary CTA in a colour that is not the product's primary
+      - one product's primary used inside another product's surface
+      - a light-hue product primary (orange/amber/lime/yellow) paired with white label text that fails A11Y-1 (use the scale's dark contrast step)
+    detail: controls/col-1.md
+    enforced: partial
+    script: checks/token-audit.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # COL-2 broadened 2026-06-25 — ratchet, design-lead approved (small functional
+  # text uses step-12 on a tint; HF-9). See docs/catalog-changes/contrast-functional-chips-step-12.md
+  - id: COL-2
+    source: DX-DS
+    title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc; small functional-colour text (≤12px chips/labels) uses the scale's step-12 on a tinted background so it clears AA (A11Y-1)
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Success/warning/danger/info colours resolve to Radix scale tokens, and small functional-colour text on a tint resolves to step-12 (step-11 on a step-3 tint lands ~4.25:1 and fails AA); contrast computed by checks/contrast / verified manually until wired"
+    waiver: documented
+    fails_when:
+      - custom green/red/amber values
+      - red used decoratively
+      - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
+    detail: controls/col-2.md
+    enforced: partial
+    script: [checks/token-audit.py, checks/contrast.py]
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # ── Components & patterns ─────────────────────────────────────────────
+  - id: CMP-1
+    source: DX-DS
+    title: Where a Base UI-based component exists for the need, it is used; one-offs require a waiver
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Component usage diffed against the product manifest; evaluator judges 'exists for the need' edge cases; record carries one of the three fixed CMP-1 verdict forms (see controls/cmp-1.md)"
+    waiver: documented
+    fails_when:
+      - custom dropdown/dialog/tooltip where the stack provides one
+    detail: controls/cmp-1.md
+    enforced: partial
+    script: checks/component-manifest.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: CMP-2
+    source: DX-DS
+    title: Destructive actions show consequences before executing and offer undo or explicit confirmation
+    tier: L0
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [flow, component]
+    verify: "Script enumerates destructive actions and asserts a consequence + undo/confirm surface exists; evaluator judges the consequence copy is plain and complete"
+    waiver: none
+    fails_when:
+      - silent destructive action
+      - confirmation that does not state what will be lost
+    detail: controls/cmp-2.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: CMP-3
+    source: DX-DS
+    title: Every async transaction has visible loading, success, and error states
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [flow]
+    verify: "Script confirms the three states exist per async action; evaluator judges each state communicates clearly"
+    waiver: documented
+    fails_when:
+      - missing error state
+      - loading state that flickers (no min visible time)
+    detail: controls/cmp-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-4 added 2026-07-08 — ratchet, design-lead approved (empty-state clarity,
+  # Student Notes loop run). See docs/catalog-changes/cmp-4-empty-state-clarity.md
+  - id: CMP-4
+    source: DX-DS
+    title: Every empty-state view unambiguously signals "no content exists" — distinct from loading, error, or permissions failure — through a heading, explanatory subtext, and the absence of loading chrome such as skeleton rows or spinners
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
+    waiver: documented
+    fails_when:
+      - a skeleton row, shimmer, or loading spinner is visible in the DOM alongside the empty-state heading
+      - the heading/subtext pair reads as "still loading" or "you don't have access" rather than "nothing here yet"
+      - an empty state ships with list chrome (row dividers, placeholder rows) that could be mistaken for a populated-but-loading list
+    detail: controls/cmp-4.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-5 / CMP-6: ratchet additions 2026-06-17 — action hierarchy and the table
+  # pattern, adopted from the design-engineering skills (ce-frontend-design,
+  # make-interfaces-feel-better, userinterface-wiki) studied against the catalog.
+  # Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: CMP-5
+    source: DX-DS
+    title: Each view has at most one primary (filled) action; secondary and tertiary actions step down to outline, ghost, or link styling
+    tier: L2
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Script counts filled/primary-variant buttons per view; evaluator judges view/region boundaries and any deliberately co-equal actions"
+    waiver: rationale
+    fails_when:
+      - two or more filled/primary buttons competing in one view with no deliberate co-equal reason
+      - a destructive action styled as the primary instead of a distinct destructive variant (CMP-2)
+      - every button rendered at the same weight, so nothing reads as the main action
+    detail: controls/cmp-5.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: CMP-6
+    source: DX-DS
+    title: Data tables use the table pattern — semantic rows and headers, numeric columns right-aligned with tabular figures, text left-aligned, and a header that stays visible while scrolling
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component, page]
+    verify: "Script asserts table/th semantics and right-aligned tabular numeric columns; evaluator judges header persistence, density, and that empty/loading states are designed (CMP-3)"
+    waiver: rationale
+    fails_when:
+      - numeric columns centre- or left-aligned, or in proportional figures, so values do not line up (TYP-5)
+      - a long table whose header scrolls out of view, leaving columns unlabelled
+      - tabular data rendered as stacked cards or divs instead of a real table (A11Y-7)
+      - a table that can be empty or slow has no designed empty or loading state (CMP-3)
+    detail: controls/cmp-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-7 added 2026-06-25 — ratchet, design-lead approved (component-default
+  # consistency, HF-19). See docs/catalog-changes/component-default-consistency.md
+  - id: CMP-7
+    source: DX-DS
+    title: Components stay consistent with their design-system defaults and with sibling-page usage — overriding a default's colour/contrast/shape, or breaking a control group's shared resting affordance, is a finding unless justified
+    tier: L2
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+    waiver: rationale
+    fails_when:
+      - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
+      - a component is used differently here than on sibling pages with no reason
+      - members of one control group (toggle set, segmented control) do not share a resting affordance — only the selected one reads as interactive
+    detail: controls/cmp-7.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-8 added 2026-07-08 — ratchet, design-lead approved (draft safety /
+  # escapability, flow-pass gap). See
+  # docs/catalog-changes/cmp-8-draft-safety-escapability.md
+  - id: CMP-8
+    source: DX-DS
+    title: A multi-step or data-entry task offers a non-destructive exit at every step, and in-progress work is preserved or explicitly discarded on interruption — never silently lost
+    tier: L1
+    check: hybrid
+    phase: [plan, implement, verify]
+    applies_to: [flow]
+    verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
+    waiver: documented
+    fails_when:
+      - a wizard/dialog with no cancel/back at some step
+      - navigation away silently drops typed content
+      - an interrupted flow resumes from zero with no warning at exit time
+      - escape/close discards a draft with no confirm (ties to CMP-2's mechanics)
+    detail: controls/cmp-8.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CMP-9 added 2026-07-08 — ratchet, design-lead approved (cross-user HTML
+  # sanitisation; category decided CMP over SLP to keep SLP aesthetically
+  # coherent). See docs/catalog-changes/cross-user-html-sanitisation.md
+  - id: CMP-9
+    source: DX-DS
+    title: Content authored by one user and rendered to another is sanitised at the render boundary; author-time schema constraints are not sufficient
+    tier: L1
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component, flow]
+    verify: "Deterministic: grep detector (planned) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
+    waiver: documented
+    fails_when:
+      - dangerouslySetInnerHTML/v-html renders another user's authored content with no sanitiser in the render path
+      - sanitisation is claimed at editor time only ("schema-constrained output") with nothing enforced at render
+      - a prototype defers sanitisation with no recorded flag noting the deferral
+    detail: controls/cmp-9.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # ── Content & naming ──────────────────────────────────────────────────
+  - id: CNT-1
+    source: DX-DS
+    title: Error messages state what happened and what to do next; no raw error codes as the primary message
+    tier: L1
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Script finds error surfaces and flags raw codes; evaluator judges 'what happened -> what it means -> what to do next'"
+    waiver: documented
+    fails_when:
+      - '"Something went wrong" with no next step'
+      - stack traces or codes shown to teachers
+    detail: controls/cnt-1.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: CNT-2
+    source: DX-DS
+    title: Feature and page names use plain language; no invented portmanteaus, no internal codenames in UI
+    tier: L1
+    check: judgment
+    phase: [intent, plan, verify]
+    applies_to: [content]
+    verify: "Evaluator: would a teacher understand the name without explanation? Portmanteaus and codenames are findings"
+    waiver: documented
+    fails_when:
+      - names that require explanation
+    detail: controls/cnt-2.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-3 narrowed 2026-07-03: the lead-with-purpose clause moved to CNT-5 (split
+  # PROPOSAL, PR'd together with CNT-5 — pending design-lead approval). CNT-3 keeps
+  # the mechanical voice rules; its lint half is unchanged.
+  - id: CNT-3
+    source: DX-DS
+    title: Copy uses second person and active voice, and keeps sentences to 25 words or fewer
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint sentence length; evaluator judges voice and person"
+    waiver: rationale
+    fails_when:
+      - passive constructions in instructions
+      - third-person references to the user ("Teachers can…")
+    detail: controls/cnt-3.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-4 added 2026-07-08 — ratchet, design-lead approved (domain fidelity,
+  # issue #27). See docs/catalog-changes/cnt-4-domain-fidelity.md
+  - id: CNT-4
+    source: DX-DS
+    title: Content that models a real-world artifact is faithful to it (scope, terminology, structure) or explicitly labelled illustrative
+    tier: L2
+    check: judgment
+    phase: [intent, implement, verify]
+    applies_to: [content]
+    verify: "Evaluator + named domain reviewer sign-off before user testing, or the illustrative label present in-product and in the decision record"
+    waiver: rationale
+    fails_when:
+      - a curriculum/subject/level detail a practitioner would recognise as wrong (e.g. a subject graded at a level where it isn't taught)
+      - invented specifics presented as real in a user-testing surface
+      - placeholder content with no illustrative label
+    detail: controls/cnt-4.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-5: ratchet PROPOSAL 2026-07-02 — device-agnostic action verbs, mapped from
+  # the HDB e-services UX-writing guide (Step 9, accessibility) during the writing-
+  # guide port. Built as the exemplar new content control. Renumbered from the
+  # proposed CNT-4 after CNT-4 was assigned to domain fidelity (issue #27) on main.
+  # Design-lead approved 2026-07-22; re-audit set = every shipped surface carrying
+  # CTA or link copy.
+  - id: CNT-5
+    source: DX-DS
+    title: UI action words name the action, not the input device — "choose", "select", "view", never "click", "tap", "swipe", or "press"
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint flags device-bound verbs (click/tap/swipe) in user-facing copy; evaluator confirms the word is a UI action instruction and judges the harder calls (press, see) and ambiguous link text"
+    waiver: rationale
+    fails_when:
+      - '"Click here" / "Tap to continue" / "Press the button" as UI copy'
+      - a device verb in an instruction a screen reader reads aloud on a touch device
+      - ambiguous link text ("click here", "read more") that names the device, not the destination
+    detail: controls/cnt-5.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-6: ratchet PROPOSAL 2026-07-03 — low-informational-value words, from the
+  # writing-guide port (edit-to-be-concise). Boundary with SLP-9: SLP-9 catches
+  # AI-writing tells (buzzwords, phrase filler, structural tells); CNT-6 catches
+  # no-op words in any copy regardless of author; lint lists stay disjoint so one
+  # token never fires two controls. Design-lead approved 2026-07-22; re-audit set =
+  # every shipped surface carrying user-facing copy.
+  - id: CNT-6
+    source: DX-DS
+    title: Copy carries no low-informational-value words — no empty openers, filler words, or droppable articles and conjunctions, unless removing them hurts clarity
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint flags sentence-initial empty openers (There is, There are, It is, This is) and the safe filler subset (just, really, very, please); evaluator judges the context-dependent words (such, that, articles and conjunctions) and the clarity exception"
+    waiver: rationale
+    fails_when:
+      - a sentence opening with an empty opener that reads fine without it
+      - filler words (just, really, very, please) carrying no meaning in UI copy
+    detail: controls/cnt-6.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-7: ratchet PROPOSAL 2026-07-03 — split out of CNT-3 during the writing-guide
+  # port. The purpose clause is pure judgment and kept straddling guideline sections,
+  # while CNT-3's other clauses are mechanical; one ID for both made findings and
+  # waivers ambiguous. Renumbered from the proposed CNT-5 after CNT-5 was assigned to
+  # device verbs. Design-lead approved 2026-07-22; re-audit set = every shipped
+  # surface carrying descriptive prose (page titles, descriptions, section intros, empty
+  # states, feature blurbs — in this repo, all content/**.mdx frontmatter and intros).
+  - id: CNT-7
+    source: DX-DS
+    title: Descriptive copy leads with its purpose — what it does for the teacher and when to reach for it — before the mechanism
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reads the first line of titles, descriptions, section intros, empty states, and feature blurbs: purpose or role first, mechanism after"
+    waiver: rationale
+    fails_when:
+      - a title, description, or intro that opens with the mechanism (the tool, token, or library) instead of what it does for the teacher
+    detail: controls/cnt-7.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-8: ratchet PROPOSAL 2026-07-09 — nominalised verbs buried under "to be"
+  # constructions; distinct from CNT-3's general active-voice clause because this
+  # failure mode requires recognising the noun ending and its underlying verb. CNT-3
+  # catches passive voice; CNT-8 catches the specific pattern of burying an action
+  # in a noun.
+  - id: CNT-8
+    source: DX-DS
+    title: Copy replaces nominalised verbs and "to be" constructions with plain action verbs
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator checks prose for noun endings (-ance, -ment, -sion, -tion, -ure, etc.) paired with a 'to be' verb and flags each; quotes the noun phrase and gives the plain-verb rewrite"
+    waiver: rationale
+    fails_when:
+      - a "to be" verb carries a nominalised action ("is a requirement", "are in maintenance", "was in transmission")
+      - an action is buried in a noun when the verb is available ("give a recommendation" → "recommend")
+    detail: controls/cnt-8.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-9: ratchet PROPOSAL 2026-07-09 — clarity mechanics bundled from the
+  # "Edit to be clear" step of the writing guide. Five clauses share one failure
+  # mode: copy that requires more than one read to parse. Word-list clause is
+  # partially automatable; remaining four clauses are judgment.
+  # CNT-9 extended (clause 6) ratchet PROPOSAL 2026-07-10 — the "explain acronyms /
+  # technical terms" slice of §7's plain-language bullet, previously unowned for body
+  # copy. Boundary with CNT-2: CNT-2 catches jargon/unexplained acronyms in *names*
+  # (nav, page titles); clause 6 catches an acronym or technical term in *body prose*
+  # with no reachable definition. The definition need not be inline — a tooltip, help
+  # text, or glossary satisfies it. Judgment clause; no script half.
+  - id: CNT-9
+    source: DX-DS
+    title: Copy is clear — one idea per sentence, simple present tense, no double negatives, no noun stacks, short words, acronyms and technical terms have a reachable definition
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint copy for long-word substitutions (word-list clause); evaluator judges the remaining clauses, including whether each acronym or technical term has a reachable definition (inline, tooltip, help text, or glossary — checked on the rendered surface, not just the copy string)"
+    waiver: rationale
+    enforced: partial
+    script: checks/content-lint.py
+    fails_when:
+      - a sentence carries two or more ideas
+      - past-perfect or passive constructions where simple present fits
+      - a double negative when a positive form exists
+      - three or more nouns stacked where a verb or adjective would do
+      - a long word from the substitution table used when the plain form exists
+      - an acronym or unfamiliar technical term with no reachable definition anywhere — no inline expansion, tooltip, help text, or glossary (established teacher terms excepted)
+    detail: controls/cnt-9.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-10: ratchet PROPOSAL 2026-07-09 — internal term consistency, split from the
+  # "Check consistency" step of the writing guide. Distinct from CNT-2: CNT-2 grades
+  # whether a single feature/page name is plain language (no portmanteaus/codenames);
+  # CNT-10 grades whether ONE term is used for the same thing everywhere it appears in
+  # the interface. A product can pass CNT-2 (every name is plain) and still fail CNT-10
+  # (the same action is called "Edit" on one screen and "Amend" on another). The whole
+  # interface is in scope — the surface list in the entry is illustrative, not a
+  # closed enumeration. L1 because term drift within a product actively confuses.
+  - id: CNT-10
+    source: DX-DS
+    title: One term per thing within a product — the same action, object, or state keeps a single name everywhere it appears in the interface
+    tier: L1
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reviews the product's surfaces for term drift — the same action, object, or state named two ways anywhere it appears (nav, buttons, labels, filters, dialogs, messages, tooltips, empty states, help text). The listed surfaces are examples, not the scope; the whole interface is in scope."
+    waiver: documented
+    fails_when:
+      - the same action named two or more ways anywhere in the product ("Edit" on one screen, "Amend" on another, "Modify" in a dialog)
+      - term drift for the same thing between any two surfaces — a button and its confirmation, a nav item and its page title, a filter and its help text
+    detail: controls/cnt-10.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-11: ratchet PROPOSAL 2026-07-09 — external term consistency, the second half of
+  # the "Check consistency" step. Distinct from CNT-2 and CNT-10: CNT-2 grades a single
+  # name's plain-language quality; CNT-10 grades one-term-per-thing WITHIN a product;
+  # CNT-11 grades whether a common UI term matches the established word teachers already
+  # meet ACROSS other products and the web ("Search", not "Find"). L2 because matching
+  # the outside convention is a strong default with legitimate product-specific
+  # exceptions, unlike internal drift.
+  - id: CNT-11
+    source: DX-DS
+    title: UI terms match the established word teachers already meet across other products — "Search" not "Find", "Settings" not "Preferences"
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator checks common UI terms against the convention teachers see across the web and other products; an invented or unfamiliar synonym for a standard term is a finding"
+    waiver: rationale
+    fails_when:
+      - an invented or unfamiliar synonym for a standard UI term ("Find" for a search field, "Preferences" for settings)
+      - a coined product term where an established web convention already exists
+    detail: controls/cnt-11.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-12: ratchet PROPOSAL 2026-07-09 — sentence case, from the "Check readability"
+  # step of the writing guide. Distinct from TYP-4: TYP-4 bans ALL-CAPS text; CNT-12
+  # catches Title Case, which passes TYP-4 (no uppercase transform) yet still breaks
+  # sentence case ("Submit Your Marks"). CNT-12 makes the grammar-mechanics "sentence
+  # case everywhere" rule enforceable. Hybrid: a Title-Case heading/label heuristic in
+  # content-lint is the deterministic half (planned); proper-noun and branded-term
+  # exemptions are judgment. Ships judgment-first; script half follows.
+  - id: CNT-12
+    source: DX-DS
+    title: Copy uses sentence case — capitalise the first word and proper or branded nouns only
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint headings/labels/buttons for Title-Case patterns (planned content-lint heuristic); evaluator judges sentence-case compliance and the proper-noun / branded-term exemptions"
+    waiver: rationale
+    enforced: partial
+    script: checks/content-lint.py
+    fails_when:
+      - Title Case in a heading, label, or button ("Submit Your Marks", "View Class Details")
+      - a non-proper mid-sentence word capitalised for emphasis
+    detail: controls/cnt-12.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-13: ratchet PROPOSAL 2026-07-10 — spelling/proofreading, from the "Check for
+  # grammar and spelling" step (§10) of the writing guide, the only step with no owning
+  # control. Owns spelling and proofreading only; the grammar half is already covered by
+  # CNT-3 (voice/length), CNT-8 (nominalisations), CNT-9 (clarity), CNT-12 (case). Disjoint
+  # from those and from SLP-9/CNT-6 word lists — one token never fires two controls. Hybrid:
+  # a curated US→UK spelling map + common-misspelling list in content-lint is the
+  # deterministic half; typos, homophones, and doubled words are the evaluator's.
+  - id: CNT-13
+    source: DX-DS
+    title: Copy is free of spelling and proofreading errors and uses Singapore English spelling (British base)
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint flags a curated US→UK spelling map and a common-misspelling list read from cnt-13.md; evaluator proofreads for the typos, homophones, and doubled words no word list can catch"
+    waiver: rationale
+    enforced: partial
+    script: checks/content-lint.py
+    fails_when:
+      - a misspelling or typo in user-facing copy ("recieve", "seperate", "teh")
+      - US spelling where British is house style ("color", "organize", "center")
+      - a doubled word or copy-paste artifact left in shipped text ("the the", "TODO")
+    detail: controls/cnt-13.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # CNT-14: ratchet 2026-07-10, design-lead approved 2026-07-22 — holistic voice
+  # quality + tone-fit, the one slice of the voice & tone guideline
+  # (content/guidelines/voice-tone.mdx) no existing control owns. Judgment-only:
+  # no static signal decides "sounds
+  # thoughtful" or "tone fits this surface". Disjoint from the mechanical voice
+  # controls (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12
+  # case, SLP-9 AI tells) — those catch specific tokens/patterns; CNT-14 grades the
+  # gestalt a string can fail while passing every mechanical control. Boundary with
+  # CMP-2: CMP-2 governs destructive-action behaviour (consequences + undo/confirm);
+  # CNT-14 governs whether the wording is sober vs dramatic. Re-audit set =
+  # every shipped surface carrying user-facing copy.
+  - id: CNT-14
+    source: DX-DS
+    title: Copy embodies the DX voice (Clear, Thoughtful, Approachable) and its tone fits the surface context
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reads the copy against the voice attributes and the tone-by-context table in voice-tone.mdx: does it sound Clear/Thoughtful/Approachable (not cold, robotic, patronising, alarmist, or sappy), and does the tone match the surface (affirming success, calm error, sober destructive, inviting empty state)?"
+    waiver: rationale
+    fails_when:
+      - an error message that is alarmist or dramatic rather than calm and helpful
+      - a success message that gushes instead of acknowledging briefly
+      - an empty state or onboarding step that is patronising or careless
+      - a destructive confirmation written with drama instead of sober, plain consequences
+    detail: controls/cnt-14.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # ── Motion & identity ─────────────────────────────────────────────────
+  - id: MOT-1
+    source: DX-DS
+    title: Interface motion is 100-300ms with standard easing; no decorative motion on critical paths
+    tier: L2
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Animation durations in 100-300ms with standard easing; none on critical paths beyond functional feedback"
+    waiver: rationale
+    fails_when:
+      - animations over 300ms on task flows
+      - transition-all
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # MOT-2: ratchet PROPOSAL 2026-07-12 — motion tokens, from the site's own
+  # motion-layer build-out (landing reveal, diagram animations). Boundary with
+  # MOT-1: MOT-1 bounds where motion may run and how long; MOT-2 bounds where
+  # the values come from. Pending design-lead approval.
+  - id: MOT-2
+    source: DX-DS
+    title: Motion values come from the declared motion token set — durations and easings are never hardcoded in component code
+    tier: L2
+    status: proposed
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component, page]
+    verify: "Grep transition/animation values in component code: every duration and easing resolves to a motion token (--motion-*/--ease-* or their declared code mirror); no raw ms or cubic-bezier literals outside the token definitions"
+    waiver: rationale
+    fails_when:
+      - a raw duration (350ms, 0.4s) or cubic-bezier literal in component code where the token set exists
+      - a surface that animates but declares no motion token set
+      - the narrative tier (--motion-story) used on interface or task UI
+    enforced: manual
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for
+  # the animated-diagram build-out. Boundary: A11Y-5 demands a reduced-motion
+  # variant exists; MOT-3 demands that variant lose no information. MOT-1
+  # bounds duration and placement; MOT-3 bounds meaning. Pending design-lead
+  # approval.
+  - id: MOT-3
+    source: DX-DS
+    title: Motion may emphasise meaning but never carry it alone — an animated surface communicates the same information with animations off
+    tier: L2
+    status: proposed
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "With prefers-reduced-motion set, every diagram and animated surface still communicates its full meaning: states, order, gates, and relationships remain legible statically"
+    waiver: rationale
+    fails_when:
+      - a diagram whose meaning (order, causality, state) exists only in the animation
+      - a reduced-motion variant that drops information instead of motion
+      - motion that implies a state change that is not happening
+    detail: controls/mot-3.md
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: IDN-1
+    source: DX-DS
+    title: Product lockups and logos render only from approved assets; no recreations
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page]
+    verify: "Logo/lockup files resolve to the approved asset library; no inline redraws"
+    waiver: documented
+    fails_when:
+      - rebuilt or distorted logo marks
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # IDN-2..4: branding controls activated via the ratchet 2026-07-06 (plan 057),
+  # from recorded facts (COL-1 table, content skill §6, product-icons guideline).
+  # Design-lead approved: Reza Ilmi, 2026-07-06 (in-session). Records:
+  # docs/catalog-changes/idn-{2,3,4}-*.md. IDN-4 is the first product-scoped control.
+  - id: IDN-2
+    source: DX-DS
+    title: Product icons render only from the approved product-icon family; no ad-hoc, redrawn, or regenerated icons
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Icon files resolve to the approved product-icon set (the guideline's icon family); no inline-drawn or regenerated marks; new marks are pre-verified via the Icon Generator before entering the set"
+    waiver: documented
+    fails_when:
+      - a redrawn, distorted, or regenerated product-icon mark
+      - a per-product background colour or gradient applied to the icon container
+      - wordmarks, photos, shadows, or gloss inside the icon
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: IDN-3
+    source: DX-DS
+    title: Copy on a product's surface carries that product's calibrated tone register — same voice character, calibrated weight, never a switched voice system
+    tier: L2
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Evaluator reads the surface's copy against the product's row in the per-product register table (controls/idn-3.md): does it hold the shared voice character at the product's calibrated weight, or switch systems?"
+    waiver: rationale
+    fails_when:
+      - copy adopts another product's register (a switched voice system, not calibrated weight)
+      - a TW-adjacent surface (Posts / PG Staff Portal) carries nuance instead of plain TW voice
+    detail: controls/idn-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: IDN-4
+    source: DX-DS
+    title: "CaseSync surfaces treat casework as sensitive: restrained celebration, no gamified or playful elements around case data"
+    tier: L1
+    check: judgment
+    phase: [implement, verify]
+    applies_to: [content, page, component]
+    products: [casesync]
+    verify: "On CaseSync surfaces, the evaluator confirms case-data moments are treated with restraint — no confetti/celebration animations, streak/badge/points gamification, or exclamatory congratulatory copy around case outcomes; acknowledgement is calm and privacy-forward"
+    waiver: documented
+    fails_when:
+      - celebratory or confetti-style motion on a case-closure or case-outcome moment
+      - streak / badge / points / leaderboard gamification attached to casework
+      - exclamatory congratulatory copy on a sensitive case outcome
+    detail: controls/idn-4.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # ── Anti-slop (SLP-1..10) ─────────────────────────────────────────────
+  # Adopted 2026-06-11 from the DX-DS site seed catalog (v0.1) during the
+  # catalog consolidation — the site and harness catalogs had diverged; these
+  # ten existed only on the site. Guard against the default AI aesthetic.
+  - id: SLP-1
+    source: DX-DS
+    title: No purple/violet gradient palettes, cyan-on-dark theming, or glow accents
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Stylesheet scan: no purple/violet gradient palettes, no cyan-on-dark theming, no glow box-shadow accents"
+    waiver: documented
+    fails_when:
+      - the default AI aesthetic anywhere in product UI
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-2
+    source: DX-DS
+    title: No gradient text
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Scan for background-clip:text (and -webkit- variant) gradient fills on text"
+    waiver: documented
+    fails_when:
+      - background-clip text gradients on headings or metrics
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-3
+    source: DX-DS
+    title: No thick side-tab accent borders on rounded cards
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Scan for thick (>= 3px) left/side accent borders combined with border-radius on card containers"
+    waiver: documented
+    fails_when:
+      - the single most recognisable AI-UI tell
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-4
+    source: DX-DS
+    title: No nested cards; flatten with spacing, typography, and dividers
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "DOM scan: no card-styled container (border + radius + background) nested inside another"
+    waiver: documented
+    fails_when:
+      - cards inside cards inside cards
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-5
+    source: DX-DS
+    title: No icon-tile-above-heading feature-card template; no identical card grids as default layout
+    tier: L2
+    check: deterministic
+    phase: [plan, implement, verify]
+    applies_to: [page]
+    verify: "Layout scan: no icon-tile-above-heading card template; no grid of identical cards as the default page layout"
+    waiver: rationale
+    fails_when:
+      - the universal AI feature-card shape repeated in a grid
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-6
+    source: DX-DS
+    title: Adjacent type-scale steps differ by at least 1.25x; no flat hierarchy
+    tier: L2
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page]
+    verify: "Adjacent steps used on the page differ by ratio >= 1.25; flag flat heading/subheading/body hierarchies"
+    waiver: rationale
+    fails_when:
+      - heading/subheading/body at nearly the same size
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-7
+    source: DX-DS
+    title: Spacing has rhythm — related items grouped tighter than unrelated ones
+    tier: L2
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Spacing scan: related items grouped tighter than unrelated; flag a single spacing value used uniformly"
+    waiver: rationale
+    fails_when:
+      - one spacing value used everywhere
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-8
+    source: DX-DS
+    title: No bounce or elastic easing on interface elements
+    tier: L1
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Easing scan: no bounce/elastic/overshoot easing (spring overshoot, cubic-bezier with y outside [0,1]) on interface elements"
+    waiver: documented
+    fails_when:
+      - dialogs that spring in with overshoot
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-9
+    source: DX-DS
+    title: Copy carries no AI-writing tells — marketing buzzwords, em-dash chains, filler, or redundant label/helper pairs
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [content]
+    verify: "Lint for the buzzword, filler, and chatbot-artifact lists and em-dash chains; evaluator judges structural tells (negative parallelism, forced triads, copula avoidance, significance inflation), redundant label/helper pairs, and marketing tone"
+    waiver: rationale
+    fails_when:
+      - streamline/empower/supercharge/world-class
+      - label, sublabel, and helper saying the same thing
+      - chatbot artifacts ("Great question!", "I hope this helps")
+      - '"It''s not just X, it''s Y" / "serves as a" / forced triads doing rhetoric, not enumeration'
+    detail: controls/slp-9.md
+    enforced: partial
+    script: checks/content-lint.py
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  - id: SLP-10
+    source: DX-DS
+    title: Complex multi-section tasks get a page, not a modal
+    tier: L1
+    check: judgment
+    phase: [intent, plan, verify]
+    applies_to: [flow, page]
+    verify: "Evaluator: any task with multiple sections, its own scrolling, or a column layout gets a page, not a modal"
+    waiver: documented
+    fails_when:
+      - modal with its own scrollbar and column layout
+    detail: controls/slp-10.md
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  # SLP-11: ratchet addition 2026-06-17 — "a card only when the card is the
+  # interaction", adopted from the compound-engineering ce-frontend-design skill;
+  # completes the card trio with SLP-4 (no nested cards) and SLP-5 (no identical-card
+  # grids). Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: SLP-11
+    source: DX-DS
+    title: A card is only for an interactive unit (clickable, selectable, draggable); static content is grouped with spacing, type, and dividers
+    tier: L2
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: every card-styled container (border or shadow + radius + background) is a discrete interactive unit; if removing the card chrome would not hurt comprehension, it should not be a card"
+    waiver: rationale
+    fails_when:
+      - static content boxed in card chrome purely for visual separation
+      - a card used as a section wrapper where a heading plus spacing would group it
+    detail: controls/slp-11.md
+    refs: [https://github.com/transformteamsg/tfx-design-standard]
+
+  # ── Layout (LAY) ──────────────────────────────────────────────────────
+  # LAY-1: grid control activated via the ratchet 2026-07-06 (plan 053) — closes the
+  # spike's deferred grid slot; declaration lives in .tfx/design.json layout_system
+  # (plan 058). N/A where no grid is declared. Design-lead approved: Reza Ilmi, 2026-07-06.
+  - id: LAY-1
+    source: DX-DS
+    title: Layout uses the product's declared column grid and gutter scale; ad-hoc column counts and off-scale gutters are findings — N/A where no grid is declared
+    tier: L2
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Where a product declares a grid (.tfx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
+    waiver: rationale
+    fails_when:
+      - a declared grid exists and the layout uses an ad-hoc column count not drawn from it
+      - a declared grid exists and gutters/margins don't match the spacing scale (TOK-2) with no deliberate reason
+    detail: controls/lay-1.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: LAY-2
+    source: DX-DS
+    title: Layout reflows to a single column with no loss at 320 CSS px (WCAG 2.2 SC 1.4.10); reading order and controls hold at 360/768/1280
+    tier: L1
+    check: judgment
+    phase: [verify]
+    applies_to: [page]
+    verify: "Evaluator confirms single-column reflow with no two-dimensional scrolling at 320 CSS px (= 1280 at 400% zoom) and a usable reading order at each captured width"
+    waiver: documented
+    fails_when:
+      - content or controls become unreachable or ambiguous at 320 px reflow
+      - reading order reverses or a primary action disappears at the narrowest width
+    detail: controls/lay-2.md
+    refs: [https://www.w3.org/WAI/WCAG21/Understanding/reflow.html]
+
+  - id: LAY-4
+    source: DX-DS
+    title: "Body-text columns cap at a comfortable measure — target ~66ch, never above 80ch (WCAG 1.4.8); full-bleed running text is a finding"
+    tier: L2
+    check: deterministic
+    phase: [implement, verify]
+    applies_to: [page, component]
+    verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"
+    waiver: rationale
+    fails_when:
+      - body-text column has no max-width and spans the full viewport at 1280
+      - measure exceeds 80ch
+    detail: controls/lay-4.md
+    refs: [https://www.w3.org/TR/WCAG21/#visual-presentation]
+
+  # LAY-3 / LAY-5 / LAY-6: ratchet additions 2026-06-17 — activated from the layout
+  # spike (docs/spikes/layout-category/SPEC.md), which specified them in full and left
+  # them pending design-lead approval. LAY-1 (grid) deferred — it needs a declared
+  # product grid (spike open Q4); peer-radius consistency stays in TOK-3 (spike Q3).
+  # Approved: harness lead (Reza Ilmi, direct instruction).
+  - id: LAY-3
+    source: DX-DS
+    title: A surface maps to a known page template (workspace view, form, flow step, dashboard, settings, empty state, onboarding) rather than an ad-hoc shell
+    tier: L2
+    check: judgment
+    phase: [plan, verify]
+    applies_to: [page]
+    verify: "Evaluator matches the surface to its declared page type (Phase 1) and flags a bespoke shell where a known template applies"
+    waiver: rationale
+    fails_when:
+      - a surface invents a bespoke shell structure when an existing template applies
+      - information hierarchy does not match the declared page type
+    detail: controls/lay-3.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: LAY-5
+    source: DX-DS
+    title: Density suits the task — neither cramped for data entry nor padded for scanning; extreme outliers in either direction are findings
+    tier: L2
+    check: judgment
+    phase: [verify]
+    applies_to: [page, component]
+    verify: "Evaluator judges density against the page type and task (a marks-entry form and a summary dashboard have legitimately different densities)"
+    waiver: rationale
+    fails_when:
+      - a data-entry surface is too padded for efficient tab traversal
+      - a reading or scanning surface is too cramped to scan without error
+    detail: controls/lay-5.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  - id: LAY-6
+    source: DX-DS
+    title: Shared edges align; optical alignment is used where geometry misleads
+    tier: L2
+    check: judgment
+    phase: [verify]
+    applies_to: [page, component]
+    verify: "Evaluator checks edge alignment in the 1280 screenshot; flags shared edges that do not align without a deliberate reason; distinguishes geometric from optical alignment (an icon optically centred but geometrically offset is correct)"
+    waiver: rationale
+    fails_when:
+      - shared edges between sections or components do not align, with no deliberate reason
+      - text or icon baselines and optical centres are visibly misaligned
+    detail: controls/lay-6.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
+  # LAY-7: focal-point control activated via the ratchet 2026-07-06 (plan 053) —
+  # promotes the "Compose, don't fill" prose into a checkable whole-page composition
+  # rule. Design-lead approved: Reza Ilmi, 2026-07-06. Record: docs/catalog-changes/lay-7-focal-point.md.
+  - id: LAY-7
+    source: DX-DS
+    title: The page has one primary focal region and its visual reading order matches the task's priority order
+    tier: L2
+    check: judgment
+    phase: [plan, verify]
+    applies_to: [page]
+    verify: "Evaluator applies the squint test (does the first-glance read land on the region the task needs done first?) and enumerates the page's distinct visual regions by weight; a page with two or more regions of comparable weight and no task reason for the tie, or whose first-read region is not the task's priority region, fails"
+    waiver: rationale
+    fails_when:
+      - two or more regions compete for first read with no task reason for the tie
+      - the squint-test first-read lands on secondary content
+      - the primary action's region is visually subordinate to decoration
+    detail: controls/lay-7.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
