@@ -28,7 +28,9 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             dx-harness
           </Link>
           <div className="flex items-center gap-1 sm:gap-4">
-            <Link href="/#quick-start" className={navLink}>
+            {/* Below 360px the four nav items overflow (LAY-2); the install
+                block is the first thing on the page there anyway. */}
+            <Link href="/#quick-start" className={`${navLink} max-[359px]:hidden`}>
               Quick start
             </Link>
             <Link href="/overview" className={navLink}>
