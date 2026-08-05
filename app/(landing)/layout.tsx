@@ -56,8 +56,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
         {children}
       </main>
       <footer className="border-t border-canvas-line">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-canvas-muted">
-          <p>TransformX · GovTech Singapore</p>
+        <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-end gap-4 px-6 py-8 text-sm text-canvas-muted">
           <div className="flex flex-wrap items-center gap-6">
             <Link href="/overview" className="min-h-11 inline-flex items-center hover:text-canvas-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)">
               Docs

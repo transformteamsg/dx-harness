@@ -213,7 +213,7 @@ export default function Landing() {
       <section id="no-cli" className="scroll-mt-24">
         <div className="mx-auto w-full max-w-[1200px] px-6 py-[72px] sm:py-[144px]">
           <h2 className="font-display text-3xl font-bold tracking-tight text-canvas-ink sm:text-5xl">
-            No command line? Still two minutes.
+            No command line?
           </h2>
           <ol className="mt-8 max-w-[58ch] list-decimal space-y-3 pl-5 text-canvas-muted marker:font-mono marker:text-canvas-muted">
             <li>
