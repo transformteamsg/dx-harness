@@ -14,7 +14,7 @@ export const PHASES: Phase[] = [
     key: "intent",
     label: "Intent",
     tape: "pink",
-    text: "What you mean is written down as a contract — every later phase is graded against it.",
+    text: "Your ask becomes a written contract — the fixed thing later phases answer to.",
   },
   {
     key: "diverge",

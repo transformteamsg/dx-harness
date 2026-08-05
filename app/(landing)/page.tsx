@@ -102,10 +102,10 @@ export default function Landing() {
             </TapeStrip>
           </div>
           <p className="mt-10 max-w-[58ch] text-lg leading-relaxed text-canvas-muted">
-            dx-harness is a Claude Code plugin of design skills your agent runs: a
-            design loop that stops for your approval, a checkable standards
-            catalog, and a separate evaluator that grades what ships. The
-            engineering workflow rides along in the same plugin.
+            dx-harness is a Claude Code plugin of design skills your agent runs.
+            It carries a design loop that stops for your approval, a checkable
+            standards catalog, and an evaluator that grades what ships. The
+            engineering workflow rides along.
           </p>
 
           {/* ── Quick start — the one primary action ── */}
@@ -187,7 +187,7 @@ export default function Landing() {
           </div>
 
           <h3 className="mt-16 font-display text-xl font-bold tracking-tight text-canvas-ink">
-            And the engineering workflow, in the same plugin.
+            And the engineering workflow.
           </h3>
           <p className="mt-2 max-w-[58ch] text-sm text-canvas-muted">
             Issue grooming to code review — eight skills that carry a change from
