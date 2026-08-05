@@ -1,11 +1,12 @@
 name: CI
 
-# Runs the fast checks (lint, typecheck, unit tests, standards gate) on every
-# push and on pull requests targeting main. Separate from deploy.yml — this
-# workflow never deploys and deploy.yml never runs these checks.
+# Runs the fast checks (lint, typecheck, unit tests, standards gate) on pushes
+# to main and on pull requests targeting main. Separate from deploy.yml — this
+# workflow never deploys; deploy.yml runs only after this workflow succeeds.
 
 on:
-  push: {}
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -39,9 +40,6 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Standards gate
-        run: node scripts/check-standards.mjs
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -49,17 +47,11 @@ jobs:
       - name: Install PyYAML
         run: pip install pyyaml
 
-      - name: Python standards gate
-        run: |
-          python3 plugins/dx-harness/checks/validate.py --self-test
-          python3 plugins/dx-harness/checks/validate.py
-          python3 plugins/dx-harness/checks/token-audit.py app components lib
-          python3 plugins/dx-harness/checks/a11y-static.py app components
-          python3 plugins/dx-harness/checks/type-scan.py app components
-
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
 
+      # pnpm build's prebuild runs check-standards.mjs and the Python gates
+      # (check:python), so the gates run exactly once per job — here.
       - name: Build production site
         run: pnpm build
 

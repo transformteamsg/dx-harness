@@ -8,6 +8,7 @@ const nextConfig = {
      with fs at build time; include them in file tracing for deploys. */
   outputFileTracingIncludes: {
     "/llms.txt": ["./content/**/*", "./plugins/dx-harness/standards/**/*"],
+    "/llms-full.txt": ["./content/**/*", "./plugins/dx-harness/standards/**/*"],
     "/standards/catalog.yaml": ["./plugins/dx-harness/standards/**/*"],
     /* The per-control detail page reads the catalog + controls/<id>.md via
        getControlDetail at build time; trace those files into the route. */
