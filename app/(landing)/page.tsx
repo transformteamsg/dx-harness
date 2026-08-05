@@ -147,8 +147,8 @@ export default function Landing() {
           </h2>
           <p className="mt-4 max-w-[58ch] text-canvas-muted">
             The harness makes one promise: intent without loss. What you mean is
-            written down first, and every phase after — 70 checkable controls
-            deep — is graded against it.
+            written down first, and every phase after is graded against it,
+            70 checkable controls deep.
           </p>
           <ol className="mt-10">
             {PHASES.map((phase) => (
