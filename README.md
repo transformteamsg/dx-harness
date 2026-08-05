@@ -10,6 +10,20 @@ bundling engineering-workflow skills and design skills under one `/dx:` namespac
 - The design skills ship with their standards catalog (`plugins/dx/standards/`),
   deterministic checks (`plugins/dx/checks/`), and an `evaluator` agent.
 
+**DX Harness: one prefix, every discipline.** A harness for digital excellence — born in
+DXD Xperience Studio, built for everyone.
+
+## What "DX" stands for
+
+Deliberately open-ended, so it scales with whoever uses it — Digital Experience or
+Digital Excellence for the broadest reading, Developer Experience for engineers,
+Designer Experience for designers. It also echoes our own office name, DXD Xperience
+Studio, which keeps the origin story without hard-coding the brand into an
+open-source plugin.
+
+The `dx` prefix is the part that matters most: type `/dx` and every skill
+auto-surfaces. Plugin names can evolve; the prefix shouldn't.
+
 ## Install
 
 ### Claude Code (plugin marketplace) — primary
@@ -41,6 +55,35 @@ clicks. Available on paid plans in the Claude web app, Claude Desktop, and Cowor
 The canonical, tool-neutral sources are the `SKILL.md` files under
 `plugins/dx/skills/`. Point your harness at those directories directly; the
 `.claude-plugin/*.json` manifests are a Claude-specific adapter and can be ignored.
+
+## Migrating from `tfx`
+
+This repo was called `atelier` and the plugin was called `tfx`. If you installed the
+old plugin, re-add the marketplace under its new name:
+
+    /plugin marketplace remove atelier
+    /plugin marketplace add transformteamsg/dx-harness
+    /plugin install dx@dx-harness
+
+Then rename these in **your product repo** — the checks no longer recognise the old
+spellings:
+
+| Old | New | Where it lives |
+|---|---|---|
+| `/tfx:<skill>` | `/dx:<skill>` | how you invoke a skill |
+| `.tfx/` | `.dx/` | `config.json`, `design.json`, `component-manifest.json` |
+| `tfx-waive CTL-1` | `dx-waive CTL-1` | inline waiver comments in source |
+| `<!-- tfx-sync:… -->` | `<!-- dx-sync:… -->` | fragment-parity markers in docs |
+| `tfx-tokens` | `dx-tokens` | token-region markers in stylesheets |
+| `TFX-DS` | `DX-DS` | the control catalog's name in prose |
+
+A one-shot sweep for a product repo:
+
+    grep -rl 'tfx' . | xargs sed -i '' 's/tfx-waive/dx-waive/g; s/tfx-sync/dx-sync/g; s/tfx-tokens/dx-tokens/g; s/\.tfx/.dx/g; s/TFX-DS/DX-DS/g'
+    git mv .tfx .dx
+
+The upstream design-standard repo and its Notion source keep their existing
+`tfx-design-standard` URLs; only the harness renamed.
 
 ## Contributing
 
