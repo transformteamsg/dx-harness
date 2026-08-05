@@ -29,7 +29,7 @@ the plugin while the harness's CLAUDE.md does not.)
 catalog ships with this harness, not with the product repo — resolve it relative to
 this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
 (the same path works in the harness dev repo and when installed as the
-`dx` plugin; do not expect `standards/` in the project cwd). Filter
+`dx-harness` plugin; do not expect `standards/` in the project cwd). Filter
 controls by `phase` and scope (`products`/`audiences` — absent = global) as you
 go; read a control's `detail` file (same `standards/`
 directory) before applying it. Also read the product's `DESIGN.md` (repo root)
@@ -438,7 +438,7 @@ failing.
 - Evidence sets are required: widths, states, journey (with a recovery path),
   the Phase-1 inventory checkoff, and the dark-mode N/A rule when the product
   has no dark mode.
-- The evaluator verdict is written by the spawned `evaluator` agent, never by
+- The evaluator verdict is written by the spawned `dx-evaluator` agent, never by
   you, and is pasted verbatim into the decision record.
 
 ## Phase 6 — Ratchet

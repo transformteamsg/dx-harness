@@ -319,7 +319,7 @@ def lay_parity_errors(repo_root, catalog_by_id, xref_re):
     source = {cid for cid in catalog_by_id if cid.startswith("LAY-")}
     consumers = [
         os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
-        os.path.join(repo_root, ".claude", "agents", "evaluator.md"),
+        os.path.join(repo_root, ".claude", "agents", "dx-evaluator.md"),
         os.path.join(repo_root, ".claude", "skills", "layout", "SKILL.md"),
     ]
     for fpath in consumers:
@@ -404,7 +404,7 @@ COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
 def live_skills_count(repo_root):
     """
     Number of dirs under `<repo_root>/.claude/skills` that contain a
-    `SKILL.md`. This is the "N skills" claimed in prose (the `evaluator`
+    `SKILL.md`. This is the "N skills" claimed in prose (the `dx-evaluator`
     subagent is counted separately as "+ 1 agent", never folded in).
     """
     skills_dir = os.path.join(repo_root, ".claude", "skills")

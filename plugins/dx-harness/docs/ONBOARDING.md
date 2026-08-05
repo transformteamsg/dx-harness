@@ -21,7 +21,7 @@ Follow the two commands in the [README Install section](../README.md#install):
 ```
 
 This installs the 11 skills (`start`, `setup`, `design`, `critique`,
-`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `evaluator`
+`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `dx-evaluator`
 subagent (which carries its own review procedure), and the control catalog
 (`standards/`) — the catalog ships with the
 plugin, not with your repo. `/dx-harness:dx-start` is the front door: it orients you and routes to
@@ -109,7 +109,7 @@ loading rule: `docs/DESIGN-CONTEXT.md`.
 
 **What it means:** The DX skills (`start`, `setup`, `design`, `critique`,
 `standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`) and the
-`evaluator` subagent must be
+`dx-evaluator` subagent must be
 active in the product repo's Claude session for the harness to work. Without them, the agent
 has no loop structure, no catalog filters, and no evaluator procedure to follow.
 
@@ -117,7 +117,7 @@ has no loop structure, no catalog filters, and no evaluator procedure to follow.
 loaded. Open a Claude Code session in your product repo and ask: "design a test page."
 The `design` loop must trigger and ask intent questions — purpose, the teacher
 and moment, page type, done-criteria. If it does not, run `/plugin list` and confirm
-`dx` is enabled. If the plugin appears but the skill does not trigger,
+`dx-harness` is enabled. If the plugin appears but the skill does not trigger,
 check that the session is open in the product repo root, not in a subdirectory.
 
 ---
@@ -210,7 +210,7 @@ page. Here is what the six phases feel like in practice:
 4. **Implement** — the agent implements against the approved plan with catalog controls
    active. You should not need to intervene unless the plan was ambiguous.
 5. **Verify** — deterministic controls are checked manually (today), screenshots are
-   captured at 360/768/1280 px, and the `evaluator` subagent grades the judgment
+   captured at 360/768/1280 px, and the `dx-evaluator` subagent grades the judgment
    controls and four quality criteria. Note: in an unattended single-agent session, the
    evaluator spawn requires an orchestrator-level dispatch after the executor stops —
    see the friction report headline finding for the working pattern.
@@ -231,7 +231,7 @@ empty state in Teacher Workspace — is available at:
 
 The evaluator verdict in that example was produced via orchestrator-level dispatch
 after the executor stopped — not from within the executor's session. In an interactive
-session you run directly, the `design` skill spawns the `evaluator`
+session you run directly, the `design` skill spawns the `dx-evaluator`
 subagent directly from Phase 5.
 
 ---

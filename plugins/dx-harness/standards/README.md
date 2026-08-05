@@ -97,7 +97,7 @@ A waiver without a specific reason is a violation, not a waiver. L0+L1 are the
 | Check | Verified by | Examples |
 |---|---|---|
 | `deterministic` | Script / scanner (`checks/`, axe). Binary pass/fail; non-skippable. | Contrast ratio, raw colour detection, label presence, reduced-motion support |
-| `judgment` | `evaluator` subagent (or human), graded with quoted evidence. | Plain-language naming, tone in error copy, pattern appropriateness |
+| `judgment` | `dx-evaluator` subagent (or human), graded with quoted evidence. | Plain-language naming, tone in error copy, pattern appropriateness |
 | `hybrid` | Script narrows the surface, evaluator judges the remainder. | Script proves error states exist; evaluator confirms the copy says what happened, what it means, what's next |
 
 ## Enforcement — `enforced:` / `script:`
@@ -113,7 +113,7 @@ Two OPTIONAL per-control fields (see the schema example above):
   - `script` — a `checks/` script fully covers the control's deterministic claim.
   - `partial` — a script covers a subset; the rest is manual or evaluator.
   - `manual` — deterministic in principle, no script yet (the honest gap).
-  - `evaluator` — a judgment control; the `evaluator` subagent IS the
+  - `evaluator` — a judgment control; the `dx-evaluator` subagent IS the
     enforcement (not a gap to close).
   - **Absent = default**: `manual` for `deterministic`/`hybrid` controls,
     `evaluator` for `judgment` controls. Validators apply the default; never
