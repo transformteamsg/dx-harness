@@ -141,6 +141,10 @@ ALLOWED_FONT_TOKENS = (
     "plus jakarta sans", "inter", "font-display", "font-body", "font-sans",
     "--font-display", "--font-body", "var(--font-display)", "var(--font-body)",
     "inherit", "initial", "unset",
+    # Sanctioned per the plan-045 escape hatch: the site defines a --font-mono
+    # token (app/globals.css) for code, commands, and data labels — the mono is
+    # a deliberate third voice, not a costume for "technical".
+    "font-mono", "--font-mono", "var(--font-mono)",
 )
 # Generic CSS family keywords that are not a "typeface" choice.
 GENERIC_FAMILY_KEYWORDS = (

@@ -1,44 +1,42 @@
 ---
-title: Design that gives teachers their time back.
-description: The TFX Design Standard is how TransformX builds the Teacher & School portfolio (Teacher Workspace, CaseSync, and Glow). It turns our design quality bar into something every builder can reach, with or without a designer in the room.
-illustration: a busy Singapore school staff room transformed into calm, teachers chatting over coffee while their marking sits finished beside them, morning light --ar 21:9
-cta: See the TFX Design Standard
-readersHeading: One standard, three readers
-readersLead: Most design systems are written for designers. This one is written so a person, a person working with an agent, and an agent on its own all reach the same bar.
-readers:
-  - key: human
-    kicker: Human
-    title: Read it, use judgement
-    text: Designers and PMs read the principles and guidelines like any standard, then decide. Priority-ordered principles settle trade-offs; status badges show what's settled and what's still proposed.
-    href: /how-to-read
-    link: How to read this standard
-  - key: human-machine
-    kicker: Human + machine
-    title: Hand the skills to your agent
-    text: Skills carry the guidelines into your agent's context. You stay on the decisions and the taste; the harness keeps the output on standard while you steer.
-    href: /harness
-    link: See the harness
-  - key: machine
-    kicker: Machine
-    title: The machine checks itself
-    text: Agents read llms.txt and the control catalog directly. Each control is one tiered statement with explicit fail conditions that a separate evaluator grades the built screen against.
-    href: /for-agents
-    link: Start at for-agents
-why:
-  - title: Arguments get settled once
-    text: Most design debates repeat. Principles are priority-ordered beliefs that resolve trade-offs the same way every time, so teams spend their energy on the hard, novel decisions instead.
-  - title: The bar is checkable
-    text: Every standard is one verifiable statement with a tier and explicit failure conditions. A machine can read the catalog and tell you whether a screen passes before review even starts.
-  - title: Builders ship without waiting
-    text: Engineers and AI agents carry the standard with them through skills and the harness. Quality stops depending on whether a designer was free that sprint.
-team:
-  - name: Add designer name
-    role: Principal Product Designer
-    focus: Owns the standard · Teacher Workspace
-  - name: Add designer name
-    role: Product Designer
-    focus: CaseSync
-  - name: Add designer name
-    role: Product Designer
-    focus: Glow
+title: Design to the bar.
+description: dx-harness is a Claude Code plugin of design skills your agent runs — a design loop that stops for your approval, a checkable standards catalog, and a separate evaluator that grades what ships. The engineering workflow rides along in the same plugin.
 ---
+
+## Quick start
+
+Two commands in Claude Code:
+
+```
+/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx-harness@dx-harness
+```
+
+Then type `/dx` — every skill surfaces. No command line? In the Claude web app
+or Desktop, open Customize → Plugins, add a marketplace from the repository
+`transformteamsg/dx-harness`, and install **dx-harness**.
+
+## One loop, five phases
+
+The harness makes one promise — intent without loss. What you mean is written
+down first, and every phase after is graded against it.
+
+1. **Intent** — what you mean is written down as a contract.
+2. **Diverge** — two or three structurally different options; you pick.
+3. **Plan gate** — the plan is grilled, then stops for your approval.
+4. **Implement** — built exactly to the approved plan, on the standards catalog.
+5. **Verify** — deterministic checks first, then a separate evaluator grades the
+   result. The generator never grades its own work.
+
+## Thirteen design skills
+
+dx-design, dx-critique, dx-standards, dx-copy, dx-layout, dx-polish, dx-motion,
+dx-flow, dx-research-brief, dx-git-buddy, dx-start, dx-setup, dx-feedback.
+
+And the engineering workflow in the same plugin: dx-code-review,
+dx-create-issue, dx-groom-issue, dx-split-issue, dx-implement-issue,
+dx-lint-setup, dx-git-hooks-setup, dx-update-npm-dependencies.
+
+The harness is built on the TFX Design Standard — the full standard lives in
+the docs (`/overview`), the machine-readable catalog at `/standards/catalog.yaml`,
+and the agent entry point at `/llms.txt`.

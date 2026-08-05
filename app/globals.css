@@ -113,6 +113,24 @@
   --demo-slop-ink: #4c1d95;
   --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
   --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
+
+  /* ── Landing world — the marketing surface's own dark, print-flat palette
+     (Hex×Grafana direction, pinned by the design owner). Scoped to the landing:
+     docs pages never use these. Flat fields only — no gradients, no glows
+     (SLP-1 still binds). Tape inks are bright enough that near-black text on
+     them clears 4.5:1; canvas-muted clears 4.5:1 on --canvas (A11Y-1, L0). ── */
+  --canvas: #101012;          /* near-black ground */
+  --canvas-raised: #17171a;   /* terminal block, quiet panels */
+  --canvas-ink: #fafafa;      /* display + body ink on canvas */
+  --canvas-muted: #a6a6ad;    /* secondary ink — 7.0:1 on --canvas */
+  --canvas-line: #26262b;     /* hairline grid + borders on canvas */
+  --canvas-line-soft: #1c1c20;/* the ruled background grid */
+  --tape-pink: #f572da;       /* phase: intent */
+  --tape-yellow: #f7c948;     /* phase: diverge */
+  --tape-green: #8fd94d;      /* phase: plan */
+  --tape-blue: #6cb8f5;       /* phase: implement */
+  --tape-orange: #f5863d;     /* phase: verify */
+  --tape-ink: #131316;        /* text on tape strips */
 }
 
 @theme inline {
@@ -167,6 +185,23 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
   --font-body: "Inter Variable", system-ui, sans-serif;
+  /* The third voice: code, commands, and data labels (sanctioned in
+     type-scan.py's ALLOWED_FONT_TOKENS). */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Landing world utilities (bg-canvas, text-canvas-ink, border-canvas-line, …) */
+  --color-canvas: var(--canvas);
+  --color-canvas-raised: var(--canvas-raised);
+  --color-canvas-ink: var(--canvas-ink);
+  --color-canvas-muted: var(--canvas-muted);
+  --color-canvas-line: var(--canvas-line);
+  --color-canvas-line-soft: var(--canvas-line-soft);
+  --color-tape-pink: var(--tape-pink);
+  --color-tape-yellow: var(--tape-yellow);
+  --color-tape-green: var(--tape-green);
+  --color-tape-blue: var(--tape-blue);
+  --color-tape-orange: var(--tape-orange);
+  --color-tape-ink: var(--tape-ink);
 }
 
 /* Default border colour for the shadcn/ui components (Base UI): their borders set
@@ -197,6 +232,39 @@ body {
 }
 
 h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+
+/* ── Landing world ────────────────────────────────────────────────────────
+   The ruled near-black ground of the landing (Hex×Grafana direction): flat
+   hairline grid drawn from tokens, no gradient washes, no glows. Scoped by
+   class so the docs shell never inherits it. */
+.landing-grid-bg {
+  background-color: var(--canvas);
+  background-image:
+    linear-gradient(var(--canvas-line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--canvas-line-soft) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* The hero's one authored motion moment: the three tape strips slide in from
+   offset positions on load, ease-out, then rest. Decorative only (aria-hidden);
+   removed entirely under reduced motion (A11Y-5). */
+@media (prefers-reduced-motion: no-preference) {
+  .tape-strip {
+    animation: tape-in var(--motion-story) var(--ease-out) both;
+  }
+  .tape-strip-2 { animation-delay: 80ms; }
+  .tape-strip-3 { animation-delay: 160ms; }
+  @keyframes tape-in {
+    from {
+      opacity: 0;
+      transform: translateX(-48px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
 
 /* prose defaults for MDX — layered as components so Tailwind utilities on
    embedded UI (diagrams, figures) can override them. */
