@@ -1,0 +1,76 @@
+---
+title: Install
+description: Two commands put the skills, the evaluator, and the control catalog in your Claude Code session.
+status: settled
+---
+
+The harness ships as a Claude Code plugin. Install it once per product repo;
+everyone who opens Claude Code in that repo gets the same skills, the same
+evaluator, and the same control catalog.
+
+## Before you start
+
+You need [Claude Code](https://claude.com/claude-code) installed and signed in.
+Open a session at the root of your product repo, not a subdirectory — skills
+read the repo they run in, and a session opened deeper may not trigger them.
+
+## Install the plugin
+
+Run these two commands in your Claude Code session:
+
+```
+/plugin marketplace add transformteamsg/tfx-design-standard
+/plugin install tfx@tfx
+```
+
+The first registers the standard's repository as a plugin marketplace. The
+second installs the `tfx` plugin from it: the eleven [skills](/harness/skills),
+the evaluator agent, and the [control catalog](/standards/catalog). The catalog
+ships inside the plugin, so your repo never carries its own copy of the
+standard.
+
+## Check it worked
+
+Type `/tfx:start`. It orients you and routes you to the right skill; if it
+responds, the install worked.
+
+If nothing happens:
+
+- Run `/plugin` and confirm `tfx` appears and is enabled.
+- Confirm your session is open at the repo root, not a subdirectory.
+- Restart Claude Code and try again.
+
+## Set up your machine, once per person
+
+The plugin is per-repo; three tools are per-person. Run `/tfx:start` once and
+the setup skill checks and installs them:
+
+- **agent-browser** — captures the screenshots the verify phase grades.
+- **`gh`, authenticated** — lets `/tfx:feedback` file an issue the moment the
+  harness confuses you.
+- **Python with PyYAML** — runs the deterministic check scripts.
+
+## Stay current
+
+Plugin updates are manual — third-party marketplaces don't update themselves.
+When the catalog or the skills change, run:
+
+```
+/plugin marketplace update tfx
+/reload-plugins
+```
+
+The skills and the catalog are versioned together, so one update moves both.
+Full steps, including the auto-update setting, are in
+[UPDATING.md](https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/docs/UPDATING.md).
+
+## Adopting the harness for a whole product repo?
+
+Installing gives you the tools. Making a repo harness-ready is six more items:
+the fixed stack, a component manifest, skills verified, deterministic checks,
+record locations, and a named waiver approver. Work through the
+[team onboarding guide](https://github.com/transformteamsg/tfx-design-standard/blob/main/harness/docs/ONBOARDING.md)
+once per repo.
+
+Working on the harness itself? Open Claude Code in the harness repo and skip
+all of this — its skills load automatically from the repo.

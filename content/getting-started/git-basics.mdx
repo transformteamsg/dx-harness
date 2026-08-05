@@ -1,0 +1,84 @@
+---
+title: Introducing Git
+description: The handful of Git words you'll hear, and what each one means.
+status: proposed
+---
+
+Git is the tool teams use to work on the same code without overwriting each other's work.
+
+**Your computer vs the shared server.** Your own computer holds your private copy. Anything you do there (including a live preview at `localhost`) is yours alone until you push it up to the shared server. The shared server (usually GitLab, sometimes GitHub) is what the whole team sees. Keep the two apart in your head and most of what follows makes sense.
+
+## The words you'll hear
+
+<Glossary>
+
+<Term icon="folder-git-2">**Repo** - the shared folder of code your team works in, hosted on GitLab or GitHub.</Term>
+
+<Term icon="copy">**Clone** - make a copy of the repo on your own computer.</Term>
+
+<Term icon="git-branch">**Branch** - your own private version of the code, so nothing you do touches the shared version until it's reviewed.</Term>
+
+<Term icon="git-commit-horizontal">**Commit** - save a checkpoint of your work. Commit often; it's what lets you undo mistakes.</Term>
+
+<Term icon="arrow-up-from-line">**Push** - upload your branch to the shared server so others can see it. Not merged yet, just uploaded.</Term>
+
+<Term icon="git-pull-request">**Merge request** (MR; **pull request** or PR on GitHub) - ask for your branch to be reviewed and added into the shared code.</Term>
+
+<Term icon="git-merge">**Merge** - approved and added in. Your work is now part of the shared code.</Term>
+
+</Glossary>
+
+That's the whole vocabulary. Your AI can run all of these for you; knowing what they mean just lets you tell when something looks off.
+
+## Meet Gitty, your git buddy
+
+You don't have to memorise any of this. **Gitty** is a companion in Claude Code that runs the git steps with you, one at a time. It explains each word as it comes up, and checks with you before anything leaves your computer.
+
+Type `/git-buddy`, then say what you want in plain words:
+
+- "start me on a new feature"
+- "save my work"
+- "put this up for review"
+- "what's a merge conflict?"
+- "I think I broke something"
+
+Gitty works out the git and walks you through it. If you've installed the [design harness](/harness/install), it's one line away:
+
+```
+/plugin install git-buddy@tfx
+```
+
+Then run `/git-buddy` whenever you want a hand. Not on the harness? It's public too, at [tashayip/git-buddy](https://github.com/tashayip/git-buddy).
+
+## Good habits
+
+A few habits keep you safe and make your work easy to follow:
+
+<Glossary>
+
+<Term icon="arrow-down-to-line">**Pull the latest first.** Before you start, grab everyone's newest changes so you're not building on an old version.</Term>
+
+<Term icon="git-branch">**Work on a branch, never on `main`.** Your branch is a safe copy; `main` stays stable for the whole team.</Term>
+
+<Term icon="git-commit-horizontal">**Commit small and often.** Save little checkpoints as you go, not one big dump at the end - small commits are easy to undo.</Term>
+
+<Term icon="message-square">**Write clear commit messages.** One line saying what changed, so a teammate gets it without opening the files.</Term>
+
+<Term icon="undo-2">**Don't panic.** Git almost never loses work; nearly anything can be recovered, so a confusing moment is rarely a real problem.</Term>
+
+</Glossary>
+
+## The everyday rhythm
+
+Once you're set up, most days follow the same shape:
+
+1. **Pull** the latest `main` so you start current.
+2. **Branch** off it for your change.
+3. **Build**, committing small checkpoints as you go.
+4. **Push** your branch up.
+5. Open a **merge request** and get it reviewed.
+6. Once approved, it's **merged** in.
+
+[Step 3: Build](/getting-started/build) and [Step 4: Ship](/getting-started/ship) walk through each of these.
+
+Next: [Step 0: Prep guardrails](/getting-started/guardrails).

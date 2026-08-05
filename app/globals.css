@@ -1,0 +1,229 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Class-based dark variant so shadcn's dark: utilities never activate from the
+   OS colour-scheme preference — this site is light-only (no .dark layer). */
+@custom-variant dark (&:is(.dark *));
+
+/* ── TFX Design Standard — neutral shadcn-style tokens, visual direction TBD ── */
+:root {
+  --background: #fafafa;
+  --surface: #ffffff;
+  --foreground: #18181b;
+  --muted-foreground: #67676f; /* darkened from zinc-500 #71717a to clear WCAG AA 4.5:1 on the --muted #f4f4f5 fill, not just the page bg (A11Y-1, L0) */
+  --border: #e4e4e7;
+  --ring: #0064ff;
+
+  /* Product primaries — ⚑ proposed mapping (Radix-based for CaseSync/Glow) */
+  --tw-blue: #0064ff;        /* Teacher Workspace — brand anchor */
+  --casesync: #3e63dd;       /* Radix indigo-9 (proposed) */
+  --glow: #f76b15;           /* Radix orange-9 (proposed) */
+
+  /* Hover darken for the TW-blue primary — kept off the call site so component
+     code stays free of raw colour (TOK-1); the `black` mix lives here, in the
+     exempt token block. */
+  --tw-blue-hover: color-mix(in oklab, var(--tw-blue) 88%, black);
+
+  /* Neutral UI fills — zinc scale, shadcn convention */
+  --muted: #f4f4f5;          /* zinc-100 — active fill, code background */
+  --accent: #fafafa;         /* zinc-50 — hover fill */
+  --border-strong: #a1a1aa;  /* zinc-400 — hover border */
+
+  /* Prose body ink — a touch softer than --foreground */
+  --prose-body: #3f3f46;     /* zinc-700 */
+
+  /* Functional colours — Radix scales (COL-2), never ad-hoc. Base = step 9,
+     text = step 11; subtle (bg) and muted (border) derived from the base. */
+  --success-9: #46a758;      /* Radix grass-9 */
+  --warning-9: #ffc53d;      /* Radix amber-9 */
+  --danger-9:  #e5484d;      /* Radix red-9 */
+  --success: #2a7e3b;        /* Radix grass-11 — text */
+  --warning: #8a5300;        /* Radix amber-11 (#ab6400) darkened → 6.1:1 on --warning-subtle. The darken is needed because amber-11 itself caps ~4.6:1 even on white (amber is intrinsically low-contrast) and fails AA on a tinted bg. */
+  --danger:  #ce2c31;        /* Radix red-11 — text */
+  /* Subtle (badge bg) kept at 8% so step-11 text clears the 4.5:1 floor with margin (A11Y-1, L0). */
+  --success-subtle: color-mix(in oklab, var(--success-9) 8%, var(--surface));
+  --warning-subtle: color-mix(in oklab, var(--warning-9) 8%, var(--surface));
+  --danger-subtle:  color-mix(in oklab, var(--danger-9) 8%, var(--surface));
+  --success-muted: color-mix(in oklab, var(--success-9) 34%, var(--surface));
+  --warning-muted: color-mix(in oklab, var(--warning-9) 44%, var(--surface));
+  --danger-muted:  color-mix(in oklab, var(--danger-9) 34%, var(--surface));
+
+  /* Section inks — colour-code the doc directory. Radix scales (COL-2 spirit);
+     avoids product hues (indigo/orange), purple (SLP-1) and red (COL-2). */
+  --sec-principles: #0064ff;   /* TW blue — the brand compass */
+  --sec-standards: #46a758;    /* Radix grass-9 — checkable, pass/fail */
+  --sec-guidelines: #ab6400;   /* Radix amber-11 — advisory, judgement applies */
+  --sec-foundations: #12a594;  /* Radix teal-9 — shared material */
+  --sec-research: #5c7c2f;     /* Radix lime-11 — evidence, distinct from the green/teal/cyan already in use */
+  --sec-products: #00a2c7;     /* Radix cyan-9 — the three identities */
+  --sec-harness: #ad7f58;      /* Radix brown-9 — the working strap */
+  --sec-getting-started: #5b5bd6; /* Radix iris-9 — the hands-on on-ramp */
+  --sec-governance: #60646c;   /* Radix slate-11 — neutral stewardship */
+
+  --radius: 0.5rem;
+
+  /* ── Motion — the only durations and easings site code may use (MOT-2, proposed).
+     Duration follows the size of the change; easing follows its direction
+     (enter/exit → out, on-screen movement → in-out, hover tint → plain ease).
+     Interface motion stays ≤300ms (MOT-1); --motion-story is for narrative
+     surfaces only — explanatory diagrams and the landing reveal — never task UI.
+     A11Y-5: every consumer provides a reduced-motion variant. ── */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-story: 600ms;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  /* ── shadcn/ui compatibility tokens — mapped onto the brand tokens above so
+     shadcn components (Base UI) render on-brand and stay TOK-1 compliant: every
+     value resolves to a token defined here, never a raw value in a component. ── */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --primary: var(--tw-blue);
+  --primary-foreground: var(--surface);
+  --secondary: var(--muted);
+  --secondary-foreground: var(--foreground);
+  --accent-foreground: var(--foreground);
+  --destructive: var(--danger);
+  --input: var(--border);
+  /* --ring is already defined above as the TW-blue focus ring (#0064ff). */
+
+  /* Sidebar surface — same fill as the page, so the desktop column reads as it
+     does today (separated by its right border), not as a distinct panel. */
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--tw-blue);
+  --sidebar-primary-foreground: var(--surface);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* ── Anti-specimen tokens — used ONLY by components/compare.tsx to draw the
+     "before" (default-AI) panel of the standards demo. Never use these in
+     product UI: they exist to be pointed at (SLP-1/SLP-2 exhibits). ── */
+  --demo-slop-grad-a: #7c3aed;
+  /* fuchsia-700, darkened from fuchsia-600 so 13px text on the gradient and
+     the gradient-clipped title both clear 4.5:1 (A11Y-1 holds even here). */
+  --demo-slop-grad-b: #a21caf;
+  --demo-slop-surface: #f5f3ff;
+  --demo-slop-ink: #4c1d95;
+  --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
+  --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-tw-blue: var(--tw-blue);
+  --color-tw-blue-hover: var(--tw-blue-hover);
+  --color-casesync: var(--casesync);
+  --color-glow: var(--glow);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-border-strong: var(--border-strong);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-muted: var(--success-muted);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-muted: var(--warning-muted);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-danger-muted: var(--danger-muted);
+
+  /* shadcn/ui token utilities → brand tokens (see :root compatibility block).
+     The --radius-* values equal Tailwind v4 defaults, so existing components are
+     unaffected; they just tie shadcn's radii to --radius. */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
+  --font-body: "Inter Variable", system-ui, sans-serif;
+}
+
+/* Default border colour for the shadcn/ui components (Base UI): their borders set
+   width only (e.g. the sidebar's border-r, the sheet edge, separators), and
+   Tailwind v4 defaults an uncoloured border to currentColor — which rendered the
+   sidebar↔content divider near-black. Restore shadcn's base rule so any uncoloured
+   border is the light --border hairline (TOK-1). Components that set an explicit
+   border-border/colour override this. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+}
+
+/* Anchor targets clear the sticky topbar; smooth only when motion is welcome. */
+html { scroll-padding-top: 80px; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter Variable", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+
+/* prose defaults for MDX — layered as components so Tailwind utilities on
+   embedded UI (diagrams, figures) can override them. */
+@layer components {
+  .prose { max-width: 70ch; line-height: 1.5; font-size: var(--text-base); }
+  .prose h1 { font-size: var(--text-3xl); font-weight: 600; margin: 0 0 16px; }
+  .prose h2 { font-size: var(--text-2xl); font-weight: 600; margin: 40px 0 12px; }
+  .prose h3 { font-size: var(--text-xl); font-weight: 600; margin: 28px 0 8px; }
+  .prose p { margin: 0 0 14px; color: var(--prose-body); }
+  .prose ul, .prose ol { margin: 0 0 14px; padding-left: 20px; color: var(--prose-body); }
+  .prose ul { list-style: disc; }
+  .prose ol { list-style: decimal; }
+  .prose ul ul { list-style: circle; margin-top: 4px; margin-bottom: 0; }
+  .prose li { margin-bottom: 4px; }
+  /* display:block lets a wide table scroll inside its own container instead of
+     overflowing the page at narrow widths (A11Y — no horizontal page scroll). */
+  .prose table { display: block; width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: 16px 0 20px; overflow-x: auto; }
+  .prose th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+  .prose td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
+  .prose code { font-size: 0.9em; background: var(--muted); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; word-break: break-word; }
+  .prose pre { background: transparent; color: inherit; padding: 0; margin: 0; border-radius: 0; overflow-x: auto; }
+  .prose pre code { background: transparent; padding: 0; overflow-wrap: normal; word-break: normal; white-space: inherit; }
+  .prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
+  .prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
+  .prose strong { color: var(--foreground); font-weight: 600; }
+  /* Preflight gives hr 0 margin, so a `---` inherits its neighbours' asymmetric
+     gaps (e.g. 20px above from a table, 0 below from a paragraph). Give it its
+     own symmetric breathing room. */
+  .prose hr { margin: 32px 0; border: 0; border-top: 1px solid var(--border); }
+}

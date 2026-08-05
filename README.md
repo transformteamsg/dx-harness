@@ -90,6 +90,17 @@ A one-shot sweep for a product repo:
 The upstream design-standard repo and its Notion source keep their existing
 `tfx-design-standard` URLs; only the harness renamed.
 
+## Website
+
+This repo also hosts the design-standard website (Next.js 15, pnpm) — the
+human- and agent-readable rendering of the standard, including `/llms.txt`
+(with control details: `/llms-full.txt`) and `/standards/catalog.yaml`. It
+reads the catalog directly from `plugins/dx-harness/standards/`.
+
+    pnpm install
+    pnpm dev      # local dev server
+    pnpm build    # runs the standards gates, then builds
+
 ## Contributing
 
 See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).

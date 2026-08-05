@@ -1,0 +1,47 @@
+---
+title: "Step 2: Plan"
+description: Start from the problem, pick your mode, and decide how much to plan.
+status: proposed
+---
+
+## Start with the problem
+
+Before any code, get clear on what you're solving: a short problem statement, a design brief, and (where they apply) your measures of success. A clear problem makes every later step easier to judge.
+
+> **Tip: track success.** If your app uses [PostHog](https://posthog.com), set up analytics to see whether a build moves the metric, not just whether it shipped.
+
+## Pick your mode
+
+What kind of work this is decides how much to plan and which tools help.
+
+| Mode | What it is | Recommended approach |
+| --- | --- | --- |
+| **Prototype** | A quick build to test an idea or demo to the team | Prompt freely with mock data; rough is fine. If the idea is fuzzy, start with a `/grill-me` interview. |
+| **Revamp** | Polishing existing UI without breaking how it works | Use light plan mode, describe the changes you want, and go in small steps. |
+| **Handoff (frontend)** | A clean frontend an engineer will wire up; they mostly refactor the backend | Write a spec so your design intent survives; OpenSpec or `/ce-plan` (Compound Engineering) can draft one. How detailed depends on the work and the engineer, so ask what documentation they need. |
+
+## Decide how much to plan
+
+It's your call. A common rhythm: explore or prototype freely first, then write it down once the shape settles. Rigid plans early tend to fight visual exploration. These modes mirror the early phases of a design loop: intent, then a few directions, then a plan (see [The loop](/harness/loop)).
+
+## Tools and skills
+
+Whichever tool you use, you start the same way: tell the AI, in plain words, what you want to build and the problem it solves. Be specific; vague in, vague out.
+
+**Got a design harness? Lean on it.** Its skills know the standard, so they build, review, and polish to spec. On a TFX repo you type it plainly - `/tfx:design a settings page for teachers` - and see [the harness skills](/harness/skills) for the full set. (That's the product-specific TFX harness; a generic DXD one is on the way.)
+
+No harness? The generic tools below do similar jobs, but the AI still needs slightly more babysitting. These are the ones I picked up from the LangBuddy engineers:
+
+| Tool | What it does, and how to use it | Where |
+| --- | --- | --- |
+| **plan mode** | Lays out its approach before writing any code. Turn it on, describe the change, then read the plan and approve it or send it back. Honestly, your best friend. | [Claude Code feature](https://code.claude.com/docs/en/permission-modes) |
+| **`/grill-me`** (rec. Sheen An) | Interviews you to pressure-test the idea. Run it, then answer its questions honestly; it surfaces the gaps you missed. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| **OpenSpec** (rec. Selwyn) | Turns your intent into a structured written spec. Describe the feature and it drafts a spec for you to review and refine. | [openspec.dev](https://openspec.dev) |
+| **`/feature-dev`** (Anthropic) | Walks a feature through discovery, architecture, build, and review. Run `/feature-dev` followed by a description of what you want. | [claude.com/plugins/feature-dev](https://claude.com/plugins/feature-dev) |
+| **Compound Engineering** (rec. Wondo) | A brainstorm-to-plan-to-build-to-review flow, built so each task makes the next one easier. Kick it off with the feature and the problem. | [github.com/EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) |
+
+All optional. Use whatever fits you or your team, or none.
+
+> **Tip: add reference images.** Give your AI a screenshot, a Figma frame, or a screen you admire from another app. Images convey the look you want faster than words.
+
+Next: [Step 3: Build](/getting-started/build).

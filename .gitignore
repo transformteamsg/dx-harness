@@ -18,3 +18,17 @@ Thumbs.db
 
 # Subagent-driven-development process scratch (briefs, reports, review diffs, ledger)
 .superpowers/
+
+# Website (Next.js)
+node_modules/
+.next/
+.next-dev/
+out/
+.env*
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+# Playwright
+/test-results/
+/playwright-report/

@@ -1,0 +1,79 @@
+---
+title: Tokens
+description: Every token in one place — colour, type, spacing, radius, and motion — the names code should use.
+status: proposed
+---
+
+One page, every token. Use the token name, never the value (TOK-1).
+
+## Colour
+
+<TokenTable group="core" />
+
+<TokenTable group="functional" />
+
+See [Colour](/foundations/colour) for the Radix ramps and where each product's primary comes from.
+
+## Type scale
+
+| Step | Size | Font |
+| --- | --- | --- |
+| Display | 48px (also 60 / 72 / 96) | Plus Jakarta Sans 600 |
+| Heading 1 | 30px | Plus Jakarta Sans 600 |
+| Heading 2 | 24px | Plus Jakarta Sans 600 |
+| Heading 3 | 20px | Plus Jakarta Sans 600 |
+| Body Large | 18px | Inter 400 |
+| Body | 16px | Inter 400 |
+| Body Small | 14px | Inter 400 |
+| Caption | 12px | Inter 500 |
+| Label | 12px | Inter 600 |
+
+See [Typography](/foundations/typography) for font roles and usage rules.
+
+## Spacing
+
+| Step | Size |
+| --- | --- |
+| 1 | 4px |
+| 2 | 8px |
+| 3 | 12px |
+| 4 | 16px |
+| 5 | 20px |
+| 6 | 24px |
+| 8 | 32px |
+| 10 | 40px |
+| 12 | 48px |
+| 16 | 64px |
+| 20 | 80px |
+| 24 | 96px |
+
+The scale continues to 112 and 128px.
+
+See [Spacing & radius](/foundations/spacing-radius) for the full spacing and radius specimens.
+
+## Radius
+
+| Token | Value |
+| --- | --- |
+| `rounded-none` | 0px |
+| `rounded-sm` | 2px |
+| `rounded` | 4px |
+| `rounded-md` | 6px |
+| `rounded-lg` | 8px |
+| `rounded-xl` | 12px |
+| `rounded-2xl` | 16px |
+| `rounded-3xl` | 24px |
+| `rounded-full` | 9999px |
+
+## Motion
+
+| Token | Value |
+| --- | --- |
+| `--motion-fast` | 120ms |
+| `--motion-base` | 200ms |
+| `--motion-slow` | 300ms |
+| `--motion-story` | 600ms |
+| `--ease-out` | cubic-bezier(0.215, 0.61, 0.355, 1) |
+| `--ease-in-out` | cubic-bezier(0.645, 0.045, 0.355, 1) |
+
+Durations and easings are never hardcoded — always reference the token (MOT-2 ⚑). See [Motion](/foundations/motion) for the raced specimen.

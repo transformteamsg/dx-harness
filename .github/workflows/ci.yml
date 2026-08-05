@@ -1,0 +1,67 @@
+name: CI
+
+# Runs the fast checks (lint, typecheck, unit tests, standards gate) on every
+# push and on pull requests targeting main. Separate from deploy.yml — this
+# workflow never deploys and deploy.yml never runs these checks.
+
+on:
+  push: {}
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Standards gate
+        run: node scripts/check-standards.mjs
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Python standards gate
+        run: |
+          python3 plugins/dx-harness/checks/validate.py --self-test
+          python3 plugins/dx-harness/checks/validate.py
+          python3 plugins/dx-harness/checks/token-audit.py app components lib
+          python3 plugins/dx-harness/checks/a11y-static.py app components
+          python3 plugins/dx-harness/checks/type-scan.py app components
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build production site
+        run: pnpm build
+
+      - name: Rendered accessibility contract
+        run: pnpm test:e2e

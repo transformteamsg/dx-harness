@@ -1,0 +1,50 @@
+{
+  "principles": {
+    "label": "Principles",
+    "slugs": ["brand-principles", "product-design-principles"]
+  },
+  "standards": {
+    "label": "Standards",
+    "slugs": []
+  },
+  "guidelines": {
+    "label": "Guidelines",
+    "slugs": [
+      "voice-tone",
+      "ui-text",
+      "grammar-mechanics",
+      "text-patterns",
+      "naming",
+      "interaction",
+      "web-interface",
+      "data-viz",
+      "illustration",
+      "product-icons"
+    ]
+  },
+  "foundations": {
+    "label": "Foundations",
+    "slugs": ["colour", "typography", "spacing-radius", "iconography", "motion", "tokens"]
+  },
+  "research": {
+    "label": "Research",
+    "slugs": ["research-brief"]
+  },
+  "products": {
+    "label": "Products",
+    "slugs": ["teacher-workspace", "casesync", "glow"]
+  },
+  "getting-started": {
+    "label": "Start with code",
+    "slugs": ["git-basics", "guardrails", "set-up", "plan", "build", "ship", "help"]
+  },
+  "harness": {
+    "label": "Harness",
+    "slugs": ["install", "loop", "skills", "tools", "on-ramp"]
+  },
+  "governance": {
+    "label": "Governance",
+    "slugs": ["governance", "changes"],
+    "root": true
+  }
+}

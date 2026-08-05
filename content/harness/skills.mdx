@@ -1,0 +1,67 @@
+---
+title: Skills
+description: The commands you type in Claude Code. Say what you want in plain words; each skill knows the standard so you don't have to.
+status: proposed
+---
+
+A skill is a command you type to Claude Code, like `/tfx:design`. They arrive
+together when you [install the plugin](/harness/install). You never
+need to memorise the list: type `/tfx:start` and it works out what you need
+and routes you. Two things are always true, whichever skill runs:
+
+- **You can't break anything by asking.** Skills that change things stop and
+  show you a plan before any code is written. Skills that review things
+  change nothing at all.
+- **You can answer in plain words.** "The page feels cluttered" is a valid
+  instruction. The skill translates it into the standard's terms.
+
+## Say what you want
+
+| You want to... | Type |
+| --- | --- |
+| Get oriented, or you're not sure which skill fits | `/tfx:start` |
+| Set up your machine or onboard a product (once) | `/tfx:setup` |
+| Build a new screen, or change an existing one | `/tfx:design` |
+| Hear what's wrong with a page before changing it | `/tfx:critique` |
+| Fix one dimension: wording, spacing, motion, a multi-step flow, layout | `/tfx:copy` · `/tfx:polish` · `/tfx:motion` · `/tfx:flow` · `/tfx:layout` |
+| Ask whether a rule applies, or whether you can waive it | `/tfx:standards` |
+| Tell us the harness itself confused you | `/tfx:feedback` |
+
+## The two you'll use most
+
+**`/tfx:design`** builds or changes product UI through the
+[six-phase loop](/harness/loop). You describe the screen in your own words; it
+comes back with 2–3 directions, you pick one, it writes a plan, and it builds
+only after you approve. If you change your mind mid-run, say so — the loop
+goes back a phase rather than pushing on.
+
+**`/tfx:critique`** is for "I don't like this page but I can't say why."
+It captures the page, grades it against the catalog, and returns ranked
+suggestions with scores. Nothing changes unless you then approve fixes.
+
+## The focused passes
+
+When you can already name the problem, skip the full loop. Each pass improves
+one dimension of an existing page, proposes ranked fixes, and stops for your
+approval before touching anything:
+
+- `/tfx:copy` — wording, tone, names, error messages.
+- `/tfx:polish` — spacing, type, colour, radius, shadow.
+- `/tfx:motion` — transitions, easing, timing, reduced motion.
+- `/tfx:flow` — multi-step tasks: steps, waiting states, safe exits, drafts.
+- `/tfx:layout` — structure, hierarchy, density, alignment.
+
+## Behind the scenes
+
+- `/tfx:standards` answers catalog questions with citations — "does TOK-1
+  apply here?", "can I waive this, and who approves?"
+- `/tfx:feedback` files a GitHub issue on the harness repo the moment
+  something about the harness itself confuses you, even mid-task. Confusion
+  is a bug report, not a you-problem.
+- The **evaluator** is an agent, not a command: after `/tfx:design` builds
+  something, a separate agent grades the result against what you asked for.
+  The builder never marks its own homework.
+
+One deliberate stance carried by every skill: **unwarranted novelty is
+flagged as readily as generic output.** A custom pattern where a stack
+component already exists is a finding.

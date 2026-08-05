@@ -1,0 +1,21 @@
+---
+title: Tools
+description: The runnable tools that let you produce on-brand work without re-reading the rules — generators and checks, not docs about the brand.
+status: proposed
+tools:
+  - name: Icon Generator
+    description: The first live tool in the harness. Produces on-brand iconography with stroke, radius, and silhouette enforced by construction.
+    href: https://icon-generator-seven.vercel.app/
+    repo: https://github.com/wondopamine/icon-generator
+---
+
+These tools serve builders inside the design loop, which invokes them for you as you work. The table below is what exists today, and how far each is trusted.
+
+| Tool | Status | Job |
+| --- | --- | --- |
+| [Icon Generator](https://icon-generator-seven.vercel.app/) | Live | On-brand iconography; stroke, radius, silhouette enforced by construction |
+| Midjourney SREF | In use | On-brand illustration: `--sref 2544305963::2 4104856457` on every prompt |
+| Deterministic check scripts | Planned (V1) | Contrast, token audit, labels, type scan, reduced-motion, anti-slop; wired as PR checks and the verify gate |
+| Theming / token generator | Planned | Product theming within the per-product Radix palette strategy |
+
+A brand isn't real until builders can produce on-brand artifacts without re-reading the guidelines. Found something missing? Built an on-brand tool? Open a PR; the list grows with the portfolio.

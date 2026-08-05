@@ -1,0 +1,121 @@
+---
+title: Change log
+description: What changed in the standard and its harness, release by release — newest first.
+status: settled
+---
+
+Each entry records what shipped, in the order it landed. Proposals that have
+not shipped live in [How this evolves](/governance), not here. The detailed
+records behind each entry live in the harness repo, under
+`harness/docs/catalog-changes/` and `harness/docs/decisions/`.
+
+## 22 July 2026 — content ratified: voice & tone, controls, and guidelines settled
+
+The design lead approved the outstanding content proposals, so they are now the
+standard. Record: `docs/catalog-changes/cnt-14-voice-tone.md`.
+
+- **Voice & tone is settled.** The [Voice & tone](/guidelines/voice-tone)
+  guideline adopts Kind Utility and the three voice attributes — Clear,
+  Thoughtful, Approachable — with the "we are / we are not" and tone-by-context
+  tables. The parallel `voice-tone-proposed` page is retired.
+- **CNT-14 reads from the settled page.** The control's `verify` now points at
+  `voice-tone.mdx`, so the enforced voice matches the published one.
+- **CNT-5, CNT-6, and CNT-7 are settled.** Device-agnostic action verbs,
+  low-informational-value words, and lead-with-purpose lose their Proposed stamp
+  and are now binding.
+- **The content guidelines are settled.** [UI text](/guidelines/ui-text),
+  [Grammar & mechanics](/guidelines/grammar-mechanics), and [Components & text
+  patterns](/guidelines/text-patterns) move from Proposed to settled.
+- **The copy skill applies the content controls.** CNT-8 through CNT-13 are
+  wired into the `tfx:copy` skill's copy-improvement pass, and its inline voice
+  table matches the settled guideline.
+
+## 16 July 2026 — the standard stays TFX
+
+The division-level programme (PRs #25 and #30–#34) was cancelled and this repo
+stays the TFX (Teacher & School) design standard. Wondo Jeong (design lead)
+decided; the record is `docs/decisions/dxd-harvest.md`. Work from that
+programme that strengthens the TFX harness was kept and re-expressed here:
+
+- **Checker and validator hardening.** Target expansion prunes vendor
+  directories, ignore rules can no longer silence L0 controls, content lints
+  see through list markers, the design hook fires on `.ts`/`.js` edits, and
+  the eval runner validates commands by parsed path instead of a prefix list.
+- **A `status: proposed` pipeline.** A control can now ship as a visible
+  proposal: the schema, validator, build guard, and public projection carry
+  the field, and catalog pages render a Proposed badge. CNT-5, CNT-6 and
+  CNT-7 carry the stamp, pending the design lead's decision.
+- **A rendered contract in CI.** A Playwright suite checks that each route
+  renders one main landmark, no horizontal overflow at 320px and 360px, 44px
+  mobile targets, and hydration-stable reduced motion. It runs beside the
+  Python gate: validator self-test, catalog validation, token audit, and
+  static accessibility checks.
+- **Site fixes.** The site must pass its own standard: muted foreground
+  darkened to meet A11Y-1, the last off-scale type snapped on-scale, uppercase
+  chrome removed per TYP-4, and 44px mobile hit boxes on the topbar and
+  catalog browser.
+
+The catalog count did not change in the harvest, apart from the two motion
+controls proposed below.
+
+## 12 July 2026 — motion tokens; MOT-2 and MOT-3 proposed
+
+The site's own motion layer drifted with no control to catch it: two surfaces,
+two easings, three durations, none declared anywhere. Record:
+`docs/catalog-changes/mot-2-mot-3-motion-tokens.md`.
+
+- A declared motion token set: `--motion-fast/base/slow/story` and
+  `--ease-out`/`--ease-in-out` in the site's CSS, mirrored for motion/react
+  by `lib/motion.ts` and held in sync by a test.
+- **MOT-2** (L2): motion values come from the declared token set — durations
+  and easings are never hardcoded in component code.
+- **MOT-3** (L2): motion may emphasise meaning but never carry it alone — an
+  animated surface communicates the same information with animations off.
+- Catalog 68 → 70. Both controls are `status: proposed` and wear the Proposed
+  badge until the design lead decides.
+
+## 10 July 2026 — content controls and line length
+
+Eight controls extend the catalog's content coverage (merged as PR #29), with
+backing detail docs and a wider `content-lint`:
+
+- **CNT-8 through CNT-14.** Plain action verbs over nominalisations; one idea
+  per sentence; one term per thing within a product; established UI terms
+  teachers already know; sentence case; Singapore English spelling; and copy
+  that embodies the TFX voice (Clear, Thoughtful, Approachable).
+- **TYP-6.** Running body text is held to a comfortable measure, roughly
+  45–75 characters per line.
+- A proposed voice and tone page (now [settled](/guidelines/voice-tone)),
+  carried by CNT-14, alongside updates to the UI text and grammar guidelines.
+
+## 8 July 2026 — tfx 0.7.0: enforcement as data
+
+- **Catalog 53 → 57 controls.** CMP-4 (empty states signal "no content
+  exists"), CMP-8 (non-destructive exits, draft safety), CMP-9 (render-time
+  sanitisation of cross-user content), and CNT-4 (content modelling
+  real-world artifacts is faithful or labelled illustrative).
+- **Enforcement as data.** New `enforced`/`script` fields in the catalog
+  schema plus a coverage check, so how a control is checked lives in the
+  catalog itself.
+- **Async-state evidence rule.** When loading, success, and error states are
+  in scope, the verify evidence must capture all of them — adopted as a
+  harness rule rather than a new catalog category.
+- **The grill.** The plan gate grew a red-team interview stage: the loop
+  questions its own plan, one decision at a time, before asking for approval.
+
+## 1 July 2026 — Glow pilot: catalog maintenance
+
+The whole-app Glow conformance audit surfaced four amendments, approved by the
+design lead. No new control ids and no tier changes. Record:
+`docs/catalog-changes/glow-pilot-col1-typ1-tok3.md`.
+
+- **COL-1 re-tagged hybrid.** The control was tagged deterministic while its
+  detail already described a judgment half — a tokenised neutral sitting
+  where the brand primary belongs passes the mechanical check.
+- **Glow primary settled at `#F76B15`,** with a foreground-pairing rule: a
+  light-hue primary takes the scale's dark contrast step, not white, which
+  fails AA on this orange.
+- **TYP-1 wordmark registry.** A per-product registered-wordmark exception
+  (Glow → Inria Sans), scoped to the logo lockup only.
+- **TOK-3 coverage caveat.** The token audit does not resolve named Tailwind
+  utilities to px, so off-scale named classes stay evaluator-judged for now.

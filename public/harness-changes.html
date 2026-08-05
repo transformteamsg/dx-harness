@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TFX design harness — what changed, and what's next</title>
+<style>
+  :root {
+    /* ── colour ── */
+    --paper: #f8fafd;
+    --panel: #ffffff;
+    --ink: #131820;
+    --muted: #565f6d;
+    --faint: #5e6775;
+    --line: #e4e9f0;
+    --line-soft: #eef2f7;
+    --accent: #0064ff;
+    --accent-soft: #e8f0ff;
+    --on-accent: #ffffff;
+    --shipped: #0f7a52;
+    --shipped-soft: #e3f4ec;
+    --gate: #935700;
+    --gate-soft: #faefdc;
+    --before-ink: #5c6572;
+    --before-bg: #f1f3f6;
+    --shadow: 0 1px 2px rgba(17,24,39,.04), 0 4px 16px rgba(17,24,39,.05);
+    /* ── radius scale ── */
+    --r-xs: 4px;
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-full: 999px;
+    /* ── spacing scale (4px grid) ── */
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px;
+    --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px;
+    /* ── type scale ── */
+    --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-15: 15px;
+    --fs-16: 16px; --fs-17: 17px; --fs-20: 20px;
+    --measure: 66ch;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0d1116; --panel: #141a22; --ink: #e7ecf3; --muted: #9aa4b2; --faint: #7c8695;
+      --line: #232b35; --line-soft: #1b222b; --accent: #5b9bff; --accent-soft: #14243f; --on-accent: #081018;
+      --shipped: #4cc793; --shipped-soft: #10261d; --gate: #e2a54b; --gate-soft: #2a1f0d;
+      --before-ink: #8b95a4; --before-bg: #171d25;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #f8fafd; --panel: #ffffff; --ink: #131820; --muted: #565f6d; --faint: #5e6775;
+    --line: #e4e9f0; --line-soft: #eef2f7; --accent: #0064ff; --accent-soft: #e8f0ff; --on-accent: #ffffff;
+    --shipped: #0f7a52; --shipped-soft: #e3f4ec; --gate: #935700; --gate-soft: #faefdc;
+    --before-ink: #5c6572; --before-bg: #f1f3f6;
+    --shadow: 0 1px 2px rgba(17,24,39,.04), 0 4px 16px rgba(17,24,39,.05);
+  }
+  :root[data-theme="dark"] {
+    --paper: #0d1116; --panel: #141a22; --ink: #e7ecf3; --muted: #9aa4b2; --faint: #7c8695;
+    --line: #232b35; --line-soft: #1b222b; --accent: #5b9bff; --accent-soft: #14243f; --on-accent: #081018;
+    --shipped: #4cc793; --shipped-soft: #10261d; --gate: #e2a54b; --gate-soft: #2a1f0d;
+    --before-ink: #8b95a4; --before-bg: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.28);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--fs-17);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: clamp(28px, 5vw, 72px) clamp(20px, 5vw, 40px) 96px; }
+
+  .eyebrow {
+    font-size: var(--fs-12); font-weight: 650; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 var(--s3);
+  }
+  h1 {
+    font-size: clamp(30px, 5.2vw, 46px); line-height: 1.08; letter-spacing: -.02em;
+    font-weight: 700; margin: 0 0 var(--s5); text-wrap: balance; max-width: 18ch;
+  }
+  .thesis { font-size: clamp(var(--fs-17), 2.3vw, var(--fs-20)); color: var(--muted); margin: 0; max-width: var(--measure); line-height: 1.5; }
+  .thesis strong { color: var(--ink); font-weight: 620; }
+
+  .meta { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s6); }
+  .chip {
+    display: inline-flex; align-items: center; gap: var(--s2);
+    font-size: var(--fs-13); font-weight: 550; padding: var(--s1) var(--s3); border-radius: var(--r-full);
+    background: var(--panel); border: 1px solid var(--line); color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip b { color: var(--ink); font-weight: 650; }
+  .dot { width: 7px; height: 7px; border-radius: var(--r-full); flex: none; }
+  .dot.done { background: var(--shipped); }
+  .dot.gate { background: var(--gate); }
+  .dot.hold { background: var(--faint); }
+  .dot.live { background: var(--accent); }
+
+  h2 {
+    font-size: var(--fs-13); font-weight: 650; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--faint); margin: 0 0 var(--s5); padding-bottom: var(--s3); border-bottom: 1px solid var(--line);
+  }
+  section { margin-top: clamp(48px, 7vw, 76px); }
+  .lede { font-size: var(--fs-16); color: var(--muted); max-width: var(--measure); margin: calc(-1 * var(--s2)) 0 var(--s6); }
+
+  /* before / after rows */
+  .rows { display: flex; flex-direction: column; }
+  .row { border-bottom: 1px solid var(--line-soft); padding-bottom: var(--s5); }
+  .row:last-child { border-bottom: none; padding-bottom: 0; }
+  .row-head { padding: var(--s5) 0 0; font-size: var(--fs-15); font-weight: 650; letter-spacing: -.01em; color: var(--ink); }
+  .ba { display: grid; grid-template-columns: 1fr 1fr; }
+  .ba > div { padding-top: var(--s3); }
+  .ba .before { color: var(--before-ink); padding-right: var(--s5); }
+  .ba .after { border-left: 1px solid var(--line-soft); padding-left: var(--s5); }
+  .ba .tag {
+    display: block; font-size: var(--fs-11); font-weight: 650; letter-spacing: .07em; text-transform: uppercase;
+    margin-bottom: var(--s2);
+  }
+  .ba .before .tag { color: var(--faint); }
+  .ba .after .tag { color: var(--accent); }
+  .ba p { margin: 0; font-size: var(--fs-15); line-height: 1.52; }
+  .ba .after p { color: var(--ink); }
+
+  @media (max-width: 620px) {
+    .ba { grid-template-columns: 1fr; }
+    .ba .before { padding-right: 0; }
+    .ba .after { border-left: none; border-top: 1px solid var(--line-soft); padding-left: 0; padding-top: var(--s3); }
+  }
+
+  /* stack diagram */
+  .stack { display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--s5); align-items: stretch; margin-top: var(--s1); }
+  .stackcard { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s5); box-shadow: var(--shadow); }
+  .stackcard.now { border-color: var(--accent); }
+  .stackcard .st-tag { font-size: var(--fs-11); font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--faint); margin-bottom: var(--s1); }
+  .stackcard.now .st-tag { color: var(--accent); }
+  .stackcard .st-sub { font-size: var(--fs-13); color: var(--muted); margin: 0 0 var(--s4); }
+  .grp { margin-bottom: var(--s3); }
+  .grp:last-child { margin-bottom: 0; }
+  .grp .glabel { font-size: var(--fs-11); font-weight: 600; letter-spacing: .04em; color: var(--faint); margin-bottom: var(--s2); }
+  .pills { display: flex; flex-wrap: wrap; gap: var(--s2); }
+  .pill {
+    font-family: var(--mono); font-size: var(--fs-13); padding: 3px var(--s2); border-radius: var(--r-sm);
+    background: var(--before-bg); color: var(--before-ink); border: 1px solid transparent; white-space: nowrap;
+  }
+  .stackcard.now .pill { background: var(--accent-soft); color: var(--accent); font-weight: 550; }
+  .stackcard.now .pill.plain { background: var(--before-bg); color: var(--muted); }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--faint); font-size: var(--fs-20); }
+  @media (max-width: 720px) {
+    .stack { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); padding: var(--s1) 0; }
+  }
+
+  /* shipped list */
+  .ships { display: flex; flex-direction: column; }
+  .ship {
+    display: grid; grid-template-columns: 52px 1fr auto; gap: var(--s4); align-items: baseline;
+    padding: var(--s4) var(--s1); border-bottom: 1px solid var(--line-soft);
+  }
+  .ship:last-child { border-bottom: none; }
+  .ship .no { font-family: var(--mono); font-size: var(--fs-13); color: var(--faint); font-variant-numeric: tabular-nums; }
+  .ship .what { font-size: var(--fs-15); color: var(--ink); }
+  .ship .what span { display: block; font-size: var(--fs-13); color: var(--muted); margin-top: var(--s1); }
+  .status { font-size: var(--fs-12); font-weight: 620; letter-spacing: .03em; padding: var(--s1) var(--s3); border-radius: var(--r-full); white-space: nowrap; }
+  .status.done { background: var(--shipped-soft); color: var(--shipped); }
+  .status.gate { background: var(--gate-soft); color: var(--gate); }
+  @media (max-width: 560px) {
+    .ship { grid-template-columns: 44px 1fr; }
+    .ship .status { grid-column: 2; justify-self: start; margin-top: var(--s2); }
+  }
+
+  /* next steps */
+  .steps { display: flex; flex-direction: column; }
+  .step {
+    display: grid; grid-template-columns: 52px 1fr; gap: var(--s4); align-items: start;
+    padding: var(--s4) var(--s1); border-bottom: 1px solid var(--line-soft);
+  }
+  .step:last-child { border-bottom: none; }
+  .step.lead {
+    border: 1px solid var(--accent); background: var(--accent-soft); border-radius: var(--r-md);
+    padding: var(--s5); box-shadow: var(--shadow); margin-bottom: var(--s4);
+  }
+  .step .rank {
+    font-family: var(--mono); font-size: var(--fs-13); font-weight: 600; color: var(--accent);
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-sm);
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .step.lead .rank { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .step h3 { margin: 3px 0 var(--s1); font-size: var(--fs-16); font-weight: 650; letter-spacing: -.01em; }
+  .step p { margin: 0; font-size: var(--fs-15); color: var(--muted); line-height: 1.5; }
+  .step p b { color: var(--ink); font-weight: 600; }
+  code {
+    font-family: var(--mono); font-size: .88em; background: var(--before-bg); color: var(--ink);
+    padding: 2px var(--s2); border-radius: var(--r-xs);
+  }
+  .owner { font-size: var(--fs-12); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--faint); }
+
+  /* gates + footnote */
+  .gates { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); }
+  @media (max-width: 620px) { .gates { grid-template-columns: 1fr; } }
+  .gate-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: var(--s5); box-shadow: var(--shadow);
+  }
+  .gate-card h3 { margin: 0 0 var(--s1); font-size: var(--fs-15); }
+  .gate-card .tag { font-size: var(--fs-12); font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: var(--gate); }
+  .gate-card .tag.done { color: var(--shipped); }
+  .gate-card p { margin: var(--s2) 0 0; font-size: var(--fs-15); color: var(--muted); line-height: 1.5; }
+
+  .foot {
+    margin-top: var(--s16); padding-top: var(--s5); border-top: 1px solid var(--line);
+    font-size: var(--fs-13); color: var(--muted); line-height: 1.6;
+  }
+  .foot b { color: var(--ink); }
+  .foot code { font-size: .92em; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">TFX design harness · v0.6.0</p>
+    <h1>The harness now works by intent, and the rulebook knows who it's for.</h1>
+    <p class="thesis">Seven pieces of work landed on <strong>main</strong>. In plain terms: you used to pick a tool by its name and hope it fit. Now you <strong>say what you want and the right skill answers</strong>. And the design rules can finally be scoped to one product or audience instead of applying to everything at once.</p>
+    <div class="meta">
+      <span class="chip"><span class="dot done"></span><b>7</b> plans merged</span>
+      <span class="chip"><b>53</b> controls</span>
+      <span class="chip"><b>+5</b> rules today</span>
+      <span class="chip"><span class="dot live"></span>now live for teams</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>What changed — before &amp; after</h2>
+    <p class="lede">Five everyday things about using the harness, each in one line of before and after.</p>
+    <div class="rows">
+
+      <div class="row">
+        <div class="row-head">Finding the right tool</div>
+        <div class="ba">
+          <div class="before"><span class="tag">Before</span><p>Five skills named after their internals: design, standards, content, onboard, feedback. You had to know which one fit before you could start, and it was easy to pick wrong.</p></div>
+          <div class="after"><span class="tag">After</span><p>You say what you want. "Build a page", "review this", "polish the spacing", "fix the wording" each reach the right skill on their own. If you're unsure, <b>start</b> points you.</p></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-head">The rulebook</div>
+        <div class="ba">
+          <div class="before"><span class="tag">Before</span><p>48 design rules, and every rule applied to every product and every screen. There was no way to say "this one's only for CaseSync" or "this is for student-facing pages".</p></div>
+          <div class="after"><span class="tag">After</span><p>The same rules — 53 now — taggable by <b>product</b> (Teacher Workspace, CaseSync, Glow) and by <b>audience</b> (teachers, students by age, parents). An untagged rule still means "everyone", so nothing was lost.</p></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-head">What makes each product feel like itself</div>
+        <div class="ba">
+          <div class="before"><span class="tag">Before</span><p>A product's own colours, tone, and motion were scattered across the catalog and a skill. Hard to find, easy to let drift.</p></div>
+          <div class="after"><span class="tag">After</span><p>Each product gets one <b>DESIGN.md</b> file for its colours, tone, and motion, read automatically whenever you design for it.</p></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-head">Checking the work</div>
+        <div class="ba">
+          <div class="before"><span class="tag">Before</span><p>Eight-plus separate check scripts, each run by hand. Easy to forget one, and nothing ran on its own.</p></div>
+          <div class="after"><span class="tag">After</span><p>One command, <b>detect</b>, runs the safe set. An optional reminder can nudge you the moment you edit a UI file: quietly, and only when something is actually off.</p></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-head">Getting set up</div>
+        <div class="ba">
+          <div class="before"><span class="tag">Before</span><p>A guided tour that explained how the harness works.</p></div>
+          <div class="after"><span class="tag">After</span><p><b>setup</b> installs the tools you actually need: screenshot capture, issue filing, the check scripts. It can also seed a product's DESIGN.md. The tour is still there.</p></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>The skill stack, reshaped</h2>
+    <p class="lede">Same job, told a different way. Named by what they touch, now grouped by what you're trying to do.</p>
+    <div class="stack">
+      <div class="stackcard">
+        <div class="st-tag">Before</div>
+        <p class="st-sub">Five skills, named by domain</p>
+        <div class="grp">
+          <div class="pills">
+            <span class="pill">design</span><span class="pill">standards</span><span class="pill">content</span><span class="pill">onboard</span><span class="pill">feedback</span>
+          </div>
+        </div>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="stackcard now">
+        <div class="st-tag">After</div>
+        <p class="st-sub">Eleven skills, grouped by intent</p>
+        <div class="grp">
+          <div class="glabel">Start here</div>
+          <div class="pills"><span class="pill">start</span></div>
+        </div>
+        <div class="grp">
+          <div class="glabel">Make something</div>
+          <div class="pills"><span class="pill">design</span><span class="pill">critique</span></div>
+        </div>
+        <div class="grp">
+          <div class="glabel">Focused passes</div>
+          <div class="pills"><span class="pill">copy</span><span class="pill">polish</span><span class="pill">motion</span><span class="pill">flow</span><span class="pill">layout</span></div>
+        </div>
+        <div class="grp">
+          <div class="glabel">Support</div>
+          <div class="pills"><span class="pill plain">setup</span><span class="pill plain">standards</span><span class="pill plain">feedback</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What shipped — plans 056 to 062</h2>
+    <div class="ships">
+      <div class="ship"><span class="no">056</span><span class="what">The rulebook can target products and audiences<span>Optional tags on each control; students split into primary versus secondary-and-up.</span></span><span class="status done">Done</span></div>
+      <div class="ship"><span class="no">057</span><span class="what">Branding rules, now in the catalog<span>Product icons (IDN-2), per-product tone (IDN-3), and a CaseSync sensitivity rule (IDN-4) — approved and committed today.</span></span><span class="status done">Done</span></div>
+      <div class="ship"><span class="no">058</span><span class="what">Per-product context (DESIGN.md)<span>A human-written file plus a generated machine copy the loop reads automatically.</span></span><span class="status done">Done</span></div>
+      <div class="ship"><span class="no">059</span><span class="what">One detector for all the checks<span>A single command with a clean pass, findings, or error signal, ready for CI.</span></span><span class="status done">Done</span></div>
+      <div class="ship"><span class="no">060</span><span class="what">Optional reminder-on-edit<span>Runs the safe checks when you edit a UI file and nudges. Off by default, opt-in.</span></span><span class="status done">Done</span></div>
+      <div class="ship"><span class="no">061</span><span class="what">Skills reshaped by intent<span>A new start router, onboard became setup, and a new critique skill for reviewing pages.</span></span><span class="status done">Done</span></div>
+      <div class="ship"><span class="no">062</span><span class="what">Five focused passes<span>copy, polish, motion, flow, layout: quick, single-topic improvements to a page.</span></span><span class="status done">Done</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What to do next</h2>
+    <p class="lede">In order of leverage. The first one is the point of all the rest.</p>
+    <div class="steps">
+      <div class="step lead">
+        <div class="rank">1</div>
+        <div>
+          <span class="owner">Strategic · biggest payoff</span>
+          <h3>Run it on one real page</h3>
+          <p>All of this is scaffolding until a real product uses it. Nothing has gone through the loop on an actual Teacher Workspace screen yet. <b>Pick one small page and run it end to end.</b> That is the only way to learn whether the upgrade holds up in practice, and it turns "we built a harness" into "we designed a page with it".</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rank">2</div>
+        <div>
+          <span class="owner">Done · now live</span>
+          <h3>Published to the teams</h3>
+          <p>Everything is merged and pushed to <code>origin/main</code>, and both design-lead gates cleared today — five new rules (IDN-2/3/4, LAY-1/7) are now in the catalog. Teams can pull now; the reinstall note below tells them how.</p>
+        </div>
+      </div>      <div class="step">
+        <div class="rank">3</div>
+        <div>
+          <span class="owner">Coordination</span>
+          <h3>Tell TW, CaseSync, and Glow it's a reinstall</h3>
+          <p>The skill renames make this a breaking change. Point each team at <code>docs/UPDATING.md</code> for the three-command migration.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="rank">4</div>
+        <div>
+          <span class="owner">Later · low priority</span>
+          <h3>Tidy four small routing edge-cases</h3>
+          <p>The review of the new skills noted a few phrasings that could reach a neighbouring skill (for example, "improve the colours" leaning toward review rather than the polish pass). None are blocking; they're logged in the plan index for a calm afternoon.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Just cleared — the last two gates</h2>
+    <p class="lede">Approved in-session on 6 Jul and committed to the catalog. Five new rules; the rulebook is now 53.</p>
+    <div class="gates">
+      <div class="gate-card">
+        <span class="tag done">Plan 057 · branding · committed</span>
+        <h3>Three identity rules</h3>
+        <p><b>Product icons</b> must come from the approved family (IDN-2). <b>Per-product tone</b> — Teacher Workspace steady, CaseSync reserved, Glow warmer (IDN-3). <b>CaseSync sensitivity</b> — no gamification or celebration around case data (IDN-4), the first rule scoped to a single product.</p>
+      </div>
+      <div class="gate-card">
+        <span class="tag done">Plan 053 · layout · committed</span>
+        <h3>Two layout rules</h3>
+        <p><b>One focal point</b> — the most important thing reads first (LAY-7, live now). <b>Declared grid</b> — use the product's own column grid (LAY-1, waits until a product declares one).</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">
+    <b>Status:</b> plans 056 to 062 merged and pushed to <code>origin/main</code> · both design-lead gates cleared 6 Jul (5 rules committed) · plugin <b>v0.6.0</b> · every check green (53 controls valid, detector and validator self-tests pass, site builds).<br>
+    <b>Heads-up for teams:</b> the <code>onboard</code>→<code>setup</code> and <code>content</code>→<code>copy</code> renames come through a normal <code>/plugin marketplace update tfx</code> then <code>/reload-plugins</code> — no reinstall. Only the old <code>tfx-design-harness</code> plugin (pre-0.3.0) needs a full reinstall.
+  </p>
+
+</div>
+
+</html>

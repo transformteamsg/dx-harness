@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TFX design harness — start here</title>
+<style>
+  :root {
+    --paper: #f8fafd;
+    --panel: #ffffff;
+    --ink: #131820;
+    --muted: #565f6d;
+    --faint: #5e6775;
+    --line: #e4e9f0;
+    --line-soft: #eef2f7;
+    --accent: #0064ff;
+    --accent-soft: #e8f0ff;
+    --on-accent: #ffffff;
+    --shipped: #0f7a52;
+    --shipped-soft: #e3f4ec;
+    --before-bg: #f1f3f6;
+    --shadow: 0 1px 2px rgba(17,24,39,.04), 0 4px 16px rgba(17,24,39,.05);
+    --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-full: 999px;
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px;
+    --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px;
+    --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-15: 15px;
+    --fs-16: 16px; --fs-17: 17px; --fs-20: 20px;
+    --measure: 66ch;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0d1116; --panel: #141a22; --ink: #e7ecf3; --muted: #9aa4b2; --faint: #7c8695;
+      --line: #232b35; --line-soft: #1b222b; --accent: #5b9bff; --accent-soft: #14243f; --on-accent: #081018;
+      --shipped: #4cc793; --shipped-soft: #10261d; --before-bg: #171d25;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #f8fafd; --panel: #ffffff; --ink: #131820; --muted: #565f6d; --faint: #5e6775;
+    --line: #e4e9f0; --line-soft: #eef2f7; --accent: #0064ff; --accent-soft: #e8f0ff; --on-accent: #ffffff;
+    --shipped: #0f7a52; --shipped-soft: #e3f4ec; --before-bg: #f1f3f6;
+    --shadow: 0 1px 2px rgba(17,24,39,.04), 0 4px 16px rgba(17,24,39,.05);
+  }
+  :root[data-theme="dark"] {
+    --paper: #0d1116; --panel: #141a22; --ink: #e7ecf3; --muted: #9aa4b2; --faint: #7c8695;
+    --line: #232b35; --line-soft: #1b222b; --accent: #5b9bff; --accent-soft: #14243f; --on-accent: #081018;
+    --shipped: #4cc793; --shipped-soft: #10261d; --before-bg: #171d25;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.28);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans);
+    font-size: var(--fs-17); line-height: 1.6; -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: clamp(28px, 5vw, 72px) clamp(20px, 5vw, 40px) 96px; }
+
+  .eyebrow { font-size: var(--fs-12); font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 0 0 var(--s3); }
+  h1 { font-size: clamp(30px, 5.2vw, 46px); line-height: 1.08; letter-spacing: -.02em; font-weight: 700; margin: 0 0 var(--s5); text-wrap: balance; max-width: 20ch; }
+  .thesis { font-size: clamp(var(--fs-17), 2.3vw, var(--fs-20)); color: var(--muted); margin: 0; max-width: var(--measure); line-height: 1.5; }
+  .thesis strong { color: var(--ink); font-weight: 620; }
+
+  .meta { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-top: var(--s6); }
+  .chip { display: inline-flex; align-items: center; gap: var(--s2); font-size: var(--fs-13); font-weight: 550; padding: var(--s1) var(--s3); border-radius: var(--r-full); background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .chip b { color: var(--ink); font-weight: 650; }
+  .dot { width: 7px; height: 7px; border-radius: var(--r-full); flex: none; background: var(--accent); }
+
+  h2 { font-size: var(--fs-13); font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); margin: 0 0 var(--s5); padding-bottom: var(--s3); border-bottom: 1px solid var(--line); }
+  section { margin-top: clamp(48px, 7vw, 76px); }
+  .lede { font-size: var(--fs-16); color: var(--muted); max-width: var(--measure); margin: calc(-1 * var(--s2)) 0 var(--s6); }
+  .prose { font-size: var(--fs-16); color: var(--ink); max-width: var(--measure); margin: 0 0 var(--s5); line-height: 1.6; }
+  .prose b { font-weight: 620; }
+  .prose .q { color: var(--muted); }
+  code { font-family: var(--mono); font-size: .88em; background: var(--before-bg); color: var(--ink); padding: 2px var(--s2); border-radius: var(--r-xs); }
+  .cmd { font-family: var(--mono); font-size: var(--fs-13); background: var(--before-bg); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s4) var(--s5); margin: 0 0 var(--s5); overflow-x: auto; line-height: 1.8; color: var(--ink); }
+
+  .subhead { font-size: var(--fs-15); font-weight: 650; letter-spacing: -.01em; color: var(--ink); margin: var(--s8) 0 var(--s4); }
+  .subhead:first-of-type { margin-top: 0; }
+
+  /* the loop — numbered rows, phase 3 is the one focal card */
+  .loop { display: flex; flex-direction: column; }
+  .phase { display: grid; grid-template-columns: 40px 1fr; gap: var(--s4); align-items: baseline; padding: var(--s4) var(--s1); border-bottom: 1px solid var(--line-soft); }
+  .phase:last-child { border-bottom: none; }
+  .phase .n { font-family: var(--mono); font-size: var(--fs-13); font-weight: 600; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .phase .nm { font-size: var(--fs-15); font-weight: 620; color: var(--ink); }
+  .phase .d { display: block; font-size: var(--fs-13); color: var(--muted); margin-top: 2px; line-height: 1.5; }
+  .phase.gate { grid-template-columns: 40px 1fr; align-items: start; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: var(--r-md); padding: var(--s5); box-shadow: var(--shadow); margin: var(--s2) 0; }
+  .phase.gate .n { color: var(--accent); font-weight: 700; }
+  .phase.gate .nm { color: var(--ink); }
+  .phase.gate .badge { display: inline-block; font-size: var(--fs-11); font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-left: var(--s2); }
+
+  /* tiers */
+  .tiers { display: flex; flex-direction: column; }
+  .tier { display: grid; grid-template-columns: 44px 1fr; gap: var(--s4); align-items: baseline; padding: var(--s3) var(--s1); border-bottom: 1px solid var(--line-soft); }
+  .tier:last-child { border-bottom: none; }
+  .tier .lvl { font-family: var(--mono); font-size: var(--fs-13); font-weight: 650; color: var(--ink); }
+  .tier .txt { font-size: var(--fs-15); color: var(--muted); }
+  .tier .txt b { color: var(--ink); font-weight: 620; }
+
+  /* skill map — one grouped-pills card */
+  .map { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s5); box-shadow: var(--shadow); }
+  .grp { margin-bottom: var(--s4); }
+  .grp:last-child { margin-bottom: 0; }
+  .grp .glabel { font-size: var(--fs-11); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--faint); margin-bottom: var(--s2); }
+  .grp .gnote { font-size: var(--fs-13); color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .pills { display: flex; flex-wrap: wrap; gap: var(--s2); }
+  .pill { font-family: var(--mono); font-size: var(--fs-13); padding: 3px var(--s2); border-radius: var(--r-sm); background: var(--before-bg); color: var(--ink); white-space: nowrap; }
+  .pill.key { background: var(--accent-soft); color: var(--accent); font-weight: 550; }
+
+  /* routes — say what you want → skill */
+  .routes { display: flex; flex-direction: column; margin-top: var(--s4); }
+  .route { display: grid; grid-template-columns: 1fr auto; gap: var(--s4); align-items: baseline; padding: var(--s3) var(--s1); border-bottom: 1px solid var(--line-soft); }
+  .route:last-child { border-bottom: none; }
+  .route .say { font-size: var(--fs-15); color: var(--ink); }
+  .route .say .q { color: var(--muted); }
+  .route .skill { font-family: var(--mono); font-size: var(--fs-13); color: var(--accent); font-weight: 550; white-space: nowrap; }
+
+  /* getting-started steps */
+  .steps { display: flex; flex-direction: column; }
+  .step { display: grid; grid-template-columns: 40px 1fr; gap: var(--s4); align-items: start; padding: var(--s4) var(--s1); border-bottom: 1px solid var(--line-soft); }
+  .step:last-child { border-bottom: none; }
+  .step .n { font-family: var(--mono); font-size: var(--fs-13); font-weight: 600; color: var(--accent); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-sm); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+  .step h3 { margin: 2px 0 var(--s1); font-size: var(--fs-15); font-weight: 650; letter-spacing: -.01em; }
+  .step p { margin: 0; font-size: var(--fs-15); color: var(--muted); line-height: 1.5; }
+  .step p b { color: var(--ink); font-weight: 600; }
+
+  .callout { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s5); box-shadow: var(--shadow); margin-top: var(--s4); }
+  .callout p { margin: 0 0 var(--s2); font-size: var(--fs-15); color: var(--muted); line-height: 1.55; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout b { color: var(--ink); font-weight: 620; }
+  .callout .rule { color: var(--shipped); font-weight: 620; }
+
+  .foot { margin-top: var(--s16); padding-top: var(--s5); border-top: 1px solid var(--line); font-size: var(--fs-13); color: var(--muted); line-height: 1.7; }
+  .foot b { color: var(--ink); }
+  .foot .pointer { display: block; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">TFX design harness · start here</p>
+    <h1>Make an agent design like it read the standard.</h1>
+    <p class="thesis">The harness is a rulebook and a set of skills that hold Claude to the <strong>TFX Design Standard</strong> whenever it builds Teacher &amp; School UI. One promise: <strong>intent without loss</strong> — what you mean is written down, then checked at every step.</p>
+    <div class="meta">
+      <span class="chip"><span class="dot"></span>essence: Kind Utility</span>
+      <span class="chip"><b>6</b>-phase loop</span>
+      <span class="chip"><b>53</b> controls</span>
+      <span class="chip"><b>11</b> skills</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Install the harness skills</h2>
+    <p class="prose">The harness ships as a Claude Code plugin. In your product repo — Teacher Workspace, CaseSync, or Glow — add the marketplace and install it. Two commands, typed in Claude Code:</p>
+    <pre class="cmd">/plugin marketplace add transformteamsg/tfx-design-standard
+/plugin install tfx@tfx
+/reload-plugins</pre>
+    <p class="prose">That installs the <b>eleven skills</b>, the <code>evaluator</code> that grades the work, and the <b>control catalog</b> — the rulebook ships with the plugin, not your repo. You're set.</p>
+    <p class="lede">Working on the harness itself? No install needed — open a Claude Code session in the harness repo and the skills load from <code>.claude/skills/</code> automatically.</p>
+
+    <p class="subhead">Already have it?</p>
+    <p class="prose">Only if you're on the <b>old</b> <code>tfx-design-harness</code> plugin (from before the 0.3.0 rename) do you reinstall — the old and new are separate plugins, so an update won't cross the rename:</p>
+    <pre class="cmd">/plugin uninstall tfx-design-harness
+/plugin marketplace update tfx
+/plugin install tfx@tfx
+/reload-plugins</pre>
+    <p class="lede">Your product's <code>DESIGN.md</code> and decision records are untouched. Full detail: <code>docs/UPDATING.md</code>.</p>
+  </section>
+
+  <section>
+    <h2>What it is</h2>
+    <p class="prose">A <b>control catalog</b> plus a set of <b>Claude Code skills</b>. Together they make an agent follow the TFX Design Standard whenever it designs or changes UI for the Teacher &amp; School portfolio — Teacher Workspace, CaseSync, and Glow.</p>
+    <p class="prose">The point is to keep quality from drifting. Instead of hoping an agent remembers the rules, the harness loads them, applies them, and grades the result against what you asked for. Its brand essence is <b>Kind Utility</b>: useful first, kind at the surface. The one test any screen has to pass — does this help teachers work faster with less stress?</p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+
+    <p class="subhead">A six-phase loop, and one phase is yours</p>
+    <p class="lede">The agent runs all six phases. You only step in at Phase 3 — approving the plan, the cheapest place to catch a wrong turn.</p>
+    <div class="loop">
+      <div class="phase"><span class="n">1</span><span><span class="nm">Intent</span><span class="d">Pin down the brief — what the page is for, who it's for, when it's done.</span></span></div>
+      <div class="phase"><span class="n">2</span><span><span class="nm">Diverge</span><span class="d">A few rough directions, no pixels yet. You pick one.</span></span></div>
+      <div class="phase gate"><span class="n">3</span><span><span class="nm">Plan<span class="badge">· your gate</span></span><span class="d">Approve or adjust before anything's built. A wrong turn caught here is a chat, not a rebuild.</span></span></div>
+      <div class="phase"><span class="n">4</span><span><span class="nm">Implement</span><span class="d">The agent builds exactly what you approved — your tokens and components, no AI slop.</span></span></div>
+      <div class="phase"><span class="n">5</span><span><span class="nm">Verify</span><span class="d">A separate agent checks it against the brief. Anything off-brief is a bug.</span></span></div>
+      <div class="phase"><span class="n">6</span><span><span class="nm">Ratchet</span><span class="d">Lessons from the run become new rules — the bar only goes up.</span></span></div>
+    </div>
+
+    <p class="subhead">The rulebook is tiered</p>
+    <p class="lede">Nobody memorises it — the agent loads and applies the catalog. Each control carries a tier that decides how hard it binds.</p>
+    <div class="tiers">
+      <div class="tier"><span class="lvl">L0</span><span class="txt"><b>Never bends.</b> Accessibility floor and destructive-action safety. If one seems impossible, that's a question for you, not a judgment call.</span></div>
+      <div class="tier"><span class="lvl">L1</span><span class="txt"><b>Must pass</b>, or a named human waives it on the record.</span></div>
+      <div class="tier"><span class="lvl">L2</span><span class="txt"><b>Strong default.</b> Deviate only with a specific, real reason.</span></div>
+    </div>
+
+    <p class="subhead">The skills are grouped by what you're doing</p>
+    <p class="lede">You don't pick a tool by its name. You say what you want, and the right skill answers.</p>
+    <div class="map">
+      <div class="grp">
+        <div class="glabel">Start here <span class="gnote">— orient &amp; route</span></div>
+        <div class="pills"><span class="pill key">start</span></div>
+      </div>
+      <div class="grp">
+        <div class="glabel">Make something</div>
+        <div class="pills"><span class="pill">design</span><span class="pill">critique</span></div>
+      </div>
+      <div class="grp">
+        <div class="glabel">Focused passes <span class="gnote">— one dimension of an existing page</span></div>
+        <div class="pills"><span class="pill">copy</span><span class="pill">polish</span><span class="pill">motion</span><span class="pill">flow</span><span class="pill">layout</span></div>
+      </div>
+      <div class="grp">
+        <div class="glabel">Support</div>
+        <div class="pills"><span class="pill">setup</span><span class="pill">standards</span><span class="pill">feedback</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Get started in three steps</h2>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><div><h3>Orient — <code>/tfx:start</code></h3><p>A few lines on how the harness works, a check that your machine is ready, and a hand-off to the right skill.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>Set up — <code>/tfx:setup</code></h3><p>Installs what the loop needs: screenshot capture, issue filing, the check scripts. It can also seed a product's <code>DESIGN.md</code> so the loop knows that product's colours, tone, and grid.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h3>Say what you want</h3><p>No need to name a skill. The router below shows where common asks land.</p></div></div>
+    </div>
+    <div class="routes">
+      <div class="route"><span class="say">"Build a page or flow"</span><span class="skill">design</span></div>
+      <div class="route"><span class="say">"Review or improve this page" <span class="q">(no specific change named)</span></span><span class="skill">critique</span></div>
+      <div class="route"><span class="say">"Fix the wording"</span><span class="skill">copy</span></div>
+      <div class="route"><span class="say">"Polish the spacing or type"</span><span class="skill">polish</span></div>
+      <div class="route"><span class="say">"The animation feels off"</span><span class="skill">motion</span></div>
+      <div class="route"><span class="say">"This multi-step flow loses my work"</span><span class="skill">flow</span></div>
+      <div class="route"><span class="say">"Tighten the structure or hierarchy"</span><span class="skill">layout</span></div>
+      <div class="route"><span class="say">"Can I waive this rule? Who approves?"</span><span class="skill">standards</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How to give feedback</h2>
+    <p class="prose">When the harness itself gets in your way, say so — even mid-task. The <b>feedback</b> skill captures it and files a <code>[harness-feedback]</code> issue on the repo for you.</p>
+    <div class="callout">
+      <p><b>Use it for:</b> "The plan gate keeps interrupting me for tiny copy changes." · "The contrast check flagged a disabled button." · "The token check missed a raw hex I snuck in."</p>
+      <p><b>Not for:</b> feedback about a product's own page (that's a design-loop task), or proposing a new rule (that's the ratchet, below).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>How to contribute</h2>
+    <p class="prose">The catalog grows one way: <b>from evidence, never speculation</b>. A defect no control caught, a waiver you keep granting, or an update to the standard — each can become a new rule. This is the <b>ratchet</b>.</p>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><div><h3>Propose</h3><p>Write a draft record in <code>docs/catalog-changes/</code>: the rule, the evidence behind it, and the <b>re-audit set</b> — which existing surfaces it would affect.</p></div></div>
+      <div class="step"><span class="n">2</span><div><h3>Open a lightweight PR</h3><p>You propose; the <b>design lead approves</b>. Nothing enters the catalog without a named human's sign-off.</p></div></div>
+      <div class="step"><span class="n">3</span><div><h3>It lands, and everything downstream re-audits</h3><p>The new rule ships, and surfaces it touches get re-checked. Evals follow the same discipline — every escaped defect becomes a test.</p></div></div>
+    </div>
+    <div class="callout">
+      <p><span class="rule">Two rules that never bend:</span> never edit the catalog to make a failing check pass, and <b>L0 is never waived</b>. Everything else is a conversation.</p>
+    </div>
+  </section>
+
+  <p class="foot">
+    <b>Go deeper:</b><br>
+    <span class="pointer"><code>CLAUDE.md</code> — the always-on rules, in force every session.</span>
+    <span class="pointer"><code>README.md</code> — architecture and roadmap.</span>
+    <span class="pointer"><code>standards/catalog.yaml</code> — the rulebook itself, the single source of truth.</span>
+    <span class="pointer"><code>docs/ONBOARDING.md</code> — adopting the harness in a product repo.</span>
+    <br><b>Meta:</b> built with the harness it describes — tokens only, both themes, AA contrast, checked clean.
+  </p>
+
+</div>
+
+</html>
