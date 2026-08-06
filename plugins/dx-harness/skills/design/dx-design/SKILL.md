@@ -467,6 +467,14 @@ and by whom, and the verify verdict. Then:
 - Harness friction the run surfaced that is **not** a control gap — a confusing step, a
   missing/unbuilt check, a process or onboarding nit — is filed as a GitHub issue via the
   `feedback` skill (it carries the procedure; `docs/harness-feedback.md` is the spec).
+- A pre-existing violation fixed only on the lines this run touched, with the same
+  defect plausibly present in untouched sibling surfaces (a design-system default that
+  needs an `min-w-0`/label/scale fix elsewhere too) → file a follow-up issue via the
+  `feedback` skill (category `a11y` or `standards`) so the root cause gets tracked
+  once, not re-discovered by the next run that happens to touch a different sibling.
+  Same for a pre-existing E2E baseline flake confirmed unrelated to this change: file
+  it once; a later run can then dedupe against it via the `feedback` skill's own
+  `gh issue list --search` step instead of re-investigating from scratch.
 
 ### PR body (issue-initiated surfaces)
 

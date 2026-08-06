@@ -53,23 +53,35 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 
 There is no user story section here: a task is described from the doing discipline's perspective, not a persona's. A design task may reference or attach the design context it needs (a parent Figma frame, the parent's design assets); an engineering task usually will not. Where it does attach something, follow Attaching screenshots and recordings above.
 
-### Step 3: Preview and confirm
+### Step 3: Design-need triage
+
+Only for a design task, or an engineering task that changes user-facing UI: decide whether this can be handed to an engineer without a designer in the loop, or should be routed to one *before* implementation starts. This is a coarser, earlier version of the same judgment `dx-harness:dx-design`'s Phase 3 reviewer-routing table makes per acceptance-criteria scenario — running it here catches the need before Intent and Diverge happen solo, not after. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md` (the canonical copy — do not duplicate it here) and judge each acceptance-criteria scenario against it. If any scenario is "strongly recommended": note it now, so Step 5 can note "Design routing: needs designer input before an engineer starts" in the description and apply the `needs-design-review` label. If every scenario "can defer", no line or label is needed — the default is silent. Skip this step entirely for a task with no user-facing surface (a CI job, a migration, backend instrumentation).
+
+### Step 4: Preview and confirm
 
 Render the complete issue body in a markdown code block, including the `Part of #NNN` line linking it to the parent, and ask for confirmation before creating the issue.
 
-### Step 4: Create the issue and link it to the parent
+### Step 5: Create the issue and link it to the parent
 
 The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <short description>` using backticks around the scope. Pick the type (`feat`, `fix`, `chore`, `refactor`, `docs`) that matches what the task actually does; it does not have to match the parent's type. For a design task, pick the type that fits the tracked deliverable (`design` if the repo's convention allows it, otherwise `feat` for new UI or `docs` for design documentation), and keep the title a valid commit message so the implementing PR can reuse it.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows), then create the issue with them:
+Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows). If Step 3 flagged design routing, also ensure the routing label exists:
 
 ```sh
 gh label create "skill:dx-create-task" --color ededed --description "Created with the dx-create-task skill" 2>/dev/null || true
 gh label create "task" --color 1d76db --description "One discipline's slice of a tracked story or chore" 2>/dev/null || true
 
+# Only if Step 3 flagged design routing:
+gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
+```
+
+Then create the issue once, adding `--label "needs-design-review"` only if Step 3 flagged design routing:
+
+```sh
 gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "task" --label "skill:dx-create-task"
+# If Step 3 flagged design routing, add: --label "needs-design-review"
 ```
 
 The shape label is the taxonomy: it answers what kind of work this is, and `gh issue list --label "task"` matches it exactly, so a `skill:dx-create-task` label never gets pulled in by the same filter. The skill label answers a different question, which is what wrote the issue, so set both.
