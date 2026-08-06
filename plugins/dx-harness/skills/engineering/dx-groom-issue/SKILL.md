@@ -44,6 +44,25 @@ Ask for the following. Do not invent answers — ask if the user has not provide
 7. **Additional test scenarios**: non-user-observable scenarios worth testing (concurrent writes, boundary values, internal error paths). Use the same Given-When-Then format.
 8. **Hard constraints**: things the implementer must NOT do (e.g. "do not add a new Go dependency").
 
+### Step 2b: Design-need triage (backstop)
+
+If the issue already carries a `needs-design-review` label or a "Design routing" line, skip this step — `create-issue`'s own triage already ran. Otherwise, run it now as the backstop for issues created before that triage existed, or created outside `create-issue`: judge each acceptance-criteria scenario against the same table `create-issue`'s Step 1d uses (reproduced from `../../design/design/issue-intake.md`'s reviewer-routing section):
+
+| Criterion | Recommendation |
+|---|---|
+| New pattern not seen elsewhere in the codebase | Strongly recommended — route to designer |
+| New user flow (not just a new component) | Strongly recommended — route to designer |
+| Destructive or irreversible action | Strongly recommended — route to designer |
+| Modification to existing UI with clear AC | Can defer — engineer reviews and ships directly |
+
+If any scenario is "strongly recommended": add a "Design routing: needs designer input before an engineer starts" line to the Design assets section (in the same update as Step 4) and apply the label in Step 5, alongside `skill:groom-issue`:
+
+```sh
+gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
+```
+
+If every scenario "can defer", no line or label is needed.
+
 ### Step 3: Confirm grooming checklist
 
 Confirm each grooming checklist item can be checked:
@@ -80,6 +99,12 @@ The body is markdown containing backticks and other shell-special characters, so
 
 ```
 gh issue edit <number> --body-file /tmp/issue-body.md --add-label "skill:groom-issue"
+```
+
+If Step 2b flagged design routing, also add the routing label in the same command:
+
+```
+gh issue edit <number> --body-file /tmp/issue-body.md --add-label "skill:groom-issue" --add-label "needs-design-review"
 ```
 
 After updating, print the issue URL. The label makes usage queryable with `gh issue list --label "skill:groom-issue"`; the footer added in Step 4 gives human-readable attribution.

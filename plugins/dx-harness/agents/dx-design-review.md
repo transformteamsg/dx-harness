@@ -134,7 +134,13 @@ a loading state or a permissions error? Quote the heading/subtext text you judge
 against their design-system defaults and against the same component on sibling pages: an
 override that changes a default's colour/contrast/shape, or a control group whose members
 don't share a resting affordance, is a finding unless recorded with a reason. Re-check any
-colour/contrast override under A11Y-1. Judgment for now — the deterministic
+colour/contrast override under A11Y-1. Also check each component against **its own nested
+interactive child's geometry** — does a focus ring or active-state fill trace the
+component's own edge, or does it float inside a smaller box than the container it's meant
+to outline? This is a self-consistency read distinct from the default/sibling-page checks
+above, and distinct from A11Y-8 (state-tracking): a ring can correctly track
+`aria-pressed` and still sit in the wrong box — check the geometry itself, not just
+whether the ring is present. Judgment for now — the deterministic
 override-detection sub-check is planned once the CMP-1 manifest is wired; say "verified
 manually" and name what you checked.
 

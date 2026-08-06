@@ -89,6 +89,19 @@ Run in this order; do not present output to the user while a step is failing:
    pattern is *orchestrator dispatch*: whoever orchestrates you spawns the evaluator
    and routes its verdict back to you. Never write the verdict yourself, and never
    present unverified work as verified while waiting.
+
+   **If the `evaluator` agent type specifically is not spawnable** (unregistered
+   this session) but subagents in general are available, spawn a `general-purpose`
+   agent and paste this harness's `agents/evaluator.md` procedure into its prompt
+   verbatim. Note in the decision record that this workaround was used — it produces
+   a usable verdict but is not the intended mechanism, and should not read as if it
+   were.
+
+   **If an evaluator pass is interrupted mid-run** (session or rate limit), resume it
+   with a follow-up message to the *same* agent instance rather than restarting — it
+   picks up from its own transcript. Note the interruption and resumption explicitly
+   in the decision record; do not silently retry as if nothing happened.
+
    **Paste the full verdict verbatim into the decision record** — the record is the
    durable artifact; a summary in its place is a defect ("full text in the session
    log" does not survive the session). You never grade your own design work. Note
@@ -120,4 +133,15 @@ Run in this order; do not present output to the user while a step is failing:
    manual pass, as today — never claim a `script` row without one having actually
    run.
 
-5. Address findings; re-run from step 1 after changes.
+5. Address findings, then decide how to re-verify — a full evaluator re-grade is not
+   always the right weight for what changed:
+   - **Direct recheck** (re-screenshot the specific finding, re-check its control by
+     hand, no new evaluator spawn) is enough when the prior verdict was
+     pass-with-findings (zero BLOCKING) and the fix is small and targeted — touches
+     only the flagged element, not structure or plan fidelity.
+   - **Full evaluator re-grade** (back to step 3) is required when: any BLOCKING
+     finding was addressed, the fix touched structure or plan fidelity, or several
+     findings were fixed together (harder to isolate whether one fix regressed
+     another).
+   - Record which path was taken and why in the decision record — a judgment call,
+     but not a silent one.

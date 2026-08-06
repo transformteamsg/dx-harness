@@ -18,6 +18,18 @@ Determine the input type:
 - **Pasted markdown body**: use it directly. Same no-issue-number consequence as
   above.
 
+**Check for a pre-loop design-routing flag before anything else.** If the fetched
+issue carries the `needs-design-review` label or a "Design routing: needs designer
+input before an engineer starts" line (written by `create-issue`'s or
+`groom-issue`'s design-need triage step), surface it immediately, before Diverge —
+put a structured question to the human: proceed solo anyway (record why), or switch
+to hand-off mode ("Who implements this" below) so Plan and Implement route to a
+designer instead of being carried through by an engineer alone. This is the coarse,
+issue-level version of the finer-grained per-AC-scenario reviewer-routing table
+below (Phase 3) — it has to run first, because Phase 3 is too late to change who does
+Diverge and Plan. No flag on the issue means this step is silent; the Phase 3 table
+still runs regardless.
+
 From the body and comments, extract three things before doing anything else:
 
 1. **Acceptance criteria scenarios** — the Given/When/Then blocks (`create-issue`'s
