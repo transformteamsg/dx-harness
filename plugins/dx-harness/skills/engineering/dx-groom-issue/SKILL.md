@@ -46,14 +46,7 @@ Ask for the following. Do not invent answers — ask if the user has not provide
 
 ### Step 2b: Design-need triage (backstop)
 
-If the issue already carries a `needs-design-review` label or a "Design routing" line, skip this step — `create-issue`'s own triage already ran. Otherwise, run it now as the backstop for issues created before that triage existed, or created outside `create-issue`: judge each acceptance-criteria scenario against the same table `create-issue`'s Step 1d uses (reproduced from `../../design/design/issue-intake.md`'s reviewer-routing section):
-
-| Criterion | Recommendation |
-|---|---|
-| New pattern not seen elsewhere in the codebase | Strongly recommended — route to designer |
-| New user flow (not just a new component) | Strongly recommended — route to designer |
-| Destructive or irreversible action | Strongly recommended — route to designer |
-| Modification to existing UI with clear AC | Can defer — engineer reviews and ships directly |
+If the issue already carries a `needs-design-review` label or a "Design routing" line, skip this step — `create-issue`'s own triage already ran. Otherwise, run it now as the backstop for issues created before that triage existed, or created outside `create-issue`: judge each acceptance-criteria scenario against the same table `create-issue`'s Step 1d uses (the canonical copy is in `../../design/dx-design/issue-intake.md`'s reviewer-routing section — do not duplicate it here).
 
 If any scenario is "strongly recommended": add a "Design routing: needs designer input before an engineer starts" line to the Design assets section (in the same update as Step 4) and apply the label in Step 5, alongside `skill:groom-issue`:
 
@@ -95,16 +88,10 @@ gh label create "skill:groom-issue" --color ededed --description "Groomed with t
 
 **If `gh` was available:**
 
-The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and update the issue with `--body-file`, applying the label:
+The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and update the issue with `--body-file`, applying the label. If Step 2b flagged design routing, add `--add-label "needs-design-review"` to the same command:
 
 ```
 gh issue edit <number> --body-file /tmp/issue-body.md --add-label "skill:groom-issue"
-```
-
-If Step 2b flagged design routing, also add the routing label in the same command:
-
-```
-gh issue edit <number> --body-file /tmp/issue-body.md --add-label "skill:groom-issue" --add-label "needs-design-review"
 ```
 
 After updating, print the issue URL. The label makes usage queryable with `gh issue list --label "skill:groom-issue"`; the footer added in Step 4 gives human-readable attribution.

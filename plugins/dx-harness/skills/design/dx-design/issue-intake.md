@@ -33,7 +33,7 @@ still runs regardless.
 From the body and comments, extract three things before doing anything else:
 
 1. **Acceptance criteria scenarios** — the Given/When/Then blocks (`create-issue`'s
-   template shape, `../../engineering/create-issue/issue-template.md`).
+   template shape, `../../engineering/dx-create-issue/issue-template.md`).
 2. **Design assets** — screenshots, prototype links, Figma links named in the issue.
 3. **Technical context** — any components or patterns already named during grooming
    (the implementer sections, if the issue went through `groom-issue`).
@@ -45,7 +45,7 @@ is what produced options built around a screenshot's incidental choices rather t
 the stated outcome, in the skill this was ported from.
 
 **Do not gate on a grooming checklist here.** An ungroomed issue is fine —
-`tfx:design`'s own Phase 3 human gate (grill + structured approve/adjust) is the
+`dx-harness:dx-design`'s own Phase 3 human gate (grill + structured approve/adjust) is the
 enforcement point. Re-checking a generic checklist ahead of it, the way
 `implement-issue` does, adds nothing here and inherits harness-feedback issue #10's
 unresolved template mismatch.
@@ -96,7 +96,7 @@ the end.
 ## Reviewer-routing (feeds Phase 3's plan and Phase 6's PR body)
 
 Flag, per AC scenario, whether it needs a human designer's review before merge —
-this is the piece with no prior `tfx:design` analog, and the part that actually
+this is the piece with no prior `dx-harness:dx-design` analog, and the part that actually
 answers "can an engineer implement a PM-written UI issue without designer input":
 
 | Criterion | Recommendation |
@@ -130,7 +130,7 @@ from a conversation with no issue.
 
 1. If no GitHub issue exists yet for this plan, create one from the approved plan,
    reusing `create-issue`'s template shape
-   (`../../engineering/create-issue/issue-template.md`) — Design assets carries the
+   (`../../engineering/dx-create-issue/issue-template.md`) — Design assets carries the
    decision record and the chosen option; Technical context carries anything the
    plan already named; everything else follows the template's own N/A convention.
 2. Add a status line to the decision record:

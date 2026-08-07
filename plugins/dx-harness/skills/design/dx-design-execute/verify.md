@@ -92,7 +92,7 @@ Run in this order; do not present output to the user while a step is failing:
 
    **If the `evaluator` agent type specifically is not spawnable** (unregistered
    this session) but subagents in general are available, spawn a `general-purpose`
-   agent and paste this harness's `agents/evaluator.md` procedure into its prompt
+   agent and paste this harness's `agents/dx-evaluator.md` procedure into its prompt
    verbatim. Note in the decision record that this workaround was used — it produces
    a usable verdict but is not the intended mechanism, and should not read as if it
    were.

@@ -545,7 +545,7 @@ controls:
       - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
       - a component is used differently here than on sibling pages with no reason
       - members of one control group (toggle set, segmented control) do not share a resting affordance — only the selected one reads as interactive
-      - a component's own nested interactive child (a focus ring, active-state fill) does not trace that component's own container edge or radius — it reads as floating inside a smaller box, not outlining the container
+      - "(proposed, pending design-lead approval — advisory only until approved) a component's own nested interactive child (a focus ring, active-state fill) does not trace that component's own container edge or radius — it reads as floating inside a smaller box, not outlining the container"
     detail: controls/cmp-7.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 

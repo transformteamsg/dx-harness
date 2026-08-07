@@ -84,18 +84,7 @@ Note the answer: it determines what happens after the issue is created (see step
 
 ### Step 1d: Design-need triage
 
-Before the issue is created, decide whether it can be safely handed to an engineer without a designer in the loop, or should be routed to one *before* implementation starts. This is a coarser, earlier version of the same judgment `tfx:design`'s Phase 3 reviewer-routing table makes per acceptance-criteria scenario — running it here catches the need before Intent and Diverge happen solo, not after:
-
-| Criterion | Recommendation |
-|---|---|
-| New pattern not seen elsewhere in the codebase | Strongly recommended — route to designer |
-| New user flow (not just a new component) | Strongly recommended — route to designer |
-| Destructive or irreversible action | Strongly recommended — route to designer |
-| Modification to existing UI with clear AC | Can defer — engineer reviews and ships directly |
-
-(Table reproduced from `../../design/design/issue-intake.md`'s reviewer-routing section — keep the two in sync rather than letting them diverge.)
-
-Judge each acceptance-criteria scenario from Step 1 against this table. If any scenario is "strongly recommended": note it now, so Step 3 can write a "Design routing: needs designer input before an engineer starts" line into the Design assets section and apply the `needs-design-review` label. If every scenario "can defer", no line or label is needed — the default is silent. Skip this step entirely when Design assets is already N/A (no user-facing surface).
+Before the issue is created, decide whether it can be safely handed to an engineer without a designer in the loop, or should be routed to one *before* implementation starts. This is a coarser, earlier version of the same judgment `dx-harness:dx-design`'s Phase 3 reviewer-routing table makes per acceptance-criteria scenario — running it here catches the need before Intent and Diverge happen solo, not after. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md` (the canonical copy — do not duplicate it here) and judge each acceptance-criteria scenario from Step 1 against it. If any scenario is "strongly recommended": note it now, so Step 3 can write a "Design routing: needs designer input before an engineer starts" line into the Design assets section and apply the `needs-design-review` label. If every scenario "can defer", no line or label is needed — the default is silent. Skip this step entirely when Design assets is already N/A (no user-facing surface).
 
 ### Step 2: Preview and confirm
 
@@ -107,23 +96,22 @@ The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <s
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure the usage-tracking label exists (idempotent — `gh label create` exits non-zero if it already exists, which `|| true` swallows), then create the issue with it:
+Ensure the usage-tracking label exists (idempotent — `gh label create` exits non-zero if it already exists, which `|| true` swallows). If Step 1d flagged design routing, also ensure the routing label exists:
 
 ```sh
 gh label create "skill:create-issue" --color ededed --description "Created with the create-issue skill" 2>/dev/null || true
 
+# Only if Step 1d flagged design routing:
+gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
+```
+
+Then create the issue once, adding `--label "needs-design-review"` only if Step 1d flagged design routing:
+
+```sh
 gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:create-issue"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:create-issue"` (exact, unlike free-text search), and the `*🤖 Generated with create-issue*` footer in the body template gives human-readable attribution.
-
-If Step 1d flagged design routing, also ensure and apply the routing label:
-
-```sh
-gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
-
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:create-issue" --label "needs-design-review"
-```
 
 - **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1b/1c as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 
