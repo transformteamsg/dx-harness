@@ -139,9 +139,12 @@ Run in this order; do not present output to the user while a step is failing:
      hand, no new evaluator spawn) is enough when the prior verdict was
      pass-with-findings (zero BLOCKING) and the fix is small and targeted — touches
      only the flagged element, not structure or plan fidelity.
-   - **Full evaluator re-grade** (back to step 3) is required when: any BLOCKING
-     finding was addressed, the fix touched structure or plan fidelity, or several
-     findings were fixed together (harder to isolate whether one fix regressed
-     another).
+   - **Full evaluator re-grade** (back to step 2 to recapture evidence for whatever
+     changed, then step 3) is required when: any BLOCKING finding was addressed, the
+     fix touched structure or plan fidelity, or several findings were fixed together
+     (harder to isolate whether one fix regressed another). Never spawn the evaluator
+     against evidence captured before the fix — stale screenshots being re-graded as
+     if they showed the fix is exactly the "unverified work presented as verified"
+     failure this phase exists to prevent.
    - Record which path was taken and why in the decision record — a judgment call,
      but not a silent one.
