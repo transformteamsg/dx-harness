@@ -1,0 +1,25 @@
+---
+title: "Step 0: Prep guardrails"
+description: Work with your engineer to make sure the repo has guardrails before you build.
+status: proposed
+---
+
+You can experiment because the repo catches mistakes before they matter. If you're joining or starting a repo, work with your engineer to make sure these guardrails are in place.
+
+## The guardrails
+
+<Checklist>
+
+<Check>**Checks that catch bad code.** Linting, type-checking, and tests, plus a build step. Your project has a command that runs them; your engineer will tell you what it is.</Check>
+
+<Check>**A pipeline that runs those checks for you.** On GitLab, every merge request kicks off a *pipeline*: the same checks, run automatically on the server. Each check is a *job*; if a job fails, the pipeline turns red and nothing broken gets in. (This is what people mean by CI, or continuous integration. GitHub calls it Actions.)</Check>
+
+<Check>**Limits on the AI.** An automatic block on dangerous commands, like wiping files or a database. It also limits what the AI can touch on your computer and network.</Check>
+
+<Check>**Design checks.** A design harness that flags UI which breaks the design standard. On a TFX repo that's the [TFX harness](/harness/install); a DXD harness is on the way.</Check>
+
+</Checklist>
+
+These guardrails are what make it safe for a designer to build. Without them, ask your engineer to set them up first.
+
+Next: [Step 1: Set up](/getting-started/set-up).

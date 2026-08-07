@@ -1,0 +1,84 @@
+---
+title: "Step 3: Build"
+description: The build loop, step by step, and how to keep an eye on the basics.
+status: proposed
+---
+
+Once you know what you're making, the loop is the same every time. Doing it by hand is the best way to learn what's actually going on.
+
+## 1. Make a branch
+
+Pull the latest shared code first (the shared branch is usually called `main`), then make your branch off it, so you build on the current version. Have your AI show you the exact git command and wait for your OK before it runs; git actions are worth a quick double-check. Branch names are team-specific, like `102-add-feedback-link` or `feat/add-feedback-link`, so ask what yours uses.
+
+## 2. Let your AI learn the codebase first
+
+Before it writes anything, have your AI read the project, so it copies what's already there instead of inventing its own style. Point it at the setup file, a couple of existing components, and any design guidelines or tokens. This one step is what makes the output match the existing code.
+
+> *"Before writing anything, read this codebase: the setup file, a few existing components, and the design tokens or guidelines. Then follow how this project already does things."*
+
+You don't have to re-orient from scratch every session. Many codebases keep a `CLAUDE.md` file (or similar) that your AI reads automatically when a session starts, so it begins oriented. If yours has one, lean on it; it's a shared team file, so read from it rather than writing your own notes into it.
+
+## 3. Follow the codebase's conventions
+
+Reuse what's there before building new. A change that looks like it belongs is easier to trust and review.
+
+<DoDont items={[
+  { kind: "do", text: "Reuse an existing component before building a new one; the ui/ and common/ folders are where shared pieces usually live." },
+  { kind: "do", text: "Use the values the project already defines for colour, spacing, and radius (its design tokens, usually CSS variables in a file like src/index.css or app/globals.css)." },
+  { kind: "do", text: "Match the words already in the codebase; use the terms it already uses (say 'publish mission', not a phrase you invented), so flows stay consistent." },
+  { kind: "do", text: "When you remove UI, have your AI clear the code behind it too, so no dead bits or filler comments pile up." },
+  { kind: "do", text: "Have your AI shape incoming data at the boundary and never assume a response is there, so a missing value can't blank the screen." },
+  { kind: "do", text: "Keep spacing on the project's grid (often 8px), not arbitrary pixel values." },
+  { kind: "dont", text: "Hardcode a hex colour or a random pixel value when a token exists." },
+  { kind: "dont", text: "Edit a component used on more than one page without checking what else uses it; it changes everywhere at once." },
+  { kind: "dont", text: "Add a new tool or dependency for something the project can already do." },
+  { kind: "dont", text: "Force fixed widths; let elements size to their content." },
+]} />
+
+**No conventions yet?** A fresh or inconsistent codebase may have nothing to match. Set them yourself - pick your tokens and patterns and keep to them - or lean on a design harness, which brings the standard with it.
+
+> **Keep an eye on the basics yourself.** AI is good, but it lapses. Every so often it will hardcode a colour, skip a token, or reinvent a component that already exists. Knowing the best practices (use tokens, reuse what's there) is what lets you catch the slip. You can't fully outsource judgment.
+
+*These are habits I picked up from engineers and from building with AI, not hard rules. Add to them or correct them as you learn your own codebase.*
+
+## 4. Build only what the task needs
+
+Keep the change focused. Skip unrelated "improvements", even tempting ones; they make it harder to review and to undo.
+
+Some moves are higher-stakes and worth a closer look. Read carefully when the AI wants to:
+
+- install a new dependency
+- edit files outside the frontend folder (like `backend/`)
+- touch a lot of files at once
+- do something you don't understand
+
+None of these are off-limits, and most turn out fine. They're just the moments to slow down, understand what's happening, and loop in an engineer if it's outside your area or you're unsure.
+
+## 5. Check it in your preview
+
+Look at your change in the running app at `localhost`, at mobile and desktop widths, and in every state, not just the main flow:
+
+- **Empty**: no data yet
+- **Loading**: while it fetches
+- **Error**: when it fails
+
+Those three states are where UI usually breaks, and they're easy to forget. To see the mobile width, open your browser's dev tools (right-click the page and choose Inspect) and click the phone/tablet icon for device view, or just drag the window narrower. [Claude in Chrome](https://claude.com/claude-for-chrome) can also drive your preview: it clicks through the states and resizes for mobile, so it catches visual issues without you doing every click.
+
+## 6. Run the checks
+
+Ask your AI to run two things. Run both, since the quick checks can pass while the full build still fails:
+
+- **Code checks** - types, formatting, and tests, plus the build step.
+- **Design checks**, if your team has them - they catch hardcoded colours, contrast failures, missing focus states, tiny fonts, and generic "AI slop".
+
+These are the same checks GitLab runs as a **pipeline** when you open a merge request (Step 4), so running them now catches failures early.
+
+A green result means nothing automated was flagged, not that the design is done, so still look at it yourself. On a TFX repo, what gets checked lives in the [standards catalog](/standards/catalog); if a check flags one dimension (spacing, colour, wording), a focused pass like `/tfx:polish` or `/tfx:copy` fixes just that.
+
+## 7. Get an adversarial review
+
+Before a human sees it, ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a TFX repo, [`/tfx:critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review: the model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more (Codex is good for this). Either way, it cleans things up first, so your engineer's review goes faster.
+
+Once you've done this by hand, a design harness can run the build, check, and review phases for you, stopping for your approval before and after (on a TFX repo, that's `/tfx:design` and its [six-phase loop](/harness/loop)). You still make the branch and open the merge request yourself.
+
+Next: [Step 4: Ship](/getting-started/ship).

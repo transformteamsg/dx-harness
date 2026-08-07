@@ -1,0 +1,59 @@
+name: CI
+
+# Runs the fast checks (lint, typecheck, unit tests, standards gate) on pushes
+# to main and on pull requests targeting main. Separate from deploy.yml — this
+# workflow never deploys; deploy.yml runs only after this workflow succeeds.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # pnpm build's prebuild runs check-standards.mjs and the Python gates
+      # (check:python), so the gates run exactly once per job — here.
+      - name: Build production site
+        run: pnpm build
+
+      - name: Rendered accessibility contract
+        run: pnpm test:e2e

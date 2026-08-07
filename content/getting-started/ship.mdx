@@ -1,0 +1,31 @@
+---
+title: "Step 4: Ship"
+description: Commit, open a merge request, get it reviewed, and merge.
+status: proposed
+---
+
+A merge request is how your change gets reviewed and added into the shared code. Your AI can do the mechanics; here's what's happening, so you can follow along.
+
+## 1. Commit and push
+
+Write a short, clear commit message, and stage only the files you meant to change. A quick `git status` first shows what's included, so nothing stray gets committed. **Never push to `main`.** Always push your own branch. Many repos run some checks automatically at a Git hook when you commit or push (LangBuddy runs lint and types on push); if the hook fails, it blocks you, so running the checks yourself first saves a round-trip.
+
+## 2. Open the merge request
+
+Set the target to `main`, add a reviewer (an engineer or your lead), and create it. Then write a short description of what changed, plus before/after screenshots. Ask your AI to draft it from what you did, then tidy it.
+
+## 3. Watch the pipeline go green
+
+When you open the merge request, GitLab runs the **pipeline**: the same checks and build from Step 3, automatically on the server. Each check is a **job**; watch them go green. If a job fails, open it, read the error (your AI can help), fix it, and push again. The pipeline re-runs and the merge request updates itself. (This is CI, or continuous integration; GitHub calls it Actions.)
+
+## 4. Get it reviewed and merged
+
+Your reviewer may ask for changes; make them and push again. Once approved, it's merged in. Many teams then auto-deploy the change to a staging site, a safe copy for checking things before your users see them. Whether yours does, and where, is set per project, so check how yours works.
+
+## Keeping your branch fresh
+
+While you work, others merge into `main`, so your branch can fall behind. Before merging, update it by pulling in the latest `main`. Two techniques do this: *rebase* and *merge* (not the same "merge" as your MR being merged in). Teams have a preference, so ask which yours uses and let your AI run the command. If two people changed the same lines, you'll get a **merge conflict**. Don't guess; ask your AI to help, then re-run the checks.
+
+> **A habit worth building:** as you build, jot down the decisions: what the change is for, what states it covers, and anything the backend will need. That's the checklist your reviewer verifies against, and it's how your intent reaches the engineer instead of getting lost.
+
+Next: [Help & prompts](/getting-started/help).

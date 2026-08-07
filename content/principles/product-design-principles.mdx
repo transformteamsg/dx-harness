@@ -1,0 +1,69 @@
+---
+title: Product Design Principles
+description: Seven headings that settle how to build when judgement is required, priority-ordered so conflicts resolve cleanly.
+status: settled
+---
+
+These are compass headings, not railroad tracks. Not every screen exercises every principle; no screen violates one without conscious, written reasoning.
+
+## 01 — Platform First
+
+Design for the system, not the screen. A feature that solves one problem but fragments the experience is a net negative.
+
+**Litmus:** could another team reuse what you just built? If not, why not?
+
+**Anti-patterns:** one-off solutions that can't be reused · skipping the design system because "it's faster" · designing features in isolation.
+
+## 02 — Design for One Teacher
+
+Anchor every design in a specific teacher's real workflow. Abstract "users" lead to abstract solutions. Name the teacher, describe their Tuesday afternoon, design for that moment.
+
+**Litmus:** can you name the teacher and the specific moment this design serves?
+
+**Anti-patterns:** designing for "teachers" instead of Ms. Lim who teaches P5 Math · validating with stakeholder opinions instead of observation · building edge cases before nailing the core path.
+
+## 03 — Earn the Feature
+
+Every feature must justify its existence through observed need, not assumed value. High bar to add, low bar to remove. When in doubt, leave it out.
+
+**Litmus:** what's the user evidence? If you can't cite it, park it.
+
+**Anti-patterns:** building because a stakeholder asked · "just in case" options · equating feature count with product value.
+
+## 04 — Name the Tradeoff
+
+Every decision has a cost. Make it visible, document it, own it. "We chose X because Y, knowing it means Z" beats "we didn't think about it."
+
+**Litmus:** can you articulate what this design sacrifices and why that's acceptable?
+
+## 05 — Coherence over Completeness
+
+A smaller, coherent experience beats a comprehensive but fragmented one. Ship less, but make what you ship feel like one product. Consistency is a feature.
+
+**Litmus:** if a teacher used Feature A and then Feature B, would they feel like the same product?
+
+## 06 — Invisible Seams
+
+Teachers shouldn't see where one team's work ends and another's begins. The org chart never leaks into the UX.
+
+**Litmus:** can a teacher complete a cross-module task without noticing the boundary?
+
+**Anti-patterns:** re-entering information across modules · visible loading at module boundaries · different navigation paradigms per team.
+
+## 07 — Default to Less
+
+Reduce cognitive load relentlessly. Fewer options, fewer steps, fewer words. Progressive disclosure is a first principle, not a fallback.
+
+**Litmus:** can you remove one more thing from this screen without losing essential function?
+
+## When principles conflict
+
+Principles are prioritised 1–7; the higher one wins, and the deprioritisation is documented in the design's Tradeoffs section.
+
+## Design debt taxonomy
+
+| Tier | Definition | Response |
+| --- | --- | --- |
+| **Critical** | Violates principles 1–3; actively harms UX | Fix in current or next sprint |
+| **Structural** | Violates principles 4–5; compounding inconsistency | Schedule within the quarter |
+| **Cosmetic** | Violates principles 6–7; noticeable, not harmful | Track; fix opportunistically |

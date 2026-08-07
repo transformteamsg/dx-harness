@@ -1,0 +1,77 @@
+---
+title: Motion
+description: "Motion is feedback, not decoration: four durations, two easings, and one rule — nothing moves that doesn't mean something."
+status: proposed
+---
+
+## The scale
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--motion-fast` | 120ms | Hover and press feedback. The change is small, so the response reads as instant. |
+| `--motion-base` | 200ms | Reveals, toggles, small movement. The default. |
+| `--motion-slow` | 300ms | Large surfaces: sheets, drawers, whole panels. Also the MOT-1 ceiling for interface motion. |
+| `--motion-story` | 600ms | Narrative surfaces only — explanatory diagrams and the landing reveal. Never task UI. |
+
+<MotionScale />
+
+Duration follows the size of the change: the bigger the surface, the longer it
+may take. `lib/motion.ts` mirrors these values for motion/react; change both
+sides together, or the sync test fails the build.
+
+## Easing
+
+| Token | Curve | Use |
+| --- | --- | --- |
+| `--ease-out` | `cubic-bezier(0.215, 0.61, 0.355, 1)` | Elements entering or exiting: reveals, dropdowns, tooltips. Starts fast, settles into place. |
+| `--ease-in-out` | `cubic-bezier(0.645, 0.045, 0.355, 1)` | Elements already on screen that move or morph. |
+| plain `ease` | browser default | Hover tint changes. |
+
+No bounce or overshoot, ever (SLP-8).
+
+## When not to animate
+
+- Anything a teacher uses 100+ times a day gets no animation. Frequency beats
+  delight: the fiftieth slide-in is friction, not polish.
+- Keyboard navigation is always instant. Animation gives pointer interactions
+  spatial feedback; a keyboard user already knows where they are going.
+- Paired elements share one duration and one easing. A sheet and its backdrop
+  move as one unit, or they read as two things.
+
+## Reduced motion
+
+Every animated surface provides a reduced-motion variant (A11Y-5). In
+components, the repo pattern is `useReducedMotion() === true` — the strict
+comparison, so the hydration null never skips the animation; in CSS, the
+`motion-reduce:` utilities. Turning motion off may remove emphasis, never
+meaning: states, order, and relationships stay legible statically (MOT-3).
+
+## The controls
+
+- [MOT-1](/standards/catalog/mot-1) — interface motion is 100–300ms with
+  standard easing; no decorative motion on critical paths.
+- [MOT-2](/standards/catalog/mot-2) ⚑ — motion values come from this token
+  set; durations and easings are never hardcoded in component code.
+- [MOT-3](/standards/catalog/mot-3) ⚑ — motion may emphasise meaning but never
+  carry it alone; the surface communicates the same information with
+  animations off.
+
+## Usage
+
+```tsx
+{/* CSS: duration and easing from tokens */}
+<div className="transition-colors duration-(--motion-fast)" />
+
+{/* motion/react, via lib/motion.ts which mirrors the CSS tokens */}
+transition={{ duration: DUR.base, ease: EASE_OUT }}
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Take durations and easings from the motion token set (MOT-2)." },
+  { kind: "do", text: "Keep interface motion at 300ms or less (MOT-1)." },
+  { kind: "do", text: "Give every animated surface a reduced-motion variant (A11Y-5)." },
+  { kind: "dont", text: "Hardcode a duration or easing in component code." },
+  { kind: "dont", text: "Use bounce or overshoot easing (SLP-8)." },
+]} />

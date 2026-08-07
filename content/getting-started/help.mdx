@@ -1,0 +1,57 @@
+---
+title: "Help & prompts"
+description: What to do when something breaks, where to go next, and prompts you can copy.
+status: proposed
+---
+
+## When something breaks
+
+Errors are normal, and on your own branch they're safe. Two things to remember:
+
+- **You can't break anything permanently.** Nothing you do is shared until it's reviewed and merged, so your own branch is a safe place to experiment. Worst case, you undo it. Git forgives.
+- **When you hit an error, hand it to your AI.** Copy the red text, paste it in, and ask your AI to explain what's wrong and fix it. Reading errors is a skill you pick up fast, and your AI is good at it.
+
+## Going further
+
+A harness can take on more of this as you go: asking the questions, making changes, drafting and running a plan while you approve. It handles the mechanics, but knowing what each step does is what lets you catch the AI when it slips and push back. That's why it pays to do a few changes by hand first. The [Designer on-ramp](/harness/on-ramp) lays out how to hand off more as your judgment grows.
+
+## Prompts you can copy
+
+Starting points that work in any repo. Your assistant fills in the specifics.
+
+**Getting set up**
+
+| What it does | Prompt |
+| --- | --- |
+| Understand the project | "What's the tech stack here, and how do I install, run, and build this project?" |
+| Clone it | "Clone this repo for me: [paste the address]." |
+
+**Building**
+
+| What it does | Prompt |
+| --- | --- |
+| Learn the codebase first | "Before writing anything, read this codebase and its design tokens, then follow how it already does things." |
+| Make a branch | "Make a branch for this change. Show me the git command and wait for my OK first." |
+| Reuse over invent | "Reuse existing components and tokens. Check the ui/ and common/ folders before making anything new, and don't hardcode colours." |
+| Check the blast radius | "Before you change a component, tell me if it's used on more than one page." |
+| Review before a human does | "Use the /code-review skill on this change (or a different model like Codex). Find anything an engineer would flag, and check it fits the codebase's conventions." |
+
+**Shipping**
+
+| What it does | Prompt |
+| --- | --- |
+| Verify your change | "Run the project's checks (lint, types, tests) and its build, plus the design checks if it has them. Show me what passes and what fails." |
+| Commit and push safely | "Stage only the files I changed, commit with a clear message, and push my branch. Confirm the commands first." |
+| Draft the MR | "Draft an MR description from what we did, with before/after screenshots." |
+| Update your branch | "Update my branch with the latest main. Tell me whether this repo uses rebase or merge first." |
+
+**When stuck**
+
+| What it does | Prompt |
+| --- | --- |
+| Fix a failed check | "This check failed. Read the error and tell me what's wrong and how to fix it." |
+| Restart the preview | "The preview stopped. Can you start it again?" |
+
+---
+
+*A living starting point. When your team does something differently, especially around setup, access, and secrets, trust your engineers over this guide, and help improve it.*

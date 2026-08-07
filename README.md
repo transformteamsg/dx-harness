@@ -3,11 +3,12 @@
 AI harness for agentic-driven product development — a single Claude Code plugin
 bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
-- **19 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
+- **21 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
   `dx-groom-issue`, `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`,
-  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 11 design (`dx-start`,
+  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 13 design (`dx-start`,
   `dx-setup`, `dx-design`, `dx-critique`, `dx-standards`, `dx-copy`, `dx-polish`,
-  `dx-motion`, `dx-flow`, `dx-layout`, `dx-feedback`).
+  `dx-motion`, `dx-flow`, `dx-layout`, `dx-feedback`, `dx-git-buddy`,
+  `dx-research-brief`).
 - The design skills ship with their standards catalog (`plugins/dx-harness/standards/`),
   deterministic checks (`plugins/dx-harness/checks/`), and an `evaluator` agent.
 
@@ -89,6 +90,17 @@ A one-shot sweep for a product repo:
 
 The upstream design-standard repo and its Notion source keep their existing
 `tfx-design-standard` URLs; only the harness renamed.
+
+## Website
+
+This repo also hosts the design-standard website (Next.js 15, pnpm) — the
+human- and agent-readable rendering of the standard, including `/llms.txt`
+(with control details: `/llms-full.txt`) and `/standards/catalog.yaml`. It
+reads the catalog directly from `plugins/dx-harness/standards/`.
+
+    pnpm install
+    pnpm dev      # local dev server
+    pnpm build    # runs the standards gates, then builds
 
 ## Contributing
 
