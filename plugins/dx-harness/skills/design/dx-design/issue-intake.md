@@ -20,8 +20,8 @@ Determine the input type:
 
 **Check for a pre-loop design-routing flag before anything else.** If the fetched
 issue carries the `needs-design-review` label or a "Design routing: needs designer
-input before an engineer starts" line (written by `create-issue`'s or
-`groom-issue`'s design-need triage step), surface it immediately, before Diverge —
+input before an engineer starts" line (written by `dx-create-story`'s or
+`dx-create-task`'s design-need triage step), surface it immediately, before Diverge —
 put a structured question to the human: proceed solo anyway (record why), or switch
 to hand-off mode ("Who implements this" below) so Plan and Implement route to a
 designer instead of being carried through by an engineer alone. This is the coarse,
@@ -32,23 +32,20 @@ still runs regardless.
 
 From the body and comments, extract three things before doing anything else:
 
-1. **Acceptance criteria scenarios** — the Given/When/Then blocks (`create-issue`'s
-   template shape, `../../engineering/create-issue/issue-template.md`).
+1. **Acceptance criteria scenarios** — the Given/When/Then blocks (the shape
+   `dx-create-story`'s and `dx-create-task`'s templates use:
+   `../../engineering/dx-create-story/references/issue-template.md`,
+   `../../engineering/dx-create-task/references/issue-template.md`).
 2. **Design assets** — screenshots, prototype links, Figma links named in the issue.
-3. **Technical context** — any components or patterns already named during grooming
-   (the implementer sections, if the issue went through `groom-issue`).
+3. **Technical context** — any patterns or constraints the scope or description
+   already names. A task also carries its parent link, which often narrows this
+   further.
 
 **Read the acceptance criteria before looking at any reference screenshot.** The AC
 scenarios are the source of truth for what to design; a screenshot anchors visual
 choices before you know what the scenario actually requires. Reversing this ordering
 is what produced options built around a screenshot's incidental choices rather than
 the stated outcome, in the skill this was ported from.
-
-**Do not gate on a grooming checklist here.** An ungroomed issue is fine —
-`tfx:design`'s own Phase 3 human gate (grill + structured approve/adjust) is the
-enforcement point. Re-checking a generic checklist ahead of it, the way
-`implement-issue` does, adds nothing here and inherits harness-feedback issue #10's
-unresolved template mismatch.
 
 ## Still run "clarify the ask"
 
@@ -96,7 +93,7 @@ the end.
 ## Reviewer-routing (feeds Phase 3's plan and Phase 6's PR body)
 
 Flag, per AC scenario, whether it needs a human designer's review before merge —
-this is the piece with no prior `tfx:design` analog, and the part that actually
+this is the piece with no prior `dx-harness:dx-design` analog, and the part that actually
 answers "can an engineer implement a PM-written UI issue without designer input":
 
 | Criterion | Recommendation |
@@ -129,10 +126,10 @@ from a conversation with no issue.
 ## On hand-off approval
 
 1. If no GitHub issue exists yet for this plan, create one from the approved plan,
-   reusing `create-issue`'s template shape
-   (`../../engineering/create-issue/issue-template.md`) — Design assets carries the
-   decision record and the chosen option; Technical context carries anything the
-   plan already named; everything else follows the template's own N/A convention.
+   reusing whichever leaf skill's template shape fits: `dx-create-task` when this is
+   a design slice of an existing parent, `dx-create-story` otherwise. Design assets
+   carries the decision record and the chosen option; everything else follows the
+   template's own N/A convention.
 2. Add a status line to the decision record:
    `Hand-off: pending engineer implementation — issue #NNN, branch <name>`.
 3. Report the issue and branch to the user. Phase 4 does not run in this session.

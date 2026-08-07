@@ -12,7 +12,7 @@ fails_when:
   - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
   - a component is used differently here than on sibling pages with no reason
   - members of one control group (toggle set, segmented control) do not share a resting affordance — only the selected one reads as interactive
-  - a component's own nested interactive child (a focus ring, active-state fill) does not trace that component's own container edge or radius — it reads as floating inside a smaller box, not outlining the container
+  - "(proposed, pending design-lead approval — advisory only until approved) a component's own nested interactive child (a focus ring, active-state fill) does not trace that component's own container edge or radius — it reads as floating inside a smaller box, not outlining the container"
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
@@ -88,7 +88,8 @@ radius throughout — which is why this is filed as a missing check, not a hard 
 - A component is used differently here than on sibling pages with no reason.
 - Members of one control group do not share a resting affordance — only the selected one
   reads as interactive.
-- A component's own nested interactive child (a focus ring, active-state fill, icon)
+- **(Proposed, pending design-lead approval — advisory only until approved.)** A
+  component's own nested interactive child (a focus ring, active-state fill, icon)
   doesn't trace that component's own container geometry — it reads as floating inside a
   smaller box rather than matching the container's edge.
 
@@ -102,7 +103,8 @@ override-detection sub-check is **planned** once the CMP-1 component manifest is
 manifest is what makes "overrode a default" mechanically detectable) — until then, say
 "verified manually" and name what you checked.
 
-Also check each interactive component against **its own nested child's geometry**, not
+**(Proposed, pending design-lead approval — advisory only until approved.)** Also check
+each interactive component against **its own nested child's geometry**, not
 only against defaults and sibling pages: does a focus ring, active-state fill, or icon
 trace the component's own edge and radius, or does it float inside a smaller box than the
 container it's meant to outline? This is a self-consistency read on one instance — a
