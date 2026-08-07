@@ -92,6 +92,7 @@ The body is markdown containing backticks and other shell-special characters, so
 
 ```
 gh issue edit <number> --body-file /tmp/issue-body.md --add-label "skill:groom-issue"
+# If Step 2b flagged design routing, add: --add-label "needs-design-review"
 ```
 
 After updating, print the issue URL. The label makes usage queryable with `gh issue list --label "skill:groom-issue"`; the footer added in Step 4 gives human-readable attribution.

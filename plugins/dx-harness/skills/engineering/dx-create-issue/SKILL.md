@@ -109,6 +109,7 @@ Then create the issue once, adding `--label "needs-design-review"` only if Step 
 
 ```sh
 gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:create-issue"
+# If Step 1d flagged design routing, add: --label "needs-design-review"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:create-issue"` (exact, unlike free-text search), and the `*🤖 Generated with create-issue*` footer in the body template gives human-readable attribution.
