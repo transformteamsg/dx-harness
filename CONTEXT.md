@@ -48,6 +48,10 @@ _Avoid_: Evaluator, verify phase, grading
 The small set of decisions that make a product itself — essence, colour, typography, motion signature, voice, guardrails — recorded in DESIGN.md, which never restates the catalogue.
 _Avoid_: Brand guide, style guide, theme
 
+**Branch guard**:
+The branch-state check every design build runs before it implements: if the person is on main/master, or their branch is behind the remote default branch after a fetch, the run hands off to the git helper, which explains the risk in plain words and acts only after the person agrees.
+_Avoid_: Branch check, git precheck
+
 **Source-of-truth election**:
 The human's choice, during a dx-design-language session, of which evidence source — code, Figma, or a hybrid split per part — seeds DESIGN.md's decisions when sources disagree. Guides elicitation only; code stays the runtime authority, and fix-todos bring it in line with the elected source.
 _Avoid_: Precedence override, truth source
