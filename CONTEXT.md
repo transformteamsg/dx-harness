@@ -9,8 +9,12 @@ The `dx-design` skill that talks to the person first, works out what they want, 
 _Avoid_: Router, dispatcher, dx-start
 
 **Pass**:
-A single-dimension review-and-fix skill (copy, motion, flow, pattern, polish) that proposes up to five ranked changes in its dimension.
-_Avoid_: Audit, sweep
+A single-dimension review skill (copy, motion, flow, pattern, polish) that proposes up to five ranked findings in its dimension, records them on the surface's design ticket, and hands accepted ones to dx-design-make to build. A pass never edits the product itself.
+_Avoid_: Audit, sweep, review-and-fix
+
+**Pattern inventory**:
+The named UI patterns (list, cards, master-detail, wizard, empty state) and when each fits — guidance kept beside the control catalogue, never controls themselves; a control always wins on conflict.
+_Avoid_: Pattern library, pattern catalogue
 
 **Plan approval**:
 The point where a run stops, shows the person its plan, and waits for their OK before building. An explicit ask to build a specific plan or chosen direction already counts as approval.
