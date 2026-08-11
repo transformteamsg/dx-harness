@@ -28,6 +28,10 @@ _Avoid_: Options phase, concept round
 A long-lived issue on the repo's tracker that holds one surface's design history; each run appends its record (approved plan, waivers, design review verdict) as a comment.
 _Avoid_: Decision record, decision file
 
+**Rule proposal**:
+The only way the control catalogue grows: a real failure shows a gap, someone proposes a new control, and the design lead approves it by a small PR. Never from speculation.
+_Avoid_: Ratchet, catalogue growth
+
 **Standing override**:
 A product-level deviation from a catalogue control, declared once in DESIGN.md's Overrides section rather than at each site. Never allowed for L0; L1 needs a named approver; L2 needs a reason.
 _Avoid_: Overlay, exception, per-product rule
