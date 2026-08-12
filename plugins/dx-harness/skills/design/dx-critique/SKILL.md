@@ -5,8 +5,10 @@ description: 'Grade an existing product page — capture it, score it against th
 
 # Critique an existing surface
 
-You evaluate a page that already exists, then — only once the user approves — polish it.
-The normative source is the DX Design Standard; brand essence is **Kind Utility** —
+You evaluate a page that already exists and you propose, never build. Critique never
+edits the product: findings land in the annotated-evidence report and on the surface's
+design ticket, and `dx-design-execute` builds accepted ones in a later run.
+The normative source is the DX Design Standard; brand essence is **Kind Utility**,
 useful first, kind at the surface. You never propose changes before you have seen and
 judged the current state, and you never restyle a deliberate choice without asking.
 
@@ -31,14 +33,23 @@ For any waiver or applicability question read `../../../standards/README.md`
    control or layout pattern it serves. **Preserved is not waived:** a "preserve" call
    protects a deliberate choice from restyling, never its compliance from the checks —
    verify every preserved element against its controls (the L0 floor, A11Y-1 especially).
-2. **Present and stop.** Show the critique and the scored, ranked suggestions. **Stop
-   for the user to pick** — suggestions are offers, not a plan; do not implement anything
-   yet. Unpicked suggestions are recorded as "considered", never silently dropped.
-3. **Hand the accepted list to `design`.** Once the user approves specific suggestions,
-   invoke `design` with them as a specified-change run — now each is a named modification
-   ("merge the two summary cards into one header row"), so it enters design's scoped
-   modification loop cleanly and runs through implement and verify with the catalog
-   enforced. The plan gate still applies; a suggestion never bypasses it.
+2. **Present the report.** Read and run `report.md` (beside this file) end to end:
+   redline the findings onto crops of this run's captures, pass the mandatory
+   contact-sheet self-check, assemble the self-contained HTML in the locked document
+   structure, and publish it. The report is the default output of every critique run,
+   not an opt-in; a person who asked for a whole-page review with no dimension named
+   gets it without asking. Only critique produces it; the five passes never do.
+3. **Record the findings and stop.** Write a Findings comment on the surface's design
+   ticket, in the typed-heading format from `../../../procedures/design-tickets.md`
+   (the Findings heading carries the date and this skill's name), and link the report
+   URL from it. Then stop. Suggestions are offers, not a plan; do not implement
+   anything. Unpicked suggestions are recorded as "considered", never silently dropped.
+4. **Approval happens on the ticket, later.** When the human replies with S-numbers,
+   each approved S# marks the F-findings it fixes as `accepted`; the suggestions
+   table's Fixes column (S# to F#) is the mapping. `dx-design-execute` builds accepted
+   findings in a later run, its plan gate still applies, and each accepted finding then
+   links to the run record of the execute run that built it. Nothing is built inside a
+   critique run.
 
 Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds
 this prose too.
