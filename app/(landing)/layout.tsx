@@ -12,27 +12,28 @@ const navLink =
 const footerLink =
   "min-h-11 inline-flex items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
-/* The mark: five squares in a quincunx — one per loop phase. Re-inked from
-   the docs palette (tw-blue / amber / grass / teal / cyan); the geometry is
-   the brand, the tape colours retired with the dark landing world. tw-blue
-   here is the recorded polychrome-mark exception (landing-dark.md), not the
-   landing's accent — it stays as-is under the lime token sheet (ticket #82).
-   NOTE: that sheet also repoints --success-9 to teal-9, which is already
-   --sec-foundations's value — the "grass" and "teal" dots below now render
-   the same hue. Flagged, not fixed here (redesigning the mark is out of
-   scope for a token-value change). */
+/* The mark: five squares in a quincunx — one per loop phase. The geometry is
+   the brand; the tape colours retired with the dark landing world. Five
+   distinct hues, all existing tokens, re-picked for the lime sheet (ticket
+   #82 follow-up): the centre carries --primary (lime), the landing's lead,
+   and the four corners run warm to cool in reading order — amber, grass,
+   teal, blue. Roughly even hue steps, so no two dots read as the same colour
+   at 6px; the previous set drew --sec-foundations and --success-9, which the
+   lime sheet had collapsed onto the same teal. tw-blue is the recorded
+   polychrome-mark exception (landing-dark.md) — the Teacher Workspace
+   anchor, not the landing's accent — and stays in the set. */
 function QuincunxMark() {
   return (
     <span aria-hidden className="grid grid-cols-3 gap-[2px]">
-      <span className="size-1.5 bg-tw-blue" />
-      <span className="size-1.5" />
       <span className="size-1.5 bg-(--warning-9)" />
       <span className="size-1.5" />
-      <span className="size-1.5 bg-(--sec-foundations)" />
+      <span className="size-1.5 bg-(--sec-standards)" />
+      <span className="size-1.5" />
+      <span className="size-1.5 bg-primary" />
       <span className="size-1.5" />
       <span className="size-1.5 bg-(--success-9)" />
       <span className="size-1.5" />
-      <span className="size-1.5 bg-(--sec-products)" />
+      <span className="size-1.5 bg-tw-blue" />
     </span>
   );
 }

@@ -46,8 +46,11 @@ export function CopyCommands({ commands }: { commands: string }) {
           target floor the stack's size scale stops short of; site-focus-ring
           restores the site's shared focus idiom — the stack's half-alpha
           ring computes ~1.8:1 on the dark surface and fails the 3:1 UI-state
-          floor (A11Y-2/A11Y-1; latent DS defect, filed). */}
-      <Button onClick={copy} className="site-focus-ring min-h-11 px-5">
+          floor (A11Y-2/A11Y-1; latent DS defect, filed); landing-primary-hover
+          swaps the stack's opacity dim for --primary-hover, the lighter step
+          the lime token sheet declares for exactly this state (ticket #82
+          follow-up). */}
+      <Button onClick={copy} className="site-focus-ring landing-primary-hover min-h-11 px-5">
         Copy commands
       </Button>
     </div>

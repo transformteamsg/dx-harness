@@ -171,11 +171,11 @@
   --primary-foreground: #11130c;
   /* Interaction steps for the lime primary (Radix lime-10, dark/light
      variants) — the same role --tw-blue-hover fills for the raw blue
-     variable, just not yet consumed by a call site: the stack Button's
-     `hover:bg-primary/80` opacity blend already gives a working (if
-     slightly muddier, since it dims rather than lightens) hover. Kept here
-     so a call site that wants the exact resolved step reaches for a token,
-     not a raw hex. */
+     variable. --primary-hover is live on the landing's primary action via
+     the `.landing-primary-hover` rule below, which replaces the stack
+     Button's `hover:bg-primary/80` opacity dim with this lighter step.
+     --primary-pressed has no call site yet; it is kept here so one that
+     wants the resolved step reaches for a token, not a raw hex. */
   --primary-hover: #d4ff70;
   --primary-pressed: #b0e64c;
   /* Lime hairline/line (Radix lime-8 dark) — non-text only, its contrast on
@@ -202,9 +202,9 @@
      own 8% subtle tint; the subtle/muted mixes recompute automatically
      because they derive from var(--success-9) and var(--surface). NOTE:
      teal-9 (#12a594) is the same value already used for --sec-foundations,
-     so the quincunx mark's "success" dot below now matches its "foundations"
-     dot — a real visual collision from this change, left as-is (redesigning
-     the mark's palette is outside this ticket's scope). */
+     so any surface drawing both reads one hue twice — the quincunx mark did,
+     and now draws --sec-standards where it used to draw --sec-foundations
+     (see the mark in app/(landing)/layout.tsx). */
   --success: #0bd8b6;
   --success-9: #12a594;
   --danger: #ff9592;
@@ -335,6 +335,19 @@
      transition-all, which would otherwise ease the outline in from
      currentcolor/medium over 150ms (and reads as a laggy ring). */
   transition: none;
+}
+
+/* The landing's primary fill, hovered. The stack Button's default variant
+   hovers with `hover:bg-primary/80`, an opacity dim — on the lime accent that
+   reads as the fill going muddy rather than lifting. The token sheet already
+   declares the intended step (--primary-hover, Radix lime-10), so the call
+   site opts into it with this class. Unlayered author CSS, like
+   .site-focus-ring above, so it outranks the layered `hover:bg-primary/80`
+   utility deterministically. Landing-only by call site (the docs' Button uses
+   are all ghost/icon variants, which never set bg-primary), so light-mode docs
+   rendering is untouched — no change to components/ui/button.tsx. */
+.landing-primary-hover:hover {
+  background-color: var(--primary-hover);
 }
 
 /* Narrative reveal (the architecture diagram) — plays once on first in-view,
