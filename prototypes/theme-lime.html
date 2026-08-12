@@ -8,6 +8,13 @@
 /* ═══════════════════════════════════════════════════════════════════════
    THROWAWAY PROTOTYPE — ticket #81. Not shipping code.
    Self-contained: no external requests, system font stacks only.
+
+   Rev 2 — brand lime confirmed as Radix lime-9 #BDEE63 (DXD Figma,
+   "Colors/Lime/9"). Every accent step is now a real step of the Radix
+   lime scale, matching how this repo already tokens colour (--casesync
+   is Radix indigo-9, --sec-research is Radix lime-11). Success moved off
+   grass and onto Radix teal. The landing ships dark-only; the light
+   column is parked and kept for reference.
    ═══════════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -32,11 +39,11 @@ table { border-collapse: collapse; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    1. CANDIDATE TOKEN SHEET
-   Roles mirror app/globals.css exactly. The lime block is the new part;
-   everything else is the same role list the landing already consumes.
+   Roles mirror app/globals.css exactly. Every lime and teal value below is
+   a named step of a Radix scale — no hand-mixed colour anywhere.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── DARK: lime on near-black ─────────────────────────────────────── */
+/* ── DARK — the resolution. Lime on near-black. ───────────────────── */
 .t-dark {
   --background: #060707;
   --surface: #0E0F10;
@@ -48,20 +55,26 @@ table { border-collapse: collapse; }
   --prose-body: #C9CEC6;
   --muted-foreground: #A2A89F;
 
-  --lime: #A3E635;
-  --lime-hover: #B4EB59;      /* brighter on dark — light travels toward the viewer */
-  --lime-pressed: #8FCA2F;
-  --lime-text: var(--lime);   /* 13.4:1 on --background — lime IS the text colour here */
-  --lime-ink: #101408;        /* label on a lime fill */
-  --lime-dim: #5C8220;        /* rules, dividers, chart strokes — non-text */
-  --lime-wash: #13190B;       /* 8% lime over --background — the only tinted fill */
+  /* Radix lime — brand base is step 9, the same value in both modes */
+  --lime: #BDEE63;            /* lime-9  — the DXD brand primary */
+  --lime-hover: #D4FF70;      /* lime-10, dark scale — step 10 is the hovered solid */
+  --lime-pressed: #B0E64C;    /* lime-10, light scale — the darker direction */
+  --lime-text: var(--lime);   /* 15.0:1 on --background — lime IS the text colour here */
+  --lime-ink: #11130C;        /* lime-1, dark scale — the label on a lime fill */
+  --lime-line: #577538;       /* lime-8, dark scale — borders and strokes */
+  --lime-wash: #1F2917;       /* lime-3, dark scale — the one tinted fill */
+
+  /* Radix teal — success, moved off grass so it stops reading as brand */
+  --success: #0BD8B6;         /* teal-11, dark scale — text */
+  --success-9: #12A594;       /* teal-9 — solid, dots, ticks */
+  --success-subtle: #0D2D2A;  /* teal-3, dark scale — badge fill */
 
   --ring: var(--lime);
   --tw-blue: #0064FF;         /* demoted: product identity mark only */
   color-scheme: dark;
 }
 
-/* ── LIGHT: warm paper, lime as fill, dark lime as ink ────────────── */
+/* ── LIGHT — parked. Kept for reference; not the resolution. ──────── */
 .t-light {
   --background: #FAFAF7;
   --surface: #FFFFFF;
@@ -73,26 +86,22 @@ table { border-collapse: collapse; }
   --prose-body: #3E4238;
   --muted-foreground: #5B6152;
 
-  --lime: #A3E635;            /* same brand base — fills only */
-  --lime-hover: #93CF30;      /* darker on light — the mirror of the dark rule */
-  --lime-pressed: #86BD2B;
-  --lime-text: #4C6B1F;       /* the darker step: 5.9:1 on paper */
-  --lime-ink: #17190F;        /* near-black label on the lime fill */
-  --lime-dim: #4C6B1F;        /* also the CTA edge — see note 3 */
-  --lime-wash: #F0F8E0;
+  --lime: #BDEE63;            /* lime-9 — fills only on light */
+  --lime-hover: #B0E64C;      /* lime-10, light scale */
+  --lime-pressed: #8DB654;    /* lime-8, light scale */
+  --lime-text: #5C7C2F;       /* lime-11, light scale — see note 5, it does not hold everywhere */
+  --lime-ink: #37401C;        /* lime-12, light scale — label on the lime fill */
+  --lime-line: #ABC978;       /* lime-7, light scale */
+  --lime-edge: #5C7C2F;       /* lime-11 — the CTA hairline; see note 3 */
+  --lime-wash: #EEF6D6;       /* lime-3, light scale */
 
-  --ring: #4C6B1F;
+  --success: #0D3D38;         /* teal-12 — teal-11 does not clear AA on warm paper */
+  --success-9: #12A594;       /* teal-9 */
+  --success-subtle: #E0F8F3;  /* teal-3, light scale */
+
+  --ring: #5C7C2F;
   --tw-blue: #0064FF;
   color-scheme: light;
-}
-
-/* ── Dark sub-variant B: yellow-leaning lime ──────────────────────── */
-.v-b {
-  --lime: #D2F63C;
-  --lime-hover: #D9F75B;
-  --lime-pressed: #B5D434;
-  --lime-dim: #6E8C1C;
-  --lime-wash: #16190C;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -169,7 +178,7 @@ table { border-collapse: collapse; }
   text-decoration-thickness: 1px; cursor: pointer;
 }
 
-/* The CTA — black ink on lime */
+/* The CTA — dark ink on lime, never white */
 .btn-lime {
   display: inline-flex; align-items: center; gap: 7px;
   background: var(--lime); color: var(--lime-ink);
@@ -181,7 +190,6 @@ table { border-collapse: collapse; }
 }
 .btn-lime:hover { background: var(--lime-hover); }
 .btn-lime:active { background: var(--lime-pressed); }
-.t-light .btn-lime { --lime-edge: var(--lime-dim); }  /* see note 3 */
 .btn-lime svg { display: block; }
 
 /* Feature cards — three, equal weight, no nesting */
@@ -212,16 +220,31 @@ table { border-collapse: collapse; }
 .figure { height: 96px; display: block; }
 .figure svg { width: 100%; height: 100%; overflow: visible; }
 
+/* Verdict row — the teal pass-badge next to the lime, so the separation shows */
+.verdicts {
+  margin-top: 22px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: 11.5px;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: 999px; padding: 3px 10px;
+  letter-spacing: 0.03em;
+}
+.badge-pass { background: var(--success-subtle); color: var(--success); padding-left: 8px; }
+.badge-pass .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success-9); }
+.badge-l0 { background: var(--lime); color: var(--lime-ink); font-weight: 700; }
+.badge-l1 { background: var(--lime-wash); color: var(--lime-text); border: 1px solid var(--lime-line); }
+.verdicts .cap { color: var(--muted-foreground); font-family: var(--font-body); font-size: 12px; }
+
 /* Mini-diagram primitives, all token-driven */
 .d-node { fill: var(--muted); stroke: var(--border); }
-.d-node-lime { fill: var(--lime-wash); stroke: var(--lime-dim); }
+.d-node-lime { fill: var(--lime-wash); stroke: var(--lime-line); }
 .d-line { stroke: var(--border-strong); stroke-width: 1; fill: none; }
-.d-line-lime { stroke: var(--lime-dim); stroke-width: 1.25; fill: none; }
+.d-line-lime { stroke: var(--lime-line); stroke-width: 1.25; fill: none; }
 .d-line-dash { stroke-dasharray: 3 3; }
 .d-t { font-family: var(--font-mono); font-size: 8.5px; fill: var(--muted-foreground); }
 .d-t-fg { fill: var(--foreground); }
 .d-t-lime { fill: var(--lime-text); }
-.d-fill-muted { fill: var(--muted); }
 .d-fill-border { fill: var(--border); }
 .d-fill-lime { fill: var(--lime); }
 
@@ -246,7 +269,8 @@ table { border-collapse: collapse; }
 .labnote b { color: #FAFAFA; }
 .labnote code { font-family: var(--font-mono); font-size: 12px; color: #FAFAFA; }
 
-.split { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #52525B; }
+/* Dark is the resolution and gets the room; light is parked beside it. */
+.split { display: grid; grid-template-columns: 1.65fr 1fr; gap: 1px; background: #52525B; }
 @media (max-width: 1180px) { .split { grid-template-columns: 1fr; } }
 .pane { position: relative; min-width: 0; }
 .pane-tag {
@@ -255,23 +279,27 @@ table { border-collapse: collapse; }
   font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
   text-transform: uppercase; padding: 4px 10px; border-radius: 0 0 5px 0;
 }
-
-/* Variant strip */
-.variants { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #52525B; }
-@media (max-width: 1180px) { .variants { grid-template-columns: 1fr; } }
-.mini { padding: 44px 26px 30px; }
-.mini .hero-h1 { font-size: clamp(24px, 3cqw, 32px); max-width: 20ch; }
-.mini .hero-lede { display: none; }
-.mini .quickstart { margin-top: 22px; }
-.mini .cards { margin-top: 26px; grid-template-columns: 1fr 1fr; gap: 12px; }
-.mini .figure { height: 74px; }
+.parked-banner {
+  background: #52525B; color: #FAFAFA;
+  padding: 26px 14px 9px; font-size: 12px; line-height: 1.45;
+  border-bottom: 1px solid #71717A;
+}
+.parked-banner b { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 2px; color: #FAFAFA; }
+.parked-banner span { color: #E4E4E7; }
 
 /* Black ladder */
 .ladder { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 20px 26px; }
 .rung { border-radius: 6px; border: 1px solid #52525B; overflow: hidden; width: 160px; }
 .rung .swatch { height: 62px; display: flex; align-items: center; justify-content: center; }
-.rung .swatch span { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: #A3E635; }
+.rung .swatch span { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: #BDEE63; }
 .rung .cap { background: #27272A; padding: 6px 8px; font-family: var(--font-mono); font-size: 10.5px; color: #D4D4D8; }
+
+/* Scale strips */
+.scale { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 20px 24px; }
+.step { width: 108px; border-radius: 5px; overflow: hidden; border: 1px solid #52525B; }
+.step .sw2 { height: 40px; }
+.step .cap2 { background: #27272A; padding: 5px 7px; font-family: var(--font-mono); font-size: 9.5px; line-height: 1.4; color: #D4D4D8; }
+.step .cap2 b { display: block; color: #FAFAFA; }
 
 /* Token table — documentation surface, held neutral-light on purpose */
 .sheet { background: #FAFAFA; color: #18181B; padding: 30px 20px 56px; }
@@ -279,10 +307,12 @@ table { border-collapse: collapse; }
 .sheet h3 { font-family: var(--font-display); font-size: 14px; letter-spacing: -0.01em; margin: 26px 0 8px; }
 .sheet p { font-size: 13px; line-height: 1.6; color: #3F3F46; max-width: 92ch; margin-top: 8px; }
 .sheet .tw { overflow-x: auto; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; }
-.sheet table { width: 100%; font-size: 12.5px; min-width: 900px; }
+.sheet table { width: 100%; font-size: 12.5px; min-width: 1000px; }
 .sheet thead { background: #F4F4F5; }
 .sheet th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 1px solid #E4E4E7; white-space: nowrap; }
+.sheet th.parked { color: #71717A; font-weight: 500; }
 .sheet td { padding: 7px 12px; border-bottom: 1px solid #F4F4F5; vertical-align: top; }
+.sheet td.parked { background: #FCFCFC; color: #52525B; }
 .sheet tbody tr:last-child td { border-bottom: 0; }
 .sheet .k { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
 .sheet .v { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
@@ -305,16 +335,16 @@ table { border-collapse: collapse; }
 
 <div class="labbar">
   <b>#81 — lime on black</b>
-  <span>Throwaway prototype. Dark and light share one role sheet; only the values flip.</span>
+  <span>Brand lime = Radix lime-9 #BDEE63. Dark ships; light is parked. Every accent step is a named Radix step.</span>
 </div>
 
-<!-- ═══════════ 1 + 2. DARK AND LIGHT, SIDE BY SIDE ═══════════ -->
-<div class="labhead">1 — the hero, both modes</div>
+<!-- ═══════════ 1. THE HERO — DARK IS THE RESOLUTION ═══════════ -->
+<div class="labhead">1 — the hero</div>
 <div class="split">
 
-  <!-- ─────────── DARK ─────────── -->
+  <!-- ─────────── DARK — ships ─────────── -->
   <div class="pane">
-    <div class="pane-tag">Dark — lime A #A3E635</div>
+    <div class="pane-tag">Dark — ships</div>
     <div class="page t-dark">
       <div class="topbar">
         <div class="wordmark"><span class="dot"></span>dx-harness</div>
@@ -406,7 +436,7 @@ table { border-collapse: collapse; }
           <!-- Card 3 — DESIGN.md file mockup -->
           <div class="card">
             <div class="figure">
-              <svg viewBox="0 0 240 96" role="img" aria-label="A DESIGN.md file with tokens, type and motion sections">
+              <svg viewBox="0 0 240 96" role="img" aria-label="A DESIGN.md file with tokens and type sections">
                 <path class="d-line-lime" d="M0 19 H240"/>
                 <circle class="d-fill-lime" cx="12" cy="10" r="3"/>
                 <text class="d-t d-t-fg" x="22" y="13">DESIGN.md</text>
@@ -424,20 +454,31 @@ table { border-collapse: collapse; }
             </div>
           </div>
         </div>
+
+        <!-- Success is teal, so a pass verdict never reads as brand -->
+        <div class="verdicts">
+          <span class="badge badge-l0">L0</span>
+          <span class="badge badge-l1">L1</span>
+          <span class="badge badge-pass"><span class="dot"></span>A11Y-1 pass</span>
+          <span class="cap">Teal carries the verdict; lime carries the brand.</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ─────────── LIGHT ─────────── -->
+  <!-- ─────────── LIGHT — parked ─────────── -->
   <div class="pane">
-    <div class="pane-tag">Light — warm paper, lime as fill</div>
+    <div class="pane-tag">Light — parked</div>
+    <div class="parked-banner">
+      <b>Parked</b>
+      <span>Dark ships; light revisits with the docs retheme. Reference only — two pairs still fail AA, see notes 5 and 6.</span>
+    </div>
     <div class="page t-light">
       <div class="topbar">
         <div class="wordmark"><span class="dot"></span>dx-harness</div>
         <nav class="topnav">
           <a href="#" class="is-current">Standards</a>
           <a href="#">Docs</a>
-          <a href="#">GitHub</a>
         </nav>
       </div>
       <div class="shell">
@@ -451,7 +492,7 @@ table { border-collapse: collapse; }
         <div class="quickstart">
           <div class="qs-frame">
             <div class="qs-bar">
-              <span class="qs-label">Claude Code — two commands</span>
+              <span class="qs-label">Claude Code</span>
               <button class="btn-lime" type="button">
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <rect x="5.5" y="5.5" width="8" height="8" rx="1.6" stroke="currentColor" stroke-width="1.4"/>
@@ -460,8 +501,7 @@ table { border-collapse: collapse; }
                 Copy
               </button>
             </div>
-<pre class="qs-pre"><code><span class="cmd">/plugin</span> marketplace add transformteamsg/dx-harness
-<span class="cmd">/plugin</span> install dx-harness@dx-harness</code></pre>
+<pre class="qs-pre"><code><span class="cmd">/plugin</span> install dx-harness@dx-harness</code></pre>
           </div>
           <p class="qs-foot">
             Then type <code>/dx</code> and every skill surfaces.
@@ -470,32 +510,6 @@ table { border-collapse: collapse; }
         </div>
 
         <div class="cards">
-          <div class="card">
-            <div class="figure">
-              <svg viewBox="0 0 240 96" role="img" aria-label="One orchestrator dispatching to specialised skills">
-                <rect class="d-node-lime" x="1" y="34" width="72" height="28" rx="5"/>
-                <text class="d-t d-t-lime" x="12" y="52">dx-design</text>
-                <path class="d-line-lime" d="M74 48 H100 M100 48 V10 H132"/>
-                <path class="d-line-lime" d="M100 48 V34 H132"/>
-                <path class="d-line-lime" d="M100 48 H132"/>
-                <path class="d-line-lime" d="M100 48 V62 H132"/>
-                <path class="d-line-lime d-line-dash" d="M100 48 V86 H132"/>
-                <rect class="d-node" x="133" y="1" width="106" height="18" rx="4"/>
-                <text class="d-t d-t-fg" x="141" y="13">make</text>
-                <rect class="d-node" x="133" y="25" width="106" height="18" rx="4"/>
-                <text class="d-t d-t-fg" x="141" y="37">critique</text>
-                <rect class="d-node" x="133" y="49" width="106" height="18" rx="4"/>
-                <text class="d-t d-t-fg" x="141" y="61">polish</text>
-                <rect class="d-node" x="133" y="73" width="106" height="18" rx="4"/>
-                <text class="d-t d-t-fg" x="141" y="85">motion</text>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-h"><span class="mono">dx-design</span></h3>
-              <p class="card-p">The orchestrator: asks what you want, answers rule questions, routes you.</p>
-            </div>
-          </div>
-
           <div class="card">
             <div class="figure">
               <svg viewBox="0 0 240 96" role="img" aria-label="Three control tiers: L0 non-negotiable, L1 mandatory, L2 recommended">
@@ -519,7 +533,7 @@ table { border-collapse: collapse; }
 
           <div class="card">
             <div class="figure">
-              <svg viewBox="0 0 240 96" role="img" aria-label="A DESIGN.md file with tokens, type and motion sections">
+              <svg viewBox="0 0 240 96" role="img" aria-label="A DESIGN.md file with tokens and type sections">
                 <path class="d-line-lime" d="M0 19 H240"/>
                 <circle class="d-fill-lime" cx="12" cy="10" r="3"/>
                 <text class="d-t d-t-fg" x="22" y="13">DESIGN.md</text>
@@ -537,203 +551,131 @@ table { border-collapse: collapse; }
             </div>
           </div>
         </div>
+
+        <div class="verdicts">
+          <span class="badge badge-l0">L0</span>
+          <span class="badge badge-l1">L1</span>
+          <span class="badge badge-pass"><span class="dot"></span>A11Y-1 pass</span>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ 3. THE TWO LIMES, DARK ONLY ═══════════ -->
-<div class="labhead">2 — two limes that genuinely compete (dark only)</div>
+<!-- ═══════════ 2. THE SCALE ═══════════ -->
+<div class="labhead">2 — the steps, straight off the Radix scales</div>
 <p class="labnote">
-  Both clear every text threshold on near-black, so the choice is temperature, not
-  contrast. <b>A</b> keeps a green cast and stays a colour; <b>B</b> is close enough
-  to yellow that it starts reading as a highlighter and dominates the headline it sits
-  in. A is the recommendation; B is here so the difference is visible rather than argued.
+  Nothing here is hand-mixed. Base is <b>lime-9 <code>#BDEE63</code></b>, the value confirmed in
+  the DXD Figma. Hover takes the mode's own step 10; pressed takes step 10 from the <i>other</i>
+  direction, so the fill goes brighter under the cursor and darker under the finger. Radix builds
+  lime as a "bright" scale whose steps 9 and 10 are designed to carry dark text rather than white —
+  the same split this theme needs from the other side. White on lime-9 is 1.35:1 and is never used.
 </p>
-<div class="variants">
-
-  <div class="pane">
-    <div class="pane-tag">A — green-leaning #A3E635 · 13.4:1</div>
-    <div class="page t-dark">
-      <div class="shell mini">
-        <h1 class="hero-h1">Now it holds the <span class="accent">design bar</span>.</h1>
-        <div class="quickstart">
-          <div class="qs-frame">
-            <div class="qs-bar">
-              <span class="qs-label">Claude Code</span>
-              <button class="btn-lime" type="button">Copy</button>
-            </div>
-<pre class="qs-pre"><code><span class="cmd">/plugin</span> install dx-harness@dx-harness</code></pre>
-          </div>
-        </div>
-        <div class="cards">
-          <div class="card">
-            <div class="figure">
-              <svg viewBox="0 0 240 74" role="img" aria-label="Tier strip">
-                <rect class="d-fill-lime" x="0" y="2" width="240" height="18" rx="4"/>
-                <text class="d-t" x="9" y="14.5" style="fill:var(--lime-ink);font-weight:700">L0</text>
-                <text class="d-t" x="30" y="14.5" style="fill:var(--lime-ink)">non-negotiable</text>
-                <rect class="d-node-lime" x="0" y="27" width="240" height="18" rx="4"/>
-                <text class="d-t d-t-lime" x="9" y="39.5" style="font-weight:700">L1</text>
-                <text class="d-t d-t-lime" x="30" y="39.5">mandatory</text>
-                <rect class="d-node" x="0" y="52" width="240" height="18" rx="4"/>
-                <text class="d-t d-t-fg" x="9" y="64.5" style="font-weight:700">L2</text>
-                <text class="d-t" x="30" y="64.5">recommended</text>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-h">Control catalog</h3>
-              <p class="card-p">70+ checkable controls, three tiers.</p>
-            </div>
-          </div>
-          <div class="card">
-            <div class="figure">
-              <svg viewBox="0 0 240 74" role="img" aria-label="DESIGN.md file">
-                <path class="d-line-lime" d="M0 19 H240"/>
-                <circle class="d-fill-lime" cx="12" cy="10" r="3"/>
-                <text class="d-t d-t-fg" x="22" y="13">DESIGN.md</text>
-                <text class="d-t d-t-lime" x="12" y="35"># Tokens</text>
-                <rect class="d-fill-border" x="12" y="41" width="150" height="4" rx="2"/>
-                <rect class="d-fill-border" x="12" y="49" width="112" height="4" rx="2"/>
-                <text class="d-t d-t-lime" x="12" y="66"># Type</text>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-h"><span class="mono">DESIGN.md</span><span class="tag">planned</span></h3>
-              <p class="card-p"><span style="font-family:var(--font-mono)">dx-design-language</span> defines DESIGN.md.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="pane">
-    <div class="pane-tag">B — yellow-leaning #D2F63C · 16.3:1</div>
-    <div class="page t-dark v-b">
-      <div class="shell mini">
-        <h1 class="hero-h1">Now it holds the <span class="accent">design bar</span>.</h1>
-        <div class="quickstart">
-          <div class="qs-frame">
-            <div class="qs-bar">
-              <span class="qs-label">Claude Code</span>
-              <button class="btn-lime" type="button">Copy</button>
-            </div>
-<pre class="qs-pre"><code><span class="cmd">/plugin</span> install dx-harness@dx-harness</code></pre>
-          </div>
-        </div>
-        <div class="cards">
-          <div class="card">
-            <div class="figure">
-              <svg viewBox="0 0 240 74" role="img" aria-label="Tier strip">
-                <rect class="d-fill-lime" x="0" y="2" width="240" height="18" rx="4"/>
-                <text class="d-t" x="9" y="14.5" style="fill:var(--lime-ink);font-weight:700">L0</text>
-                <text class="d-t" x="30" y="14.5" style="fill:var(--lime-ink)">non-negotiable</text>
-                <rect class="d-node-lime" x="0" y="27" width="240" height="18" rx="4"/>
-                <text class="d-t d-t-lime" x="9" y="39.5" style="font-weight:700">L1</text>
-                <text class="d-t d-t-lime" x="30" y="39.5">mandatory</text>
-                <rect class="d-node" x="0" y="52" width="240" height="18" rx="4"/>
-                <text class="d-t d-t-fg" x="9" y="64.5" style="font-weight:700">L2</text>
-                <text class="d-t" x="30" y="64.5">recommended</text>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-h">Control catalog</h3>
-              <p class="card-p">70+ checkable controls, three tiers.</p>
-            </div>
-          </div>
-          <div class="card">
-            <div class="figure">
-              <svg viewBox="0 0 240 74" role="img" aria-label="DESIGN.md file">
-                <path class="d-line-lime" d="M0 19 H240"/>
-                <circle class="d-fill-lime" cx="12" cy="10" r="3"/>
-                <text class="d-t d-t-fg" x="22" y="13">DESIGN.md</text>
-                <text class="d-t d-t-lime" x="12" y="35"># Tokens</text>
-                <rect class="d-fill-border" x="12" y="41" width="150" height="4" rx="2"/>
-                <rect class="d-fill-border" x="12" y="49" width="112" height="4" rx="2"/>
-                <text class="d-t d-t-lime" x="12" y="66"># Type</text>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-h"><span class="mono">DESIGN.md</span><span class="tag">planned</span></h3>
-              <p class="card-p"><span style="font-family:var(--font-mono)">dx-design-language</span> defines DESIGN.md.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="scale">
+  <div class="step"><div class="sw2" style="background:#11130C"></div><div class="cap2"><b>lime-1 dark</b>#11130C<br>--lime-ink</div></div>
+  <div class="step"><div class="sw2" style="background:#1F2917"></div><div class="cap2"><b>lime-3 dark</b>#1F2917<br>--lime-wash</div></div>
+  <div class="step"><div class="sw2" style="background:#577538"></div><div class="cap2"><b>lime-8 dark</b>#577538<br>--lime-line</div></div>
+  <div class="step"><div class="sw2" style="background:#BDEE63"></div><div class="cap2"><b>lime-9</b>#BDEE63<br>--lime · base</div></div>
+  <div class="step"><div class="sw2" style="background:#D4FF70"></div><div class="cap2"><b>lime-10 dark</b>#D4FF70<br>--lime-hover</div></div>
+  <div class="step"><div class="sw2" style="background:#B0E64C"></div><div class="cap2"><b>lime-10 light</b>#B0E64C<br>--lime-pressed</div></div>
+  <div class="step"><div class="sw2" style="background:#5C7C2F"></div><div class="cap2"><b>lime-11 light</b>#5C7C2F<br>light text (parked)</div></div>
+</div>
+<div class="scale">
+  <div class="step"><div class="sw2" style="background:#0D2D2A"></div><div class="cap2"><b>teal-3 dark</b>#0D2D2A<br>--success-subtle</div></div>
+  <div class="step"><div class="sw2" style="background:#12A594"></div><div class="cap2"><b>teal-9</b>#12A594<br>--success-9</div></div>
+  <div class="step"><div class="sw2" style="background:#0BD8B6"></div><div class="cap2"><b>teal-11 dark</b>#0BD8B6<br>--success</div></div>
+  <div class="step"><div class="sw2" style="background:#46A758"></div><div class="cap2"><b>grass-9</b>#46A758<br>retired — reads as brand</div></div>
 </div>
 
-<!-- ═══════════ THE BLACK ═══════════ -->
+<!-- ═══════════ 3. THE BLACK ═══════════ -->
 <div class="labhead">3 — which black</div>
 <p class="labnote">
-  All four carry lime at 13:1 or better, so this is not a contrast decision either.
-  Pure <code>#000</code> leaves nowhere to go <i>down</i> — insets, wells and the
-  scrim under a dialog all have to be faked with a border — and at 13.9:1 the lime
-  edges bloom on OLED at display sizes. <code>#060707</code> reads as black, keeps a
-  four-step ladder above it, and still allows a darker inset if one is ever needed.
+  All of them carry lime-9 at 13:1 or better, so this is not a contrast decision.
+  Pure <code>#000</code> leaves nowhere to go <i>down</i> — insets, wells and the scrim under a
+  dialog all have to be faked with a border — and at 15.6:1 the lime edges bloom on OLED at
+  display sizes. <code>#060707</code> reads as black, keeps a four-step ladder above it, and
+  still allows a darker inset if one is ever needed.
 </p>
 <div class="ladder">
-  <div class="rung"><div class="swatch" style="background:#000000"><span>Aa 13.9</span></div><div class="cap">#000000 · pure</div></div>
-  <div class="rung"><div class="swatch" style="background:#060707"><span>Aa 13.4</span></div><div class="cap">#060707 · chosen</div></div>
-  <div class="rung"><div class="swatch" style="background:#08090A"><span>Aa 13.2</span></div><div class="cap">#08090A · Linear</div></div>
-  <div class="rung"><div class="swatch" style="background:#0A0A0C"><span>Aa 13.1</span></div><div class="cap">#0A0A0C · today</div></div>
-  <div class="rung"><div class="swatch" style="background:#0E0F10"><span>Aa 12.7</span></div><div class="cap">#0E0F10 · surface</div></div>
-  <div class="rung"><div class="swatch" style="background:#16181A"><span>Aa 11.8</span></div><div class="cap">#16181A · muted</div></div>
+  <div class="rung"><div class="swatch" style="background:#000000"><span>Aa 15.6</span></div><div class="cap">#000000 · pure</div></div>
+  <div class="rung"><div class="swatch" style="background:#060707"><span>Aa 15.0</span></div><div class="cap">#060707 · chosen</div></div>
+  <div class="rung"><div class="swatch" style="background:#08090A"><span>Aa 14.8</span></div><div class="cap">#08090A · Linear</div></div>
+  <div class="rung"><div class="swatch" style="background:#0A0A0C"><span>Aa 14.7</span></div><div class="cap">#0A0A0C · today</div></div>
+  <div class="rung"><div class="swatch" style="background:#0E0F10"><span>Aa 14.2</span></div><div class="cap">#0E0F10 · surface</div></div>
+  <div class="rung"><div class="swatch" style="background:#16181A"><span>Aa 13.2</span></div><div class="cap">#16181A · muted</div></div>
 </div>
 
 <!-- ═══════════ 4. THE TOKEN SHEET ═══════════ -->
 <div class="sheet">
   <h2>4 — token sheet</h2>
   <p>
-    Role names are the ones already in <code>app/globals.css</code>, so the landing consumes
-    this without touching component code. Dark values go in the <code>.landing-dark</code>
-    block; light values replace the landing's use of <code>:root</code>. Ratios are WCAG 2.x
-    contrast; the floor is 4.5:1 for body text, 3:1 for large text and UI boundaries (A11Y-1).
+    Role names are the ones already in <code>app/globals.css</code>, so the landing consumes this
+    without touching component code. The dark column goes in the <code>.landing-dark</code> block
+    and is the resolution of this ticket. The light column is parked — kept for the docs retheme,
+    not for this landing. Ratios are WCAG 2.x contrast; the floor is 4.5:1 for body text, 3:1 for
+    large text and UI boundaries (A11Y-1).
   </p>
 
   <h3>Existing roles, re-inked</h3>
   <div class="tw">
   <table>
     <thead>
-      <tr><th>Role</th><th>Dark</th><th>Light</th><th>Pair measured</th><th>Dark ratio</th><th>Light ratio</th></tr>
+      <tr>
+        <th>Role</th>
+        <th>Radix step</th>
+        <th>Dark — ships</th>
+        <th class="parked">Light — parked</th>
+        <th>Pair measured</th>
+        <th>Dark ratio</th>
+        <th class="parked">Light ratio</th>
+      </tr>
     </thead>
     <tbody>
-      <tr class="grp"><td colspan="6">Surfaces — no text of their own</td></tr>
-      <tr><td class="k">--background</td><td class="v"><span class="sw" style="background:#060707"></span>#060707</td><td class="v"><span class="sw" style="background:#FAFAF7"></span>#FAFAF7</td><td class="na">page ground</td><td class="na">—</td><td class="na">—</td></tr>
-      <tr><td class="k">--surface</td><td class="v"><span class="sw" style="background:#0E0F10"></span>#0E0F10</td><td class="v"><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td>vs --background</td><td>1.05</td><td>1.05</td></tr>
-      <tr><td class="k">--muted</td><td class="v"><span class="sw" style="background:#16181A"></span>#16181A</td><td class="v"><span class="sw" style="background:#F1F2EA"></span>#F1F2EA</td><td>vs --surface</td><td>1.08</td><td>1.13</td></tr>
-      <tr><td class="k">--accent</td><td class="v"><span class="sw" style="background:#121315"></span>#121315</td><td class="v"><span class="sw" style="background:#F5F5EF"></span>#F5F5EF</td><td>hover fill vs --surface</td><td>1.03</td><td>1.09</td></tr>
-      <tr><td class="k">--border</td><td class="v"><span class="sw" style="background:#22252A"></span>#22252A</td><td class="v"><span class="sw" style="background:#E3E5DA"></span>#E3E5DA</td><td>hairline vs --surface</td><td>1.25</td><td>1.27</td></tr>
-      <tr><td class="k">--border-strong</td><td class="v"><span class="sw" style="background:#3A3F45"></span>#3A3F45</td><td class="v"><span class="sw" style="background:#A8AC9C"></span>#A8AC9C</td><td>vs --background</td><td>1.90</td><td>2.22</td></tr>
+      <tr class="grp"><td colspan="7">Surfaces — no text of their own</td></tr>
+      <tr><td class="k">--background</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#060707"></span>#060707</td><td class="v parked"><span class="sw" style="background:#FAFAF7"></span>#FAFAF7</td><td class="na">page ground</td><td class="na">—</td><td class="na parked">—</td></tr>
+      <tr><td class="k">--surface</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#0E0F10"></span>#0E0F10</td><td class="v parked"><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td>vs --background</td><td>1.05</td><td class="parked">1.05</td></tr>
+      <tr><td class="k">--muted</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#16181A"></span>#16181A</td><td class="v parked"><span class="sw" style="background:#F1F2EA"></span>#F1F2EA</td><td>vs --surface</td><td>1.08</td><td class="parked">1.13</td></tr>
+      <tr><td class="k">--accent</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#121315"></span>#121315</td><td class="v parked"><span class="sw" style="background:#F5F5EF"></span>#F5F5EF</td><td>hover fill vs --surface</td><td>1.03</td><td class="parked">1.09</td></tr>
+      <tr><td class="k">--border</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#22252A"></span>#22252A</td><td class="v parked"><span class="sw" style="background:#E3E5DA"></span>#E3E5DA</td><td>hairline vs --surface</td><td>1.25</td><td class="parked">1.27</td></tr>
+      <tr><td class="k">--border-strong</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#3A3F45"></span>#3A3F45</td><td class="v parked"><span class="sw" style="background:#A8AC9C"></span>#A8AC9C</td><td>vs --background</td><td>1.90</td><td class="parked">2.22</td></tr>
 
-      <tr class="grp"><td colspan="6">Text — every pair it is allowed to sit on</td></tr>
-      <tr><td class="k">--foreground</td><td class="v"><span class="sw" style="background:#F3F5F1"></span>#F3F5F1</td><td class="v"><span class="sw" style="background:#17190F"></span>#17190F</td><td>on --background</td><td class="pass">18.4</td><td class="pass">17.0</td></tr>
-      <tr><td class="k">--foreground</td><td class="v">”</td><td class="v">”</td><td>on --surface</td><td class="pass">17.5</td><td class="pass">17.8</td></tr>
-      <tr><td class="k">--foreground</td><td class="v">”</td><td class="v">”</td><td>on --muted (code block)</td><td class="pass">16.2</td><td class="pass">15.8</td></tr>
-      <tr><td class="k">--prose-body</td><td class="v"><span class="sw" style="background:#C9CEC6"></span>#C9CEC6</td><td class="v"><span class="sw" style="background:#3E4238"></span>#3E4238</td><td>on --background</td><td class="pass">12.6</td><td class="pass">9.8</td></tr>
-      <tr><td class="k">--muted-foreground</td><td class="v"><span class="sw" style="background:#A2A89F"></span>#A2A89F</td><td class="v"><span class="sw" style="background:#5B6152"></span>#5B6152</td><td>on --background</td><td class="pass">8.3</td><td class="pass">6.1</td></tr>
-      <tr><td class="k">--muted-foreground</td><td class="v">”</td><td class="v">”</td><td>on --surface</td><td class="pass">7.9</td><td class="pass">6.4</td></tr>
-      <tr><td class="k">--muted-foreground</td><td class="v">”</td><td class="v">”</td><td>on --muted (11px label)</td><td class="pass">7.3</td><td class="pass">5.7</td></tr>
+      <tr class="grp"><td colspan="7">Text — every pair it is allowed to sit on</td></tr>
+      <tr><td class="k">--foreground</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#F3F5F1"></span>#F3F5F1</td><td class="v parked"><span class="sw" style="background:#17190F"></span>#17190F</td><td>on --background</td><td class="pass">18.4</td><td class="pass parked">17.0</td></tr>
+      <tr><td class="k">--foreground</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --surface</td><td class="pass">17.5</td><td class="pass parked">17.8</td></tr>
+      <tr><td class="k">--foreground</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --muted (code block)</td><td class="pass">16.2</td><td class="pass parked">15.8</td></tr>
+      <tr><td class="k">--prose-body</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#C9CEC6"></span>#C9CEC6</td><td class="v parked"><span class="sw" style="background:#3E4238"></span>#3E4238</td><td>on --background</td><td class="pass">12.6</td><td class="pass parked">9.8</td></tr>
+      <tr><td class="k">--muted-foreground</td><td class="na">neutral</td><td class="v"><span class="sw" style="background:#A2A89F"></span>#A2A89F</td><td class="v parked"><span class="sw" style="background:#5B6152"></span>#5B6152</td><td>on --background</td><td class="pass">8.3</td><td class="pass parked">6.1</td></tr>
+      <tr><td class="k">--muted-foreground</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --surface</td><td class="pass">7.9</td><td class="pass parked">6.4</td></tr>
+      <tr><td class="k">--muted-foreground</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --muted (11px label)</td><td class="pass">7.3</td><td class="pass parked">5.7</td></tr>
+      <tr><td class="k">--muted-foreground</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --lime-wash</td><td class="pass">6.2</td><td class="na parked">n/a</td></tr>
 
-      <tr class="grp"><td colspan="6">Accent — the new lead colour</td></tr>
-      <tr><td class="k">--lime</td><td class="v"><span class="sw" style="background:#A3E635"></span>#A3E635</td><td class="v"><span class="sw" style="background:#A3E635"></span>#A3E635</td><td>base — one value, both modes</td><td class="na">—</td><td class="na">—</td></tr>
-      <tr><td class="k">--lime-text</td><td class="v">var(--lime)</td><td class="v"><span class="sw" style="background:#4C6B1F"></span>#4C6B1F</td><td>on --background</td><td class="pass">13.4</td><td class="pass">5.9</td></tr>
-      <tr><td class="k">--lime-text</td><td class="v">”</td><td class="v">”</td><td>on --surface</td><td class="pass">12.7</td><td class="pass">6.1</td></tr>
-      <tr><td class="k">--lime-text</td><td class="v">”</td><td class="v">”</td><td>on --muted (code keyword)</td><td class="pass">11.8</td><td class="pass">5.6</td></tr>
-      <tr><td class="k">--lime-ink</td><td class="v"><span class="sw" style="background:#101408"></span>#101408</td><td class="v"><span class="sw" style="background:#17190F"></span>#17190F</td><td>label on --lime (the CTA)</td><td class="pass">12.4</td><td class="pass">11.8</td></tr>
-      <tr><td class="k">--lime-hover</td><td class="v"><span class="sw" style="background:#B4EB59"></span>#B4EB59</td><td class="v"><span class="sw" style="background:#93CF30"></span>#93CF30</td><td>label on hover fill</td><td class="pass">13.3</td><td class="pass">9.5</td></tr>
-      <tr><td class="k">--lime-pressed</td><td class="v"><span class="sw" style="background:#8FCA2F"></span>#8FCA2F</td><td class="v"><span class="sw" style="background:#86BD2B"></span>#86BD2B</td><td>label on pressed fill</td><td class="pass">9.5</td><td class="pass">7.9</td></tr>
-      <tr><td class="k">--lime-dim</td><td class="v"><span class="sw" style="background:#5C8220"></span>#5C8220</td><td class="v"><span class="sw" style="background:#4C6B1F"></span>#4C6B1F</td><td>rules and strokes vs --background (3:1 floor)</td><td class="pass">4.5</td><td class="pass">5.9</td></tr>
-      <tr><td class="k">--lime-wash</td><td class="v"><span class="sw" style="background:#13190B"></span>#13190B</td><td class="v"><span class="sw" style="background:#F0F8E0"></span>#F0F8E0</td><td>--lime-text on the wash</td><td class="pass">11.9</td><td class="pass">5.6</td></tr>
-      <tr><td class="k">--ring</td><td class="v">var(--lime)</td><td class="v"><span class="sw" style="background:#4C6B1F"></span>#4C6B1F</td><td>focus outline vs --background (3:1 floor)</td><td class="pass">13.4</td><td class="pass">5.9</td></tr>
+      <tr class="grp"><td colspan="7">Accent — Radix lime, the new lead colour</td></tr>
+      <tr><td class="k">--lime</td><td class="k">lime-9</td><td class="v"><span class="sw" style="background:#BDEE63"></span>#BDEE63</td><td class="v parked"><span class="sw" style="background:#BDEE63"></span>#BDEE63</td><td>brand base — one value, both modes</td><td class="na">—</td><td class="na parked">—</td></tr>
+      <tr><td class="k">--lime-text</td><td class="k">lime-9 / lime-11</td><td class="v">var(--lime)</td><td class="v parked"><span class="sw" style="background:#5C7C2F"></span>#5C7C2F</td><td>on --background</td><td class="pass">15.0</td><td class="pass parked">4.6</td></tr>
+      <tr><td class="k">--lime-text</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --surface</td><td class="pass">14.2</td><td class="pass parked">4.8</td></tr>
+      <tr><td class="k">--lime-text</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --muted (code keyword)</td><td class="pass">13.2</td><td class="fail parked">4.3 — fails</td></tr>
+      <tr><td class="k">--lime-text</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --lime-wash (L1 chip)</td><td class="pass">11.2</td><td class="fail parked">4.3 — fails</td></tr>
+      <tr><td class="k">--lime-ink</td><td class="k">lime-1 dark / lime-12</td><td class="v"><span class="sw" style="background:#11130C"></span>#11130C</td><td class="v parked"><span class="sw" style="background:#37401C"></span>#37401C</td><td>label on --lime (the CTA)</td><td class="pass">13.9</td><td class="pass parked">8.1</td></tr>
+      <tr><td class="k">--lime-hover</td><td class="k">lime-10 dark / light</td><td class="v"><span class="sw" style="background:#D4FF70"></span>#D4FF70</td><td class="v parked"><span class="sw" style="background:#B0E64C"></span>#B0E64C</td><td>--lime-ink on the hover fill</td><td class="pass">16.3</td><td class="pass parked">7.5</td></tr>
+      <tr><td class="k">--lime-pressed</td><td class="k">lime-10 light / lime-8</td><td class="v"><span class="sw" style="background:#B0E64C"></span>#B0E64C</td><td class="v parked"><span class="sw" style="background:#8DB654"></span>#8DB654</td><td>--lime-ink on the pressed fill</td><td class="pass">12.7</td><td class="pass parked">4.7</td></tr>
+      <tr><td class="k">--lime-line</td><td class="k">lime-8 dark / lime-7</td><td class="v"><span class="sw" style="background:#577538"></span>#577538</td><td class="v parked"><span class="sw" style="background:#ABC978"></span>#ABC978</td><td>strokes and borders vs --background (3:1 floor)</td><td class="pass">3.9</td><td class="fail parked">1.9 — decorative only</td></tr>
+      <tr><td class="k">--lime-wash</td><td class="k">lime-3 dark / light</td><td class="v"><span class="sw" style="background:#1F2917"></span>#1F2917</td><td class="v parked"><span class="sw" style="background:#EEF6D6"></span>#EEF6D6</td><td>tinted fill vs --surface</td><td>1.27</td><td class="parked">1.10</td></tr>
+      <tr><td class="k">--lime-edge</td><td class="k">— / lime-11</td><td class="na">not needed</td><td class="v parked"><span class="sw" style="background:#5C7C2F"></span>#5C7C2F</td><td>CTA hairline vs --background (3:1 floor)</td><td class="na">—</td><td class="pass parked">4.6</td></tr>
+      <tr><td class="k">--ring</td><td class="k">lime-9 / lime-11</td><td class="v">var(--lime)</td><td class="v parked"><span class="sw" style="background:#5C7C2F"></span>#5C7C2F</td><td>focus outline vs --background (3:1 floor)</td><td class="pass">15.0</td><td class="pass parked">4.6</td></tr>
 
-      <tr class="grp"><td colspan="6">What survives of the blue</td></tr>
-      <tr><td class="k">--tw-blue</td><td class="v"><span class="sw" style="background:#0064FF"></span>#0064FF</td><td class="v"><span class="sw" style="background:#0064FF"></span>#0064FF</td><td>Teacher Workspace identity mark only — never the landing's accent, ring or link</td><td class="na">n/a</td><td class="na">n/a</td></tr>
-      <tr><td class="k">--tw-blue-text</td><td class="na" colspan="2">retired from the landing</td><td>was the link colour; <span class="k">--lime-text</span> replaces it</td><td class="na">—</td><td class="na">—</td></tr>
-      <tr><td class="k">--casesync</td><td class="v"><span class="sw" style="background:#3E63DD"></span>#3E63DD</td><td class="v"><span class="sw" style="background:#3E63DD"></span>#3E63DD</td><td>product mark, unchanged</td><td class="na">n/a</td><td class="na">n/a</td></tr>
-      <tr><td class="k">--glow</td><td class="v"><span class="sw" style="background:#F76B15"></span>#F76B15</td><td class="v"><span class="sw" style="background:#F76B15"></span>#F76B15</td><td>product mark, unchanged</td><td class="na">n/a</td><td class="na">n/a</td></tr>
+      <tr class="grp"><td colspan="7">Success — moved off grass, onto Radix teal</td></tr>
+      <tr><td class="k">--success</td><td class="k">teal-11 dark / teal-12</td><td class="v"><span class="sw" style="background:#0BD8B6"></span>#0BD8B6</td><td class="v parked"><span class="sw" style="background:#0D3D38"></span>#0D3D38</td><td>on --background</td><td class="pass">11.1</td><td class="pass parked">11.5</td></tr>
+      <tr><td class="k">--success</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --success-subtle (the pass badge)</td><td class="pass">8.1</td><td class="pass parked">10.9</td></tr>
+      <tr><td class="k">--success</td><td class="na">”</td><td class="v">”</td><td class="v parked">”</td><td>on --surface</td><td class="pass">10.5</td><td class="pass parked">12.1</td></tr>
+      <tr><td class="k">--success-9</td><td class="k">teal-9</td><td class="v"><span class="sw" style="background:#12A594"></span>#12A594</td><td class="v parked"><span class="sw" style="background:#12A594"></span>#12A594</td><td>solid dot vs --background (3:1 floor)</td><td class="pass">6.6</td><td class="fail parked">2.9 — needs teal-10</td></tr>
+      <tr><td class="k">--success-subtle</td><td class="k">teal-3 dark / light</td><td class="v"><span class="sw" style="background:#0D2D2A"></span>#0D2D2A</td><td class="v parked"><span class="sw" style="background:#E0F8F3"></span>#E0F8F3</td><td>badge fill vs --surface</td><td>1.30</td><td class="parked">1.06</td></tr>
+      <tr><td class="k">--success-9 <i>(was)</i></td><td class="k">grass-9</td><td class="v"><span class="sw" style="background:#46A758"></span>#46A758</td><td class="v parked"><span class="sw" style="background:#46A758"></span>#46A758</td><td>retired — same family as the brand lime</td><td class="na">n/a</td><td class="na parked">n/a</td></tr>
+
+      <tr class="grp"><td colspan="7">What survives of the blue</td></tr>
+      <tr><td class="k">--tw-blue</td><td class="k">—</td><td class="v"><span class="sw" style="background:#0064FF"></span>#0064FF</td><td class="v parked"><span class="sw" style="background:#0064FF"></span>#0064FF</td><td>Teacher Workspace identity mark only — never the landing's accent, ring or link</td><td class="na">n/a</td><td class="na parked">n/a</td></tr>
+      <tr><td class="k">--tw-blue-text</td><td class="k">—</td><td class="na" colspan="2">retired from the landing</td><td>was the link colour; <span class="k">--lime-text</span> replaces it</td><td class="na">—</td><td class="na parked">—</td></tr>
+      <tr><td class="k">--casesync</td><td class="k">indigo-9</td><td class="v"><span class="sw" style="background:#3E63DD"></span>#3E63DD</td><td class="v parked"><span class="sw" style="background:#3E63DD"></span>#3E63DD</td><td>product mark, unchanged</td><td class="na">n/a</td><td class="na parked">n/a</td></tr>
+      <tr><td class="k">--glow</td><td class="k">orange-9</td><td class="v"><span class="sw" style="background:#F76B15"></span>#F76B15</td><td class="v parked"><span class="sw" style="background:#F76B15"></span>#F76B15</td><td>product mark, unchanged</td><td class="na">n/a</td><td class="na parked">n/a</td></tr>
     </tbody>
   </table>
   </div>
@@ -741,50 +683,61 @@ table { border-collapse: collapse; }
   <h3>Notes — the decisions behind the numbers</h3>
   <ol>
     <li>
-      <b>Lime is a text colour on dark and a fill colour on light.</b> It never swaps.
-      At 13.4:1 on <code>#060707</code> the lime carries body text, links and code keywords
-      in the dark world; on paper the same value drops to 1.4:1 and carries nothing, so the
-      light world hands text to <code>--lime-text</code> <code>#4C6B1F</code> (5.9:1) and keeps
-      the full-chroma lime for fills only. This is the same move aihero.dev makes with its
-      gold: on light its primary is near-black ink, and the gold survives only as a fill.
+      <b>Lime is a text colour on dark and a fill colour on light.</b> It never swaps. At 15.0:1
+      on <code>#060707</code>, lime-9 carries body text, links and code keywords in the dark world.
+      On paper the same value drops to 1.3:1 and carries nothing, so the light world hands text to
+      lime-11 and keeps lime-9 for fills only. Radix designs lime as a "bright" scale whose steps 9
+      and 10 take dark text rather than white, which is the same split from the other side.
     </li>
     <li>
-      <b>Black-on-lime, never white-on-lime.</b> White on <code>#A3E635</code> is 1.5:1 —
-      unusable. Every lime fill takes <code>--lime-ink</code>, and the hover and pressed
-      steps were picked so the ink still clears AAA on them (9.5:1 at the darkest).
+      <b>Dark ink on lime, never white.</b> White on lime-9 is 1.35:1 — unusable. Every lime fill
+      takes <code>--lime-ink</code>, and the hover and pressed steps were chosen so the ink still
+      clears AAA on them in the dark world (12.7:1 at the darkest).
     </li>
     <li>
-      <b>The worst pair is the light-mode CTA edge, and it needed a fix.</b> A lime button on
-      paper is 1.44:1 against its own background — the label passes at 11.8:1 but the button's
-      <i>shape</i> fails the 3:1 UI-boundary floor, so on a light page the CTA dissolves into
-      the paper. Darkening the fill until it passes stops it reading as lime. The fix is a 1px
-      <code>--lime-dim</code> hairline on the light-mode fill only (5.9:1 against paper): the
-      lime stays lime, and the boundary is carried by the edge instead of the fill.
-      <code>--ring</code> has the same problem and the same answer — the light focus ring is
-      the dark step, not the brand lime.
+      <b>Hover and pressed both come from step 10, in opposite directions.</b> Hover uses the
+      mode's own step 10 (dark <code>#D4FF70</code>, light <code>#B0E64C</code>); pressed uses step
+      10 from the other side. No hand-mixing, and the direction reverses correctly on light.
+    </li>
+    <li>
+      <b>The re-derivation fixed the old worst pair on dark.</b> The previous hand-mixed
+      <code>--lime-dim</code> sat at 4.5:1 and did two jobs badly. Radix lime-8 <code>#577538</code>
+      is 3.9:1 on the background — it clears the 3:1 UI floor on its own, so
+      <code>--lime-line</code> now covers borders and meaningful strokes with one value.
+      <b>The dark column has no failing pair.</b> Its worst is <code>--lime-line</code> at 3.9:1,
+      and that is non-text.
+    </li>
+    <li>
+      <b>What the re-derivation broke: light-mode lime text.</b> Radix calibrates step 11 against
+      its own scale's steps 1–2, not against a warm neutral or a tinted step 3. On
+      <code>--muted</code> and <code>--lime-wash</code>, lime-11 lands at 4.25:1 and 4.29:1 — both
+      fail. The earlier hand-mixed <code>#4C6B1F</code> passed everywhere. The fix, when light is
+      unparked, is to step text on tinted fills down to lime-12 <code>#37401C</code> (9.7:1 and
+      9.8:1). Left failing and marked rather than papered over, because light is parked.
+    </li>
+    <li>
+      <b>Light also loses the teal dot.</b> Teal-9 is 2.9:1 on warm paper and misses the 3:1 floor
+      for a solid indicator; teal-10 or teal-11 is needed there. Teal-11 itself is 4.36:1 on paper
+      and fails as text, so the light <code>--success</code> is teal-12. Same root cause as note 5;
+      both resolve together in the docs retheme.
+    </li>
+    <li>
+      <b>Success is teal so a verdict never reads as brand.</b> Grass-9 <code>#46A758</code> and
+      lime-9 are the same family — a green pass badge beside a lime brand mark stops meaning "pass".
+      Teal-11 on teal-3 is 8.1:1 on dark and sits far enough round the wheel that the badge reads as
+      a verdict, not as decoration. The verdict row under the cards shows the L0 chip, the L1 chip
+      and the pass badge together.
     </li>
     <li>
       <b>Near-black, not pure black.</b> <code>#060707</code> over <code>#000</code>: it reads
-      identically as "black", keeps a four-step ladder above it for surface, muted and hover
-      fills, and leaves a darker step available for wells and scrims. Linear reserves
-      <code>#010102</code> for marketing pages only and runs its product on
-      <code>#08090a</code>; this sits between.
+      identically as "black", keeps a four-step ladder above it for surface, muted and hover fills,
+      and leaves a darker step available for wells and scrims. Linear reserves <code>#010102</code>
+      for marketing pages only and runs its product on <code>#08090a</code>; this sits between.
     </li>
     <li>
-      <b>Warm paper, not white.</b> <code>#FAFAF7</code> and <code>#F1F2EA</code> carry a few
-      points of yellow so the lime fill lands on a ground that shares its temperature. On pure
-      white the same fill reads as a sticker.
-    </li>
-    <li>
-      <b>Elevation is surface steps and hairlines.</b> No glows, no lime bloom behind the hero —
-      the dark world separates by the 1.05/1.08 surface ladder and the <code>--border</code>
-      hairline, exactly as the current <code>.landing-dark</code> block does.
-    </li>
-    <li>
-      <b>Unresolved: <code>--success</code>.</b> Grass-9 <code>#46A758</code> and the brand lime
-      are the same family. A green "pass" badge next to a lime brand mark stops meaning "pass".
-      Either the success semantic moves onto the lime itself, or it moves away to teal.
-      Not settled here.
+      <b>Elevation is surface steps and hairlines.</b> No glows, no lime bloom behind the hero — the
+      dark world separates by the 1.05/1.08 surface ladder and the <code>--border</code> hairline,
+      exactly as the current <code>.landing-dark</code> block does.
     </li>
   </ol>
 </div>
