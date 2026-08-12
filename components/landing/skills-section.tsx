@@ -27,12 +27,12 @@ export function SkillsSection() {
       <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
         {SKILL_DIRECTORY.map((group) => (
           <section key={group.number} className="flex flex-col bg-surface px-5 py-5">
-            <h3 className="flex items-baseline gap-2.5 font-display text-lg font-semibold tracking-tight text-foreground">
+            <h4 className="flex items-baseline gap-2.5 font-display text-lg font-semibold tracking-tight text-foreground">
               <span className="font-mono text-xs font-medium text-tw-blue-text">
                 {group.number}
               </span>
               {group.heading}
-            </h3>
+            </h4>
             <p className="mt-2 max-w-[40ch] text-sm leading-relaxed text-muted-foreground">
               {group.role}
             </p>

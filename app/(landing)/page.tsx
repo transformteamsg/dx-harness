@@ -65,19 +65,26 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── The three claims — orchestrator, catalog, DESIGN.md (ticket #77) ── */}
+      {/* ── Core features — orchestrator, catalog, DESIGN.md (ticket #77) ── */}
       <section>
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
-          <h2 className="sr-only">What the harness gives you</h2>
-          <FeatureCards />
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            Core features of the design harness.
+          </h2>
+          <p className="mt-4 max-w-[62ch] text-lg leading-relaxed text-pretty text-muted-foreground">
+            The three parts everything else hangs off.
+          </p>
+          <div className="mt-8">
+            <FeatureCards />
+          </div>
         </div>
       </section>
 
-      {/* ── The full map — the machine behind the one front door (ticket #78) ── */}
+      {/* ── The full map — how it is structured and works (ticket #78) ── */}
       <section className="border-t border-border">
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-            Intent without loss.
+            How it works.
           </h2>
           <p className="mt-4 max-w-[62ch] text-lg leading-relaxed text-pretty text-muted-foreground">
             The whole harness on one map. You brief one skill; everything else
@@ -89,18 +96,36 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── The skills — the slider as the hero, then the directory (#79) ── */}
+      {/* ── The skills — text beside the slider, then the collection (#79) ── */}
       <section className="border-t border-border">
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
-          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-            The skills.
-          </h2>
-          <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
-            Everything here is one command away. Start with{" "}
-            <span className="font-mono text-sm text-foreground">dx-design</span>;
-            it routes you.
+          <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-center">
+            <div>
+              <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+                The skills.
+              </h2>
+              <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
+                Everything here is one command away. Start with{" "}
+                <span className="font-mono text-sm text-foreground">dx-design</span>;
+                it routes you.
+              </p>
+              <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
+                The demo shows the difference they make: drag the divider
+                between the page your agent ships unattended and the same page
+                on the harness.
+              </p>
+            </div>
+            <div className="min-w-0">
+              <SlopCompare />
+            </div>
+          </div>
+
+          <h3 className="mt-16 border-t border-border pt-12 font-display text-xl font-semibold tracking-tight text-foreground">
+            Skills collection
+          </h3>
+          <p className="mt-2 max-w-[62ch] leading-relaxed text-muted-foreground">
+            Grouped by the job each skill does in the flow.
           </p>
-          <SlopCompare />
           <SkillsSection />
         </div>
       </section>
