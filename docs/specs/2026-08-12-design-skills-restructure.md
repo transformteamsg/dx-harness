@@ -282,7 +282,7 @@ formats sharpened here. These conventions become `procedures/design-tickets.md`.
 
 - One long-lived issue per surface (page or flow). Title: `Design: <surface>` where
   `<surface>` is the route path (`/marks`) or the flow name (`marks entry wizard`).
-  Label: `design-ticket`.
+  Label: `design`.
 - Created by the first run that touches the surface (make, a pass, or critique). Runs find it
   by label + title match; sub-issues only for genuinely separate work items.
 - `dx-design-setup` checks and wires the tracker (via the repo's issue-tracker doc where one
