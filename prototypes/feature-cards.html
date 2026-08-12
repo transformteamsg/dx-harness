@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prototype — three feature cards (#73)</title>
+<style>
+  /* ── Tokens, lifted from app/globals.css — the .landing-dark scope, since
+     the landing page (where these cards will live) runs dark, not the docs
+     light :root. Values copied verbatim; nothing invented (no raw hex beyond
+     what globals.css already defines). ── */
+  :root {
+    --background: #0a0a0c;
+    --surface: #131316;
+    --foreground: #f4f4f5;
+    --muted-foreground: #a7a7b0;
+    --border: #26262c;
+    --border-strong: #52525b;
+    --muted: #1e1e22;
+    --accent: #17171a;
+    --prose-body: #d1d1d6;
+    --tw-blue: #0064ff;
+    --tw-blue-text: #6ea3ff;
+    --radius: 0.5rem;
+    --motion-fast: 120ms;
+    --motion-base: 200ms;
+    --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --font-display: -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: -apple-system, "Segoe UI Variable", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  /* ── Prototype header — clearly not product chrome ── */
+  .proto-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    margin: 0 0 12px;
+  }
+  .proto-header h1 {
+    font-size: 28px;
+    color: var(--foreground);
+  }
+  .proto-header .lede {
+    margin: 12px 0 0;
+    max-width: 62ch;
+    color: var(--muted-foreground);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Each variant block ── */
+  .variant { margin-bottom: 72px; }
+  .variant-caption {
+    font-size: 14px;
+    color: var(--muted-foreground);
+    max-width: 70ch;
+    margin: 0 0 20px;
+    line-height: 1.6;
+  }
+  .variant-caption strong { color: var(--foreground); font-weight: 600; }
+
+  .card-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 720px) {
+    .card-row { grid-template-columns: 1fr; }
+  }
+
+  /* Card shell — a single border, no drop shadow, no left-accent strip
+     (SLP: no side-tab borders). One level of card only: diagrams inside are
+     notation (see .mini-diagram comment below), not nested card chrome. */
+  .card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 20px 20px 22px;
+    transition: border-color var(--motion-base) var(--ease-out);
+  }
+  .card:hover { border-color: var(--border-strong); }
+
+  .card .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--tw-blue-text);
+    margin: 0 0 10px;
+    word-break: break-word;
+  }
+  .card h3 {
+    font-size: 18px;
+    color: var(--foreground);
+    margin-bottom: 8px;
+  }
+  .card p.body-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--prose-body);
+    margin: 0;
+  }
+  .card p.body-text code,
+  .eyebrow code { font-family: var(--font-mono); }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: var(--muted);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ── Mini-diagrams (Variant B/C) — diagram notation, not cards: nodes are
+     plain bordered rectangles inside a figure, exactly the treatment
+     components/landing/harness-diagram.tsx already uses and documents as
+     "diagram notation, not cards" (SLP-11). No shadows, no hover affordance,
+     no independent card padding-in-padding. ── */
+  .mini-diagram {
+    margin: 16px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .mini-diagram figcaption {
+    font-size: 11px;
+    color: var(--muted-foreground);
+    margin-bottom: 10px;
+  }
+
+  .node {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--muted);
+    font-size: 11px;
+    color: var(--foreground);
+    padding: 5px 8px;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .node.accent { border-color: var(--tw-blue-text); color: var(--tw-blue-text); background: var(--accent); }
+  .connector {
+    width: 1px;
+    height: 14px;
+    background: var(--border-strong);
+    margin: 0 auto;
+  }
+
+  /* Card 1 diagram: orchestrator fan-out */
+  .fanout-top { display: flex; justify-content: center; margin-bottom: 0; }
+  .fanout-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 10px 0; }
+  .fanout-bottom { display: flex; justify-content: center; }
+
+  /* Card 2 diagram: tier strip */
+  .tier-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .tier {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--muted);
+    padding: 8px 8px 9px;
+    text-align: center;
+  }
+  .tier .tier-id {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--foreground);
+    display: block;
+  }
+  .tier .tier-meaning {
+    font-size: 10.5px;
+    color: var(--muted-foreground);
+    display: block;
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+  .tier-axis {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 10.5px;
+    color: var(--muted-foreground);
+  }
+  .tier-axis .line { flex: 1; height: 1px; background: var(--border); }
+
+  /* Card 3 diagram: DESIGN.md file card */
+  .file-mock {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--muted);
+    overflow: hidden;
+  }
+  .file-mock .file-titlebar {
+    border-bottom: 1px solid var(--border);
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground);
+    background: var(--accent);
+  }
+  .file-mock .file-body { padding: 10px; }
+  .file-mock .skeleton-line {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    margin-bottom: 6px;
+  }
+  .file-mock .override-line {
+    margin-top: 8px;
+    padding: 6px 8px;
+    border: 1px solid var(--tw-blue-text);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--tw-blue-text);
+    line-height: 1.5;
+    white-space: normal;
+  }
+
+  /* ── Variant C: asymmetric grid, card 1 doubled ── */
+  .card-row.asymmetric {
+    grid-template-columns: 2fr 1fr;
+    align-items: stretch;
+  }
+  @media (max-width: 720px) {
+    .card-row.asymmetric { grid-template-columns: 1fr; }
+  }
+  .card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card-wide h3 { font-size: 22px; }
+  .card-small p.body-text { font-size: 13px; }
+
+  /* ── Reviewer notes ── */
+  .reviewer-notes {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+  }
+  .reviewer-notes h2 {
+    font-size: 16px;
+    color: var(--foreground);
+    margin-bottom: 12px;
+  }
+  .reviewer-notes ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--prose-body);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .reviewer-notes li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="proto-header">
+    <p class="kicker">Throwaway prototype — ticket #73 — prototypes/feature-cards.html</p>
+    <h1>Three feature cards, three renderings</h1>
+    <p class="lede">
+      The triad is settled: the orchestrator and its propose-only passes, the
+      control catalog's L0/L1/L2 tiers, and DESIGN.md. What is not settled is
+      how much a card should carry. Scroll through variants A, B, and C below
+      and react to what earns its place.
+    </p>
+  </header>
+
+  <!-- ═══════════════════ VARIANT A ═══════════════════ -->
+  <section class="variant">
+    <p class="variant-caption">
+      <strong>Variant A — minimal.</strong> Claim line plus one sentence, no
+      visual. The card carries the whole idea in text; the full-map diagram
+      later on the page does the showing.
+    </p>
+    <div class="card-row">
+
+      <article class="card">
+        <p class="eyebrow">/dx-harness:dx-design</p>
+        <h3>One way in. One way to ship.</h3>
+        <p class="body-text">
+          Ask in plain words. <code>dx-design</code> routes you to a pass, and
+          only <code>dx-design-make</code> ever edits your product.
+        </p>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">the control catalog</p>
+        <h3>Not every rule is a lint check.</h3>
+        <p class="body-text">
+          Controls sit on three tiers — L0 blocks outright, L1 needs a named
+          approver, L2 leaves room to judge — because design calls range from
+          &ldquo;it depends&rdquo; to &ldquo;1+1=2.&rdquo;
+        </p>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">DESIGN.md</p>
+        <h3>Your design language, written down once.</h3>
+        <p class="body-text">
+          DESIGN.md records the decisions unique to your product, plus any
+          standing override — L0 never, L1 needs a named approver, L2 needs a
+          reason.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ VARIANT B ═══════════════════ -->
+  <section class="variant">
+    <p class="variant-caption">
+      <strong>Variant B — mini-diagram per card.</strong> Each card gets a
+      small figure that shows its own mechanism, so the row previews the
+      full-map diagram in miniature rather than repeating its prose.
+    </p>
+    <div class="card-row">
+
+      <article class="card">
+        <p class="eyebrow">/dx-harness:dx-design</p>
+        <h3>One way in. One way to ship.</h3>
+        <p class="body-text">
+          <code>dx-design</code> listens, then hands off. Passes propose;
+          <code>dx-design-make</code> is the only skill that builds.
+        </p>
+        <figure class="mini-diagram" aria-label="dx-design routes to five propose-only passes; only dx-design-make builds">
+          <figcaption>orchestrator → passes → the one builder</figcaption>
+          <div class="fanout-top"><span class="node accent">dx-design</span></div>
+          <div class="connector"></div>
+          <div class="fanout-row">
+            <span class="node">dx-design-critique</span>
+            <span class="node">dx-design-copy</span>
+            <span class="node">dx-design-flow</span>
+            <span class="node">dx-design-pattern</span>
+            <span class="node">dx-design-motion</span>
+          </div>
+          <div class="connector"></div>
+          <div class="fanout-bottom"><span class="node accent">dx-design-make — builds</span></div>
+        </figure>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">the control catalog</p>
+        <h3>Not every rule is a lint check.</h3>
+        <p class="body-text">
+          Three tiers, one spectrum — from calls a check can make to calls
+          only a person can make.
+        </p>
+        <figure class="mini-diagram" aria-label="Control catalog tiers L0, L1, L2 across a deterministic to abstract spectrum">
+          <figcaption>L0 · L1 · L2, deterministic → abstract</figcaption>
+          <div class="tier-strip">
+            <div class="tier">
+              <span class="tier-id">L0</span>
+              <span class="tier-meaning">blocks outright</span>
+            </div>
+            <div class="tier">
+              <span class="tier-id">L1</span>
+              <span class="tier-meaning">named approver</span>
+            </div>
+            <div class="tier">
+              <span class="tier-id">L2</span>
+              <span class="tier-meaning">judgement call</span>
+            </div>
+          </div>
+          <div class="tier-axis">
+            <span>deterministic, &ldquo;1+1=2&rdquo;</span>
+            <span class="line"></span>
+            <span>abstract, &ldquo;it depends&rdquo;</span>
+          </div>
+        </figure>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">DESIGN.md</p>
+        <h3>Your design language, written down once.</h3>
+        <p class="body-text">
+          DESIGN.md is a real file in your repo, not a wiki page nobody opens.
+        </p>
+        <figure class="mini-diagram" aria-label="DESIGN.md file with an Overrides section entry showing tier and approver">
+          <figcaption>a file in your repo, not a wiki page</figcaption>
+          <div class="file-mock">
+            <div class="file-titlebar">DESIGN.md</div>
+            <div class="file-body">
+              <div class="skeleton-line" style="width: 70%;"></div>
+              <div class="skeleton-line" style="width: 90%;"></div>
+              <div class="skeleton-line" style="width: 55%;"></div>
+              <div class="override-line">## Overrides<br>TOK-1 (L1): brand teal replaces --tw-blue on marketing pages — approver: @reza</div>
+            </div>
+          </div>
+        </figure>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════ VARIANT C ═══════════════════ -->
+  <section class="variant">
+    <p class="variant-caption">
+      <strong>Variant C — asymmetric emphasis.</strong> Card 1 doubles in
+      width and carries the diagram, because every ask starts at
+      <code>dx-design</code>; cards 2 and 3 stay text-only in a narrower
+      column, in its shadow rather than beside it as equals.
+    </p>
+    <div class="card-row asymmetric">
+
+      <article class="card card-wide">
+        <p class="eyebrow">/dx-harness:dx-design</p>
+        <h3>One way in. One way to ship.</h3>
+        <p class="body-text">
+          Ask in plain words. <code>dx-design</code> routes you to a pass, and
+          only <code>dx-design-make</code> ever edits your product — five
+          specialists propose, one skill builds.
+        </p>
+        <figure class="mini-diagram" aria-label="dx-design routes to five propose-only passes; only dx-design-make builds">
+          <figcaption>orchestrator → passes → the one builder</figcaption>
+          <div class="fanout-top"><span class="node accent">dx-design</span></div>
+          <div class="connector"></div>
+          <div class="fanout-row">
+            <span class="node">dx-design-critique</span>
+            <span class="node">dx-design-copy</span>
+            <span class="node">dx-design-flow</span>
+            <span class="node">dx-design-pattern</span>
+            <span class="node">dx-design-motion</span>
+          </div>
+          <div class="connector"></div>
+          <div class="fanout-bottom"><span class="node accent">dx-design-make — builds</span></div>
+        </figure>
+      </article>
+
+      <div class="card-stack">
+        <article class="card card-small">
+          <p class="eyebrow">the control catalog</p>
+          <h3>Not every rule is a lint check.</h3>
+          <p class="body-text">
+            L0 blocks outright, L1 needs a named approver, L2 leaves room to
+            judge.
+          </p>
+        </article>
+        <article class="card card-small">
+          <p class="eyebrow">DESIGN.md</p>
+          <h3>Your design language, written down once.</h3>
+          <p class="body-text">
+            Records your product's decisions, plus any standing override —
+            L0 never, L1 named approver, L2 reason.
+          </p>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="reviewer-notes">
+    <h2>Open questions for review</h2>
+    <ul>
+      <li>Card 2's tier strip repeats words already in the full-map diagram lower on the page (L0/L1/L2, "it depends" / "1+1=2") — does that reinforce the idea, or does a reader notice the rerun before they've even reached the diagram?</li>
+      <li>Card 3's mocked Overrides line uses a made-up example (TOK-1, @reza) to show the tier + approver shape — is a fabricated example the right call here, or should it show a real, currently-active override instead?</li>
+      <li>Variant B's diagrams are the same visual weight as the full-map diagram's nodes — does that read as "helpful preview" or as "we already showed you this, twice"?</li>
+      <li>Variant C bets that dx-design deserves top billing over the catalog and DESIGN.md — does that match how people actually reach for this tool, or does it undersell the catalog as an afterthought?</li>
+      <li>None of the three variants use an icon (only mono skill names and diagram notation) — is a wordless icon worth testing as a fourth option, or does this product not have three things distinct enough to iconify without going generic?</li>
+    </ul>
+  </section>
+
+</div>
+</body>
+</html>
