@@ -386,7 +386,36 @@ directly. The slash command still works. The helper is not on the five-mode menu
 the branch guard when a design build hands off (§4). The description is functional only.
 The persona lives in the skill body.
 
-## 11. Rename mechanics and rollout
+## 11. Machine setup — `dx-design-setup`
+
+`dx-design-setup` prepares a person's machine and orients newcomers. It verifies the
+per-user tools: the agent-browser capture CLI + skill, an authenticated `gh`, and
+Python + PyYAML for the checks. It also wires the design-ticket tracker (§9.1).
+
+### Commit signing **(assembly: added by the human, 2026-08-12)**
+
+Some repos require verified commit signatures on the default branch. An unsigned commit
+then blocks every merge. Setup checks and fixes this once per machine:
+
+1. **Check git config.** `gpg.format`, `user.signingkey`, and `commit.gpgsign` must be
+   set. If they are not, configure SSH signing: `gpg.format ssh`,
+   `user.signingkey ~/.ssh/<key>.pub`, `commit.gpgsign true`.
+2. **Test a signature locally.** `echo test | ssh-keygen -Y sign -f ~/.ssh/<key> -n git`
+   must produce a signature block.
+3. **Check the key on GitHub.** The public key must be on the account as a **signing
+   key**, not only as an auth key. Read it with `gh api user/ssh_signing_keys`. That call
+   needs the `admin:ssh_signing_key` scope — if it is missing, guide the person through
+   `gh auth refresh -h github.com -s admin:ssh_signing_key` (device login).
+4. **Add the key if absent.** `gh api --method POST user/ssh_signing_keys` with a title
+   and the public key.
+5. **Know the order rule.** GitHub does not verify a signature retroactively. A commit
+   pushed before the key was registered stays unverified. The fix: re-sign the commits
+   (`git rebase --force-rebase <base>`) and force-push after the key exists.
+
+The git helper (§10) applies the same steps when a design session hits a signature block
+mid-run; setup exists so it never comes to that.
+
+## 12. Rename mechanics and rollout
 
 ([#35](https://github.com/transformteamsg/dx-harness/issues/35) — full write-up:
 [plugin-skill-renames.md on `research/plugin-skill-renames`](https://github.com/transformteamsg/dx-harness/blob/research/plugin-skill-renames/docs/research/plugin-skill-renames.md))
@@ -407,19 +436,20 @@ Staging:
 4. **CHANGELOG** entry with the old→new mapping. There is no forced migration —
    stragglers keep old names until they update.
 
-## 12. Routing descriptions — locked texts
+## 13. Routing descriptions — locked texts
 
 The 13 frontmatter descriptions are locked on
 [#48's resolution](https://github.com/transformteamsg/dx-harness/issues/48). The
 implementation effort copies them from that comment, with the later renames applied:
 replace `dx-design-make` with `dx-design-execute`, and `dx-design-git-helper` with
-`dx-design-git`. No other wording changes. The principles they encode:
+`dx-design-git`. One content change: the `dx-design-setup` description adds commit
+signing to its verified-tools list (§11). No other wording changes. The principles they encode:
 product framing is generalised (no "Teacher & School"); specialists stay directly
 model-invocable; passes use a shared propose-only template with the stated-edit boundary;
 critique is propose-only and takes re-audit asks; audits that name a non-pass dimension
 stay with critique; `dx-design-research-brief` keeps its existing description.
 
-## 13. Glossary
+## 14. Glossary
 
 `CONTEXT.md` already carries the adopted terms: orchestrator, pass, pattern inventory,
 plan approval, diverge, design ticket, rule proposal, standing override, guardrails,
@@ -431,7 +461,7 @@ control, for one run on one surface. L0 is never waived. An L1 waiver needs a na
 approver. An L2 waiver needs a real reason. A waiver that repeats can be promoted into a
 standing override in DESIGN.md (§7).
 
-## 14. Future work (out of this spec)
+## 15. Future work (out of this spec)
 
 - **Concept roll for diverge** — impeccable-style externalized option selection, so runs
   do not converge on the default direction. Decided 2026-08-12: not adopted now. A later
