@@ -1,6 +1,6 @@
 ---
-name: dx-polish
-description: Polish a NAMED visual dimension of an existing Teacher & School product page — spacing, type, radius, colour, shadow, or type/weight hierarchy (SLP-6). Use only when the ask names such a dimension — "polish the spacing", "tighten the type", "the colours look off", "the headings don't stand out from the body". NOT for a bare "polish / tidy / clean up the page (or screen)" with no visual dimension named — that general, dimensionless polish is critique's whole-page job, so route it to critique. NOT for a named structural or component change — that is design. Visual or page hierarchy — what draws the eye (emphasis, size, position, grouping) — is layout's; polish only touches type/weight hierarchy. Layout structure goes to layout, wording to copy, animation to motion.
+name: dx-design-polish
+description: 'Use when the ask names a visual dimension of an existing product page but not the exact edit — spacing, type, radius, colour, shadow, or type/weight hierarchy (SLP-6): "polish the spacing", "the headings don''t stand out". Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("set the padding to 16px") is dx-design-execute''s. NOT for a bare "polish/tidy the page" with no dimension named — that is dx-design-critique. Page hierarchy (what draws the eye) is dx-design-pattern''s; polish touches type/weight hierarchy only.'
 ---
 
 # Polish an existing surface

@@ -1,6 +1,6 @@
 ---
-name: dx-layout
-description: Tighten the layout of an existing Teacher & School product page — structure, visual hierarchy (what draws the eye — emphasis, size, position, grouping), density, alignment, and grouping. Use for a scoped ask that names this dimension — "tighten the layout", "fix the hierarchy", "the visual hierarchy is weak", "the density is off", "these cards should be a list". Bare "hierarchy" and "visual hierarchy" are layout's. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural change or a brand-new page (that is design). Visual styling — spacing tokens, type, colour — goes to polish (including type/weight hierarchy), wording to copy, motion to motion.
+name: dx-design-pattern
+description: 'Use when the ask names page structure — visual hierarchy (what draws the eye — emphasis, size, position, grouping), density, alignment, grouping, or which named UI pattern fits (master-detail, wizard, empty state). Judges structure and pattern fit against the pattern inventory and may propose up to a whole-page same-content rebuild. Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones — rebuilds stop at plan approval. A pattern swap ask ("these cards should be a list") is pattern''s even when stated as an edit; other stated structural edits ("move the sidebar") are dx-design-execute''s. Bare "hierarchy" is pattern''s; type/weight hierarchy is dx-design-polish''s; how steps behave is dx-design-flow. NOT for a whole-page review with no dimension named — that is dx-design-critique; wording goes to dx-design-copy.'
 ---
 
 # Tighten the layout of an existing surface

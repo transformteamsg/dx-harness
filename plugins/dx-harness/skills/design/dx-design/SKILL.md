@@ -1,6 +1,6 @@
 ---
-name: dx-design
-description: Design or change a Teacher & School product UI — a new page, screen, form, flow, OR a modification to an existing one (adding a field, editing copy, restyling a component). Use whenever the user asks to design, create, build, add to, change, fix, or restyle any page, screen, form, component, or user flow — and whenever they ask to re-audit, re-check, or re-verify an existing page against the standards catalog (e.g. after the catalog gains new controls). Orchestrates the full loop — intent, diverge, plan (human gate), implement, verify — with the DX-DS standards catalog enforced throughout. For copy-only edits the copy skill is sufficient; for questions about the catalog itself use standards; and to review, improve, or polish an existing page with no specific change named — or when the user just says they don't like it — use critique.
+name: dx-design-execute
+description: 'Build product UI — a new page, screen, form, flow, or component, or a stated change to an existing one ("add a field", "restyle the header", "set the padding to 16px"). The only skill that edits the product: it also builds accepted findings handed over by the passes and dx-design-critique. Runs intent → diverge (2–3 directions) → plan approval → implement → design review; an explicit ask to build a specific plan or chosen direction counts as plan approval. NOT for a review with no change named — that is dx-design-critique; NOT for an open-ended improvement ask naming one pass dimension (copy, flow, pattern, motion, polish) with no edit stated — that is the matching pass.'
 ---
 
 # Design UI

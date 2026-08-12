@@ -1,6 +1,6 @@
 ---
-name: dx-critique
-description: Critique an existing Teacher & School product page — capture it, grade it against the standards catalog and layout patterns, and return scored, ranked improvement suggestions without changing anything; then, on the user's approval, execute the accepted suggestions through the design loop's implement and verify phases. Use when the user asks to review, critique, audit, improve, polish, or judge an existing page, asks what's wrong with it, what's off, or what they should improve, or says they don't like it — WITHOUT naming a specific change. NOT for a named change ('add a field', 'change the button') or a new page; those go to design. NOT for grading the loop's own output; that is the evaluator agent. NOT for copy-only improvements — wording, microcopy, tone, or naming with no structural or visual change; those go to copy.
+name: dx-design-critique
+description: 'Grade an existing product page — capture it, score it against the standards catalogue and pattern inventory, and return ranked improvement suggestions. Use when the ask is to review, critique, audit, judge, improve, or polish a page WITHOUT naming a change or a pass dimension — including "I don''t like it", "what''s wrong here", and re-audit asks ("re-check this page against the catalogue", e.g. after new controls land). Propose-only: findings are recorded on the surface''s design ticket, and dx-design-execute builds accepted ones. NOT for a stated change or a new page — that is dx-design-execute; NOT for one of the five pass dimensions — that is the matching pass; NOT for grading a build''s own output — that is the design reviewer agent inside dx-design-execute''s loop.'
 ---
 
 # Critique an existing surface

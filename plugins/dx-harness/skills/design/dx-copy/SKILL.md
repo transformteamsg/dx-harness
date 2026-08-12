@@ -1,6 +1,6 @@
 ---
-name: dx-copy
-description: Improve, write, or review the copy on a Teacher & School product surface — DX voice & tone, naming, error-message anatomy, and anti-AI-writing rules (SLP-9), applied at generation time. Use for any copy-only edit — writing or reviewing user-facing text (page, form, notification, empty state, error state), tightening the wording on a page ("improve/polish the copy on the marks page"), or any longer prose (site content, marketing copy, documentation, decision records). Sufficient on its own for copy-only work; the design loop pulls it in at its implement phase. NOT for a whole-page review with no dimension named — that is critique; NOT for a named structural or visual change — that is design.
+name: dx-design-copy
+description: 'Use when the ask names the copy of a product surface but not the exact wording — reviewing or proposing user-facing text (page, form, notification, empty or error state), naming, error-message anatomy, or tone, with anti-AI-writing rules (SLP-9) applied. Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones — and loads this skill at implement for generation-time copy rules. A stated edit ("change the label to Save") is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Non-surface prose (site content, marketing, documentation) is out of scope.'
 ---
 
 # Copy for Teacher & School products

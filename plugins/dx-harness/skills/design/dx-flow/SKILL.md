@@ -1,6 +1,6 @@
 ---
-name: dx-flow
-description: Improve the flow of an existing Teacher & School multi-step task or interaction — step traversal, async states, escapability, and draft safety. Use for a scoped ask that names this dimension — "improve this flow", "this multi-step form loses my draft", "smooth the journey between steps on <page>", "there's no way out of this wizard" — with no structural rebuild named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named structural change or a brand-new flow (that is design). Layout goes to layout, wording to copy.
+name: dx-design-flow
+description: 'Use when the ask names the flow of an existing multi-step task but not the exact edit — step traversal, async states, escapability, draft safety ("this wizard loses my draft", "there''s no way out"). Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("add a back button to step 2") or a brand-new flow is dx-design-execute''s. How steps behave is flow; how a page is structured is dx-design-pattern. NOT for a whole-page review with no dimension named — that is dx-design-critique.'
 ---
 
 # Improve the flow on an existing surface

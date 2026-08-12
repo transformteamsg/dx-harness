@@ -1,6 +1,6 @@
 ---
-name: dx-motion
-description: Smooth the motion on an existing Teacher & School product page — transitions, easing, timing, and reduced-motion. Use for a scoped ask that names this dimension — "smooth the animations", "the motion feels janky", "the transitions are too slow", "fix the animation on <page>" — with no structural change named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named change like adding a new transition or interaction (that is design). Styling goes to polish, layout to layout.
+name: dx-design-motion
+description: 'Use when the ask names the motion of an existing product page but not the exact edit — transitions, easing, timing, reduced-motion ("the motion feels janky", "transitions are too slow"). Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("make the transition 150ms") or a brand-new interaction is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Visual styling goes to dx-design-polish.'
 ---
 
 # Smooth the motion on an existing surface
