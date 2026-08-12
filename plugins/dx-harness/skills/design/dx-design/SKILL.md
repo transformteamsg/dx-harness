@@ -92,8 +92,8 @@ scoped named change (a restyle, an "improve / polish this", or a catalog
 re-audit), the evaluate step belongs to the `critique` skill — **invoke
 `critique` first** and continue here once the user approves its suggestions. Do
 not propose changes before the current state has been captured and judged. The
-critique captures the live page, runs a structured layout read (against
-`../dx-critique/layout-patterns.md`), grades it against the in-scope catalog
+critique captures the live page, runs a structured layout read (against the
+pattern inventory, `../../../standards/layout-patterns.md`), grades it against the in-scope catalog
 controls and Kind Utility, and returns ranked suggestions whose "what
 underperforms" list sets the scope of the polish; the procedure lives in
 `../dx-critique/critique.md`. **Preserved is not waived** — a "preserve" call still

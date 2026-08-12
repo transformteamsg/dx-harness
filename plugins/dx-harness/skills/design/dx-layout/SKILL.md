@@ -24,7 +24,7 @@ space only; token/type/colour craft is a `polish` matter and gets NOTED and rout
   SLP-5 (no identical-card grids as default), SLP-11 (a card is only for an interactive
   unit; group static content with space and dividers).
 
-**Reference:** `../dx-critique/layout-patterns.md` (the regions → squint-test → alignment →
+**Reference:** `../../../standards/layout-patterns.md` (the regions → squint-test → alignment →
 density → grouping read). When the product ships one, `.dx/design.json` `layout_system`
 declares its column grid — where declared, LAY-1 makes the grid checkable; treat it
 as layout context otherwise.

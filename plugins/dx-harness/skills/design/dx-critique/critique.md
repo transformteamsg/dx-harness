@@ -12,8 +12,8 @@ you have seen and judged the current state. Before Phase 1's contract:
    width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
    the local Playwright fallback; (4) ask the user to provide the screenshot.
    Never critique a page you cannot see, and never fabricate what it looks like.
-2. **Layout read (do this before judging).** Read `layout-patterns.md` (beside
-   this file). From the 1280 frame (and 360 when responsive behaviour is in
+2. **Layout read (do this before judging).** Read the pattern inventory at
+   `../../../standards/layout-patterns.md` (beside the catalogue). From the 1280 frame (and 360 when responsive behaviour is in
    scope), write down — in this order, before any judgment: (a) the page's
    regions and what each is for; (b) where the eye lands first, second, third
    (squint test) and whether that matches the task's priority; (c) the
