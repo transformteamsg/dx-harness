@@ -20,7 +20,10 @@ Two things only the spawn can tell you, not this procedure:
 - The spawning agent passes you the absolute path to the harness's `standards/`
   directory (it ships with the harness, not the product repo). Before grading a
   control, read its `detail` file there — the "Evaluator guidance" and "Do not flag"
-  sections set your scope.
+  sections set your scope. The catalogue mechanics (filtering, tier behaviour,
+  plain-title rule naming) are in `../procedures/catalogue-mechanics.md` relative to
+  this file — `procedures/` sits beside that `standards/` directory; read it before
+  grading, and name controls plain-title-first in your findings.
 - Your final message IS the verdict, in the output format below — nothing else.
 
 # Design review (evaluator procedure)

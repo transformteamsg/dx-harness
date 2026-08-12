@@ -35,9 +35,13 @@ go; read a control's `detail` file (same `standards/`
 directory) before applying it. Also read the product's `DESIGN.md` (repo root)
 if present — per-product parameters only; on conflict with implemented code
 conventions, the code wins and you flag the drift. Spec: the harness's
-`docs/DESIGN-CONTEXT.md`. Also load the `standards` skill for the waiver
-protocol. For any waiver or applicability question read
-`../../../standards/README.md` — never answer from memory.
+`docs/DESIGN-CONTEXT.md`. Also read `../../../procedures/catalogue-mechanics.md`
+for the catalog mechanics: filtering, tier behaviour for agents, detail files, the
+waiver protocol, and plain-title rule naming. For any waiver or applicability
+question read `../../../standards/README.md` — never answer from memory. The shared
+back half of the run lives beside it: `../../../procedures/plan-approval.md`,
+`../../../procedures/implement.md`, `../../../procedures/design-review.md`,
+`../../../procedures/rule-proposal.md`, and `../../../procedures/design-tickets.md`.
 
 **The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
 scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
@@ -243,7 +247,9 @@ Output: the options with a recommendation. The user picks.
 
 ## Phase 3 — Plan (human gate)
 
-Expand the chosen option into a plan:
+The shared gate protocol is `../../../procedures/plan-approval.md` — read it now:
+plan approval occurs one time per run, an explicit build ask counts as approval, and
+L1 waivers are approved here. Expand the chosen option into a plan:
 
 - Page/step structure and the component for each region.
 - Tokens/patterns used; any **missing component** surfaced explicitly with options
@@ -331,7 +337,10 @@ in that file.
 
 ## Phase 4 — Implement
 
-Build exactly the approved plan. Constraints, non-negotiable:
+The shared implement procedure is `../../../procedures/implement.md` — read it now
+and run its **branch guard** (fetch first; on main/master or behind the remote
+default, hand off to the git helper) before any edit. Build exactly the approved
+plan. Constraints, non-negotiable:
 
 - **Conservative, reversible defaults — do not restyle what is already
   deliberate.** Established iconography, corner radius, layout structure, and
@@ -439,7 +448,8 @@ failing.
   the Phase-1 inventory checkoff, and the dark-mode N/A rule when the product
   has no dark mode.
 - The evaluator verdict is written by the spawned `dx-design-review` agent, never by
-  you, and is pasted verbatim into the decision record.
+  you, and is pasted verbatim into the decision record. Reviewer dispatch and the
+  verdict re-check follow `../../../procedures/design-review.md`.
 
 ## Phase 6 — Ratchet
 
@@ -448,9 +458,10 @@ After the user accepts the result, finish the decision record started in Phase 3
 and by whom, and the verify verdict. Then:
 
 - Any failure the evaluator or user caught that no control covered → propose a new
-  control or anti-pattern entry for `standards/`. Follow the "Growing the catalog"
-  section of the `standards` skill — it is the single authoritative description
-  of the proposal format.
+  control or anti-pattern entry for `standards/`. Follow
+  `../../../procedures/rule-proposal.md` — it is the single authoritative description
+  of the proposal format. Record the run on the surface's design ticket per
+  `../../../procedures/design-tickets.md`.
 - Harness friction the run surfaced that is **not** a control gap — a confusing step, a
   missing/unbuilt check, a process or onboarding nit — is filed as a GitHub issue via the
   `feedback` skill (it carries the procedure; `docs/harness-feedback.md` is the spec).
