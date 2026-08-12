@@ -12,9 +12,6 @@ refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
 
-**Status: proposed, pending design-lead approval.** Report violations as advisory
-suggestions, not blocking or advisory findings, until this control is approved.
-
 ## Requirement
 
 A component's own nested interactive child matches that component's own container

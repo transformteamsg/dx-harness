@@ -13,7 +13,7 @@
 - **Page type:** workspace view | form | flow step | dashboard | settings | empty state | onboarding
 - **Run type:** attended | unattended (operator-proxy approvals)
 - **Hand-off:** solo (default) | pending engineer implementation — issue #NNN,
-  branch \`<name>\`
+  branch `<name>`
 - **The teacher and the moment:** (name the specific workflow this serves)
 
 ## Sprint contract (done-criteria)
