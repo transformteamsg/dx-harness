@@ -26,7 +26,7 @@ import { Reveal } from "@/components/landing/reveal";
    SLP-4 (L1, documented) — "no nested cards": the boxes inside the figures are
    diagram notation, not cards. None is interactive and none repeats card
    chrome (no shadow, no hover, no independent padding shell) — the same
-   treatment components/landing/harness-diagram.tsx already documents.
+   treatment components/landing/full-map-diagram.tsx documents for its figure.
 
    Reveal choreography matches the architecture diagram: one --reveal-i per
    card, staggered in reading order, armed client-side so no-JS and

@@ -54,7 +54,7 @@ function RailItem({
       >
         {n}
       </span>
-      <p className="font-mono text-xs tracking-[0.08em] text-muted-foreground uppercase">
+      <p className="font-mono text-xs tracking-[0.08em] text-muted-foreground">
         {where}
       </p>
       <h3 className="mt-1 text-sm font-semibold text-foreground">{heading}</h3>

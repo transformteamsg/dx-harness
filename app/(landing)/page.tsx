@@ -1,8 +1,10 @@
 import { SlopCompare } from "@/components/compare";
 import { CopyCommands } from "@/components/landing/copy-commands";
 import { NoCliDialog } from "@/components/landing/no-cli-dialog";
-import { HarnessDiagram } from "@/components/landing/harness-diagram";
-import { INSTALL_COMMANDS, SKILL_GROUPS } from "@/components/landing/data";
+import { FeatureCards } from "@/components/landing/feature-cards";
+import { FullMapDiagram } from "@/components/landing/full-map-diagram";
+import { SkillsSection } from "@/components/landing/skills-section";
+import { INSTALL_COMMANDS } from "@/components/landing/data";
 
 export const metadata = {
   /* Absolute: the root template suffixes "— dx-harness", which would double
@@ -23,21 +25,26 @@ export default function Landing() {
       <section className="border-b border-border">
         <div className="hero-enter mx-auto w-full max-w-[1080px] px-6 pt-16 pb-16 sm:pt-24 sm:pb-20">
           <h1 className="max-w-[24ch] font-display text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
-            Your agent already writes the code. Now it holds the bar.
+            Your agent already builds the UI. Now it holds the design bar.
           </h1>
           <p className="mt-6 max-w-[58ch] text-lg leading-relaxed text-pretty text-muted-foreground">
-            dx-harness is a Claude Code plugin of design skills your agent
-            runs. It carries a design loop that stops for your approval, a
-            checkable standards catalog, and a design reviewer that grades
-            what ships.
+            dx-harness is a Claude Code plugin of design skills for GovTech
+            designers. Every pass proposes; only one skill ever edits your
+            product.
           </p>
 
           {/* ── Quick start — the one primary action (CMP-5) ── */}
           <div id="quick-start" className="mt-10 max-w-[640px] scroll-mt-24">
             <div className="rounded-lg border border-border bg-surface">
-              <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-2.5">
-                <span className="font-mono text-xs font-medium tracking-[0.08em] text-muted-foreground">
-                  Claude Code<span className="hidden sm:inline"> — two commands</span>
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2.5">
+                <span className="flex items-center gap-3">
+                  <span className="font-mono text-xs font-medium tracking-[0.08em] text-foreground">
+                    Claude Code<span className="hidden sm:inline"> — two commands</span>
+                  </span>
+                  <span aria-hidden className="h-3 w-px bg-border" />
+                  <span className="font-mono text-xs tracking-[0.08em] text-muted-foreground">
+                    Codex — coming soon
+                  </span>
                 </span>
                 <CopyCommands commands={INSTALL_COMMANDS} />
               </div>
@@ -58,20 +65,26 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── How it works — the promise, then the machine that keeps it ── */}
+      {/* ── The three claims — orchestrator, catalog, DESIGN.md (ticket #77) ── */}
       <section>
+        <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
+          <h2 className="sr-only">What the harness gives you</h2>
+          <FeatureCards />
+        </div>
+      </section>
+
+      {/* ── The full map — the machine behind the one front door (ticket #78) ── */}
+      <section className="border-t border-border">
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
             Intent without loss.
           </h2>
           <p className="mt-4 max-w-[62ch] text-lg leading-relaxed text-pretty text-muted-foreground">
-            The loop writes what you mean into a contract, then grades every
-            phase against it. Here is the machine that keeps that promise —
-            one orchestrator, specialised passes, and a control catalog
-            underneath it all.
+            The whole harness on one map. You brief one skill; everything else
+            works behind it.
           </p>
           <div className="mt-8">
-            <HarnessDiagram />
+            <FullMapDiagram />
           </div>
         </div>
       </section>
@@ -93,46 +106,18 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── The path — skill groups as titled panels ── */}
+      {/* ── The skills — attributed hero, then the directory (ticket #79) ── */}
       <section className="border-t border-border">
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-            Twenty-one skills, one prefix.
+            The skills.
           </h2>
-          <p className="mt-3 max-w-[62ch] leading-relaxed text-muted-foreground">
-            Skill names are exact; type them after{" "}
-            <span className="font-mono text-sm text-foreground">/dx-harness:</span>.
+          <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
+            Everything here is one command away. Start with{" "}
+            <span className="font-mono text-sm text-foreground">dx-design</span>;
+            it routes you.
           </p>
-          <div className="mt-8 grid gap-5 lg:grid-cols-3">
-            {SKILL_GROUPS.map((group) => (
-              <section
-                key={group.heading}
-                className="rounded-lg border border-border bg-surface"
-              >
-                <div className="border-b border-border px-5 py-4">
-                  <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
-                    {group.heading}
-                  </h3>
-                  <p className="mt-0.5 text-sm text-muted-foreground">{group.lede}</p>
-                </div>
-                <dl aria-label={group.heading} className="px-5 pb-2">
-                  {group.skills.map((skill) => (
-                    <div
-                      key={skill.name}
-                      className="border-t border-border py-3.5 first:border-t-0"
-                    >
-                      <dt className="font-mono text-sm font-medium text-foreground">
-                        {skill.name}
-                      </dt>
-                      <dd className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
-                        {skill.text}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </section>
-            ))}
-          </div>
+          <SkillsSection />
         </div>
       </section>
 
