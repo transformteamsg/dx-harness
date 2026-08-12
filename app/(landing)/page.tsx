@@ -89,24 +89,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Proof — the standard, demonstrated ── */}
-      <section className="border-t border-border">
-        <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
-          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-            You&rsquo;ve seen this PR.
-          </h2>
-          <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
-            Your agent ships in minutes, and every review re-litigates the same
-            arguments about what good looks like. Style guides don&rsquo;t fix
-            this, because agents can&rsquo;t read a PDF and reviewers
-            can&rsquo;t check a vibe. The catalog names each failure — and a
-            check catches it before you do.
-          </p>
-          <SlopCompare />
-        </div>
-      </section>
-
-      {/* ── The skills — attributed hero, then the directory (ticket #79) ── */}
+      {/* ── The skills — the slider as the hero, then the directory (#79) ── */}
       <section className="border-t border-border">
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
@@ -117,6 +100,7 @@ export default function Landing() {
             <span className="font-mono text-sm text-foreground">dx-design</span>;
             it routes you.
           </p>
+          <SlopCompare />
           <SkillsSection />
         </div>
       </section>
