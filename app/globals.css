@@ -77,6 +77,12 @@
      (MOT-1) — only the choreography spans longer, and only on story
      surfaces. */
   --motion-stagger: 60ms;
+  /* Stagger step for the full-map figure's plate → connector → plate
+     choreography (components/landing/full-map-diagram.tsx). Tune this one
+     value to retime the whole build-up: total ≈ 8 × step + --motion-slow
+     (≈2.1s at 220ms). Each individual motion still runs --motion-slow, so
+     MOT-1 holds — only the choreography spans longer, on a story surface. */
+  --motion-story-step: 220ms;
   --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
   --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
 
@@ -374,6 +380,36 @@
   }
   [data-reveal="armed"] .reveal-line {
     scale: 0;
+  }
+
+  /* Full-map figure variant (components/landing/full-map-diagram.tsx): the
+     same arm-then-play contract, but plates settle from above and the SVG
+     connectors draw top-down. The stagger step is --motion-story-step (the
+     tuning knob); each individual motion stays at --motion-slow, ease-out,
+     no overshoot (MOT-1/MOT-2, SLP-8). */
+  [data-reveal] .map-item {
+    transition:
+      opacity var(--motion-slow) var(--ease-out),
+      translate var(--motion-slow) var(--ease-out),
+      scale var(--motion-slow) var(--ease-out);
+    transition-delay: calc(var(--reveal-i, 0) * var(--motion-story-step));
+  }
+  [data-reveal="armed"] .map-item {
+    opacity: 0;
+    translate: 0 -12px;
+    transition: none;
+  }
+  /* --reveal-i inherits from the connector group, so the line's draw lands
+     on the same beat as its group's fade. */
+  [data-reveal] .map-line {
+    transform-box: fill-box;
+    transform-origin: top center;
+    transition: scale var(--motion-slow) var(--ease-out);
+    transition-delay: calc(var(--reveal-i, 0) * var(--motion-story-step));
+  }
+  [data-reveal="armed"] .map-line {
+    scale: 1 0;
+    transition: none;
   }
 }
 
