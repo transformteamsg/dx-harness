@@ -6,9 +6,19 @@
 <title>Prototype #75 — skills section</title>
 <style>
 /* ─────────────────────────────────────────────────────────────────────────
-   Throwaway prototype for ticket #75. Token values copied inline from
-   app/globals.css (.landing-dark scope + :root product light scope) so the
-   file is self-contained and makes no external request. Font stacks are
+   Throwaway prototype for ticket #75, iteration 2.
+
+   Locked by the human after iteration 1:
+     · Hero A (before/after) wins. Hero B (critique report) deleted.
+     · Hero A must be attributed to SKILLS — which pass proposed what —
+       so it earns its place next to the homepage's existing standards demo.
+     · Grouped-panel FORM kept; moment-of-use FRAMING rejected as artificial.
+     · Directory variant B (design vs engineering) deleted.
+     · setup / git / feedback stop being a residue bucket.
+   Colours untouched — a lime-on-black retheme is being prototyped elsewhere.
+
+   Token values copied inline from app/globals.css (.landing-dark scope) so
+   the file is self-contained and makes no external request. Font stacks are
    system approximations of Plus Jakarta Sans (display) and Inter (body).
    ───────────────────────────────────────────────────────────────────────── */
 
@@ -27,20 +37,15 @@
   --tw-blue: #0064ff;
   --tw-blue-text: #6ea3ff;
   --primary-foreground: #ffffff;
-  --casesync: #3e63dd;
   --glow: #f76b15;
 
   --success-9: #46a758;
-  --warning-9: #ffc53d;
   --danger-9: #e5484d;
   --success: #71d083;
   --danger: #ff9592;
-  --warning: #ffc53d;
   --success-subtle: color-mix(in oklab, var(--success-9) 8%, var(--surface));
-  --warning-subtle: color-mix(in oklab, var(--warning-9) 8%, var(--surface));
   --danger-subtle: color-mix(in oklab, var(--danger-9) 8%, var(--surface));
   --success-muted: color-mix(in oklab, var(--success-9) 34%, var(--surface));
-  --warning-muted: color-mix(in oklab, var(--warning-9) 44%, var(--surface));
   --danger-muted: color-mix(in oklab, var(--danger-9) 34%, var(--surface));
 
   --radius: 0.5rem;
@@ -50,32 +55,8 @@
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Mono", Consolas, monospace;
 }
 
-/* Surfaces that depict the (light) product inside the dark landing. */
-.product-light {
-  --background: #fafafa;
-  --surface: #ffffff;
-  --foreground: #18181b;
-  --muted-foreground: #67676f;
-  --border: #e4e4e7;
-  --border-strong: #a1a1aa;
-  --muted: #f4f4f5;
-  --prose-body: #3f3f46;
-  --tw-blue-text: var(--tw-blue);
-  --primary-foreground: #ffffff;
-  --success: #2a7e3b;
-  --danger: #ce2c31;
-  --warning: #8a5300;
-  --success-subtle: color-mix(in oklab, var(--success-9) 8%, #fff);
-  --danger-subtle: color-mix(in oklab, var(--danger-9) 8%, #fff);
-  --warning-subtle: color-mix(in oklab, var(--warning-9) 10%, #fff);
-  --success-muted: color-mix(in oklab, var(--success-9) 34%, #fff);
-  --danger-muted: color-mix(in oklab, var(--danger-9) 34%, #fff);
-  --warning-muted: color-mix(in oklab, var(--warning-9) 44%, #fff);
-}
-
 /* The quarantined anti-specimen palette. Never product UI — it exists to be
-   pointed at. Waived SLP-1 / SLP-2 in the same way components/compare.tsx
-   waives them. */
+   pointed at. Waived SLP-1 / SLP-2, exactly as components/compare.tsx does. */
 .slop {
   --slop-grad-a: #7c3aed;
   --slop-grad-b: #a21caf;
@@ -106,89 +87,62 @@ a { color: var(--tw-blue-text); }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; width: 100%; }
 
 /* ── Prototype chrome — clearly not part of the design ── */
-.proto-bar {
-  border-bottom: 1px solid var(--border);
-  background: var(--accent);
-  padding: 18px 0;
-}
+.proto-bar { border-bottom: 1px solid var(--border); background: var(--accent); padding: 18px 0; }
 .proto-bar .kicker {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: lowercase;
-  color: var(--glow);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--glow);
 }
 .proto-bar h1 { font-size: 20px; margin-top: 4px; }
-.proto-bar p { color: var(--muted-foreground); font-size: 14px; margin-top: 6px; max-width: 72ch; }
+.proto-bar p { color: var(--muted-foreground); font-size: 14px; margin-top: 6px; max-width: 74ch; }
 
 .variant { border-top: 1px solid var(--border); padding: 56px 0 64px; }
-.variant-head { margin-bottom: 24px; }
+.variant-head { margin-bottom: 26px; }
 .variant-tag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--glow);
-  border: 1px solid color-mix(in oklab, var(--glow) 40%, var(--background));
-  border-radius: 999px;
-  padding: 2px 8px;
+  display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--glow); border: 1px solid color-mix(in oklab, var(--glow) 40%, var(--background));
+  border-radius: 999px; padding: 2px 8px;
 }
-.variant-caption {
-  margin-top: 8px;
-  font-size: 14px;
-  color: var(--muted-foreground);
-  max-width: 78ch;
-}
+.variant-caption { margin-top: 8px; font-size: 14px; color: var(--muted-foreground); max-width: 80ch; }
 .variant-caption strong { color: var(--foreground); font-weight: 600; }
 
-/* ── Section-level typography, as on the landing ── */
 .sec-h2 { font-size: 30px; line-height: 1.2; max-width: 22ch; }
 .sec-lede { margin-top: 12px; font-size: 17px; line-height: 1.6; color: var(--muted-foreground); max-width: 62ch; }
 
-/* ── Chips ── */
 .chip {
   display: inline-flex; align-items: center; gap: 5px;
   border-radius: 999px; padding: 1px 8px;
-  font-size: 12px; font-weight: 500; line-height: 18px;
-  white-space: nowrap;
+  font-size: 12px; font-weight: 500; line-height: 18px; white-space: nowrap;
 }
 .chip-bad { color: var(--danger); background: var(--danger-subtle); border: 1px solid var(--danger-muted); }
 .chip-good { color: var(--success); background: var(--success-subtle); border: 1px solid var(--success-muted); }
-.chip-warn { color: var(--warning); background: var(--warning-subtle); border: 1px solid var(--warning-muted); }
 .chip-neutral { color: var(--muted-foreground); background: var(--muted); border: 1px solid var(--border); }
 
+.notes { margin-top: 20px; font-size: 13px; color: var(--muted-foreground); max-width: 82ch; }
+.notes li { padding-left: 16px; position: relative; margin-top: 6px; }
+.notes li::before { content: "—"; position: absolute; left: 0; color: var(--border-strong); }
+
 /* ═══════════════════════════════════════════════════════════════════════
-   HERO VARIANT 1 — SlopCompare-style before/after
+   HERO — before/after, attributed to the skills that did it
    ═══════════════════════════════════════════════════════════════════════ */
 
 .compare {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  max-width: 900px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--border); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; max-width: 900px;
 }
 @media (max-width: 720px) { .compare { grid-template-columns: 1fr; } }
 
 .compare-side { display: flex; flex-direction: column; min-width: 0; }
 .compare-label {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 10px 14px;
-  background: var(--accent);
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-  color: var(--muted-foreground);
+  padding: 10px 14px; background: var(--accent); border-bottom: 1px solid var(--border);
+  font-size: 12px; color: var(--muted-foreground);
 }
 .compare-label .who { font-family: var(--font-mono); font-size: 12px; color: var(--foreground); }
 
 /* the before panel — quarantined anti-specimen */
-.slop-panel { background: var(--slop-surface); padding: 0; flex: 1; }
+.slop-panel { background: var(--slop-surface); flex: 1; }
 .slop-bar {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  padding: 10px 14px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 14px;
   background: linear-gradient(135deg, var(--slop-grad-a), var(--slop-grad-b));
   color: #fff; font-size: 14px;
 }
@@ -206,22 +160,18 @@ a { color: var(--tw-blue-text); }
   border: 1px solid var(--slop-border); border-radius: 8px; padding: 10px 4px;
   color: var(--slop-ink); font-size: 12px; text-align: center;
 }
-.slop-tile .sq {
-  width: 28px; height: 28px; border-radius: 6px;
-  background: linear-gradient(135deg, var(--slop-grad-a), var(--slop-grad-b));
-}
+.slop-tile .sq { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, var(--slop-grad-a), var(--slop-grad-b)); }
 .slop-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .slop-btn {
-  background: var(--slop-grad-a); color: #fff; font-size: 13px;
-  border-radius: 6px; padding: 7px 14px;
+  background: var(--slop-grad-a); color: #fff; font-size: 13px; border-radius: 6px; padding: 7px 14px;
   box-shadow: 0 2px 10px color-mix(in oklab, var(--slop-grad-a) 45%, transparent);
 }
 
 /* the after panel — the same task, on standard */
 .std-panel { background: var(--surface); flex: 1; padding: 18px; display: flex; flex-direction: column; }
-.std-panel .std-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.std-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .std-panel h4 { font-size: 16px; color: var(--foreground); }
-.std-panel .std-sub { margin-top: 6px; font-size: 14px; color: var(--muted-foreground); max-width: 44ch; }
+.std-sub { margin-top: 6px; font-size: 14px; color: var(--muted-foreground); max-width: 44ch; }
 .std-rule { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 12px; }
 .std-rule p { font-size: 14px; color: var(--foreground); }
 .std-foot {
@@ -231,152 +181,143 @@ a { color: var(--tw-blue-text); }
 .std-foot .meta { font-size: 12px; color: var(--muted-foreground); }
 .btn-primary {
   background: var(--tw-blue); color: var(--primary-foreground);
-  border: 0; border-radius: 6px; padding: 8px 14px;
-  font: inherit; font-size: 14px; font-weight: 500;
+  border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 500;
 }
 .btn-quiet { color: var(--muted-foreground); font-size: 14px; font-weight: 500; }
 
-.run-strip {
-  margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
-  font-size: 13px; color: var(--muted-foreground);
-}
-.cmd {
-  font-family: var(--font-mono); font-size: 13px;
-  color: var(--foreground); background: var(--muted);
-  border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px;
+/* the attribution marker — the whole point of this hero */
+.mark {
+  display: inline-grid; place-items: center;
+  width: 17px; height: 17px; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--tw-blue-text) 55%, transparent);
+  background: color-mix(in oklab, var(--tw-blue-text) 12%, transparent);
+  color: var(--tw-blue-text);
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  vertical-align: 2px; margin-left: 6px;
 }
 
-.quarantine {
-  margin-top: 12px; font-size: 12px; color: var(--muted-foreground);
-  font-family: var(--font-mono);
+.attrib { max-width: 900px; margin-top: 18px; }
+.attrib-lede { font-size: 14px; color: var(--muted-foreground); max-width: 74ch; }
+.attrib ol {
+  margin-top: 12px; display: grid; gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
 }
+.attrib li {
+  background: var(--surface); padding: 11px 14px;
+  display: grid; grid-template-columns: 20px minmax(0, 258px) minmax(0, 1fr); gap: 12px; align-items: baseline;
+}
+@media (max-width: 680px) {
+  .attrib li { grid-template-columns: 20px minmax(0, 1fr); }
+  .attrib li .what { grid-column: 2; }
+}
+.attrib li .n { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--tw-blue-text); }
+.attrib li .who { font-family: var(--font-mono); font-size: 13px; color: var(--foreground); }
+.attrib li .who .prefix { color: var(--muted-foreground); }
+.attrib li .what { font-size: 13.5px; color: var(--muted-foreground); }
+
+.quarantine { margin-top: 12px; font-size: 12px; color: var(--muted-foreground); font-family: var(--font-mono); }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   HERO VARIANT 2 — the critique annotated-evidence report
+   TAKE 1 — aihero.dev-reference grouping
+   One bordered grid, hairline-separated cells (not a card grid). The group
+   carries the description; skills are bare command chips; a "start with"
+   button pins to the bottom of every cell.
    ═══════════════════════════════════════════════════════════════════════ */
 
-.report {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  max-width: 900px;
-  overflow: hidden;
+.ah-grid {
+  margin-top: 28px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+  background: var(--border); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
 }
-.report-chrome {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 9px 14px; background: var(--accent); border-bottom: 1px solid var(--border);
-}
-.report-chrome .url { font-family: var(--font-mono); font-size: 12px; color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.report-inner { padding: 22px; }
-.report h3 { font-size: 20px; }
-.report .lede { margin-top: 6px; font-size: 14px; color: var(--muted-foreground); }
+@media (max-width: 900px) { .ah-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .ah-grid { grid-template-columns: 1fr; } }
 
-.factgrid {
-  margin-top: 18px;
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px; background: var(--border);
-  border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+.ah-cell { background: var(--surface); padding: 22px 20px 18px; display: flex; flex-direction: column; }
+.ah-cell h3 { font-size: 18px; display: flex; align-items: baseline; gap: 9px; }
+.ah-cell h3 .num { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--tw-blue-text); }
+.ah-cell .role { margin-top: 7px; font-size: 13.5px; line-height: 1.55; color: var(--muted-foreground); max-width: 40ch; }
+.ah-chips { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+.ah-chips span {
+  font-family: var(--font-mono); font-size: 12px;
+  border: 1px solid var(--border); background: var(--muted); color: var(--prose-body);
+  border-radius: 4px; padding: 4px 8px; white-space: nowrap;
 }
-@media (max-width: 640px) { .factgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.fact { background: var(--surface); padding: 10px 12px; }
-.fact dt { font-size: 11px; letter-spacing: 0.04em; color: var(--muted-foreground); text-transform: none; }
-.fact dd { margin-top: 3px; font-size: 13px; font-family: var(--font-mono); color: var(--foreground); }
-
-.verdict {
-  margin-top: 18px; padding: 14px 0 0; border-top: 1px solid var(--border);
-  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+.ah-start { margin-top: auto; padding-top: 18px; }
+.ah-start span {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-family: var(--font-mono); font-size: 12px;
+  border: 1px solid color-mix(in oklab, var(--tw-blue-text) 35%, transparent);
+  background: color-mix(in oklab, var(--tw-blue-text) 8%, transparent);
+  color: var(--tw-blue-text);
+  border-radius: 6px; padding: 9px 12px;
 }
-.verdict .counts { display: flex; gap: 8px; flex-wrap: wrap; }
-.approve-line { margin-top: 10px; font-size: 14px; color: var(--muted-foreground); }
-
-.table-scroll { overflow-x: auto; margin-top: 18px; }
-.sugg { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
-.sugg th {
-  text-align: left; font-weight: 600; font-size: 11px; letter-spacing: 0.04em;
-  color: var(--muted-foreground); padding: 0 10px 7px 0; border-bottom: 1px solid var(--border);
-}
-.sugg td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
-.sugg td:first-child { font-family: var(--font-mono); color: var(--foreground); white-space: nowrap; }
-.sugg .num { font-variant-numeric: tabular-nums; }
-
-.finding { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
-.finding-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.finding-head .fid { font-family: var(--font-mono); font-size: 13px; color: var(--foreground); }
-.finding-head h4 { font-size: 15px; }
-.finding p { margin-top: 8px; font-size: 14px; color: var(--muted-foreground); max-width: 68ch; }
-.finding-grid { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
-@media (max-width: 720px) { .finding-grid { grid-template-columns: 1fr; } }
-
-/* the "crop" — a cropped screenshot of the live surface with a 3px
-   rounded highlight box on the offending element */
-.crop {
-  position: relative; border: 1px solid var(--border-strong); border-radius: 6px;
-  overflow: hidden; background: var(--surface);
-}
-.crop-ui { padding: 14px; font-size: 13px; color: var(--foreground); }
-.crop-ui .row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid var(--border); }
-.crop-ui .row:first-of-type { border-top: 0; }
-.crop-ui .muted { color: var(--muted-foreground); }
-.crop-ui .btnrow { display: flex; gap: 8px; margin-top: 12px; }
-.crop-ui .fake-btn { background: var(--tw-blue); color: #fff; border-radius: 6px; padding: 7px 12px; font-size: 13px; }
-.highlight {
-  position: absolute; border: 3px solid var(--danger-9); border-radius: 6px;
-  pointer-events: none;
-}
-.crop-cap { margin-top: 6px; font-size: 12px; color: var(--muted-foreground); font-family: var(--font-mono); }
-
-.evidence dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 13px; margin-top: 10px; }
-.evidence dt { color: var(--muted-foreground); }
-.evidence dd { color: var(--prose-body); }
+.ah-start .arrow { flex: none; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   DIRECTORY — grouped panels (shared by variants A and B)
+   TAKE 2 — no stage labels; hierarchy by prominence
    ═══════════════════════════════════════════════════════════════════════ */
 
-.groups { margin-top: 28px; display: grid; gap: 20px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.groups-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 900px) { .groups, .groups-3 { grid-template-columns: 1fr; } }
-
-.panel {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--surface);
-  display: flex; flex-direction: column;
+.featured {
+  margin-top: 28px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+  background: var(--border); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
 }
-.panel-head { padding: 16px 18px 14px; border-bottom: 1px solid var(--border); }
-.panel-head .idx { font-family: var(--font-mono); font-size: 11px; color: var(--muted-foreground); letter-spacing: 0.06em; }
-.panel-head h3 { margin-top: 4px; font-size: 17px; }
-.panel-head p { margin-top: 5px; font-size: 14px; color: var(--muted-foreground); max-width: 46ch; }
-
-.panel-cta {
-  padding: 12px 18px; border-bottom: 1px solid var(--border);
-  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
-  font-size: 13px; color: var(--muted-foreground);
+@media (max-width: 820px) { .featured { grid-template-columns: 1fr; } }
+.feat { background: var(--surface); padding: 24px 22px 20px; display: flex; flex-direction: column; }
+.feat .name { font-family: var(--font-mono); font-size: 13px; color: var(--muted-foreground); }
+.feat h3 { margin-top: 8px; font-size: 22px; line-height: 1.2; }
+.feat p { margin-top: 10px; font-size: 14.5px; line-height: 1.6; color: var(--muted-foreground); max-width: 38ch; }
+.feat .tail { margin-top: auto; padding-top: 20px; }
+.feat .role-note {
+  display: block; font-size: 12px; color: var(--muted-foreground);
+  border-top: 1px solid var(--border); padding-top: 12px;
+}
+.feat .cta {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
+  font-family: var(--font-mono); font-size: 12.5px;
+  border: 1px solid color-mix(in oklab, var(--tw-blue-text) 35%, transparent);
+  background: color-mix(in oklab, var(--tw-blue-text) 8%, transparent);
+  color: var(--tw-blue-text); border-radius: 6px; padding: 9px 12px;
 }
 
-.skills { padding: 2px 18px 10px; }
-.skills > div { padding: 12px 0; border-top: 1px solid var(--border); }
-.skills > div:first-child { border-top: 0; }
-.skills dt { font-family: var(--font-mono); font-size: 13.5px; font-weight: 500; color: var(--foreground); }
-.skills dd { margin-top: 3px; font-size: 13.5px; line-height: 1.55; color: var(--muted-foreground); }
-.skills dt .lead-mark { color: var(--tw-blue-text); }
-
-.skills-2col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
-@media (max-width: 640px) { .skills-2col { grid-template-columns: 1fr; } }
-
-.subhead {
-  padding: 14px 18px 8px; border-top: 1px solid var(--border);
-  font-size: 11px; letter-spacing: 0.08em; color: var(--muted-foreground);
-  font-family: var(--font-mono);
+.quiet-band { margin-top: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.quiet-band .band-head {
+  padding: 15px 20px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap;
 }
-.panel .subhead:first-child { border-top: 0; }
+.quiet-band .band-head h3 { font-size: 15px; }
+.quiet-band .band-head p { font-size: 13.5px; color: var(--muted-foreground); max-width: 60ch; margin-top: 4px; }
+.quiet-band .band-head .cta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--tw-blue-text);
+  border: 1px solid color-mix(in oklab, var(--tw-blue-text) 32%, transparent);
+  border-radius: 6px; padding: 6px 10px; white-space: nowrap;
+}
+@media (max-width: 460px) {
+  .quiet-band .band-head .cta { white-space: normal; overflow-wrap: anywhere; }
+}
+.rowlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.rowlist > div { padding: 12px 20px; border-top: 1px solid var(--border); }
+.rowlist dt { font-family: var(--font-mono); font-size: 13px; color: var(--foreground); }
+.rowlist dd { margin-top: 2px; font-size: 13px; color: var(--muted-foreground); }
+
+/* the demoted strip — deliberately the quietest thing on the page */
+.strip {
+  margin-top: 22px; border-top: 1px solid var(--border); padding-top: 16px;
+  display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 20px;
+}
+@media (max-width: 720px) { .strip { grid-template-columns: 1fr; } }
+.strip h3 { font-size: 13.5px; color: var(--muted-foreground); font-weight: 500; letter-spacing: 0; }
+.strip .strip-note { margin-top: 4px; font-size: 12.5px; color: var(--muted-foreground); }
+.strip ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 4px 24px; }
+.strip li { font-size: 13px; color: var(--muted-foreground); padding: 3px 0; }
+.strip li .n { font-family: var(--font-mono); font-size: 12.5px; color: var(--prose-body); }
 
 /* ── Curated externals ── */
 .curated {
-  margin-top: 20px;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  background: var(--accent);
+  margin-top: 22px; border: 1px dashed var(--border-strong);
+  border-radius: var(--radius); padding: 18px 20px; background: var(--accent);
 }
 .curated h3 { font-size: 16px; }
 .curated p { margin-top: 6px; font-size: 14px; color: var(--muted-foreground); max-width: 70ch; }
@@ -386,9 +327,15 @@ a { color: var(--tw-blue-text); }
 .curated li .n { font-family: var(--font-mono); font-size: 13.5px; color: var(--foreground); }
 .curated li .d { font-size: 13px; color: var(--muted-foreground); }
 
-.notes { margin-top: 20px; font-size: 13px; color: var(--muted-foreground); max-width: 78ch; }
-.notes li { padding-left: 16px; position: relative; margin-top: 6px; }
-.notes li::before { content: "—"; position: absolute; left: 0; color: var(--border-strong); }
+/* ── Reference table ── */
+.table-scroll { overflow-x: auto; margin-top: 18px; }
+.ledger { width: 100%; min-width: 560px; max-width: 820px; border-collapse: collapse; font-size: 13px; }
+.ledger th {
+  text-align: left; font-weight: 600; font-size: 11px; letter-spacing: 0.04em;
+  color: var(--muted-foreground); padding: 0 10px 7px 0; border-bottom: 1px solid var(--border);
+}
+.ledger td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--prose-body); }
+.ledger td:first-child, .ledger td:nth-child(2) { font-family: var(--font-mono); font-size: 12.5px; color: var(--foreground); }
 </style>
 </head>
 <body>
@@ -396,72 +343,59 @@ a { color: var(--tw-blue-text); }
 <!-- ── Prototype chrome ─────────────────────────────────────────────────── -->
 <div class="proto-bar">
   <div class="wrap">
-    <div class="kicker">prototype · ticket #75 · throwaway</div>
-    <h1>Skills section — before/after hero &times;2, grouping &times;2</h1>
+    <div class="kicker">prototype · ticket #75 · iteration 2 · throwaway</div>
+    <h1>Skills section — attributed hero, two grouping takes</h1>
     <p>
-      Two candidate hero visuals and two competing grouping models for the landing page's
-      skills section. Names follow the locked design-skills restructure spec (2026-08-12):
-      the <span class="mono">dx-design-*</span> family, invoked as
-      <span class="mono">/dx-harness:&lt;skill&gt;</span>. Nothing here is wired to the site.
+      Hero A kept and rebuilt so it introduces the <em>skills</em>, not the standard.
+      Two competing directories below it. Names follow the locked design-skills restructure
+      spec (2026-08-12): the <span class="mono">dx-design-*</span> family, invoked as
+      <span class="mono">/dx-harness:&lt;skill&gt;</span>. Colours are the current tokens —
+      the lime retheme is a separate prototype.
     </p>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     HERO VARIANT 1
+     HERO — before/after, attributed to skills
      ═══════════════════════════════════════════════════════════════════ -->
 <section class="variant">
   <div class="wrap">
     <div class="variant-head">
-      <span class="variant-tag">hero variant 1</span>
+      <span class="variant-tag">hero</span>
       <p class="variant-caption">
-        <strong>The screen, before and after.</strong> Reuses the shipped SlopCompare
-        specimen and adds the missing half: which skill did which bit. The hero argues that a
-        skill changes what lands on screen.
+        <strong>The before/after, with a name on every change.</strong> The homepage's
+        standards demo already argues that the catalog catches slop; this one has a different
+        job, so it credits the work. Four numbered markers in the after panel, each naming
+        the skill that proposed that change, and a fifth row for the one skill that built
+        them. Deliberately not the critique report — no tiers, no severity, no evidence crops.
       </p>
     </div>
 
-    <h2 class="sec-h2">Same brief. Same agent. One of them ran the skills.</h2>
+    <h2 class="sec-h2">Every difference here has a skill behind it.</h2>
     <p class="sec-lede">
-      Both panels are the same task — a term broadcast to four classes. The left one is what
-      an agent writes unattended. The right one went through the loop, and every difference
-      has a control ID behind it.
+      Same brief, same agent, same afternoon. On the left, what an agent writes unattended.
+      On the right, what came back after the skills ran — and which one asked for what.
     </p>
 
-    <div class="run-strip">
-      <span>Run on the right-hand panel:</span>
-      <span class="cmd">/dx-harness:dx-design-critique</span>
-      <span class="cmd">/dx-harness:dx-design-execute</span>
-    </div>
-
-    <div class="compare slop" style="margin-top: 20px;">
+    <div class="compare slop" style="margin-top: 22px;">
       <!-- BEFORE — quarantined anti-specimen. Waived SLP-1 (gradient palette),
            SLP-2 (gradient text), SLP-4 (nested boxes), SLP-5 (icon tiles),
            CMP-5 (two primaries), CNT-2 (invented …Hub name), SLP-9 (buzzwords).
            Every text/background pair still clears WCAG AA — L0 is never
-           demonstrated broken. -->
+           demonstrated broken. Control chips deliberately removed: the homepage
+           demo upstream already names controls. -->
       <div class="compare-side">
         <div class="compare-label">
-          <span class="who">before — agent, unattended</span>
-          <span class="chip chip-bad">7 controls failed</span>
+          <span class="who">agent, unattended</span>
+          <span class="chip chip-bad">no skills ran</span>
         </div>
         <div class="slop-panel">
-          <div class="slop-bar">
-            <span>Communication Hub</span>
-            <span class="chip chip-bad">CNT-2</span>
-            <span class="chip chip-bad">SLP-1</span>
-          </div>
+          <div class="slop-bar"><span>Communication Hub</span></div>
           <div class="slop-body">
-            <div>
-              <span class="slop-title">Term 3 broadcast</span>
-              <span class="chip chip-bad">SLP-2</span>
-            </div>
-            <p>
-              Revolutionise your seamless communication workflow and unlock engagement at
-              scale. <span class="chip chip-bad">SLP-9</span>
-            </p>
+            <div><span class="slop-title">Term 3 broadcast</span></div>
+            <p>Revolutionise your seamless communication workflow and unlock engagement at scale.</p>
             <div class="slop-box">
-              <div>Audience <span class="chip chip-bad">SLP-4</span></div>
+              <div>Audience</div>
               <div class="slop-box" style="margin-top: 8px;">4 classes &middot; 127 parents</div>
             </div>
             <div class="slop-tiles">
@@ -469,30 +403,33 @@ a { color: var(--tw-blue-text); }
               <div class="slop-tile"><span class="sq"></span>All-in-one</div>
               <div class="slop-tile"><span class="sq"></span>Cloud-based</div>
             </div>
-            <div><span class="chip chip-bad">SLP-5 icon tiles</span></div>
             <div class="slop-actions">
               <span class="slop-btn">Get started!</span>
               <span class="slop-btn">Learn more</span>
-              <span class="chip chip-bad">CMP-5</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- AFTER — the same task on standard, from ordinary tokens only. -->
+      <!-- AFTER — the same task on standard. Markers 1..4 carry the attribution. -->
       <div class="compare-side">
         <div class="compare-label">
-          <span class="who">after — agent, on the harness</span>
-          <span class="chip chip-good">passes the catalog</span>
+          <span class="who">agent, on the harness</span>
+          <span class="chip chip-good">4 skills ran</span>
         </div>
         <div class="std-panel">
           <div class="std-head">
-            <h4>Term 3 broadcast</h4>
+            <h4>Term 3 broadcast<span class="mark" aria-label="change 1">1</span></h4>
             <span class="chip chip-neutral">Draft</span>
           </div>
-          <p class="std-sub">Reaches every parent by Friday morning. Drafts save on their own.</p>
+          <p class="std-sub">
+            Reaches every parent by Friday morning. Drafts save on their own.<span class="mark" aria-label="change 2">2</span>
+          </p>
           <div class="std-rule">
-            <p>To: <strong>4 classes</strong> <span style="color: var(--muted-foreground)">&middot; 127 parents</span></p>
+            <p>
+              To: <strong>4 classes</strong>
+              <span style="color: var(--muted-foreground)">&middot; 127 parents</span><span class="mark" aria-label="change 3">3</span>
+            </p>
           </div>
           <div class="std-rule">
             <p style="color: var(--muted-foreground); font-size: 13px;">
@@ -503,477 +440,301 @@ a { color: var(--tw-blue-text); }
             <span class="meta">Saved just now</span>
             <span style="display: flex; align-items: center; gap: 14px;">
               <span class="btn-quiet">Save draft</span>
-              <span class="btn-primary">Send to 4 classes</span>
+              <span class="btn-primary">Send to 4 classes</span><span class="mark" aria-label="change 4">4</span>
             </span>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="attrib">
+      <p class="attrib-lede">
+        <span class="mono" style="color: var(--foreground);">/dx-harness:dx-design-critique</span>
+        graded the page and found eleven things. Three specialists proposed the fixes. One
+        skill built them.
+      </p>
+      <ol>
+        <li>
+          <span class="n">1</span>
+          <span class="who"><span class="prefix">/dx-harness:</span>dx-design-copy</span>
+          <span class="what">Named the thing after what it is. &ldquo;Communication Hub&rdquo; wasn't a word any teacher used.</span>
+        </li>
+        <li>
+          <span class="n">2</span>
+          <span class="who"><span class="prefix">/dx-harness:</span>dx-design-copy</span>
+          <span class="what">Rewrote the lede as a promise you can check &mdash; who it reaches, and by when.</span>
+        </li>
+        <li>
+          <span class="n">3</span>
+          <span class="who"><span class="prefix">/dx-harness:</span>dx-design-pattern</span>
+          <span class="what">Flattened the box inside a box into one divided row. Same information, one less frame.</span>
+        </li>
+        <li>
+          <span class="n">4</span>
+          <span class="who"><span class="prefix">/dx-harness:</span>dx-design-polish</span>
+          <span class="what">One primary action, one accent, ordinary tokens. The second button stepped down.</span>
+        </li>
+        <li>
+          <span class="n">&#9656;</span>
+          <span class="who"><span class="prefix">/dx-harness:</span>dx-design-execute</span>
+          <span class="what">Built the four you accepted. It is the only skill here that changed a file.</span>
+        </li>
+      </ol>
+    </div>
+
     <p class="quarantine">
       left panel = quarantined anti-specimen &middot; dx-waive SLP-1/2/4/5/9, CMP-5, CNT-2
     </p>
 
     <ul class="notes">
-      <li>Ships as a static two-up here; the real one would keep the existing drag divider so the two states occupy one frame.</li>
-      <li>The two command chips above the frame are the new part — the shipped demo never says which skill did the work.</li>
+      <li>Control IDs came off the before panel on purpose. The homepage demo three scrolls up already names controls; if this one names them too, the two blocks read as the same argument twice.</li>
+      <li>Ships static two-up here. The real one keeps the existing drag divider, and the markers appear only on the exposed side.</li>
+      <li>The five attribution rows are the bridge into the directory below &mdash; every name in them appears again as a heading or a chip further down the page.</li>
+      <li>Open: whether the markers sit inside the panel at all. The alternative is an unmarked after panel with the five rows underneath, which keeps the product frame clean but breaks the link between a change and its name.</li>
     </ul>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     HERO VARIANT 2
+     DIRECTORY TAKE 1 — aihero.dev reference grouping
      ═══════════════════════════════════════════════════════════════════ -->
 <section class="variant">
   <div class="wrap">
     <div class="variant-head">
-      <span class="variant-tag">hero variant 2</span>
+      <span class="variant-tag">directory take 1 — aihero.dev model</span>
       <p class="variant-caption">
-        <strong>The report, not the screen.</strong> Shows what a skill hands back — the
-        annotated-evidence report from critique (spec &sect;6): findings beside cropped
-        evidence, controls named, and an approval line you reply to. The hero argues that the
-        skills produce something you can act on, not an opinion.
+        <strong>Grouped by each skill's role in the process, not by your situation.</strong>
+        Adapted from aihero.dev, which groups its 25 skills as
+        &ldquo;Getting Started / The Main Flow / Shaping / Upkeep / Productivity / Reference&rdquo;
+        — every group heading says what that group does <em>for the flow</em>, which holds
+        whatever the reader's context is. Their form too: one bordered grid with hairline
+        cells (not six cards), a numbered heading, one sentence, skills as bare command
+        chips with no per-skill prose, and a &ldquo;start with&rdquo; button pinned to the
+        bottom of every cell. Group 01 gets a real shared predicate — none of those four
+        change your product — instead of being the leftovers.
       </p>
     </div>
 
-    <h2 class="sec-h2">Ask for a review. Get evidence back.</h2>
+    <h2 class="sec-h2">Twenty-one skills, and where each one sits.</h2>
     <p class="sec-lede">
-      Critique captures your page, grades it against the catalog, and returns a report you
-      can share. It changes nothing on its own — you approve findings by number, and the
-      builder does the work.
+      Every skill installs with the plugin and works today. Start anywhere. Most people start
+      with the design loop.
     </p>
 
-    <div class="run-strip">
-      <span class="cmd">/dx-harness:dx-design-critique</span>
-      <span>on the marks-entry page</span>
-    </div>
-
-    <div class="report" style="margin-top: 20px;">
-      <div class="report-chrome">
-        <span class="url">claude.ai/artifact/marks-entry-critique &middot; v3</span>
-        <span class="chip chip-neutral">no code changed</span>
+    <div class="ah-grid">
+      <div class="ah-cell">
+        <h3><span class="num">01</span>Getting started</h3>
+        <p class="role">Install once, find your way around, get unstuck. None of these change your product.</p>
+        <div class="ah-chips">
+          <span>/dx-design</span><span>/dx-design-setup</span><span>/dx-design-git</span><span>/dx-design-feedback</span>
+        </div>
+        <div class="ah-start"><span>Start with /dx-harness:dx-design<span class="arrow">&rarr;</span></span></div>
       </div>
-      <div class="report-inner">
-        <h3>Marks entry — design critique</h3>
-        <p class="lede">Graded against the catalog and the pattern inventory. No code changed.</p>
 
-        <dl class="factgrid">
-          <div class="fact"><dt>Surface</dt><dd>/marks/entry</dd></div>
-          <div class="fact"><dt>Captured</dt><dd>1280 &times; 3120</dd></div>
-          <div class="fact"><dt>Controls checked</dt><dd class="num">64</dd></div>
-          <div class="fact"><dt>Design ticket</dt><dd>#412</dd></div>
-        </dl>
-
-        <div class="verdict">
-          <span class="counts">
-            <span class="chip chip-bad">L0 &middot; 1 blocker</span>
-            <span class="chip chip-warn">L1 &middot; 4</span>
-            <span class="chip chip-neutral">L2 &middot; 6</span>
-            <span class="chip chip-good">51 pass</span>
-          </span>
+      <div class="ah-cell">
+        <h3><span class="num">02</span>The design loop</h3>
+        <p class="role">The spine. Critique finds the work and numbers it; execute is the only skill that changes your product.</p>
+        <div class="ah-chips">
+          <span>/dx-design-execute</span><span>/dx-design-critique</span>
         </div>
-        <p class="approve-line">
-          Reply with the S-numbers you accept. Anything you decline is recorded as
-          &ldquo;considered and declined&rdquo; — nothing is dropped quietly.
-        </p>
+        <div class="ah-start"><span>Start with /dx-harness:dx-design-execute<span class="arrow">&rarr;</span></span></div>
+      </div>
 
-        <div class="table-scroll" tabindex="0" role="region" aria-label="Suggestions">
-        <table class="sugg">
-          <thead>
-            <tr>
-              <th>S#</th><th>Fixes</th><th>Suggestion</th><th>Controls</th><th>Impact</th><th>Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>S1</td><td class="num">F1</td>
-              <td>Right-align the mark columns and set tabular figures so the digits line up down the column.</td>
-              <td class="mono" style="font-size: 12px;">CMP-6, TYP-5</td>
-              <td>High</td><td>Quick win</td>
-            </tr>
-            <tr>
-              <td>S2</td><td class="num">F2, F5</td>
-              <td>Drop the second filled button. Keep &ldquo;Save marks&rdquo; primary; step the rest down to ghost.</td>
-              <td class="mono" style="font-size: 12px;">CMP-5</td>
-              <td>High</td><td>Quick win</td>
-            </tr>
-            <tr>
-              <td>S3</td><td class="num">F3</td>
-              <td>Say what a failed save means and what to do next, in place of the raw error code.</td>
-              <td class="mono" style="font-size: 12px;">CNT-1, CMP-3</td>
-              <td>Medium</td><td>Half a day</td>
-            </tr>
-            <tr>
-              <td>S4</td><td class="num">F4</td>
-              <td>Rebuild the class picker as a list. Eleven identical cards read slower than eleven rows.</td>
-              <td class="mono" style="font-size: 12px;">SLP-5, SLP-11</td>
-              <td>Medium</td><td>Two days</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="ah-cell">
+        <h3><span class="num">03</span>The five passes</h3>
+        <p class="role">The propose-only layer the loop routes to. One named dimension each. None of them edit.</p>
+        <div class="ah-chips">
+          <span>/dx-design-pattern</span><span>/dx-design-polish</span><span>/dx-design-motion</span><span>/dx-design-flow</span><span>/dx-design-copy</span>
         </div>
+        <div class="ah-start"><span>Start with /dx-harness:dx-design-pattern<span class="arrow">&rarr;</span></span></div>
+      </div>
 
-        <!-- F1 — annotated finding with a cropped capture -->
-        <div class="finding">
-          <div class="finding-head">
-            <span class="fid">F1</span>
-            <h4>Mark columns are left-aligned with proportional figures</h4>
-            <span class="chip chip-warn">L1</span>
-          </div>
-          <p>
-            Teachers scan a column for outliers. Left-aligned proportional digits break the
-            vertical edge, so 8 and 88 start in the same place and 100 sits wider than 99.
-          </p>
-          <div class="finding-grid">
-            <div>
-              <div class="crop product-light">
-                <div class="crop-ui">
-                  <div class="row"><span>Amirah B.</span><span>8</span></div>
-                  <div class="row"><span>Chen Wei L.</span><span>88</span></div>
-                  <div class="row"><span>Devi R.</span><span>100</span></div>
-                  <div class="row"><span>Farid H.</span><span>72</span></div>
-                  <div class="row"><span class="muted">Class average</span><span class="muted">67</span></div>
-                </div>
-                <div class="highlight" style="top: 8px; right: 8px; width: 62px; bottom: 8px;"></div>
-              </div>
-              <p class="crop-cap">crop &middot; /marks/entry @1280 &rarr; 760px</p>
-            </div>
-            <div class="evidence">
-              <dl>
-                <dt>Controls</dt><dd>CMP-6 (numeric columns right-aligned), TYP-5 (tabular figures)</dd>
-                <dt>Tier</dt><dd>L1 — needs a named approver to waive</dd>
-                <dt>Where</dt><dd><span class="mono" style="font-size: 12px;">components/marks/mark-cell.tsx:34</span></dd>
-                <dt>Fix</dt><dd>S1 — right-align the column, add <span class="mono" style="font-size: 12px;">tabular-nums</span></dd>
-              </dl>
-            </div>
-          </div>
+      <div class="ah-cell">
+        <h3><span class="num">04</span>Shaping the work</h3>
+        <p class="role">Settle an open question and write it down, so the loop has something to hold you to.</p>
+        <div class="ah-chips">
+          <span>/dx-design-language</span><span>/dx-design-research-brief</span>
         </div>
+        <div class="ah-start"><span>Start with /dx-harness:dx-design-language<span class="arrow">&rarr;</span></span></div>
+      </div>
 
-        <!-- F2 — second annotated finding -->
-        <div class="finding">
-          <div class="finding-head">
-            <span class="fid">F2</span>
-            <h4>Two filled buttons compete at the bottom of the form</h4>
-            <span class="chip chip-warn">L1</span>
-          </div>
-          <p>
-            &ldquo;Save marks&rdquo; and &ldquo;Publish to parents&rdquo; carry the same weight, so neither
-            reads as the thing to do. Publishing is also the one that can't be undone.
-          </p>
-          <div class="finding-grid">
-            <div>
-              <div class="crop product-light">
-                <div class="crop-ui">
-                  <div class="row"><span class="muted">39 of 40 marks entered</span><span class="muted">Draft</span></div>
-                  <div class="btnrow">
-                    <span class="fake-btn">Save marks</span>
-                    <span class="fake-btn">Publish to parents</span>
-                  </div>
-                </div>
-                <div class="highlight" style="left: 8px; bottom: 8px; width: 240px; height: 46px;"></div>
-              </div>
-              <p class="crop-cap">crop &middot; /marks/entry @1280 &rarr; 760px</p>
-            </div>
-            <div class="evidence">
-              <dl>
-                <dt>Controls</dt><dd>CMP-5 (one primary per view), CMP-2 (destructive actions show consequences)</dd>
-                <dt>Tier</dt><dd>L1 — needs a named approver to waive</dd>
-                <dt>Where</dt><dd><span class="mono" style="font-size: 12px;">app/marks/entry/page.tsx:118</span></dd>
-                <dt>Fix</dt><dd>S2 — one primary, and confirm before publishing</dd>
-              </dl>
-            </div>
-          </div>
+      <div class="ah-cell">
+        <h3><span class="num">05</span>Shipping the code</h3>
+        <p class="role">Idea to merged pull request. The engineering spine, unchanged by the design restructure.</p>
+        <div class="ah-chips">
+          <span>/dx-create-issue</span><span>/dx-groom-issue</span><span>/dx-split-issue</span><span>/dx-implement-issue</span><span>/dx-code-review</span>
         </div>
+        <div class="ah-start"><span>Start with /dx-harness:dx-create-issue<span class="arrow">&rarr;</span></span></div>
+      </div>
+
+      <div class="ah-cell">
+        <h3><span class="num">06</span>Repo upkeep</h3>
+        <p class="role">Set the gates once and they catch things before a reviewer has to.</p>
+        <div class="ah-chips">
+          <span>/dx-lint-setup</span><span>/dx-git-hooks-setup</span><span>/dx-update-npm-dependencies</span>
+        </div>
+        <div class="ah-start"><span>Start with /dx-harness:dx-lint-setup<span class="arrow">&rarr;</span></span></div>
       </div>
     </div>
 
-    <ul class="notes">
-      <li>Abridged: the real report also carries code-level findings, the full catalog coverage table, a &ldquo;what works — preserve&rdquo; section, and an appendix of full captures.</li>
-      <li>The report is critique's default output and republishes to the same URL each pass, so the version label matters.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     DIRECTORY VARIANT A — by moment of use
-     ═══════════════════════════════════════════════════════════════════ -->
-<section class="variant">
-  <div class="wrap">
-    <div class="variant-head">
-      <span class="variant-tag">directory variant A</span>
-      <p class="variant-caption">
-        <strong>Grouped by the moment you reach for them.</strong> Four panels answering
-        &ldquo;where am I right now?&rdquo; rather than &ldquo;whose job is this?&rdquo;. Each panel opens
-        with one skill to type; the rest of the panel is what that first skill can hand off to.
-      </p>
-    </div>
-
-    <h2 class="sec-h2">Twenty-one skills. You only ever type one.</h2>
-    <p class="sec-lede">
-      Every skill is a real command. Type the one that matches where you are, and it routes
-      you to the rest — you never have to hold this list in your head.
-    </p>
-
-    <div class="groups groups-3">
-      <!-- A1 -->
-      <div class="panel">
-        <div class="panel-head">
-          <span class="idx">01</span>
-          <h3>When you're starting out</h3>
-          <p>Get the tools in place, then ask for anything in plain words.</p>
-        </div>
-        <div class="panel-cta">
-          Start with <span class="cmd">/dx-harness:dx-design</span>
-        </div>
-        <dl class="skills">
-          <div>
-            <dt><span class="lead-mark">&#9656;</span> dx-design</dt>
-            <dd>The orchestrator. Asks what you want, answers rule questions, routes you to the right skill.</dd>
-          </div>
-          <div>
-            <dt>dx-design-setup</dt>
-            <dd>Installs the per-user tools the loop relies on, then shows you around.</dd>
-          </div>
-          <div>
-            <dt>dx-design-git</dt>
-            <dd>Gitty — explains git in plain words and does it with you safely.</dd>
-          </div>
-          <div>
-            <dt>dx-design-feedback</dt>
-            <dd>Files an issue against the harness the moment something confuses you.</dd>
-          </div>
-        </dl>
-      </div>
-
-      <!-- A2 -->
-      <div class="panel">
-        <div class="panel-head">
-          <span class="idx">02</span>
-          <h3>When you're making something new</h3>
-          <p>Decide what you're building, agree the plan, then build it once.</p>
-        </div>
-        <div class="panel-cta">
-          Start with <span class="cmd">/dx-harness:dx-design-execute</span>
-        </div>
-        <dl class="skills">
-          <div>
-            <dt><span class="lead-mark">&#9656;</span> dx-design-execute</dt>
-            <dd>The only skill that builds. Intent, options, a plan you approve, then the change.</dd>
-          </div>
-          <div>
-            <dt>dx-design-language</dt>
-            <dd>Defines your design language and writes DESIGN.md, so the rules stop living in your head.</dd>
-          </div>
-          <div>
-            <dt>dx-design-research-brief</dt>
-            <dd>A research plan that settles what you're asking before you recruit anyone.</dd>
-          </div>
-        </dl>
-      </div>
-
-      <!-- A3 -->
-      <div class="panel">
-        <div class="panel-head">
-          <span class="idx">03</span>
-          <h3>When the page already exists</h3>
-          <p>Grade it whole, or take one dimension at a time. All of these propose; none of them edit.</p>
-        </div>
-        <div class="panel-cta">
-          Start with <span class="cmd">/dx-harness:dx-design-critique</span>
-        </div>
-        <dl class="skills">
-          <div>
-            <dt><span class="lead-mark">&#9656;</span> dx-design-critique</dt>
-            <dd>Grades the whole page and ranks what to improve, with a shareable evidence report.</dd>
-          </div>
-          <div>
-            <dt>dx-design-pattern</dt>
-            <dd>Structure, hierarchy, density, and whether the page is using the right named pattern.</dd>
-          </div>
-          <div>
-            <dt>dx-design-polish</dt>
-            <dd>Spacing, type, radius, colour — one named dimension at a time.</dd>
-          </div>
-          <div>
-            <dt>dx-design-motion</dt>
-            <dd>Transitions and easing, with reduced-motion variants built in.</dd>
-          </div>
-          <div>
-            <dt>dx-design-flow</dt>
-            <dd>Multi-step tasks: traversal, async states, escape routes, draft safety.</dd>
-          </div>
-          <div>
-            <dt>dx-design-copy</dt>
-            <dd>Voice, tone, and error-message anatomy, applied as the text is written.</dd>
-          </div>
-        </dl>
-      </div>
-
-      <!-- A4 — spans the row on wide screens -->
-      <div class="panel" style="grid-column: 1 / -1;">
-        <div class="panel-head">
-          <span class="idx">04</span>
-          <h3>When you're shipping the code</h3>
-          <p>Eight skills that carry a change from an idea to a merged pull request. These come along for the ride — the design skills are the point.</p>
-        </div>
-        <div class="panel-cta">
-          Start with <span class="cmd">/dx-harness:dx-create-issue</span>
-        </div>
-        <dl class="skills skills-2col">
-          <div><dt><span class="lead-mark">&#9656;</span> dx-create-issue</dt><dd>Issues structured for an agent to implement.</dd></div>
-          <div><dt>dx-groom-issue</dt><dd>Fills in the technical sections of an issue someone else wrote.</dd></div>
-          <div><dt>dx-split-issue</dt><dd>Breaks an issue into children, each one a single pull request.</dd></div>
-          <div><dt>dx-implement-issue</dt><dd>Implements a groomed issue end to end.</dd></div>
-          <div><dt>dx-code-review</dt><dd>Seven-angle review, with findings posted inline on the pull request.</dd></div>
-          <div><dt>dx-lint-setup</dt><dd>Detects your stack and configures linting and formatting.</dd></div>
-          <div><dt>dx-git-hooks-setup</dt><dd>Pre-commit and pre-push gates around the checks you already run.</dd></div>
-          <div><dt>dx-update-npm-dependencies</dt><dd>Audits and bumps vulnerable packages, with a release cooldown.</dd></div>
-        </dl>
-      </div>
-    </div>
-
-    <!-- Curated externals — position 1: directly under the panels -->
+    <!-- Curated externals — position 1: directly under the grid -->
     <div class="curated">
       <h3>We build ours. We curate the rest.</h3>
       <p>
         Three skills we didn't write and don't maintain, but reach for often. Install them
-        alongside the harness — they carry no <span class="mono">dx-harness:</span> prefix and
-        no catalog behind them.
+        alongside the harness &mdash; they carry no <span class="mono">dx-harness:</span> prefix
+        and no catalog behind them.
       </p>
       <ul>
-        <li>
-          <span class="n">/web-animation-design</span>
-          <span class="d">Easing, timing, and springs, argued from first principles.</span>
-        </li>
-        <li>
-          <span class="n">/better-ui</span>
-          <span class="d">A second opinion on a component you've already built.</span>
-        </li>
-        <li>
-          <span class="n">/make-interfaces-feel-better</span>
-          <span class="d">The small craft details — optical alignment, borders, hover feel.</span>
-        </li>
+        <li><span class="n">/web-animation-design</span><span class="d">Easing, timing, and springs, argued from first principles.</span></li>
+        <li><span class="n">/better-ui</span><span class="d">A second opinion on a component you've already built.</span></li>
+        <li><span class="n">/make-interfaces-feel-better</span><span class="d">The small craft details &mdash; optical alignment, borders, hover feel.</span></li>
       </ul>
     </div>
 
     <ul class="notes">
-      <li>Externals sit here, after the panels, so the last thing you read is generous rather than promotional. They could also sit as a fifth panel in the grid (reads as ours — risky), in the footer (safe, easily missed), or on a dedicated /skills page with the full directory (best once the list grows past 21).</li>
-      <li>Panel 04 deliberately spans the full row: two columns of eight short rows, so the engineering set reads as a block rather than as a third of the attention.</li>
-      <li>Unresolved: panels 01 and 02 are much shorter than 03, so the equal-height row leaves dead space. Either let the panels find their own height in a masonry-ish column layout, or move a skill or two to even them up.</li>
+      <li>What the reference buys us: dropping per-skill prose. Twenty-one one-liners is a wall of text; twenty-one chips under six honest sentences is a shape you can read in ten seconds.</li>
+      <li>What it costs: a chip tells you nothing. Anyone who doesn't already know what <span class="mono">/dx-design-flow</span> means learns nothing here, and there is no hover on touch. aihero absorbs this with a &ldquo;See all 25 skills&rdquo; link to a full directory page &mdash; we would need the same escape hatch, which is a second page to build.</li>
+      <li>The role framing survives a change of context, which is the fix for the rejected moment-of-use model: &ldquo;the propose-only layer the loop routes to&rdquo; is true whether or not your page exists yet.</li>
+      <li>Externals sit under the grid so the last thing you read is generous rather than promotional. They could also sit as a seventh cell (reads as ours &mdash; risky), in the footer (safe, easily missed), or on the /skills page once it exists.</li>
     </ul>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     DIRECTORY VARIANT B — design vs engineering
+     DIRECTORY TAKE 2 — no stage labels, hierarchy by prominence
      ═══════════════════════════════════════════════════════════════════ -->
 <section class="variant">
   <div class="wrap">
     <div class="variant-head">
-      <span class="variant-tag">directory variant B</span>
+      <span class="variant-tag">directory take 2 — prominence, no labels</span>
       <p class="variant-caption">
-        <strong>Grouped by which half of the harness they belong to.</strong> Two panels,
-        design first and larger, with roles as quiet sub-headers inside. Matches how the
-        plugin is actually laid out on disk, and makes the design-first claim structural
-        rather than copy.
+        <strong>No stage names at all. Size carries the meaning.</strong> The three skills you
+        actually type get full billing; the five passes are a quiet band, because the
+        orchestrator routes to them and you rarely name them yourself; the engineering eight
+        sit below as a plain list; setup, git, feedback, and the two shaping skills drop to a
+        hairline strip. Nothing is hidden, but the page stops pretending all twenty-one
+        deserve equal attention.
       </p>
     </div>
 
-    <h2 class="sec-h2">Thirteen design skills. Eight engineering ones.</h2>
+    <h2 class="sec-h2">Three skills do most of the work.</h2>
     <p class="sec-lede">
-      The design skills are why the harness exists. The engineering set is there because a
-      design change has to become a merged pull request eventually.
+      There are twenty-one in the plugin. You will type three of them. The rest get routed to
+      for you, or run once and stay out of the way.
     </p>
 
-    <div class="groups" style="grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);">
-      <!-- B1 — design -->
-      <div class="panel">
-        <div class="panel-head">
-          <span class="idx">design &middot; 13 skills</span>
-          <h3>The design half</h3>
-          <p>One skill in front, one that builds, five that propose. The rest are support.</p>
+    <div class="featured">
+      <div class="feat">
+        <span class="name">/dx-harness:dx-design</span>
+        <h3>Ask for anything</h3>
+        <p>
+          Say what you want in plain words. It works out which skill you need, answers rule
+          questions on the spot, and hands off. Start here when you're not sure.
+        </p>
+        <div class="tail">
+          <span class="role-note">Routes. Never builds.</span>
+          <span class="cta">/dx-harness:dx-design &rarr;</span>
         </div>
-        <div class="panel-cta">
-          Start with <span class="cmd">/dx-harness:dx-design</span>
-          <span style="color: var(--muted-foreground);">— it routes to everything below</span>
-        </div>
-
-        <div class="subhead">the orchestrator</div>
-        <dl class="skills">
-          <div><dt>dx-design</dt><dd>Asks what you want, answers rule questions, routes you. Start here if you're unsure.</dd></div>
-        </dl>
-
-        <div class="subhead">the builder</div>
-        <dl class="skills">
-          <div><dt>dx-design-execute</dt><dd>The only skill that changes your product. Stops for your approval before it builds.</dd></div>
-        </dl>
-
-        <div class="subhead">the graded review</div>
-        <dl class="skills">
-          <div><dt>dx-design-critique</dt><dd>Grades an existing page against the catalog and returns ranked, numbered suggestions.</dd></div>
-        </dl>
-
-        <div class="subhead">the five passes — propose only</div>
-        <dl class="skills">
-          <div><dt>dx-design-pattern</dt><dd>Structure, hierarchy, density, named-pattern fit.</dd></div>
-          <div><dt>dx-design-polish</dt><dd>Spacing, type, radius, colour.</dd></div>
-          <div><dt>dx-design-motion</dt><dd>Transitions and easing, reduced-motion included.</dd></div>
-          <div><dt>dx-design-flow</dt><dd>Multi-step tasks, async states, escape routes, draft safety.</dd></div>
-          <div><dt>dx-design-copy</dt><dd>Voice, tone, and error-message anatomy.</dd></div>
-        </dl>
-
-        <div class="subhead">setting up and getting help</div>
-        <dl class="skills">
-          <div><dt>dx-design-setup</dt><dd>Installs the per-user tools the loop relies on.</dd></div>
-          <div><dt>dx-design-language</dt><dd>Defines your design language and writes DESIGN.md.</dd></div>
-          <div><dt>dx-design-research-brief</dt><dd>A research plan that aligns a study before you recruit anyone.</dd></div>
-          <div><dt>dx-design-git</dt><dd>Gitty — git explained in plain words, and done with you safely.</dd></div>
-          <div><dt>dx-design-feedback</dt><dd>Files harness feedback as an issue while the confusion is still fresh.</dd></div>
-        </dl>
       </div>
 
-      <!-- B2 — engineering -->
-      <div class="panel">
-        <div class="panel-head">
-          <span class="idx">engineering &middot; 8 skills</span>
-          <h3>The engineering half</h3>
-          <p>Idea to merged pull request. Unchanged by the design restructure.</p>
+      <div class="feat">
+        <span class="name">/dx-harness:dx-design-execute</span>
+        <h3>Get it built</h3>
+        <p>
+          Intent, a few options, then a plan you approve before anything moves. The only skill
+          in the plugin that changes a file in your product.
+        </p>
+        <div class="tail">
+          <span class="role-note">Stops for you at plan approval.</span>
+          <span class="cta">/dx-harness:dx-design-execute &rarr;</span>
         </div>
-        <div class="panel-cta">
-          Start with <span class="cmd">/dx-harness:dx-create-issue</span>
+      </div>
+
+      <div class="feat">
+        <span class="name">/dx-harness:dx-design-critique</span>
+        <h3>Find out what's wrong</h3>
+        <p>
+          Captures the page, grades it against the catalog, and hands back a numbered list with
+          evidence. You approve by number; nothing changes until you do.
+        </p>
+        <div class="tail">
+          <span class="role-note">Proposes only. Changes nothing.</span>
+          <span class="cta">/dx-harness:dx-design-critique &rarr;</span>
         </div>
-
-        <div class="subhead">issues</div>
-        <dl class="skills">
-          <div><dt>dx-create-issue</dt><dd>Issues structured for an agent to implement.</dd></div>
-          <div><dt>dx-groom-issue</dt><dd>Fills in the technical sections of an existing issue.</dd></div>
-          <div><dt>dx-split-issue</dt><dd>Breaks an issue into single-pull-request children.</dd></div>
-        </dl>
-
-        <div class="subhead">building and reviewing</div>
-        <dl class="skills">
-          <div><dt>dx-implement-issue</dt><dd>Implements a groomed issue end to end.</dd></div>
-          <div><dt>dx-code-review</dt><dd>Seven-angle review, posted inline on the pull request.</dd></div>
-        </dl>
-
-        <div class="subhead">the repo itself</div>
-        <dl class="skills">
-          <div><dt>dx-lint-setup</dt><dd>Detects your stack and configures linting and formatting.</dd></div>
-          <div><dt>dx-git-hooks-setup</dt><dd>Pre-commit and pre-push gates around your existing checks.</dd></div>
-          <div><dt>dx-update-npm-dependencies</dt><dd>Audits and bumps vulnerable packages, with a release cooldown.</dd></div>
-        </dl>
       </div>
     </div>
 
+    <div class="quiet-band">
+      <div class="band-head">
+        <div>
+          <h3>Five specialists the loop reaches for</h3>
+          <p>
+            You can type these, but you mostly won't &mdash; the orchestrator picks the right one
+            from what you asked. Each takes one dimension and proposes; none of them edit.
+          </p>
+        </div>
+        <span class="cta">Start with /dx-harness:dx-design-pattern</span>
+      </div>
+      <dl class="rowlist">
+        <div><dt>dx-design-pattern</dt><dd>Structure, hierarchy, density, named-pattern fit.</dd></div>
+        <div><dt>dx-design-polish</dt><dd>Spacing, type, radius, colour.</dd></div>
+        <div><dt>dx-design-motion</dt><dd>Transitions and easing, reduced-motion included.</dd></div>
+        <div><dt>dx-design-flow</dt><dd>Multi-step tasks, async states, escape routes, draft safety.</dd></div>
+        <div><dt>dx-design-copy</dt><dd>Voice, tone, and error-message anatomy.</dd></div>
+      </dl>
+    </div>
+
+    <div class="quiet-band">
+      <div class="band-head">
+        <div>
+          <h3>Eight more that carry the change to merged</h3>
+          <p>
+            The engineering set. It came with the plugin and it still works, but the design
+            skills are why the harness exists.
+          </p>
+        </div>
+        <span class="cta">Start with /dx-harness:dx-create-issue</span>
+      </div>
+      <dl class="rowlist">
+        <div><dt>dx-create-issue</dt><dd>Issues structured for an agent to implement.</dd></div>
+        <div><dt>dx-groom-issue</dt><dd>Fills in the technical sections of an existing issue.</dd></div>
+        <div><dt>dx-split-issue</dt><dd>Breaks an issue into single-pull-request children.</dd></div>
+        <div><dt>dx-implement-issue</dt><dd>Implements a groomed issue end to end.</dd></div>
+        <div><dt>dx-code-review</dt><dd>Seven-angle review, posted inline on the pull request.</dd></div>
+        <div><dt>dx-lint-setup</dt><dd>Detects your stack and configures linting and formatting.</dd></div>
+        <div><dt>dx-git-hooks-setup</dt><dd>Pre-commit and pre-push gates around your existing checks.</dd></div>
+        <div><dt>dx-update-npm-dependencies</dt><dd>Audits and bumps vulnerable packages, with a release cooldown.</dd></div>
+      </dl>
+    </div>
+
+    <!-- the demoted strip — run once, or reach for when stuck -->
+    <div class="strip">
+      <div>
+        <h3>Run once, or when you're stuck</h3>
+        <p class="strip-note">None of these touch your product.</p>
+      </div>
+      <ul>
+        <li><span class="n">dx-design-setup</span> &mdash; installs the per-user tools the loop relies on</li>
+        <li><span class="n">dx-design-language</span> &mdash; writes DESIGN.md, your project's design language</li>
+        <li><span class="n">dx-design-research-brief</span> &mdash; a research plan before you recruit anyone</li>
+        <li><span class="n">dx-design-git</span> &mdash; Gitty, git explained in plain words and done with you</li>
+        <li><span class="n">dx-design-feedback</span> &mdash; files an issue when the harness itself confuses you</li>
+      </ul>
+    </div>
+
     <ul class="notes">
-      <li>Same 21 skills as variant A, re-cut. B tells you what the harness <em>is</em>; A tells you what to do next. B's sub-headers carry the vocabulary — orchestrator, builder, pass — which A has to leave out.</li>
-      <li>B's design panel is long. On mobile it becomes a 13-row scroll before engineering appears at all.</li>
-      <li>The curated externals note is not repeated here — it would sit in the same place, under both panels.</li>
+      <li>Same 21 skills as take 1, re-weighted. Take 1 tells you the shape of the system; take 2 tells you what to type and lets the rest fade. Take 2 is the only one of the two that admits some skills matter more than others.</li>
+      <li>The residue bucket is fixed here by demoting it rather than naming it: the strip is one hairline and five rows, and its unifying line is a real property (none of these touch your product), not a stage.</li>
+      <li>No &ldquo;start with&rdquo; CTA on the strip, on purpose. A CTA is a claim that you should begin there, and you shouldn't &mdash; except for setup, which the install block at the top of the page already covers.</li>
+      <li>Risk: three big cells, two banded lists, and a strip is four levels of hierarchy in one section. If the section has to shrink, the strip goes first, and then those five skills appear nowhere on the homepage.</li>
+      <li>The curated-externals note is not repeated here. It would sit below the strip, in the same dashed frame.</li>
     </ul>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     Rename ledger — so a reader can check the names
+     Reference — the rename ledger
      ═══════════════════════════════════════════════════════════════════ -->
 <section class="variant">
   <div class="wrap">
@@ -982,30 +743,32 @@ a { color: var(--tw-blue-text); }
       <p class="variant-caption">
         Old shipped name &rarr; spec name, for checking the copy above against
         <span class="mono">docs/specs/2026-08-12-design-skills-restructure.md</span> &sect;1.
+        That file is not on this branch; it lives on
+        <span class="mono">origin/improve-design-skills</span>.
       </p>
     </div>
     <div class="table-scroll" tabindex="0" role="region" aria-label="Rename ledger">
-    <table class="sugg" style="max-width: 760px;">
-      <thead><tr><th>Shipped today</th><th>Printed above</th><th>Note</th></tr></thead>
-      <tbody>
-        <tr><td>dx-start</td><td>dx-design</td><td>Becomes the orchestrator; claims the bare name</td></tr>
-        <tr><td>dx-design</td><td>dx-design-execute</td><td>The builder. Not dx-design-make — components/landing/data.ts on this branch is stale</td></tr>
-        <tr><td>dx-critique</td><td>dx-design-critique</td><td>Now propose-only; owns the evidence report</td></tr>
-        <tr><td>dx-layout</td><td>dx-design-pattern</td><td>Widened to named-pattern fit</td></tr>
-        <tr><td>dx-polish</td><td>dx-design-polish</td><td>Rename</td></tr>
-        <tr><td>dx-motion</td><td>dx-design-motion</td><td>Rename</td></tr>
-        <tr><td>dx-flow</td><td>dx-design-flow</td><td>Rename</td></tr>
-        <tr><td>dx-copy</td><td>dx-design-copy</td><td>Drops non-surface prose</td></tr>
-        <tr><td>dx-setup</td><td>dx-design-setup</td><td>Tools and orientation only</td></tr>
-        <tr><td>dx-git-buddy</td><td>dx-design-git</td><td>Not dx-design-git-helper — renamed again 2026-08-12</td></tr>
-        <tr><td>dx-feedback</td><td>dx-design-feedback</td><td>Rename</td></tr>
-        <tr><td>dx-research-brief</td><td>dx-design-research-brief</td><td>Rename</td></tr>
-        <tr><td>&mdash;</td><td>dx-design-language</td><td>New; writes DESIGN.md</td></tr>
-        <tr><td>dx-standards</td><td>&mdash;</td><td>Deleted; content relocates</td></tr>
-        <tr><td>dx-evaluator</td><td>&mdash;</td><td>Becomes the dx-design-review agent — not a skill, not listed</td></tr>
-        <tr><td colspan="3" style="color: var(--muted-foreground);">Engineering group unchanged: 8 skills. 13 design + 8 engineering = 21.</td></tr>
-      </tbody>
-    </table>
+      <table class="ledger">
+        <thead><tr><th>Shipped today</th><th>Printed above</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>dx-start</td><td>dx-design</td><td>Becomes the orchestrator; claims the bare name</td></tr>
+          <tr><td>dx-design</td><td>dx-design-execute</td><td>The builder. Not dx-design-make — components/landing/data.ts on this branch is stale</td></tr>
+          <tr><td>dx-critique</td><td>dx-design-critique</td><td>Now propose-only; owns the annotated-evidence report</td></tr>
+          <tr><td>dx-layout</td><td>dx-design-pattern</td><td>Widened to named-pattern fit</td></tr>
+          <tr><td>dx-polish</td><td>dx-design-polish</td><td>Rename</td></tr>
+          <tr><td>dx-motion</td><td>dx-design-motion</td><td>Rename</td></tr>
+          <tr><td>dx-flow</td><td>dx-design-flow</td><td>Rename</td></tr>
+          <tr><td>dx-copy</td><td>dx-design-copy</td><td>Drops non-surface prose</td></tr>
+          <tr><td>dx-setup</td><td>dx-design-setup</td><td>Tools and orientation only</td></tr>
+          <tr><td>dx-git-buddy</td><td>dx-design-git</td><td>Not dx-design-git-helper — renamed again 2026-08-12</td></tr>
+          <tr><td>dx-feedback</td><td>dx-design-feedback</td><td>Rename</td></tr>
+          <tr><td>dx-research-brief</td><td>dx-design-research-brief</td><td>Rename</td></tr>
+          <tr><td>&mdash;</td><td>dx-design-language</td><td>New; writes DESIGN.md</td></tr>
+          <tr><td>dx-standards</td><td>&mdash;</td><td>Deleted; content relocates</td></tr>
+          <tr><td>dx-evaluator</td><td>&mdash;</td><td>Becomes the dx-design-review agent — not a skill, not listed</td></tr>
+          <tr><td colspan="3" style="color: var(--muted-foreground);">Engineering group unchanged: 8 skills. 13 design + 8 engineering = 21.</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
