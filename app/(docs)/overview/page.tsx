@@ -24,14 +24,11 @@ export default function Overview() {
   const governance = getDoc("governance", "governance");
   return (
     <div className="max-w-[760px]">
-      <p className="text-xs font-semibold text-tw-blue">
-        TransformX · Teacher &amp; School portfolio
-      </p>
-      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">
+      <h1 className="font-display text-3xl font-semibold tracking-tight">
         Kind Utility,<br />held to a standard.
       </h1>
-      <p className="mt-5 text-lg text-muted-foreground">
-        How TransformX designs for Singapore&apos;s teachers — utility-first at the core,
+      <p className="mt-5 text-base text-muted-foreground">
+        How dx-harness designs for Singapore&apos;s teachers — utility-first at the core,
         human-first at the surface. Principles that settle arguments, standards a machine can
         check, and a harness so every builder ships at the bar, with or without a designer
         on the team.
@@ -91,7 +88,7 @@ export default function Overview() {
         </p>
       </div>
 
-      <h2 className="mt-14 font-display text-xl font-semibold">Three readers, one standard</h2>
+      <h2 className="mt-14 font-display text-lg font-semibold">Three readers, one standard</h2>
       <div className="mt-5 grid gap-8 sm:grid-cols-3">
         <div>
           <h3 className="text-base font-semibold">Humans</h3>

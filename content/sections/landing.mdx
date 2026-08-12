@@ -1,6 +1,6 @@
 ---
 title: Design to the bar.
-description: dx-harness is a Claude Code plugin of design skills your agent runs. It carries a design loop that stops for your approval, a checkable standards catalog, and an evaluator that grades what ships. The engineering workflow rides along.
+description: dx-harness is a Claude Code plugin of design skills your agent runs. It carries a design loop that stops for your approval, a checkable standards catalog, and a design reviewer that grades what ships. The engineering workflow rides along.
 ---
 
 ## Quick start
@@ -25,18 +25,20 @@ down first, and every phase after is graded against it.
 2. **Diverge** — two or three structurally different options; you pick.
 3. **Plan gate** — the plan is grilled, then stops for your approval.
 4. **Implement** — built exactly to the approved plan, on the standards catalog.
-5. **Verify** — deterministic checks first, then a separate evaluator grades the
-   result. The generator never grades its own work.
+5. **Verify** — deterministic checks first, then a separate design reviewer
+   grades the result. The builder never grades its own work.
 
 ## Thirteen design skills
 
-dx-design, dx-critique, dx-standards, dx-copy, dx-layout, dx-polish, dx-motion,
-dx-flow, dx-research-brief, dx-git-buddy, dx-start, dx-setup, dx-feedback.
+dx-design, dx-design-make, dx-design-critique, dx-design-copy,
+dx-design-pattern, dx-design-polish, dx-design-motion, dx-design-flow,
+dx-design-language, dx-design-research-brief, dx-design-git-helper,
+dx-design-setup, dx-design-feedback.
 
 And the engineering workflow in the same plugin: dx-code-review,
 dx-create-issue, dx-groom-issue, dx-split-issue, dx-implement-issue,
 dx-lint-setup, dx-git-hooks-setup, dx-update-npm-dependencies.
 
-The harness is built on the TFX Design Standard — the full standard lives in
+The harness carries its own design standard — published in full in
 the docs (`/overview`), the machine-readable catalog at `/standards/catalog.yaml`,
 and the agent entry point at `/llms.txt`.

@@ -125,8 +125,8 @@ for (const entry of fs.readdirSync(contentDir, { withFileTypes: true })) {
   }
 }
 
-// ── 5. Sidebar nav ↔ content/map.json, both directions ───────────────────────
-const sidebarSrc = fs.readFileSync(path.join(root, "components", "sidebar.tsx"), "utf8");
+// ── 5. Docs nav (lib/nav.ts) ↔ content/map.json, both directions ─────────────
+const sidebarSrc = fs.readFileSync(path.join(root, "lib", "nav.ts"), "utf8");
 const sidebarHrefs = new Set(
   [...sidebarSrc.matchAll(/href:\s*["'`]([^"'`]+)["'`]/g)].map((m) => m[1]),
 );
@@ -139,7 +139,7 @@ for (const [section, def] of Object.entries(map)) {
     const href = def.root && i === 0 ? `/${section}` : `/${section}/${slug}`;
     expectedHrefs.add(href);
     if (!sidebarHrefs.has(href))
-      err("components/sidebar.tsx", `no nav entry for registered doc '${href}'`);
+      err("lib/nav.ts", `no nav entry for registered doc '${href}'`);
   }
 }
 // Chrome pages live in code, not content — exempt from registration.
@@ -148,7 +148,7 @@ const sectionKeys = new Set(Object.keys(map));
 for (const href of sidebarHrefs) {
   const [, section, slug] = href.split("/");
   if (slug && sectionKeys.has(section) && !expectedHrefs.has(href) && !chromeHrefs.has(href))
-    err("components/sidebar.tsx", `stale nav entry '${href}' — not registered in content/map.json`);
+    err("lib/nav.ts", `stale nav entry '${href}' — not registered in content/map.json`);
 }
 
 if (errors.length) {

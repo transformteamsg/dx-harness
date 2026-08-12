@@ -6,10 +6,10 @@ import { llmsFull, llmsIndex } from "./llms";
 import { allTwins } from "./markdown-twin";
 
 describe("llmsIndex", () => {
-  it("publishes the TFX identity and the catalog waiver syntax", () => {
+  it("publishes the dx-harness identity and the catalog waiver syntax", () => {
     const index = llmsIndex();
     const meta = getCatalogMeta();
-    expect(index.startsWith("# TFX Design Standard")).toBe(true);
+    expect(index.startsWith("# dx-harness")).toBe(true);
     expect(index).toContain(`(v${meta.version} draft)`);
     expect(index).toContain(meta.waiver_syntax);
   });

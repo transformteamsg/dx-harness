@@ -1,17 +1,19 @@
 ---
 title: Skills
-description: The commands you type in Claude Code. Say what you want in plain words; each skill knows the standard so you don't have to.
+description: The commands you type in Claude Code. Say what you want in plain words; each skill knows the standard so you do not have to.
 status: proposed
 ---
 
-A skill is a command you type to Claude Code, like `/tfx:design`. They arrive
-together when you [install the plugin](/harness/install). You never
-need to memorise the list: type `/tfx:start` and it works out what you need
-and routes you. Two things are always true, whichever skill runs:
+A skill is a command you type in Claude Code. All design skills carry the
+`dx-design-` prefix. They install together when you
+[install the plugin](/harness/install). You do not need to memorise the list:
+type `/dx-harness:dx-design` and it works out what you need and routes you.
 
-- **You can't break anything by asking.** Skills that change things stop and
-  show you a plan before any code is written. Skills that review things
-  change nothing at all.
+Two rules hold for every skill:
+
+- **You cannot break anything by asking.** One skill edits the product:
+  `dx-design-make`. It stops and shows you a plan before it writes code.
+  Every other skill proposes; it does not edit.
 - **You can answer in plain words.** "The page feels cluttered" is a valid
   instruction. The skill translates it into the standard's terms.
 
@@ -19,48 +21,101 @@ and routes you. Two things are always true, whichever skill runs:
 
 | You want to... | Type |
 | --- | --- |
-| Get oriented, or you're not sure which skill fits | `/tfx:start` |
-| Set up your machine or onboard a product (once) | `/tfx:setup` |
-| Build a new screen, or change an existing one | `/tfx:design` |
-| Hear what's wrong with a page before changing it | `/tfx:critique` |
-| Fix one dimension: wording, spacing, motion, a multi-step flow, layout | `/tfx:copy` · `/tfx:polish` · `/tfx:motion` · `/tfx:flow` · `/tfx:layout` |
-| Ask whether a rule applies, or whether you can waive it | `/tfx:standards` |
-| Tell us the harness itself confused you | `/tfx:feedback` |
+| Get routed, or you are not sure which skill fits | `/dx-harness:dx-design` |
+| Build a new screen, or change an existing one | `/dx-harness:dx-design-make` |
+| Hear what is wrong with a page before you change it | `/dx-harness:dx-design-critique` |
+| Fix one dimension: wording, spacing, motion, a multi-step flow, structure | `/dx-harness:dx-design-copy` · `/dx-harness:dx-design-polish` · `/dx-harness:dx-design-motion` · `/dx-harness:dx-design-flow` · `/dx-harness:dx-design-pattern` |
+| Define your product's design language, write DESIGN.md | `/dx-harness:dx-design-language` |
+| Ask whether a rule applies, or whether you can waive it | `/dx-harness:dx-design` |
+| Get help with git in plain words | `/dx-harness:dx-design-git-helper` |
+| Set up your machine (once per person) | `/dx-harness:dx-design-setup` |
+| Tell us the harness itself confused you | `/dx-harness:dx-design-feedback` |
 
-## The two you'll use most
+## The front door
 
-**`/tfx:design`** builds or changes product UI through the
-[six-phase loop](/harness/loop). You describe the screen in your own words; it
-comes back with 2–3 directions, you pick one, it writes a plan, and it builds
-only after you approve. If you change your mind mid-run, say so — the loop
-goes back a phase rather than pushing on.
+**`/dx-harness:dx-design`** is the orchestrator. It asks what you want, one
+question at a time. If you cannot say, it offers five plain modes: make
+something new, improve what exists, brainstorm, define your design language,
+set up or fix your tools. It routes you and hands your answers over, so no
+skill interviews you twice.
 
-**`/tfx:critique`** is for "I don't like this page but I can't say why."
-It captures the page, grades it against the catalog, and returns ranked
-suggestions with scores. Nothing changes unless you then approve fixes.
+It also answers rule and waiver questions — "does TOK-1 apply here?", "can I
+waive this, and who approves?" — with citations from the catalog, then offers
+the one next step that fits. It never builds.
 
-## The focused passes
+## The builder
 
-When you can already name the problem, skip the full loop. Each pass improves
-one dimension of an existing page, proposes ranked fixes, and stops for your
-approval before touching anything:
+**`/dx-harness:dx-design-make`** is the only skill that edits the product. It
+runs the loop: intent → diverge → plan approval → implement → design review.
+You describe the screen in your own words; it comes back with 2–3 genuinely
+different directions as real HTML pages; you pick one. No code exists until
+you approve the plan. If you change your mind mid-run, say so — the loop goes
+back a phase rather than pushing on.
 
-- `/tfx:copy` — wording, tone, names, error messages.
-- `/tfx:polish` — spacing, type, colour, radius, shadow.
-- `/tfx:motion` — transitions, easing, timing, reduced motion.
-- `/tfx:flow` — multi-step tasks: steps, waiting states, safe exits, drafts.
-- `/tfx:layout` — structure, hierarchy, density, alignment.
+It also builds the findings you accept from the critique and the passes.
+
+## The five passes
+
+When you can already name the problem, skip the full loop. Each pass reviews
+one dimension of an existing page and proposes up to five ranked findings,
+recorded on the surface's design ticket. A pass never edits the product; the
+findings you accept go to `dx-design-make` to build.
+
+- `/dx-harness:dx-design-copy` — wording, tone, names, error messages.
+- `/dx-harness:dx-design-polish` — spacing, type, colour, radius, shadow.
+- `/dx-harness:dx-design-motion` — transitions, easing, timing, reduced motion.
+- `/dx-harness:dx-design-flow` — multi-step tasks: steps, waiting states, safe exits, drafts.
+- `/dx-harness:dx-design-pattern` — structure, hierarchy, density, and whether
+  the page uses the right named pattern (list vs cards, master-detail,
+  wizard). It can propose a whole-page rebuild that keeps the same content.
+
+**`/dx-harness:dx-design-critique`** is for "I do not like this page but I
+cannot say why." It captures the page, grades it against the catalog, and
+returns ranked findings with scores. It is also the re-audit: "re-check this
+page against the catalog." Propose-only, like the passes.
+
+## The design language
+
+**`/dx-harness:dx-design-language`** defines your product's design language
+and writes `DESIGN.md` — the per-product decisions any agent can read. It
+scans your code first: on a healthy repo it mines the answers and asks you to
+confirm or correct; on a token-less repo it interviews you. It can ingest
+Figma and brand documents. It never writes product code.
 
 ## Behind the scenes
 
-- `/tfx:standards` answers catalog questions with citations — "does TOK-1
-  apply here?", "can I waive this, and who approves?"
-- `/tfx:feedback` files a GitHub issue on the harness repo the moment
-  something about the harness itself confuses you, even mid-task. Confusion
-  is a bug report, not a you-problem.
-- The **evaluator** is an agent, not a command: after `/tfx:design` builds
-  something, a separate agent grades the result against what you asked for.
-  The builder never marks its own homework.
+- `/dx-harness:dx-design-git-helper` is Gitty, a friendly git companion for
+  designers who design in code. It also runs the branch guard: when a build
+  starts on `main` or behind the remote, it proposes the fix before anything
+  changes.
+- `/dx-harness:dx-design-feedback` files a GitHub issue on the harness repo
+  the moment something about the harness itself confuses you, even mid-task.
+  Confusion is a bug report, not a you-problem.
+- `/dx-harness:dx-design-research-brief` writes a research plan that aligns a
+  study before a participant is recruited.
+- The **design reviewer** (`dx-design-reviewer`) is an agent, not a command:
+  after `dx-design-make` builds something, a separate agent grades the result
+  against what you asked for, then re-checks each fix. The builder never
+  marks its own homework.
+
+## Renamed from
+
+The family was restructured under
+[the design skills spec](https://github.com/transformteamsg/dx-harness/issues/28).
+If you know the old names:
+
+| Old | New |
+| --- | --- |
+| `dx-start` | `dx-design` |
+| `dx-design` | `dx-design-make` |
+| `dx-critique` | `dx-design-critique` |
+| `dx-copy` · `dx-polish` · `dx-motion` · `dx-flow` | `dx-design-copy` · `dx-design-polish` · `dx-design-motion` · `dx-design-flow` |
+| `dx-layout` | `dx-design-pattern` |
+| `dx-standards` | Deleted — ask `dx-design` your rule questions |
+| `dx-setup` | `dx-design-setup` |
+| `dx-git-buddy` | `dx-design-git-helper` |
+| `dx-feedback` | `dx-design-feedback` |
+| `dx-research-brief` | `dx-design-research-brief` |
 
 One deliberate stance carried by every skill: **unwarranted novelty is
 flagged as readily as generic output.** A custom pattern where a stack

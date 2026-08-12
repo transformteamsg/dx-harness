@@ -4,9 +4,9 @@ import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "TFX Design Standard", template: "%s — TFX Design Standard" },
+  title: { default: "dx-harness", template: "%s — dx-harness" },
   description:
-    "How TransformX designs the Teacher & School portfolio: principles, checkable standards, guidelines, foundations, and the AI design harness. For human builders and AI agents.",
+    "The dx-harness design standard: principles, checkable standards, guidelines, foundations, and the design loop the agent runs. For human builders and AI agents.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -18,12 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // Direction contract — kept in emitted markup so the build can be audited.
           dangerouslySetInnerHTML={{
             __html: `
-THESIS: the harness demonstrated in its own material — a print-flat spec sheet for a design loop, refusing the SaaS hero-gradient-and-card-grid arrangement.
-OWN-WORLD: near-black canvas ruled with hairline grid; oversized white grotesk display; flat vivid tape strips (pink/yellow/green/blue, plus orange — the loop's five-phase truth forces a fifth tape colour) carrying mono sentence-case phase labels (caps traded for TYP-4 compliance); no gradients, no glows, no cards.
-STORY: a designer arrives skeptical, reads "design skills your agent runs", sees the loop phases as labeled tape, copies two install commands, leaves able to say what the loop does.
-FIRST VIEWPORT: landing nav (wordmark left; Quick start / Docs / GitHub right); giant two-line headline crossed by phase-label tape strips; one-line lede; terminal block with the two commands and the single primary Copy action.
-FORM: pinned by brief — Hex×Grafana identity system (user-supplied reference); no seed roll, pinned direction beats it.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
+THESIS: the machine explained where the visitor asks "how does this work?" — the token-drawn architecture diagram is the hero's demonstration; the before/after demo is the proof below it.
+OWN-WORLD: two deliberate worlds (docs/decisions/landing-dark.md, user-pinned): a dark Linear-register landing (near-black layered surfaces, hairline borders, the TW blue ramp as the single accent, no gradients/glows/cyan-on-dark) and light docs (docs.stripe.com register); the demo frame is pinned light because it depicts the light Teacher Workspace product.
+STORY: an engineer whose agent ships slop arrives skeptical, copies two install commands in the first viewport, reads the promise (intent without loss), traces their ask through the orchestrator diagram (one router, one builder with a human gate), recognizes their own PR in the demo.
+FIRST VIEWPORT: landing nav (quincunx wordmark left; Quick start / Docs / GitHub right); hook headline ("Your agent already writes the code. Now it holds the bar."); install panel with the single primary Copy action.
+FORM: hook + install → how it works (architecture diagram) → proof (SlopCompare) → path (skill groups) → close (no-CLI); diagram phases render from components/diagrams/loop-data.ts, the contract-of-record.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the verify verdict, the decision record, and DESIGN.md.
 `,
           }}
         />

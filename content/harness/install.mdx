@@ -1,12 +1,12 @@
 ---
 title: Install
-description: Two commands put the skills, the evaluator, and the control catalog in your Claude Code session.
+description: Two commands put the skills, the design reviewer, and the control catalog in your Claude Code session.
 status: settled
 ---
 
 The harness ships as a Claude Code plugin. Install it once per product repo;
 everyone who opens Claude Code in that repo gets the same skills, the same
-evaluator, and the same control catalog.
+design reviewer, and the same control catalog.
 
 ## Before you start
 
@@ -25,14 +25,14 @@ Run these two commands in your Claude Code session:
 
 The first registers the harness repository as a plugin marketplace. The
 second installs the `dx-harness` plugin from it: the [skills](/harness/skills),
-the evaluator agent, and the [control catalog](/standards/catalog). The catalog
+the design reviewer agent, and the [control catalog](/standards/catalog). The catalog
 ships inside the plugin, so your repo never carries its own copy of the
 standard.
 
 ## Check it worked
 
-Type `/dx-harness:dx-start`. It orients you and routes you to the right skill;
-if it responds, the install worked.
+Type `/dx-harness:dx-design`. It asks what you want and routes you to the
+right skill; if it responds, the install worked.
 
 If nothing happens:
 
@@ -42,12 +42,12 @@ If nothing happens:
 
 ## Set up your machine, once per person
 
-The plugin is per-repo; three tools are per-person. Run `/dx-harness:dx-start` once and
-the setup skill checks and installs them:
+The plugin is per-repo; three tools are per-person. Run
+`/dx-harness:dx-design-setup` once and it checks and installs them:
 
 - **agent-browser** — captures the screenshots the verify phase grades.
-- **`gh`, authenticated** — lets `/dx-harness:dx-feedback` file an issue the moment the
-  harness confuses you.
+- **`gh`, authenticated** — lets `/dx-harness:dx-design-feedback` file an issue the
+  moment the harness confuses you.
 - **Python with PyYAML** — runs the deterministic check scripts.
 
 ## Stay current

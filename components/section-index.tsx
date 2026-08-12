@@ -22,7 +22,7 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
       )}
       <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">{doc.title}</h1>
       {doc.description && (
-        <p className="mt-3 text-lg text-muted-foreground">{doc.description}</p>
+        <p className="mt-3 text-base text-muted-foreground">{doc.description}</p>
       )}
       {doc.content.trim() && (
         <div className="prose mt-4 text-base">

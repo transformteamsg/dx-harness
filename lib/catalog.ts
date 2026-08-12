@@ -132,7 +132,7 @@ export function getPublicCatalogYaml(): string {
   const updated = doc.getIn(["meta", "updated"], true);
   if (updated instanceof Scalar) updated.type = Scalar.QUOTE_DOUBLE;
   const header = [
-    "# TFX Design Standard — control catalog",
+    "# dx-harness — control catalog",
     "# A control is one verifiable statement. If you can't check it, it's not a standard.",
     "# Tiers: L0 = non-negotiable (no waiver) · L1 = mandatory (documented waiver) · L2 = recommended (inline rationale)",
     "# Control rationale and pass/fail examples: /standards/catalog/<id> (append .md for Markdown)",

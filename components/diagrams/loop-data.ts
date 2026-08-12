@@ -21,7 +21,7 @@ export const LOOP_PHASES: LoopPhase[] = [
     label: "Intent",
     note: "written as a contract",
     detail:
-      "Purpose, audience, page type, and done-criteria, written down as a contract. Every phase after this one answers to that text — the evaluator grades the finished work against it.",
+      "Purpose, audience, page type, and done-criteria, written down as a contract. Every phase after this one answers to that text — the design reviewer grades the finished work against it.",
     you: "Say what you mean and what done looks like.",
   },
   {
@@ -57,20 +57,20 @@ export const LOOP_PHASES: LoopPhase[] = [
     id: "verify",
     n: 5,
     label: "Verify",
-    note: "checks, then an evaluator",
+    note: "checks, then a design review",
     gate: "waivers",
     gateLabel: "gate on waivers",
     detail:
-      "Deterministic checks run first: L0 failures block, L1 failures loop back. Screenshots at 360, 768, and 1280 stand as evidence, and a separate evaluator agent grades the judgment controls against your contract. The generator never grades its own work.",
+      "Deterministic checks run first: L0 failures block, L1 failures loop back. Screenshots at 360, 768, and 1280 stand as evidence, and a separate design reviewer agent grades the judgment controls against your contract. It re-checks each fix from new screenshots; the builder never grades its own work.",
     you: "Decide on any waivers the plan proposed.",
   },
   {
-    id: "ratchet",
+    id: "rule-proposal",
     n: 6,
-    label: "Ratchet",
+    label: "Rule proposal",
     note: "lessons kept",
     detail:
-      "A decision record is written. Defects no control covered become proposed controls; solved problems become tagged, searchable solution records.",
+      "A run record is written on the surface's design ticket. Defects no control covered become rule proposals; solved problems become tagged, searchable solution records.",
     you: "Nothing — the loop files what it learnt.",
   },
 ];

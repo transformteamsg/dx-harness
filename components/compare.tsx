@@ -49,7 +49,12 @@ function Violation({ children }: { children: string }) {
    is the minimum, so nothing clips at narrow widths. */
 function BeforePanel() {
   return (
-    <div className="relative flex min-h-full flex-col bg-(--demo-slop-surface)">
+    <div
+      role="group"
+      aria-label="Before: default AI output (the anti-specimen)"
+      className="relative flex min-h-full flex-col bg-(--demo-slop-surface)"
+    >
+      {/* dx-waive CNT-2 reason="quarantined anti-specimen: 'Communication Hub' is the invented …Hub name the control bans, shown as the exhibit" */}
       {/* dx-waive SLP-1 reason="quarantined anti-specimen: the before panel of the standards demo" */}
       <div
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
@@ -84,6 +89,7 @@ function BeforePanel() {
             <span className="text-sm text-(--demo-slop-ink)">4 classes · 127 parents</span>
           </div>
         </div>
+        {/* dx-waive SLP-5 reason="quarantined anti-specimen: the icon-tile grid is the exhibited default, same waiver family as the panel's other violations" */}
         <div className="grid shrink-0 grid-cols-3 gap-2">
           {SLOP_TILES.map((tile) => (
             <div
@@ -129,6 +135,8 @@ function BeforePanel() {
 function AfterPanel() {
   return (
     <div
+      role="group"
+      aria-label="After: the same screen on standard"
       className="absolute inset-0 overflow-hidden bg-surface"
       style={{
         clipPath:
@@ -167,13 +175,8 @@ function AfterPanel() {
   );
 }
 
-/* variant="canvas" adapts the figure chrome (frame border, hint/caption ink,
-   link colour) to the landing's dark world so the caption text keeps AA on
-   --canvas (A11Y-1); the specimen panels themselves render unchanged — a lit
-   slide on the dark ground. Recorded CMP-7 variant, not an override. */
-export function SlopCompare({ variant = "docs" }: { variant?: "docs" | "canvas" } = {}) {
-  const onCanvas = variant === "canvas";
-  const captionInk = onCanvas ? "text-canvas-muted" : "text-muted-foreground";
+export function SlopCompare() {
+  const captionInk = "text-muted-foreground";
   const id = useId();
   const reduced = useReducedMotionSafe();
   const frameRef = useRef<HTMLDivElement | null>(null);
@@ -231,7 +234,11 @@ export function SlopCompare({ variant = "docs" }: { variant?: "docs" | "canvas" 
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
            the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        className={`relative aspect-[16/10] w-full max-w-[760px] rounded-lg border bg-surface [clip-path:inset(0_round_var(--radius))] ${onCanvas ? "border-canvas-line" : "border-border"}`}
+        /* The demo inherits the page's token world (dark on the landing) —
+           the panels are drawn from semantic + demo-slop tokens, and the
+           landing-dark scope re-inks both (user decision 2026-08-12,
+           reversing the earlier pinned-light call). */
+        className="relative aspect-[16/10] w-full max-w-[760px] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
         style={{ "--exposure": "50%" } as CSSProperties}
       >
         <BeforePanel />
@@ -272,7 +279,7 @@ export function SlopCompare({ variant = "docs" }: { variant?: "docs" | "canvas" 
         standard. Every chip is a control ID from the{" "}
         <Link
           href="/standards/catalog"
-          className={onCanvas ? "text-tape-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)" : "text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"}
+          className="text-tw-blue-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
         >
           catalog
         </Link>

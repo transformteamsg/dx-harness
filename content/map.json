@@ -40,7 +40,7 @@
   },
   "harness": {
     "label": "Harness",
-    "slugs": ["install", "loop", "skills", "tools", "on-ramp"]
+    "slugs": ["install", "loop", "skills", "tools"]
   },
   "governance": {
     "label": "Governance",

@@ -66,7 +66,7 @@ const SPOTS: LabelSpot[] = [
   { anchor: "end", x: 474, labelY: 364, chipY: 381, chipW: 76, noteY: 400 }, // Plan
   { anchor: "middle", x: C, labelY: 447, noteY: 462 }, // Implement (bottom)
   { anchor: "start", x: 6, labelY: 364, chipY: 381, chipW: 104, noteY: 400 }, // Verify
-  { anchor: "start", x: 6, labelY: 112, noteY: 127 }, // Ratchet (top left)
+  { anchor: "start", x: 6, labelY: 112, noteY: 127 }, // Rule proposal (top left)
 ];
 
 /* ── Ambient choreography (plan 017): one revolution ≈ 36s, dwelling at the

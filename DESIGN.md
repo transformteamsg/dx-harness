@@ -1,33 +1,27 @@
 ---
 name: dx-harness website
-description: Print-flat dark landing world (Hex×Grafana direction) over a light, calm docs shell — one repo, two deliberately separate surfaces.
+description: Two deliberate worlds — a dark Linear-register landing and light, calm docs — sharing one token vocabulary, with TW blue as the single accent in both.
 colors:
-  canvas: "#101012"
-  canvas-raised: "#17171a"
-  canvas-ink: "#fafafa"
-  canvas-muted: "#a6a6ad"
-  canvas-line: "#26262b"
-  canvas-line-soft: "#1c1c20"
-  tape-pink: "#f572da"
-  tape-yellow: "#f7c948"
-  tape-green: "#8fd94d"
-  tape-blue: "#6cb8f5"
-  tape-orange: "#f5863d"
-  tape-ink: "#131316"
-  docs-background: "#fafafa"
-  docs-foreground: "#18181b"
+  landing-background: "#0a0a0c"
+  landing-surface: "#131316"
+  landing-foreground: "#f4f4f5"
+  landing-muted-foreground: "#a7a7b0"
+  landing-border: "#26262c"
   tw-blue: "#0064ff"
+  tw-blue-text-dark: "#6ea3ff"
+  docs-background: "#fafafa"
+  docs-surface: "#ffffff"
+  docs-foreground: "#18181b"
 typography:
   display:
     fontFamily: "Plus Jakarta Sans Variable, system-ui, sans-serif"
-    fontSize: "clamp(3.75rem, 8vw, 8rem)"
-    fontWeight: 800
-    lineHeight: 0.95
-    letterSpacing: "-0.03em"
+    fontSize: "clamp(2.25rem, 5vw, 3.75rem)"
+    fontWeight: 600
+    letterSpacing: "-0.01em"
   heading:
     fontFamily: "Plus Jakarta Sans Variable, system-ui, sans-serif"
-    fontSize: "clamp(1.875rem, 4vw, 3rem)"
-    fontWeight: 700
+    fontSize: "clamp(1.5rem, 3vw, 1.875rem)"
+    fontWeight: 600
     letterSpacing: "-0.01em"
   body:
     fontFamily: "Inter Variable, system-ui, sans-serif"
@@ -39,119 +33,128 @@ typography:
     fontSize: "12px"
     letterSpacing: "0.08em"
 spacing:
-  cell: "72px"
-  section: "144px"
+  section-y: "64px"
+  section-y-lg: "80px"
 rounded:
-  none: "0px"
-  docs: "8px"
+  panel: "0.5rem"
 components:
   button-primary:
-    backgroundColor: "{colors.canvas-ink}"
-    textColor: "{colors.tape-ink}"
-    typography: "{typography.mono}"
-    rounded: "{rounded.none}"
+    backgroundColor: "{colors.tw-blue}"
+    textColor: "#ffffff"
+    rounded: "6px"
     height: "44px"
-  button-primary-hover:
-    backgroundColor: "{colors.tape-yellow}"
-  tape-chip:
-    backgroundColor: "{colors.tape-pink}"
-    textColor: "{colors.tape-ink}"
-    typography: "{typography.mono}"
-    rounded: "{rounded.none}"
-    padding: "4px 8px"
-  terminal-block:
-    backgroundColor: "{colors.canvas-raised}"
-    textColor: "{colors.canvas-ink}"
-    rounded: "{rounded.none}"
+  diagram-node:
+    border: "1px solid {colors.landing-border}"
+    rounded: "{rounded.panel}"
+    background: "none (panel surface) or --muted one step up"
 ---
 
 ## Overview
 
-The repo hosts two surfaces with deliberately separate visual worlds:
+The repo hosts two surfaces that share one token **vocabulary** but two visual
+**worlds** (decision: `docs/decisions/landing-dark.md`, 2026-08-11):
 
-- **Landing** (`app/(landing)/`): the marketing surface for the dx-harness
-  plugin. A print-flat spec sheet on a near-black ruled canvas — oversized
-  extrabold display type crossed by flat vivid "tape" strips carrying mono
-  phase labels. Pinned direction: Hex's Grafana identity work. No gradients,
-  no glows, no cards, no shadows; hierarchy comes from scale, weight, and the
-  five tape colours.
-- **Docs** (`app/(docs)/`): the TFX Design Standard rendering — light, calm,
-  sidebar-navigated, governed by the incumbent token set in `app/globals.css`
-  (`--background`, `--foreground`, section inks, shadcn compatibility layer).
-  This file's frontmatter records the landing world; the docs world's
-  normative source stays `app/globals.css` and the standard itself.
+- **Landing** (`app/(landing)/`): dark, Linear-register marketing surface for
+  the dx-harness plugin. The `landing-dark` scope in `app/globals.css` flips
+  only the semantic tokens (`--background`, `--surface`, inks, borders) on the
+  landing shell; component code stays token-only (TOK-1). Storyline: hook +
+  install → how it works (the architecture diagram) → before/after demo →
+  grouped skills → No-CLI close.
+- **Docs** (`app/(docs)/`): the TFX Design Standard rendering, unchanged in
+  the light `:root` world (docs.stripe.com register). The landing→docs
+  transition is a deliberate dark→light jump, recorded as a tradeoff.
 
 Everything on both surfaces must pass the repo's own control catalog
 (`plugins/dx-harness/standards/catalog.yaml`) — the prebuild gates enforce it.
 
 ## Colors
 
-Landing colour strategy: **full palette on a dark ground**. The canvas trio
-(`canvas`, `canvas-raised`, `canvas-line`) is the surface; the five tape
-colours are the only saturation and each is bound to a loop phase — pink =
-intent, yellow = diverge, green = plan gate, blue = implement, orange =
-verify. Tape colours always render as flat fills with `tape-ink` text (AA at
-12px mono). `canvas-muted` is the only secondary ink on canvas (7:1). Never
-mix docs tokens onto the landing or tape tokens into docs.
+Single-accent strategy in both worlds: TW blue is the only saturation in page
+chrome. On dark, the raw brand blue is **fill-only** (button, focus outlines —
+about 3.5:1, non-text); text and links use `--tw-blue-text` (#6ea3ff), a
+lighter step of the same ramp that clears AA on near-black (COL-1 "or its
+ramp"). SLP-1 binds hard on dark: no purple/violet, no cyan-on-dark theming,
+no glow shadows — elevation is surface steps and hairline borders. The
+quincunx brand mark stays the one polychrome element. The `--demo-slop-*`
+tokens exist only to draw the demo's "before" specimen.
+
+The before/after demo renders in the dark world with the rest of the landing
+(user decision 2026-08-12, reversing the earlier pinned-light call): the
+`landing-dark` scope carries dark functional text steps (`--success`
+`#71d083`, `--danger` `#ff9592` — ≥8:1 on their subtle tints) and a dark
+anti-specimen ink pair (`--demo-slop-surface` `#1c1728`, `--demo-slop-ink`
+`#c4b5fd` ≈ 9.5:1). The `landing-light` scope remains available for any
+future surface that must depict the light product.
 
 ## Typography
 
-Three voices, all bound by the catalog (TYP-1): Plus Jakarta Sans for display
-(800 on the h1, 700 on section headings, tracking −0.03em to −0.01em), Inter
-for body (1.5–1.6 line-height, ≤58ch measure), and the sanctioned mono
-(`--font-mono`) for code, commands, tape labels, and skill names — 12px floor,
-+0.08em tracking, sentence case (TYP-4 bans all-caps; the reference's caps
-were deliberately traded away).
+Three voices, all bound by the catalog (TYP-1, weights 400/500/600 only):
+Plus Jakarta Sans 600 for display and headings (tracking −0.01em,
+`text-wrap: balance`), Inter for body (1.5–1.6 line-height, ≤62ch measure),
+and the sanctioned mono (`--font-mono`) for code, commands, phase badges,
+diagram node names, and skill names — 12px floor, +0.08em tracking, sentence
+case (TYP-4 bans all-caps).
 
 ## Layout
 
-The landing is ruled by a 72px grid drawn from `--canvas-line-soft`; the grid
-is a drawing surface, not wallpaper — section paddings sit on the rule
-(72/144px) and the hero tape strips register to it (top 72/144/216px inside
-the hero block). Content column is `max-w-[1200px]`; single column throughout;
-lists and description lists, never card grids (SLP-5/11). Tape strips are
-finite, staggered, full-bleed-clipped bands that physically cross the display
-type — never "near" it. At `max-sm` the third strip drops and the second
-crosses the headline mid-line.
+Content column is `max-w-[1080px]`; single column throughout; lists and
+description lists, never identical card grids (SLP-5/11). Section rhythm is
+64–80px vertical padding with full-width hairline separators. The hero stacks
+hook → install; the architecture diagram is the second section's full panel;
+everything reflows cleanly at 320px (LAY-2).
 
-## Elevation & Depth
+## The architecture diagram
 
-None on the landing: flat fills and 1px `canvas-line` hairlines only. The
-docs surface keeps its own hairline-border convention. No shadows, no glass,
-no glow anywhere.
+`components/landing/harness-diagram.tsx` — the "how it works" asset. Static,
+token-drawn, semantic HTML (real text, no image): You → `dx-design`
+orchestrator (six phase chips from `components/diagrams/loop-data.ts`, the
+contract-of-record) → dispatched skill chips; a dashed
+"planned" treatment for unshipped nodes with a visible legend (CNT-4); the
+context band (Control catalog L0/L1/L2, abstract↔deterministic spectrum →
+primitives → DESIGN.md). Connector lines and arrowheads are `aria-hidden`
+decoration; labels are real text. Boxes are diagram notation, not cards
+(SLP-11). Nothing moves (MOT-3).
 
-## Shapes
+## Elevation & depth
 
-Landing chrome is square-cornered (radius 0) — buttons, chips, terminal
-block. Docs keep the incumbent `--radius: 0.5rem` family. The wordmark glyph
-is five 6px squares in a quincunx on a 3×3 grid — one square per loop phase
-(pure geometry, not an icon).
+On dark: no shadows, no glows — separation is hairline `--border` and the
+surface/muted step. One `shadow-sm` remains on the demo's light frame chrome
+where it reads as part of the depicted product.
+
+## Motion
+
+Two authored moments only, both reduced-motion-safe (A11Y-5): the hero's
+one-time fade-up (`hero-enter`, `--motion-base`/`--ease-out`) and the demo's
+one-time divider nudge (62→50). Everything else is `--motion-fast` hover
+tints. Values come from the motion tokens (MOT-2); interface motion ≤300ms
+(MOT-1).
 
 ## Components
 
-- **Primary action** (one per page, CMP-5): white fill, `tape-ink` mono
-  label, ≥44px tall, hover flips to `tape-yellow`. The landing's only primary
-  is "Copy commands"; its async states (copied / failed) announce via a
-  polite live region, never a focus move (A11Y-11).
-- **Tape strip**: decorative `aria-hidden` band, mono 12px on a tape fill,
-  content repeated to overflow; entrance is the page's single authored motion
-  (600ms ease-out slide, removed under reduced motion).
-- **Tape chip**: the phase label unit in lists — same anatomy as a strip,
-  `w-fit`.
-- **Terminal block**: `canvas-raised` panel, hairline border, mono 14px at
-  1.6, header row with a mono label and the primary action.
-- **Skill list**: `<dl>` rows separated by hairlines; 10px tape-coloured
-  square markers for the design set, outlined muted squares for the quieter
-  engineering set.
+- **Primary action** (one per page, CMP-5): TW-blue fill, white label
+  (pinned via `--primary-foreground` in the dark scope), ≥44px tall. The
+  landing's only primary is "Copy commands"; its async states announce via a
+  polite live region, never a focus move (A11Y-11); "failed" holds until the
+  next attempt.
+- **Install panel**: `--surface` panel, hairline border, `rounded-lg`; mono
+  header label + the primary action; `pre` region on `--muted`,
+  keyboard-focusable.
+- **SlopCompare**: the standards demo, pinned light (`landing-light`).
+- **Phase chips / skill chips**: mono 12px on `--muted`, `rounded-md`;
+  planned chips are dashed-border with a plain "planned" tag.
+- **Skill list**: `<dl>` rows separated by hairlines, grouped by moment of
+  need, inside titled group panels.
 
-## Do's and Don'ts
+## Do's and don'ts
 
-- Do keep the landing's saturation exclusively in the five tape colours;
-  a sixth accent is a system change, not a tweak.
-- Do register new landing elements to the 72px rule.
-- Don't reintroduce caps, gradients, glows, cards, or shadows on the landing;
-  don't soften the tape-over-headline overlap.
-- Don't let the two worlds bleed: docs tokens stay out of `app/(landing)/`,
-  canvas/tape tokens stay out of `app/(docs)/`.
+- Do keep chrome saturation exclusively in the TW blue ramp; a second accent
+  is a system change, not a tweak.
+- Do lead with the machine: the diagram and the demo outrank any decorative
+  treatment.
+- Don't reintroduce gradients, glows, cyan-on-dark, or card grids; don't move
+  load-bearing copy into `aria-hidden` decoration.
+- Landing-only styling stays in `app/(landing)/` + the `landing-dark` /
+  `landing-light` scopes in `app/globals.css`; keep the two scope blocks in
+  sync with `:root` when light values change.
 - The catalog outranks this file: where a control and this prose disagree,
   the control wins and this file gets corrected.

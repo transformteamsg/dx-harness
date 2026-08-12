@@ -1,119 +1,43 @@
-import Link from "next/link";
 import { SlopCompare } from "@/components/compare";
 import { CopyCommands } from "@/components/landing/copy-commands";
-import {
-  DESIGN_SKILLS,
-  ENGINEERING_SKILLS,
-  INSTALL_COMMANDS,
-  PHASES,
-  type Skill,
-} from "@/components/landing/data";
+import { NoCliDialog } from "@/components/landing/no-cli-dialog";
+import { HarnessDiagram } from "@/components/landing/harness-diagram";
+import { INSTALL_COMMANDS, SKILL_GROUPS } from "@/components/landing/data";
 
 export const metadata = {
-  title: "dx-harness — design skills your agent runs",
+  /* Absolute: the root template suffixes "— dx-harness", which would double
+     the name on its own homepage. */
+  title: { absolute: "dx-harness — design skills your agent runs" },
   description:
-    "A Claude Code plugin that carries a design loop, a checkable standards catalog, and an evaluator into your agent. Design skills first; the engineering workflow rides along.",
+    "A Claude Code plugin that carries a design loop, a checkable standards catalog, and a design reviewer into your agent. Design skills first; the engineering workflow rides along.",
   alternates: { types: { "text/markdown": "/index.md" } },
 };
 
-const TAPE_BG: Record<string, string> = {
-  pink: "bg-tape-pink",
-  yellow: "bg-tape-yellow",
-  green: "bg-tape-green",
-  blue: "bg-tape-blue",
-  orange: "bg-tape-orange",
-};
-
-function TapeStrip({
-  tape,
-  className,
-  children,
-}: {
-  tape: string;
-  className?: string;
-  children: string;
-}) {
-  return (
-    <div
-      aria-hidden
-      className={`tape-strip pointer-events-none absolute overflow-hidden whitespace-nowrap py-1.5 font-mono text-xs font-medium tracking-[0.08em] text-tape-ink ${TAPE_BG[tape]} ${className ?? ""}`}
-    >
-      {Array.from({ length: 12 }, () => children).join("   ")}
-    </div>
-  );
-}
-
-function SkillList({
-  skills,
-  quiet,
-  label,
-}: {
-  skills: Skill[];
-  quiet?: boolean;
-  label: string;
-}) {
-  const tapes = ["pink", "yellow", "green", "blue", "orange"];
-  return (
-    <dl aria-label={label} className="grid gap-x-12 sm:grid-cols-2">
-      {skills.map((skill, i) => (
-        <div
-          key={skill.name}
-          className="flex gap-3 border-t border-canvas-line py-4"
-        >
-          <span
-            aria-hidden
-            className={`mt-1.5 size-2.5 shrink-0 ${quiet ? "border border-canvas-muted" : TAPE_BG[tapes[i % tapes.length]]}`}
-          />
-          <div>
-            <dt className={`font-mono text-sm font-semibold ${quiet ? "text-canvas-muted" : "text-canvas-ink"}`}>
-              {skill.name}
-            </dt>
-            <dd className="mt-1 text-sm leading-relaxed text-canvas-muted">
-              {skill.text}
-            </dd>
-          </div>
-        </div>
-      ))}
-    </dl>
-  );
-}
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)";
 
 export default function Landing() {
   return (
-    <div className="landing-grid-bg">
-      {/* ── Hero — the single focal region ── */}
-      <section className="relative overflow-hidden border-b border-canvas-line">
-        <div className="mx-auto w-full max-w-[1200px] px-6 pt-[72px] pb-[72px] sm:pt-[144px] sm:pb-[144px]">
-          {/* dx-waive TYP-1 reason="landing display weights 700/800 (family unchanged: Plus Jakarta Sans) — the design owner pinned the Hex×Grafana direction, whose oversized grotesk display needs the heavier cut; approved by reza.ilmi (design owner), 2026-08-05" */}
-          <div className="relative">
-            <h1 className="font-display text-6xl leading-[0.95] font-extrabold tracking-[-0.03em] text-canvas-ink sm:text-8xl lg:text-9xl">
-              Design
-              <br />
-              to the bar.
-            </h1>
-            <TapeStrip tape="pink" className="top-[72px] left-[calc(50%-58vw)] w-[76vw] max-sm:top-[26%]">
-              Intent → Diverge → Plan gate → Implement → Verify
-            </TapeStrip>
-            <TapeStrip tape="yellow" className="top-[144px] tape-strip-2 left-[calc(50%-24vw)] w-[74vw] max-sm:top-[104%] max-sm:w-[86vw]">
-              Your agent + the catalog = ships on standard
-            </TapeStrip>
-            <TapeStrip tape="green" className="top-[216px] tape-strip-3 left-[calc(50%-52vw)] w-[64vw] max-sm:hidden">
-              70 checkable controls · a human gate · an evaluator that never grades its own work
-            </TapeStrip>
-          </div>
-          <p className="mt-10 max-w-[58ch] text-lg leading-relaxed text-canvas-muted">
-            dx-harness is a Claude Code plugin of design skills your agent runs.
-            It carries a design loop that stops for your approval, a checkable
-            standards catalog, and an evaluator that grades what ships. The
-            engineering workflow rides along.
+    <div>
+      {/* ── Hook + install — the single focal region (LAY-7) ── */}
+      <section className="border-b border-border">
+        <div className="hero-enter mx-auto w-full max-w-[1080px] px-6 pt-16 pb-16 sm:pt-24 sm:pb-20">
+          <h1 className="max-w-[24ch] font-display text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
+            Your agent already writes the code. Now it holds the bar.
+          </h1>
+          <p className="mt-6 max-w-[58ch] text-lg leading-relaxed text-pretty text-muted-foreground">
+            dx-harness is a Claude Code plugin of design skills your agent
+            runs. It carries a design loop that stops for your approval, a
+            checkable standards catalog, and a design reviewer that grades
+            what ships.
           </p>
 
-          {/* ── Quick start — the one primary action ── */}
-          <div id="quick-start" className="mt-12 max-w-[640px] scroll-mt-24">
-            <div className="border border-canvas-line bg-canvas-raised">
-              <div className="flex items-center justify-between gap-4 border-b border-canvas-line px-4 py-2.5">
-                <span className="font-mono text-xs font-medium tracking-[0.08em] text-canvas-muted">
-                  Claude Code — two commands
+          {/* ── Quick start — the one primary action (CMP-5) ── */}
+          <div id="quick-start" className="mt-10 max-w-[640px] scroll-mt-24">
+            <div className="rounded-lg border border-border bg-surface">
+              <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-2.5">
+                <span className="font-mono text-xs font-medium tracking-[0.08em] text-muted-foreground">
+                  Claude Code<span className="hidden sm:inline"> — two commands</span>
                 </span>
                 <CopyCommands commands={INSTALL_COMMANDS} />
               </div>
@@ -121,130 +45,97 @@ export default function Landing() {
                 tabIndex={0}
                 role="region"
                 aria-label="Install commands"
-                className="overflow-x-auto px-4 py-4 font-mono text-sm leading-[1.6] text-canvas-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)"
+                className={`overflow-x-auto rounded-b-lg bg-muted px-4 py-4 font-mono text-sm leading-[1.6] text-foreground ${focusRing}`}
               >
                 <code>{INSTALL_COMMANDS}</code>
               </pre>
             </div>
-            <p className="mt-3 text-sm text-canvas-muted">
-              Then type <span className="font-mono text-canvas-ink">/dx</span> and
-              every skill surfaces.{" "}
-              <a
-                href="#no-cli"
-                className="underline underline-offset-4 hover:text-canvas-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)"
-              >
-                No command line?
-              </a>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Then type <span className="font-mono text-foreground">/dx</span> and
+              every skill surfaces. <NoCliDialog triggerClassName={focusRing} />
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── The loop ── */}
-      <section className="border-b border-canvas-line">
-        <div className="mx-auto w-full max-w-[1200px] px-6 py-[72px] sm:py-[144px]">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-canvas-ink sm:text-5xl">
-            One loop, five phases.
+      {/* ── How it works — the promise, then the machine that keeps it ── */}
+      <section>
+        <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            Intent without loss.
           </h2>
-          <p className="mt-4 max-w-[58ch] text-canvas-muted">
-            The harness makes one promise: intent without loss. What you mean is
-            written down first, and every phase after is graded against it,
-            70 checkable controls deep.
+          <p className="mt-4 max-w-[62ch] text-lg leading-relaxed text-pretty text-muted-foreground">
+            The loop writes what you mean into a contract, then grades every
+            phase against it. Here is the machine that keeps that promise —
+            one orchestrator, specialised passes, and a control catalog
+            underneath it all.
           </p>
-          <ol className="mt-10">
-            {PHASES.map((phase) => (
-              <li
-                key={phase.key}
-                className="grid items-center gap-x-6 gap-y-2 border-t border-canvas-line py-5 last:border-b sm:grid-cols-[10rem_1fr]"
+          <div className="mt-8">
+            <HarnessDiagram />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Proof — the standard, demonstrated ── */}
+      <section className="border-t border-border">
+        <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            You&rsquo;ve seen this PR.
+          </h2>
+          <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
+            Your agent ships in minutes, and every review re-litigates the same
+            arguments about what good looks like. Style guides don&rsquo;t fix
+            this, because agents can&rsquo;t read a PDF and reviewers
+            can&rsquo;t check a vibe. The catalog names each failure — and a
+            check catches it before you do.
+          </p>
+          <SlopCompare />
+        </div>
+      </section>
+
+      {/* ── The path — skill groups as titled panels ── */}
+      <section className="border-t border-border">
+        <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            Twenty-one skills, one prefix.
+          </h2>
+          <p className="mt-3 max-w-[62ch] leading-relaxed text-muted-foreground">
+            Skill names are exact; type them after{" "}
+            <span className="font-mono text-sm text-foreground">/dx-harness:</span>.
+          </p>
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+            {SKILL_GROUPS.map((group) => (
+              <section
+                key={group.heading}
+                className="rounded-lg border border-border bg-surface"
               >
-                <span
-                  className={`inline-flex w-fit px-2 py-1 font-mono text-xs font-semibold tracking-[0.08em] ${TAPE_BG[phase.tape]} text-tape-ink`}
-                >
-                  {phase.label}
-                </span>
-                <p className="text-sm leading-relaxed text-canvas-muted sm:text-base">
-                  {phase.text}
-                </p>
-              </li>
+                <div className="border-b border-border px-5 py-4">
+                  <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+                    {group.heading}
+                  </h3>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{group.lede}</p>
+                </div>
+                <dl aria-label={group.heading} className="px-5 pb-2">
+                  {group.skills.map((skill) => (
+                    <div
+                      key={skill.name}
+                      className="border-t border-border py-3.5 first:border-t-0"
+                    >
+                      <dt className="font-mono text-sm font-medium text-foreground">
+                        {skill.name}
+                      </dt>
+                      <dd className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                        {skill.text}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
             ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* ── What it ships ── */}
-      <section className="border-b border-canvas-line">
-        <div className="mx-auto w-full max-w-[1200px] px-6 py-[72px] sm:py-[144px]">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-canvas-ink sm:text-5xl">
-            Thirteen design skills.
-          </h2>
-          <p className="mt-4 max-w-[58ch] text-canvas-muted">
-            The catalog and the evaluator travel inside the plugin, so any repo
-            you open holds the same bar. Skill names are exact; type them after{" "}
-            <span className="font-mono text-canvas-ink">/dx-harness:</span>.
-          </p>
-          <div className="mt-10">
-            <SkillList skills={DESIGN_SKILLS} label="Design skills" />
-          </div>
-
-          <h3 className="mt-16 font-display text-xl font-bold tracking-tight text-canvas-ink">
-            And the engineering workflow.
-          </h3>
-          <p className="mt-2 max-w-[58ch] text-sm text-canvas-muted">
-            Issue grooming to code review — eight skills that carry a change from
-            idea to merged PR, alongside the design set.
-          </p>
-          <div className="mt-6">
-            <SkillList skills={ENGINEERING_SKILLS} quiet label="Engineering skills" />
           </div>
         </div>
       </section>
 
-      {/* ── The bar, shown ── */}
-      <section className="border-b border-canvas-line">
-        <div className="mx-auto w-full max-w-[1200px] px-6 py-[72px] sm:py-[144px]">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-canvas-ink sm:text-5xl">
-            The bar, shown.
-          </h2>
-          <SlopCompare variant="canvas" />
-        </div>
-      </section>
-
-      {/* ── No command line ── */}
-      <section id="no-cli" className="scroll-mt-24">
-        <div className="mx-auto w-full max-w-[1200px] px-6 py-[72px] sm:py-[144px]">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-canvas-ink sm:text-5xl">
-            No command line?
-          </h2>
-          <ol className="mt-8 max-w-[58ch] list-decimal space-y-3 pl-5 text-canvas-muted marker:font-mono marker:text-canvas-muted">
-            <li>
-              In the Claude web app or Desktop, open{" "}
-              <strong className="font-medium text-canvas-ink">Customize → Plugins</strong>.
-            </li>
-            <li>
-              Add a marketplace from the repository{" "}
-              <span className="font-mono text-canvas-ink">transformteamsg/dx-harness</span>.
-            </li>
-            <li>
-              Install <strong className="font-medium text-canvas-ink">dx-harness</strong>{" "}
-              and use any skill by typing{" "}
-              <span className="font-mono text-canvas-ink">/</span> in a chat.
-            </li>
-          </ol>
-          <p className="mt-8 max-w-[58ch] text-sm text-canvas-muted">
-            Working in a repo? Run{" "}
-            <span className="font-mono text-canvas-ink">/dx-harness:dx-setup</span>{" "}
-            once — it checks the per-person tools the loop relies on. The harness
-            is built on the{" "}
-            <Link
-              href="/overview"
-              className="underline underline-offset-4 hover:text-canvas-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tape-yellow)"
-            >
-              TFX Design Standard
-            </Link>
-            , published in full in the docs.
-          </p>
-        </div>
-      </section>
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { allTwins } from "@/lib/markdown-twin";
 export function llmsIndex(): string {
   const { version, waiver_syntax } = getCatalogMeta();
   const lines: string[] = [];
-  lines.push("# TFX Design Standard");
+  lines.push("# dx-harness");
   lines.push("");
   lines.push(
     "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
@@ -29,7 +29,7 @@ export function llmsIndex(): string {
   lines.push("## About");
   lines.push("");
   lines.push(
-    `- TransformX, Teacher & School portfolio, GovTech Singapore (v${version} draft).`,
+    `- The dx-harness design standard (v${version} draft).`,
   );
   lines.push(
     "- Litmus for standards: if you can't check it, it's a principle or guideline, not a standard.",
@@ -53,7 +53,7 @@ export function llmsIndex(): string {
   // Start here: the singleton entry points.
   lines.push("## Start here");
   lines.push("");
-  lines.push("- [TFX Design Standard home](/index.md)");
+  lines.push("- [dx-harness home](/index.md)");
   lines.push("- [Overview](/overview.md)");
   lines.push("- [How to read this standard](/how-to-read.md)");
   lines.push("- [For agents](/for-agents.md)");
@@ -107,7 +107,7 @@ export function llmsIndex(): string {
    catalog projection. */
 export function llmsFull(): string {
   const lines = [
-    "# TFX Design Standard — full Markdown corpus",
+    "# dx-harness — full Markdown corpus",
     "",
     "> Complete corpus generated from the site's Markdown twins. Each source is delimited by its canonical Markdown path.",
     "",
