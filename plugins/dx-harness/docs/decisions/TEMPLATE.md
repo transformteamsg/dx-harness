@@ -76,7 +76,7 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
 
   Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what was
   checked and how. A `script` row names the script/command. `unverified` says why.
-- **Evaluator verdict:** paste the full `dx-evaluator` verdict **verbatim** — a
+- **Evaluator verdict:** paste the full `dx-design-review` verdict **verbatim** — a
   summary here is a defect; this record is the durable artifact.
 
 ## Ratchet

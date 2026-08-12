@@ -438,7 +438,7 @@ failing.
 - Evidence sets are required: widths, states, journey (with a recovery path),
   the Phase-1 inventory checkoff, and the dark-mode N/A rule when the product
   has no dark mode.
-- The evaluator verdict is written by the spawned `dx-evaluator` agent, never by
+- The evaluator verdict is written by the spawned `dx-design-review` agent, never by
   you, and is pasted verbatim into the decision record.
 
 ## Phase 6 — Ratchet

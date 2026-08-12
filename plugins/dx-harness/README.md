@@ -20,7 +20,7 @@ Engineering + design skills for agentic product development. Every skill is name
 
 The design skills orchestrate the DX design loop against a **70-control** standards
 catalog (`standards/`), with deterministic `checks/` and a generator/evaluator split
-(`agents/dx-evaluator.md`). Start with `/dx-harness:dx-start` for orientation and routing.
+(`agents/dx-design-review.md`). Start with `/dx-harness:dx-start` for orientation and routing.
 
 | Skill | What it does |
 |---|---|
