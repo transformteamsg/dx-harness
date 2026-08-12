@@ -2,19 +2,25 @@ import Link from "next/link";
 
 /* Landing shell: its own top navigation, no docs sidebar. The landing runs in
    its own dark token scope (`landing-dark`, docs/decisions/landing-dark.md):
-   near-black layered surfaces, hairline borders, the TW blue ramp as the
-   single accent. Docs keep the light :root world — the boundary is this
-   shell. */
+   near-black layered surfaces, hairline borders, the lime accent (ticket
+   #82; previously the TW blue ramp). Docs keep the light :root world — the
+   boundary is this shell. */
 
 const navLink =
-  "inline-flex min-h-11 items-center px-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-(--motion-fast) hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)";
+  "inline-flex min-h-11 items-center px-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-(--motion-fast) hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
 const footerLink =
-  "min-h-11 inline-flex items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)";
+  "min-h-11 inline-flex items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
 /* The mark: five squares in a quincunx — one per loop phase. Re-inked from
    the docs palette (tw-blue / amber / grass / teal / cyan); the geometry is
-   the brand, the tape colours retired with the dark landing world. */
+   the brand, the tape colours retired with the dark landing world. tw-blue
+   here is the recorded polychrome-mark exception (landing-dark.md), not the
+   landing's accent — it stays as-is under the lime token sheet (ticket #82).
+   NOTE: that sheet also repoints --success-9 to teal-9, which is already
+   --sec-foundations's value — the "grass" and "teal" dots below now render
+   the same hue. Flagged, not fixed here (redesigning the mark is out of
+   scope for a token-value change). */
 function QuincunxMark() {
   return (
     <span aria-hidden className="grid grid-cols-3 gap-[2px]">
@@ -41,7 +47,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
         >
           <Link
             href="/"
-            className="flex min-h-11 items-center gap-2.5 font-display text-lg font-semibold tracking-tight whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+            className="flex min-h-11 items-center gap-2.5 font-display text-lg font-semibold tracking-tight whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
           >
             <QuincunxMark />
             dx-harness

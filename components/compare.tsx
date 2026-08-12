@@ -60,7 +60,7 @@ function BeforePanel() {
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
         style={{ background: SLOP_GRADIENT }}
       >
-        <span className="text-sm text-primary-foreground">Communication Hub</span>
+        <span className="text-sm text-(--demo-slop-foreground)">Communication Hub</span>
         <Violation>SLP-1 gradient palette</Violation>
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
@@ -97,7 +97,7 @@ function BeforePanel() {
               className="flex flex-col items-center gap-1.5 rounded-lg border border-(--demo-slop-border) bg-surface px-1 py-3 text-center shadow-sm"
             >
               <span
-                className="grid size-8 shrink-0 place-items-center rounded-md text-primary-foreground"
+                className="grid size-8 shrink-0 place-items-center rounded-md text-(--demo-slop-foreground)"
                 style={{ background: SLOP_GRADIENT }}
               >
                 <tile.icon className="size-4" aria-hidden />
@@ -109,10 +109,10 @@ function BeforePanel() {
         <div className="mt-auto flex flex-col gap-3">
           {/* dx-waive CMP-5 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-(--demo-slop-foreground) shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Get started!
             </span>
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-(--demo-slop-foreground) shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Learn more
             </span>
             <Violation>CMP-5 two primaries</Violation>
@@ -131,7 +131,9 @@ function BeforePanel() {
 }
 
 /* The same task on standard: one primary, hairline dividers, a real type
-   ramp, plain copy. Existing tokens only. */
+   ramp, plain copy. Existing tokens only — the primary button below tracks
+   --primary/--primary-foreground, so it repaints with whichever accent the
+   surrounding token world uses (blue on /standards, lime on the landing). */
 function AfterPanel() {
   return (
     <div
@@ -165,7 +167,7 @@ function AfterPanel() {
           <p className="text-xs text-muted-foreground">Draft · saved just now</p>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-muted-foreground">Save draft</span>
-            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-primary-foreground">
+            <span className="rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground">
               Send to 4 classes
             </span>
           </div>
@@ -260,12 +262,12 @@ export function SlopCompare() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-tw-blue"
+          className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-primary"
           style={{ left: "var(--exposure)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-tw-blue) motion-reduce:transition-none"
+          className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-ring) motion-reduce:transition-none"
           style={{ left: "var(--exposure)" }}
         >
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
@@ -279,7 +281,7 @@ export function SlopCompare() {
         standard. Every chip is a control ID from the{" "}
         <Link
           href="/standards/catalog"
-          className="text-tw-blue-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          className="text-tw-blue-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
         >
           catalog
         </Link>

@@ -14,7 +14,7 @@ export const metadata = {
 };
 
 const focusRing =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)";
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
 export default function Landing() {
   return (
