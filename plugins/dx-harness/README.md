@@ -21,6 +21,10 @@ Engineering + design skills for agentic product development. Every skill is name
 The design skills orchestrate the DX design loop against a **70-control** standards
 catalog (`standards/`), with deterministic `checks/` and a generator/evaluator split
 (`agents/dx-design-review.md`). Start with `/dx-harness:dx-design` for orientation and routing.
+The shared run procedures (plan approval, implement, design review, rule proposal,
+catalogue mechanics, design tickets) live in `procedures/`; rule and waiver questions go
+to `/dx-harness:dx-design`, which reads `standards/README.md` and
+`procedures/catalogue-mechanics.md` before answering.
 
 | Skill | What it does |
 |---|---|
@@ -28,7 +32,6 @@ catalog (`standards/`), with deterministic `checks/` and a generator/evaluator s
 | `/dx-harness:dx-design-setup` | Per-user tool setup + product context init. |
 | `/dx-harness:dx-design-execute` | The full design loop: intent → diverge → plan (gate) → implement → verify. |
 | `/dx-harness:dx-design-critique` | Evaluate an existing page → ranked suggestions → gated fixes. |
-| `/dx-harness:dx-standards` | How to read, filter, and apply the control catalog. |
 | `/dx-harness:dx-design-copy` · `dx-design-polish` · `dx-design-motion` · `dx-design-flow` · `dx-design-pattern` | Focused single-dimension passes. |
 | `/dx-harness:dx-design-feedback` | Captures harness feedback mid-turn and files it as an issue. |
 | `/dx-harness:dx-design-git` | Gitty (🦔), a friendly git companion for designers who design in code. |

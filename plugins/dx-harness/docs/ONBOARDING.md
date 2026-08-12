@@ -21,7 +21,7 @@ Follow the two commands in the [README Install section](../README.md#install):
 ```
 
 This installs the design skills (`dx-design`, `dx-design-setup`, `dx-design-execute`,
-`dx-design-critique`, `dx-standards`, `dx-design-copy`, `dx-design-polish`,
+`dx-design-critique`, `dx-design-copy`, `dx-design-polish`,
 `dx-design-motion`, `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`), the `dx-design-review`
 subagent (which carries its own review procedure), and the control catalog
 (`standards/`) — the catalog ships with the
@@ -109,7 +109,7 @@ loading rule: `docs/DESIGN-CONTEXT.md`.
 ## 3. Skills installed
 
 **What it means:** The DX skills (`dx-design`, `dx-design-setup`, `dx-design-execute`,
-`dx-design-critique`, `dx-standards`, `dx-design-copy`, `dx-design-polish`,
+`dx-design-critique`, `dx-design-copy`, `dx-design-polish`,
 `dx-design-motion`, `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`) and the
 `dx-design-review` subagent must be
 active in the product repo's Claude session for the harness to work. Without them, the agent
@@ -244,8 +244,9 @@ subagent directly from Phase 5.
 (A11Y-1, A11Y-2, A11Y-3, CMP-2) are never waivable. There is no path forward that
 leaves an L0 violation unresolved.
 
-**A control seems wrong for your context** — use the waiver protocol in the
-`standards` skill, not silent deviation. A silent deviation is a compliance gap;
+**A control seems wrong for your context** — use the waiver protocol in
+`standards/README.md` and `procedures/catalogue-mechanics.md` (both ship with the
+plugin), not silent deviation. A silent deviation is a compliance gap;
 a waiver with a reason and a named approver is an intentional decision. The catalog is
 built to evolve — if a control is wrong in principle, raise it via the ratchet.
 

@@ -23,8 +23,8 @@ to this SKILL.md, three levels up — it ships with the plugin).
    per `../../../docs/harness-feedback.md`.
 3. **Classify**: one severity + category label(s) from the doc's scheme (read the
    doc; do not trust memory for the label lists). Boundary check: if the feedback is
-   really a control proposal, route to the ratchet via the `standards` skill instead
-   and say so.
+   really a control proposal, route it as a rule proposal per
+   `../../../procedures/rule-proposal.md` instead and say so.
 4. **Confirm before filing** — filing an issue is an outward, visible side effect on
    a repo the user may not own. Show the exact title, labels, and body (use the
    helper's `--dry-run` output) and ask the user to approve, edit, or skip. In an
