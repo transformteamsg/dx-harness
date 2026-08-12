@@ -1,8 +1,9 @@
-# Harness setup — per-user tools
+# Harness setup checklist
 
-Check, install, and verify the tools the harness relies on. Everything here
-is per-person, per-machine. Repo-level adoption — stack, component manifest,
-record locations, the named L1 approver — lives in the team onboarding guide
+Check, install, and verify the tools the harness relies on, wire the
+design-ticket tracker, and set up commit signing. Everything here is
+per-person, per-machine. Repo-level adoption (stack, component manifest,
+record locations, the named L1 approver) lives in the team onboarding guide
 (`../../../docs/ONBOARDING.md`, relative to this file; it ships with the
 plugin).
 
@@ -17,7 +18,7 @@ Two rules bind every row:
 
 Work the table top to bottom: run the check; if it passes, move on; if not,
 offer the install, run it (or hand it to the user where marked), and re-run
-the check.
+the check. Then continue with the tracker and commit-signing steps below.
 
 | Tool | Why the harness needs it | Check (exit 0 = present) | Install |
 |---|---|---|---|
@@ -26,6 +27,105 @@ the check.
 | `gh` CLI, authenticated | The `feedback` skill files issues through `scripts/file-feedback-issue.py` | `gh auth status` | `brew install gh`, then the user runs `gh auth login` themselves (interactive — never run it for them) |
 | Python 3 + PyYAML | The `checks/*.py` scripts import `yaml` | `python3 -c "import yaml"` | `python3 -m pip install --user pyyaml` |
 | `dx-harness` plugin (product repos only) | The harness itself; skills load from the installed `dx-harness` plugin, same as any product repo | ask the user: `/plugin list` shows `dx-harness` | the two commands in the README Install section (`../../../README.md`) |
+
+## Wire the design-ticket tracker
+
+Design work is recorded on one long-lived ticket per surface (a page or a
+flow). Wire the conventions once:
+
+1. **Detect a tracker.** A tracker is present when `gh auth status` exits 0
+   and `gh repo view --json nameWithOwner` resolves the current repo. Where
+   the repo has an issue-tracker doc (in this repo:
+   `docs/agents/issue-tracker.md`), follow it.
+2. **Tracker present: create the label idempotently.**
+
+   ```sh
+   gh label create design --description "Design ticket, one long-lived issue per surface" --color 5319e7 2>/dev/null || true
+   ```
+
+   An existing label is success, not an error. Then state the conventions
+   setup has wired: one long-lived issue per surface; title
+   `Design: <surface>`, where `<surface>` is the route path (`/marks`) or the
+   flow name; label `design`; runs find the ticket by label plus title match;
+   the first run that touches a surface creates it.
+3. **No tracker: set up the local-markdown fallback.** A missing tracker is
+   not a failure. Create `docs/design-tickets/` and say plainly that the
+   fallback is active and why: runs will append typed blocks to
+   `docs/design-tickets/<surface-slug>.md`, and deferred sections and
+   fix-todos go to `docs/design-tickets/TODO.md`.
+
+The canonical conventions doc is `../../../procedures/design-tickets.md`;
+follow it where it ships with this plugin build. The facts above stand on
+their own either way.
+
+## Set up commit signing (once per machine)
+
+Some repos require verified signatures on the default branch, and an unsigned
+commit then blocks every merge. Whether the current repo enforces this does
+not gate the flow: always report the config state, and offer fixes only for
+what is missing. The two binding rules above apply to every write here,
+including git config changes and the key registration.
+
+1. **Check git config.** All three must return values:
+
+   ```sh
+   git config --get gpg.format
+   git config --get user.signingkey
+   git config --get commit.gpgsign
+   ```
+
+   If all are set, report the existing values and change nothing. If any is
+   missing, ask first, then configure SSH signing:
+
+   ```sh
+   git config --global gpg.format ssh
+   git config --global user.signingkey ~/.ssh/<key>.pub
+   git config --global commit.gpgsign true
+   ```
+
+2. **Test a signature locally.**
+
+   ```sh
+   echo test | ssh-keygen -Y sign -f ~/.ssh/<key> -n git
+   ```
+
+   This must produce an `SSH SIGNATURE` block.
+
+3. **Check the key on GitHub as a signing key.** Signing keys are separate
+   from auth keys; an auth-only key does not verify commits.
+
+   ```sh
+   gh api user/ssh_signing_keys
+   ```
+
+   Compare the result against the local public key. This call needs the
+   `admin:ssh_signing_key` scope on the gh token. If it fails with HTTP 403
+   or a scope error, do not fail silently and do not skip the step: show the
+   person the exact command
+
+   ```sh
+   gh auth refresh -h github.com -s admin:ssh_signing_key
+   ```
+
+   and wait while they complete the device login themselves (interactive;
+   never run it for them), then re-run the check.
+
+4. **Add the key if absent.**
+
+   ```sh
+   gh api --method POST user/ssh_signing_keys -f title="<machine>" -f key="$(cat ~/.ssh/<key>.pub)"
+   ```
+
+   If the key is already on the account as a signing key, skip the POST and
+   report "already on GitHub as a signing key". Never re-register the same
+   key.
+
+5. **Explain the order rule.** GitHub never verifies retroactively: commits
+   pushed before the key was registered stay unverified. The fix, after the
+   key exists, is `git rebase --force-rebase <base>` to re-sign the commits,
+   then a force-push.
+
+## Close out
 
 Close with one end-to-end health check:
 `agent-browser doctor --offline --quick` → exit 0. If it fails, plain
