@@ -8,8 +8,13 @@ description: 'Build product UI — a new page, screen, form, flow, or component,
 You are designing UI for the Teacher & School portfolio (Teacher Workspace, CaseSync,
 Glow, and TW surfaces). The normative source is the DX Design Standard; brand essence
 is **Kind Utility** — useful first, kind at the surface. Standards compliance is not a
-final check — it shapes every phase. Work through the phases in order; do not skip a
-gate even if the request seems simple.
+final check — it shapes every phase. The run is: intent, diverge, plan approval,
+implement, design review. Work through the phases in order; do not skip a gate even
+if the request seems simple. This is the ONLY skill that edits the product: the
+passes and dx-design-critique propose only, and their accepted findings are built
+here. Intent and diverge live in this file; the back half of the run (plan approval,
+implement, design review, rule proposal) is shared procedure, loaded from
+`../../../procedures/` and never restated here.
 
 The harness's one promise: **intent without loss**. What the builder means is written
 down as a contract in Phase 1; every later phase is graded against that contract;
@@ -67,6 +72,29 @@ LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
 LAY-7 (one primary focal region; visual reading order matches the task's
 priority order — L2).
 <!-- /dx-sync:lay-controls -->
+
+## Two ways in: standalone and return-to-caller
+
+A caller (normally the `dx-design` orchestrator) can dispatch this skill with the
+token `mode:return-to-caller` plus a context payload:
+
+- the sprint contract, or the one-line intent for a modification, so Phase 1 is not
+  re-interviewed;
+- the approved plan or the accepted findings list (with any granted waivers and the
+  L1 approver), or the explicit build ask verbatim, so plan approval is not re-asked;
+- the surface's design ticket reference (issue number or local markdown path).
+
+In this mode, skip the Phase 1 interview and the plan-approval stop: the caller
+already holds the contract and the approval (an explicit build ask counts as
+approval per `../../../procedures/plan-approval.md`). Do not spawn the design
+reviewer either; whoever started the run spawns it once, per
+`../../../procedures/design-review.md`. Instead, return the run record content to
+the caller: the built changes, the waivers applied, and the evidence captured.
+
+Standalone invocation (no token) takes a plain ask and owns the whole run: the full
+front half, exactly one stop at plan approval, and spawning the reviewer. In BOTH
+modes the branch guard from `../../../procedures/implement.md` runs before any edit,
+and it hands off to `dx-design-git` when it trips.
 
 ## New page vs. modification
 
@@ -211,11 +239,31 @@ Output: the sprint contract, shown to the user.
 
 ## Phase 2 — Diverge
 
-Produce 2–3 structurally different options. **No pixel code.** For each option:
-layout structure, which existing components it composes, how the flow splits across
-steps, a one-line **visual thesis** (the mood and energy it carries — stated as an
-extension of the product's existing system, never an invented new aesthetic), and one
-sentence on the trade-off. Use the product's component manifest
+Produce 2–3 clearly different directions and render each one as a real,
+self-contained HTML page, so the person picks between things they can see, not
+descriptions. Skip diverge only when the structure is fixed (the modification path
+above) or the ask names a chosen direction.
+
+**Rendering and hosting.** Each direction is one self-contained HTML file: inline
+CSS, no external requests, honest content (the real headings and copy from Phase 1,
+not lorem ipsum). In Claude Code, publish the pages as Claude Artifacts; they open
+in the browser automatically. In a harness without artifact publishing, write the
+HTML files locally and open them in the browser (`open <file>` on macOS, or the
+platform equivalent). In a headless or unattended run where no browser can open,
+print the file paths or artifact URLs and ask for the pick; NEVER silently choose a
+direction yourself.
+
+**The accompanying summary.** Beside the rendered pages, give each direction a short
+text summary: layout structure, which existing components it composes, how the flow
+splits across steps, a one-line **visual thesis** (the mood and energy it carries,
+stated as an extension of the product's existing system, never an invented new
+aesthetic), and one sentence on the trade-off.
+
+**The pick is the contract.** Record the chosen direction on the surface's design
+ticket run record (`../../../procedures/design-tickets.md`); the design review
+audits the built result against it.
+
+Use the product's component manifest
 (`.dx/component-manifest.json`, filtered to `status: "stable"` entries) —
 options may only compose components that exist in the manifest (CMP-1 applies from
 here on). If the product has no manifest yet, fall back to the v0-limit procedure
@@ -243,7 +291,8 @@ order match the task's priority order — the squint test) — design to them no
 a cleanup pass. When diverging on an existing surface, the critique's layout
 suggestions seed the options.
 
-Output: the options with a recommendation. The user picks.
+Output: the rendered direction pages plus their summaries, with a recommendation.
+The user picks; the pick becomes the contract above.
 
 ## Phase 3 — Plan (human gate)
 
