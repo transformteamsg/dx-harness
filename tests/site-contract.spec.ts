@@ -105,7 +105,7 @@ test.describe("reduced motion", () => {
   test.use({ contextOptions: { reducedMotion: "reduce" } });
 
   const animatedRoutes = [
-    { name: "landing", path: "/", essentialText: "Intent without loss." },
+    { name: "landing", path: "/", essentialText: "How it works." },
     { name: "overview", path: "/overview", essentialText: "Three readers, one standard" },
   ] as const;
 

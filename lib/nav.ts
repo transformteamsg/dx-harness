@@ -97,6 +97,7 @@ export const nav: NavGroup[] = [
       { href: "/harness/install", title: "Install" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/skills", title: "Skills" },
+      { href: "/harness/on-ramp", title: "Designer on-ramp" },
       { href: "/harness/tools", title: "Tools" },
     ],
   },
