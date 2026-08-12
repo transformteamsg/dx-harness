@@ -9,7 +9,7 @@ The `dx-design` skill that talks to the person first, works out what they want, 
 _Avoid_: Router, dispatcher, dx-start
 
 **Pass**:
-A single-dimension review skill (copy, motion, flow, pattern, polish) that proposes up to five ranked findings in its dimension, records them on the surface's design ticket, and hands accepted ones to dx-design-make to build. A pass never edits the product itself. A pass takes open-ended asks that name its dimension but not the exact edit; a stated edit goes to dx-design-make (pattern swaps stay the pattern pass's even when stated as an edit).
+A single-dimension review skill (copy, motion, flow, pattern, polish) that proposes up to five ranked findings in its dimension, records them on the surface's design ticket, and hands accepted ones to dx-design-execute to build. A pass never edits the product itself. A pass takes open-ended asks that name its dimension but not the exact edit; a stated edit goes to dx-design-execute (pattern swaps stay the pattern pass's even when stated as an edit).
 _Avoid_: Audit, sweep, review-and-fix
 
 **Pattern inventory**:
@@ -21,7 +21,7 @@ The point where a run stops, shows the person its plan, and waits for their OK b
 _Avoid_: Plan gate, gate, sign-off
 
 **Diverge**:
-The step where dx-design-make presents 2–3 genuinely different design directions for the person to choose between, rendered as HTML pages.
+The step where dx-design-execute presents 2–3 genuinely different design directions for the person to choose between, rendered as HTML pages.
 _Avoid_: Options phase, concept round
 
 **Design ticket**:

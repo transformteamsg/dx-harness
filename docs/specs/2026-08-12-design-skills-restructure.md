@@ -23,7 +23,7 @@ All design skills take the `dx-design-*` prefix. ([#48](https://github.com/trans
 | Today | Becomes | Change |
 |---|---|---|
 | `dx-start` | `dx-design` | Becomes the orchestrator; claims the bare name |
-| `dx-design` (six-phase loop) | `dx-design-make` | Slimmed: keeps intent + diverge; the back half moves to shared procedure docs |
+| `dx-design` (six-phase loop) | `dx-design-execute` | Slimmed: keeps intent + diverge; the back half moves to shared procedure docs |
 | `dx-critique` | `dx-design-critique` | Goes propose-only; gains re-audit asks |
 | `dx-copy` | `dx-design-copy` | Pass; drops non-surface prose |
 | `dx-flow` | `dx-design-flow` | Pass |
@@ -32,11 +32,11 @@ All design skills take the `dx-design-*` prefix. ([#48](https://github.com/trans
 | `dx-polish` | `dx-design-polish` | Pass |
 | `dx-standards` | — | Deleted; the content relocates (§8) |
 | `dx-setup` | `dx-design-setup` | Tools-only + orientation; DESIGN.md seeding moves out |
-| `dx-git-buddy` | `dx-design-git-helper` | Persona and memory stay; gains the branch guard |
+| `dx-git-buddy` | `dx-design-git` | Persona and memory stay; gains the branch guard |
 | `dx-feedback` | `dx-design-feedback` | Rename |
 | `dx-research-brief` | `dx-design-research-brief` | Rename only |
 | — | `dx-design-language` | New: defines the design language and writes DESIGN.md |
-| `dx-evaluator` (agent) | `dx-design-reviewer` | Does the design review; gains a verdict re-check pass |
+| `dx-evaluator` (agent) | `dx-design-review` | Does the design review; gains a verdict re-check pass |
 
 The engineering skills group does not change.
 
@@ -45,9 +45,9 @@ The engineering skills group does not change.
 ([#40](https://github.com/transformteamsg/dx-harness/issues/40), grounded in the
 [orchestrator-vs-loop research](https://github.com/transformteamsg/dx-harness/blob/research/orchestrator-vs-loop/docs/research/orchestrator-vs-loop-architectures.md), [#39](https://github.com/transformteamsg/dx-harness/issues/39))
 
-- `dx-design-make` keeps the front half of the loop: **intent** and **diverge**.
+- `dx-design-execute` keeps the front half of the loop: **intent** and **diverge**.
 - The back half of the loop moves into shared procedure docs. The back half is: **plan
-  approval**, **implement**, **design review**, and **rule proposal**. `dx-design-make`,
+  approval**, **implement**, **design review**, and **rule proposal**. `dx-design-execute`,
   the orchestrator, and the five passes all load these docs. The orchestrator joins the
   shared back half at plan approval.
 - A routed-to skill runs in a **return-to-caller mode**. This mode skips the skill's own
@@ -110,9 +110,13 @@ plugin as a snapshot. The copy has a provenance header: the upstream URL and the
 commit. A person re-checks the copy by hand at each plugin version bump. There is no sync
 tooling.
 
-## 4. The builder — `dx-design-make`
+## 4. The builder — `dx-design-execute`
 
 ([#40](https://github.com/transformteamsg/dx-harness/issues/40))
+
+**(assembly: renamed by the human, 2026-08-12.** #40 named this skill `dx-design-make`
+and the review agent `dx-design-reviewer`. The human later chose `dx-design-execute` and
+`dx-design-review`. This spec carries the current names everywhere.)
 
 - The **only** skill that edits the product. It also builds accepted findings from the
   passes and from critique.
@@ -130,7 +134,7 @@ tooling.
   run hands off to the git helper. The helper explains the risk in plain words and
   proposes the fix (new branch / pull). It acts only after the person agrees. There is no
   time heuristic.
-- **Design review.** The `dx-design-reviewer` agent has fresh context and is
+- **Design review.** The `dx-design-review` agent has fresh context and is
   propose-only. Whoever started the run spawns it, one time per run. After fixes, new
   screenshots go back to the same reviewer. The reviewer marks each fix resolved /
   partial / unresolved. The builder's narration is not evidence.
@@ -144,7 +148,7 @@ tooling.
 
 **Shape (all five).** A pass is propose-only. It records up to five ranked findings in its
 dimension as a comment on the surface's design ticket. It records accepted and
-not-accepted findings alike, so nothing is silently dropped. `dx-design-make` builds the
+not-accepted findings alike, so nothing is silently dropped. `dx-design-execute` builds the
 accepted findings. A pass never edits the product.
 
 **Routing boundaries.**
@@ -216,7 +220,7 @@ passes do not produce it.
   same artifact URL on each pass, with a version label.
 - **Fit with this restructure.** The findings still go on the surface's design ticket
   (§9.2); the findings comment links to the report. An S-number approval marks the
-  finding `accepted`, and `dx-design-make` builds it. The report proposes only — critique
+  finding `accepted`, and `dx-design-execute` builds it. The report proposes only — critique
   stays propose-only.
 
 ## 7. The design language — `dx-design-language` and DESIGN.md
@@ -368,9 +372,12 @@ No tracker → one file per surface: `docs/design-tickets/<surface-slug>.md`. Th
 typed blocks are appended in time order. Deferred sections and fix-todos append to
 `docs/design-tickets/TODO.md` as checklist items with the same titles.
 
-## 10. The git helper — `dx-design-git-helper`
+## 10. The git helper — `dx-design-git`
 
 ([#34](https://github.com/transformteamsg/dx-harness/issues/34))
+
+**(assembly: renamed by the human, 2026-08-12.** #34 named this skill
+`dx-design-git-helper`. The human later chose `dx-design-git`.)
 
 `dx-git-buddy` is renamed. The Gitty persona (🦔) and the per-person memory stay. The
 scope stays: explain git in plain words, do it with the person safely, remember what they
@@ -404,7 +411,9 @@ Staging:
 
 The 13 frontmatter descriptions are locked on
 [#48's resolution](https://github.com/transformteamsg/dx-harness/issues/48). The
-implementation effort copies them verbatim from that comment. The principles they encode:
+implementation effort copies them from that comment, with the later renames applied:
+replace `dx-design-make` with `dx-design-execute`, and `dx-design-git-helper` with
+`dx-design-git`. No other wording changes. The principles they encode:
 product framing is generalised (no "Teacher & School"); specialists stay directly
 model-invocable; passes use a shared propose-only template with the stated-edit boundary;
 critique is propose-only and takes re-audit asks; audits that name a non-pass dimension
