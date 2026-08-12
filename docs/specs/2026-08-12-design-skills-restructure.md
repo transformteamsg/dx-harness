@@ -188,6 +188,37 @@ takes whole-page review asks that name no change and no pass dimension — inclu
 don't like it" and re-audit asks ("re-check this page against the catalogue"). Scored
 audits stay here. The orchestrator's light triage never grades.
 
+### The annotated-evidence report
+
+**(assembly: brought in from [tfx-design-standard#39](https://github.com/transformteamsg/tfx-design-standard/issues/39); decided with the human, 2026-08-12)**
+
+Every critique run ends with a shareable HTML report. The report is critique's default
+output and its present step. It lives inside `dx-design-critique` — no new skill. The five
+passes do not produce it.
+
+- **Shape.** Each finding sits beside a cropped screenshot of the live surface. A rounded
+  highlight box (3px) marks the specific element. Crops come from the full-res 1280
+  capture and downscale to ~760px. Comparison findings stack crops from several pages
+  into one image.
+- **Self-check.** Before the report publishes, the skill renders a contact sheet of all
+  crops and re-reads it. This step catches misplaced boxes. It is mandatory.
+- **Document structure.** The reference format is locked on
+  [#39's comment](https://github.com/transformteamsg/tfx-design-standard/issues/39):
+  title + one-line lede ("no code changed"); a fact grid; a summary block with tier
+  counts and a "reply with S-numbers to approve" line; the suggestions table first (S#,
+  fixes F#, controls, impact, cost, quick-win rows); annotated findings F1..Fn; code-level
+  findings; the full catalogue coverage table (a "verify" verdict means evidence
+  incomplete, never "failed"); a "what works — preserve" section; an appendix with full
+  captures. Rejected suggestions get a "considered and declined" line — nothing is
+  silently dropped.
+- **Working conventions.** Keep F-/S-numbering stable across revisions; removals leave
+  gaps. The HTML is self-contained: base64 images, light/dark theme. Republish to the
+  same artifact URL on each pass, with a version label.
+- **Fit with this restructure.** The findings still go on the surface's design ticket
+  (§9.2); the findings comment links to the report. An S-number approval marks the
+  finding `accepted`, and `dx-design-make` builds it. The report proposes only — critique
+  stays propose-only.
+
 ## 7. The design language — `dx-design-language` and DESIGN.md
 
 ### DESIGN.md ([#30](https://github.com/transformteamsg/dx-harness/issues/30))
@@ -418,3 +449,4 @@ standing override in DESIGN.md (§7).
 | [#40](https://github.com/transformteamsg/dx-harness/issues/40) | Shape C; make; diverge; plan approval; design review; design tickets |
 | [#48](https://github.com/transformteamsg/dx-harness/issues/48) | The 13 locked routing descriptions |
 | [#36](https://github.com/transformteamsg/dx-harness/issues/36) | This assembly: location, grilling sync, concept roll deferral, ticket conventions, rule 5 amendment |
+| [tfx-design-standard#39](https://github.com/transformteamsg/tfx-design-standard/issues/39) | Annotated-evidence HTML report as critique's default output (brought in 2026-08-12) |
