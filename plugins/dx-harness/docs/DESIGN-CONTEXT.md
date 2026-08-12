@@ -1,119 +1,165 @@
-# Per-product context layer — `DESIGN.md` + `.dx/design.json`
+# Per-product design language: `DESIGN.md` + `.dx/design.json`
 
 The control catalog is portfolio-wide and product-agnostic on purpose (see
-`standards/README.md` rule 5: no per-product control overlays). But real products differ
-in ways the catalog deliberately does not encode: which primary they anchor on, how they
-weight tone, their motion conventions, their column grid. Those **parameters** used to be
-scattered — per-product primary in `standards/controls/col-1.md`, tone weighting in the
-content skill's §6, motion nowhere, grid in a separate proposed `.dx/layout-system.json`.
+`standards/README.md` rule 5). But real products differ in ways the catalog
+deliberately does not encode: what they should feel like, which primary they anchor
+on, how they weight tone, their motion signature, their column grid, and the few
+standing deviations rule 5 sanctions. This layer gives each product repo one place
+for "what makes this product this product":
 
-This layer gives each product repo one place for "what makes this product this product":
+- **`DESIGN.md`**: human-approved, at the product repo root. Written and revised by
+  the `dx-design-language` skill through its guided walkthrough.
+- **`.dx/design.json`**: its typed projection, **generated** from `DESIGN.md` by
+  `scripts/generate-design-json.py`. Not a transcript: it carries only what the
+  checks and the design reviewer consume, plus `catalog_version` for staleness
+  detection. Never hand-edited.
 
-- **`DESIGN.md`** — human-owned, at the product repo root. Per-product visual parameters.
-- **`.dx/design.json`** — its machine twin, **generated** from `DESIGN.md` by
-  `scripts/generate-design-json.py`, so checks and hooks can read the same parameters the
-  agent reads. Never hand-edited.
+Both are **optional**. A repo with neither gets portfolio defaults everywhere; that
+is a valid, complete state. Never grade a missing context file as a failure.
 
-Both are **optional**. A repo with neither gets portfolio defaults everywhere; that is a
-valid, complete state — never grade a missing context file as a failure.
+**Precedence:** the catalogue governs portfolio rules; code governs implemented
+primitives; `DESIGN.md` carries this product's decisions and deviations.
 
-## The one rule: parameters, never catalog-rule restatements
+## The one rule: decisions, never catalog-rule restatements
 
-`DESIGN.md` carries only what *differs* from the portfolio default or *specialises* a
-catalog rule for this product — the values, not the rules. It must never restate a catalog
-control (that recreates exactly the drift `docs/SYNC.md` exists to prevent). Say the
-parameter and cite its normative source:
+`DESIGN.md` is reference-first. It carries only what *differs* from the portfolio
+default or *specialises* a catalog rule for this product: the values and decisions,
+not the rules. It must never restate a catalog control (that recreates exactly the
+drift `docs/SYNC.md` exists to prevent). Say the decision and cite its normative
+source:
 
-- Good: `Primary: --tw-blue #0064FF` (a value) with "Normative source: COL-1".
-- Bad: "Primary actions use the product's own primary brand colour" — that is COL-1's rule
-  restated; it will drift from the catalog and mislead.
+- Good: `primary: --tw-blue #0064FF` (a value) with "Cites: COL-1".
+- Bad: "Primary actions use the product's own primary brand colour". That is COL-1's
+  rule restated; it will drift from the catalog and mislead.
 
-Omit any section that does not differ from the portfolio default. An absent section means
-"portfolio default applies", not "unspecified".
+Omit any section that does not differ from the portfolio default. An absent section
+means "portfolio default applies", not "unspecified".
 
-## `DESIGN.md` — sections (all optional)
+## `DESIGN.md`: the ten sections (all optional)
 
-Each `## ` heading below maps to one top-level key in `.dx/design.json`. Cite the
-normative source in each section you keep.
+Each `## ` heading maps to one top-level key in `.dx/design.json`. Cite the
+normative source in each section you keep. Template:
+`docs/templates/DESIGN.md`.
 
-| Section (`## `) | json key | Carries | Normative source to cite |
+| Section (`## `) | json key | Carries | Cites |
 |---|---|---|---|
-| `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table | COL-1 |
-| `Tone weighting` | `tone` | pointer to content §6 + this product's weighting note | content skill §6 |
-| `Motion` | `motion` | product motion conventions (durations, signature moves) | MOT-1, SLP-8, A11Y-5 |
-| `Layout system` | `layout_system` | the declared column grid (see below) | LAY-1 proposal (`docs/catalog-changes/lay-1-grid.md`) |
-| `Components` | `components` | product-specific component notes (e.g. AvatarFallback default) | CMP-1, CMP-7 |
+| `Essence` | `essence` | what the product should feel like, one or two sentences | (interview) |
+| `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table | COL-1, COL-2 |
+| `Typography` | `typography` | family, base size/leading, scale steps, tabular numerals | TYP controls |
+| `Tokens` | `tokens` | source file, prefix, spacing base, dark-mode strategy (pointers into code; code is the authority) | TOK controls |
+| `Motion` | `motion` | signature moves only (durations, easing) | MOT-1, SLP-8, A11Y-5 |
+| `Voice & Tone` | `tone` | register, person, locale, empty-state behaviour; this product's weighting of content §6 | content skill §6 |
+| `Layout system` | `layout_system` | the declared column grid; machine-read, keep bullets exact | LAY-1 |
+| `Components` | `components` | manifest pointer + product-level component decisions | CMP-1, CMP-7 |
+| `Guardrails` | `guardrails` | product-specific agent instructions no catalogue control covers (10 bullets max) | (interview) |
+| `Overrides` | `overrides` | standing, product-level deviations, one structured line each | rule 5 |
 
-**Layout system** absorbs the `.dx/layout-system.json` proposed in
-`docs/catalog-changes/lay-1-grid.md` (plan 053): its object (`columns`, `gutter`,
-`margins`, `breakpoints`, `maxContentWidth`) becomes the `layout_system` key here.
-That control's gate status is unchanged — it still grades **N/A where no grid is
-declared**; declaring one here only moves the declaration's location.
+The legacy heading `Tone weighting` still maps to `tone`.
 
-A `register:` field (brand-register impact) is **reserved for the future** and is not used
-today — brand impact is carried by the colour parameters plus COL-1. Do not add it now.
+### The Overrides section
 
-## `.dx/design.json` — the generated twin
+One structured line per standing override:
+
+```
+- <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
+```
+
+The generator enforces the tier rules and refuses to write past a rejected line
+(exit 3):
+
+- **L0** lines are always rejected. If the rule seems wrong, start a rule proposal.
+- **L1** needs a reason and a named approver (`; approver: <name>`).
+- **L2** needs a reason.
+- The control id must exist in `standards/catalog.yaml`, and the stated tier must
+  match the catalogue's tier for that control.
+
+Checks (`checks/detect.py`) and the design reviewer load the overrides from
+`.dx/design.json`, grade against the adjusted rule, and surface every active
+override. Anything not listed binds as written. Overrides start empty on a first
+definition: a deviation earns its place through the waiver promotion flow or is
+volunteered, never fished for.
+
+## `.dx/design.json`: the generated typed projection
 
 Generated only, never hand-edited. Shape:
 
 ```json
 {
   "generated_from": "DESIGN.md",
-  "generated_at": "2026-07-03T00:00:00Z",
+  "generated_at": "2026-08-12T00:00:00Z",
+  "catalog_version": "0.1",
+  "essence": "Kind Utility: useful first, kind at the surface.",
   "colour": { "primary": "--tw-blue #0064FF" },
-  "layout_system": { "columns": 12, "gutter": "space-4" },
-  "tone": "Follows content §6. Teacher Workspace: neutral, steady, quietly confident."
+  "layout_system": { "columns": 12, "gutter": "space-4", "breakpoints": [360, 768, 1280] },
+  "tone": "Neutral, steady, quietly confident.",
+  "guardrails": ["Check the component manifest before building anything new."],
+  "overrides": [
+    { "control": "MOT-1", "tier": "L2", "rule": "entrances may run to 240ms on full-page loads", "reason": "staged hydration causes pop-in" }
+  ]
 }
 ```
 
-- `generated_from` is always `"DESIGN.md"`; `generated_at` is an ISO-8601 UTC timestamp.
-- One top-level key per `DESIGN.md` section present (omitted sections produce no key).
-- A section's value is **structured data** when the section carries `- key: value` lines
-  (hex/token strings, scale numbers, arrays), else the **prose verbatim** as a string.
+- `generated_from` is always `"DESIGN.md"`; `generated_at` is an ISO-8601 UTC
+  timestamp; `catalog_version` is stamped from `standards/catalog.yaml`
+  `meta.version` so staleness against the catalogue is detectable.
+- One top-level key per `DESIGN.md` section present (omitted sections produce no
+  key; comments never reach the json).
+- Prose sections (Essence, Voice & Tone) project as strings; Guardrails projects as
+  a list of strings, one per bullet; Overrides projects as a list of objects
+  (`control`, `tier`, `rule`, `reason`, and `approver` on L1).
 
 ### How the generator parses `DESIGN.md`
 
 `scripts/generate-design-json.py` (stdlib-only) does a deterministic parse:
 
-1. Split on `## ` headings; map each heading to its json key (`Colour`/`Color` → `colour`,
-   `Tone weighting`/`Tone` → `tone`, `Motion` → `motion`, `Layout system` → `layout_system`,
-   `Components` → `components`; any other heading is slugified so nothing is dropped).
-2. Strip HTML comments (`<!-- ... -->`) from the section body — comments are guidance and
-   never reach the json.
-3. In the remaining body, a bulleted line of the form `- key: value` becomes a structured
-   field. `value` is coerced: an integer literal → int, a `[…]` JSON array → list, else the
-   string verbatim (so `space-4`, `#0064FF`, and `1280px` survive intact). Field keys keep
-   their written casing (so `maxContentWidth` matches the LAY-1 schema).
-4. A section with **no** field lines becomes its prose (non-comment, non-blank lines joined),
-   verbatim. A section that is empty after comment-stripping produces no key.
+1. Split on `## ` headings; map each heading to its json key (the table above; any
+   other heading is slugified so nothing is dropped).
+2. Strip HTML comments (`<!-- ... -->`) from the section body. Comments are guidance
+   and never reach the json.
+3. In the remaining body, a bulleted line of the form `- key: value` becomes a
+   structured field. `value` is coerced: an integer literal to int, a `[...]` JSON
+   array to list, else the string verbatim (so `space-4`, `#0064FF`, and `1280px`
+   survive intact). Field keys keep their written casing (so `maxContentWidth`
+   matches the LAY-1 schema).
+4. A section with **no** field lines becomes its prose (non-comment, non-blank lines
+   joined), verbatim. A section with field lines AND prose keeps both: the fields,
+   plus the prose under a reserved `prose` key (so avoid a field literally named
+   `prose`). A section that is empty after comment-stripping produces no key.
+5. Guardrails and Overrides are special-cased as described above; a colon inside a
+   guardrail bullet never splits it into a field.
 
-Use `- key: value` bullets for parameters you want machine-readable; use prose (or `—`
-bullets) for narrative notes.
+Use `- key: value` bullets for parameters you want machine-readable; use prose for
+narrative notes.
 
-## Loading rules (for the design skill)
+## Loading rules (for the design skills)
 
-- Read `DESIGN.md` at **intent** (once the product is identified) and implement against its
-  parameters for the rest of the loop — it calibrates colour/tone/motion/layout downstream.
-- **Absent file → portfolio defaults apply.** Do not grade missing context as a failure.
-- **Code overrides stale docs.** When `DESIGN.md` disagrees with the product's *implemented*
-  conventions, the code wins: follow the implemented convention and tell the user that
-  `DESIGN.md` has drifted (so a human can reconcile it). `DESIGN.md` is a pointer to intent,
-  not an authority over shipped code.
+- Read `DESIGN.md` at **intent** (once the product is identified) and implement
+  against its decisions for the rest of the loop.
+- **Absent file: portfolio defaults apply.** Do not grade missing context as a
+  failure.
+- **Code overrides stale docs.** When `DESIGN.md` disagrees with the product's
+  *implemented* conventions, the code wins: follow the implemented convention and
+  tell the user that `DESIGN.md` has drifted so `dx-design-language` can reconcile
+  it. `DESIGN.md` records intent and deviations; it is not an authority over shipped
+  code.
+- **Drift is a start-of-session banner, not a flow.** A stale `catalog_version` or a
+  dead token pointer surfaces as a banner at the start of a design session;
+  regeneration re-stamps. Staleness is never a hard failure of a design run.
 
 ## Regenerating
 
-After editing `DESIGN.md`, regenerate and commit both files:
+After any `DESIGN.md` edit, regenerate and commit both files:
 
 ```
 python3 scripts/generate-design-json.py <product-repo-root>
 ```
 
-CI can assert freshness with `--check` (exit 2 when `.dx/design.json` is stale vs the
-markdown).
+Exit codes: 0 ok; 1 no `DESIGN.md` (not a failure); 2 (`--check`) stale against
+`DESIGN.md` or the catalogue version; 3 the Overrides section did not validate,
+nothing written.
 
-The unified detector consumes this: `checks/detect.py` (plan 059) runs the generator in
-`--check` mode whenever a `.dx/design.json` exists at the target repo root, so a stale
-twin surfaces as a detector finding (exit 2), never a crash. A repo with no
-`.dx/design.json` skips the check entirely — a missing context layer is a valid, complete
-state, never graded as a failure.
+CI can assert freshness with `--check`. The unified detector consumes this:
+`checks/detect.py` runs the generator in `--check` mode whenever a `.dx/design.json`
+exists at the target repo root, so a stale or rejected projection surfaces as a
+detector finding (exit 2), never a crash. A repo with no `.dx/design.json` skips the
+check entirely.
