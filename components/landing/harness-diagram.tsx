@@ -56,7 +56,7 @@ export function HarnessDiagram() {
   return (
     <Reveal>
       <figure
-      aria-label="How the harness is structured. Your ask enters the dx-design orchestrator, which routes it to specialised skills. The builder, dx-design-make, runs the loop with a human gate before code. Every skill reads the control catalog."
+      aria-label="How the harness is structured. Your ask enters the dx-design orchestrator, which routes it to specialised skills. The builder, dx-design-execute, runs the loop with a human gate before code. Every skill reads the control catalog."
       className="rounded-lg border border-border bg-surface px-5 py-6 sm:px-8 sm:py-8"
     >
       {/* ── The dispatch flow: you → orchestrator, then down to the skills ── */}
@@ -132,7 +132,7 @@ export function HarnessDiagram() {
       {/* ── The build path: only one skill writes code ── */}
       <div className="reveal-item mt-6 flex flex-col items-start gap-2 border-t border-border pt-5 md:flex-row md:items-center md:gap-4" style={at(12)}>
         <p className="text-sm leading-relaxed text-muted-foreground md:max-w-[34ch]">
-          Only <span className="font-mono font-medium text-foreground">dx-design-make</span>{" "}
+          Only <span className="font-mono font-medium text-foreground">dx-design-execute</span>{" "}
           edits the product. The passes propose; you accept; it builds. Every build
           runs the loop:
         </p>
