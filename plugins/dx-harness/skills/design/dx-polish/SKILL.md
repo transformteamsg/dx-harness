@@ -25,3 +25,9 @@ edges. It refines these controls; it never replaces them.
 
 **Procedure:** follow `../dx-critique/pass.md` with the subset above. Card/nested-card
 composition (SLP-4/5/11) is a `layout` matter — note and route it, do not fix it here.
+Catalogue mechanics (filtering, tiers, plain-title naming):
+`../../../procedures/catalogue-mechanics.md`. The shared back half of the run is
+`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`, and
+`../../../procedures/design-review.md`; findings are recorded per
+`../../../procedures/design-tickets.md`, and uncovered gaps become rule proposals per
+`../../../procedures/rule-proposal.md`.

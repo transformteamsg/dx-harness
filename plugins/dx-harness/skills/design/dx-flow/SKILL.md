@@ -28,4 +28,10 @@ entry points, the done state, every exit (back/cancel/abandon), and what happens
 teacher's work on interruption, partial completion, and resume. Escapability is
 structure, not polish.
 
-**Procedure:** follow `../dx-critique/pass.md` with the subset above.
+**Procedure:** follow `../dx-critique/pass.md` with the subset above. Catalogue
+mechanics (filtering, tiers, plain-title naming):
+`../../../procedures/catalogue-mechanics.md`. The shared back half of the run is
+`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`, and
+`../../../procedures/design-review.md`; findings are recorded per
+`../../../procedures/design-tickets.md`, and uncovered gaps become rule proposals per
+`../../../procedures/rule-proposal.md`.

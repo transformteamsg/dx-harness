@@ -31,7 +31,12 @@ UI term teachers already know — "Search" not "Find"), CNT-12 (sentence case), 
 (Singapore English spelling, proofread), CNT-14 (voice quality + tone-fit — the copy sounds
 Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
 (IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's reference: it is what
-"on-voice" means.
+"on-voice" means. Catalogue mechanics (filtering, tiers, plain-title naming):
+`../../../procedures/catalogue-mechanics.md`. The shared back half of the run is
+`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`, and
+`../../../procedures/design-review.md`; findings are recorded per
+`../../../procedures/design-tickets.md`, and uncovered gaps become rule proposals per
+`../../../procedures/rule-proposal.md`.
 
 ## Who you're writing for
 
