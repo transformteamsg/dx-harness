@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototype #74 — full-map layered diagram</title>
+<style>
+  /* ── Throwaway prototype. Token values inlined from app/globals.css
+     (.landing-dark world). No external requests. ── */
+  :root {
+    --background: #0a0a0c;
+    --surface: #131316;
+    --muted: #1e1e22;
+    --accent: #17171a;
+    --border: #26262c;
+    --border-strong: #52525b;
+    --foreground: #f4f4f5;
+    --muted-foreground: #a7a7b0;
+    --prose-body: #d1d1d6;
+    --tw-blue: #0064ff;
+    --tw-blue-text: #6ea3ff;
+    --radius: 0.5rem;
+    --motion-slow: 300ms;
+    --motion-story-step: 220ms; /* stagger step for this narrative surface */
+    --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --font-display: "Plus Jakarta Sans", "Plus Jakarta Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-body: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+  code, .mono { font-family: var(--font-mono); }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 40px 24px 96px; }
+
+  /* Page header */
+  .kicker { font-family: var(--font-mono); font-size: 12px; color: var(--muted-foreground); letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { font-size: 26px; font-weight: 600; margin-top: 8px; }
+  .lede { margin-top: 10px; max-width: 62ch; color: var(--prose-body); font-size: 14px; }
+  .judge { margin-top: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: 14px 18px; font-size: 13px; color: var(--muted-foreground); max-width: 72ch; }
+  .judge strong { color: var(--foreground); font-weight: 600; }
+  .judge ul { margin: 6px 0 0 18px; }
+  .judge li { margin-top: 2px; }
+
+  /* Variant sections */
+  section.variant { margin-top: 56px; }
+  .variant-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 16px; }
+  .variant-head h2 { font-size: 19px; font-weight: 600; }
+  .variant-head p { font-size: 13px; color: var(--muted-foreground); }
+  .panel { margin-top: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: 24px; position: relative; }
+
+  .replay {
+    position: absolute; top: 16px; right: 16px; z-index: 2;
+    font: 500 12px/1 var(--font-body); color: var(--foreground);
+    background: var(--muted); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 12px; cursor: pointer;
+  }
+  .replay:hover { border-color: var(--border-strong); }
+  .replay:focus-visible { outline: 2px solid var(--tw-blue-text); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .replay { display: none; } }
+
+  /* ── Variant A layout: reading rail beside the isometric stack ── */
+  .iso-grid { display: grid; grid-template-columns: minmax(250px, 330px) 1fr; gap: 12px 44px; align-items: start; }
+  @media (max-width: 760px) { .iso-grid { grid-template-columns: 1fr; } }
+
+  .rail { list-style: none; counter-reset: step; padding-top: 8px; }
+  .rail li { counter-increment: step; position: relative; padding-left: 40px; margin-bottom: 34px; }
+  .rail li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 1px;
+    width: 26px; height: 26px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--muted);
+    font: 600 12px/24px var(--font-mono); text-align: center;
+    color: var(--tw-blue-text);
+  }
+  .rail .where { font: 500 10.5px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); }
+  .rail h3 { font-size: 14.5px; font-weight: 600; margin-top: 3px; }
+  .rail h3 code { font-size: 13.5px; color: var(--tw-blue-text); }
+  .rail p { margin-top: 3px; font-size: 13px; line-height: 1.55; color: var(--muted-foreground); }
+  .rail p code { font-size: 12px; color: var(--prose-body); background: var(--muted); padding: 1px 4px; border-radius: 4px; }
+
+  .iso-figure { margin: 0; }
+  .iso-figure svg { display: block; width: 100%; max-width: 560px; height: auto; margin: 0 auto; }
+  figcaption.legend { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .iso-figure text { font-family: var(--font-body); }
+  .iso-figure text.t-mono { font-family: var(--font-mono); }
+  .iso-figure text.t-disp { font-family: var(--font-display); }
+  .legend .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 7px; }
+
+  /* ── Variant B: exploded flat stack, semantic HTML ── */
+  .flat { max-width: 640px; margin: 0 auto; }
+  .band { border: 1px solid var(--border); border-radius: 8px; background: var(--muted); padding: 14px 18px;
+    /* depth as a drawn slab edge, not a projection: two hard offsets, no blur */
+    box-shadow: 0 5px 0 -1px var(--accent), 0 6px 0 0 var(--border); }
+  .band.front-door { border-color: var(--tw-blue-text); }
+  .band.repo { background: transparent; border-style: dashed; border-color: var(--border-strong); box-shadow: none; }
+  .band .name { font: 600 14px/1.4 var(--font-mono); }
+  .band .name.blue { color: var(--tw-blue-text); }
+  .band .invoke { font: 400 11px/1.4 var(--font-mono); color: var(--muted-foreground); margin-left: 8px; }
+  .band p { font-size: 12.5px; color: var(--muted-foreground); margin-top: 3px; line-height: 1.55; }
+  .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chips li { font: 500 11.5px/1 var(--font-mono); color: var(--foreground); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; white-space: nowrap; }
+  .chips li.builder { border-color: var(--tw-blue-text); }
+  .chips li .tag { font-family: var(--font-body); font-weight: 400; color: var(--muted-foreground); }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  @media (max-width: 560px) { .duo { grid-template-columns: 1fr; } }
+  .duo > div { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); padding: 10px 12px; }
+  .duo .h { font-size: 12.5px; font-weight: 600; color: var(--foreground); }
+  .duo p { margin-top: 2px; }
+  .tiers { list-style: none; display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .tiers li { font-size: 11px; color: var(--muted-foreground); background: var(--muted); border-radius: 5px; padding: 3px 7px; }
+  .tiers .t { font: 600 11px/1 var(--font-mono); color: var(--foreground); }
+  .inner-doc { border: 1px solid var(--border); border-radius: 6px; background: var(--muted); padding: 10px 14px; margin-top: 10px; }
+  .repo-label { font: 500 10.5px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); }
+
+  .vconn { display: flex; flex-direction: column; align-items: center; padding: 4px 0; }
+  .vconn .lbl { font-size: 11.5px; color: var(--muted-foreground); padding: 2px 0 4px; text-align: center; }
+  .vconn .stem { width: 1px; height: 18px; background: var(--border-strong); }
+  .vconn .head { border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 4px solid var(--border-strong); }
+
+  footer { margin-top: 64px; font-size: 12px; color: var(--muted-foreground); border-top: 1px solid var(--border); padding-top: 16px; }
+
+  /* ── Reveal choreography ─────────────────────────────────────────────
+     Plays only when: (a) motion is welcome, and (b) JS has armed the root
+     (data-reveal="armed"). No-JS, SSR-equivalent, and reduced-motion all
+     render the finished figure — full static parity. Each item carries its
+     narrative index (--i); plates land, then the connector draws, then the
+     next plate. Ease-out, no overshoot, every individual motion 300ms. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] .rv {
+      transition:
+        opacity var(--motion-slow) var(--ease-out),
+        translate var(--motion-slow) var(--ease-out),
+        scale var(--motion-slow) var(--ease-out);
+      transition-delay: calc(var(--i, 0) * var(--motion-story-step));
+    }
+    [data-reveal="armed"] .rv { opacity: 0; translate: 0 -12px; transition: none; }
+    [data-reveal] .rv-line { transform-box: fill-box; transform-origin: top center; }
+    [data-reveal="armed"] .rv-line { scale: 1 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">prototype · ticket #74 · throwaway</p>
+    <h1>Full-map layered diagram</h1>
+    <p class="lede">One question: what composition makes the whole harness read at a glance?
+      Reading order is fixed — you, the front door, the passes, the shared context, DESIGN.md —
+      the composition is not. React to the render, not the polish.</p>
+    <div class="judge">
+      <strong>What to judge</strong>
+      <ul>
+        <li>Is the isometric angle worth pushing all detail into the side rail?</li>
+        <li>Does the reveal pacing (plate, connector, plate…) tell the story or just delay it?</li>
+        <li>Does the bottom plate read as <em>your repo</em>, distinct from the harness above it?</li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ══════════════ Variant A — 3/4 isometric stack + reading rail ══════════════ -->
+  <section class="variant">
+    <div class="variant-head">
+      <h2>Variant A — isometric stack, rail beside it</h2>
+      <p>The plates stay clean; every word lives in the numbered rail, which is the semantic story.</p>
+    </div>
+    <div class="panel" data-reveal>
+      <button class="replay" type="button" data-replay>Replay</button>
+      <div class="iso-grid">
+
+        <!-- The reading rail: real text, in reading order. This is the
+             screen-reader path for the composition; the SVG beside it is a
+             labelled figure with its own finished-figure summary. -->
+        <ol class="rail" aria-label="How the harness is structured, in reading order">
+          <li class="rv" style="--i:0">
+            <span class="where">in the chat</span>
+            <h3>You</h3>
+            <p>One ask, in plain words. You never pick a skill.</p>
+          </li>
+          <li class="rv" style="--i:2">
+            <span class="where">the harness plugin</span>
+            <h3><code>dx-design</code> — the single front door</h3>
+            <p>The orchestrator grills first, then routes. Rule and waiver questions stop here too. No external skills inside it.</p>
+          </li>
+          <li class="rv" style="--i:4">
+            <span class="where">dispatched as subagents</span>
+            <h3>The propose-only passes</h3>
+            <p>Copy, flow, pattern, motion, polish — each returns up to five ranked findings. Only <code>dx-design-execute</code> edits the product, building what you accept.</p>
+          </li>
+          <li class="rv" style="--i:6">
+            <span class="where">the harness plugin</span>
+            <h3>Shared context</h3>
+            <p>Every skill reads the same rulebook: the Control Catalogue (L0 never waived, L1 needs a named approver, L2 needs a reason), grounded by the primitives — tokens and components.</p>
+          </li>
+          <li class="rv" style="--i:8">
+            <span class="where">your product repo</span>
+            <h3><code>DESIGN.md</code></h3>
+            <p>Your product's decisions and deviations, written where any agent can read them. The catalogue stays the rulebook; DESIGN.md never restates a control.</p>
+          </li>
+        </ol>
+
+        <!-- The isometric figure. role="img" + title/desc carry the
+             finished-figure story; everything inside is presentational. -->
+        <figure class="iso-figure">
+          <svg viewBox="0 0 560 936" role="img" aria-labelledby="isoTitle isoDesc">
+            <title id="isoTitle">How the design harness fits together</title>
+            <desc id="isoDesc">Five layers, read top to bottom. You make one ask in
+              plain words. It enters dx-design, the orchestrator and the single front
+              door; no external skills sit inside it. The orchestrator dispatches the
+              propose-only passes — copy, flow, pattern, motion and polish — and only
+              dx-design-execute builds what you accept. Every skill reads the same
+              shared context: the Control Catalogue with its L0, L1 and L2 tiers, and
+              the primitives — tokens and components. The outcome is written into
+              DESIGN.md in your product repo, which any agent can read.</desc>
+
+            <defs>
+              <!-- One plate: 420×120 diamond top face + 10px slab edge -->
+              <g id="plate">
+                <polygon points="0,60 210,120 210,130 0,70" fill="var(--accent)" stroke="var(--border)" stroke-width="1"/>
+                <polygon points="420,60 210,120 210,130 420,70" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+                <polygon points="210,0 420,60 210,120 0,60" fill="var(--muted)" stroke="var(--border)" stroke-width="1"/>
+              </g>
+              <!-- A small cube (one pass) -->
+              <g id="cube">
+                <polygon points="-18,0 0,6.5 0,13.5 -18,7" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1"/>
+                <polygon points="18,0 0,6.5 0,13.5 18,7" fill="var(--accent)" stroke="var(--border-strong)" stroke-width="1"/>
+                <polygon points="0,-6.5 18,0 0,6.5 -18,0" fill="var(--muted)" stroke="var(--border-strong)" stroke-width="1"/>
+              </g>
+              <!-- A slab (catalogue / primitives / DESIGN.md) -->
+              <g id="slab">
+                <polygon points="-54,0 0,16 0,22 -54,6" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1"/>
+                <polygon points="0,-16 54,0 0,16 -54,0" fill="var(--muted)" stroke="var(--border-strong)" stroke-width="1"/>
+                <polygon points="54,0 0,16 0,22 54,6" fill="var(--accent)" stroke="var(--border-strong)" stroke-width="1"/>
+              </g>
+            </defs>
+
+            <!-- Layer 1 — You (plate centre y=84) -->
+            <g class="rv" style="--i:0">
+              <use href="#plate" x="70" y="24"/>
+              <circle cx="280" cy="66" r="8" fill="none" stroke="var(--muted-foreground)" stroke-width="1.5"/>
+              <path d="M 266 88 a 14 11 0 0 1 28 0" fill="none" stroke="var(--muted-foreground)" stroke-width="1.5"/>
+              <text x="280" y="108" text-anchor="middle" class="t-disp" font-size="14" font-weight="600" fill="var(--foreground)">You</text>
+            </g>
+            <!-- Connector 1→2 -->
+            <g class="rv" style="--i:1">
+              <line class="rv-line" x1="280" y1="158" x2="280" y2="196" stroke="var(--border-strong)" stroke-width="1"/>
+              <polygon points="275,196 285,196 280,204" fill="var(--border-strong)"/>
+              <text x="294" y="184" font-size="11" fill="var(--muted-foreground)">one ask, in plain words</text>
+            </g>
+
+            <!-- Layer 2 — dx-design, the single front door (centre y=266) -->
+            <g class="rv" style="--i:2">
+              <use href="#plate" x="70" y="206"/>
+              <!-- brand edge: re-stroke the top face -->
+              <polygon points="280,206 490,266 280,326 70,266" fill="none" stroke="var(--tw-blue-text)" stroke-width="1.5"/>
+              <text x="280" y="264" text-anchor="middle" class="t-mono" font-size="15" font-weight="600" fill="var(--tw-blue-text)">dx-design</text>
+              <text x="280" y="284" text-anchor="middle" class="t-mono" font-size="10" fill="var(--muted-foreground)">/dx-harness:dx-design</text>
+            </g>
+            <!-- Connector 2→3 -->
+            <g class="rv" style="--i:3">
+              <line class="rv-line" x1="280" y1="340" x2="280" y2="378" stroke="var(--border-strong)" stroke-width="1"/>
+              <polygon points="275,378 285,378 280,386" fill="var(--border-strong)"/>
+              <text x="294" y="366" font-size="11" fill="var(--muted-foreground)">dispatches propose-only subagents</text>
+            </g>
+
+            <!-- Layer 3 — the passes (centre y=448) -->
+            <g class="rv" style="--i:4">
+              <use href="#plate" x="70" y="388"/>
+              <text x="280" y="430" text-anchor="middle" font-size="12" font-weight="600" fill="var(--foreground)">propose-only passes</text>
+              <use href="#cube" x="180" y="462"/>
+              <use href="#cube" x="230" y="462"/>
+              <use href="#cube" x="280" y="462"/>
+              <use href="#cube" x="330" y="462"/>
+              <use href="#cube" x="380" y="462"/>
+            </g>
+            <!-- Connector 3→4 -->
+            <g class="rv" style="--i:5">
+              <line class="rv-line" x1="280" y1="522" x2="280" y2="560" stroke="var(--border-strong)" stroke-width="1"/>
+              <polygon points="275,560 285,560 280,568" fill="var(--border-strong)"/>
+              <text x="294" y="548" font-size="11" fill="var(--muted-foreground)">every skill reads the same context</text>
+            </g>
+
+            <!-- Layer 4 — shared context (centre y=630) -->
+            <g class="rv" style="--i:6">
+              <use href="#plate" x="70" y="570"/>
+              <text x="280" y="608" text-anchor="middle" font-size="12" font-weight="600" fill="var(--foreground)">shared context</text>
+              <use href="#slab" x="218" y="644"/>
+              <text x="218" y="647" text-anchor="middle" font-size="9.5" fill="var(--foreground)">catalogue</text>
+              <use href="#slab" x="342" y="644"/>
+              <text x="342" y="647" text-anchor="middle" font-size="9.5" fill="var(--foreground)">primitives</text>
+            </g>
+            <!-- Connector 4→5 -->
+            <g class="rv" style="--i:7">
+              <line class="rv-line" x1="280" y1="704" x2="280" y2="742" stroke="var(--border-strong)" stroke-width="1"/>
+              <polygon points="275,742 285,742 280,750" fill="var(--border-strong)"/>
+              <text x="294" y="730" font-size="11" fill="var(--muted-foreground)">written into the product repo</text>
+            </g>
+
+            <!-- Layer 5 — DESIGN.md in your product repo (centre y=812) -->
+            <g class="rv" style="--i:8">
+              <polygon points="280,752 490,812 280,872 70,812" fill="var(--accent)" stroke="var(--border-strong)" stroke-width="1" stroke-dasharray="5 5"/>
+              <use href="#slab" x="280" y="814"/>
+              <text x="280" y="812" text-anchor="middle" class="t-mono" font-size="12" font-weight="600" fill="var(--foreground)">DESIGN.md</text>
+              <text x="280" y="898" text-anchor="middle" class="t-mono" font-size="10.5" letter-spacing="0.06em" fill="var(--muted-foreground)">YOUR PRODUCT REPO</text>
+            </g>
+          </svg>
+
+          <figcaption class="legend">
+            <span><span class="swatch" style="background: var(--muted); border: 1px solid var(--border-strong);"></span>solid — the harness plugin</span>
+            <span><span class="swatch" style="border: 1px dashed var(--border-strong);"></span>dashed — your product repo</span>
+            <span><span class="swatch" style="border: 1px solid var(--tw-blue-text);"></span>blue edge — the single front door</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ Variant B — exploded flat stack, all text inline ══════════════ -->
+  <section class="variant">
+    <div class="variant-head">
+      <h2>Variant B — exploded flat stack</h2>
+      <p>Everything is real text in reading order; depth is a drawn slab edge, not a projection.</p>
+    </div>
+    <div class="panel" data-reveal>
+      <button class="replay" type="button" data-replay>Replay</button>
+      <div class="flat" role="group" aria-label="How the harness is structured: you, the dx-design front door, the propose-only passes, the shared context, and DESIGN.md in your product repo">
+
+        <div class="band rv" style="--i:0; text-align: center;">
+          <span class="name">You</span>
+          <p>One ask, in plain words. You never pick a skill.</p>
+        </div>
+
+        <div class="vconn rv" style="--i:1">
+          <span class="lbl">one ask, in plain words</span>
+          <span class="stem" aria-hidden="true"></span>
+          <span class="head" aria-hidden="true"></span>
+        </div>
+
+        <div class="band front-door rv" style="--i:2">
+          <span class="name blue">dx-design</span>
+          <span class="invoke">/dx-harness:dx-design</span>
+          <p>The single front door. It grills first, answers rule and waiver questions, and routes. No external skills inside it.</p>
+        </div>
+
+        <div class="vconn rv" style="--i:3">
+          <span class="lbl">dispatches propose-only subagents</span>
+          <span class="stem" aria-hidden="true"></span>
+          <span class="head" aria-hidden="true"></span>
+        </div>
+
+        <div class="band rv" style="--i:4">
+          <span class="name">The passes</span>
+          <p>Each returns up to five ranked findings on the surface's design ticket. None edits the product.</p>
+          <ul class="chips" aria-label="The five propose-only passes, and the one skill that builds">
+            <li>dx-design-copy</li>
+            <li>dx-design-flow</li>
+            <li>dx-design-pattern</li>
+            <li>dx-design-motion</li>
+            <li>dx-design-polish</li>
+            <li class="builder">dx-design-execute <span class="tag">— builds what you accept</span></li>
+          </ul>
+        </div>
+
+        <div class="vconn rv" style="--i:5">
+          <span class="lbl">every skill reads the same context</span>
+          <span class="stem" aria-hidden="true"></span>
+          <span class="head" aria-hidden="true"></span>
+        </div>
+
+        <div class="band rv" style="--i:6">
+          <span class="name">Shared context</span>
+          <div class="duo">
+            <div>
+              <span class="h">Control Catalogue</span>
+              <p>70+ checkable controls — the rulebook for every skill.</p>
+              <ul class="tiers" aria-label="Control tiers">
+                <li><span class="t">L0</span> never waived</li>
+                <li><span class="t">L1</span> named approver</li>
+                <li><span class="t">L2</span> needs a reason</li>
+              </ul>
+            </div>
+            <div>
+              <span class="h">Primitives</span>
+              <p>Tokens and components — the boring stack, on purpose.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="vconn rv" style="--i:7">
+          <span class="lbl">written into the product repo</span>
+          <span class="stem" aria-hidden="true"></span>
+          <span class="head" aria-hidden="true"></span>
+        </div>
+
+        <div class="band repo rv" style="--i:8">
+          <span class="repo-label">your product repo</span>
+          <div class="inner-doc">
+            <span class="name">DESIGN.md</span>
+            <p>Your product's decisions and deviations, readable by any agent. It never restates a control — the catalogue stays the rulebook.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Throwaway prototype for ticket #74. Names follow the locked design-skills
+    restructure spec; token values are inlined from app/globals.css. Not product code.
+  </footer>
+</div>
+
+<script>
+  /* Arm-then-play, copied from the site's convention: the hidden state exists
+     only after JS arms the root, and only when motion is welcome — so no-JS
+     and reduced-motion both get the finished figure with zero flash. */
+  (function () {
+    var motionOK = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!motionOK) return;
+
+    var roots = document.querySelectorAll("[data-reveal]");
+    roots.forEach(function (root) {
+      root.setAttribute("data-reveal", "armed");
+    });
+
+    var seen = new WeakSet();
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !seen.has(entry.target)) {
+          seen.add(entry.target);
+          requestAnimationFrame(function () {
+            entry.target.setAttribute("data-reveal", "play");
+          });
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    roots.forEach(function (root) { io.observe(root); });
+
+    document.querySelectorAll("[data-replay]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var root = btn.closest("[data-reveal]");
+        root.setAttribute("data-reveal", "armed");
+        void root.offsetWidth; /* commit the hidden state */
+        root.setAttribute("data-reveal", "play");
+      });
+    });
+  })();
+</script>
+</body>
+</html>
