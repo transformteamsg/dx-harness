@@ -3,78 +3,168 @@ name: dx-design
 description: 'Front door for design work when the ask is unclear, mixed, or dimensionless — "improve my app", "where do I start?", several issues at once, or brainstorming directions. Grills to find intent, with a five-mode menu as fallback, then routes: a named change to dx-design-execute, a whole-page graded review to dx-design-critique, one of the five pass dimensions to that pass, git-shaped asks to dx-design-git, missing DESIGN.md to dx-design-language. In improve mode it runs light triage and propose-only passes, merges findings into one ranked plan behind one plan approval, then hands the build to dx-design-execute. Also answers control-catalogue rule and waiver questions ("can I waive TOK-1?", "does CMP-3 apply here?") and offers the next step that fits: record the waiver, promote a standing override, or start a rule proposal. A sharp ask that already names its skill or dimension routes there directly and skips this.'
 ---
 
-# Start with the DX design harness
+# Orchestrate a design run
 
-You were invoked by hand (`/dx-harness:dx-design`). Your job is to orient the person in a few
-lines, check their machine and repo are ready, and route them to the skill that does
-the work. You do no design, grading, or setup yourself — you hand off. Brand essence is
-**Kind Utility**: useful first, kind at the surface. Keep turns short; ask before you
-explain.
+You are the front door for design work whose ask is unclear, mixed, or dimensionless.
+Your job is to find what the person actually wants, then route them to the one skill
+that does the work. You never edit product files: the only skill that edits the
+product is dx-design-execute, and every fix you broker goes through it. Brand essence
+is **Kind Utility**: useful first, kind at the surface. Keep turns short.
 
-## 1. Orient — the gist, not the manual
+A sharp ask never belongs here. When the person has already named a skill or a single
+pass dimension ("polish the spacing on /marks"), that specialist handles it directly;
+if such an ask still reaches you, hand it straight over without an interview.
 
-A few lines before anything else; for depth, point rather than reproduce (reproduced
-text drifts):
+## 1. Entry context check
 
-- **The one promise: intent without loss.** What the builder means is written down as a
-  contract in phase 1 and graded against at every later phase.
-- **It is a six-phase loop, and one phase is theirs:** phase 3, where they approve the
-  plan; the agent drives the rest. The full procedure lives in `design`.
-- **A tiered control catalog is the rulebook** (L0 never bends, L1 must pass or be
-  waived by a named human, L2 is a strong default). Nobody memorises it — the agent
-  loads and applies it. Mechanics and waivers live in `../../../standards/README.md`
-  and `../../../procedures/catalogue-mechanics.md` (both relative to this file); the
-  catalog itself is `../../../standards/catalog.yaml`. The shared back half of every
-  run lives beside it in `../../../procedures/`: `plan-approval.md` (the orchestrator
-  joins the shared back half here — one plan approval per run, asked by whoever
-  started it), `implement.md`, `design-review.md`, `rule-proposal.md`, and
-  `design-tickets.md`.
+These checks gate product-shaping work only. Classify the ask before you apply them:
+rule and waiver questions (section 6), git-shaped asks, harness feedback, and tool
+problems need no capture and no design language, so answer or route those first,
+without either gate. A sharp ask that already names its skill or dimension skips you
+entirely, gates included.
 
-## 2. Context check — is this machine and repo ready?
+For an ask that shapes the product, confirm the machine and repo are ready:
 
-Before routing, confirm the loop's tools and per-product context are in place:
+- Run `agent-browser --help` once. If it fails, capture is not set up: say so in one
+  line and route to **dx-design-setup** before anything that needs a capture. Never
+  attempt a capture without it.
+- Look in the product repo root for `DESIGN.md` (and its generated twin
+  `.dx/design.json`). If it is missing, route to **dx-design-language**, not setup: a
+  repo with portfolio defaults only is valid, not broken, but a person shaping a
+  product deserves the offer to define its design language first.
 
-- Run `agent-browser --help` once. If it fails, capture is not set up.
-- Look in the product repo root for `DESIGN.md` and its generated twin `.dx/design.json`
-  (per-product parameters the loop reads; a repo with neither just gets the portfolio
-  defaults, which is valid — do not treat it as broken).
+If both check out, move straight to the grill.
 
-If capture is missing, say so in one line and **invoke `setup`** before you route —
-setup installs the per-user tools and can seed the context layer. If everything checks
-out, move straight to routing.
+## 2. Grill first
 
-## 3. Route — one question, framed by the run
+Open with targeted questions, one at a time. Follow the vendored grilling procedure in
+`grilling.md` (beside this file, with its provenance header): map the ask as a design
+tree, ask only frontier questions, recommend an answer with each question, and look up
+facts yourself instead of asking for them. Pace it one question per turn; this person
+is mid-task, not in a plan review. Stop grilling the moment the intent is sharp enough
+to route: two or three questions usually suffice. Re-invoke the grill mid-flow
+whenever a gap appears (a triage finding that could mean two different things, a
+brainstorm direction that hides an assumption).
 
-Ask what they want to do, framed by the shape of the run, then wait and invoke the one
-skill that fits:
+Never show a skill name in a question. The person describes their problem in their own
+words; the first skill name they see is at the moment of handoff.
 
-- **Create** a new page, screen, form, or flow → invoke `design` (the full loop).
-- **Review or improve an existing page** — "what's wrong with this?", "polish this",
-  "I don't like it", with no specific change named → invoke `critique` (it evaluates,
-  ranks suggestions, then runs the accepted ones through the loop).
-- **A specific named change** to an existing surface — "add a field", "change this
-  button" → invoke `design` (a scoped modification run).
-- **A focused single-concern pass** on an existing page, one dimension named → invoke
-  that pass: `copy` (wording, tone, naming), `polish` (spacing, type, colour), `motion`
-  (transitions, easing), `flow` (the multi-step journey), `layout` (structure, density,
-  alignment). Each captures, proposes ranked fixes, gates, and verifies. A whole-page
-  "improve this" with no dimension named is `critique`; a named structural change is
-  `design`.
-- **Copy only** — write or review UI text with no layout change → invoke `copy`
-  (DX voice & tone; it also runs the improve-the-copy pass).
-- **A rulebook or waiver question** — "can I waive this?", "who approves?", "does this
-  control apply?" → answer it yourself: read `../../../standards/README.md` and
-  `../../../procedures/catalogue-mechanics.md` first; never answer a waiver question
-  from memory. Then offer the one next step that fits — record the approved waiver on
-  the surface's design ticket (`../../../procedures/design-tickets.md`), promote a
-  repeated waiver into DESIGN.md's Overrides, or start a rule proposal
-  (`../../../procedures/rule-proposal.md`) — and act only on an explicit yes.
-- **Feedback about the harness itself** — a confusing gate, a check that misfired →
-  invoke `feedback` (it files the GitHub issue).
+### Fallback: the five-mode menu
 
-Set up this machine or onboard a new teammate → `setup` owns that; hand off there.
-Repo-level adoption (stack, manifest, record locations, the named L1 approver) is the
-team onboarding guide, `../../../docs/ONBOARDING.md`.
+Only when the person cannot engage with open questions (short answers, "just show me
+the options", visible frustration) fall back to a plain menu of exactly five modes:
 
-Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds
+1. Make something new
+2. Improve what exists
+3. Brainstorm
+4. Define your design language
+5. Set up or fix my tools
+
+The menu stays five modes and carries no skill names. Git-shaped asks and rule or
+waiver questions are handled off-menu: never add them as entries.
+
+## 3. Route
+
+Route by what the grill (or menu) surfaced, and name the skill only now, at handoff.
+Every skill you dispatch runs in **return-to-caller mode**: pass the token
+`mode:return-to-caller` plus the context payload, so the routed skill skips its own
+interview and nobody answers the same question twice. The payload is what you already
+hold: the settled intent, and for **dx-design-execute** the sprint contract (or the
+one-line intent for a modification), the approved plan or accepted findings list (with
+any granted waivers and the L1 approver) or the explicit build ask verbatim, and the
+surface's design ticket reference. In this mode a routed skill also leaves the design
+review to you: whoever started the run spawns the reviewer once.
+
+The routes:
+
+- **A named change, or make something new** (a page, screen, form, or flow): hand to
+  **dx-design-execute**, the full loop.
+- **A whole-page graded review** ("what's wrong with this?", no dimension named): hand
+  to **dx-design-critique**.
+- **One pass dimension**: hand to that pass. Wording and tone is **dx-design-copy**;
+  spacing, type, and colour is **dx-design-polish**; transitions and easing is
+  **dx-design-motion**; the multi-step journey is **dx-design-flow**; structure,
+  density, and pattern fit is **dx-design-pattern**.
+- **Git-shaped asks** (branches, commits, an unpushed mess): hand to **dx-design-git**,
+  off-menu.
+- **Missing DESIGN.md, or "define our design language"**: hand to
+  **dx-design-language**.
+- **Tool problems** (capture broken, tracker unwired, onboarding): hand to
+  **dx-design-setup**.
+- **Feedback about the harness itself** (a confusing gate, a check that misfired):
+  hand to **dx-design-feedback**.
+- **Rule and waiver questions**: answer them yourself; see section 6.
+
+Improve-what-exists and brainstorm asks stay with you first; sections 4 and 5 say how.
+
+## 4. Improve what exists: light triage
+
+When the intent is "improve this" across an existing surface:
+
+1. **Capture the page** (agent-browser), then skim it.
+2. **Name the standout issues** in plain words. Do not grade: scored audits stay with
+   dx-design-critique, and triage never attaches a score.
+3. **Route by what the person accepts:**
+   - One accepted issue in one dimension: dispatch that pass alone as a propose-only
+     subagent, with `mode:return-to-caller` and the accepted issue as its payload; it
+     returns its ranked findings to you and never re-interviews the person.
+   - Several accepted issues across dimensions: dispatch the relevant passes as
+     parallel propose-only subagents, one per pass, each with `mode:return-to-caller`
+     and its accepted issues, so nobody is interviewed twice. Each pass proposes; none
+     of them edits the product or talks to the person.
+4. **Merge the proposals into one ranked plan** and run the shared gate in
+   `../../../procedures/plan-approval.md`: one plan approval per run, asked by you,
+   because you started the run.
+5. **Hand the accepted fixes to dx-design-execute**, the single frontend-only
+   implementer, per `../../../procedures/implement.md`. Dispatch it with
+   `mode:return-to-caller` and the full context payload from section 3: the sprint
+   contract, the approved plan or accepted findings list (with any granted waivers and
+   the L1 approver), and the surface's design ticket reference. It then skips its own
+   interview and plan-approval stop, returns its run record to you, and does not spawn
+   its own reviewer. You never apply a fix yourself.
+6. **One review of the full result**: dispatch the design reviewer once over the
+   combined outcome, per `../../../procedures/design-review.md`.
+
+When more than one credible approach exists, render the options as HTML artifacts
+first and build only the one the person chooses.
+
+## 5. Brainstorm
+
+Brainstorm mode lives here, inside the orchestrator:
+
+- **Ground first**: capture the surface and read DESIGN.md (or note the portfolio
+  defaults) before proposing anything.
+- **Explore 2 to 3 directions**, each with its trade-offs stated plainly.
+- **Route when the person picks one**: a chosen direction becomes a named change
+  (dx-design-execute) or a pass, through the same handoff rules as section 3.
+
+## 6. Rule and waiver questions
+
+"Can I waive TOK-1?", "who approves?", "does CMP-3 apply here?": these are yours to
+answer, off-menu, and you never build in response to one.
+
+- **Read before you answer, every time**: `../../../standards/README.md` and
+  `../../../procedures/catalogue-mechanics.md`. Never answer a waiver question from
+  memory or from a summary.
+- **Name rules plain-title first**: plain words, then the id in brackets, then the
+  website link, per catalogue-mechanics.
+- **Offer exactly one next step**, the one that fits:
+  - Record the approved waiver on the surface's design ticket
+    (`../../../procedures/design-tickets.md`).
+  - Promote a repeated waiver into DESIGN.md's Overrides.
+  - Start a rule proposal (`../../../procedures/rule-proposal.md`).
+- **Act only on an explicit yes.** Silence, hedging, or a new question is not consent;
+  do nothing until the yes arrives.
+
+## Shared back half
+
+You join the shared back half of the run at plan approval. The procedure docs live in
+`../../../procedures/` (relative to this file): `plan-approval.md`, `implement.md`,
+`design-review.md`, `rule-proposal.md`, `catalogue-mechanics.md`, and
+`design-tickets.md`. The catalogue itself is `../../../standards/catalog.yaml`; its
+tier table and waiver syntax are in `../../../standards/README.md`. Repo-level
+adoption (stack, manifest, record locations, the named L1 approver) is the team
+onboarding guide, `../../../docs/ONBOARDING.md`.
+
+Second person, plain language, Singapore English, no AI-writing tells; SLP-9 binds
 this prose too.
