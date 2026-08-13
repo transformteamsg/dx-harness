@@ -12,12 +12,16 @@
    `/dx-harness:dx-<old>` command stop existing on the user's next plugin update —
    old invocations fail with "unknown command", with no migration notice.
 2. **The invocation string comes from the SKILL.md frontmatter `name` field when
-   present, falling back to the directory name.** All dx-harness skills set `name:`
-   in frontmatter, so the user-facing command and the on-disk directory are
-   independently renameable. This is the key staged-rename lever: you can change
-   the command without touching the 20 relative-path cross-references
-   (`../dx-critique/pass.md` etc.) that are bound to directory names — or keep a
-   stub skill at the old name as a DIY deprecation shim.
+   present, falling back to the directory name.** Because the fallback is live, a
+   directory name never leaves the namespace: a directory whose name differs from
+   its frontmatter `name` claims *both* strings. Renaming frontmatter while keeping
+   directories therefore does not move a name — it makes the name ambiguous between
+   the old directory and the new frontmatter, and in practice the directory won
+   ([#121](https://github.com/transformteamsg/dx-harness/issues/121):
+   `dx-harness:dx-design` resolved to the directory `dx-design/`, not to the skill
+   whose frontmatter declared `name: dx-design`). **Directory renames are required
+   to complete a rename, not optional cleanup** — and a stub skill at an old name
+   can only fire once no live directory still holds that name.
 3. **Updates are pull-based and gated by the `version` string.** dx-harness pins
    `"version": "0.1.0"` in `plugin.json`, so installed users receive *nothing* —
    including a rename — until that field is bumped *and* they refresh
@@ -72,9 +76,14 @@ From [skills § How a skill gets its command name](https://code.claude.com/docs/
 > another command already uses that name."
 
 - Plugin `skills/` subdirectory: command = frontmatter `name` **or** the directory
-  name, namespaced by plugin. All dx-harness skills declare `name:` (e.g.
-  `name: dx-design`), so today the frontmatter is authoritative and the directory
-  name is inert for invocation purposes.
+  name, namespaced by plugin. The "or" is not a dead branch: the directory name
+  stays live as a fallback even when frontmatter `name:` is set, so a directory
+  named differently from its frontmatter claims two strings at once. Observed on
+  `dx-harness@0.3.0` ([#121](https://github.com/transformteamsg/dx-harness/issues/121)):
+  the directory `dx-design/` (frontmatter `name: dx-design-execute`) captured the
+  `dx-design` invocation away from the skill whose frontmatter declared
+  `name: dx-design`. A rename is complete only when the directory matches the
+  frontmatter.
 - The bare un-namespaced form (`/dx-design`) also works when unambiguous
   (v2.1.216+ behavior), so renames also break users' short-form muscle memory.
 - For personal/project (non-plugin) skills, `name` is display-only and the
@@ -201,9 +210,11 @@ Paths relative to repo root; line numbers at commit `263055c`.
    (v2.1.193+) — that migration is automatic. Skill renames have no such net.
 6. **Sweep order for a rename PR:** frontmatter `name:` → the two frontmatter
    description routing sentences → `/dx-harness:dx-*` strings in both READMEs,
-   ONBOARDING.md, dx-start and dx-setup bodies → (optional, separate commit)
-   directory renames + all `../dx-*/` relative paths → version bump → CHANGELOG
-   entry with old→new mapping.
+   ONBOARDING.md, dx-start and dx-setup bodies → directory renames + all
+   `../dx-*/` relative paths (**required in the same release** — until directories
+   match frontmatter, the old names stay live as fallbacks and every renamed skill
+   collides with its own former name; see #121) → version bump → CHANGELOG entry
+   with old→new mapping.
 
 ## Sources
 
