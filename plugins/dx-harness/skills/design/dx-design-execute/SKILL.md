@@ -136,7 +136,7 @@ critique captures the live page, runs a structured layout read (against the
 pattern inventory, `../../../standards/layout-patterns.md`), grades it against the in-scope catalog
 controls and Kind Utility, and returns ranked suggestions whose "what
 underperforms" list sets the scope of the polish; the procedure lives in
-`../dx-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
+`../dx-design-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
 has to pass its controls, it only means don't restyle a deliberate choice.
 
 ## A flow is not a stack of pages
@@ -381,7 +381,7 @@ Skill-specific notes while building:
   build, not as a cleanup pass; each refines the shared constraints, none replaces
   them, and the design reviewer grades Craft on them.
 - The copy pass skill the shared constraints defer to ships with this harness:
-  `../dx-copy/SKILL.md`, relative to this skill.
+  `../dx-design-copy/SKILL.md`, relative to this skill.
 
 ## Phase 5: Design review
 
