@@ -81,15 +81,24 @@ token `mode:return-to-caller` plus a context payload:
 - the sprint contract, or the one-line intent for a modification, so Phase 1 is not
   re-interviewed;
 - the approved plan or the accepted findings list (with any granted waivers and the
-  L1 approver), or the explicit build ask verbatim, so plan approval is not re-asked;
+  L1 approver), or the verbatim ask when it names a specific plan or chosen
+  direction, so plan approval is not re-asked;
 - the surface's design ticket reference (issue number or local markdown path).
 
-In this mode, skip the Phase 1 interview and the plan-approval stop: the caller
-already holds the contract and the approval (an explicit build ask counts as
-approval per `../../../procedures/plan-approval.md`). Do not spawn the design
-reviewer either; whoever started the run spawns it once, per
-`../../../procedures/design-review.md`. Instead, return the run record content to
-the caller: the built changes, the waivers applied, and the evidence captured.
+In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
+payload carries a real approval: an approved plan, or a verbatim ask that names a
+specific plan or chosen direction (only that form counts as approval per
+`../../../procedures/plan-approval.md`). A generic named change such as "add a
+field" is NOT approval: no one has seen a plan yet. In that case write the scoped
+plan and return it to the caller for approval; do not edit the product until the
+approval comes back. Do not spawn the design reviewer in this mode; whoever
+started the run spawns it, exactly once, per
+`../../../procedures/design-review.md`. Instead, return the full review bundle to
+the caller: the built changes, the sprint contract (or the one-line intent), the
+approved plan, the component inventory, the in-scope judgment and hybrid controls,
+the waivers applied, and the evidence captured. This is every input reviewer
+dispatch in `../../../procedures/design-review.md` requires; a return of changes
+and evidence alone leaves the caller unable to dispatch the reviewer.
 
 Standalone invocation (no token) takes a plain ask and owns the whole run: the full
 front half, exactly one stop at plan approval, and spawning the reviewer. In BOTH
@@ -298,10 +307,12 @@ The user picks; the pick becomes the contract above.
 
 The gate protocol is shared: read `../../../procedures/plan-approval.md` now and
 run it. It holds the stop-once rule (plan approval occurs one time per run; an
-explicit build ask counts as approval), the three gate stages, L1 waiver approval,
-the unattended-run proxy rules, and where the approved plan is recorded. The
-grilling procedure its stage 2 runs is `grill.md`, beside this skill. In
-return-to-caller mode the gate is already satisfied; do not stop again.
+explicit ask to build a specific plan or chosen direction counts as approval), the
+three gate stages, L1 waiver approval, the unattended-run proxy rules, and where
+the approved plan is recorded. The grilling procedure its stage 2 runs is
+`grill.md`, beside this skill. In return-to-caller mode the gate is satisfied only
+when the payload carries an approval; without one, return the plan to the caller
+per "Two ways in" above, and never stop twice in one run.
 
 What the plan itself covers is this skill's job. Expand the chosen direction into a
 plan:
@@ -366,16 +377,19 @@ Skill-specific notes while building:
 
 ## Phase 5: Design review
 
-Run the four steps in `verify.md` (beside this skill) IN ORDER: read it now, before
-verifying anything, and do not present output to the user while a step is failing.
-It carries the deterministic checks and the evidence sets, then hands off to the
-shared procedure `../../../procedures/design-review.md` for reviewer dispatch, the
-verbatim-verdict rule, and the verdict re-check from new screenshots. The verdict
-is written by the `dx-design-review` agent, never by you.
+In standalone mode, run the four steps in `verify.md` (beside this skill) IN
+ORDER: read it now, before verifying anything, and do not present output to the
+user while a step is failing. It carries the deterministic checks and the evidence
+sets, then hands off to the shared procedure
+`../../../procedures/design-review.md` for reviewer dispatch, the verbatim-verdict
+rule, and the verdict re-check from new screenshots. The verdict is written by the
+`dx-design-review` agent, never by you.
 
-In return-to-caller mode, do not spawn the reviewer: capture the evidence, return
-the run record content to the caller, and let whoever started the run dispatch the
-review once.
+In return-to-caller mode, run only steps 1 and 2 of `verify.md`: the deterministic
+checks and the evidence capture. Never run step 3 yourself; reviewer dispatch
+belongs to whoever started the run, exactly once. Return the review bundle from
+"Two ways in" to the caller, who dispatches the reviewer and routes the verdict
+back; when findings come back, address them and re-run from step 1 (step 4).
 
 ## Phase 6: Rule proposal
 
