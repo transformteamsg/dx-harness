@@ -1,6 +1,6 @@
 ---
-name: dx-motion
-description: Smooth the motion on an existing Teacher & School product page — transitions, easing, timing, and reduced-motion. Use for a scoped ask that names this dimension — "smooth the animations", "the motion feels janky", "the transitions are too slow", "fix the animation on <page>" — with no structural change named. NOT for a whole-page review with no dimension named (that is critique); NOT for a named change like adding a new transition or interaction (that is design). Styling goes to polish, layout to layout.
+name: dx-design-motion
+description: 'Use when the ask names the motion of an existing product page but not the exact edit — transitions, easing, timing, reduced-motion ("the motion feels janky", "transitions are too slow"). Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("make the transition 150ms") or a brand-new interaction is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Visual styling goes to dx-design-polish.'
 ---
 
 # Smooth the motion on an existing surface
@@ -26,4 +26,13 @@ easing (entrances `ease-out`, exits `ease-in`, changes `ease-in-out`), press fee
 (`scale(0.96)`, never a bounce), and disciplined `will-change`. Keyboard navigation is
 instant — no animation on tab/arrow movement.
 
-**Procedure:** follow `../dx-critique/pass.md` with the subset above.
+**Procedure:** follow `../dx-critique/pass.md` with the subset above, in either entry
+mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
+token; pass.md defines both and what the token suppresses). Catalogue mechanics
+(filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
+The pass is propose-only: it records findings on the surface's design ticket per
+`../../../procedures/design-tickets.md` and hands accepted ones to dx-design-execute,
+which owns plan approval, implement, design review, and verify
+(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
+`../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
+`../../../procedures/rule-proposal.md`.

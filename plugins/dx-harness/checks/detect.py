@@ -28,6 +28,19 @@ Config ignores COMPLEMENT tier waivers, they never replace them: a waiver is a
 per-instance control exception with a named approver; a config ignore is scan-noise
 control (a legacy folder, a sanctioned raw value). Neither silences an L0.
 
+Standing overrides (`.dx/design.json` at the target repo root, generated from
+DESIGN.md)
+──────────────────────────────────────────────────────────────────────────────
+The projection's `overrides` list carries the product's standing, generator-validated
+deviations (L1 with approver, L2 with reason; L0 never). detect loads them and
+surfaces every active override in both report formats. A finding on an overridden
+control is annotated with the override and marked for a manual check against the
+adjusted rule, but it STAYS BLOCKING (it still counts toward exit 2): a deterministic
+script cannot judge whether one instance falls inside the override's scope, so only a
+manual comparison against the adjusted rule, or a machine-readable clearance (a
+config ignoreValue for a sanctioned raw value, or a per-instance waiver), clears it.
+An entry naming an L0 control is ignored (and the generator rejects it upstream).
+
 Exit contract (Impeccable-adopted): 0 clean · 2 findings · 1 tool failure /
 invalid config. This differs from the per-script 0/1: a wrapped script's exit 1
 (violations) maps to detect's exit 2; detect reserves 1 for a crashed script or a
@@ -127,6 +140,64 @@ def load_config(repo_root, no_config=False):
             raise ConfigError(f".dx/config.json detector.{key} must be a list of strings")
         out[key] = val
     return out
+
+
+def load_overrides(repo_root):
+    """Read the standing overrides from `<repo_root>/.dx/design.json` (`overrides`
+    key). Returns a list of {control, tier, rule, reason[, approver]} dicts. A
+    missing or malformed file, or a malformed entry, yields no overrides (never a
+    crash). Any entry naming an L0 control is dropped: L0 is never overridable."""
+    path = os.path.join(repo_root, ".dx", "design.json")
+    if not os.path.isfile(path):
+        return []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (ValueError, OSError):
+        return []
+    if not isinstance(data, dict):
+        return []
+    raw = data.get("overrides")
+    if not isinstance(raw, list):
+        return []
+    out = []
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        control = entry.get("control")
+        tier = entry.get("tier")
+        if not isinstance(control, str) or not isinstance(tier, str):
+            continue
+        if tier == "L0" or control in L0_CONTROL_IDS:
+            continue
+        out.append({
+            "control": control,
+            "tier": tier,
+            "rule": entry.get("rule"),
+            "reason": entry.get("reason"),
+            "approver": entry.get("approver"),
+        })
+    return out
+
+
+def split_override_findings(findings, overrides):
+    """Partition findings into (plain, adjusted). A finding on a control with a
+    standing override is annotated with that override and moved to `adjusted`: it
+    needs a manual check against the adjusted rule. Adjusted findings still count
+    toward exit 2 — a deterministic script cannot judge the override's scope, so
+    the finding stays blocking until a manual comparison (or a machine-readable
+    clearance: a config ignoreValue or a per-instance waiver) clears it."""
+    by_control = {o["control"]: o for o in overrides}
+    plain, adjusted = [], []
+    for f in findings:
+        o = by_control.get(f.get("control"))
+        if o is None:
+            plain.append(f)
+        else:
+            g = dict(f)
+            g["override"] = o
+            adjusted.append(g)
+    return plain, adjusted
 
 
 # ── Targets ────────────────────────────────────────────────────────────────────
@@ -350,44 +421,71 @@ def run_checks(specs, targets, ignore_rules, repo_root):
     return results, all_findings, crashed
 
 
-def run_generator_check(repo_root, findings, results):
+def classify_generator_result(rc):
+    """Map the generator's --check exit code to a detect kind.
+    0 -> clean · 2/3 (stale / rejected Overrides) -> findings · 1 (no DESIGN.md)
+    -> note · 4 or anything else (catalogue unreadable, crash) -> crash. Exit 4
+    means overrides could not be validated and catalog_version could not be
+    checked, so it propagates as detect's tool-failure exit, never a clean note."""
+    if rc == 0:
+        return "clean"
+    if rc in (2, 3):
+        return "findings"
+    if rc == 1:
+        return "note"
+    return "crash"
+
+
+def run_generator_check(repo_root, findings, results, crashed):
     """If `.dx/design.json` exists and the 058 generator is present, run it in
-    `--check` mode. Staleness (exit 2) is a finding, never a crash."""
+    `--check` mode. Staleness (exit 2) and a rejected Overrides section (exit 3)
+    are findings; an unreadable catalogue (exit 4) is a tool failure (exit 1)."""
     design_json = os.path.join(repo_root, ".dx", "design.json")
     if not os.path.isfile(design_json) or not os.path.isfile(GENERATOR):
         return
-    rc, out, _err = _run_subprocess([sys.executable, GENERATOR, repo_root, "--check"])
+    rc, out, err = _run_subprocess([sys.executable, GENERATOR, repo_root, "--check"])
     msg = out.strip().splitlines()[0] if out.strip() else f"generator exit {rc}"
-    if rc == 2:
+    kind = classify_generator_result(rc)
+    if kind == "findings":
         f = {"check": "design-json", "control": None,
              "file": os.path.relpath(design_json, repo_root), "line": None,
              "message": msg}
         findings.append(f)
         results.append({"name": "design-json", "kind": "findings",
                         "error_lines": [f"ERROR {msg}"], "note_lines": [], "findings": [f]})
-    elif rc == 0:
+    elif kind == "clean":
         results.append({"name": "design-json", "kind": "clean",
                         "error_lines": [], "note_lines": [], "findings": []})
-    else:
-        # No DESIGN.md or an unexpected code: surface as a note, never a crash.
+    elif kind == "note":
+        # No DESIGN.md while design.json exists: surface as a note.
         results.append({"name": "design-json", "kind": "clean",
                         "error_lines": [], "note_lines": [f"NOTE  design-json: {msg}"],
                         "findings": []})
+    else:
+        crashed.append(("design-json", msg))
+        results.append({"name": "design-json", "kind": "crash", "reason": f"exit {rc}",
+                        "error_lines": [], "note_lines": [], "findings": [],
+                        "stderr": err or msg})
 
 
 # ── Output ───────────────────────────────────────────────────────────────────────
 
-def build_json_report(findings, results, crashed, profile, exit_code):
+def build_json_report(findings, results, crashed, profile, exit_code,
+                      overrides=None, adjusted=None):
+    overrides = overrides or []
+    adjusted = adjusted or []
     by_control = {}
     by_check = {}
-    for f in findings:
+    for f in findings + adjusted:
         c = f["control"] or "(operational)"
         by_control[c] = by_control.get(c, 0) + 1
         by_check[f["check"]] = by_check.get(f["check"], 0) + 1
     return {
-        "findings": findings,
+        "findings": findings + adjusted,
+        "overrides": overrides,
         "counts": {
-            "total": len(findings),
+            "total": len(findings) + len(adjusted),
+            "override_adjusted": len(adjusted),
             "by_control": by_control,
             "by_check": by_check,
             "checks_run": [r["name"] for r in results if r["kind"] != "skipped"],
@@ -399,8 +497,18 @@ def build_json_report(findings, results, crashed, profile, exit_code):
     }
 
 
-def print_text_report(findings, results, crashed, ignore_rules):
+def print_text_report(findings, results, crashed, ignore_rules,
+                      overrides=None, adjusted=None):
+    overrides = overrides or []
+    adjusted = adjusted or []
     ig = effective_ignore_rules(ignore_rules)
+    override_map = {o["control"]: o for o in overrides}
+    if overrides:
+        print("── standing overrides (.dx/design.json) ──")
+        for o in overrides:
+            tail = f"; approver: {o['approver']}" if o.get("approver") else ""
+            print(f"OVERRIDE {o['control']} ({o['tier']}): {o.get('rule')}"
+                  f" - reason: {o.get('reason')}{tail}")
     for r in results:
         if r["kind"] == "skipped":
             print(f"── {r['name']}: skipped ({r['reason']}) ──")
@@ -410,6 +518,10 @@ def print_text_report(findings, results, crashed, ignore_rules):
             m = _FINDING_RE.match(ln)
             if m and m.group("control") in ig:
                 continue  # dropped by ignoreRules
+            if m and m.group("control") in override_map:
+                o = override_map[m.group("control")]
+                ln = (f"{ln}  [override:{o['tier']}] check against the adjusted "
+                      f"rule: {o.get('rule')}")
             shown.append(ln)
         if shown or r["note_lines"] or r["kind"] == "crash":
             print(f"── {r['name']} ──")
@@ -421,11 +533,16 @@ def print_text_report(findings, results, crashed, ignore_rules):
                 tail = (r.get("stderr") or "").strip().splitlines()
                 print(f"CRASH {r['name']}: {tail[-1] if tail else r.get('reason', '')}")
     n_run = len([r for r in results if r["kind"] != "skipped"])
+    total = len(findings) + len(adjusted)
+    adj_note = (f" {len(adjusted)} finding(s) are on overridden controls: they stay "
+                f"blocking until a manual check against the adjusted rule clears "
+                f"them.") if adjusted else ""
     if crashed:
         print(f"detect: {len(crashed)} check(s) crashed — {', '.join(n for n, _ in crashed)} "
-              f"(exit 1). {len(findings)} finding(s) collected before the failure.")
-    elif findings:
-        print(f"detect: {len(findings)} finding(s) across {n_run} check(s) (exit 2).")
+              f"(exit 1). {total} finding(s) collected before the failure.")
+    elif total:
+        print(f"detect: {total} finding(s) across {n_run} check(s) (exit 2)."
+              f"{adj_note}")
     else:
         print(f"detect: clean — {n_run} check(s), no findings (exit 0).")
 
@@ -481,17 +598,23 @@ def run(argv):
     tokens_file = find_tokens_file(args.tokens, repo_root)
     specs = build_check_specs(args.all, allow_values=ignore_values, tokens_file=tokens_file)
 
-    results, findings, crashed = run_checks(specs, scan_targets, ignore_rules, repo_root)
-    run_generator_check(repo_root, findings, results)
+    overrides = load_overrides(repo_root)
 
-    exit_code = compute_exit(findings, crashed)
+    results, findings, crashed = run_checks(specs, scan_targets, ignore_rules, repo_root)
+    run_generator_check(repo_root, findings, results, crashed)
+
+    findings, adjusted = split_override_findings(findings, overrides)
+    # Adjusted findings stay blocking: detect cannot judge the override's scope.
+    exit_code = compute_exit(findings + adjusted, crashed)
 
     if args.json:
         print(json.dumps(build_json_report(findings, results, crashed,
-                                           "all" if args.all else "curated", exit_code),
+                                           "all" if args.all else "curated", exit_code,
+                                           overrides=overrides, adjusted=adjusted),
                          indent=2, ensure_ascii=False))
     else:
-        print_text_report(findings, results, crashed, ignore_rules)
+        print_text_report(findings, results, crashed, ignore_rules,
+                          overrides=overrides, adjusted=adjusted)
     return exit_code
 
 
@@ -697,6 +820,95 @@ def run_self_test():
     check("json counts total", parsed["counts"]["total"] == 1)
     check("json counts by_control", parsed["counts"]["by_control"].get("A11Y-2") == 1)
     check("json records skipped check", "component-manifest" in parsed["counts"]["checks_skipped"])
+
+    # 13. load_overrides — missing / malformed / L0-dropping behaviour.
+    with tempfile.TemporaryDirectory() as td:
+        check("no design.json -> no overrides", load_overrides(td) == [])
+        os.makedirs(os.path.join(td, ".dx"))
+        dj = os.path.join(td, ".dx", "design.json")
+        with open(dj, "w", encoding="utf-8") as fh:
+            fh.write("{ not json")
+        check("malformed design.json -> no overrides (never a crash)",
+              load_overrides(td) == [])
+        with open(dj, "w", encoding="utf-8") as fh:
+            json.dump({"overrides": [
+                {"control": "MOT-1", "tier": "L2", "rule": "entrances to 240ms",
+                 "reason": "staged hydration"},
+                {"control": "TOK-1", "tier": "L1", "rule": "raw hex in print css",
+                 "reason": "no token layer", "approver": "J. Tan"},
+                {"control": "CNT-9", "tier": "L0", "rule": "x", "reason": "y"},
+                {"control": "A11Y-2", "tier": "L2", "rule": "x", "reason": "y"},
+                "not-a-dict",
+            ]}, fh)
+        loaded = load_overrides(td)
+        names = {o["control"] for o in loaded}
+        check("overrides loaded from design.json", {"MOT-1", "TOK-1"} <= names)
+        check("an L0-tier entry is dropped", "CNT-9" not in names)
+        check("an entry naming a catalog L0 control is dropped", "A11Y-2" not in names)
+        check("override keeps its approver",
+              next(o for o in loaded if o["control"] == "TOK-1")["approver"] == "J. Tan")
+
+    # 14. split_override_findings — annotate + separate; adjusted stays blocking.
+    ovs = [{"control": "MOT-1", "tier": "L2", "rule": "entrances to 240ms",
+            "reason": "staged hydration", "approver": None}]
+    fs2 = [{"check": "type-scan", "control": "MOT-1", "file": "a.css", "line": 4, "message": "m"},
+           {"check": "token-audit", "control": "TOK-1", "file": "b.css", "line": 7, "message": "m"},
+           {"check": "token-audit", "control": None, "file": None, "line": None, "message": "op"}]
+    enforced, adjusted = split_override_findings(fs2, ovs)
+    check("overridden finding moves to adjusted",
+          len(adjusted) == 1 and adjusted[0]["control"] == "MOT-1")
+    check("adjusted finding carries its override",
+          adjusted[0]["override"]["rule"] == "entrances to 240ms")
+    check("non-overridden findings stay enforced",
+          {f["control"] for f in enforced} == {"TOK-1", None})
+    p_only, a_only = split_override_findings(
+        [{"check": "t", "control": "MOT-1", "file": "a", "line": 1, "message": "m"}], ovs)
+    check("adjusted findings alone still exit 2 (stay blocking)",
+          compute_exit(p_only + a_only, []) == EXIT_FINDINGS)
+
+    # 14b. A narrow override never suppresses enforcement wholesale: a TOK-1
+    # override scoped to a print stylesheet cannot clear a TOK-1 finding in
+    # app/page.tsx — detect cannot judge scope, so the finding stays blocking.
+    tok_ov = [{"control": "TOK-1", "tier": "L1", "rule": "raw hex in print css only",
+               "reason": "no token layer", "approver": "J. Tan"}]
+    tok_f = [{"check": "token-audit", "control": "TOK-1", "file": "app/page.tsx",
+              "line": 3, "message": "raw hex"}]
+    tp, ta = split_override_findings(tok_f, tok_ov)
+    check("narrow override keeps the finding visible", len(ta) == 1)
+    check("narrow override does not bypass exit 2",
+          compute_exit(tp + ta, []) == EXIT_FINDINGS)
+
+    # 14c. classify_generator_result — the generator --check exit map.
+    check("generator 0 -> clean", classify_generator_result(0) == "clean")
+    check("generator 2 (stale) -> findings", classify_generator_result(2) == "findings")
+    check("generator 3 (rejected overrides) -> findings",
+          classify_generator_result(3) == "findings")
+    check("generator 1 (no DESIGN.md) -> note", classify_generator_result(1) == "note")
+    check("generator 4 (catalogue unreadable) -> crash (exit 1, never clean)",
+          classify_generator_result(4) == "crash")
+    check("generator unknown code -> crash", classify_generator_result(7) == "crash")
+
+    # 15. reports surface every active override.
+    rep = build_json_report(enforced, [], [], "curated", EXIT_FINDINGS,
+                            overrides=ovs, adjusted=adjusted)
+    check("json report lists overrides", rep["overrides"] == ovs)
+    check("json report counts override_adjusted",
+          rep["counts"]["override_adjusted"] == 1)
+    check("json report total includes adjusted findings",
+          rep["counts"]["total"] == len(enforced) + 1)
+    check("json report keeps adjusted findings visible",
+          any(f.get("override") for f in rep["findings"]))
+    txt = io.StringIO()
+    ov_results = [{"name": "type-scan", "kind": "findings",
+                   "error_lines": ["ERROR a.css:4 [MOT-1] duration 300ms over cap"],
+                   "note_lines": [], "findings": []}]
+    with contextlib.redirect_stdout(txt):
+        print_text_report(enforced, ov_results, [], [], overrides=ovs, adjusted=adjusted)
+    rendered_ov = txt.getvalue()
+    check("text report prints the overrides block", "standing overrides" in rendered_ov
+          and "OVERRIDE MOT-1 (L2)" in rendered_ov)
+    check("text report annotates the adjusted line",
+          "[override:L2] check against the adjusted rule" in rendered_ov)
 
     if failures:
         for f in failures:

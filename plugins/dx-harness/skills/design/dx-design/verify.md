@@ -60,20 +60,11 @@ Run in this order; do not present output to the user while a step is failing:
      init-script that sets `.dark` / the theme attribute *before* load, or the
      app's own toggle); a token-resolution argument alone is not evidence that
      the mode renders.
-3. **Evaluator review** — spawn the `dx-evaluator` subagent (a genuinely separate
-   agent — do not write the verdict yourself) with: the sprint contract, the approved
-   plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
-   controls in scope, **and the absolute path to the harness's `standards/` directory**
-   (the evaluator cannot resolve it from the product cwd). **If you cannot spawn subagents** (you are yourself a
-   subagent, or running unattended), stop at this step and report — the proven
-   pattern is *orchestrator dispatch*: whoever orchestrates you spawns the evaluator
-   and routes its verdict back to you. Never write the verdict yourself, and never
-   present unverified work as verified while waiting.
-   **Paste the full verdict verbatim into the decision record** — the record is the
-   durable artifact; a summary in its place is a defect ("full text in the session
-   log" does not survive the session). You never grade your own design work. Note
-   the shared limit honestly: the evaluator runs the same model on the same
-   standards, so it is a second read, not a fully independent one — treat split
-   findings and any control you could not mechanically verify as candidates for
-   human review.
+3. **Evaluator review** — run the reviewer dispatch in
+   `../../../procedures/design-review.md`: it holds who spawns the `dx-design-review`
+   subagent, the inputs to pass (contract, approved plan, screenshots, component
+   inventory, in-scope judgment/hybrid controls, and the absolute `standards/` path),
+   the cannot-spawn rule, the verbatim-verdict rule, and the verdict re-check from
+   new screenshots. You never write the verdict yourself, and never present
+   unverified work as verified while waiting.
 4. Address findings; re-run from step 1 after changes.

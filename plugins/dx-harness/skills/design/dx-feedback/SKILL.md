@@ -1,6 +1,6 @@
 ---
-name: dx-feedback
-description: Capture feedback about the DX design harness itself — a confusing skill or gate, a check that flagged wrongly or is missing, a process or onboarding gap — and file it as a `[harness-feedback]` GitHub issue on the harness repo. Use when the user gives such feedback in ANY session, including mid-task while another skill is running, or asks to "file this as harness feedback". NOT for feedback about a product's design or page (that is design-loop material), and NOT for proposing a new catalog control (that is the ratchet, via the standards skill).
+name: dx-design-feedback
+description: 'Capture feedback about the design harness itself — a confusing skill or gate, a check that flagged wrongly or is missing, a process or onboarding gap — and file it as a `[harness-feedback]` GitHub issue on the harness repo. Use when the user gives such feedback in ANY session, including mid-task while another skill is running, or asks to "file this as harness feedback". NOT for feedback about a product''s design or page — that is a pass or dx-design-critique; NOT for proposing a new catalogue control — that is a rule proposal, via dx-design.'
 ---
 
 # Harness feedback → GitHub issue
@@ -23,8 +23,8 @@ to this SKILL.md, three levels up — it ships with the plugin).
    per `../../../docs/harness-feedback.md`.
 3. **Classify**: one severity + category label(s) from the doc's scheme (read the
    doc; do not trust memory for the label lists). Boundary check: if the feedback is
-   really a control proposal, route to the ratchet via the `standards` skill instead
-   and say so.
+   really a control proposal, route it as a rule proposal per
+   `../../../procedures/rule-proposal.md` instead and say so.
 4. **Confirm before filing** — filing an issue is an outward, visible side effect on
    a repo the user may not own. Show the exact title, labels, and body (use the
    helper's `--dry-run` output) and ask the user to approve, edit, or skip. In an

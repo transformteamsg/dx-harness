@@ -1,6 +1,6 @@
 ---
-name: dx-copy
-description: Improve, write, or review the copy on a Teacher & School product surface — DX voice & tone, naming, error-message anatomy, and anti-AI-writing rules (SLP-9), applied at generation time. Use for any copy-only edit — writing or reviewing user-facing text (page, form, notification, empty state, error state), tightening the wording on a page ("improve/polish the copy on the marks page"), or any longer prose (site content, marketing copy, documentation, decision records). Sufficient on its own for copy-only work; the design loop pulls it in at its implement phase. NOT for a whole-page review with no dimension named — that is critique; NOT for a named structural or visual change — that is design.
+name: dx-design-copy
+description: 'Use when the ask names the copy of a product surface but not the exact wording — reviewing or proposing user-facing text (page, form, notification, empty or error state), naming, error-message anatomy, or tone, with anti-AI-writing rules (SLP-9) applied. Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones — and loads this skill at implement for generation-time copy rules. A stated edit ("change the label to Save") is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Non-surface prose (site content, marketing, documentation) is out of scope.'
 ---
 
 # Copy for Teacher & School products
@@ -19,9 +19,14 @@ layer (it travels in the plugin); the website's voice & tone, naming, UI text, g
 mechanics, and text-patterns guidelines present the same controls for human readers. If
 any disagree, the catalog control wins and the others are corrected.
 
-**Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run —
-capture the surface, judge only the wording, propose ranked fixes, gate, and verify —
-follow `../dx-critique/pass.md` with this skill's dimension subset: **CNT-1, CNT-2, CNT-3,
+**Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run,
+follow `../dx-critique/pass.md` with this skill's dimension subset, in either entry
+mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
+token; pass.md defines both and what the token suppresses). The pass captures the
+surface, judges only the wording, and records up to five ranked findings on the
+surface's design ticket; it proposes only and never edits the product. A stated
+exact edit ("change the label to Save") is a dx-design-execute intent, not a pass
+run. The dimension subset: **CNT-1, CNT-2, CNT-3,
 CNT-4 (domain fidelity — content modeling a real-world artifact is faithful to it or
 labelled illustrative), CNT-5 (device-agnostic action verbs), CNT-6 (low-informational-value
 words), CNT-7 (lead with purpose), CNT-8 (plain action verbs, not nominalisations),
@@ -31,7 +36,20 @@ UI term teachers already know — "Search" not "Find"), CNT-12 (sentence case), 
 (Singapore English spelling, proofread), CNT-14 (voice quality + tone-fit — the copy sounds
 Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
 (IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's reference: it is what
-"on-voice" means.
+"on-voice" means. Catalogue mechanics (filtering, tiers, plain-title naming):
+`../../../procedures/catalogue-mechanics.md`. Findings are recorded per
+`../../../procedures/design-tickets.md`; accepted findings go to dx-design-execute,
+which owns plan approval, implement, design review, and verify
+(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
+`../../../procedures/design-review.md`) and loads this skill at implement so
+generated copy arrives on-voice. Uncovered gaps become rule proposals per
+`../../../procedures/rule-proposal.md`.
+
+**Scope: product surfaces only.** This skill covers user-facing text on a product
+surface: pages, forms, notifications, empty and error states, names, tone.
+Non-surface prose (site content, marketing, documentation, decision records) is out
+of scope, and no design-family skill claims it. SLP-9 itself still binds any prose an
+agent writes; that duty travels with the control, not with this skill.
 
 ## Who you're writing for
 
@@ -149,8 +167,9 @@ for human readers; this skill is where an agent applies it.
 
 ## AI writing tells (SLP-9)
 
-These rules apply to ANY prose written in a session — UI strings, site and marketing
-content, documentation, decision records — not just product UI. The buzzword,
+Within this skill these rules apply to the surface copy you judge and propose. The
+control itself reaches wider: SLP-9 binds any prose an agent writes in a session,
+whichever skill is running (see "Scope: product surfaces only" above). The buzzword,
 em-dash-chain, and redundant-pair rules above are part of the same control. The
 canonical word lists and the full Flag / Do-not-flag calibration live in
 `slp-9.md`, resolved relative to this SKILL.md three levels up at

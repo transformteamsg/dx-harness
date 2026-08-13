@@ -1,5 +1,5 @@
 ---
-name: dx-research-brief
+name: dx-design-research-brief
 description: "Build a user research plan or research brief for any study. Use this skill when someone needs to plan a research project, write a research plan, create a research brief, document study goals and methodology, align stakeholders on a research project, or structure a new research request. Triggers include: 'write me a research plan', 'help me plan this study', 'I need a research brief', 'create a research plan for', 'we're starting a new research project', 'how do I structure this research request', 'help me document this study'. Works for all research methods — generative, evaluative, and hybrid."
 version: 1.0
 author: The User Research Strategist
