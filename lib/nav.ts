@@ -21,7 +21,7 @@ export const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Start with code",
+    label: "Design in Code",
     items: [
       { href: "/getting-started", title: "Overview" },
       { href: "/getting-started/git-basics", title: "Introducing Git" },

@@ -51,7 +51,7 @@
     ]
   },
   "getting-started": {
-    "label": "Start with code",
+    "label": "Design in Code",
     "slugs": [
       "git-basics",
       "guardrails",

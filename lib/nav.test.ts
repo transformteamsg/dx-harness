@@ -24,4 +24,9 @@ describe("docs navigation", () => {
       { href: "/harness/tools", title: "Tools" },
     ]);
   });
+
+  it("names the code workflow Design in Code", () => {
+    expect(visibleNav.some((group) => group.label === "Design in Code")).toBe(true);
+    expect(visibleNav.some((group) => group.label === "Start with code")).toBe(false);
+  });
 });
