@@ -59,3 +59,7 @@ _Avoid_: Precedence override, truth source
 **Quality bar**:
 The ceiling artifact kept beside the control catalogue: what good looks like once no control is broken. Four criteria — design quality, originality, craft, functionality — each graded strong / acceptable / weak, with every grade quoting the pairing or threshold that decided it. Read at plan, graded at design review; it never blocks — a miss is evidence for a grade, never a finding.
 _Avoid_: Ceiling file, rubric, taste standard
+
+**Register**:
+A class of surface with its own idea of what good looks like, declared in the quality bar and selected once per product repo in DESIGN.md's Quality bar section; no declaration selects the default. A register may vary a criterion's By-surface rows and thresholds, never its pairings. Distinct from the tone register (IDN-3), which calibrates one product's voice.
+_Avoid_: Surface class, surface register, mode

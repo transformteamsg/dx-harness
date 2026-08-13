@@ -14,9 +14,9 @@ registers:
 
 > **PROTOTYPE — not adopted.** Built for [#110](https://github.com/transformteamsg/dx-harness/issues/110)
 > to make the *shape* reactable, then filled for [#112](https://github.com/transformteamsg/dx-harness/issues/112):
-> all four criteria are now written end to end and the anchors are human-confirmed. Still open —
-> [#113](https://github.com/transformteamsg/dx-harness/issues/113) owns the register model,
-> [#114](https://github.com/transformteamsg/dx-harness/issues/114) the fold of
+> all four criteria are now written end to end and the anchors are human-confirmed. The register
+> model was settled on [#113](https://github.com/transformteamsg/dx-harness/issues/113). Still open —
+> [#114](https://github.com/transformteamsg/dx-harness/issues/114) owns the fold of
 > `layout-patterns.md` and reviewer rubric §4, [#115](https://github.com/transformteamsg/dx-harness/issues/115)
 > the plan/verify wiring. Delete this banner on adoption. Decisions recorded are listed at the bottom.
 
@@ -71,19 +71,36 @@ the controls, not the ceiling.** A three-point scale with no stated distribution
 ## Registers
 
 A register is a class of surface with its own idea of what good looks like. Registers are
-declared here; which one a product uses is declared in that product's `DESIGN.md`.
+declared here; which one a product uses is declared in that product's `DESIGN.md`. Distinct
+from the *tone register* (**IDN-3**), which calibrates one product's voice — a register here
+classifies the surface, not the product.
 
 | Register | Surfaces | What good looks like |
 |---|---|---|
 | `product` *(default)* | Teacher Workspace, CaseSync, Glow — dense, calm, task-first professional tools | Efficiency reads as care. The teacher is mid-task, often between classes. |
 | `standards-site` | This repo's website — the standard read by humans | A reading surface. Measure, rhythm, and scannability outrank density. |
 
-**Absent = all registers.** An anchor with no register note applies everywhere; a register
-variation is opt-in on the specific anchor, written inline as `[standards-site: …]`. This is the
-same convention as `products:` in `catalog.yaml` — absent means global, and there is never an
-empty list. Duplicating the whole file per register would guarantee drift.
+**The list grows only on evidence.** A new register enters when a real surface exists that
+neither declared register fits — never ahead of one. Glow and CaseSync are not registers:
+their warmth and restraint are per-product nuance, carried by `DESIGN.md`'s Essence and
+Voice, which the reviewer reads beside this file.
 
-`DESIGN.md` names one register per product. No declaration = `product`.
+**What a register may vary.** The **We are / We are not pairings are register-invariant** —
+they are the portfolio's shared vocabulary, and two registers with different vocabularies
+would be two files wearing one name. A register note may vary a criterion's **By-surface
+rows and thresholds** only, opt-in on the specific anchor, written inline as
+`[standards-site: …]`. An anchor with no note applies everywhere — the same convention as
+`products:` in `catalog.yaml`: absent means global, never an empty list. A register that
+seems to need different pairings is evidence the criterion's prose is wrong, not grounds
+for a note.
+
+**Selection.** `DESIGN.md` names at most one register per product repo, in a `## Quality bar`
+section (json key `quality_bar`), one bullet: `- register: standards-site`. No declaration —
+or no `DESIGN.md` at all — selects the default. `validate.py` checks a declared id exists
+here. Variety inside a product is what the six By-surface rows handle; the register is
+repo-wide. There are **no ceiling overrides**: this file never blocks, so there is nothing
+to waive — a conflict that recurs between a product and an anchor is evidence to change
+this file.
 
 ---
 
@@ -167,10 +184,12 @@ sentence should be about what is left after the controls are satisfied.
 
 ## Grades what
 
-Appropriate distinctiveness — inverted for this register. On a daily-use professional tool,
-unwarranted novelty is the more common failure than genericness: the tool's job is to disappear
-into the task. The question is never "is this distinctive?" but "did every divergence from the
-obvious build earn itself — and does anything demand to be remembered that shouldn't?"
+Appropriate distinctiveness — inverted from the usual reading, on every register declared so
+far. On a daily-use professional tool, and no less on the standard's own reading surface,
+unwarranted novelty is the more common failure than genericness: the surface's job is to
+disappear into the task. The question is never "is this distinctive?" but "did every
+divergence from the obvious build earn itself — and does anything demand to be remembered
+that shouldn't?"
 
 ## Procedure
 
@@ -365,7 +384,8 @@ Before judging, work through this in order:
 
 Items 1–7 are shape decisions committed by the prototype and confirmed on
 [#110](https://github.com/transformteamsg/dx-harness/issues/110). Items 8–10 were settled on
-[#112](https://github.com/transformteamsg/dx-harness/issues/112).
+[#112](https://github.com/transformteamsg/dx-harness/issues/112). Items 11–14 were settled on
+[#113](https://github.com/transformteamsg/dx-harness/issues/113).
 
 1. **Markdown with YAML frontmatter, not a YAML index plus detail files.** The catalogue splits
    because 70 controls cannot all sit in context and the site renders the index raw. Four
@@ -410,3 +430,19 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
     names the control it tightens (the 40×40 hit floor over **A11Y-4**, 150–250ms inside
     **MOT-1**). The alternative — keeping controlled ground out of the ceiling entirely — was
     rejected; it would have cost the two most register-specific craft rows.
+11. **Two registers, growing only on evidence.** A third register enters when a real surface
+    exists that neither fits — the same discipline that kept `marketing` out. Glow is a
+    teacher tool (the encouragement layer, per its product page), not a student surface;
+    its warmth is `DESIGN.md` nuance, not a register. An audience-based register list
+    (mirroring `catalog.yaml`'s unused `audiences:` axis) was rejected as speculation.
+12. **Pairings are register-invariant.** A register note may vary By-surface rows and
+    thresholds only. The loose alternative — any anchor may carry a note — was rejected:
+    it lets two registers grow different vocabularies inside one file. This forced the
+    small register-neutral rewrite of Originality's opening line.
+13. **Selection is one `- register:` bullet in a `## Quality bar` section of `DESIGN.md`**
+    (json key `quality_bar`), at most one per repo; absent — section or file — selects the
+    default. The word *register* stays despite the **IDN-3** tone-register collision;
+    `CONTEXT.md` now separates the two senses.
+14. **No ceiling overrides in `DESIGN.md`.** The ceiling never blocks, so there is nothing
+    to waive. The reviewer reads Essence and Voice beside this file; a recurring conflict
+    is evidence to change this file, not grounds for a per-product adjustment grammar.
