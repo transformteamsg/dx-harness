@@ -14,12 +14,11 @@ describe("llmsIndex", () => {
     expect(index).toContain(meta.waiver_syntax);
   });
 
-  it("publishes the audience-wide Kind Utility test", () => {
-    const index = llmsIndex().replaceAll("\n> ", " ");
-    expect(index).toContain(
-      "does this help the people we serve work faster with less stress?",
-    );
-    expect(index).not.toContain("does this help teachers work faster with less stress?");
+  it("publishes a product-agnostic harness promise", () => {
+    const mission = llmsIndex().split("\n\n## About")[0].replaceAll("\n> ", " ");
+    expect(mission).toContain("help people and agents ship coherent interfaces");
+    expect(mission).not.toContain("Kind Utility");
+    expect(mission).not.toContain("The one test");
   });
 
   it("links the full corpus and every page twin", () => {

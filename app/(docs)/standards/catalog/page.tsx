@@ -1,23 +1,23 @@
 import { getCatalog, getScopeMeta } from "@/lib/catalog";
 import { CatalogBrowser } from "@/components/catalog-browser";
-import { Breadcrumb } from "@/components/breadcrumb";
+import { SectionIndex } from "@/components/section-index";
 import { mdAlternate } from "@/lib/markdown-twin";
 
-export const metadata = { title: "Control catalog", ...mdAlternate("/standards/catalog") };
+export const metadata = {
+  title: "Standards and control catalog",
+  ...mdAlternate("/standards/catalog"),
+};
 
 export default function CatalogPage() {
   const controls = getCatalog();
   const scopeMeta = getScopeMeta();
   return (
     <div>
-      <div className="max-w-[720px]">
-        <Breadcrumb
-          section={{ label: "Standards", href: "/standards" }}
-          current="Control catalog"
-        />
-        <h1 className="font-display text-3xl font-semibold tracking-tight">
+      <SectionIndex sectionKey="standards" showTopics={false} />
+      <section className="mt-14 max-w-[720px] border-t border-border pt-10">
+        <h2 className="font-display text-2xl font-semibold tracking-tight">
           Control catalog
-        </h1>
+        </h2>
         <p className="mt-3 text-base text-muted-foreground">
           Every control in the standard — one verifiable statement each, with its tier, fail
           conditions, and how it&apos;s checked. Cite IDs in review; agents read the same list.
@@ -31,7 +31,7 @@ export default function CatalogPage() {
             catalog.yaml
           </a>
         </p>
-      </div>
+      </section>
       <CatalogBrowser
         controls={controls}
         productNames={scopeMeta.products}

@@ -20,7 +20,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { nav, isSubGroup, type NavItem, type NavLeaf } from "@/lib/nav";
+import { visibleNav as nav, isSubGroup, type NavItem, type NavLeaf } from "@/lib/nav";
 
 const leafHrefs = (items: NavItem[]): string[] =>
   items.flatMap((item) =>
@@ -53,6 +53,23 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent className="px-2 py-4">
         {nav.map((group) => {
+          if (group.items.length === 0 && group.href) {
+            return (
+              <SidebarGroup key={group.label} className="mb-0.5 p-0">
+                <Link
+                  href={group.href}
+                  className={clsx(
+                    "block rounded-md text-foreground/80 hover:text-foreground",
+                    groupLabel,
+                    pathname === group.href && "text-foreground",
+                  )}
+                >
+                  {group.label}
+                </Link>
+              </SidebarGroup>
+            );
+          }
+
           const holdsCurrentPage =
             pathname === group.href || leafHrefs(group.items).includes(pathname);
           const open = toggled[group.label] ?? holdsCurrentPage;

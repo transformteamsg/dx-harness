@@ -27,3 +27,37 @@ describe("content frontmatter", () => {
     expect(getDoc("guidelines", "ui-text")).not.toHaveProperty("status");
   });
 });
+
+describe("skills documentation", () => {
+  it("names every skill shipped by the plugin", () => {
+    const skillsRoot = path.join(process.cwd(), "plugins", "dx-harness", "skills");
+    const shippedNames = fs
+      .readdirSync(skillsRoot, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .flatMap((category) =>
+        fs
+          .readdirSync(path.join(skillsRoot, category.name), { withFileTypes: true })
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => {
+            const source = fs.readFileSync(
+              path.join(skillsRoot, category.name, entry.name, "SKILL.md"),
+              "utf8",
+            );
+            const name = source.match(/^name:\s*(.+)$/m)?.[1].trim();
+            expect(name, `${category.name}/${entry.name}/SKILL.md has no name`).toBeTruthy();
+            return name!;
+          }),
+      );
+    const skillsDoc = fs.readFileSync(
+      path.join(CONTENT_DIR, "harness", "skills.mdx"),
+      "utf8",
+    );
+
+    expect(shippedNames).toHaveLength(21);
+    for (const name of shippedNames) {
+      expect(skillsDoc, `${name} is shipped but missing from the Skills page`).toMatch(
+        new RegExp(`${name}(?![\\w-])`),
+      );
+    }
+  });
+});

@@ -1,10 +1,11 @@
 ---
 title: Skills
-description: The commands you type in Claude Code. Say what you want in plain words; each skill knows the standard so you do not have to.
+description: "The 21 commands shipped with dx-harness: design work, issue delivery, review, and repository upkeep."
 ---
 
-A skill is a command you type in Claude Code. All design skills carry the
-`dx-design-` prefix. They install together when you
+A skill is a command you type in Claude Code. The plugin ships 21 skills:
+13 for design work and 8 for engineering workflow. The design family carries
+the `dx-design-` prefix. They install together when you
 [install the plugin](/harness/install). You do not need to memorise the list:
 type `/dx-harness:dx-design` and it works out what you need and routes you.
 
@@ -29,6 +30,22 @@ Two rules hold for every skill:
 | Get help with git in plain words | `/dx-harness:dx-design-git` |
 | Set up your machine (once per person) | `/dx-harness:dx-design-setup` |
 | Tell us the harness itself confused you | `/dx-harness:dx-design-feedback` |
+
+## Engineering workflow
+
+These commands carry work from a clear issue to reviewed code, then keep the
+repository gates healthy.
+
+| You want to... | Type |
+| --- | --- |
+| Write a complete implementation-ready issue | `/dx-harness:dx-create-issue` |
+| Add technical decisions and constraints during grooming | `/dx-harness:dx-groom-issue` |
+| Split a large issue into atomic child issues | `/dx-harness:dx-split-issue` |
+| Implement a groomed issue and open its pull request | `/dx-harness:dx-implement-issue` |
+| Review a pull request or local branch across seven angles | `/dx-harness:dx-code-review` |
+| Configure linting and formatting | `/dx-harness:dx-lint-setup` |
+| Wire existing checks into pre-commit and pre-push hooks | `/dx-harness:dx-git-hooks-setup` |
+| Resolve vulnerable npm dependencies with a release cooldown | `/dx-harness:dx-update-npm-dependencies` |
 
 ## The front door
 

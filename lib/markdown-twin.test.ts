@@ -116,6 +116,28 @@ describe("mdAlternate", () => {
   });
 });
 
+describe("combined standards catalog twin", () => {
+  it("includes the standards overview before the controls", () => {
+    const twin = resolveTwin(["standards", "catalog.md"]);
+    const markdown = twin?.render() ?? "";
+    expect(markdown).toContain("# Standards");
+    expect(markdown).toContain("## Control catalog");
+    expect(markdown.indexOf("# Standards")).toBeLessThan(
+      markdown.indexOf("## Control catalog"),
+    );
+  });
+
+  it("keeps the old standards twin as a compatibility alias", () => {
+    const canonical = resolveTwin(["standards", "catalog.md"]);
+    const compatibilityAlias = resolveTwin(["standards.md"]);
+
+    expect(compatibilityAlias?.htmlPath).toBe("/standards/catalog");
+    expect(compatibilityAlias?.render()).toBe(canonical?.render());
+    expect(allTwins().some((twin) => twin.mdPath === "/standards.md")).toBe(false);
+    expect(mdPaths()).toContain("/standards.md");
+  });
+});
+
 /* Landing twin parity. The landing page renders from components/landing/data.ts
    and components/diagrams/loop-data.ts; its /index.md twin renders from
    content/sections/landing.mdx. Nothing else holds the two together, and both

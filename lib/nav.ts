@@ -1,20 +1,23 @@
 /* Docs navigation tree — single source of truth. The sidebar renders it;
    prev/next pagination walks its leaves in order. */
 
-export type NavLeaf = { href: string; title: string };
+export type NavLeaf = { href: string; title: string; hidden?: boolean };
 export type NavSubGroup = { label: string; items: NavLeaf[] };
 export type NavItem = NavLeaf | NavSubGroup;
-export type NavGroup = { label: string; href?: string; items: NavItem[] };
+export type NavGroup = { label: string; href?: string; items: NavItem[]; hidden?: boolean };
 
 export const isSubGroup = (item: NavItem): item is NavSubGroup => "items" in item;
 
 export const nav: NavGroup[] = [
   {
-    label: "Get oriented",
+    label: "Harness",
+    href: "/overview",
     items: [
-      { href: "/overview", title: "Overview" },
-      { href: "/how-to-read", title: "How to read this" },
-      { href: "/for-agents", title: "For agents" },
+      { href: "/harness/install", title: "Install" },
+      { href: "/harness/skills", title: "Skills" },
+      { href: "/harness/loop", title: "The loop" },
+      { href: "/harness/on-ramp", title: "Designer on-ramp", hidden: true },
+      { href: "/harness/tools", title: "Tools" },
     ],
   },
   {
@@ -31,58 +34,57 @@ export const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Principles",
-    href: "/principles",
-    items: [
-      { href: "/principles/brand-principles", title: "Brand Principles" },
-      { href: "/principles/product-design-principles", title: "Product Design Principles" },
-    ],
-  },
-  {
-    label: "Standards",
-    href: "/standards",
-    items: [{ href: "/standards/catalog", title: "Control catalog" }],
-  },
-  {
-    label: "Guidelines",
-    href: "/guidelines",
+    label: "Design reference",
     items: [
       {
-        label: "Content",
+        label: "Principles",
         items: [
+          { href: "/principles", title: "Overview" },
+          { href: "/principles/brand-principles", title: "Brand principles" },
+          { href: "/principles/product-design-principles", title: "Product design principles" },
+        ],
+      },
+      { href: "/standards/catalog", title: "Control catalog" },
+      {
+        label: "Guidelines",
+        items: [
+          { href: "/guidelines", title: "Overview" },
           { href: "/guidelines/voice-tone", title: "Voice & tone" },
           { href: "/guidelines/ui-text", title: "UI text" },
           { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
           { href: "/guidelines/text-patterns", title: "Components & text patterns" },
           { href: "/guidelines/naming", title: "Naming" },
+          { href: "/guidelines/interaction", title: "Interaction" },
+          { href: "/guidelines/web-interface", title: "Web interface" },
+          { href: "/guidelines/data-viz", title: "Data visualization" },
+          { href: "/guidelines/illustration", title: "Illustration" },
+          { href: "/guidelines/product-icons", title: "Product icons" },
         ],
       },
-      { href: "/guidelines/interaction", title: "Interaction" },
-      { href: "/guidelines/web-interface", title: "Web interface" },
-      { href: "/guidelines/data-viz", title: "Data visualization" },
-      { href: "/guidelines/illustration", title: "Illustration" },
-      { href: "/guidelines/product-icons", title: "Product icons" },
+      {
+        label: "Foundations",
+        items: [
+          { href: "/foundations", title: "Overview" },
+          { href: "/foundations/colour", title: "Colour" },
+          { href: "/foundations/typography", title: "Typography" },
+          { href: "/foundations/spacing-radius", title: "Spacing & radius" },
+          { href: "/foundations/iconography", title: "Iconography" },
+          { href: "/foundations/motion", title: "Motion" },
+          { href: "/foundations/tokens", title: "Tokens" },
+        ],
+      },
+      {
+        label: "Research",
+        items: [
+          { href: "/research", title: "Overview" },
+          { href: "/research/research-brief", title: "Research brief" },
+        ],
+      },
     ],
-  },
-  {
-    label: "Foundations",
-    href: "/foundations",
-    items: [
-      { href: "/foundations/colour", title: "Colour" },
-      { href: "/foundations/typography", title: "Typography" },
-      { href: "/foundations/spacing-radius", title: "Spacing & radius" },
-      { href: "/foundations/iconography", title: "Iconography" },
-      { href: "/foundations/motion", title: "Motion" },
-      { href: "/foundations/tokens", title: "Tokens" },
-    ],
-  },
-  {
-    label: "Research",
-    href: "/research",
-    items: [{ href: "/research/research-brief", title: "Research brief" }],
   },
   {
     label: "Products",
+    hidden: true,
     href: "/products",
     items: [
       { href: "/products/teacher-workspace", title: "Teacher Workspace" },
@@ -91,25 +93,44 @@ export const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Harness",
-    href: "/harness",
+    label: "Reference",
     items: [
-      { href: "/harness/install", title: "Install" },
-      { href: "/harness/loop", title: "The loop" },
-      { href: "/harness/skills", title: "Skills" },
-      { href: "/harness/on-ramp", title: "Designer on-ramp" },
-      { href: "/harness/tools", title: "Tools" },
-    ],
-  },
-  {
-    label: "Governance",
-    href: "/governance",
-    items: [
+      { href: "/how-to-read", title: "How to read the system" },
+      { href: "/for-agents", title: "For agents" },
       { href: "/governance", title: "How this evolves" },
       { href: "/governance/changes", title: "Change log" },
     ],
   },
 ];
+
+const visibleItems = (items: NavItem[]): NavItem[] =>
+  items.reduce<NavItem[]>((visible, item) => {
+    if (isSubGroup(item)) {
+      const leaves = item.items.filter((leaf) => !leaf.hidden);
+      if (leaves.length > 0) visible.push({ ...item, items: leaves });
+    } else if (!item.hidden) {
+      visible.push(item);
+    }
+    return visible;
+  }, []);
+
+/* Some pages remain available to direct links and machine readers without
+   taking up primary-navigation space. */
+export const visibleNav: NavGroup[] = nav
+  .filter((group) => !group.hidden)
+  .map((group) => ({ ...group, items: visibleItems(group.items) }));
+
+export function isVisibleNavHref(href: string): boolean {
+  return visibleNav.some(
+    (group) =>
+      group.href === href ||
+      group.items.some((item) =>
+        isSubGroup(item)
+          ? item.items.some((leaf) => leaf.href === href)
+          : item.href === href,
+      ),
+  );
+}
 
 /* Reading order for prev/next: each group's index page (when it has one),
    then its leaves. Deduped so a group href that repeats as a leaf
@@ -122,7 +143,7 @@ export const readingOrder: NavLeaf[] = (() => {
     seen.add(leaf.href);
     out.push(leaf);
   };
-  for (const group of nav) {
+  for (const group of visibleNav) {
     if (group.href) push({ href: group.href, title: group.label });
     for (const item of group.items) {
       if (isSubGroup(item)) item.items.forEach(push);

@@ -7,11 +7,19 @@ const routes = [
   { name: "standards catalog", path: "/standards/catalog" },
   { name: "for agents", path: "/for-agents" },
   { name: "the loop", path: "/harness/loop" },
-  { name: "standards index", path: "/standards" },
+  { name: "standards redirect", path: "/standards" },
   { name: "motion foundations", path: "/foundations/motion" },
   { name: "tokens foundations", path: "/foundations/tokens" },
   { name: "governance changes", path: "/governance/changes" },
 ] as const;
+
+test("standards overview resolves directly to the combined control catalog", async ({ page }) => {
+  await page.goto("/standards");
+  await expect(page).toHaveURL(/\/standards\/catalog$/);
+  await expect(page.getByRole("heading", { name: "Standards", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Control catalog", exact: true })).toBeVisible();
+  await expect(page.getByText("See what the catalog catches")).toHaveCount(0);
+});
 
 const mobileWidths = [320, 360] as const;
 
@@ -106,7 +114,7 @@ test.describe("reduced motion", () => {
 
   const animatedRoutes = [
     { name: "landing", path: "/", essentialText: "How it works." },
-    { name: "overview", path: "/overview", essentialText: "Three readers, one standard" },
+    { name: "overview", path: "/overview", essentialText: "Start with the harness" },
   ] as const;
 
   for (const route of animatedRoutes) {

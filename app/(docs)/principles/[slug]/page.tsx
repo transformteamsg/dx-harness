@@ -17,5 +17,5 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const { slug } = await params;
   const doc = getDoc("principles", slug);
   if (!doc) notFound();
-  return <DocPage doc={doc} />;
+  return <DocPage doc={doc} brandPrincipleTabs={slug === "brand-principles"} />;
 }

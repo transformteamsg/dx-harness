@@ -14,14 +14,12 @@ export function llmsIndex(): string {
   lines.push("# dx-harness");
   lines.push("");
   lines.push(
-    "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
+    "> Make the quality bar independent of staffing. Shared product intent, checkable",
   );
   lines.push(
-    "> useful first, kind at the surface. The one test: does this help the people we serve work",
+    "> standards, and a repeatable workflow help people and agents ship coherent interfaces.",
   );
-  lines.push(
-    "> faster with less stress? Every page below is also available as Markdown by",
-  );
+  lines.push("> Every page below is also available as Markdown by");
   lines.push("> appending `.md` to its path.");
   lines.push("");
 
@@ -66,9 +64,7 @@ export function llmsIndex(): string {
     if (key === "standards") {
       lines.push("## Standards");
       lines.push("");
-      const std = getDoc("sections", "standards");
-      if (std) lines.push(item("Standards overview", "/standards.md", std.description));
-      lines.push(item("Control catalog", "/standards/catalog.md", "readable controls + embedded YAML"));
+      lines.push(item("Standards and control catalog", "/standards/catalog.md", "overview, readable controls + embedded YAML"));
       lines.push(item("Control catalog (YAML)", "/standards/catalog.yaml", "machine source"));
       lines.push("");
       continue;
