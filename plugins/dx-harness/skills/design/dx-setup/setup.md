@@ -33,22 +33,34 @@ the check. Then continue with the tracker and commit-signing steps below.
 Design work is recorded on one long-lived ticket per surface (a page or a
 flow). Wire the conventions once:
 
-1. **Detect a tracker.** A tracker is present when `gh auth status` exits 0
-   and `gh repo view --json nameWithOwner` resolves the current repo. Where
-   the repo has an issue-tracker doc (in this repo:
-   `docs/agents/issue-tracker.md`), follow it.
-2. **Tracker present: create the label idempotently.**
+1. **Confirm a repo checkout.** Run `git rev-parse --show-toplevel`. If it
+   fails, setup is running outside a repo: skip this whole section, say so,
+   and continue with commit signing. Never create the fallback directory
+   outside a checkout.
+2. **Follow the repo's issue-tracker doc where one exists.** In this repo
+   that is `docs/agents/issue-tracker.md`. The doc wins, even when it names
+   a tracker other than GitHub: follow its workflow and skip the GitHub
+   probe below.
+3. **No doc: detect GitHub.** A GitHub tracker is present when
+   `gh auth status` exits 0 and `gh repo view --json nameWithOwner` resolves
+   the current repo.
+4. **Tracker present: create the label idempotently.**
 
    ```sh
-   gh label create design --description "Design ticket, one long-lived issue per surface" --color 5319e7 2>/dev/null || true
+   gh label list --limit 200 --json name --jq '.[].name' | grep -qx design ||
+     gh label create design --description "Design ticket, one long-lived issue per surface" --color 5319e7
    ```
 
-   An existing label is success, not an error. Then state the conventions
+   An existing label is success, not an error. Anything else that makes the
+   command fail (issues disabled, a token that cannot manage labels, the API
+   down) is a real failure: report the error, do not claim the tracker is
+   wired, and use the local-markdown fallback in the next step instead.
+   Once the label verifiably exists, state the conventions
    setup has wired: one long-lived issue per surface; title
    `Design: <surface>`, where `<surface>` is the route path (`/marks`) or the
    flow name; label `design`; runs find the ticket by label plus title match;
    the first run that touches a surface creates it.
-3. **No tracker: set up the local-markdown fallback.** A missing tracker is
+5. **No tracker: set up the local-markdown fallback.** A missing tracker is
    not a failure. Create `docs/design-tickets/` and say plainly that the
    fallback is active and why: runs will append typed blocks to
    `docs/design-tickets/<surface-slug>.md`, and deferred sections and
@@ -66,16 +78,23 @@ not gate the flow: always report the config state, and offer fixes only for
 what is missing. The two binding rules above apply to every write here,
 including git config changes and the key registration.
 
-1. **Check git config.** All three must return values:
+1. **Check the machine-wide git config.** This is once-per-machine setup, so
+   read the global scope, not the current repo:
 
    ```sh
-   git config --get gpg.format
-   git config --get user.signingkey
-   git config --get commit.gpgsign
+   git config --global --get gpg.format
+   git config --global --get user.signingkey
+   git config --global --get commit.gpgsign
    ```
 
-   If all are set, report the existing values and change nothing. If any is
-   missing, ask first, then configure SSH signing:
+   Signing is configured only when all three return values **and**
+   `commit.gpgsign` is `true`. A `false` value means signing is off: treat
+   it the same as missing. If everything passes, report the existing values
+   and change nothing. Also read the same three keys without `--global` when
+   inside a repo; where local values override the global ones (for example a
+   local `commit.gpgsign false`), report the override so the person can
+   decide what to do with it. If anything is missing or off, ask first, then
+   configure SSH signing:
 
    ```sh
    git config --global gpg.format ssh
