@@ -17,6 +17,13 @@ sections and fix-todos are filed. The catalogue is at
 `../../../docs/DESIGN-CONTEXT.md`; the template is
 `../../../docs/templates/DESIGN.md`.
 
+**Path resolution for commands.** The `../../../` paths above resolve from this
+skill file's own directory (the harness install), never from the product repo.
+Before running any `python3` command below, resolve the harness root — the
+directory three levels above this file — to an absolute path and substitute it
+for `<harness>`. Running `python3 ../../../scripts/...` from the product repo
+root fails with file-not-found.
+
 ## Rules that bind the whole session
 
 - **The catalogue is always the rulebook. DESIGN.md never restates a control**: it
@@ -37,15 +44,19 @@ sections and fix-todos are filed. The catalogue is at
 If the repo already has a `DESIGN.md`, run the staleness check before anything else:
 
 ```
-python3 ../../../scripts/generate-design-json.py <repo-root> --check
+python3 <harness>/scripts/generate-design-json.py <repo-root> --check
 ```
 
 On exit 2, show a one-line banner with the generator's message (stale against
-DESIGN.md, or stamped against an older catalogue), and check the Tokens section's
-pointers still resolve (dead token pointers are drift too). Regeneration at the end
-of the session re-stamps. Drift is a banner, never a blocker, and never a standalone
-flow. Exit 3 means the Overrides section is invalid: show the generator's errors and
-fix them with the person before going on.
+DESIGN.md, or stamped against an older catalogue). Regardless of the exit code,
+also resolve the Tokens section's pointers (and the Components manifest pointer)
+against the repo: a dead pointer is drift even when the generator reports the
+projection fresh, so check them every session. Regeneration at the end of the
+session re-stamps. Drift is a banner, never a blocker, and never a standalone
+flow. Exit 3 means the Overrides section is invalid: show the generator's errors
+and fix them with the person before going on. Exit 4 means the harness's own
+catalogue is unreadable: report it as a harness-install fault and never claim a
+clean check.
 
 ## The procedure
 
@@ -61,7 +72,7 @@ fix them with the person before going on.
    the projection, and offer the commit:
 
 ```
-python3 ../../../scripts/generate-design-json.py <repo-root>
+python3 <harness>/scripts/generate-design-json.py <repo-root>
 ```
 
    If the generator rejects an Overrides line, show its plain-language error, fix the

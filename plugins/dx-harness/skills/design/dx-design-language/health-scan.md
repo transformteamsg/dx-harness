@@ -7,20 +7,27 @@ fixes.
 
 ## Run the heuristics
 
-From the product repo root, run each script and note what it shows (paths are
-relative to this skill directory):
+Resolve the harness root first (SKILL.md's path note: the directory three levels
+above this skill's directory) and substitute it for `<harness>`. Then, from the
+product repo root, run each step and note what it shows:
 
-1. **Tokens file present, and hex sprawl.**
-   `python3 ../../../checks/token-audit.py <repo-root>`
-   A tokens file the script locates (its token-definition blocks) says the repo has
-   a token layer. Count the raw-hex / raw-colour findings: a handful is noise; raw
-   hex across many components is sprawl.
-2. **Consistent spacing and type scales.**
-   `python3 ../../../checks/type-scan.py <repo-root>`
+1. **Token files present.** Discover the candidate token files yourself: look for
+   `tokens.css`, `globals.css`, `theme.css`, a `styles/` or `tokens/` directory,
+   and a Tailwind config with a `theme` block. Open what you find and confirm it
+   defines design tokens (CSS custom properties or a theme scale). The audit
+   script reports violations only, so a silent audit alone cannot tell a healthy
+   tokenized repo from a token-less repo with no raw values; this discovery step
+   is the evidence for "a token layer exists".
+2. **Hex sprawl.**
+   `python3 <harness>/checks/token-audit.py <repo-root>`
+   Count the raw-hex / raw-colour findings: a handful is noise; raw hex across
+   many components is sprawl.
+3. **Consistent spacing and type scales.**
+   `python3 <harness>/checks/type-scan.py <repo-root>`
    Few or no off-scale findings means the scales are consistent enough to mine.
-3. **Component manifest present.**
+4. **Component manifest present.**
    `.dx/component-manifest.json` at the repo root, verified with
-   `python3 ../../../checks/component-manifest.py .dx/component-manifest.json <repo-root>`
+   `python3 <harness>/checks/component-manifest.py .dx/component-manifest.json <repo-root>`
    when it exists. Absent is common and only weakens the Components section's
    evidence.
 

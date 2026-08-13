@@ -74,7 +74,8 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
 2. Render one preview of the whole file and ask for a yes. The per-section
    confirmations plus this preview are the approval; there is no other gate.
 3. Write `DESIGN.md` at the product repo root, regenerate the projection
-   (`python3 ../../../scripts/generate-design-json.py <repo-root>`), and offer to
+   (`python3 <harness>/scripts/generate-design-json.py <repo-root>`, with
+   `<harness>` the resolved harness root from SKILL.md's path note), and offer to
    commit both files. If the generator rejects a line, fix it with the person and
    regenerate; nothing ships past a rejected line.
 
