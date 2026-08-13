@@ -17,7 +17,13 @@ if such an ask still reaches you, hand it straight over without an interview.
 
 ## 1. Entry context check
 
-Before anything else, confirm the machine and repo are ready:
+These checks gate product-shaping work only. Classify the ask before you apply them:
+rule and waiver questions (section 6), git-shaped asks, harness feedback, and tool
+problems need no capture and no design language, so answer or route those first,
+without either gate. A sharp ask that already names its skill or dimension skips you
+entirely, gates included.
+
+For an ask that shapes the product, confirm the machine and repo are ready:
 
 - Run `agent-browser --help` once. If it fails, capture is not set up: say so in one
   line and route to **dx-design-setup** before anything that needs a capture. Never
@@ -59,7 +65,17 @@ waiver questions are handled off-menu: never add them as entries.
 
 ## 3. Route
 
-Route by what the grill (or menu) surfaced, and name the skill only now, at handoff:
+Route by what the grill (or menu) surfaced, and name the skill only now, at handoff.
+Every skill you dispatch runs in **return-to-caller mode**: pass the token
+`mode:return-to-caller` plus the context payload, so the routed skill skips its own
+interview and nobody answers the same question twice. The payload is what you already
+hold: the settled intent, and for **dx-design-execute** the sprint contract (or the
+one-line intent for a modification), the approved plan or accepted findings list (with
+any granted waivers and the L1 approver) or the explicit build ask verbatim, and the
+surface's design ticket reference. In this mode a routed skill also leaves the design
+review to you: whoever started the run spawns the reviewer once.
+
+The routes:
 
 - **A named change, or make something new** (a page, screen, form, or flow): hand to
   **dx-design-execute**, the full loop.
@@ -89,17 +105,23 @@ When the intent is "improve this" across an existing surface:
 2. **Name the standout issues** in plain words. Do not grade: scored audits stay with
    dx-design-critique, and triage never attaches a score.
 3. **Route by what the person accepts:**
-   - One accepted issue in one dimension: route to that pass directly.
+   - One accepted issue in one dimension: dispatch that pass alone as a propose-only
+     subagent, with `mode:return-to-caller` and the accepted issue as its payload; it
+     returns its ranked findings to you and never re-interviews the person.
    - Several accepted issues across dimensions: dispatch the relevant passes as
-     parallel propose-only subagents (the Agent tool, one per pass), each in
-     return-to-caller mode so nobody is interviewed twice. Each pass proposes; none of
-     them edits the product or talks to the person.
+     parallel propose-only subagents, one per pass, each with `mode:return-to-caller`
+     and its accepted issues, so nobody is interviewed twice. Each pass proposes; none
+     of them edits the product or talks to the person.
 4. **Merge the proposals into one ranked plan** and run the shared gate in
    `../../../procedures/plan-approval.md`: one plan approval per run, asked by you,
    because you started the run.
 5. **Hand the accepted fixes to dx-design-execute**, the single frontend-only
-   implementer, per `../../../procedures/implement.md`. You never apply a fix
-   yourself.
+   implementer, per `../../../procedures/implement.md`. Dispatch it with
+   `mode:return-to-caller` and the full context payload from section 3: the sprint
+   contract, the approved plan or accepted findings list (with any granted waivers and
+   the L1 approver), and the surface's design ticket reference. It then skips its own
+   interview and plan-approval stop, returns its run record to you, and does not spawn
+   its own reviewer. You never apply a fix yourself.
 6. **One review of the full result**: dispatch the design reviewer once over the
    combined outcome, per `../../../procedures/design-review.md`.
 
