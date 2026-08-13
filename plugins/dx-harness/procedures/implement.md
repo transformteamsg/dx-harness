@@ -37,7 +37,12 @@ Constraints, non-negotiable while building:
 - **Catalogue controls bind throughout.** Load `../standards/catalog.yaml` and
   filter to the in-scope controls per `catalogue-mechanics.md` (beside this file);
   read a control's detail file before applying it. The L0 floor never bends.
-- Compose only manifest components (CMP-1); semantic tokens only, no raw colour or
+- Compose only manifest components (`status: "stable"` from
+  `.dx/component-manifest.json`) when the product has a manifest. When the product
+  has no manifest, that is a supported state: follow the v0-limit procedure in
+  `../standards/controls/cmp-1.md`, inspect the product codebase for the component,
+  and record the `asserted, no manifest` verdict form (CMP-1). Never block on a
+  missing manifest and never invent one. Semantic tokens only, no raw colour or
   off-scale spacing/radius (TOK-1..3); the portfolio typefaces only, on-scale sizes
   (TYP-1..3); functional colours from the Radix scales (COL-2).
 - Accessibility floor: AA contrast (A11Y-1), keyboard reach with visible focus

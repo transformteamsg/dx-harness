@@ -217,7 +217,9 @@ reference lens (a judgment aid, not a checkable standard):
 VERDICT: pass | pass-with-findings | fail
 
 BLOCKING (must fix before ship):
-- [control-id or contract item] finding — evidence
+- plain rule title (control-id or contract item) finding — evidence
+  (Plain-title rule: say the rule in plain words first, the id in brackets after
+  it, e.g. "no raw hex colours (TOK-1)". Ledger cells stay ID-only.)
   (MECHANICAL RULE, no severity discretion: every in-scope control you judge
   "fail" with no waiver on file goes HERE if it is L0 or L1, ADVISORY if L2.
   Do not demote an L1 because the element is peripheral, the fix is small, or
@@ -238,7 +240,8 @@ SUGGESTIONS (not violations — layout/pattern improvements the builder may take
 QUALITY GRADES: design quality / originality / craft / functionality — with reasons
 
 JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
-- [control-id] pass | pass-with-caveat | fail — the evidence you judged, quoted.
+- plain rule title (control-id) pass | pass-with-caveat | fail — the evidence you
+  judged, quoted.
   For CMP-1, always name your evidence source (manifest diff / product codebase
   read / general stack knowledge) per its detail file's v0-limit clause.
 
