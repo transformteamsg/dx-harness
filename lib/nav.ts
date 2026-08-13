@@ -13,7 +13,7 @@ export const nav: NavGroup[] = [
     label: "Harness",
     href: "/overview",
     items: [
-      { href: "/harness/install", title: "Install" },
+      { href: "/harness/install", title: "Quick start" },
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/on-ramp", title: "Designer on-ramp", hidden: true },

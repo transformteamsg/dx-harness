@@ -19,7 +19,7 @@ const tiles = [
 const harnessStart = [
   {
     href: "/harness/install",
-    title: "Install",
+    title: "Quick start",
     description: "Add the plugin and its control catalog to your agent.",
     artKey: "harness/install",
   },

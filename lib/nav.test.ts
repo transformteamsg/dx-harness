@@ -18,7 +18,7 @@ describe("docs navigation", () => {
     const harness = visibleNav.find((group) => group.label === "Harness");
     expect(harness?.href).toBe("/overview");
     expect(harness?.items).toEqual([
-      { href: "/harness/install", title: "Install" },
+      { href: "/harness/install", title: "Quick start" },
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/tools", title: "Tools" },

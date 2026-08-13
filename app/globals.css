@@ -80,6 +80,11 @@
   --motion-base: 200ms;
   --motion-slow: 300ms;
   --motion-story: 600ms;
+  /* The hero mark uses the logo-grid-generator's draw treatment: the complete
+     closed path traces once, then its fill settles. Narrative brand motion,
+     never task feedback. */
+  --motion-mark-draw: 1800ms;
+  --motion-mark-fill-delay: 1500ms;
   /* Stagger step for narrative reveals (the diagram): each item's delay is
      its narrative index × this step; every individual motion stays ≤300ms
      (MOT-1) — only the choreography spans longer, and only on story
@@ -306,10 +311,37 @@
   .hero-enter {
     animation: hero-enter var(--motion-base) var(--ease-out) both;
   }
+  .hero-geometry-grid {
+    animation: hero-geometry-grid var(--motion-story) var(--ease-out) both;
+  }
+  .hero-geometry-mark-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: hero-geometry-mark-draw var(--motion-mark-draw) linear both;
+  }
+  .hero-geometry-mark-fill {
+    animation: hero-geometry-mark-fill var(--motion-slow) var(--ease-out)
+      var(--motion-mark-fill-delay) both;
+  }
   @keyframes hero-enter {
     from {
       opacity: 0;
       transform: translateY(8px);
+    }
+  }
+  @keyframes hero-geometry-grid {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes hero-geometry-mark-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes hero-geometry-mark-fill {
+    from {
+      opacity: 0;
     }
   }
 }

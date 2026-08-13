@@ -118,6 +118,3 @@ export const CURATED_SKILLS: CuratedSkill[] = [
     text: "Optical alignment, borders, and the feel of a hover.",
   },
 ];
-
-export const INSTALL_COMMANDS = `/plugin marketplace add transformteamsg/dx-harness
-/plugin install dx-harness@dx-harness`;

@@ -1,10 +1,9 @@
+import Link from "next/link";
 import { SlopCompare } from "@/components/compare";
-import { CopyCommands } from "@/components/landing/copy-commands";
-import { NoCliDialog } from "@/components/landing/no-cli-dialog";
 import { FeatureCards } from "@/components/landing/feature-cards";
 import { FullMapDiagram } from "@/components/landing/full-map-diagram";
+import { HeroGeometry } from "@/components/landing/hero-geometry";
 import { SkillsSection } from "@/components/landing/skills-section";
-import { INSTALL_COMMANDS } from "@/components/landing/data";
 
 export const metadata = {
   /* Absolute: the root template suffixes "— dx-harness", which would double
@@ -21,41 +20,36 @@ const focusRing =
 export default function Landing() {
   return (
     <div>
-      {/* ── Hook + install — the single focal region (LAY-7) ── */}
-      <section className="border-b border-border">
-        <div className="hero-enter mx-auto w-full max-w-[1080px] px-6 pt-16 pb-16 sm:pt-24 sm:pb-20">
-          <h1 className="max-w-[24ch] font-display text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
-            Your agent already builds the UI. Now it holds the design bar.
-          </h1>
-          <p className="mt-6 max-w-[58ch] text-lg leading-relaxed text-pretty text-muted-foreground">
-            dx-harness is a Claude Code plugin of design skills for GovTech
-            designers. Every pass proposes; only one skill ever edits your
-            product.
-          </p>
-
-          {/* ── Quick start — the one primary action (CMP-5) ── */}
-          <div id="quick-start" className="mt-10 max-w-[640px] scroll-mt-24">
-            <div className="rounded-lg border border-border bg-surface">
-              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2.5">
-                <span className="font-mono text-xs font-medium tracking-[0.08em] text-foreground">
-                  Claude Code — two commands
-                </span>
-                <CopyCommands commands={INSTALL_COMMANDS} />
-              </div>
-              <pre
-                tabIndex={0}
-                role="region"
-                aria-label="Install commands"
-                className={`overflow-x-auto rounded-b-lg bg-muted px-4 py-4 font-mono text-sm leading-[1.6] text-foreground ${focusRing}`}
-              >
-                <code>{INSTALL_COMMANDS}</code>
-              </pre>
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Then type <span className="font-mono text-foreground">/dx</span> and
-              every skill surfaces. Codex support is coming.{" "}
-              <NoCliDialog triggerClassName={focusRing} />
+      {/* ── Poster hero — promise, one action, canonical DXD geometry ── */}
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-[1280px] items-center gap-6 px-6 py-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(480px,1.12fr)] lg:gap-8 lg:py-10">
+          <div className="hero-enter relative z-10 max-w-[660px]">
+            <p className="font-mono text-xs font-medium tracking-[0.14em] text-tw-blue-text">
+              DXD · DESIGN HARNESS
             </p>
+            <h1 className="mt-5 max-w-[18ch] font-display text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
+              Your agent already builds the UI. Now it holds the design bar.
+            </h1>
+            <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-pretty text-muted-foreground">
+              A design loop, checkable standards, and an independent reviewer for every build.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Link
+                href="/harness/install"
+                className="site-focus-ring inline-flex min-h-11 items-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-(--motion-fast) hover:bg-tw-blue-hover"
+              >
+                Quick start
+              </Link>
+              <Link
+                href="/overview"
+                className={`inline-flex min-h-11 items-center text-sm font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-(--motion-fast) hover:text-tw-blue-text ${focusRing}`}
+              >
+                Explore the harness
+              </Link>
+            </div>
+          </div>
+          <div className="relative">
+            <HeroGeometry />
           </div>
         </div>
       </section>

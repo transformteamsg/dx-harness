@@ -38,9 +38,9 @@ export function sectionTopics(key: string): Topic[] {
   const section = sections[key];
   if (!section) return [];
   const ink = sectionInk[key] ?? "var(--foreground)";
-  const fromPages = (section.pages ?? [])
-    .filter((page) => isVisibleNavHref(page.href))
-    .map((page) => ({ ...page, ink }));
+  const fromPages = (section.pages ?? []).flatMap((page) =>
+    isVisibleNavHref(page.href) ? [{ ...page, ink }] : [],
+  );
   const fromSlugs = (section.slugs ?? []).flatMap((slug) => {
     const href = `/${key}/${slug}`;
     if (!isVisibleNavHref(href)) return [];

@@ -18,11 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // Direction contract — kept in emitted markup so the build can be audited.
           dangerouslySetInnerHTML={{
             __html: `
-THESIS: the machine explained where the visitor asks "how does this work?" — the token-drawn architecture diagram is the hero's demonstration; the before/after demo is the proof below it.
+THESIS: the canonical DXD construction is the landing's visual anchor; the architecture diagram explains the harness and the before/after demo proves the result below it.
 OWN-WORLD: one light world (docs/decisions/landing-light-return.md, reversing landing-dark.md): the landing and the docs share the light :root tokens and the same calm documentation register (seed-design.io docs pages as the reference) — near-monochrome chrome, hairline borders, TW blue as the single accent; the demo frame needs no pinning because it already depicts the light Teacher Workspace product in a light world.
-STORY: an engineer whose agent ships slop arrives skeptical, copies two install commands in the first viewport, reads the promise (intent without loss), traces their ask through the orchestrator diagram (one router, one builder with a human gate), recognizes their own PR in the demo.
-FIRST VIEWPORT: landing nav (quincunx wordmark left; Quick start / Docs / GitHub right); hook headline ("Your agent already builds the UI. Now it holds the design bar."); install panel with the single primary Copy action.
-FORM: hook + install (no-CLI in a dialog) → core features → how it works (the isometric five-layer map) → proof (SlopCompare) → path (skill groups); the landing renders no loop phases — the loop's contract-of-record stays components/diagrams/loop-data.ts, rendered only by the docs OrbitLoop.
+STORY: an engineer whose agent ships slop sees a designed system, follows Quick start into the docs, traces their ask through the orchestrator diagram, and recognizes their own PR in the demo.
+FIRST VIEWPORT: landing nav (quincunx wordmark left; Quick start / Docs / GitHub right); hook headline; one Quick start action; the measured DXD quartic mark and construction grids from the logo-grid-generator.
+FORM: poster hero → core features → how it works (the isometric five-layer map) → proof (SlopCompare) → path (skill groups); install instructions live in the docs Quick start page, and the landing renders no loop phases.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the verify verdict, the decision record, and DESIGN.md.
 `,
           }}
