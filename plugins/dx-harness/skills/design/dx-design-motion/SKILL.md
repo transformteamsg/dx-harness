@@ -10,7 +10,7 @@ and view changes, hover/press feedback. You judge motion only; styling, layout, 
 and flow structure are out of scope and get NOTED and routed.
 
 **Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-critique/pass.md):
+../dx-design-critique/pass.md):
 
 - **MOT-1** — 100–300ms, standard easing, no decorative motion on critical paths.
 - **MOT-2** — motion values come from the declared motion token set; durations and
@@ -20,13 +20,13 @@ and flow structure are out of scope and get NOTED and routed.
 - **A11Y-5** — a `prefers-reduced-motion` variant disables non-essential animation.
 - **SLP-8** — no bounce or elastic easing on interface elements.
 
-**Reference:** the motion bullets of `../dx-design/implement-craft.md` — property-scoped
+**Reference:** the motion bullets of `../dx-design-execute/implement-craft.md` — property-scoped
 interruptible transitions (`transition-property`, never `transition: all`), direction of
 easing (entrances `ease-out`, exits `ease-in`, changes `ease-in-out`), press feedback
 (`scale(0.96)`, never a bounce), and disciplined `will-change`. Keyboard navigation is
 instant — no animation on tab/arrow movement.
 
-**Procedure:** follow `../dx-critique/pass.md` with the subset above, in either entry
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics
 (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.

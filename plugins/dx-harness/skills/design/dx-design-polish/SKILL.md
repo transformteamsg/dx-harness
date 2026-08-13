@@ -10,7 +10,7 @@ a screen read as cared-for rather than templated. You judge the visual surface o
 structure, wording, motion, and flow are out of scope and get NOTED and routed.
 
 **Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-critique/pass.md):
+../dx-design-critique/pass.md):
 
 - **Tokens** — TOK-1 (no raw colour), TOK-2 (spacing scale), TOK-3 (radius scale).
 - **Type** — TYP-1 (Plus Jakarta Sans / Inter only), TYP-2 (min sizes + line-height),
@@ -19,11 +19,11 @@ structure, wording, motion, and flow are out of scope and get NOTED and routed.
 - **Visual anti-slop** — SLP-1 (no purple/glow), SLP-2 (no gradient text), SLP-3 (no
   side-tab card borders), SLP-6 (type hierarchy ≥ 1.25x), SLP-7 (spacing rhythm).
 
-**Reference:** the polish bullets of `../dx-design/implement-craft.md` — tabular figures,
+**Reference:** the polish bullets of `../dx-design-execute/implement-craft.md` — tabular figures,
 concentric radius, layered shadows, type polish (`text-wrap`, font-smoothing), image
 edges. It refines these controls; it never replaces them.
 
-**Procedure:** follow `../dx-critique/pass.md` with the subset above, in either entry
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Card/nested-card
 composition (SLP-4/5/11) is a dx-design-pattern matter: note and route it, never a
