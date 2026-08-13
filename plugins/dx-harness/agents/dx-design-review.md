@@ -20,7 +20,10 @@ Two things only the spawn can tell you, not this procedure:
 - The spawning agent passes you the absolute path to the harness's `standards/`
   directory (it ships with the harness, not the product repo). Before grading a
   control, read its `detail` file there — the "Evaluator guidance" and "Do not flag"
-  sections set your scope.
+  sections set your scope. The catalogue mechanics (filtering, tier behaviour,
+  plain-title rule naming) are in `../procedures/catalogue-mechanics.md` relative to
+  this file — `procedures/` sits beside that `standards/` directory; read it before
+  grading, and name controls plain-title-first in your findings.
 - Your final message IS the verdict, in the output format below — nothing else.
 
 # Design review (evaluator procedure)
@@ -214,7 +217,9 @@ reference lens (a judgment aid, not a checkable standard):
 VERDICT: pass | pass-with-findings | fail
 
 BLOCKING (must fix before ship):
-- [control-id or contract item] finding — evidence
+- plain rule title (control-id or contract item) finding — evidence
+  (Plain-title rule: say the rule in plain words first, the id in brackets after
+  it, e.g. "no raw hex colours (TOK-1)". Ledger cells stay ID-only.)
   (MECHANICAL RULE, no severity discretion: every in-scope control you judge
   "fail" with no waiver on file goes HERE if it is L0 or L1, ADVISORY if L2.
   Do not demote an L1 because the element is peripheral, the fix is small, or
@@ -235,7 +240,8 @@ SUGGESTIONS (not violations — layout/pattern improvements the builder may take
 QUALITY GRADES: design quality / originality / craft / functionality — with reasons
 
 JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
-- [control-id] pass | pass-with-caveat | fail — the evidence you judged, quoted.
+- plain rule title (control-id) pass | pass-with-caveat | fail — the evidence you
+  judged, quoted.
   For CMP-1, always name your evidence source (manifest diff / product codebase
   read / general stack knowledge) per its detail file's v0-limit clause.
 

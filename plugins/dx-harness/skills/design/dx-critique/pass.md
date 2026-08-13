@@ -18,18 +18,26 @@ deliberate choice without asking.
 2. **Load only your slice.** Load the pass's control-id subset (named in the SKILL.md
    that sent you here) from `../../../standards/catalog.yaml`, read each control's
    `detail` file when it has one, and load the pass's named reference files — nothing
-   wider. The dimension is the boundary; the catalog ids are the rules.
+   wider. The dimension is the boundary; the catalog ids are the rules. Mechanics
+   (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
 3. **Findings, then up to five ranked suggestions — inside the dimension only.**
    Ground each in the captured surface. Rank by impact on the teacher's task; note cost
    (S/M) and the control or pattern each serves. Anything you notice **outside** the
    dimension is NOTED and routed, never fixed here — "the spacing rhythm is a `layout`
    matter", "that wording is a `copy` matter". Suggestions are offers, not a plan.
-4. **Plan gate — the user approves before any edit.** Present the findings and the
-   ranked suggestions, then stop for the user to pick. Unpicked suggestions are recorded
-   as "considered", never silently dropped. A pass never bypasses this gate.
-5. **Implement, then verify.** Build only the accepted suggestions, then run
-   `../dx-design/verify.md` (beside the design skill) in order — a scoped pass still proves
-   its changed surface. Report a `checks/`-backed control as "verified manually" or
+4. **Plan gate — the user approves before any edit.** Run the shared gate protocol
+   in `../../../procedures/plan-approval.md`: present the findings and the ranked
+   suggestions, then stop once for the user to pick (an explicit build ask counts as
+   approval; L1 waivers are approved here). Record the findings on the surface's
+   design ticket per `../../../procedures/design-tickets.md` — unpicked suggestions
+   are recorded as "considered", never silently dropped. A pass never bypasses this
+   gate.
+5. **Implement, then verify.** Build only the accepted suggestions per
+   `../../../procedures/implement.md` (its branch guard and frontend-only
+   constraints bind a scoped pass too), then run `../dx-design/verify.md` (beside the
+   design skill) in order — a scoped pass still proves its changed surface; reviewer
+   dispatch and the verdict re-check follow `../../../procedures/design-review.md`.
+   Report a `checks/`-backed control as "verified manually" or
    "could not verify mechanically" whenever no script ran; never as "passed".
 
 ## L0 is never scoped out

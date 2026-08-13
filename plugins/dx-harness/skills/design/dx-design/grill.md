@@ -72,9 +72,10 @@ into the plan.
   family from `standards/catalog.yaml` at grill time, not from a remembered list,
   which goes stale the day the catalog ratchets.
 - **Waiver honesty** — for every proposed waiver: is it genuinely mandated or
-  unavoidable, or is it convenience? Check what the waiver's tier demands via the
-  `standards` skill — the tier rules live there, not here — and name the approver
-  now, not later.
+  unavoidable, or is it convenience? Check what the waiver's tier demands in
+  `../../../standards/README.md` (agent mechanics:
+  `../../../procedures/catalogue-mechanics.md`) — the tier rules live there, not
+  here — and name the approver now, not later.
 
 ## Recording it
 

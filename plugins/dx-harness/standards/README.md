@@ -142,8 +142,9 @@ summary count. This replaces hand-maintained gap lists, which drift.
    L2 is evidence. Citizen-service patterns (one-thing-per-page, government banners)
    enter only via ratchet evidence — these products are professional daily-use
    workspaces, not transactional citizen services.
-5. **One catalog for the whole portfolio.** No per-product control overlays;
-   per-product difference is nuance calibration, never separate rules.
+5. **One catalog for the whole portfolio.** No per-product control overlays; per-product
+   difference is nuance calibration or a standing override declared in that product's
+   DESIGN.md (L0 never; L1 needs a named approver; L2 needs a reason) — never separate rules.
 
 ## Detail file format (`controls/<id>.md`)
 

@@ -22,8 +22,13 @@ text drifts):
   plan; the agent drives the rest. The full procedure lives in `design`.
 - **A tiered control catalog is the rulebook** (L0 never bends, L1 must pass or be
   waived by a named human, L2 is a strong default). Nobody memorises it — the agent
-  loads and applies it. Mechanics and waivers live in `standards`; the catalog itself is
-  `../../../standards/catalog.yaml` (relative to this file).
+  loads and applies it. Mechanics and waivers live in `../../../standards/README.md`
+  and `../../../procedures/catalogue-mechanics.md` (both relative to this file); the
+  catalog itself is `../../../standards/catalog.yaml`. The shared back half of every
+  run lives beside it in `../../../procedures/`: `plan-approval.md` (the orchestrator
+  joins the shared back half here — one plan approval per run, asked by whoever
+  started it), `implement.md`, `design-review.md`, `rule-proposal.md`, and
+  `design-tickets.md`.
 
 ## 2. Context check — is this machine and repo ready?
 
@@ -58,7 +63,12 @@ skill that fits:
 - **Copy only** — write or review UI text with no layout change → invoke `copy`
   (DX voice & tone; it also runs the improve-the-copy pass).
 - **A rulebook or waiver question** — "can I waive this?", "who approves?", "does this
-  control apply?" → invoke `standards`; never answer a waiver question from memory.
+  control apply?" → answer it yourself: read `../../../standards/README.md` and
+  `../../../procedures/catalogue-mechanics.md` first; never answer a waiver question
+  from memory. Then offer the one next step that fits — record the approved waiver on
+  the surface's design ticket (`../../../procedures/design-tickets.md`), promote a
+  repeated waiver into DESIGN.md's Overrides, or start a rule proposal
+  (`../../../procedures/rule-proposal.md`) — and act only on an explicit yes.
 - **Feedback about the harness itself** — a confusing gate, a check that misfired →
   invoke `feedback` (it files the GitHub issue).
 

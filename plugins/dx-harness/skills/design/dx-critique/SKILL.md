@@ -13,8 +13,9 @@ judged the current state, and you never restyle a deliberate choice without aski
 **Load first:** the control catalog at `standards/catalog.yaml`. It ships with this
 harness, not the product repo — resolve it relative to this SKILL.md, three levels up:
 `<this-skill-dir>/../../../standards/catalog.yaml`. Filter controls by `phase` and scope
-(`products` / `audiences` — absent = global) as you go, per the `standards` skill's
-"Reading and filtering" rules; read a control's `detail` file before applying it. If the
+(`products` / `audiences` — absent = global) as you go, per the "Reading and filtering"
+rules in `../../../procedures/catalogue-mechanics.md`; read a control's `detail` file
+before applying it. If the
 product repo has a `DESIGN.md`, it calibrates colour/tone/motion — load it too.
 
 For any waiver or applicability question read `../../../standards/README.md`
