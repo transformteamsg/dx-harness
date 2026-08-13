@@ -8,8 +8,13 @@ description: 'Build product UI — a new page, screen, form, flow, or component,
 You are designing UI for the Teacher & School portfolio (Teacher Workspace, CaseSync,
 Glow, and TW surfaces). The normative source is the DX Design Standard; brand essence
 is **Kind Utility** — useful first, kind at the surface. Standards compliance is not a
-final check — it shapes every phase. Work through the phases in order; do not skip a
-gate even if the request seems simple.
+final check — it shapes every phase. The run is: intent, diverge, plan approval,
+implement, design review. Work through the phases in order; do not skip a gate even
+if the request seems simple. This is the ONLY skill that edits the product: the
+passes and dx-design-critique propose only, and their accepted findings are built
+here. Intent and diverge live in this file; the back half of the run (plan approval,
+implement, design review, rule proposal) is shared procedure, loaded from
+`../../../procedures/` and never restated here.
 
 The harness's one promise: **intent without loss**. What the builder means is written
 down as a contract in Phase 1; every later phase is graded against that contract;
@@ -67,6 +72,41 @@ LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
 LAY-7 (one primary focal region; visual reading order matches the task's
 priority order — L2).
 <!-- /dx-sync:lay-controls -->
+
+## Two ways in: standalone and return-to-caller
+
+A caller (normally the `dx-design` orchestrator) can dispatch this skill with the
+token `mode:return-to-caller` plus a context payload:
+
+- the sprint contract, or the one-line intent for a modification, so Phase 1 is not
+  re-interviewed;
+- the approved plan or the accepted findings list (with any granted waivers and the
+  L1 approver), or the verbatim ask when it names a specific plan or chosen
+  direction, so plan approval is not re-asked;
+- the surface's design ticket reference (issue number or local markdown path).
+
+In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
+payload carries a real approval: an approved plan; an accepted-findings list from a
+pass or critique, which counts as approval for a smaller finding (a whole-page
+rebuild always stops once at plan approval before any edit, per the pattern pass
+rules); or a verbatim ask that names a specific plan or chosen direction (only
+these forms count as approval per `../../../procedures/plan-approval.md`). A
+generic named change such as "add a field" is NOT approval: no one has seen a plan
+yet. In that case write the scoped
+plan and return it to the caller for approval; do not edit the product until the
+approval comes back. Do not spawn the design reviewer in this mode; whoever
+started the run spawns it, exactly once, per
+`../../../procedures/design-review.md`. Instead, return the full review bundle to
+the caller: the built changes, the sprint contract (or the one-line intent), the
+approved plan, the component inventory, the in-scope judgment and hybrid controls,
+the waivers applied, and the evidence captured. This is every input reviewer
+dispatch in `../../../procedures/design-review.md` requires; a return of changes
+and evidence alone leaves the caller unable to dispatch the reviewer.
+
+Standalone invocation (no token) takes a plain ask and owns the whole run: the full
+front half, exactly one stop at plan approval, and spawning the reviewer. In BOTH
+modes the branch guard from `../../../procedures/implement.md` runs before any edit,
+and it hands off to `dx-design-git` when it trips.
 
 ## New page vs. modification
 
@@ -211,11 +251,31 @@ Output: the sprint contract, shown to the user.
 
 ## Phase 2 — Diverge
 
-Produce 2–3 structurally different options. **No pixel code.** For each option:
-layout structure, which existing components it composes, how the flow splits across
-steps, a one-line **visual thesis** (the mood and energy it carries — stated as an
-extension of the product's existing system, never an invented new aesthetic), and one
-sentence on the trade-off. Use the product's component manifest
+Produce 2–3 clearly different directions and render each one as a real,
+self-contained HTML page, so the person picks between things they can see, not
+descriptions. Skip diverge only when the structure is fixed (the modification path
+above) or the ask names a chosen direction.
+
+**Rendering and hosting.** Each direction is one self-contained HTML file: inline
+CSS, no external requests, honest content (the real headings and copy from Phase 1,
+not lorem ipsum). In Claude Code, publish the pages as Claude Artifacts; they open
+in the browser automatically. In a harness without artifact publishing, write the
+HTML files locally and open them in the browser (`open <file>` on macOS, or the
+platform equivalent). In a headless or unattended run where no browser can open,
+print the file paths or artifact URLs and ask for the pick; NEVER silently choose a
+direction yourself.
+
+**The accompanying summary.** Beside the rendered pages, give each direction a short
+text summary: layout structure, which existing components it composes, how the flow
+splits across steps, a one-line **visual thesis** (the mood and energy it carries,
+stated as an extension of the product's existing system, never an invented new
+aesthetic), and one sentence on the trade-off.
+
+**The pick is the contract.** Record the chosen direction on the surface's design
+ticket run record (`../../../procedures/design-tickets.md`); the design review
+audits the built result against it.
+
+Use the product's component manifest
 (`.dx/component-manifest.json`, filtered to `status: "stable"` entries) —
 options may only compose components that exist in the manifest (CMP-1 applies from
 here on). If the product has no manifest yet, fall back to the v0-limit procedure
@@ -243,13 +303,22 @@ order match the task's priority order — the squint test) — design to them no
 a cleanup pass. When diverging on an existing surface, the critique's layout
 suggestions seed the options.
 
-Output: the options with a recommendation. The user picks.
+Output: the rendered direction pages plus their summaries, with a recommendation.
+The user picks; the pick becomes the contract above.
 
 ## Phase 3 — Plan (human gate)
 
-The shared gate protocol is `../../../procedures/plan-approval.md` — read it now:
-plan approval occurs one time per run, an explicit build ask counts as approval, and
-L1 waivers are approved here. Expand the chosen option into a plan:
+The gate protocol is shared: read `../../../procedures/plan-approval.md` now and
+run it. It holds the stop-once rule (plan approval occurs one time per run; an
+explicit ask to build a specific plan or chosen direction counts as approval), the
+three gate stages, L1 waiver approval, the unattended-run proxy rules, and where
+the approved plan is recorded. The grilling procedure its stage 2 runs is
+`grill.md`, beside this skill. In return-to-caller mode the gate is satisfied only
+when the payload carries an approval; without one, return the plan to the caller
+per "Two ways in" above, and never stop twice in one run.
+
+What the plan itself covers is this skill's job. Expand the chosen direction into a
+plan:
 
 - Page/step structure and the component for each region.
 - Tokens/patterns used; any **missing component** surfaced explicitly with options
@@ -280,188 +349,57 @@ L1 waivers are approved here. Expand the chosen option into a plan:
   to capture), each cell a tight phrase, not prose. It is a summary the grill and the
   approver read first, never a substitute for the plan above it.
 
-**Stop. The user approves the plan before any implementation.** This is the cheapest
-place for human judgment — structural mistakes caught here cost a conversation, not a
-rebuild. The gate runs across **three stages**, in order — never collapsed on your own
-initiative; only the human's clear early approval shortens it (`grill.md`'s
-early-approval rule):
+Skill-specific notes on the gate:
 
-- **Stage 1 — expose the plan.** The full plan goes in your message body, ending with
-  the plan summary table. Close with a plain-text line that you will grill the plan
-  next — **never a modal/option dialog in the same turn as the plan**, which forces a
-  decision before the reader has read what they're deciding on. Do not ask for
-  approval yet.
-- **Stage 2 — grill the plan.** Read `grill.md` (beside this skill) now and run it:
-  interrogate the exposed plan one question at a time, each with a recommended answer,
-  looking up facts from context and putting every open decision to the human, and
-  folding every answer back into the plan before the next question. This is where hidden assumptions and
-  ducked decisions get resolved, so the human approves a sharpened plan rather than a
-  first draft. Grilling sharpens only: a question whose answer changes the chosen
-  structure sends you back to Phase 2, and grilling never relaxes a control.
-- **Stage 3 — the structured ask.** Once the grill is spent, ask for sign-off on the
-  sharpened plan with a structured **Approve / Adjust** `AskUserQuestion` — the
-  documented Phase-3 default. "Approve" proceeds to implement; "Adjust" sends you back
-  to revise the plan — a structural adjustment returns to Phase 2 (the grill's own
-  rule), anything else is re-exposed and re-asked. A free-text approval is still
-  accepted; a vague "continue" is not — confirm what they are approving.
-
-This structured **Approve / Adjust** question is the default at the Phase 2 option pick
-and at continuation/verify gates too — but the three-stage split above is Phase 3 only.
-At the Phase 2 pick the dialog may be same-turn, because the options are short enough
-to read inside it. In an unattended run the grill has no human to answer it — grill
-yourself and record it, per `grill.md`.
-
-In an **unattended run** with no human reachable, proxy approval is
-permitted only when the operator authorized it up front — record it verbatim as
-"approved by operator proxy — unattended run" in the decision record, never as if a
-human approved.
-
-Proxy approval is not a substitute for review. In an unattended run, still emit a
-**compact, reviewable plan + intended-diff summary** for async sign-off: the files
-to be touched, the specific visual/structural changes, and — explicitly — what is
-being **preserved**. Route it to the async reviewer (the portfolio designer) and
-record that it was sent; do not treat "operator proxy" as equivalent to a human
-having read the diff.
-
-On a team with no dedicated designer, this gate (and the verify gate) is reviewed
-async by a portfolio designer — route the plan to them rather than treating the gate
-as optional. Write the approved plan to a decision record at `docs/decisions/<page>.md` in
-the **product repo**. If `docs/decisions/TEMPLATE.md` does not yet exist there,
-copy it from the plugin first — it ships at
-`<this-skill-dir>/../../../docs/decisions/TEMPLATE.md` (resolved the same way as
-the catalog in the Load-first note, three levels up) — so records conform to
-`audit-record.py` by default. Base the new record on that template. The approved
-plan is the artifact the verify phase grades against, so it must be fixed, not
-whatever you last proposed. Any L1 waiver granted here records its named approver
-in that file.
+- The structured Approve / Adjust question is the default at the Phase 2 direction
+  pick and at continuation gates too, but the three-stage split lives only at this
+  gate. At the Phase 2 pick the dialog may be same-turn, because the summaries are
+  short enough to read inside it.
+- The decision record this repo writes the approved plan to is
+  `docs/decisions/<page>.md` in the **product repo**. If `docs/decisions/TEMPLATE.md`
+  does not yet exist there, copy it from the plugin first; it ships at
+  `<this-skill-dir>/../../../docs/decisions/TEMPLATE.md` (resolved the same way as
+  the catalog in the Load-first note) so records conform to `audit-record.py` by
+  default.
 
 ## Phase 4 — Implement
 
-The shared implement procedure is `../../../procedures/implement.md` — read it now
-and run its **branch guard** (fetch first; on main/master or behind the remote
-default, hand off to the git helper) before any edit. Build exactly the approved
-plan. Constraints, non-negotiable:
+The implement procedure is shared: read `../../../procedures/implement.md` now. It
+holds the **branch guard** (run it before any edit, in both modes; when it trips,
+hand off to `dx-design-git`), the frontend-only boundary, and the non-negotiable
+build constraints. Build exactly the approved plan under them.
 
-- **Conservative, reversible defaults — do not restyle what is already
-  deliberate.** Established iconography, corner radius, layout structure, and
-  settled copy are presumed intentional: do not change them as a side effect of a
-  scoped task. If a change to one is genuinely warranted, flag it explicitly as a
-  *proposed* change with its rationale and a one-line revert note in the plan/diff
-  summary — never silently. Default to the smallest reversible change that meets
-  the contract. **But preserved is not waived:** "deliberate" protects an element's
-  *look* from restyling, never its *compliance* from verification. A preserved avatar,
-  badge, or icon still must pass A11Y-1 (contrast), A11Y-2/-3, and every in-scope
-  control; if it fails one, fixing it is in scope — flag the fix as above rather than
-  leave the failure standing because the element was "established". (Example:
-  per-section semantic colour-coded icons that are decorative `aria-hidden` wayfinding
-  are **not** SLP-1 "rainbow slop" — preserve them; neutralising them is a restyle to
-  flag, not a default.)
-- Compose only manifest components (`status: "stable"` from `.dx/component-manifest.json`
-  if the product has one; CMP-1); semantic shadcn tokens only — no raw
-  colour, off-scale spacing, or off-scale radii (TOK-1..3); Plus Jakarta Sans /
-  Inter only, on-scale sizes (TYP-1..3).
-- Functional colours come from the Radix scales (COL-2); **small functional-colour
-  text (≤12px) on a tint uses step-12, not step-11** — step-11 on a tint dips below
-  the 4.5:1 AA floor (A11Y-1).
-- Visible label on every field (A11Y-3); keyboard reach + focus states (A11Y-2);
-  AA contrast (A11Y-1); targets ≥ 24px, 44px on mobile (A11Y-4); respect reduced
-  motion (A11Y-5).
-- Anti-slop is standard (SLP-1..11) — the default AI aesthetic is a defect. The
-  rules live in the catalog you loaded first; re-read the SLP block before
-  styling anything. Highest-frequency traps: purple/violet gradients (SLP-1),
-  nested cards (SLP-4), identical-card grids (SLP-5), bounce easing (SLP-8).
-- Accessibility structure (A11Y-6..10, GovTech Essential tier) — apply from
-  the catalog; every image/icon, heading, custom control, page title, and
-  landmark is in scope.
-- Every async state change picks ONE announcement channel (A11Y-11): transient →
-  live region, no focus steal; context replacement → focus moves to the revealed
-  surface, no `role="alert"` on the focus target. Declare the channel per state in
-  the Phase 3 plan alongside CMP-3's state enumeration.
-- Destructive actions: consequence + undo/confirm before execution (CMP-2, L0).
-  Build forgiveness beyond CMP-2's minimum (HIG: Agency): recovering from the
-  unexpected should not cost the teacher time or work — preserve drafts, keep
-  back-navigation safe, make reversal cheap.
-- Consistency is a feature (HIG: Familiarity, Flexibility): once an element's
-  behaviour or appearance is established, reuse it across the surface, and keep
-  content and controls in predictable positions across the three widths — people
-  learn faster when new interactions work the way the last one did. **Use
-  design-system components at their defaults and the way sibling pages use them
-  (CMP-7): an override that changes a default's colour/contrast/shape, or a control
-  group whose members don't share a resting affordance, is a finding unless recorded
-  with a reason — re-check any colour/contrast override under A11Y-1.**
-- **Action hierarchy** (CMP-5): one primary (filled) action per view — secondary steps
-  down to outline/tonal, tertiary to ghost/link; a destructive action takes its own
-  variant, never the primary style (CMP-2). The primary's colour is the product's own
-  brand primary (COL-1). Make the next step obvious without a label.
-- **Tables** (CMP-6): for tabular data — gradebooks, rosters, attendance — use a real
-  `<table>` with `<th>` headers (A11Y-7); right-align numeric columns in tabular figures
-  (TYP-5) and left-align text; keep the header visible while scrolling; design the empty
-  and loading states (CMP-3); set density to the task (LAY-5); separate rows with spacing
-  or hairline dividers, not nested-card chrome (SLP-4). If records are not compared across
-  shared columns, a list or cards may fit better than a table (SLP-11).
-- **Empty states** (CMP-4): whatever the surface, an empty state's heading and subtext
-  must read as "nothing here yet" — never as still loading or as a permissions error —
-  and no skeleton row, shimmer, or spinner may render alongside that heading.
-- **Cross-user content** (CMP-9): where content authored by one user renders to a
-  different user (a teacher's comment shown to a parent, a message shown to another
-  staff member), sanitise it at the render boundary — an allowlist sanitiser
-  immediately before render. A "schema-constrained editor" claim at author time is not
-  sufficient on its own; the guarantee must hold where the HTML actually reaches the
-  other user's screen.
-- **Identity**: product icons come only from the approved product-icon family (IDN-2,
-  L1); copy carries the product's calibrated tone register (IDN-3, L2); on CaseSync
-  surfaces, casework is treated as sensitive — no celebration/gamification around case
-  data (IDN-4, L1, CaseSync-scoped).
-- **Interface craft** (HIG: Craft) — the small details that read as care: tabular
-  figures, concentric radius, property-scoped interruptible transitions, press
-  feedback, hit-area expansion, feels-instant loading, layered shadows, type polish,
-  image edges, and disciplined `will-change`. Each refines the controls above, none
-  replaces them, and the evaluator grades Craft on them. Apply the ones the surface
-  calls for **from `implement-craft.md`** (beside this skill) as you build — the
-  specifics live there so this list stays scannable; don't defer them to a cleanup pass.
-- Copy follows the `copy` skill as you write it, not as a cleanup pass
-  (it ships with this harness: `../dx-copy/SKILL.md` relative to this skill).
-  That includes the anti-slop copy rule (SLP-9): no AI-writing tells — buzzwords,
-  em-dash chains, filler, chatbot artifacts, structural tells (negative
-  parallelism, forced triads, copula avoidance), or label/helper pairs that
-  restate each other. Canonical lists and calibration:
-  `standards/controls/slp-9.md` — resolved relative to this SKILL.md (three levels up),
-  as in the Load-first note above.
-- **Make every asserted state reachable for evidence.** If a hybrid control claims
-  loading/success/error states, the verify phase must photograph them — build a
-  clearly-marked demo-only hook where needed (e.g. a `?fail=1` query param to force
-  the error state) and note it in the decision record. A state that can't be
-  demonstrated can't be verified.
-- Structure drift from the approved plan is a defect — if implementation reveals the
-  plan was wrong, go back to the user, don't silently improvise.
+Skill-specific notes while building:
 
-## Phase 5 — Verify
+- **Interface craft** (HIG: Craft): the small details that read as care. Apply the
+  ones the surface calls for from `implement-craft.md` (beside this skill) as you
+  build, not as a cleanup pass; each refines the shared constraints, none replaces
+  them, and the design reviewer grades Craft on them.
+- The copy pass skill the shared constraints defer to ships with this harness:
+  `../dx-copy/SKILL.md`, relative to this skill.
 
-Run the four steps in `verify.md` (beside this skill) IN ORDER — read it now,
-before verifying anything. Do not present output to the user while a step is
-failing.
+## Phase 5: Design review
 
-- Deterministic controls run first; an L0 failure blocks everything, an L1
-  failure sends you back to Phase 4 — see "What actually runs today" above for
-  what the scripts do and don't cover.
-- Evidence sets are required: widths, states, journey (with a recovery path),
-  the Phase-1 inventory checkoff, and the dark-mode N/A rule when the product
-  has no dark mode.
-- The evaluator verdict is written by the spawned `dx-design-review` agent, never by
-  you, and is pasted verbatim into the decision record. Reviewer dispatch and the
-  verdict re-check follow `../../../procedures/design-review.md`.
+In standalone mode, run the four steps in `verify.md` (beside this skill) IN
+ORDER: read it now, before verifying anything, and do not present output to the
+user while a step is failing. It carries the deterministic checks and the evidence
+sets, then hands off to the shared procedure
+`../../../procedures/design-review.md` for reviewer dispatch, the verbatim-verdict
+rule, and the verdict re-check from new screenshots. The verdict is written by the
+`dx-design-review` agent, never by you.
 
-## Phase 6 — Ratchet
+In return-to-caller mode, run only steps 1 and 2 of `verify.md`: the deterministic
+checks and the evidence capture. Never run step 3 yourself; reviewer dispatch
+belongs to whoever started the run, exactly once. Return the review bundle from
+"Two ways in" to the caller, who dispatches the reviewer and routes the verdict
+back; when findings come back, address them and re-run from step 1 (step 4).
+
+## Phase 6: Rule proposal
 
 After the user accepts the result, finish the decision record started in Phase 3
-(`docs/decisions/<page>.md`): chosen option, rejected options and why, waivers granted
-and by whom, and the verify verdict. Then:
-
-- Any failure the evaluator or user caught that no control covered → propose a new
-  control or anti-pattern entry for `standards/`. Follow
-  `../../../procedures/rule-proposal.md` — it is the single authoritative description
-  of the proposal format. Record the run on the surface's design ticket per
-  `../../../procedures/design-tickets.md`.
-- Harness friction the run surfaced that is **not** a control gap — a confusing step, a
-  missing/unbuilt check, a process or onboarding nit — is filed as a GitHub issue via the
-  `feedback` skill (it carries the procedure; `docs/harness-feedback.md` is the spec).
+(`docs/decisions/<page>.md`): chosen direction, rejected directions and why, waivers
+granted and by whom, and the review verdict verbatim. Then follow
+`../../../procedures/rule-proposal.md` for any failure the review or the user caught
+that no control covered (it also routes harness friction to the feedback skill,
+which carries that procedure), and record the run on the surface's design ticket per
+`../../../procedures/design-tickets.md`.
