@@ -86,10 +86,13 @@ token `mode:return-to-caller` plus a context payload:
 - the surface's design ticket reference (issue number or local markdown path).
 
 In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
-payload carries a real approval: an approved plan, or a verbatim ask that names a
-specific plan or chosen direction (only that form counts as approval per
-`../../../procedures/plan-approval.md`). A generic named change such as "add a
-field" is NOT approval: no one has seen a plan yet. In that case write the scoped
+payload carries a real approval: an approved plan; an accepted-findings list from a
+pass or critique, which counts as approval for a smaller finding (a whole-page
+rebuild always stops once at plan approval before any edit, per the pattern pass
+rules); or a verbatim ask that names a specific plan or chosen direction (only
+these forms count as approval per `../../../procedures/plan-approval.md`). A
+generic named change such as "add a field" is NOT approval: no one has seen a plan
+yet. In that case write the scoped
 plan and return it to the caller for approval; do not edit the product until the
 approval comes back. Do not spawn the design reviewer in this mode; whoever
 started the run spawns it, exactly once, per
