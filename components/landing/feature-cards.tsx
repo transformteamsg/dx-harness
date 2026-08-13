@@ -61,31 +61,49 @@ function CatalogFigure() {
 }
 
 function DesignFileFigure() {
-  const pages = Array.from({ length: 10 }, (_, index) => ({
-    x: 46 + index * 17,
-    y: 187 - index * 14,
-    height: 34 + index * 14,
-    opacity: 0.38 + index * 0.055,
-  }));
+  const fields = [
+    { y: 86, x2: 118 },
+    { y: 99, x2: 104 },
+    { y: 112, x2: 112 },
+    { y: 125, x2: 96 },
+    { y: 138, x2: 108 },
+  ];
+  const tokens = [64, 77, 90, 103];
 
   return (
     <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
       <g className="text-border-strong" {...figureStroke}>
-        {pages.map(({ x, y, height, opacity }, index) => (
-          <path
-            key={index}
-            d={`M${x} ${y}v-${height - 10}a5 5 0 0 1 7-4l146 72a8 8 0 0 1 4 7v${height - 12}a5 5 0 0 1-7 4L${x + 4} ${y + 7}a8 8 0 0 1-4-7Z`}
-            fill={index === pages.length - 1 ? "var(--primary-wash)" : "var(--background)"}
-            opacity={opacity}
-            strokeWidth={index === pages.length - 1 ? "1.4" : "1"}
+        <rect x="40" y="64" width="100" height="136" rx="6" fill="var(--primary-wash)" strokeWidth="1.25" />
+        {fields.map(({ y, x2 }, index) => (
+          <line
+            key={y}
+            x1="52"
+            y1={y}
+            x2={x2}
+            y2={y}
+            className={index === 0 ? "text-muted-foreground" : undefined}
+            strokeWidth={index === 0 ? "1.1" : "1"}
+            opacity={index === 0 ? 0.85 : 0.7 - index * 0.08}
           />
         ))}
+
+        <path d="M272 78a18 18 0 0 1 36 0" fill="var(--primary-wash)" strokeWidth="1.25" />
+        <circle cx="290" cy="44" r="9" fill="var(--primary-wash)" strokeWidth="1.25" />
+
+        <rect x="274" y="188" width="32" height="28" rx="5" fill="var(--primary-wash)" strokeWidth="1.25" />
+        <path d="m284 196 6 5-6 5" strokeWidth="1.3" opacity=".75" />
       </g>
 
       <g className="text-tw-blue-text" {...figureStroke}>
-        <path d="m214 58 39 19" strokeWidth="1.6" />
-        <path d="m214 68 53 26" strokeWidth="1.1" opacity=".65" />
-        <path d="m214 78 44 22" strokeWidth="1.1" opacity=".65" />
+        <circle cx="150" cy="132" r="6" fill="var(--surface)" strokeWidth="1.6" />
+        <path d="M150 132 172 96 290 60" strokeWidth="1.4" />
+        <path d="M150 132 172 168 290 204" strokeWidth="1.4" />
+      </g>
+
+      <g className="fill-tw-blue text-tw-blue-text">
+        {tokens.map((x) => (
+          <circle key={x} cx={x} cy="172" r="3" />
+        ))}
       </g>
     </svg>
   );

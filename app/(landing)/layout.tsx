@@ -12,29 +12,24 @@ const navLink =
 const footerLink =
   "min-h-11 inline-flex items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
-/* The mark: five squares in a quincunx. The geometry is the brand. Five
-   distinct hues, all existing tokens, re-picked for the light world
-   where --primary is the TW blue again: the centre carries --primary
-   (the brand anchor leads), and the four corners run warm to cool in reading
-   order — amber, brown, grass, teal. Roughly even hue steps, so no two dots
-   read as the same colour at 6px; the dark-world set drew --sec-standards
-   and bg-tw-blue, which the light sheet collapses onto --success-9 (both
-   grass) and --primary (both blue). The mark is the recorded polychrome
-   exception (docs/decisions/landing-light-return.md). */
-/* dx-waive COL-1 reason="brand mark: the quincunx is five distinct hues by construction — one dot per loop phase — and is the single polychrome element on the surface" */
-function QuincunxMark() {
+/* The mark: the canonical DXD quartic mark (components/landing/hero-geometry.tsx),
+   the same p=4 concave superellipse rotated 45°, frozen as a static path so the
+   nav glyph never re-runs the construction math. It carries the harness's own
+   accent, --dxd-lime (Radix lime-9), kept apart from --tw-blue so the mark reads
+   as the harness's identity rather than a Teacher Workspace brand moment. */
+/* dx-waive COL-1 reason="brand mark: the harness's own identity is drawn in --dxd-lime, a second accent held apart from the page's Teacher Workspace primary (--tw-blue), same exception this mark has always carried (docs/decisions/landing-light-return.md)" */
+function DxdMark() {
   return (
-    <span aria-hidden className="grid grid-cols-3 gap-[2px]">
-      <span className="size-1.5 bg-(--warning-9)" />
-      <span className="size-1.5" />
-      <span className="size-1.5 bg-(--sec-harness)" />
-      <span className="size-1.5" />
-      <span className="size-1.5 bg-primary" />
-      <span className="size-1.5" />
-      <span className="size-1.5 bg-(--success-9)" />
-      <span className="size-1.5" />
-      <span className="size-1.5 bg-(--sec-foundations)" />
-    </span>
+    <svg
+      aria-hidden
+      viewBox="0 0 1000 1000"
+      className="size-6 shrink-0 text-(--dxd-lime)"
+    >
+      <path
+        fill="currentColor"
+        d="M 712.13 712.13 L 711.11 711.11 L 708.06 708.10 L 703.00 703.19 L 695.98 696.60 L 687.08 688.56 L 676.38 679.39 L 663.98 669.45 L 650.00 659.10 L 634.58 648.75 L 617.85 638.80 L 600.00 629.64 L 581.18 621.60 L 561.58 615.00 L 541.38 610.10 L 520.79 607.09 L 500.00 606.07 L 479.21 607.09 L 458.62 610.10 L 438.42 615.00 L 418.82 621.60 L 400.00 629.64 L 382.15 638.80 L 365.42 648.75 L 350.00 659.10 L 336.02 669.45 L 323.62 679.39 L 312.92 688.56 L 304.02 696.60 L 297.00 703.19 L 291.94 708.10 L 288.89 711.11 L 287.87 712.13 L 288.89 711.11 L 291.90 708.06 L 296.81 703.00 L 303.40 695.98 L 311.44 687.08 L 320.61 676.38 L 330.55 663.98 L 340.90 650.00 L 351.25 634.58 L 361.20 617.85 L 370.36 600.00 L 378.40 581.18 L 385.00 561.58 L 389.90 541.38 L 392.91 520.79 L 393.93 500.00 L 392.91 479.21 L 389.90 458.62 L 385.00 438.42 L 378.40 418.82 L 370.36 400.00 L 361.20 382.15 L 351.25 365.42 L 340.90 350.00 L 330.55 336.02 L 320.61 323.62 L 311.44 312.92 L 303.40 304.02 L 296.81 297.00 L 291.90 291.94 L 288.89 288.89 L 287.87 287.87 L 288.89 288.89 L 291.94 291.90 L 297.00 296.81 L 304.02 303.40 L 312.92 311.44 L 323.62 320.61 L 336.02 330.55 L 350.00 340.90 L 365.42 351.25 L 382.15 361.20 L 400.00 370.36 L 418.82 378.40 L 438.42 385.00 L 458.62 389.90 L 479.21 392.91 L 500.00 393.93 L 520.79 392.91 L 541.38 389.90 L 561.58 385.00 L 581.18 378.40 L 600.00 370.36 L 617.85 361.20 L 634.58 351.25 L 650.00 340.90 L 663.98 330.55 L 676.38 320.61 L 687.08 311.44 L 695.98 303.40 L 703.00 296.81 L 708.06 291.90 L 711.11 288.89 L 712.13 287.87 L 711.11 288.89 L 708.10 291.94 L 703.19 297.00 L 696.60 304.02 L 688.56 312.92 L 679.39 323.62 L 669.45 336.02 L 659.10 350.00 L 648.75 365.42 L 638.80 382.15 L 629.64 400.00 L 621.60 418.82 L 615.00 438.42 L 610.10 458.62 L 607.09 479.21 L 606.07 500.00 L 607.09 520.79 L 610.10 541.38 L 615.00 561.58 L 621.60 581.18 L 629.64 600.00 L 638.80 617.85 L 648.75 634.58 L 659.10 650.00 L 669.45 663.98 L 679.39 676.38 L 688.56 687.08 L 696.60 695.98 L 703.19 703.00 L 708.10 708.06 L 711.11 711.11 Z"
+      />
+    </svg>
   );
 }
 
@@ -48,9 +43,9 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
         >
           <Link
             href="/"
-            className="flex min-h-11 items-center gap-2.5 font-display text-lg font-semibold tracking-tight whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
+            className="flex min-h-11 items-center gap-2 font-display text-lg font-semibold tracking-tight whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
           >
-            <QuincunxMark />
+            <DxdMark />
             dx-harness
           </Link>
           <div className="flex items-center gap-1 sm:gap-4">

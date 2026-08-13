@@ -175,7 +175,7 @@ export function FullMapDiagram() {
             additive stage. On narrow screens it becomes a complete static
             figure before the prose, avoiding a tiny sticky viewport. */}
         <figure className="order-first min-w-0 border-y border-border py-8 md:sticky md:top-16 md:order-last md:flex md:h-[calc(100svh-4rem)] md:flex-col md:justify-center md:border-y-0 md:py-0">
-          <div className="mx-auto w-full max-w-[560px] md:h-[calc(100svh-10rem)] md:min-h-[520px] md:max-h-[640px] md:overflow-hidden">
+          <div className="scroll-map-viewport mx-auto w-full max-w-[560px] md:h-[calc(100svh-10rem)] md:min-h-[520px] md:max-h-[640px] md:overflow-hidden">
           <svg
             viewBox="0 0 560 950"
             role="img"
