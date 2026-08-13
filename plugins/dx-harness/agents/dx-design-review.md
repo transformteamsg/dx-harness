@@ -44,8 +44,20 @@ why this role exists separately.
    filtered to `check: judgment | hybrid`, `phase: verify`).
 5. The **component inventory** from Phase 1 — the route, every component, and every
    interactive control with its states.
+6. The **standing overrides** from the product repo's `.dx/design.json` (`overrides`
+   key), when that file exists. The spawn may not pass these: read
+   `.dx/design.json` at the product repo root yourself before grading, whether or
+   not the spawn mentioned it; a dispatcher that omits this input never exempts
+   an overridden control from its adjusted rule. Each entry adjusts one control:
+   grade that control against the adjusted rule, not the catalogue text, and list
+   every active override in your verdict (control, tier, adjusted rule, and the
+   approver on L1). Apply an override only where its stated scope actually covers
+   the instance you are grading; outside that scope the catalogue text binds. An
+   override never touches an L0 control; treat an entry that names one as a defect
+   to flag, never a rule to apply.
 
 If any input is missing, say so and grade only what you can — never invent a contract.
+The standing overrides are the one exception: fetch them yourself as described above.
 
 **independently enumerate the surface's interactive controls** — from the
 component inventory **and** from reading the route's code (you have Read/Grep/

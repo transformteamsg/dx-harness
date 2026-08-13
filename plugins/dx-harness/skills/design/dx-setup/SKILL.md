@@ -36,8 +36,12 @@ list.
 
 ## DESIGN.md belongs to dx-design-language
 
-Setup never asks for, creates, or writes `DESIGN.md` or `.dx/design.json` content. If
-someone asks for that here, point them to `dx-design-language` in one line and stop.
+Setup never asks for, creates, or writes `DESIGN.md` or `.dx/design.json` content. A
+repo with neither just gets the portfolio defaults everywhere, which is a valid,
+complete state, never a failure. If someone asks for that here, point them to
+`/dx-harness:dx-design-language` in one line and stop: it scans the repo, walks the
+sections with them, writes the file, and generates the projection. Full spec:
+`../../../docs/DESIGN-CONTEXT.md`.
 
 ## Stay honest
 
