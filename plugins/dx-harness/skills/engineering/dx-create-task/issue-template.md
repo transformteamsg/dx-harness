@@ -8,6 +8,12 @@ Part of #NNN
 
 ## Acceptance criteria
 
+<!-- Use ONE shape, whichever makes the finish line clearest, and delete the other.
+     Shape A (Given-When-Then): observable system behaviour, e.g. an endpoint, a migration, a job.
+     Shape B (Done when): a deliverable or set of states, usually design work. -->
+
+<!-- Shape A -->
+
 ### <Outcome-first scenario name (happy path)>
 
 - **Given** <starting state>
@@ -19,6 +25,13 @@ Part of #NNN
 - **Given** <starting state>
 - **When** <action>
 - **Then** <observable outcome>
+
+<!-- Shape B -->
+
+### Done when
+
+- [ ] <observable, independently checkable condition, e.g. "empty, loading, and error states are designed">
+- [ ] <another condition, e.g. "layout holds at mobile, tablet, and desktop breakpoints">
 
 ## Out of scope
 
