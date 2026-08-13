@@ -79,7 +79,10 @@ proportionality*, not copy grammar — CNT-1 covers copy.
 **Do not flag**:
 
 - Instant (< ~100 ms) local operations with no perceivable pending period. A client-
-  side toggle that resolves synchronously does not need a loading state.
+  side toggle that resolves synchronously does not need a loading state. (The EVD-1
+  evidence gate records this as `N/A — state does not exist: <reason>` for the
+  loading frame — see `../../docs/catalog-changes/evd-1-async-evidence.md` — so a
+  correct build of such a surface satisfies both this clause and the gate.)
 - Optimistic updates that revert on failure, provided the revert and error message are
   visible when failure occurs.
 

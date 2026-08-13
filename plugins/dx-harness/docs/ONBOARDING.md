@@ -34,7 +34,7 @@ automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
 filing tools are per-person. Each teammate runs `/dx-harness:dx-design` (or invokes the `dx-design-setup`
-skill directly), which follows the checklist (`plugins/dx-harness/skills/design/dx-setup/setup.md` in this
+skill directly), which follows the checklist (`plugins/dx-harness/skills/design/dx-design-setup/setup.md` in this
 repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
 

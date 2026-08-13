@@ -47,13 +47,16 @@ Constraints, non-negotiable while building:
   (TYP-1..3); functional colours from the Radix scales (COL-2).
 - Accessibility floor: AA contrast (A11Y-1), keyboard reach with visible focus
   (A11Y-2), a visible label on every field (A11Y-3), targets at least 24px (A11Y-4),
-  reduced motion respected (A11Y-5), plus the structural controls (A11Y-6..10).
+  reduced motion respected (A11Y-5), plus the structural controls (A11Y-6,
+  A11Y-7, A11Y-8, A11Y-9, A11Y-10 — semantic headings, lists, tables, and form
+  groups under A11Y-7 in particular).
 - Every async state change picks one announcement channel (A11Y-11), declared per
   state in the approved plan alongside CMP-3's state enumeration. Destructive
   actions show consequences and offer undo or confirm before execution (CMP-2, L0).
 - Anti-slop is standard (SLP-1..11); re-read the SLP block before styling anything.
 - One primary action per view (CMP-5); components at their defaults and the way
-  sibling pages use them (CMP-7).
+  sibling pages use them (CMP-7); data tables use the semantic table pattern —
+  header row, right-aligned numeric columns with tabular figures (CMP-6).
 - Copy follows the copy pass skill as you write it, not as a cleanup pass; SLP-9
   (AI-writing tells) binds all of it.
 - **Make every asserted state reachable for evidence.** If a control claims

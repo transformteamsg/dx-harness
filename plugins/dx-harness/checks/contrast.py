@@ -29,7 +29,10 @@ Line-local only (same philosophy as a11y-static): a candidate needs BOTH a
 foreground and a background colour on the same line —
   - Tailwind: a class string with a text-<colour> AND a bg-<colour> (bare names
     that resolve to a token colour, or arbitrary values text-[#hex] / bg-[#hex] /
-    text-[var(--t)] / bg-[var(--t)]),
+    text-[var(--t)] / bg-[var(--t)]). Opacity modifiers (bg-destructive/10,
+    text-foreground/[0.06]) are composited before measuring: a translucent bg
+    over the page ground (--background, else --surface), a translucent text
+    colour over its effective bg. An unresolvable page ground → NOTE,
   - CSS / inline style: a rule or style="…" with both color: and
     background[-color]: (hex or var(--token)).
 Both resolve → ratio computed: <3.0 ERROR (fails even large text); 3.0–4.5 ERROR
@@ -243,13 +246,27 @@ class TokenResolver:
             return _hex_to_rgb(kw) if kw else None
         return _hex_to_rgb(expr)
 
+    def page_base(self):
+        """The page ground a translucent background composites over:
+        --background, else --surface (this repo's tokens), else their @theme
+        aliases. None when unresolvable — never guessed."""
+        for cand in ("--background", "--surface",
+                     "--color-background", "--color-surface"):
+            rgb = self.resolve(cand)
+            if rgb is not None:
+                return rgb
+        return None
+
 
 # ── Pairing detection ─────────────────────────────────────────────────────────────
 
 # Tailwind utilities. Arbitrary values keep the brackets so we can tell
 # "clearly a colour but unresolved" (→ NOTE) from "not a colour utility" (skip).
-_TW_TEXT_RE = re.compile(r"\btext-(\[[^\]]+\]|[\w-]+)")
-_TW_BG_RE = re.compile(r"\bbg-(\[[^\]]+\]|[\w-]+)")
+# Group 2 captures the optional /<alpha> opacity modifier (bg-destructive/10,
+# text-foreground/[0.06]) — dropping it would measure a token against itself
+# and false-fail A11Y-1 on ordinary tinted backgrounds (#122).
+_TW_TEXT_RE = re.compile(r"\btext-(\[[^\]]+\]|[\w-]+)(?:/(\d{1,3}(?:\.\d+)?|\[[^\]]+\]))?")
+_TW_BG_RE = re.compile(r"\bbg-(\[[^\]]+\]|[\w-]+)(?:/(\d{1,3}(?:\.\d+)?|\[[^\]]+\]))?")
 # CSS / inline declarations
 _CSS_COLOR_RE = re.compile(r"(?<!-)\bcolor\s*:\s*([^;}{]+)")
 _CSS_BG_RE = re.compile(r"\bbackground(?:-color)?\s*:\s*([^;}{]+)")
@@ -298,6 +315,35 @@ def _classify_tw_value(raw, resolver):
     return None  # bare name that is not a known colour token — not a candidate
 
 
+def _parse_tw_alpha(raw):
+    """A Tailwind opacity modifier (the part after '/') → alpha in [0,1], or
+    None if unparseable. Absent modifier → 1.0. Accepts bare percentages
+    ('10', '2.5') and arbitrary values ('[0.06]', '[6%]')."""
+    if raw is None:
+        return 1.0
+    s = raw
+    if s.startswith("["):
+        s = s[1:-1].strip()
+        if s.endswith("%"):
+            s = s[:-1]
+        else:
+            try:
+                return max(0.0, min(1.0, float(s)))  # bare number is 0–1
+            except ValueError:
+                return None
+    try:
+        return max(0.0, min(1.0, float(s) / 100.0))
+    except ValueError:
+        return None
+
+
+def _composite(rgb, alpha, base_rgb):
+    """Source-over blend of `rgb` at `alpha` on an opaque `base_rgb`, in sRGB
+    space (as browsers blend)."""
+    return tuple(round(alpha * c + (1 - alpha) * b)
+                 for c, b in zip(rgb, base_rgb))
+
+
 def _fmt_hex(rgb):
     return "#{:02x}{:02x}{:02x}".format(*rgb)
 
@@ -336,7 +382,32 @@ def _check_line(scan_line, rel, lineno, resolver):
         bg = _classify_tw_value(bm.group(1), resolver)
         if fg and bg:
             if fg[0] == "colour" and bg[0] == "colour":
-                err = _verdict_line(rel, lineno, fg[1], bg[1])
+                # Opacity modifiers: a translucent bg composites over the page
+                # ground first, then a translucent fg composites over that
+                # effective bg — measuring the raw token pair would compare a
+                # tint against its own full-strength colour (1:1) and
+                # false-fail A11Y-1 on idioms like bg-destructive/10.
+                fg_alpha = _parse_tw_alpha(tm.group(2))
+                bg_alpha = _parse_tw_alpha(bm.group(2))
+                if fg_alpha is None or bg_alpha is None:
+                    bad = [f"{p}-{m.group(1)}/{m.group(2)}"
+                           for p, m, a in (("text", tm, fg_alpha), ("bg", bm, bg_alpha))
+                           if a is None]
+                    out.append(f"NOTE  contrast: could not parse opacity modifier "
+                               f"on {', '.join(bad)} at {rel}:{lineno} — verify manually")
+                    return out
+                fg_rgb, bg_rgb = fg[1], bg[1]
+                if bg_alpha < 1.0:
+                    base = resolver.page_base()
+                    if base is None:
+                        out.append(f"NOTE  contrast: could not resolve the page "
+                                   f"background to composite bg-{bm.group(1)}/"
+                                   f"{bm.group(2)} at {rel}:{lineno} — verify manually")
+                        return out
+                    bg_rgb = _composite(bg_rgb, bg_alpha, base)
+                if fg_alpha < 1.0:
+                    fg_rgb = _composite(fg_rgb, fg_alpha, bg_rgb)
+                err = _verdict_line(rel, lineno, fg_rgb, bg_rgb)
                 if err:
                     out.append(err)
             elif "unresolved" in (fg[0], bg[0]):
@@ -417,6 +488,7 @@ _SELF_TEST_TOKENS = """
   --success-9: #46a758;
   --success: #2a7e3b;
   --success-subtle: color-mix(in oklab, var(--success-9) 8%, var(--surface));
+  --destructive: #b91c1c;
 }
 @theme inline {
   --color-surface: var(--surface);
@@ -424,6 +496,7 @@ _SELF_TEST_TOKENS = """
   --color-tw-blue: var(--tw-blue);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
+  --color-destructive: var(--destructive);
 }
 """
 
@@ -545,6 +618,47 @@ def run_self_test():
         ".css", ["A11Y-1"],
     )
     assert_ratio("the ≈4.23 oracle", "#7b7b7b", "#ffffff", 4.23, tol=0.05)
+
+    # ── Tailwind opacity modifiers (compositing, #122) ───────────────────────────
+    # The common tinted-chip idiom: 10% destructive over the surface is a light
+    # tint; full-strength destructive text on it clears AA. Without compositing
+    # this measured destructive-on-destructive (1:1) and false-failed A11Y-1.
+    assert_clean(
+        "bg-destructive/10 keeps its alpha (composites over surface)",
+        '<span className="bg-destructive/10 text-destructive">Overdue</span>',
+        ".tsx",
+    )
+    # The alpha fix is not a blanket exemption: a genuinely low-contrast pair
+    # with a modifier still fails (white text on a 10% foreground tint ≈1.2:1).
+    assert_violations(
+        "genuine low contrast with alpha still fails",
+        '<div className="bg-foreground/10 text-surface">ghost</div>',
+        ".tsx", ["A11Y-1"],
+    )
+    # A translucent foreground composites over its (opaque) background:
+    # 40% near-black on white lands ≈2.5:1 → ERROR.
+    assert_violations(
+        "text alpha composites over the background",
+        '<p className="bg-surface text-foreground/40">hint</p>',
+        ".tsx", ["A11Y-1"],
+    )
+    # Arbitrary-value modifier parses too ([0.06] ≈ /6).
+    assert_violations(
+        "arbitrary alpha modifier",
+        '<div className="bg-foreground/[0.06] text-surface">ghost</div>',
+        ".tsx", ["A11Y-1"],
+    )
+    # No resolvable page ground → NOTE, never a guess. Drive _check_line with a
+    # resolver whose token map lacks --background/--surface.
+    case_count += 1
+    bare = TokenResolver(":root { --ink: #b91c1c; } "
+                         "@theme inline { --color-ink: var(--ink); }")
+    bare_out = _check_line('<i className="bg-ink/10 text-ink">x</i>',
+                           "scratch.tsx", 1, bare)
+    if not any(o.startswith("NOTE") and "page background" in o for o in bare_out) \
+            or any(o.startswith("ERROR") for o in bare_out):
+        failures.append(f"FAIL alpha without page ground: expected a NOTE, no ERROR "
+                        f"— got: {bare_out}")
 
     # ── unresolvable → NOTE, never silent pass, never false ERROR ────────────────
     assert_note(

@@ -11,7 +11,7 @@ interruption, and resume — and leave visual and copy craft to their own passes
 and routed).
 
 **Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-critique/pass.md):
+../dx-design-critique/pass.md):
 
 - **CMP-2** — destructive actions show consequences and offer undo/confirm (L0).
 - **CMP-3** — every async transaction has loading, success, and error states.
@@ -23,12 +23,12 @@ and routed).
 - **A11Y-11** — each transition announces its change and manages focus.
 - **SLP-10** — a complex multi-section task gets a page, not a modal.
 
-**Reference:** the "A flow is not a stack of pages" section of `../dx-design/SKILL.md` —
+**Reference:** the "A flow is not a stack of pages" section of `../dx-design-execute/SKILL.md` —
 entry points, the done state, every exit (back/cancel/abandon), and what happens to the
 teacher's work on interruption, partial completion, and resume. Escapability is
 structure, not polish.
 
-**Procedure:** follow `../dx-critique/pass.md` with the subset above, in either entry
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics
 (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.

@@ -12,7 +12,7 @@ craft is a dx-design-polish matter, empty-state wording is a dx-design-copy matt
 and both get NOTED and routed.
 
 **Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-critique/pass.md):
+../dx-design-critique/pass.md):
 
 <!-- dx-sync:lay-controls -->
 - **LAY-1** — the declared column grid and gutter scale (N/A where no grid is
@@ -44,7 +44,7 @@ inventory is guidance, not controls; a control always wins on conflict. When the
 product ships one, `.dx/design.json` `layout_system` declares its column grid; where
 declared, LAY-1 makes the grid checkable; treat it as layout context otherwise.
 
-**Procedure:** follow `../dx-critique/pass.md` with the subset above, in either entry
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics
 (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.

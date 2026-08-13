@@ -5,7 +5,10 @@
 > Phase 6. Keeps the human approval, waivers, and verdict traceable.
 
 - **Date:**
-- **Product:** TW | CaseSync | Glow | TW surface (Posts / PG Staff Portal)
+- **Product:** TW | CaseSync | Glow | TW surface (Posts / PG Staff Portal) |
+  other — outside the portfolio (name the actual product here; `products:`-scoped
+  controls are then recorded under "Controls in scope" as deliberately out of
+  scope, never silently dropped)
 - **Change type:** new page | modification
 - **Page type:** workspace view | form | flow step | dashboard | settings | empty state | onboarding
 - **Run type:** attended | unattended (operator-proxy approvals)
@@ -60,8 +63,11 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
   loading-state frame, a success-state frame, and an error-state frame — not only the
   initial/empty state. Acceptable substitutes for any one frame: a video walkthrough
   covering all three states, or a named human reviewer's attestation that they witnessed
-  the live render of all three. Note explicitly which of the three (frame / video /
-  attestation) covers each state.
+  the live render of all three. A fourth outcome is valid per state:
+  `N/A — state does not exist: <reason>`, permitted only when CMP-3's "Do not flag"
+  clause applies (an instant local operation has no loading state to photograph) — a
+  recorded fact, never a pass. Note explicitly which of the four (frame / video /
+  attestation / state does not exist) covers each state.
 - **Token block line range:** (the `dx-tokens` region exempt from token-audit, e.g.
   `attendance.html:12-68`)
 - **Dark mode:** supported (dark frame captured at <path>) | N/A — product has no

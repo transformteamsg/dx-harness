@@ -29,6 +29,11 @@ meta:
     tw: Teacher Workspace   # TW-adjacent surfaces (Posts, PG Staff Portal) count as tw
     casesync: CaseSync
     glow: Glow
+    # A repo outside the portfolio (incl. this standard's own site) answers
+    # `other` and names the actual product in the decision record; every
+    # products:-scoped control is then recorded as deliberately out of scope.
+    # Never used in a control's products: list — controls scope to real products.
+    other: Outside the portfolio — name the product in the decision record
   audiences:
     teachers: Teachers & school staff
     students-primary: Students — primary

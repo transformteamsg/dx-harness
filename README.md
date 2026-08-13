@@ -3,14 +3,13 @@
 AI harness for agentic-driven product development — a single Claude Code plugin
 bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
-- **20 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
+- **21 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
   `dx-groom-issue`, `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`,
-  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 12 design (`dx-design`,
+  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 13 design (`dx-design`,
   `dx-design-setup`, `dx-design-execute`, `dx-design-critique`,
-  `dx-design-copy`, `dx-design-polish`, `dx-design-motion`, `dx-design-flow`,
-  `dx-design-pattern`, `dx-design-feedback`, `dx-design-git`,
-  `dx-design-research-brief`), plus deprecated stubs that point the old design
-  names to the new ones.
+  `dx-design-language`, `dx-design-copy`, `dx-design-polish`, `dx-design-motion`,
+  `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`, `dx-design-git`,
+  `dx-design-research-brief`). The old pre-0.2.0 design names no longer resolve.
 - The design skills ship with their standards catalog (`plugins/dx-harness/standards/`),
   shared procedure docs (`plugins/dx-harness/procedures/`), deterministic checks
   (`plugins/dx-harness/checks/`), and an `evaluator` agent.
