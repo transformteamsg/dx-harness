@@ -13,16 +13,26 @@ export function Reveal({ children }: { children: React.ReactNode }) {
     const el = ref.current;
     if (el === null) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    el.setAttribute("data-reveal", "armed");
+    /* Never arm what cannot be un-armed. Arming applies the hidden state, so
+       everything that could fail must fail BEFORE this point — otherwise the
+       section is stranded at opacity 0 with nothing left to play it. */
+    if (typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
+      (entries, obs) => {
+        if (entries[0].isIntersecting) {
           el.setAttribute("data-reveal", "shown");
-          observer.disconnect();
+          obs.disconnect();
         }
       },
-      { threshold: 0.2 }
+      /* threshold 0 + a bottom inset, NOT threshold 0.2. A ratio threshold is
+         unsatisfiable once the element is taller than 1/0.2 = 5x the viewport:
+         20% of it can never be on screen at once, isIntersecting never goes
+         true, and the content stays hidden permanently. The inset fires on the
+         same beat — when the element reaches 80% of viewport height — at any
+         element height. */
+      { threshold: 0, rootMargin: "0px 0px -20% 0px" }
     );
+    el.setAttribute("data-reveal", "armed");
     observer.observe(el);
     return () => {
       observer.disconnect();

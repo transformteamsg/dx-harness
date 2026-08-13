@@ -45,12 +45,14 @@ export function CopyCommands({ commands }: { commands: string }) {
       {/* Overrides, with reasons (CMP-1 residual): min-h-11 = the 44px mobile
           target floor the stack's size scale stops short of; site-focus-ring
           restores the site's shared focus idiom — the stack's half-alpha
-          ring computes ~1.8:1 on the dark surface and fails the 3:1 UI-state
-          floor (A11Y-2/A11Y-1; latent DS defect, filed); landing-primary-hover
-          swaps the stack's opacity dim for --primary-hover, the lighter step
-          the lime token sheet declares for exactly this state (ticket #82
-          follow-up). */}
-      <Button onClick={copy} className="site-focus-ring landing-primary-hover min-h-11 px-5">
+          ring underperforms the 3:1 UI-state floor (A11Y-2/A11Y-1; latent DS
+          defect, filed); hover:bg-tw-blue-hover replaces the stack's
+          hover:bg-primary/80 opacity dim, whose white-on-#3383FF composite
+          fails AA (3.6:1) — the darken step matches tool-card.tsx (CMP-7). */}
+      <Button
+        onClick={copy}
+        className="site-focus-ring min-h-11 px-5 hover:bg-tw-blue-hover"
+      >
         Copy commands
       </Button>
     </div>

@@ -12,8 +12,8 @@ import {
 /* The no-CLI install path, hosted in a dialog off the hero's inline question
    (user decision 2026-08-12; previously a page-bottom section). Simple
    single-section content, so a dialog fits (SLP-10). The popup portals to
-   <body>, outside the landing shell, so it carries `landing-dark` itself to
-   stay in the landing's token world. */
+   <body>; with one light world (docs/decisions/landing-light-return.md) the
+   :root tokens already apply there. */
 export function NoCliDialog({ triggerClassName }: { triggerClassName?: string }) {
   return (
     <Dialog>
@@ -22,7 +22,7 @@ export function NoCliDialog({ triggerClassName }: { triggerClassName?: string })
       >
         No command line?
       </DialogTrigger>
-      <DialogContent className="landing-dark bg-surface text-foreground">
+      <DialogContent className="bg-surface text-foreground">
         <DialogHeader>
           <DialogTitle className="font-display text-lg font-semibold tracking-tight">
             No command line?

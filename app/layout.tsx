@@ -19,10 +19,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
 THESIS: the machine explained where the visitor asks "how does this work?" — the token-drawn architecture diagram is the hero's demonstration; the before/after demo is the proof below it.
-OWN-WORLD: two deliberate worlds (docs/decisions/landing-dark.md, user-pinned): a dark Linear-register landing (near-black layered surfaces, hairline borders, the TW blue ramp as the single accent, no gradients/glows/cyan-on-dark) and light docs (docs.stripe.com register); the demo frame is pinned light because it depicts the light Teacher Workspace product.
+OWN-WORLD: one light world (docs/decisions/landing-light-return.md, reversing landing-dark.md): the landing and the docs share the light :root tokens and the same calm documentation register (seed-design.io docs pages as the reference) — near-monochrome chrome, hairline borders, TW blue as the single accent; the demo frame needs no pinning because it already depicts the light Teacher Workspace product in a light world.
 STORY: an engineer whose agent ships slop arrives skeptical, copies two install commands in the first viewport, reads the promise (intent without loss), traces their ask through the orchestrator diagram (one router, one builder with a human gate), recognizes their own PR in the demo.
-FIRST VIEWPORT: landing nav (quincunx wordmark left; Quick start / Docs / GitHub right); hook headline ("Your agent already writes the code. Now it holds the bar."); install panel with the single primary Copy action.
-FORM: hook + install → how it works (architecture diagram) → proof (SlopCompare) → path (skill groups) → close (no-CLI); diagram phases render from components/diagrams/loop-data.ts, the contract-of-record.
+FIRST VIEWPORT: landing nav (quincunx wordmark left; Quick start / Docs / GitHub right); hook headline ("Your agent already builds the UI. Now it holds the design bar."); install panel with the single primary Copy action.
+FORM: hook + install (no-CLI in a dialog) → core features → how it works (the isometric five-layer map) → proof (SlopCompare) → path (skill groups); the landing renders no loop phases — the loop's contract-of-record stays components/diagrams/loop-data.ts, rendered only by the docs OrbitLoop.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the verify verdict, the decision record, and DESIGN.md.
 `,
           }}

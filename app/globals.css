@@ -24,6 +24,14 @@
      exempt token block. */
   --tw-blue-hover: color-mix(in oklab, var(--tw-blue) 88%, black);
 
+  /* Brand-tinted hairline and wash — the accent chips and "start with"
+     panels on the landing. Line is non-text (a border); the wash stays at
+     4% so --tw-blue-text on it keeps ≥4.5:1 (A11Y-1) — raise the mix only
+     with a recomputed contrast fact. (These carried Radix lime steps in the
+     retired dark world; see docs/decisions/landing-light-return.md.) */
+  --primary-line: color-mix(in oklab, var(--tw-blue) 30%, var(--surface));
+  --primary-wash: color-mix(in oklab, var(--tw-blue) 4%, var(--surface));
+
   /* Neutral UI fills — zinc scale, shadcn convention */
   --muted: #f4f4f5;          /* zinc-100 — active fill, code background */
   --accent: #fafafa;         /* zinc-50 — hover fill */
@@ -113,11 +121,10 @@
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 
-  /* Accent-as-text — links and inline accent text. In the light world the
-     brand blue itself clears AA on the page bg (about 4.7:1); the dark
-     landing overrides this with a lighter step of the same ramp (COL-1 "or
-     its ramp") because the brand blue on near-black is about 3.5:1 and fails
-     the 4.5:1 body-text floor (A11Y-1). */
+  /* Accent-as-text — links and inline accent text. The brand blue itself
+     clears AA on the page bg (about 4.7:1, A11Y-1). Kept as its own token so
+     a future world can substitute a ramp step without touching call sites
+     (COL-1 "or its ramp"). */
   --tw-blue-text: var(--tw-blue);
 
   /* ── Anti-specimen tokens — used ONLY by components/compare.tsx to draw the
@@ -131,126 +138,19 @@
   --demo-slop-ink: #4c1d95;
   --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
   --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
-  /* Foreground for text drawn directly on the gradient exhibit fills — was
-     coincidentally the same white as --primary-foreground until the lime
-     token sheet (ticket #82) repointed --primary-foreground to dark ink for
-     the real lime button. Split out so the anti-specimen keeps its own
-     white-on-gradient exhibit (≈5.7:1, per the decision record) regardless
-     of what --primary-foreground means on whichever surface renders it. */
+  /* Foreground for text drawn directly on the gradient exhibit fills — kept
+     separate from --primary-foreground so the anti-specimen's white-on-
+     gradient exhibit (≈5.7:1) never tracks whatever the real primary button
+     means on the surface that renders it. */
   --demo-slop-foreground: #ffffff;
 
 }
 
-/* dx-tokens */
-/* ── Landing dark world (docs/decisions/landing-dark.md) — scoped to the
-   landing shell only; docs keep the light :root values. Only semantic tokens
-   flip, so component code stays token-only (TOK-1). Contrast facts (A11Y-1),
-   recomputed for the lime-on-black token sheet (ticket #82, resolution in
-   #81): --foreground on --surface ≈ 17.5:1; --muted-foreground on --muted
-   ≈ 7.5:1 (holds at 12px); --tw-blue-text (now the lime accent) on
-   --background ≈ 15:1; --primary-foreground (ink) on --primary (lime fill)
-   ≈ 13.9:1 (button label). --tw-blue itself is UNTOUCHED (#0064ff) — it no
-   longer leads the landing (off primary/accent/focus-ring/link), and stays
-   only as the Teacher Workspace identity anchor and one dot of the quincunx
-   mark below. Elevation on dark is surface steps and hairlines — never
-   glows (SLP-1). ── */
-.landing-dark {
-  --background: #060707;
-  --surface: #0e0f10;
-  --foreground: #f4f4f5;
-  --muted-foreground: #a7a7b0;
-  --border: #26262c;
-  --border-strong: #52525b;
-  --muted: #16181a;
-  --accent: #121315;
-  --prose-body: #d1d1d6;
-
-  /* Brand accent — Radix lime-9, replacing the blue-led accent as the
-     landing's lead colour. Repoints --primary (fills), --ring (focus), and
-     --tw-blue-text (links/accent text); --tw-blue the raw variable is left
-     alone. */
-  --primary: #bdee63;
-  /* Ink-on-lime-fill (Radix lime-1 dark) — lime is a light, saturated
-     ground, so text/icons drawn ON a lime fill need dark ink, not white
-     (white-on-lime would be ~1.2:1 and fail outright). Was `#ffffff` when
-     the primary fill was --tw-blue. */
-  --primary-foreground: #11130c;
-  /* Interaction steps for the lime primary (Radix lime-10, dark/light
-     variants) — the same role --tw-blue-hover fills for the raw blue
-     variable. --primary-hover is live on the landing's primary action via
-     the `.landing-primary-hover` rule below, which replaces the stack
-     Button's `hover:bg-primary/80` opacity dim with this lighter step.
-     --primary-pressed has no call site yet; it is kept here so one that
-     wants the resolved step reaches for a token, not a raw hex. */
-  --primary-hover: #d4ff70;
-  --primary-pressed: #b0e64c;
-  /* Lime hairline/line (Radix lime-8 dark) — non-text only, its contrast on
-     these surfaces is too low for body/label text. For a border or divider
-     that wants the brand tint instead of the neutral --border-strong.
-     Unconsumed today. */
-  --primary-line: #577538;
-  /* Lime wash (Radix lime-3 dark) — a tinted background step for a future
-     lime-accented panel or selected state. Unconsumed today. */
-  --primary-wash: #1f2917;
-  /* Accent-as-text / link colour, landing-scoped. Was a lighter blue ramp
-     step (#6ea3ff) kept off the raw --tw-blue for AA; now the lime accent
-     itself, which is light enough to read as text directly (≈14.2:1 on
-     --surface). The name predates the lime move and is legacy — the role is
-     "this world's accent, safe as text," not literally tw-blue. */
-  --tw-blue-text: #bdee63;
-
-  /* Functional text steps for dark — the :root values are light-world
-     Radix step-11s and fail AA on dark tints. --danger is unchanged from
-     the previous record (≈7.4:1 on its subtle tint). --success moves off
-     the green family entirely (ticket #81): text step is teal-11 dark, and
-     --success-9 (the step-9 base the subtle/muted tints and any solid fill
-     derive from) moves to teal-9 to match — ≈10.5:1 for --success on its
-     own 8% subtle tint; the subtle/muted mixes recompute automatically
-     because they derive from var(--success-9) and var(--surface). NOTE:
-     teal-9 (#12a594) is the same value already used for --sec-foundations,
-     so any surface drawing both reads one hue twice — the quincunx mark did,
-     and now draws --sec-standards where it used to draw --sec-foundations
-     (see the mark in app/(landing)/layout.tsx). */
-  --success: #0bd8b6;
-  --success-9: #12a594;
-  --danger: #ff9592;
-
-  /* The anti-specimen ("before" demo panel) re-inked for dark: same purple
-     gradient exhibit, dark violet-tinted surface, lavender ink ≈ 9:1 on it.
-     Still quarantined — never product UI (SLP-1 exhibits). Its white-on-
-     gradient text now comes from --demo-slop-foreground, not
-     --primary-foreground (see :root) — those two diverged the moment
-     --primary-foreground became ink for the lime button. */
-  --demo-slop-surface: #1c1728;
-  --demo-slop-ink: #c4b5fd;
-
-  /* Stack components draw focus from --ring at HALF ALPHA (ring-ring/50).
-     With the lime accent this composite lands ≈4.2:1 on both --surface and
-     --background — it clears the 3:1 UI-state floor on its own, unlike the
-     raw blue (~1.8:1) or the lifted blue text step (~2.7:1) that motivated
-     the `.site-focus-ring` workaround below. `.site-focus-ring` is still
-     applied on the landing's primary action for the site-wide 2px solid
-     idiom (CMP-7 consistency), not because the ring alone still fails here. */
-  --ring: var(--primary);
-}
-
-/* Light re-override for surfaces that depict the (light) Teacher Workspace
-   product inside the dark landing — the before/after demo frame. Values
-   mirror :root; keep the two blocks in sync. */
-.landing-light {
-  --background: #fafafa;
-  --surface: #ffffff;
-  --foreground: #18181b;
-  --muted-foreground: #67676f;
-  --border: #e4e4e7;
-  --border-strong: #a1a1aa;
-  --muted: #f4f4f5;
-  --accent: #fafafa;
-  --prose-body: #3f3f46;
-  --tw-blue-text: var(--tw-blue);
-  --primary-foreground: var(--surface);
-}
-/* /dx-tokens */
+/* One light world (docs/decisions/landing-light-return.md, 2026-08-13):
+   the landing and the docs both render the :root tokens above. The scoped
+   `landing-dark` / `landing-light` blocks that carried the dark landing
+   (docs/decisions/landing-dark.md, lime token sheet in ticket #82) are
+   retired; the decision record holds their history. */
 
 @theme inline {
   --color-background: var(--background);
@@ -328,10 +228,9 @@
    onto stack components whose base styles (outline-none + a half-alpha ring)
    otherwise suppress it inside @layer utilities. Unlayered author CSS
    outranks layered utilities, so this wins deterministically. The outline
-   tracks --ring rather than the raw --tw-blue, so it stays correct per token
-   world: ~3.9:1 on light (--ring is still the brand blue there) and ~14:1 on
-   the dark landing (--ring is the lime accent — ticket #82). Only call site
-   today is the landing's primary action (A11Y-2). */
+   tracks --ring (the brand blue, ~3.9:1 on the light surfaces — clears the
+   3:1 UI-state floor where the stack's half-alpha ring does not). Only call
+   site today is the landing's primary action (A11Y-2). */
 .site-focus-ring:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
@@ -341,19 +240,6 @@
      transition-all, which would otherwise ease the outline in from
      currentcolor/medium over 150ms (and reads as a laggy ring). */
   transition: none;
-}
-
-/* The landing's primary fill, hovered. The stack Button's default variant
-   hovers with `hover:bg-primary/80`, an opacity dim — on the lime accent that
-   reads as the fill going muddy rather than lifting. The token sheet already
-   declares the intended step (--primary-hover, Radix lime-10), so the call
-   site opts into it with this class. Unlayered author CSS, like
-   .site-focus-ring above, so it outranks the layered `hover:bg-primary/80`
-   utility deterministically. Landing-only by call site (the docs' Button uses
-   are all ghost/icon variants, which never set bg-primary), so light-mode docs
-   rendering is untouched — no change to components/ui/button.tsx. */
-.landing-primary-hover:hover {
-  background-color: var(--primary-hover);
 }
 
 /* Narrative reveal (the architecture diagram) — plays once on first in-view,

@@ -62,7 +62,9 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot="dialog-close"
             render={
-              <Button variant="ghost" className="absolute top-3 right-3" size="icon-sm" />
+              // 44px target floor on mobile (A11Y-4); icon-sm's 28px holds
+              // above sm where the 24px desktop floor applies.
+              <Button variant="ghost" className="absolute top-3 right-3 max-sm:size-11" size="icon-sm" />
             }
           >
             <XIcon />

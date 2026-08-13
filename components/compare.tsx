@@ -133,7 +133,7 @@ function BeforePanel() {
 /* The same task on standard: one primary, hairline dividers, a real type
    ramp, plain copy. Existing tokens only — the primary button below tracks
    --primary/--primary-foreground, so it repaints with whichever accent the
-   surrounding token world uses (blue on /standards, lime on the landing). */
+   surrounding token world uses (TW blue everywhere, one light world). */
 function AfterPanel() {
   return (
     <div
@@ -236,10 +236,9 @@ export function SlopCompare() {
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
            the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        /* The demo inherits the page's token world (dark on the landing) —
-           the panels are drawn from semantic + demo-slop tokens, and the
-           landing-dark scope re-inks both (user decision 2026-08-12,
-           reversing the earlier pinned-light call). */
+        /* The demo inherits the page's token world — the panels are drawn
+           from semantic + demo-slop tokens, so the one light world
+           (docs/decisions/landing-light-return.md) renders both light. */
         className="relative aspect-[16/10] w-full max-w-[760px] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
         style={{ "--exposure": "50%" } as CSSProperties}
       >

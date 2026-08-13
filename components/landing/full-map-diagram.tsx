@@ -75,17 +75,26 @@ export function FullMapDiagram() {
     const el = ref.current;
     if (el === null) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setMotionArmed(true);
-    el.setAttribute("data-reveal", "armed");
+    /* Never arm what cannot be un-armed — see the same guard in reveal.tsx.
+       Arming applies the hidden state, so anything that could fail must fail
+       before it. This figure is the tallest reveal root on the page (~1090px),
+       which is exactly why the threshold below is height-independent. */
+    if (typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
+      (entries, obs) => {
+        if (entries[0].isIntersecting) {
           el.setAttribute("data-reveal", "shown");
-          observer.disconnect();
+          obs.disconnect();
         }
       },
-      { threshold: 0.2 }
+      /* threshold 0 + a bottom inset, NOT threshold 0.2 — a ratio threshold
+         needs 20% of a 1090px figure (218px) on screen at once, so any viewport
+         shorter than that stranded the whole diagram at opacity 0 even after a
+         full scroll of the page. Verified failing at 210px before this change. */
+      { threshold: 0, rootMargin: "0px 0px -20% 0px" }
     );
+    setMotionArmed(true);
+    el.setAttribute("data-reveal", "armed");
     observer.observe(el);
     return () => {
       observer.disconnect();
@@ -110,7 +119,7 @@ export function FullMapDiagram() {
         <button
           type="button"
           onClick={replay}
-          className="absolute top-4 right-4 z-10 rounded-md border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
+          className="absolute top-4 right-4 z-10 rounded-md border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) max-sm:min-h-11 max-sm:min-w-11"
         >
           Replay
         </button>
@@ -164,12 +173,24 @@ export function FullMapDiagram() {
 
         {/* ── The isometric figure: a labelled image narrating the finished
              state; the rail above carries the step-by-step story. ── */}
-        <figure>
+        {/* min-w-0 lets the grid item shrink so the scroll container below
+            clips instead of widening the page (LAY-2). */}
+        <figure className="min-w-0">
+          {/* The SVG never scales below its 560px design width — labels are
+              sized in design units, so downscaling would sink them under the
+              12px floor (TYP-2). Below 560px the figure scrolls in its own
+              container instead (LAY-2: container scroll, never page scroll). */}
+          <div
+            className="overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
+            tabIndex={0}
+            role="group"
+            aria-label="Harness map figure, scrolls sideways on narrow screens"
+          >
           <svg
             viewBox="0 0 560 950"
             role="img"
             aria-labelledby="fullmap-title fullmap-desc"
-            className="mx-auto block h-auto w-full max-w-[560px]"
+            className="mx-auto block h-auto w-full min-w-[560px] max-w-[560px]"
           >
             <title id="fullmap-title">How the design harness fits together</title>
             <desc id="fullmap-desc">
@@ -291,7 +312,7 @@ export function FullMapDiagram() {
                 strokeWidth="1"
               />
               <polygon points="275,196 285,196 280,204" fill="var(--border-strong)" />
-              <text x="294" y="184" fontSize="11" fill="var(--muted-foreground)">
+              <text x="294" y="184" fontSize="12" fill="var(--muted-foreground)">
                 one ask, in plain words
               </text>
             </g>
@@ -322,7 +343,7 @@ export function FullMapDiagram() {
                 y="284"
                 textAnchor="middle"
                 className="font-mono"
-                fontSize="10"
+                fontSize="12"
                 fill="var(--muted-foreground)"
               >
                 /dx-harness:dx-design
@@ -340,7 +361,7 @@ export function FullMapDiagram() {
                 strokeWidth="1"
               />
               <polygon points="275,378 285,378 280,386" fill="var(--border-strong)" />
-              <text x="294" y="366" fontSize="11" fill="var(--muted-foreground)">
+              <text x="294" y="366" fontSize="12" fill="var(--muted-foreground)">
                 dispatches propose-only subagents
               </text>
             </g>
@@ -365,7 +386,7 @@ export function FullMapDiagram() {
                 x="230"
                 y="528"
                 textAnchor="middle"
-                fontSize="10.5"
+                fontSize="12"
                 fontWeight="600"
                 fill="var(--foreground)"
               >
@@ -375,7 +396,7 @@ export function FullMapDiagram() {
                 x="230"
                 y="542"
                 textAnchor="middle"
-                fontSize="10"
+                fontSize="12"
                 fill="var(--muted-foreground)"
               >
                 copy · flow · pattern · motion · polish
@@ -385,7 +406,7 @@ export function FullMapDiagram() {
                 y="528"
                 textAnchor="middle"
                 className="font-mono"
-                fontSize="10.5"
+                fontSize="12"
                 fontWeight="600"
                 fill="var(--tw-blue-text)"
               >
@@ -395,7 +416,7 @@ export function FullMapDiagram() {
                 x="412"
                 y="542"
                 textAnchor="middle"
-                fontSize="10"
+                fontSize="12"
                 fill="var(--muted-foreground)"
               >
                 builds what you accept
@@ -413,7 +434,7 @@ export function FullMapDiagram() {
                 strokeWidth="1"
               />
               <polygon points="275,596 285,596 280,604" fill="var(--border-strong)" />
-              <text x="294" y="584" fontSize="11" fill="var(--muted-foreground)">
+              <text x="294" y="584" fontSize="12" fill="var(--muted-foreground)">
                 every skill reads the same context
               </text>
             </g>
@@ -436,7 +457,7 @@ export function FullMapDiagram() {
                 x="218"
                 y="683"
                 textAnchor="middle"
-                fontSize="9.5"
+                fontSize="12"
                 fill="var(--foreground)"
               >
                 control catalog
@@ -446,7 +467,7 @@ export function FullMapDiagram() {
                 x="342"
                 y="683"
                 textAnchor="middle"
-                fontSize="9.5"
+                fontSize="12"
                 fill="var(--foreground)"
               >
                 primitives
@@ -464,7 +485,7 @@ export function FullMapDiagram() {
                 strokeWidth="1"
               />
               <polygon points="275,778 285,778 280,786" fill="var(--border-strong)" />
-              <text x="294" y="766" fontSize="11" fill="var(--muted-foreground)">
+              <text x="294" y="766" fontSize="12" fill="var(--muted-foreground)">
                 written into the product repo
               </text>
             </g>
@@ -495,13 +516,14 @@ export function FullMapDiagram() {
                 y="934"
                 textAnchor="middle"
                 className="font-mono tracking-[0.06em]"
-                fontSize="10.5"
+                fontSize="12"
                 fill="var(--muted-foreground)"
               >
-                YOUR PRODUCT REPO
+                Your product repo
               </text>
             </g>
           </svg>
+          </div>
 
           {/* Legend — visible content, not decoration: the words carry the key,
                the swatches reinforce it. */}
@@ -516,7 +538,7 @@ export function FullMapDiagram() {
             </span>
             <span className="flex items-center gap-2">
               <span aria-hidden className="size-3 rounded-xs border border-primary" />
-              lime edge — the single front door
+              blue edge — the single front door
             </span>
           </figcaption>
         </figure>
