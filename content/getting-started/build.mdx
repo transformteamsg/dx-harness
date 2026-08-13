@@ -79,5 +79,5 @@ A green result means nothing automated was flagged, not that the design is done,
 
 Before a human sees it, ask for an *adversarial* review, a deliberately critical pass that hunts for problems. On a dx-harness repo, [`/dx-harness:dx-design-critique`](/harness/skills) does this against the standard; otherwise, run Claude Code's `/code-review` skill. Even better, have a *different* model do the review: the model that wrote the code is a poor judge of its own work, so a fresh set of eyes catches more (Codex is good for this). Either way, it cleans things up first, so your engineer's review goes faster.
 
-Once you've done this by hand, a design harness can run the build, check, and review phases for you, stopping for your approval before and after (on a dx-harness repo, that's `/dx-harness:dx-design-make` and its [loop](/harness/loop)). You still make the branch and open the merge request yourself.
+Once you've done this by hand, a design harness can run the build, check, and review phases for you, stopping for your approval before and after (on a dx-harness repo, that's `/dx-harness:dx-design-execute` and its [loop](/harness/loop)). You still make the branch and open the merge request yourself.
 
