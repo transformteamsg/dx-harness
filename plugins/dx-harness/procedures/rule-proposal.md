@@ -29,5 +29,5 @@ marked pending design-lead approval.
 **Harness friction is a feedback issue, not a rule proposal.** A confusing gate, a
 missing or unbuilt check, a process or onboarding nit: none of these is a control
 gap. File those as a GitHub issue via the feedback skill
-(`docs/harness-feedback.md` in the harness repo is the spec). A rule proposal is
+(the spec is `../docs/harness-feedback.md`, relative to this file). A rule proposal is
 only for a gap in what the catalogue can check.

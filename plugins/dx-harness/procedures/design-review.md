@@ -24,6 +24,18 @@ positive, which is why the role exists separately.
   second read, not a fully independent one; treat split findings and anything not
   mechanically verified as candidates for human review.
 
+## Async evidence gate (mandatory when CMP-3 is in scope)
+
+This is a harness rule (EVD-1, async evidence), not a catalog control. Before
+dispatch, the screenshot
+set must capture the loading state, the success state, and the error state, not
+only the initial or empty state. A build can claim all three states exist in code
+while only the empty state is ever screenshotted; code-level reachability is not
+perceptibility. Acceptable substitutes for a frame: a video walkthrough that covers
+all three states, or a named human reviewer's attestation that they witnessed the
+live render of all three. An evidence set that misses this gate goes back to the
+builder; do not dispatch the reviewer on it.
+
 ## Verdict re-check from new screenshots
 
 After the builder addresses findings, the fixes go back to the **same reviewer**
