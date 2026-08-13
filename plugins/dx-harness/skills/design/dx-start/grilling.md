@@ -1,7 +1,7 @@
 # Grilling (vendored snapshot)
 
-> Upstream: `~/.agents/skills/grilling/SKILL.md` (local install, symlinked from `~/.claude/skills/grilling`; no public URL yet, attach it when the upstream is published).
-> Upstream commit: none (the upstream is not a git checkout); upstream file dated 2026-08-06, copied verbatim 2026-08-12. Re-check this copy by hand at each plugin version bump; there is no sync tooling.
+> Upstream: <https://github.com/mattpocock/skills/blob/1495d014303e041c51c29f9e442485ba06f5878d/skills/productivity/grilling/SKILL.md>
+> Upstream commit: `1495d014303e041c51c29f9e442485ba06f5878d` (mattpocock/skills). Body copied verbatim on 2026-08-12; the upstream frontmatter is dropped, this header is added. Re-check this copy by hand at each plugin version bump; there is no sync tooling.
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
