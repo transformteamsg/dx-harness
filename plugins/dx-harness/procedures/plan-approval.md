@@ -48,6 +48,16 @@ not a judgment call. An L2 deviation needs a specific, real reason. For the tier
 table and the `dx-waive` syntax read `../standards/README.md`; never answer a waiver
 question from memory (mechanics: `catalogue-mechanics.md`, beside this file).
 
+## No dedicated designer on the team
+
+The gate does not become optional. The **portfolio designer** holds this gate
+asynchronously: send them the compact plan + intended-diff summary (the files to
+be touched, the specific visual and structural changes, and what is preserved),
+and record on the design ticket that it was sent. The portfolio designer is the
+correct L1 approver for teams without an embedded designer. Target turnaround is
+less than one day. The same person holds the design-review gate asynchronously
+(see `design-review.md`, beside this file).
+
 ## Unattended runs
 
 With no human reachable, proxy approval is permitted only when the operator
@@ -55,7 +65,8 @@ authorized it up front. Record it verbatim as "approved by operator proxy —
 unattended run" in the decision record, never as if a human approved. Proxy approval
 is not a substitute for review: still emit a compact, reviewable plan plus
 intended-diff summary (files to touch, the specific visual and structural changes,
-and what is preserved), route it to the async reviewer, and record that it was sent.
+and what is preserved), route it to the async reviewer (the portfolio designer, per the section above),
+and record that it was sent.
 
 ## Record it
 

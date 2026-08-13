@@ -17,6 +17,10 @@ positive, which is why the role exists separately.
   whoever orchestrates you spawns the reviewer and routes its verdict back. Never
   write the verdict yourself, and never present unverified work as verified while
   waiting.
+- **No dedicated designer on the team?** The portfolio designer holds this gate
+  asynchronously, the same way they hold plan approval (see `plan-approval.md`,
+  beside this file): route the verdict and its evidence to them and record on the
+  design ticket that it was sent. Target turnaround is less than one day.
 - **Paste the full verdict verbatim into the decision record** and the surface's
   design ticket run record (`design-tickets.md`, beside this file). The record is
   the durable artifact; a summary in its place is a defect. Note the shared limit
