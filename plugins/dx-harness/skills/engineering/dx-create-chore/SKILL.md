@@ -13,7 +13,7 @@ Dependencies live outside the body: link blockers and dependents with GitHub's n
 
 ## Issue template
 
-The canonical structure is in `issue-template.md` in this skill's directory. Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading.
+The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading.
 
 ## Workflow
 
