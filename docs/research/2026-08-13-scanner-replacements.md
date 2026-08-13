@@ -19,8 +19,8 @@ fetched 2026-08-13.
 |---|---|---|---|
 | `a11y-static.py` + `contrast.py` | A11Y-1/2/3/8 | **Narrow sharply, then layer.** Delete the KBD and NAME rules (jsx-a11y does them properly, already installed). Delete `contrast.py`'s ERROR path (it is provably wrong). **Keep** the FOCUS rule — axe has no rule for it. Add a rendered-DOM tier. | **Needs an owner decision** — see §6 |
 | `content-lint.py` | CNT-1/3/5/6/9/12/13, SLP-9 | **Narrow, and invert.** Vale owns the rule bodies (~85%, much of it near-verbatim off the shelf); the script shrinks to a string extractor (~15%) because Vale reads only *comments* from `.tsx`. Stop running prose rules over raw TSX — that is where its false positives come from. | Decidable now |
-| `type-scan.py` | TYP-1/2/3/4 | **Keep.** Nothing off-the-shelf can read Tailwind utilities out of JSX. Stylelint sees CSS files only. | Decidable now |
-| `token-audit.py` | TOK-1/2/3, COL-1/2 | **Keep**, optionally add stylelint for the `.css` files only. Same reason as `type-scan.py`. | Decidable now |
+| `type-scan.py` | TYP-1/2/3/4 | **Narrow: keep the rules, replace the engine.** No *linter* encodes a design scale — but ast-grep reads Tailwind utilities out of JSX (verified), so the scanning machinery is off-the-shelf even though the policy stays yours. | Decidable now |
+| `token-audit.py` | TOK-1/2/3, COL-1/2 | **Narrow**, same shape. TOK-1 is the closest thing to a drop-in in this survey: a 12-line ast-grep rule reproduces it. Optionally add stylelint for `.css` only. | Decidable now |
 
 The headline finding is not about any tool. It is that **the harness already has
 `axe-core@4.12.1` and `eslint-plugin-jsx-a11y@6.10.2` installed** and uses almost none of
@@ -436,7 +436,7 @@ docs list as **experimental**, and most of the ecosystem is Japanese-specific.
 
 **Cost:** one Go binary, no runtime deps, no browser, config outside the target repo.
 
-### 5.2 `type-scan.py` → **keep**
+### 5.2 `type-scan.py` → **narrow: keep the rules, replace the engine**
 
 The controls are TYP-1 (typeface), TYP-2 (size floor, line-height), TYP-3 (on-scale sizes),
 TYP-4 (all-caps). In this codebase, all of these are expressed as **Tailwind utility
@@ -457,14 +457,42 @@ Tailwind v4 dropped `tailwind.config.js` for CSS-first `@theme`, and the plugin 
 load the target's theme to know which classes are valid. That is a build-coupled dependency
 on a repo the harness does not own.
 
-**Recommendation: keep.** `type-scan.py` currently reports **zero** findings on this repo,
-and its docstring is unusually honest about its limits (`type-scan.py:40-55` concedes font
-weights, the 12-vs-14px label ambiguity, px/% line-heights, and camelCase inline styles).
-This is the one scanner where bespoke regex is genuinely the reasonable answer, because the
-thing being checked is a string in a JSX attribute and no mature tool reads those against a
-design scale.
+`eslint-plugin-better-tailwindcss` is the maintained alternative that genuinely does support
+v4 — and checking it carefully makes the "keep" verdict stronger, not weaker, for two
+reasons:
 
-### 5.3 `token-audit.py` → **keep**
+1. **It still needs the target's theme.** v4 support works via an `entryPoint` setting
+   pointing at the target repo's CSS entry file (e.g. `src/global.css`), *"relative to the
+   current working directory"*
+   ([settings docs](https://github.com/schoero/eslint-plugin-better-tailwindcss/blob/main/docs/settings/settings.md)).
+   The harness would have to discover that path per target repo and the plugin would have
+   to resolve and build the theme — the same build coupling, just better handled.
+2. **Its rules are the wrong shape.** They cover class *validity, ordering, duplication and
+   conflicts* (`no-unregistered-classes`, `no-conflicting-classes`, `no-duplicate-classes`,
+   `no-deprecated-classes`). **None of them expresses a design-scale constraint.** Nothing
+   says `text-[13px]` is off the Tailwind type scale (TYP-3), that `p-[7px]` is off the
+   spacing scale (TOK-2), or that `bg-red-500` bypasses the semantic token layer (COL-1/2)
+   — because to Tailwind all of those are perfectly valid classes. That judgement is
+   design-system policy, not Tailwind correctness, and no general-purpose linter encodes it.
+
+**But "no tool can read a JSX class string" turns out to be false.** See §5.4 — ast-grep
+can, and that changes the recommendation from *keep* to *narrow*.
+
+**Recommendation: narrow.** Keep the *policy* — the type scale, the approved typefaces, the
+size floors are the harness's own judgement and no off-the-shelf tool encodes them. Replace
+the *engine*: the scanning, walking, comment-stripping and line-local regex machinery is
+what ast-grep provides for free, with AST context on top. `type-scan.py:40-55` is unusually
+honest about its limits (font weights, the 12-vs-14px label ambiguity, px/% line-heights,
+camelCase inline styles); several of those are AST-shaped problems that ast-grep addresses
+directly and regex cannot.
+
+What stays genuinely bespoke: TYP-2's numeric thresholds and TYP-3's scale-membership
+arithmetic. A regex can express "is 13px on the scale?" only by enumerating the scale — the
+current script does exactly that (`type-scan.py:29`) and reads the values from the catalog's
+`verify` field so they cannot drift. That coupling is worth preserving in whatever engine
+runs.
+
+### 5.3 `token-audit.py` → **narrow: keep the rules, replace the engine**
 
 Same argument, same evidence. TOK-1 (raw hex), TOK-2 (spacing scale), TOK-3 (radius scale),
 COL-1/2 are checked against Tailwind utility classes and CSS values. Reports **zero**
@@ -479,8 +507,78 @@ Stylelint's `color-no-hex` and `declaration-property-value-allowed-list`, plus
 narrow but real win, and worth taking if `.css` files are a meaningful surface in target
 repos. It does nothing for the JSX half, which is where the violations actually live.
 
-**Recommendation: keep.** Optionally add stylelint scoped to `.css` only, as a
-belt-and-braces layer with an out-of-tree config. Do not attempt to replace the JSX scan.
+**Recommendation: narrow**, same shape as §5.2. TOK-1 (raw hex) is the closest thing to a
+drop-in replacement anywhere in this survey — see §5.4. Optionally add stylelint scoped to
+`.css` only, as a belt-and-braces layer with an out-of-tree config.
+
+### 5.4 ast-grep — the engine that changes §5.2 and §5.3
+
+The premise behind "keep the bespoke scanners" was that no off-the-shelf tool can read
+Tailwind utilities out of a JSX attribute. **That is wrong, and I verified it by running the
+tool.**
+
+In tree-sitter's TSX grammar the node kind `string_fragment` covers every surface these
+controls care about at once. This 12-line rule file, kept in the harness, with **no config
+of any kind in the target**:
+
+```yaml
+id: no-raw-hex-colour
+language: tsx
+severity: error
+message: TOK-1 raw hex colour literal
+rule:
+  any:
+    - all: [{kind: string_fragment}, {regex: '#[0-9a-fA-F]{3,8}\b'}]
+    - all: [{kind: string_fragment}, {regex: '\b(rgb|rgba|hsl|hsla|oklch)\('}]
+```
+
+run as `ast-grep scan --rule <harness>/rule-hex.yml <target>`, matched all three surfaces on
+a probe file:
+
+| Matched | Context |
+|---|---|
+| `#fff`, `rgb(0 0 0 / 10%)` | styled-components template literal |
+| `#fff` | `style={{ color: "#fff" }}` object value |
+| `text-[#0064FF] uppercase tracking-widest` | **`className` attribute value** |
+
+and correctly left `text-sm` and `text-(--tw-blue)` alone. Run against this repo's
+`components/` it reports **zero findings** — the same answer `token-audit.py` gives, from
+12 lines instead of 866.
+
+**Why this is the right substrate, not just a smaller regex:**
+
+- **Rules live in the harness.** Nothing is added to the target repo — the single hardest
+  constraint in this survey, and ast-grep satisfies it with no caveats.
+- **AST context kills a false-positive class.** `inside: import_statement` excludes the
+  `"styled-components"` import specifier. The bespoke scripts have no equivalent, which is
+  precisely why `content-lint.py` reports a `tagName` comparison as user-facing copy (§5.1).
+- **Structured output.** `--json=compact` gives byte offsets, so findings can keep the
+  existing `ERROR <file>:<line> [<CTL>]` contract that `detect.py` reverse-parses.
+
+**Honest limits.** ast-grep is a *matching engine*, not a design-system linter — it has no
+notion of a type scale, and scale-membership still has to be enumerated in a regex. Node
+kinds are per-language: `language: tsx` scans `.tsx` and skips `.jsx`, so parallel rules are
+needed. And invocation is fiddly: bare `npx @ast-grep/cli` fails because the binary is named
+`ast-grep`; use `npx --yes --package @ast-grep/cli ast-grep …`.
+
+**A trap worth recording if ESLint is used instead.** ESLint evaluates all patterns relative
+to the current working directory, so an absolute `--config` with the target elsewhere yields
+`File ignored because outside of base path`. The harness must set CWD to the target repo
+root. ast-grep has no equivalent trap.
+
+**One structural fact that closes out TYP-5 and TYP-6.** Stylelint has **no rule that
+requires a property to be present** — every rule disallows or normalises. So "columns must
+use `tabular-nums`" (TYP-5) and "body text must carry a `ch` max-width" (TYP-6) are not
+expressible in stylelint at all. The nearest candidate, `@double-great/stylelint-a11y`'s
+`no-spread-text`, only fires when `max-width` is *already* in `ch` and outside 45–80 — by
+its own README `max-width: 100px` is explicitly not a violation. These two controls stay
+manual.
+
+**Purpose-built token linters do not exist.** Unscoped `eslint-plugin-design-tokens` has
+zero published versions (a squatted name). `eslint-plugin-react-native`'s `no-color-literals`
+has inverted semantics — its docs bless `const white = '#fff'`, the exact constant you want
+caught. `@metamask/eslint-plugin-design-tokens`'s `color-no-hex` handles JSX `style={{}}`
+objects only and has not published since 2024-11-08.
 
 ---
 
@@ -488,8 +586,9 @@ belt-and-braces layer with an out-of-tree config. Do not attempt to replace the 
 
 **Decidable now — no further input needed:**
 
-1. `type-scan.py` and `token-audit.py`: **keep**. Nothing off-the-shelf reads Tailwind
-   utilities out of JSX; the alternatives are build-coupled to repos the harness doesn't own.
+1. `type-scan.py` and `token-audit.py`: **keep the policy, move the engine to ast-grep.**
+   Verified working with rules in the harness and nothing in the target. The design-scale
+   arithmetic stays bespoke; the 1,612 lines of scanning machinery need not.
 2. `content-lint.py`: **stop running prose rules over raw `.tsx`/`.ts` text.** This
    eliminates the largest measured false-positive class, with or without Vale. (UI copy in
    TSX still needs checking — but via extraction, not by treating the file as prose.)
@@ -575,6 +674,11 @@ belt-and-braces layer with an out-of-tree config. Do not attempt to replace the 
 [alex](https://github.com/get-alex/alex)
 
 **CSS / token tooling:**
+[ast-grep rule config](https://ast-grep.github.io/reference/rule.html) ·
+[ast-grep CLI](https://ast-grep.github.io/reference/cli.html) ·
+[stylelint rules](https://stylelint.io/user-guide/rules/) ·
 [stylelint CLI](https://stylelint.io/user-guide/cli/) ·
+[better-tailwindcss settings](https://github.com/schoero/eslint-plugin-better-tailwindcss/blob/main/docs/settings/settings.md) ·
+[stylelint-a11y no-spread-text](https://github.com/double-great/stylelint-a11y) ·
 [eslint-plugin-tailwindcss #428](https://github.com/francoismassart/eslint-plugin-tailwindcss/issues/428) ·
 [eslint-plugin-tailwindcss #418](https://github.com/francoismassart/eslint-plugin-tailwindcss/issues/418)
