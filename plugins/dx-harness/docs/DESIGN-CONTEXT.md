@@ -72,10 +72,15 @@ The generator enforces the tier rules and refuses to write past a rejected line
 - **L2** needs a reason.
 - The control id must exist in `standards/catalog.yaml`, and the stated tier must
   match the catalogue's tier for that control.
+- One control id may appear on at most one line; duplicate lines are rejected.
 
 Checks (`checks/detect.py`) and the design reviewer load the overrides from
-`.dx/design.json`, grade against the adjusted rule, and surface every active
-override. Anything not listed binds as written. Overrides start empty on a first
+`.dx/design.json` and surface every active override. The design reviewer grades
+against the adjusted rule, applying it only where its stated scope covers the
+instance. `checks/detect.py` cannot judge scope: it annotates a finding on an
+overridden control with the override and keeps it blocking until a manual check
+against the adjusted rule (or a config ignoreValue, or a per-instance waiver)
+clears it. Anything not listed binds as written. Overrides start empty on a first
 definition: a deviation earns its place through the waiver promotion flow or is
 volunteered, never fished for.
 

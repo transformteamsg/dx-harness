@@ -25,8 +25,10 @@ The parse is deterministic (stdlib only):
       - <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
     The generator validates every line against `standards/catalog.yaml` (ships with the
     harness beside this script): the control id must exist, the stated tier must match
-    the catalogue tier, L0 lines are always rejected, L1 needs a named approver, and
-    L1 and L2 both need a reason. One rejected line stops the write (exit 3).
+    the catalogue tier, L0 lines are always rejected, L1 needs a named approver,
+    L1 and L2 both need a reason, and one control id may appear on at most one line
+    (duplicate lines have no deterministic meaning downstream). One rejected line
+    stops the write (exit 3).
   - `catalog_version` is stamped from catalog.yaml `meta.version`; `--check` also
     flags a projection stamped against an older catalogue.
 
@@ -37,10 +39,11 @@ Usage:
 
 Exit codes:
   0  wrote the file / it is up to date
-  1  no DESIGN.md (nothing to generate - portfolio defaults apply; not a failure),
-     or the control catalogue is unreadable
+  1  no DESIGN.md (nothing to generate - portfolio defaults apply; not a failure)
   2  --check: .dx/design.json is stale vs DESIGN.md or the catalogue version
   3  the Overrides section did not validate; nothing was written
+  4  the control catalogue is missing or unreadable (a tool failure: override
+     validation and catalog_version stamping were not possible)
 """
 
 import argparse
@@ -186,8 +189,12 @@ def guardrails_value(body):
 def parse_overrides(body):
     """Parse the Overrides section (comments pre-stripped). Returns (items, errors).
     Enforces the line grammar and the stated tier's field rules: L0 is always
-    rejected, L1 needs an approver, L1 and L2 both need a reason."""
+    rejected, L1 needs an approver, L1 and L2 both need a reason. One control id
+    may appear on at most one line: duplicates are rejected, because downstream
+    consumers keep one adjusted rule per control and two lines would have no
+    deterministic meaning."""
     items, errors = [], []
+    seen = set()
     for raw in body.splitlines():
         line = raw.strip()
         if not line:
@@ -202,6 +209,14 @@ def parse_overrides(body):
         cid = m.group("id")
         tier = m.group("tier").strip().upper()
         rest = m.group("rest").strip()
+
+        if cid in seen:
+            errors.append(
+                f"{cid} appears on more than one override line. Keep one line per "
+                f"control: merge the adjusted rules into a single line."
+            )
+            continue
+        seen.add(cid)
 
         parts = REASON_SPLIT_RE.split(rest, maxsplit=1)
         rule = parts[0].strip()
@@ -435,7 +450,7 @@ def main(argv=None):
         print(f"cannot read the control catalogue at {CATALOG_PATH}: {exc}. "
               f"Override validation and catalog_version stamping need it; "
               f"fix the harness install and rerun.")
-        return 1
+        return 4
 
     if args.check:
         try:
@@ -575,10 +590,10 @@ def run_self_test():
 
     # 10b. mixed section: fields AND prose both survive (the fields-OR-prose fix)
     mixed = ("## Components\n"
-             "- manifest: src/components/MANIFEST.md\n"
+             "- manifest: .dx/component-manifest.json\n"
              "Buttons pair a solid primary with a ghost secondary.\n")
     got = parse_sections(mixed)["components"]
-    check("mixed section keeps its fields", got.get("manifest") == "src/components/MANIFEST.md")
+    check("mixed section keeps its fields", got.get("manifest") == ".dx/component-manifest.json")
     check("mixed section keeps its prose",
           got.get("prose") == "Buttons pair a solid primary with a ghost secondary.")
 
@@ -669,6 +684,15 @@ def run_self_test():
     check("malformed line rejected with grammar",
           any("cannot parse" in e and "<CONTROL-ID>" in e for e in errs))
 
+    # 23b. duplicate control ids are rejected (no deterministic meaning downstream)
+    errs = overrides_errors("## Overrides\n"
+                            "- MOT-1 (L2): entrances to 240ms - reason: hydration\n"
+                            "- MOT-1 (L2): entrances to 200ms - reason: contradicts\n",
+                            controls=controls)
+    check("duplicate control id rejected",
+          any("more than one override line" in e for e in errs))
+    check("duplicate rejection names the control", any("MOT-1" in e for e in errs))
+
     # 24. errors collect: every bad line is reported, not just the first
     errs = overrides_errors("## Overrides\n"
                             "- A11Y-1 (L0): x - reason: y\n"
@@ -738,6 +762,21 @@ def run_self_test():
         check("rejected override exits 3", rc_bad == 3)
         check("rejected override writes nothing",
               not os.path.isfile(os.path.join(td, ".dx", "design.json")))
+
+    # 28. an unreadable catalogue -> exit 4 (a tool failure, distinguishable
+    # from exit 1's benign no-DESIGN.md so detect.py can propagate it)
+    global CATALOG_PATH
+    saved_catalog_path = CATALOG_PATH
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            with open(os.path.join(td, DESIGN_MD), "w", encoding="utf-8") as fh:
+                fh.write(sample)
+            CATALOG_PATH = os.path.join(td, "no-such-catalog.yaml")
+            check("unreadable catalogue exits 4 on generate", quiet(main, [td]) == 4)
+            check("unreadable catalogue exits 4 on --check",
+                  quiet(main, [td, "--check"]) == 4)
+    finally:
+        CATALOG_PATH = saved_catalog_path
 
     if failures:
         for f in failures:
