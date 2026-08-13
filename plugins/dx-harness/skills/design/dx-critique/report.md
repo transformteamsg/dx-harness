@@ -20,8 +20,11 @@ captured.
 ## 2. Redlined crops
 
 PIL (Pillow) is a setup dependency, not a runtime surprise. Detect it before
-cropping; if it is missing, offer setup once via `../dx-setup/setup.md`, then
-proceed. Never fake crops, and never ship a report with placeholder images.
+cropping: run `python3 -c "import PIL"`. If that fails, install it with
+`pip install Pillow` (or `pip3 install Pillow`), re-run the check, and only then
+proceed. The general environment checklist lives in `../dx-setup/setup.md`, but
+this step never depends on it: the check and the fix above are complete on their
+own. Never fake crops, and never ship a report with placeholder images.
 
 For each annotated finding:
 

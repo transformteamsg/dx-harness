@@ -43,9 +43,13 @@ For any waiver or applicability question read `../../../standards/README.md`
    ticket, in the typed-heading format from `../../../procedures/design-tickets.md`
    (the Findings heading carries the date and this skill's name), and link the report
    URL from it. Then stop. Suggestions are offers, not a plan; do not implement
-   anything. Unpicked suggestions are recorded as "considered", never silently dropped.
+   anything. At this point every suggestion is pending: do not mark anything
+   `accepted` or `not accepted` before the human replies in step 4.
 4. **Approval happens on the ticket, later.** When the human replies with S-numbers,
-   each approved S# marks the F-findings it fixes as `accepted`; the suggestions
+   each approved S# marks the F-findings it fixes as `accepted`, and suggestions the
+   reply does not pick are marked `not accepted` then, never silently dropped
+   (`../../../procedures/design-tickets.md` sets both states only on the human's
+   response); the suggestions
    table's Fixes column (S# to F#) is the mapping. `dx-design-execute` builds accepted
    findings in a later run, its plan gate still applies, and each accepted finding then
    links to the run record of the execute run that built it. Nothing is built inside a

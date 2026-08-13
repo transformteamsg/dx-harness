@@ -37,8 +37,9 @@ propose changes before you have seen and judged the current state:
    cards into one calm header row"), the pattern or control it serves
    (layout-patterns.md #4, LAY-5), and the cost (S/M). Suggestions are OFFERS:
    the human approves them by S-number on the surface's design ticket, and
-   `dx-design-execute` builds accepted ones in a later run. Unpicked
-   suggestions are recorded as "considered", not silently dropped. A suggestion
+   `dx-design-execute` builds accepted ones in a later run. A suggestion stays
+   pending until the human replies; unpicked ones are marked `not accepted` on
+   that reply, not silently dropped. A suggestion
    never bypasses `dx-design-execute`'s plan gate.
 5. The critique's findings and suggestions feed the report step (`report.md`,
    beside this file) and the Findings comment on the surface's design ticket.
