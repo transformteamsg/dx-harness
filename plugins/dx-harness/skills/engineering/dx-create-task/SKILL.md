@@ -9,7 +9,7 @@ A task only makes sense in the context of the story it delivers. Every task must
 
 ## Issue template
 
-The canonical structure is in `issue-template.md` in this skill's directory. Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading.
+The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading.
 
 ## Workflow
 
