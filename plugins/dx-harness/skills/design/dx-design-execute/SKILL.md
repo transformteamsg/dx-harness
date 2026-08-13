@@ -220,9 +220,14 @@ Establish the rest, asking the user only what you cannot infer:
    Lim, P5 Math, entering marks the week before reports are due.") Design for the
    stressed week, not the average one.
 3. **Product and page type**: which product (TW / CaseSync / Glow / TW surface — this
-   sets tone calibration per `copy`), and what kind of surface: workspace
-   view, form, flow step, dashboard, settings, empty state, onboarding. Page type
-   selects controls via `applies_to`. **Audience**: who does this surface serve —
+   sets tone calibration per `copy`; a repo outside the portfolio answers
+   **other** and names the actual product — a true answer always exists, and
+   "closest fit" is never recorded as the product), and what kind of surface:
+   workspace view, form, flow step, dashboard, settings, empty state, onboarding.
+   Page type selects controls via `applies_to`. For **other**, every
+   `products:`-scoped control (e.g. IDN-4) is recorded in the decision record as
+   **deliberately out of scope — product outside the portfolio**, a decision, not
+   a silent drop. **Audience**: who does this surface serve —
    teachers (the default; assume it when unstated), students (ask which band:
    primary, or secondary and up), or parents? Record it in the sprint contract;
    it scopes `audiences:`-scoped controls for the rest of the loop. If the product

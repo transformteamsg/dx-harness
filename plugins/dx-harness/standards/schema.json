@@ -5,7 +5,7 @@
   "checks": ["deterministic", "judgment", "hybrid"],
   "phases": ["intent", "plan", "implement", "verify"],
   "applies_to": ["page", "component", "flow", "content"],
-  "products": ["tw", "casesync", "glow"],
+  "products": ["tw", "casesync", "glow", "other"],
   "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
   "enforced": ["script", "partial", "manual", "evaluator"],
   "status": ["proposed"],

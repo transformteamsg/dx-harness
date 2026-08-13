@@ -4,8 +4,13 @@ Run in this order; do not present output to the user while a step is failing:
 
 1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the built
    `checks/` scripts first — `checks/README.md` is the authority for the full set,
-   each script's flags, and the static subset each does *not* cover. The three that
-   catch the most:
+   each script's flags, and the static subset each does *not* cover.
+   **Locating them:** like the catalog, `checks/` ships with this harness, not with
+   the product repo — resolve it relative to this verify.md file, three levels up:
+   `<this-skill-dir>/../../../checks/` (the same path works in the harness dev repo
+   and when installed as the `dx-harness` plugin; do not expect a `checks/`
+   directory in the project cwd). The commands below are written repo-relative for
+   brevity; prefix each with that resolved path. The three that catch the most:
    - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
    - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8.
    - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset of A11Y-1.
@@ -29,7 +34,11 @@ Run in this order; do not present output to the user while a step is failing:
      exist in code while only the empty state is ever screenshotted, and code-level
      reachability is not perceptibility. Acceptable substitutes for a frame: a video
      walkthrough covering all three states, or a named human reviewer's attestation
-     that they witnessed the live render of all three.
+     that they witnessed the live render of all three. One more outcome is valid,
+     per state: `N/A — state does not exist: <reason>`, permitted **only** when
+     CMP-3's own "Do not flag" clause applies (an instant, < ~100 ms local
+     operation has no loading state to photograph) — a truthful outcome recorded
+     as fact, never a pass, exactly like the dark-mode N/A below.
    - **Journey evidence** (flows and multi-step interactions): traverse the happy
      path end-to-end, one frame per step, **plus one recovery path** from the Phase
      3 flow map actually walked — e.g. abandon at step 2 and return, or fail
