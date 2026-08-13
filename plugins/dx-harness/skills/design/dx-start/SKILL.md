@@ -1,12 +1,11 @@
 ---
-name: dx-start
-disable-model-invocation: true
-description: Start here — orientation, a quick context check, and routing to the right DX skill.
+name: dx-design
+description: 'Front door for design work when the ask is unclear, mixed, or dimensionless — "improve my app", "where do I start?", several issues at once, or brainstorming directions. Grills to find intent, with a five-mode menu as fallback, then routes: a named change to dx-design-execute, a whole-page graded review to dx-design-critique, one of the five pass dimensions to that pass, git-shaped asks to dx-design-git, missing DESIGN.md to dx-design-language. In improve mode it runs light triage and propose-only passes, merges findings into one ranked plan behind one plan approval, then hands the build to dx-design-execute. Also answers control-catalogue rule and waiver questions ("can I waive TOK-1?", "does CMP-3 apply here?") and offers the next step that fits: record the waiver, promote a standing override, or start a rule proposal. A sharp ask that already names its skill or dimension routes there directly and skips this.'
 ---
 
 # Start with the DX design harness
 
-You were invoked by hand (`/dx-harness:dx-start`). Your job is to orient the person in a few
+You were invoked by hand (`/dx-harness:dx-design`). Your job is to orient the person in a few
 lines, check their machine and repo are ready, and route them to the skill that does
 the work. You do no design, grading, or setup yourself — you hand off. Brand essence is
 **Kind Utility**: useful first, kind at the surface. Keep turns short; ask before you

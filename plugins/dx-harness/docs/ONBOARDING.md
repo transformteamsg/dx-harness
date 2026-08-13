@@ -20,11 +20,12 @@ Follow the two commands in the [README Install section](../README.md#install):
 /plugin install dx-harness@dx-harness
 ```
 
-This installs the 11 skills (`start`, `setup`, `design`, `critique`,
-`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`), the `dx-evaluator`
+This installs the design skills (`dx-design`, `dx-design-setup`, `dx-design-execute`,
+`dx-design-critique`, `dx-standards`, `dx-design-copy`, `dx-design-polish`,
+`dx-design-motion`, `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`), the `dx-design-review`
 subagent (which carries its own review procedure), and the control catalog
 (`standards/`) — the catalog ships with the
-plugin, not with your repo. `/dx-harness:dx-start` is the front door: it orients you and routes to
+plugin, not with your repo. `/dx-harness:dx-design` is the front door: it orients you and routes to
 the right skill.
 
 If you are working on the harness itself (not a product repo), open a Claude Code
@@ -32,7 +33,7 @@ session in this repository directly: the skills load from `plugins/dx-harness/sk
 automatically and no install step is needed.
 
 **Per-user tools.** The plugin install is per-repo; the capture and
-filing tools are per-person. Each teammate runs `/dx-harness:dx-start` (or invokes the `setup`
+filing tools are per-person. Each teammate runs `/dx-harness:dx-design` (or invokes the `dx-design-setup`
 skill directly), which follows the checklist (`plugins/dx-harness/skills/design/dx-setup/setup.md` in this
 repo): the agent-browser CLI + skill for screenshots, an authenticated `gh` for
 harness feedback, Python with PyYAML for the check scripts.
@@ -107,9 +108,10 @@ loading rule: `docs/DESIGN-CONTEXT.md`.
 
 ## 3. Skills installed
 
-**What it means:** The DX skills (`start`, `setup`, `design`, `critique`,
-`standards`, `copy`, `polish`, `motion`, `flow`, `layout`, `feedback`) and the
-`dx-evaluator` subagent must be
+**What it means:** The DX skills (`dx-design`, `dx-design-setup`, `dx-design-execute`,
+`dx-design-critique`, `dx-standards`, `dx-design-copy`, `dx-design-polish`,
+`dx-design-motion`, `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`) and the
+`dx-design-review` subagent must be
 active in the product repo's Claude session for the harness to work. Without them, the agent
 has no loop structure, no catalog filters, and no evaluator procedure to follow.
 
@@ -210,7 +212,7 @@ page. Here is what the six phases feel like in practice:
 4. **Implement** — the agent implements against the approved plan with catalog controls
    active. You should not need to intervene unless the plan was ambiguous.
 5. **Verify** — deterministic controls are checked manually (today), screenshots are
-   captured at 360/768/1280 px, and the `dx-evaluator` subagent grades the judgment
+   captured at 360/768/1280 px, and the `dx-design-review` subagent grades the judgment
    controls and four quality criteria. Note: in an unattended single-agent session, the
    evaluator spawn requires an orchestrator-level dispatch after the executor stops —
    see the friction report headline finding for the working pattern.
@@ -231,7 +233,7 @@ empty state in Teacher Workspace — is available at:
 
 The evaluator verdict in that example was produced via orchestrator-level dispatch
 after the executor stopped — not from within the executor's session. In an interactive
-session you run directly, the `design` skill spawns the `dx-evaluator`
+session you run directly, the `dx-design-execute` skill spawns the `dx-design-review`
 subagent directly from Phase 5.
 
 ---

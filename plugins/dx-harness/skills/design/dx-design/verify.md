@@ -60,7 +60,7 @@ Run in this order; do not present output to the user while a step is failing:
      init-script that sets `.dark` / the theme attribute *before* load, or the
      app's own toggle); a token-resolution argument alone is not evidence that
      the mode renders.
-3. **Evaluator review** — spawn the `dx-evaluator` subagent (a genuinely separate
+3. **Evaluator review** — spawn the `dx-design-review` subagent (a genuinely separate
    agent — do not write the verdict yourself) with: the sprint contract, the approved
    plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
    controls in scope, **and the absolute path to the harness's `standards/` directory**

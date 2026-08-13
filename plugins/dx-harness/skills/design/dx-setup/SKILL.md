@@ -1,6 +1,6 @@
 ---
-name: dx-setup
-description: 'Set up a person''s machine for the DX design harness, and orient someone new to it. Two jobs: (1) install and verify the per-user tools the loop relies on — the agent-browser capture CLI + skill, an authenticated gh for feedback issues, Python + PyYAML for the checks — and optionally seed a product''s DESIGN.md context layer; (2) orient a newcomer. Use to set up, install, or fix that tooling ("set up the harness", "install the harness dependencies", "agent-browser isn''t installed"), or when someone asks to be onboarded to or taught the harness itself ("onboard me", "I''m new to the harness", "how do I use this harness", "teach me the loop"). NOT for designing or changing a page, screen, form, or component; those always go to design, even when phrased as "how do I…". NOT for repo-level harness adoption — stack, manifest, record locations, the L1 approver; that is the team onboarding guide.'
+name: dx-design-setup
+description: 'Set up a person''s machine for the design harness and orient newcomers. Installs and verifies the per-user tools the harness relies on — the agent-browser capture CLI + skill, an authenticated gh, commit signing, Python + PyYAML for the checks — and wires the design-ticket tracker. Use for "set up the harness", "agent-browser isn''t installed", "onboard me", or "teach me the harness". NOT for DESIGN.md — that is dx-design-language; NOT for designing or changing a page — that is dx-design-execute, or dx-design when unclear.'
 ---
 
 # Harness setup — per-user tools and context
@@ -12,7 +12,7 @@ ask before you install.
 **New to the harness?** Two lines: the harness makes an agent follow the DX Design
 Standard whenever it builds Teacher & School UI — one promise, *intent without loss*,
 held by a six-phase loop and a tiered control catalog. For the full orientation and
-routing to the right skill, run `/dx-harness:dx-start`; this skill's own job is getting your
+routing to the right skill, run `/dx-harness:dx-design`; this skill's own job is getting your
 machine and repo ready, so continue here for that.
 
 ## 1. Set up the per-user tools
