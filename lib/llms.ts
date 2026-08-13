@@ -17,7 +17,7 @@ export function llmsIndex(): string {
     "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
   );
   lines.push(
-    "> useful first, kind at the surface. The one test: does this help teachers work",
+    "> useful first, kind at the surface. The one test: does this help the people we serve work",
   );
   lines.push(
     "> faster with less stress? Every page below is also available as Markdown by",
@@ -39,7 +39,7 @@ export function llmsIndex(): string {
   );
   lines.push(`- Waiver syntax: \`${waiver_syntax}\`.`);
   lines.push(
-    "- Stack: Base UI components + Radix Colors + shadcn/ui default tokens. Fonts: Plus Jakarta Sans (display), Inter (body).",
+    "- Product context: implemented stack and standing deviations belong in the product repo's DESIGN.md. Current catalog defaults use Base UI, Radix Colors, shadcn/ui tokens, Plus Jakarta Sans, and Inter.",
   );
   lines.push("");
 

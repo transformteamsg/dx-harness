@@ -14,6 +14,14 @@ describe("llmsIndex", () => {
     expect(index).toContain(meta.waiver_syntax);
   });
 
+  it("publishes the audience-wide Kind Utility test", () => {
+    const index = llmsIndex().replaceAll("\n> ", " ");
+    expect(index).toContain(
+      "does this help the people we serve work faster with less stress?",
+    );
+    expect(index).not.toContain("does this help teachers work faster with less stress?");
+  });
+
   it("links the full corpus and every page twin", () => {
     const index = llmsIndex();
     expect(index).toContain("(/llms-full.txt)");

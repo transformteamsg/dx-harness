@@ -3,9 +3,9 @@
    `/dx-harness:` prefix. Names here are the record for the landing; the
    SKILL.md descriptions stay canonical for behaviour. */
 
-/* The loop's phases render in the diagram straight from
-   components/diagrams/loop-data.ts — the contract-of-record; never fork
-   them into copy here. */
+/* The landing renders no loop phases: components/diagrams/loop-data.ts — the
+   contract-of-record for the six phases — is read only by the docs OrbitLoop.
+   If a phase list ever returns here, render it from there; never fork it. */
 
 /* ── The skills directory (ticket #79) ──────────────────────────────────
    Grouped by the job each skill does in the flow, not by the reader's
@@ -13,7 +13,7 @@
    group's one sentence; the skills themselves are bare names, and the group's
    `start` is the one command worth typing first — always in full, so the
    printed form is typeable as-is. */
-export type DirectorySkill = { name: string; planned?: boolean };
+export type DirectorySkill = { name: string };
 
 export type DirectoryGroup = {
   number: string;
@@ -60,11 +60,8 @@ export const SKILL_DIRECTORY: DirectoryGroup[] = [
     number: "04",
     heading: "Shaping the work",
     role: "Settle an open question and write it down, so the loop has something to hold you to.",
-    /* CNT-4: dx-design-language is specified but unbuilt, so it is labelled
-       planned everywhere it appears — and the group's start command points at
-       the sibling you can type today. */
     skills: [
-      { name: "dx-design-language", planned: true },
+      { name: "dx-design-language" },
       { name: "dx-design-research-brief" },
     ],
     start: "dx-design-research-brief",

@@ -28,10 +28,10 @@ export default function Overview() {
         Kind Utility,<br />held to a standard.
       </h1>
       <p className="mt-5 text-base text-muted-foreground">
-        How dx-harness designs for Singapore&apos;s teachers — utility-first at the core,
-        human-first at the surface. Principles that settle arguments, standards a machine can
-        check, and a harness so every builder ships at the bar, with or without a designer
-        on the team.
+        How dx-harness designs for Singapore&apos;s teachers, students, and parents —
+        utility-first at the core, human-first at the surface. Principles that settle
+        arguments, standards a machine can check, and a harness so every builder ships at
+        the bar, with or without a designer on the team.
       </p>
 
       {home?.illustration && <Illo subject={home.illustration} />}
@@ -40,8 +40,8 @@ export default function Overview() {
         className="mt-6 rounded-lg border border-border p-4 text-base"
         style={{ background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))" }}
       >
-        <strong>The one test:</strong> does this help teachers work faster with less stress?
-        If not — we don&apos;t build it.
+        <strong>The one test:</strong> does this help the people we serve work faster with less
+        stress? If not — we don&apos;t build it.
       </div>
 
       {/* SLP-5 (L2) rationale: the tile grid IS the navigation — six distinct

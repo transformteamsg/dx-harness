@@ -5,7 +5,7 @@ description: Use during a technical grooming session to fill in the implementer 
 
 You are helping a team complete the technical (implementer) sections of an existing GitHub issue during an engineering grooming session. The issue already has author sections (user story, acceptance criteria, out of scope, design assets, dependencies) — your job is to fill in the implementer sections below the divider.
 
-The canonical issue structure is defined in the `create-issue` skill's `issue-template.md` (invoke `/dx-harness:dx-create-issue` or read that skill's directory). Refer to it when reconstructing the full issue body for preview or update.
+The canonical issue structure is defined in the `dx-create-issue` skill's `issue-template.md` (invoke `/dx-harness:dx-create-issue` or read that skill's directory). Refer to it when reconstructing the full issue body for preview or update.
 
 ## Workflow
 

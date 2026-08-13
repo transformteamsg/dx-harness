@@ -1,11 +1,11 @@
 ---
-title: Design to the bar.
+title: Your agent already builds the UI. Now it holds the design bar.
 description: dx-harness is a Claude Code plugin of design skills your agent runs. It carries a design loop that stops for your approval, a checkable standards catalog, and a design reviewer that grades what ships. The engineering workflow rides along.
 ---
 
 ## Quick start
 
-Two commands in Claude Code:
+Two commands in Claude Code (Codex support is coming):
 
 ```
 /plugin marketplace add transformteamsg/dx-harness
@@ -14,9 +14,11 @@ Two commands in Claude Code:
 
 Then type `/dx` — every skill surfaces. No command line? In the Claude web app
 or Desktop, open Customize → Plugins, add a marketplace from the repository
-`transformteamsg/dx-harness`, and install **dx-harness**.
+`transformteamsg/dx-harness`, and install **dx-harness**. Working in a repo?
+Run `/dx-harness:dx-design-setup` once — it checks the per-person tools the
+loop relies on.
 
-## One loop, five phases
+## One loop, six phases
 
 The harness makes one promise — intent without loss. What you mean is written
 down first, and every phase after is graded against it.
@@ -26,19 +28,37 @@ down first, and every phase after is graded against it.
 3. **Plan gate** — the plan is grilled, then stops for your approval.
 4. **Implement** — built exactly to the approved plan, on the standards catalog.
 5. **Verify** — deterministic checks first, then a separate design reviewer
-   grades the result. The builder never grades its own work.
+   grades the result, and any waiver the plan proposed stops for your
+   decision. The builder never grades its own work.
+6. **Rule proposal** — a run record is written on the surface's design ticket,
+   and defects no control covered become proposed controls.
 
 ## Thirteen design skills
 
-dx-design, dx-design-make, dx-design-critique, dx-design-copy,
+dx-design, dx-design-execute, dx-design-critique, dx-design-copy,
 dx-design-pattern, dx-design-polish, dx-design-motion, dx-design-flow,
-dx-design-language, dx-design-research-brief, dx-design-git-helper,
+dx-design-language, dx-design-research-brief, dx-design-git,
 dx-design-setup, dx-design-feedback.
+
+One way in, one way to ship: `dx-design` is the front door and routes you;
+the five passes — copy, flow, pattern, motion, polish — only propose; only
+`dx-design-execute` edits your product.
 
 And the engineering workflow in the same plugin: dx-code-review,
 dx-create-issue, dx-groom-issue, dx-split-issue, dx-implement-issue,
 dx-lint-setup, dx-git-hooks-setup, dx-update-npm-dependencies.
 
+We also curate three skills we did not write and do not maintain, with no
+catalog behind them: /web-animation-design, /better-ui, and
+/make-interfaces-feel-better.
+
+Every control carries a tier — L0 blocks outright, L1 needs a named approver,
+L2 leaves room to judge — and your product's own decisions and standing
+overrides live in a `DESIGN.md` in your repo, which every skill reads.
+
 The harness carries its own design standard — published in full in
 the docs (`/overview`), the machine-readable catalog at `/standards/catalog.yaml`,
 and the agent entry point at `/llms.txt`.
+
+A before/after demo on the page compares the page an agent ships unattended
+with the same page built on the harness.

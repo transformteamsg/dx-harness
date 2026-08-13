@@ -1,6 +1,6 @@
 ---
 name: dx-git-hooks-setup
-description: Use when setting up pre-commit and pre-push git hooks on any project (JS/TS, Go, shell scripts, or mixed), auditing whether an existing hook setup meets minimum requirements, or adding new mandatory checks to existing hooks. Triggered by "set up commit hooks", "add pre-commit checks", "wire up pre-push tests", "check if our hooks are good enough", or "add a new gate before push". Supports Husky (JS/TS only) and Lefthook (language-agnostic). This skill wires hooks around whatever linters are already configured — if no linters are set up yet, point the user to lint-setup first.
+description: Use when setting up pre-commit and pre-push git hooks on any project (JS/TS, Go, shell scripts, or mixed), auditing whether an existing hook setup meets minimum requirements, or adding new mandatory checks to existing hooks. Triggered by "set up commit hooks", "add pre-commit checks", "wire up pre-push tests", "check if our hooks are good enough", or "add a new gate before push". Supports Husky (JS/TS only) and Lefthook (language-agnostic). This skill wires hooks around whatever linters are already configured — if no linters are set up yet, point the user to dx-lint-setup first.
 ---
 
 # Git Hooks Setup
@@ -9,7 +9,7 @@ description: Use when setting up pre-commit and pre-push git hooks on any projec
 
 Installs git hooks using either **Husky** (shell scripts + lint-staged) or **Lefthook** (YAML config with built-in staged-file filtering), enforcing whatever quality tools are already configured in the repo.
 
-This skill **does not install or configure linters or formatters** — it detects what's already there and wires the hooks accordingly. If linters aren't configured yet, use `lint-setup` first, then return here.
+This skill **does not install or configure linters or formatters** — it detects what's already there and wires the hooks accordingly. If linters aren't configured yet, use `/dx-harness:dx-lint-setup` first, then return here.
 
 ---
 
@@ -87,7 +87,7 @@ Check for config files and installed tools. These determine what runs on staged 
 |------|-----------------|---------|
 | shellcheck | `.shellcheckrc` present, or `shellcheck` in PATH | `shellcheck <files>` |
 
-If **no linters or formatters are found at all**: tell the user and recommend running `lint-setup` first. Ask whether they want to continue anyway — hooks will be wired but linting will do nothing until tools are configured. Wait for their answer before proceeding.
+If **no linters or formatters are found at all**: tell the user and recommend running `/dx-harness:dx-lint-setup` first. Ask whether they want to continue anyway — hooks will be wired but linting will do nothing until tools are configured. Wait for their answer before proceeding.
 
 ### TypeScript (JS/TS projects only)
 
@@ -236,7 +236,7 @@ Re-confirm the package manager from the lockfile. Run each check, report all fai
 | Hook blocks push to main/master | `grep -qE 'main\|master' .husky/pre-push` and reads remote ref from stdin |
 | Hook enforces branch naming | `grep -q 'BRANCH_PATTERN' .husky/pre-push` and `grep -q 'TRUNK_PATTERN' .husky/pre-push` |
 
-For hook-level failures: fix using **Hook Requirements — Husky**. For missing lint configuration (empty lint-staged config): surface the gap and point to `lint-setup`.
+For hook-level failures: fix using **Hook Requirements — Husky**. For missing lint configuration (empty lint-staged config): surface the gap and point to `dx-lint-setup`.
 
 ---
 
@@ -264,7 +264,7 @@ Re-confirm the package manager from the lockfile. Read `lefthook.yml` and check 
 | Hook blocks push to main/master | a command checks the remote ref for `main`/`master` |
 | Hook enforces branch naming | a command checks `BRANCH_PATTERN` and `TRUNK_PATTERN` |
 
-For failures: fix using **Hook Requirements — Lefthook**. For missing lint configuration: surface the gap and point to `lint-setup`.
+For failures: fix using **Hook Requirements — Lefthook**. For missing lint configuration: surface the gap and point to `dx-lint-setup`.
 
 ---
 
@@ -535,7 +535,7 @@ If yes, run the full flow:
 | Main branch check never fires (Husky) | Use the `while read` stdin loop — `git branch --show-current` reads local state, not the push target |
 | Branch pattern rejects detached HEAD | Guard with `[ -n "$BRANCH" ]` before pattern matching |
 | Consecutive hyphens/dots pass naive pattern | Use `[a-z0-9]+([.-][a-z0-9]+)*` — requires every separator to be followed by alphanumeric |
-| lint-staged wired but config is empty | The hook runs but does nothing — use `lint-setup` to configure what lint-staged runs |
+| lint-staged wired but config is empty | The hook runs but does nothing — use `dx-lint-setup` to configure what lint-staged runs |
 | Lefthook `{staged_files}` empty on first commit | Expected — no staged files matching the glob means the command is skipped, not an error |
 | Lefthook `stage_fixed: true` not set | Fixed files won't be restaged — the commit will contain the unfixed version |
 | Lefthook not re-installed after `lefthook.yml` changes | `lefthook.yml` is read fresh on each hook run — no reinstall needed for config changes; only reinstall if the hook binary itself needs updating |

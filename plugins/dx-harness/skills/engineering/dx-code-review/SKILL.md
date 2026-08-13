@@ -69,7 +69,7 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
    Commit the file: `docs(review): update agent-patterns.md [skip ci]`
 
    For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes:
-   - Implement the guard using `lint-setup` (lint rule) or `git-hooks-setup` (hook script) as appropriate.
+   - Implement the guard using `dx-lint-setup` (lint rule) or `dx-git-hooks-setup` (hook script) as appropriate.
    - Remove the pattern's row from `review/agent-patterns.md`.
    - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
    - If the guard requires CI pipeline changes, surface a recommendation to the developer instead of implementing directly.
@@ -91,7 +91,7 @@ Run as Analysis Phase step 1, before the review angles. The goal: confirm the ch
      - Number provided → fetch it as above.
      - "Proceed" → no issue for the rest of this check; skip step 4 below.
 3. **Check the PR has a test plan.** Look for a "Test plan" / "Testing" / "How to test" section in the PR body. If missing, treat it as an empty test plan and continue.
-4. **Check the test plan covers the linked issue(s)' acceptance criteria** (skip if no issue was resolved in step 2). Each issue follows the `create-issue` template — each entry under `## Acceptance criteria` is a Given-When-Then scenario. For each scenario across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
+4. **Check the test plan covers the linked issue(s)' acceptance criteria** (skip if no issue was resolved in step 2). Each issue follows the `dx-create-issue` template — each entry under `## Acceptance criteria` is a Given-When-Then scenario. For each scenario across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
    - All covered → continue to step 5.
    - Any uncovered → ask the reviewer:
      > "The test plan doesn't cover these acceptance criteria scenarios: <list>. Continue the review anyway?"

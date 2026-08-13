@@ -10,9 +10,9 @@ useful first, kind at the surface. Keep turns short; ask before you install.
 
 **New to the harness?** Two lines: the harness makes an agent follow the DX Design
 Standard whenever it builds Teacher & School UI — one promise, *intent without loss*,
-held by a six-phase loop and a tiered control catalog. For the full orientation and
-routing to the right skill, run `/dx-harness:dx-design`; this skill's own job is getting your
-machine and repo ready, so continue here for that.
+held by one loop of six phases with two human gates, and a tiered control catalog. For
+the full orientation and routing to the right skill, run `/dx-harness:dx-design`; this
+skill's own job is getting your machine and repo ready, so continue here for that.
 
 ## Work the setup checklist
 

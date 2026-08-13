@@ -80,8 +80,7 @@ change to those stays here and in the helper — the skill needs no edit.
 
 The markdown feedback logs are read-only historical archives — do not append to them:
 
-- `docs/loop-run/FRICTION-REPORT.md` (upstream, loop run 004).
-- `docs/decisions/HARNESS-FEEDBACK.md` (the consumer repo, Teacher Workspace) — archived
+- `docs/decisions/HARNESS-FEEDBACK.md` (in a consumer repo) — archived
   there, in that repo; named here only for completeness.
 
 If a file view of open feedback is still wanted, generate a thin index *from* issues

@@ -45,21 +45,18 @@ export const PRODUCT_PRIMARIES = [
     token: "--tw-blue",
     value: "#0064ff",
     source: "TW brand blue (anchor)",
-    proposed: false,
   },
   {
     product: "CaseSync",
     token: "--casesync",
     value: indigo.indigo9,
     source: "Radix indigo-9",
-    proposed: true,
   },
   {
     product: "Glow",
     token: "--glow",
     value: orange.orange9,
     source: "Radix orange-9",
-    proposed: true,
   },
 ] as const;
 

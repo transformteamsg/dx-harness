@@ -1,6 +1,6 @@
 {
   "generated_from": "DESIGN.md",
-  "generated_at": "2026-08-13T07:22:44Z",
+  "generated_at": "2026-08-13T08:43:52Z",
   "catalog_version": "0.1",
   "essence": "One light world. The landing and the docs share the same calm documentation\nregister — near-monochrome, generous whitespace, hairline borders — with\nseed-design.io's docs pages as the reference register. Useful first, kind at\nthe surface; when two good options compete, the lighter, quieter one wins.\n(Decision 2026-08-13: reverses the dark landing in docs/decisions/landing-dark.md.)",
   "colour": {
@@ -29,6 +29,7 @@
     "columns": 1,
     "minWidth": "320px",
     "breakpoints": [
+      480,
       640,
       768,
       1024,
@@ -37,7 +38,7 @@
     "maxContentWidth": "1080px",
     "sectionPaddingY": "64px",
     "sectionPaddingYLarge": "80px",
-    "prose": "The breakpoints are Tailwind's defaults, uncustomised — `sm` 640, `md` 768,\n`lg` 1024, `xl` 1280 — because that is what the code actually uses (65 `sm:`,\n13 `md:`, 14 `lg:`, 2 `xl:`). Declaring anything else here would describe a\nsystem nobody wrote against. `minWidth` is the reflow floor, not a breakpoint:\nnothing has a media query at 320px, everything simply has to work there\n(LAY-2). `maxContentWidth` is the column cap, also not a breakpoint.\nLanding: a single column with full-width hairline separators. Docs: top nav +\nleft sidebar + right table of contents — the seed docs shell. Wide content\n(tables, code) scrolls in its own container; everything reflows at 320px (LAY-2)."
+    "prose": "Four of the five are Tailwind's defaults, uncustomised — `sm` 640, `md` 768,\n`lg` 1024, `xl` 1280 — because that is what the code actually uses (65 `sm:`,\n13 `md:`, 14 `lg:`, 2 `xl:`). Declaring anything else here would describe a\nsystem nobody wrote against.\n480 is the one deliberate addition, used only by the standards demo\n(`components/compare.tsx`, 8 `min-[480px]:` utilities). It is where the\nbefore/after wipe stops being readable: below it each half is under ~220px and\nclips mid-word, so the frame rests fully on the \"after\" panel instead of\nmid-wipe, and the audience rows stop right-anchoring. It is a property of that\none component's content, not of the page grid — which is why it is not a\ngeneral step and nothing else may reach for it. If a second component ever\nwants it, that is the signal to reconsider rather than to spread it.\n`minWidth` is the reflow floor, not a breakpoint: nothing has a media query at\n320px, everything simply has to work there (LAY-2). `maxContentWidth` is the\ncolumn cap, also not a breakpoint.\nLanding: a single column with full-width hairline separators. Docs: top nav +\nleft sidebar + right table of contents — the seed docs shell. Wide content\n(tables, code) scrolls in its own container; everything reflows at 320px (LAY-2)."
   },
   "components": {
     "primary action": "TW-blue fill, white label, ≥44px tall, one per page (CMP-5); the landing's is \"Copy commands\"; async states announce via a polite live region (A11Y-11)",

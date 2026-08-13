@@ -78,7 +78,6 @@ def load_schema_bits(repo_root):
         "allowed_products": set(schema["products"]),
         "allowed_audiences": set(schema["audiences"]),
         "allowed_enforced": set(schema["enforced"]),
-        "allowed_status": set(schema["status"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -190,14 +189,6 @@ def validate_control(control, idx, schema_bits):
 
     if enforced == "evaluator" and check not in ("judgment", "hybrid"):
         err(loc, f"enforced 'evaluator' is only valid on check 'judgment' or 'hybrid' — got '{check}'")
-
-    # 2e. Optional status field — 'proposed' marks a control pending
-    # design-lead approval. Absence means settled; 'settled' is never
-    # written explicitly.
-    allowed_status = schema_bits["allowed_status"]
-    status = control.get("status")
-    if status is not None and status not in allowed_status:
-        err(loc, f"invalid status '{status}' — allowed: {sorted(allowed_status)} (absence means settled)")
 
     # 3. Tier→waiver pairing
     if tier in tier_waiver and waiver is not None:
@@ -1353,17 +1344,6 @@ def run_self_test():
     assert_control_error("script wrong type",
                          dict(valid_control, enforced="script", script=42),
                          "'script' must be a string or list of strings")
-
-    # ── Status field cases ───────────────────────────────────────────────
-    # status: proposed → clean.
-    assert_control_clean("status proposed",
-                         dict(valid_control, status="proposed"))
-    # status: settled → error (absence means settled; the explicit value is invalid).
-    assert_control_error("status settled invalid",
-                         dict(valid_control, status="settled"),
-                         "invalid status 'settled'")
-    # status absent → clean (the base valid_control carries no status).
-    assert_control_clean("status absent", dict(valid_control))
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

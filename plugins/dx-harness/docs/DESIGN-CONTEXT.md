@@ -25,8 +25,8 @@ primitives; `DESIGN.md` carries this product's decisions and deviations.
 `DESIGN.md` is reference-first. It carries only what *differs* from the portfolio
 default or *specialises* a catalog rule for this product: the values and decisions,
 not the rules. It must never restate a catalog control (that recreates exactly the
-drift `docs/SYNC.md` exists to prevent). Say the decision and cite its normative
-source:
+drift the catalogue-as-single-source rule exists to prevent). Say the decision and
+cite its normative source:
 
 - Good: `primary: --tw-blue #0064FF` (a value) with "Cites: COL-1".
 - Bad: "Primary actions use the product's own primary brand colour". That is COL-1's

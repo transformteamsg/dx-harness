@@ -7,7 +7,7 @@
 
 import { TYPE_SCALE } from "@/lib/foundations/type-data";
 
-const SAMPLE = "Give teachers their time back";
+const SAMPLE = "Give people their time back";
 
 export function TypeScale() {
   return (

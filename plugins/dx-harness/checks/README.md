@@ -26,23 +26,14 @@ tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
 `python3 checks/detect.py [<path>...]` is the **unified entry point**: a façade that
 invokes the individual check scripts below (whose rules it never changes), maps their
 exit codes onto one contract, and adds a config-based ignore layer. Targets are files
-or directories (recursive); the default target is `.`. This is the check surface hooks
-wire to (plan 060) — "fast signal without asking an AI".
+or directories (recursive); the default target is `.` — "fast signal without asking
+an AI".
 
-**Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
-Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
-contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
-findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
-a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
-
-**`detect.py`'s role: hook-only, by design (plan 069).** `hooks/design-hook.py` is
-`detect.py`'s only caller, and the hook itself is deliberately not shipped in the
-plugin (`plugin.json` carries no `hooks` key) — it's a paste-in `settings.json`
-snippet, consent by construction (see `../hooks/README.md`). `detect.py` is
-deliberately **not** part of `package.json` prebuild or `.github/workflows/ci.yml`;
-those run the individual check scripts directly (see "Wiring status" below). This is
-a "keep, hook-only" decision, not a deprecation — promoting `detect.py` to the single
-prebuild/CI runner was considered and rejected for now.
+**Run it manually.** No hook ships in this plugin (`plugin.json` carries no `hooks`
+key), and `detect.py` is deliberately **not** part of `package.json` prebuild or
+`.github/workflows/ci.yml`; those run the individual check scripts directly (see
+"Wiring status" below). Promoting `detect.py` to the single prebuild/CI runner was
+considered and rejected for now.
 
 **Exit contract (0 / 2 / 1).** `detect.py` adopts Impeccable's codes, which differ from
 the per-script 0/1: **0 = clean, 2 = findings, 1 = tool failure** (a wrapped script
@@ -103,20 +94,19 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (43 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (67 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
-their behaviour is proven by their own `--self-test`s and a real-corpus run over
-`docs/loop-run/`.
+their behaviour is proven by their own `--self-test`s.
 
 ## Validator (built)
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `checks/detect.py` and `skills/design/dx-design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `dx-design-copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` must equal the live count it claims — the catalog's control count, the number of `skills/*/*/SKILL.md` dirs under the plugin excluding `deprecated-*`, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `skills/**` or `agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans). A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `skills/design/dx-design/SKILL.md`, `agents/dx-design-review.md`, and `skills/design/dx-layout/SKILL.md` each equal the catalog's `LAY-*` id set.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (63 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (76 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -167,8 +157,7 @@ CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 `unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
 "verified manually" is an auditable claim rather than a prose blob). Exit 0 with
 `OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
-failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
-hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
+failure.
 
 **Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
 
@@ -274,7 +263,7 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
 - CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (44 cases)`.
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (49 cases)`.
 
 ## Type scan (built — static subset)
 
@@ -302,42 +291,13 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 
 ## Component manifest (built)
 
-`python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.dx/component-manifest.json` against the DX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
+`python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.dx/component-manifest.json` against the DX manifest spec: required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
 
 **CMP-1 import-diff — only when `coverage: "complete"`:** the diff flags any component import in changed source that resolves outside the manifest. When `coverage` is `"partial"` (or absent) the diff stays **off** and the script reports `partial manifest — diff not run` — a team that declares complete coverage is asserting the manifest is reliable enough to diff against.
 
 **What this script does NOT verify:** re-exports and barrel files can produce false-positive diff hits when an import resolves through a barrel that isn't the manifest's import path; if you hit these, downgrade to `coverage: "partial"` and the diff stays off (same trust lesson as `token-audit`). The manifest is only as complete as the product keeps it — a stale manifest passes schema validation but misses new components.
 
 **Self-test:** `python3 checks/component-manifest.py --self-test` → `SELF-TEST OK (11 cases)`.
-
-Planned for V1 (remaining):
-
-| Check | Controls | Approach |
-|---|---|---|
-| `contrast` | A11Y-1 | axe-core contrast scan: 4.5:1 body, 3:1 large text + UI components |
-| ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal) + KBD (click on non-focusable element); traversal order and hit-area still need a rendered DOM |
-| ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-static` covers NAME (icon-only button without aria-label); placeholder-only label and multi-line label association still need a rendered DOM |
-| `targets` | A11Y-4 | Computed hit area of interactive elements ≥ 24×24 CSS px |
-| `reduced-motion` | A11Y-5 | With prefers-reduced-motion set, non-essential animation does not run |
-| `alt-scan` | A11Y-6 | Every img/svg/icon has a text alternative or is marked decorative |
-| `structure` | A11Y-7 (deterministic half) | Heading-hierarchy walk; lists/tables/groups are semantic elements |
-| ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-static` covers KBD (non-focusable click handler without role/name); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
-| `title-lang` | A11Y-9 | Descriptive document title present; html lang attribute set |
-| `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
-| `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
-| ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
-| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
-| `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
-| `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
-| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6 judgment halves stay evaluator |
-| `motion` | MOT-1, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; no bounce/elastic/overshoot easing |
-| `identity` | IDN-1 | Logo/lockup files resolve to the approved asset library; no inline redraws |
-| `slop-scan` | SLP-1..4 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards, nested cards |
-| `slop-layout` | SLP-5..7 | Layout heuristics: identical-card grids / icon-tile templates, adjacent type-scale ratio < 1.25, a single spacing value used uniformly |
-
-Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
-(fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate
-(full suite). L0 failures block; L1 failures loop the agent back to implement.
 
 Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
 run the same Python gate — `validate.py --self-test`, `validate.py`, `token-audit.py`

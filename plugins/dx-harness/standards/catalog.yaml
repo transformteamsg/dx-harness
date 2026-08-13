@@ -905,15 +905,14 @@ controls:
       - transition-all
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
-  # MOT-2: ratchet PROPOSAL 2026-07-12 — motion tokens, from the site's own
+  # MOT-2: added 2026-07-12 from the site's own motion-token build-out
   # motion-layer build-out (landing reveal, diagram animations). Boundary with
   # MOT-1: MOT-1 bounds where motion may run and how long; MOT-2 bounds where
-  # the values come from. Pending design-lead approval.
+  # the values come from.
   - id: MOT-2
     source: DX-DS
     title: Motion values come from the declared motion token set — durations and easings are never hardcoded in component code
     tier: L2
-    status: proposed
     check: deterministic
     phase: [implement, verify]
     applies_to: [component, page]
@@ -926,16 +925,14 @@ controls:
     enforced: manual
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
-  # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for
+  # MOT-3: added 2026-07-12 for static information parity, written for
   # the animated-diagram build-out. Boundary: A11Y-5 demands a reduced-motion
   # variant exists; MOT-3 demands that variant lose no information. MOT-1
-  # bounds duration and placement; MOT-3 bounds meaning. Pending design-lead
-  # approval.
+  # bounds duration and placement; MOT-3 bounds meaning.
   - id: MOT-3
     source: DX-DS
     title: Motion may emphasise meaning but never carry it alone — an animated surface communicates the same information with animations off
     tier: L2
-    status: proposed
     check: judgment
     phase: [plan, implement, verify]
     applies_to: [page, component]

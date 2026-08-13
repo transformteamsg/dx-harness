@@ -8,6 +8,5 @@
   "products": ["tw", "casesync", "glow"],
   "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
   "enforced": ["script", "partial", "manual", "evaluator"],
-  "status": ["proposed"],
   "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"]
 }

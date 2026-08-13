@@ -1,7 +1,6 @@
 ---
 title: Tools
 description: The runnable tools that let you produce on-brand work without re-reading the rules — generators and checks, not docs about the brand.
-status: proposed
 tools:
   - name: Icon Generator
     description: The first live tool in the harness. Produces on-brand iconography with stroke, radius, and silhouette enforced by construction.
@@ -15,7 +14,6 @@ These tools serve builders inside the design loop, which invokes them for you as
 | --- | --- | --- |
 | [Icon Generator](https://icon-generator-seven.vercel.app/) | Live | On-brand iconography; stroke, radius, silhouette enforced by construction |
 | Midjourney SREF | In use | On-brand illustration: `--sref 2544305963::2 4104856457` on every prompt |
-| Deterministic check scripts | Planned (V1) | Contrast, token audit, labels, type scan, reduced-motion, anti-slop; wired as PR checks and the verify gate |
-| Theming / token generator | Planned | Product theming within the per-product Radix palette strategy |
+| Deterministic check scripts | Built (static subsets) | Ten scripts plus a unified detector: token audit, contrast, static a11y, type scan, content lint, component manifest, record audits. Reduced-motion, motion timing, and the visual anti-slop scans stay manual |
 
 A brand isn't real until builders can produce on-brand artifacts without re-reading the guidelines. Found something missing? Built an on-brand tool? Open a PR; the list grows with the portfolio.

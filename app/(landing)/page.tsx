@@ -37,14 +37,8 @@ export default function Landing() {
           <div id="quick-start" className="mt-10 max-w-[640px] scroll-mt-24">
             <div className="rounded-lg border border-border bg-surface">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2.5">
-                <span className="flex items-center gap-3">
-                  <span className="font-mono text-xs font-medium tracking-[0.08em] text-foreground">
-                    Claude Code<span className="hidden sm:inline"> — two commands</span>
-                  </span>
-                  <span aria-hidden className="h-3 w-px bg-border" />
-                  <span className="font-mono text-xs tracking-[0.08em] text-muted-foreground">
-                    Codex — coming soon
-                  </span>
+                <span className="font-mono text-xs font-medium tracking-[0.08em] text-foreground">
+                  Claude Code — two commands
                 </span>
                 <CopyCommands commands={INSTALL_COMMANDS} />
               </div>
@@ -59,7 +53,8 @@ export default function Landing() {
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
               Then type <span className="font-mono text-foreground">/dx</span> and
-              every skill surfaces. <NoCliDialog triggerClassName={focusRing} />
+              every skill surfaces. Codex support is coming.{" "}
+              <NoCliDialog triggerClassName={focusRing} />
             </p>
           </div>
         </div>
@@ -96,28 +91,24 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── The skills — text beside the slider, then the collection (#79) ── */}
+      {/* ── The skills — lede, full-width comparison, then the collection ── */}
       <section className="border-t border-border">
         <div className="mx-auto w-full max-w-[1080px] px-6 py-16 sm:py-20">
-          <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-center">
-            <div>
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-                The skills.
-              </h2>
-              <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
-                Everything here is one command away. Start with{" "}
-                <span className="font-mono text-sm text-foreground">dx-design</span>;
-                it routes you.
-              </p>
-              <p className="mt-4 max-w-[62ch] leading-relaxed text-pretty text-muted-foreground">
-                The demo shows the difference they make: drag the divider
-                between the page your agent ships unattended and the same page
-                on the harness.
-              </p>
-            </div>
-            <div className="min-w-0">
-              <SlopCompare />
-            </div>
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            The skills.
+          </h2>
+          <p className="mt-4 max-w-[62ch] text-lg leading-relaxed text-pretty text-muted-foreground">
+            Everything here is one command away. Start with{" "}
+            <span className="font-mono text-sm text-foreground">dx-design</span>;
+            it routes you.
+          </p>
+          <p className="mt-4 max-w-[62ch] text-lg leading-relaxed text-pretty text-muted-foreground">
+            The demo shows the difference they make: drag the divider between
+            the page your agent ships unattended and the same page on the
+            harness.
+          </p>
+          <div className="mt-8">
+            <SlopCompare />
           </div>
 
           <h3 className="mt-16 border-t border-border pt-12 font-display text-xl font-semibold tracking-tight text-foreground">

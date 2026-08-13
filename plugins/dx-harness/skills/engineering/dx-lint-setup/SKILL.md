@@ -1,6 +1,6 @@
 ---
 name: dx-lint-setup
-description: Set up linting and/or formatting for a repository workspace. Detects project types (JS/TS, Go, shell scripts), audits existing lint configuration for gaps, presents tool options, and installs + configures the chosen tools. Use when asked to "set up linting", "add a linter", "configure ESLint / Biome / oxlint / oxfmt / golangci-lint / shellcheck", "our project has no lint", or when a PR review flags missing lint config. For JS/TS, lets the user independently pick linters (ESLint, oxlint, Biome) and formatters (Prettier, oxfmt) — multiple tools can be set up in one go. Does NOT wire linters into git hooks — point the user to git-hooks-setup for that after this skill completes.
+description: Set up linting and/or formatting for a repository workspace. Detects project types (JS/TS, Go, shell scripts), audits existing lint configuration for gaps, presents tool options, and installs + configures the chosen tools. Use when asked to "set up linting", "add a linter", "configure ESLint / Biome / oxlint / oxfmt / golangci-lint / shellcheck", "our project has no lint", or when a PR review flags missing lint config. For JS/TS, lets the user independently pick linters (ESLint, oxlint, Biome) and formatters (Prettier, oxfmt) — multiple tools can be set up in one go. Does NOT wire linters into git hooks — point the user to dx-git-hooks-setup for that after this skill completes.
 ---
 
 # lint-setup
@@ -16,7 +16,7 @@ types & existing       confirm with user      run installs
 lint config            before any change
 ```
 
-This skill does **not** wire linters into git hooks. After completing, remind the user they can use `git-hooks-setup` to enforce lint on commit.
+This skill does **not** wire linters into git hooks. After completing, remind the user they can use `/dx-harness:dx-git-hooks-setup` to enforce lint on commit.
 
 ---
 
@@ -528,7 +528,7 @@ After installing and configuring:
 
 1. Run the linter(s) once to confirm they work and surface any initial findings.
 2. Remind the user about hook integration:
-   > "Lint is now configured. To enforce it automatically on commit, use the `git-hooks-setup` skill."
+   > "Lint is now configured. To enforce it automatically on commit, use the `dx-git-hooks-setup` skill."
 3. Offer to commit, push, and open a PR for these changes — don't force it:
    > "Want me to commit the lint setup to a feature branch, push, and open a PR?"
 

@@ -1,9 +1,16 @@
 /* SkillsSection — the homepage's skills block: everything below the section
    heading and lede, which the page places.
 
-   One part: the directory. One bordered grid of hairline cells, grouped by
-   the job each skill does in the flow — a role holds whatever context the
-   reader arrives in, which a "when you're …" grouping does not.
+   One part: the directory. Six hairline-separated rows, grouped by the job
+   each skill does in the flow — a role holds whatever context the reader
+   arrives in, which a "when you're …" grouping does not. Each row reads left
+   to right: who the group is (number, heading, role sentence), then what you
+   get (the skills, then the command to type). Rows, not cards: nothing here is
+   interactive, so card chrome would promise a click (SLP-11), and the cells
+   previously nested a bordered chip and a bordered "Start with" panel inside a
+   bordered cell (SLP-4). They also forced six equal-height boxes whose slack
+   shipped as empty chrome. Below md each row stacks and the same rule holds
+   the groups apart.
 
    The section shipped with an attributed before/after hero above the grid
    (#75); the human cut it at assembly review — the page carries one
@@ -24,37 +31,37 @@ const focusRing =
 export function SkillsSection() {
   return (
     <div className="mt-8">
-      <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+      <div className="divide-y divide-border border-t border-border">
         {SKILL_DIRECTORY.map((group) => (
-          <section key={group.number} className="flex flex-col bg-surface px-5 py-5">
-            <h4 className="flex items-baseline gap-2.5 font-display text-lg font-semibold tracking-tight text-foreground">
-              <span className="font-mono text-xs font-medium text-tw-blue-text">
-                {group.number}
-              </span>
-              {group.heading}
-            </h4>
-            <p className="mt-2 max-w-[40ch] text-sm leading-relaxed text-muted-foreground">
-              {group.role}
-            </p>
-            <ul aria-label={group.heading} className="mt-4 flex flex-wrap gap-1.5">
-              {group.skills.map((skill) => (
-                <li
-                  key={skill.name}
-                  className="flex items-baseline gap-1.5 rounded-md border border-border bg-muted px-2 py-1 font-mono text-xs whitespace-nowrap text-(--prose-body)"
-                >
-                  {skill.name}
-                  {skill.planned && (
-                    <span className="font-body text-xs text-muted-foreground">
-                      planned
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-            {/* Not a link: it is the command to type, and every one of them
-                works today (CNT-4 — the planned skill is never the start). */}
-            <div className="mt-auto pt-5">
-              <p className="flex flex-col gap-0.5 rounded-md border border-(--primary-line) bg-(--primary-wash) px-3 py-2">
+          <section
+            key={group.number}
+            className="grid gap-x-10 gap-y-4 py-6 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)]"
+          >
+            <div>
+              <h4 className="flex items-baseline gap-2.5 font-display text-lg font-semibold tracking-tight text-foreground">
+                <span className="font-mono text-xs font-medium text-tw-blue-text">
+                  {group.number}
+                </span>
+                {group.heading}
+              </h4>
+              <p className="mt-2 max-w-[40ch] text-sm leading-relaxed text-muted-foreground">
+                {group.role}
+              </p>
+            </div>
+            <div>
+              <ul aria-label={group.heading} className="flex flex-wrap gap-1.5">
+                {group.skills.map((skill) => (
+                  <li
+                    key={skill.name}
+                    className="flex items-baseline gap-1.5 rounded-md border border-border bg-muted px-2 py-1 font-mono text-xs whitespace-nowrap text-(--prose-body)"
+                  >
+                    {skill.name}
+                  </li>
+                ))}
+              </ul>
+              {/* Not a link: it is the command to type, and every one of them
+                  works today. */}
+              <p className="mt-4 flex flex-wrap items-baseline gap-x-2 border-t border-border pt-3">
                 <span className="text-xs text-muted-foreground">Start with</span>
                 <span className="font-mono text-xs text-tw-blue-text [overflow-wrap:anywhere]">
                   /dx-harness:{group.start}
@@ -74,10 +81,13 @@ export function SkillsSection() {
         </Link>
       </p>
 
-      <div className="mt-6 rounded-lg border border-dashed border-border-strong bg-accent px-5 py-5">
-        <p className="font-display text-base font-semibold tracking-tight text-foreground">
+      {/* Separated by a rule, not a dashed box: dashed already means "your
+          product repo" in the architecture map's legend on the same page, and
+          one token cannot carry two meanings. */}
+      <div className="mt-8 border-t border-border pt-8">
+        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
           We build ours, and curate the best of the rest.
-        </p>
+        </h3>
         <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-muted-foreground">
           We didn&rsquo;t write these three and we don&rsquo;t maintain them.
           They carry no catalog behind them.

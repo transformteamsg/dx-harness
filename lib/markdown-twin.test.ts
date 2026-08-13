@@ -1,4 +1,8 @@
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { LOOP_PHASES } from "@/components/diagrams/loop-data";
+import { SKILL_COUNT, SKILL_DIRECTORY } from "@/components/landing/data";
 import {
   allTwins,
   controlMarkdown,
@@ -109,5 +113,58 @@ describe("mdAlternate", () => {
     expect(mdAlternate("/guidelines/voice-tone")).toEqual({
       alternates: { types: { "text/markdown": "/guidelines/voice-tone.md" } },
     });
+  });
+});
+
+/* Landing twin parity. The landing page renders from components/landing/data.ts
+   and components/diagrams/loop-data.ts; its /index.md twin renders from
+   content/sections/landing.mdx. Nothing else holds the two together, and both
+   have drifted before — the twin claimed five phases and named skills that
+   never shipped. These are facts, not characterization: fix the twin, not the
+   assertion. */
+
+const LANDING_TWIN_PATH = path.join(process.cwd(), "content", "sections", "landing.mdx");
+const landingTwin = fs.readFileSync(LANDING_TWIN_PATH, "utf8");
+
+/* Skill names that never shipped, or that predate a rename. None may appear. */
+const DEAD_SKILL_NAMES = [
+  "dx-design-make",
+  "dx-design-git-helper",
+  "dx-design-reviewer",
+  "dx-evaluator",
+  "dx-standards",
+];
+
+/* A name counts as named only as a whole name: `dx-design` is not satisfied by
+   `dx-design-setup` sitting in the same list. */
+function names(text: string, skill: string): boolean {
+  return new RegExp(`${skill}(?![\\w-])`).test(text);
+}
+
+describe("landing twin parity", () => {
+  it("names every skill in the directory", () => {
+    for (const group of SKILL_DIRECTORY) {
+      for (const skill of group.skills) {
+        expect(
+          names(landingTwin, skill.name),
+          `${skill.name} is on the landing page but not in content/sections/landing.mdx`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("names no dead skill", () => {
+    for (const dead of DEAD_SKILL_NAMES) {
+      expect(landingTwin).not.toContain(dead);
+    }
+  });
+
+  it("counts twenty-one live skills", () => {
+    expect(SKILL_COUNT).toBe(21);
+  });
+
+  it("carries the six-phase loop", () => {
+    expect(LOOP_PHASES.length).toBe(6);
+    expect(landingTwin).toContain("One loop, six phases");
   });
 });

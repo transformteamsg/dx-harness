@@ -3,17 +3,16 @@
 AI harness for agentic-driven product development — a single Claude Code plugin
 bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
-- **20 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
+- **21 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
   `dx-groom-issue`, `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`,
-  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 12 design (`dx-design`,
+  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 13 design (`dx-design`,
   `dx-design-setup`, `dx-design-execute`, `dx-design-critique`,
   `dx-design-copy`, `dx-design-polish`, `dx-design-motion`, `dx-design-flow`,
-  `dx-design-pattern`, `dx-design-feedback`, `dx-design-git`,
-  `dx-design-research-brief`), plus deprecated stubs that point the old design
-  names to the new ones.
+  `dx-design-pattern`, `dx-design-language`, `dx-design-feedback`, `dx-design-git`,
+  `dx-design-research-brief`).
 - The design skills ship with their standards catalog (`plugins/dx-harness/standards/`),
   shared procedure docs (`plugins/dx-harness/procedures/`), deterministic checks
-  (`plugins/dx-harness/checks/`), and an `evaluator` agent.
+  (`plugins/dx-harness/checks/`), and the `dx-design-review` agent.
 
 **DX Harness: one prefix, every discipline.** A harness for digital excellence — born in
 DXD Xperience Studio, built for everyone.
@@ -64,35 +63,6 @@ clicks. Available on paid plans in the Claude web app, Claude Desktop, and Cowor
 The canonical, tool-neutral sources are the `SKILL.md` files under
 `plugins/dx-harness/skills/`. Point your harness at those directories directly; the
 `.claude-plugin/*.json` manifests are a Claude-specific adapter and can be ignored.
-
-## Migrating from `tfx`
-
-This repo was called `atelier` and the plugin was called `tfx`. If you installed the
-old plugin, re-add the marketplace under its new name:
-
-    /plugin marketplace remove atelier
-    /plugin marketplace add transformteamsg/dx-harness
-    /plugin install dx-harness@dx-harness
-
-Then rename these in **your product repo** — the checks no longer recognise the old
-spellings:
-
-| Old | New | Where it lives |
-|---|---|---|
-| `/tfx:<skill>` | `/dx-harness:dx-<skill>` | how you invoke a skill |
-| `.tfx/` | `.dx/` | `config.json`, `design.json`, `component-manifest.json` |
-| `tfx-waive CTL-1` | `dx-waive CTL-1` | inline waiver comments in source |
-| `<!-- tfx-sync:… -->` | `<!-- dx-sync:… -->` | fragment-parity markers in docs |
-| `tfx-tokens` | `dx-tokens` | token-region markers in stylesheets |
-| `TFX-DS` | `DX-DS` | the control catalog's name in prose |
-
-A one-shot sweep for a product repo:
-
-    grep -rl 'tfx' . | xargs sed -i '' 's/tfx-waive/dx-waive/g; s/tfx-sync/dx-sync/g; s/tfx-tokens/dx-tokens/g; s/\.tfx/.dx/g; s/TFX-DS/DX-DS/g'
-    git mv .tfx .dx
-
-The upstream design-standard repo and its Notion source keep their existing
-`tfx-design-standard` URLs; only the harness renamed.
 
 ## Website
 

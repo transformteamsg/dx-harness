@@ -59,17 +59,28 @@ Empty states and errors say what happened and what to do next.
 
 - columns: 1
 - minWidth: 320px
-- breakpoints: [640, 768, 1024, 1280]
+- breakpoints: [480, 640, 768, 1024, 1280]
 - maxContentWidth: 1080px
 - sectionPaddingY: 64px
 - sectionPaddingYLarge: 80px
 
-The breakpoints are Tailwind's defaults, uncustomised — `sm` 640, `md` 768,
+Four of the five are Tailwind's defaults, uncustomised — `sm` 640, `md` 768,
 `lg` 1024, `xl` 1280 — because that is what the code actually uses (65 `sm:`,
 13 `md:`, 14 `lg:`, 2 `xl:`). Declaring anything else here would describe a
-system nobody wrote against. `minWidth` is the reflow floor, not a breakpoint:
-nothing has a media query at 320px, everything simply has to work there
-(LAY-2). `maxContentWidth` is the column cap, also not a breakpoint.
+system nobody wrote against.
+
+480 is the one deliberate addition, used only by the standards demo
+(`components/compare.tsx`, 8 `min-[480px]:` utilities). It is where the
+before/after wipe stops being readable: below it each half is under ~220px and
+clips mid-word, so the frame rests fully on the "after" panel instead of
+mid-wipe, and the audience rows stop right-anchoring. It is a property of that
+one component's content, not of the page grid — which is why it is not a
+general step and nothing else may reach for it. If a second component ever
+wants it, that is the signal to reconsider rather than to spread it.
+
+`minWidth` is the reflow floor, not a breakpoint: nothing has a media query at
+320px, everything simply has to work there (LAY-2). `maxContentWidth` is the
+column cap, also not a breakpoint.
 
 Landing: a single column with full-width hairline separators. Docs: top nav +
 left sidebar + right table of contents — the seed docs shell. Wide content

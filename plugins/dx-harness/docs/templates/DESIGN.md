@@ -12,21 +12,21 @@ Rules (full spec: the harness's docs/DESIGN-CONTEXT.md):
     with both keeps both.
   - Precedence: the catalogue governs portfolio rules; code governs implemented
     primitives; DESIGN.md carries this product's decisions and deviations.
-Filled below with Teacher Workspace examples. Replace the values with your product's,
-or delete the section if this product matches the portfolio default.
+Filled below with example values. Replace them with your product's, or delete a
+section if the product matches the portfolio default.
 -->
 
-# DESIGN.md - Teacher Workspace
+# DESIGN.md - Example product
 
 ## Essence
 <!-- One or two sentences: what this product should feel like, and which instinct
      wins when two good options compete. -->
-Kind Utility: useful first, kind at the surface. Calm tools for busy teachers,
+Kind Utility: useful first, kind at the surface. Calm tools for busy people,
 never playful at the cost of clarity. When unsure, choose the quieter option.
 
 ## Colour
 <!-- Cites: COL-1, COL-2. Values only. -->
-- primary: --tw-blue #0064FF
+- primary: --product-primary #0064FF
 - accent: none; functional colour comes from the Radix scales
 
 ## Typography
@@ -39,7 +39,7 @@ never playful at the cost of clarity. When unsure, choose the quieter option.
 ## Tokens
 <!-- Pointers into the code; the code is the authority. Cites: TOK controls. -->
 - source: src/styles/tokens.css
-- prefix: --tw-
+- prefix: --product-
 - spacing: space-1 to space-12 (4px base)
 - dark-mode: class strategy, `.dark` on <html>
 
@@ -73,8 +73,8 @@ primary action.
      catalogue control covers because they are THIS product's own. Ten bullets max.
      Never restate a control here. -->
 - Check the component manifest before building anything new.
-- Marks and attendance figures are load-bearing: never truncate, round, or animate them.
-- Every flow must survive a 30-second interruption; teachers work between classes.
+- Numbers people use to make decisions are load-bearing: never truncate, round, or animate them.
+- Every flow must survive a 30-second interruption; people may switch context mid-task.
 
 ## Overrides
 <!-- Standing, product-level deviations from the Control Catalogue. Starts empty:

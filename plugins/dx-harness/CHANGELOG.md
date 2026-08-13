@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 (2026-08-13)
+
+The deprecated stub skills for the pre-0.2.0 design names are removed. An old name (`dx-start`, `dx-critique`, `dx-copy`, …) no longer resolves; the 0.2.0 table below maps old names to current ones.
+
+The adopter docs now describe the current `dx-design` routing and six-phase loop. Product context belongs in `DESIGN.md`; a different interface stack no longer blocks installation, though several catalog checks still assume the portfolio defaults. The website speaks to products serving teachers, students, and parents, and no longer presents content or controls as Settled or Proposed.
+
 ## 0.3.0 (2026-08-12)
 
 Six shared procedure docs now live in `procedures/` at the plugin root: `plan-approval.md`, `implement.md` (with the branch guard), `design-review.md` (with the verdict re-check), `rule-proposal.md`, `catalogue-mechanics.md`, and `design-tickets.md`. The loop skill, the orchestrator, the five passes, critique, and the `dx-design-review` agent load them.

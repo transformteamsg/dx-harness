@@ -5,11 +5,12 @@
 > Phase 6. Keeps the human approval, waivers, and verdict traceable.
 
 - **Date:**
-- **Product:** TW | CaseSync | Glow | TW surface (Posts / PG Staff Portal)
+- **Product:**
+- **Audience:** teachers | students-primary | students-secondary | parents
 - **Change type:** new page | modification
 - **Page type:** workspace view | form | flow step | dashboard | settings | empty state | onboarding
 - **Run type:** attended | unattended (operator-proxy approvals)
-- **The teacher and the moment:** (name the specific workflow this serves)
+- **The person and the moment:** (name the specific workflow this serves)
 
 ## Sprint contract (done-criteria)
 

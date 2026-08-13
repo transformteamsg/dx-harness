@@ -32,6 +32,11 @@ const SLOP_TILES = [
   { icon: Cloud, label: "Cloud-based" },
 ] as const;
 
+/* Keep both panel labels visible and semantic as the divider moves. The after
+   label aligns to the unclipped edge. */
+const PANEL_LABEL =
+  "shrink-0 border-b border-border bg-surface px-4 py-2 font-mono text-xs tracking-[0.08em] text-muted-foreground";
+
 /* Violation chip — plain text, non-interactive. It lives in the before layer,
    so the divider hides it together with the thing it points at. */
 function Violation({ children }: { children: string }) {
@@ -48,12 +53,16 @@ function Violation({ children }: { children: string }) {
    frame's one in-flow child: the 16/10 aspect is the floor and this content
    is the minimum, so nothing clips at narrow widths. */
 function BeforePanel() {
+  const labelId = useId();
   return (
     <div
       role="group"
-      aria-label="Before: default AI output (the anti-specimen)"
+      aria-labelledby={labelId}
       className="relative flex min-h-full flex-col bg-(--demo-slop-surface)"
     >
+      <p id={labelId} className={PANEL_LABEL}>
+        Before — default AI output
+      </p>
       {/* dx-waive CNT-2 reason="quarantined anti-specimen: 'Communication Hub' is the invented …Hub name the control bans, shown as the exhibit" */}
       {/* dx-waive SLP-1 reason="quarantined anti-specimen: the before panel of the standards demo" */}
       <div
@@ -130,46 +139,60 @@ function BeforePanel() {
   );
 }
 
-/* The same task on standard: one primary, hairline dividers, a real type
-   ramp, plain copy. Existing tokens only — the primary button below tracks
-   --primary/--primary-foreground, so it repaints with whichever accent the
-   surrounding token world uses (TW blue everywhere, one light world). */
+/* The clipped panel uses full-width bands so each revealed slice remains
+   legible. At 480px and above, label/value pairs align to the unclipped edge. */
 function AfterPanel() {
+  const labelId = useId();
   return (
     <div
       role="group"
-      aria-label="After: the same screen on standard"
+      aria-labelledby={labelId}
       className="absolute inset-0 overflow-hidden bg-surface"
       style={{
         clipPath:
           "polygon(var(--exposure) 0, 100% 0, 100% 100%, var(--exposure) 100%)",
       }}
     >
-      <div className="flex h-full flex-col p-5">
-        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-          <span className="font-display text-base font-semibold tracking-tight text-foreground">
-            Term 3 broadcast
-          </span>
-          <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-success-muted bg-success-subtle px-1.5 py-px text-xs font-medium leading-4 text-success">
-            Passes the catalog
-          </span>
-        </div>
-        <p className="mt-1.5 max-w-[44ch] text-sm leading-normal text-muted-foreground">
-          Reaches every parent by Friday morning. Drafts save automatically.
+      <div className="flex h-full flex-col">
+        <p id={labelId} className={`${PANEL_LABEL} text-right`}>
+          After — on standard
         </p>
-        <div className="mt-4 border-t border-border pt-3">
-          <p className="text-sm text-foreground">
-            To: <span className="font-medium">4 classes</span>
-            <span className="text-muted-foreground"> · 127 parents</span>
-          </p>
-        </div>
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4">
-          <p className="text-xs text-muted-foreground">Draft · saved just now</p>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-muted-foreground">Save draft</span>
-            <span className="rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground">
-              Send to 4 classes
+        <div className="flex min-h-0 flex-1 flex-col p-5">
+          <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+            <span className="font-display text-base font-semibold tracking-tight text-foreground">
+              Term 3 broadcast
             </span>
+            <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-success-muted bg-success-subtle px-1.5 py-px text-xs font-medium leading-4 text-success">
+              Passes the catalog
+            </span>
+          </div>
+          <p className="mt-1.5 max-w-[44ch] text-sm leading-normal text-muted-foreground">
+            Reaches every parent by Friday morning. Drafts save automatically.
+          </p>
+          {/* These rows grow with the frame and align with the divider's
+              responsive rest position. */}
+          <dl className="mt-4 flex min-h-0 w-full flex-1 flex-col divide-y divide-border border-t border-border">
+            <div className="flex flex-1 flex-wrap items-center justify-between gap-x-4 min-[480px]:justify-end min-[480px]:gap-x-8">
+              <dt className="text-sm text-muted-foreground">To</dt>
+              <dd className="text-sm font-medium text-foreground min-[480px]:w-24 min-[480px]:text-right">
+                4 classes
+              </dd>
+            </div>
+            <div className="flex flex-1 flex-wrap items-center justify-between gap-x-4 min-[480px]:justify-end min-[480px]:gap-x-8">
+              <dt className="text-sm text-muted-foreground">Parents</dt>
+              <dd className="text-sm font-medium text-foreground min-[480px]:w-24 min-[480px]:text-right">
+                127
+              </dd>
+            </div>
+          </dl>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4">
+            <p className="text-xs text-muted-foreground">Draft · saved just now</p>
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-muted-foreground">Save draft</span>
+              <span className="rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground">
+                Send to 4 classes
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -205,17 +228,34 @@ export function SlopCompare() {
     if (rafRef.current === 0) rafRef.current = requestAnimationFrame(applyExposure);
   };
 
-  /* One-time "this moves" cue: the divider eases 62 → 50 on first in-view
-     render. Skipped under reduced motion and after any interaction (A11Y-5);
-     the dragged value itself is always applied directly, with no easing lag. */
+  /* Above 480px the divider cues movement and rests at 38%. Narrow and
+     reduced-motion views settle immediately with the after panel readable.
+     Keep the range value synchronized so keyboard input resumes from the
+     visible position. */
   useEffect(() => {
-    if (!inView || reduced || interactedRef.current) return;
+    if (interactedRef.current) return;
     const frame = frameRef.current;
-    if (frame === null) return;
-    const controls = animate(62, 50, {
+    const input = inputRef.current;
+    if (frame === null || input === null) return;
+
+    const narrow = window.matchMedia("(max-width: 479px)").matches;
+    const rest = narrow ? 0 : 38;
+    const settle = () => {
+      frame.style.setProperty("--exposure", `${rest}%`);
+      input.value = String(rest);
+      input.setAttribute("aria-valuetext", `${100 - rest}% on standard`);
+    };
+
+    if (narrow || reduced) {
+      settle();
+      return;
+    }
+    if (!inView) return;
+    const controls = animate(62, rest, {
       duration: DUR.base,
       ease: EASE_OUT,
       onUpdate: (v) => frame.style.setProperty("--exposure", `${v}%`),
+      onComplete: settle,
     });
     introRef.current = controls;
     return () => controls.stop();
@@ -264,10 +304,13 @@ export function SlopCompare() {
           className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-primary"
           style={{ left: "var(--exposure)" }}
         />
+        {/* Clamp only the knob; the clip edge stays at the true exposure. */}
         <div
           aria-hidden
           className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-ring) motion-reduce:transition-none"
-          style={{ left: "var(--exposure)" }}
+          style={{
+            left: "clamp(0.875rem, var(--exposure), calc(100% - 0.875rem))",
+          }}
         >
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>

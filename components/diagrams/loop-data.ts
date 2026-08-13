@@ -30,7 +30,7 @@ export const LOOP_PHASES: LoopPhase[] = [
     label: "Diverge",
     note: "2–3 options",
     detail:
-      "The agent sketches 2–3 structurally different options, using only components that exist in the product's manifest. No pixel code yet — just enough shape to choose between.",
+      "The agent renders 2–3 clearly different directions as real HTML pages you can open, composed only from components that exist in the product's manifest. No product code yet — you choose between things you can see.",
     you: "Pick a direction.",
   },
   {

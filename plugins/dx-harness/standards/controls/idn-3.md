@@ -30,10 +30,10 @@ colour rule — one control, a per-product table.
 | Glow | Lighter, encouraging | Warmer accents, more celebratory moments |
 | TW surfaces (Posts / PG Staff Portal) | Pure TW | No nuance — plain Teacher Workspace voice |
 
-Source of truth for this table is this file; the `copy` skill's per-product tone section
-points here rather than restating it (per `docs/SYNC.md`). If the two drift in practice,
-add a `dx-sync:idn-register` block and a parity sub-check in `validate.py` — deferred for
-v1, pointer suffices.
+Source of truth for this table is this file; the `dx-design-copy` skill's per-product
+tone section points here rather than restating it (per the catalogue-as-single-source
+rule). If the two drift in practice, add a `dx-sync:idn-register` block and a parity
+sub-check in `validate.py` — deferred for v1, pointer suffices.
 
 ## Rationale
 

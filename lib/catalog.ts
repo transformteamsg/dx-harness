@@ -13,7 +13,6 @@ export type Control = {
   audiences?: string[];
   enforced?: "script" | "partial" | "manual" | "evaluator";
   script?: string | string[];
-  status?: "proposed";
 };
 
 type RawControl = Record<string, unknown> & { id: string };
@@ -41,7 +40,6 @@ const PUBLIC_FIELDS = [
   "audiences",
   "enforced",
   "script",
-  "status",
 ] as const;
 
 function readCatalog(): RawCatalog {
@@ -70,7 +68,6 @@ export function getCatalog(): Control[] {
       audiences: c.audiences,
       enforced: c.enforced,
       script: c.script,
-      status: c.status,
     } as Control;
   });
 }

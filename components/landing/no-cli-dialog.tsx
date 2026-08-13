@@ -18,7 +18,7 @@ export function NoCliDialog({ triggerClassName }: { triggerClassName?: string })
   return (
     <Dialog>
       <DialogTrigger
-        className={`cursor-pointer text-tw-blue-text underline underline-offset-4 hover:text-foreground ${triggerClassName ?? ""}`}
+        className={`inline-flex min-h-11 items-center cursor-pointer text-tw-blue-text underline underline-offset-4 hover:text-foreground ${triggerClassName ?? ""}`}
       >
         No command line?
       </DialogTrigger>

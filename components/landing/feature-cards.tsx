@@ -1,35 +1,17 @@
 import { Reveal } from "@/components/landing/reveal";
 
-/* FeatureCards — three equally weighted cards, one per thing the harness gives
-   you: the orchestrator, the control catalog, DESIGN.md (ticket #77, variant B
-   of the approved prototype). Equal weight is the point — no card is wider,
-   louder, or styled as the hero.
+/* FeatureCards — three equally weighted columns for the orchestrator, control
+   catalog, and DESIGN.md. Hairline rules group the non-interactive units
+   without card affordances (SLP-4/5/11).
 
-   Each card carries a mini-diagram. The diagrams are decoration: the claim and
-   the sentence under it already say what the card means, so the notation is
-   aria-hidden and assistive tech reads the prose alone (A11Y-6). Nothing here
-   is interactive, so nothing carries a hover affordance that would promise a
-   click (CMP-7).
-
-   ── The card-shape controls, and why this passes ──
-   SLP-5 (L2, rationale) — "no identical card grids as default layout": the
-   template SLP-5 names is the icon tile above a heading above a sentence,
-   repeated. There is no icon here; each card carries its own figure, drawn
-   from its own mechanism, below its claim — three different pictures, not one
-   template stamped three times. The row is also not the page's default
-   layout: the sections around it run full-bleed prose and one wide figure.
-   SLP-11 (L2, rationale) — "a card is only for an interactive unit": the card
-   shell is doing real grouping work here, because each unit is a claim, a
-   sentence, a hairline, and a figure, and spacing alone stops separating them
-   once the figures are in. This matches the page's existing skill-group
-   panels, so the landing keeps one grouping idiom rather than two.
-   SLP-4 (L1, documented) — "no nested cards": the boxes inside the figures are
-   diagram notation, not cards. None is interactive and none repeats card
-   chrome (no shadow, no hover, no independent padding shell) — the same
-   treatment components/landing/full-map-diagram.tsx documents for its figure.
+   Each column carries a mini-diagram. The diagrams are decoration: the claim
+   and the sentence under it already say what the column means, so the notation
+   is aria-hidden and assistive tech reads the prose alone (A11Y-6). Nothing
+   here is interactive, so nothing carries a hover affordance that would
+   promise a click (CMP-7).
 
    Reveal choreography matches the architecture diagram: one --reveal-i per
-   card, staggered in reading order, armed client-side so no-JS and
+   column, staggered in reading order, armed client-side so no-JS and
    reduced-motion get the finished row (MOT-3, A11Y-5). */
 
 type RevealStyle = React.CSSProperties & { "--reveal-i"?: number };
@@ -42,7 +24,7 @@ const nodeAccent =
   "rounded-md border border-(--primary-line) bg-accent px-2 py-1 font-mono text-xs whitespace-nowrap text-tw-blue-text";
 const connector = "mx-auto h-3.5 w-px bg-border-strong";
 
-function Card({
+function FeatureColumn({
   eyebrow,
   claim,
   children,
@@ -55,7 +37,7 @@ function Card({
 }) {
   return (
     <li
-      className="reveal-item rounded-lg border border-border bg-surface px-5 pt-5 pb-6"
+      className="reveal-item py-8 first:pt-0 last:pb-0 md:px-6 md:py-0 md:first:pl-0 md:last:pr-0"
       style={at(index)}
     >
       <p className="font-mono text-xs break-words text-tw-blue-text">{eyebrow}</p>
@@ -67,7 +49,7 @@ function Card({
   );
 }
 
-/* The one sentence under the claim — the card's meaning in prose, which is
+/* The one sentence under the claim — the column's meaning in prose, which is
    what assistive tech gets in place of the hidden figure. */
 function Support({ children }: { children: React.ReactNode }) {
   return <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{children}</p>;
@@ -85,9 +67,9 @@ function MiniDiagram({ caption, children }: { caption: string; children: React.R
 export function FeatureCards() {
   return (
     <Reveal>
-      <ul className="grid gap-5 md:grid-cols-3">
+      <ul className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
         {/* ── One way in: the orchestrator fans out, one skill builds ── */}
-        <Card eyebrow="/dx-harness:dx-design" claim="One way in. One way to ship." index={0}>
+        <FeatureColumn eyebrow="/dx-harness:dx-design" claim="One way in. One way to ship." index={0}>
           <Support>
             Ask in plain words.{" "}
             <span className="font-mono text-foreground">dx-design</span> routes you to a
@@ -95,7 +77,7 @@ export function FeatureCards() {
             <span className="font-mono text-foreground">dx-design-execute</span> ever
             edits your product.
           </Support>
-          <MiniDiagram caption="orchestrator → passes → the one builder">
+          <MiniDiagram caption="orchestrator → propose-only skills → the one builder">
             <div className="flex justify-center">
               <span className={nodeAccent}>dx-design</span>
             </div>
@@ -106,16 +88,17 @@ export function FeatureCards() {
               <span className={node}>dx-design-flow</span>
               <span className={node}>dx-design-pattern</span>
               <span className={node}>dx-design-motion</span>
+              <span className={node}>dx-design-polish</span>
             </div>
             <div className={connector} />
             <div className="flex justify-center">
               <span className={nodeAccent}>dx-design-execute — builds</span>
             </div>
           </MiniDiagram>
-        </Card>
+        </FeatureColumn>
 
         {/* ── The catalog: three tiers across the spectrum of design calls ── */}
-        <Card eyebrow="Control catalog" claim="Not every rule is a lint check." index={1}>
+        <FeatureColumn eyebrow="Control catalog" claim="Not every rule is a lint check." index={1}>
           <Support>
             Every control carries a tier, so you know which rules never bend and which
             leave you room to argue.
@@ -146,10 +129,10 @@ export function FeatureCards() {
               <span>a person judges it</span>
             </p>
           </MiniDiagram>
-        </Card>
+        </FeatureColumn>
 
         {/* ── DESIGN.md: the per-product file, overrides and all ── */}
-        <Card
+        <FeatureColumn
           eyebrow="DESIGN.md"
           claim="Your design language, written down once."
           index={2}
@@ -180,7 +163,7 @@ export function FeatureCards() {
               </div>
             </div>
           </MiniDiagram>
-        </Card>
+        </FeatureColumn>
       </ul>
     </Reveal>
   );

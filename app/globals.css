@@ -14,7 +14,7 @@
   --border: #e4e4e7;
   --ring: #0064ff;
 
-  /* Product primaries — ⚑ proposed mapping (Radix-based for CaseSync/Glow) */
+  /* Product primaries (Radix-based for CaseSync/Glow) */
   --tw-blue: #0064ff;        /* Teacher Workspace — brand anchor */
   --casesync: #3e63dd;       /* Radix indigo-9 (proposed) */
   --glow: #f76b15;           /* Radix orange-9 (proposed) */
