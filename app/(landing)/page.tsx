@@ -24,10 +24,7 @@ export default function Landing() {
       <section className="relative overflow-hidden border-b border-border">
         <div className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-[1280px] items-center gap-6 px-6 py-14 lg:grid-cols-[minmax(0,0.88fr)_minmax(480px,1.12fr)] lg:gap-8 lg:py-10">
           <div className="hero-enter relative z-10 max-w-[660px]">
-            <p className="font-mono text-xs font-medium tracking-[0.14em] text-tw-blue-text">
-              DXD · DESIGN HARNESS
-            </p>
-            <h1 className="mt-5 max-w-[18ch] font-display text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
+            <h1 className="max-w-[18ch] font-display text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
               Your agent already builds the UI. Now it holds the design bar.
             </h1>
             <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-pretty text-muted-foreground">

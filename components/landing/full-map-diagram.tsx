@@ -2,142 +2,129 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/* FullMapDiagram — the whole harness as one isometric layered figure
-   (ticket #78, composition locked in #74). Two halves split the story:
-
-   - The numbered rail is the semantic path: real text, in reading order
-     (you → dx-design → the passes → shared context → DESIGN.md), so
-     assistive tech gets the full narrative as plain HTML (A11Y-6/7).
-   - The SVG is a labelled figure — role="img" with <title> + <desc>
-     narrating the FINISHED figure; everything inside it is presentational.
-
-   Skill names follow the locked design-skills restructure spec:
-   dx-design is the single front door; the five passes propose;
-   dx-design-execute is the one skill that builds.
-
-   Reveal choreography: plate → connector → plate, in reading order, via
-   per-item --reveal-i delays (see the [data-reveal] .map-item rules in
-   globals.css; step = --motion-story-step, the tuning knob — total ≈ 2.1s
-   at the 220ms default). The hidden state exists only after client JS arms
-   the root and only under prefers-reduced-motion: no-preference, so no-JS,
-   SSR, and reduce users all render the finished figure from the first
-   frame (MOT-3, A11Y-5). Replay renders only once motion is armed, so it
-   never appears under reduced motion.
-
-   The plates are diagram notation, not cards (SLP-11): nothing here is
-   interactive and nothing nests card chrome. The legend is visible content,
-   not decoration — the words carry the key. */
-
-type RevealStyle = React.CSSProperties & { "--reveal-i"?: number };
-const at = (i: number): RevealStyle => ({ "--reveal-i": i });
+/* ─────────────────────────────────────────────────────────
+ * SCROLL STORYBOARD
+ *
+ * Each numbered section owns one additive stage. The viewport's reading
+ * line advances a single `activeStage` integer:
+ *
+ *   01   You enters with the first plain-language ask
+ *   02   dx-design appears as the single front door
+ *   03   propose-only passes and the one builder join
+ *   04   shared catalog and primitives become available
+ *   05   DESIGN.md lands in the product repository
+ *
+ * Previous layers remain as quiet context. No-JS and reduced-motion render
+ * the complete finished map; only motion-capable clients arm staged hiding.
+ * ───────────────────────────────────────────────────────── */
 
 /* One rail entry: numbered, with a small locator kicker. The number is
    drawn (the <ol> already carries order); hence aria-hidden. */
 function RailItem({
-  i,
   n,
   where,
   heading,
   children,
+  active,
+  itemRef,
 }: {
-  i: number;
   n: number;
   where: string;
   heading: React.ReactNode;
   children: React.ReactNode;
+  active: boolean;
+  itemRef: (node: HTMLLIElement | null) => void;
 }) {
   return (
-    <li className="map-item relative pl-10 pb-8 last:pb-0" style={at(i)}>
-      <span
-        aria-hidden
-        className="absolute top-0 left-0 flex size-6.5 items-center justify-center rounded-full border border-border bg-muted font-mono text-xs font-semibold text-tw-blue-text"
+    <li
+      ref={itemRef}
+      data-stage={n - 1}
+      aria-current={active ? "step" : undefined}
+      className="flex min-h-[58svh] items-center py-16 md:min-h-[72svh]"
+    >
+      <div
+        className={`border-l-2 pl-6 transition-colors duration-(--motion-slow) ${
+          active ? "border-primary" : "border-border"
+        }`}
       >
-        {n}
-      </span>
-      <p className="font-mono text-xs tracking-[0.08em] text-muted-foreground">
-        {where}
-      </p>
-      <h3 className="mt-1 text-sm font-semibold text-foreground">{heading}</h3>
-      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{children}</p>
+        <p className="font-mono text-xs tracking-[0.14em] text-muted-foreground">
+          STEP {String(n).padStart(2, "0")} · {where}
+        </p>
+        <h3 className="mt-4 font-display text-2xl font-semibold tracking-tight text-balance text-foreground">
+          {heading}
+        </h3>
+        <p className="mt-3 max-w-[38ch] leading-relaxed text-pretty text-muted-foreground">
+          {children}
+        </p>
+      </div>
     </li>
   );
 }
 
 const railCode = "rounded-sm bg-muted px-1 font-mono text-xs text-foreground";
 
+/* Camera offsets are percentages of the 950-unit SVG height. Each one places
+   its layer near the center of the 520–640px sticky viewport. Keeping the
+   values together makes the scroll composition easy to retune. */
+const MAP_CAMERA = ["23.8%", "5.2%", "-15.8%", "-37.5%", "-57.4%"] as const;
+
 export function FullMapDiagram() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  /* True only once JS confirms motion is welcome — gates the Replay button,
-     so no-JS and reduced-motion users never see a control that does nothing. */
+  const stepRefs = useRef<Array<HTMLLIElement | null>>([]);
+  const [activeStage, setActiveStage] = useState(0);
   const [motionArmed, setMotionArmed] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (el === null) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    /* Never arm what cannot be un-armed — see the same guard in reveal.tsx.
-       Arming applies the hidden state, so anything that could fail must fail
-       before it. This figure is the tallest reveal root on the page (~1090px),
-       which is exactly why the threshold below is height-independent. */
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      window.matchMedia("(max-width: 767px)").matches
+    ) return;
     if (typeof IntersectionObserver === "undefined") return;
+
     const observer = new IntersectionObserver(
-      (entries, obs) => {
-        if (entries[0].isIntersecting) {
-          el.setAttribute("data-reveal", "shown");
-          obs.disconnect();
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const stage = Number((entry.target as HTMLElement).dataset.stage);
+            setActiveStage(stage);
+          }
         }
       },
-      /* threshold 0 + a bottom inset, NOT threshold 0.2 — a ratio threshold
-         needs 20% of a 1090px figure (218px) on screen at once, so any viewport
-         shorter than that stranded the whole diagram at opacity 0 even after a
-         full scroll of the page. Verified failing at 210px before this change. */
-      { threshold: 0, rootMargin: "0px 0px -20% 0px" }
+      { threshold: 0, rootMargin: "-44% 0px -44% 0px" }
     );
+
+    for (const step of stepRefs.current) {
+      if (step !== null) observer.observe(step);
+    }
     setMotionArmed(true);
-    el.setAttribute("data-reveal", "armed");
-    observer.observe(el);
-    return () => {
-      observer.disconnect();
-      el.removeAttribute("data-reveal");
-    };
+    return () => observer.disconnect();
   }, []);
 
-  const replay = () => {
-    const el = ref.current;
-    if (el === null) return;
-    el.setAttribute("data-reveal", "armed");
-    void el.offsetWidth; /* commit the hidden state before playing again */
-    el.setAttribute("data-reveal", "shown");
-  };
+  const layerState = (stage: number) => ({
+    "data-visible": !motionArmed || stage <= activeStage,
+    "data-current": !motionArmed || stage === activeStage,
+  });
 
   return (
-    <div
-      ref={ref}
-      className="relative rounded-lg border border-border bg-surface px-5 py-6 sm:px-8 sm:py-8"
-    >
-      {motionArmed && (
-        <button
-          type="button"
-          onClick={replay}
-          className="absolute top-4 right-4 z-10 rounded-md border border-border bg-muted px-3 py-1.5 text-xs font-medium text-foreground hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) max-sm:min-h-11 max-sm:min-w-11"
-        >
-          Replay
-        </button>
-      )}
-
-      <div className="grid items-start gap-x-11 gap-y-4 md:grid-cols-[minmax(250px,330px)_1fr]">
+    <div className="grid items-start md:grid-cols-[minmax(260px,0.72fr)_minmax(0,1.28fr)] md:gap-12 lg:gap-16">
         {/* ── The reading rail: the non-visual story, in reading order ── */}
         <ol
           aria-label="How the harness is structured, in reading order"
-          className="pt-2"
+          className="border-t border-border md:border-t-0"
         >
-          <RailItem i={0} n={1} where="in the chat" heading="You">
+          <RailItem
+            n={1}
+            where="in the chat"
+            heading="You"
+            active={motionArmed && activeStage === 0}
+            itemRef={(node) => { stepRefs.current[0] = node; }}
+          >
             One ask, in plain words. You never pick a skill.
           </RailItem>
           <RailItem
-            i={2}
             n={2}
             where="the harness plugin"
+            active={motionArmed && activeStage === 1}
+            itemRef={(node) => { stepRefs.current[1] = node; }}
             heading={
               <>
                 <code className="font-mono text-tw-blue-text">dx-design</code> — the
@@ -148,21 +135,34 @@ export function FullMapDiagram() {
             The orchestrator grills first, then routes. Rule and waiver questions
             stop here too. No external skills inside it.
           </RailItem>
-          <RailItem i={4} n={3} where="dispatched as subagents" heading="The propose-only passes">
+          <RailItem
+            n={3}
+            where="dispatched as subagents"
+            heading="The propose-only passes"
+            active={motionArmed && activeStage === 2}
+            itemRef={(node) => { stepRefs.current[2] = node; }}
+          >
             Copy, flow, pattern, motion, polish — each returns up to five ranked
             findings. They plan and document for{" "}
             <code className={railCode}>dx-design-execute</code>, the one skill that
             builds what you accept.
           </RailItem>
-          <RailItem i={6} n={4} where="the harness plugin" heading="Shared context">
+          <RailItem
+            n={4}
+            where="the harness plugin"
+            heading="Shared context"
+            active={motionArmed && activeStage === 3}
+            itemRef={(node) => { stepRefs.current[3] = node; }}
+          >
             Every skill reads the same rulebook: the control catalog (L0 never
             waived, L1 needs a named approver, L2 needs a reason), grounded by the
             primitives — tokens and components.
           </RailItem>
           <RailItem
-            i={8}
             n={5}
             where="your product repo"
+            active={motionArmed && activeStage === 4}
+            itemRef={(node) => { stepRefs.current[4] = node; }}
             heading={<code className="font-mono">DESIGN.md</code>}
           >
             Your product&rsquo;s decisions and deviations, written where any agent
@@ -171,26 +171,17 @@ export function FullMapDiagram() {
           </RailItem>
         </ol>
 
-        {/* ── The isometric figure: a labelled image narrating the finished
-             state; the rail above carries the step-by-step story. ── */}
-        {/* min-w-0 lets the grid item shrink so the scroll container below
-            clips instead of widening the page (LAY-2). */}
-        <figure className="min-w-0">
-          {/* The SVG never scales below its 560px design width — labels are
-              sized in design units, so downscaling would sink them under the
-              12px floor (TYP-2). Below 560px the figure scrolls in its own
-              container instead (LAY-2: container scroll, never page scroll). */}
-          <div
-            className="overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
-            tabIndex={0}
-            role="group"
-            aria-label="Harness map figure, scrolls sideways on narrow screens"
-          >
+        {/* The map remains pinned while the reading rail advances its single
+            additive stage. On narrow screens it becomes a complete static
+            figure before the prose, avoiding a tiny sticky viewport. */}
+        <figure className="order-first min-w-0 border-y border-border py-8 md:sticky md:top-16 md:order-last md:flex md:h-[calc(100svh-4rem)] md:flex-col md:justify-center md:border-y-0 md:py-0">
+          <div className="mx-auto w-full max-w-[560px] md:h-[calc(100svh-10rem)] md:min-h-[520px] md:max-h-[640px] md:overflow-hidden">
           <svg
             viewBox="0 0 560 950"
             role="img"
             aria-labelledby="fullmap-title fullmap-desc"
-            className="mx-auto block h-auto w-full min-w-[560px] max-w-[560px]"
+            className="scroll-map-figure mx-auto block h-auto w-full"
+            style={motionArmed ? { translate: `0 ${MAP_CAMERA[activeStage]}` } : undefined}
           >
             <title id="fullmap-title">How the design harness fits together</title>
             <desc id="fullmap-desc">
@@ -272,7 +263,7 @@ export function FullMapDiagram() {
             </defs>
 
             {/* Layer 1 — you */}
-            <g className="map-item" style={at(0)}>
+            <g className="scroll-map-layer" {...layerState(0)}>
               <use href="#fullmap-plate" x="70" y="24" />
               <circle
                 cx="280"
@@ -301,9 +292,9 @@ export function FullMapDiagram() {
               </text>
             </g>
             {/* Connector 1→2 */}
-            <g className="map-item" style={at(1)}>
+            <g className="scroll-map-layer scroll-map-connector" {...layerState(1)}>
               <line
-                className="map-line"
+                className="scroll-map-line"
                 x1="280"
                 y1="158"
                 x2="280"
@@ -318,7 +309,7 @@ export function FullMapDiagram() {
             </g>
 
             {/* Layer 2 — dx-design, the single front door */}
-            <g className="map-item" style={at(2)}>
+            <g className="scroll-map-layer" {...layerState(1)}>
               <use href="#fullmap-plate" x="70" y="206" />
               {/* accent edge: re-stroke the top face */}
               <polygon
@@ -350,9 +341,9 @@ export function FullMapDiagram() {
               </text>
             </g>
             {/* Connector 2→3 */}
-            <g className="map-item" style={at(3)}>
+            <g className="scroll-map-layer scroll-map-connector" {...layerState(2)}>
               <line
-                className="map-line"
+                className="scroll-map-line"
                 x1="280"
                 y1="340"
                 x2="280"
@@ -367,7 +358,7 @@ export function FullMapDiagram() {
             </g>
 
             {/* Layer 3 — the passes propose; dx-design-execute builds */}
-            <g className="map-item" style={at(4)}>
+            <g className="scroll-map-layer" {...layerState(2)}>
               <use href="#fullmap-plate" x="70" y="388" />
               <use href="#fullmap-cube" x="140" y="448" />
               <use href="#fullmap-cube" x="185" y="448" />
@@ -423,9 +414,9 @@ export function FullMapDiagram() {
               </text>
             </g>
             {/* Connector 3→4 */}
-            <g className="map-item" style={at(5)}>
+            <g className="scroll-map-layer scroll-map-connector" {...layerState(3)}>
               <line
-                className="map-line"
+                className="scroll-map-line"
                 x1="280"
                 y1="558"
                 x2="280"
@@ -440,7 +431,7 @@ export function FullMapDiagram() {
             </g>
 
             {/* Layer 4 — shared context */}
-            <g className="map-item" style={at(6)}>
+            <g className="scroll-map-layer" {...layerState(3)}>
               <use href="#fullmap-plate" x="70" y="606" />
               <text
                 x="280"
@@ -474,9 +465,9 @@ export function FullMapDiagram() {
               </text>
             </g>
             {/* Connector 4→5 */}
-            <g className="map-item" style={at(7)}>
+            <g className="scroll-map-layer scroll-map-connector" {...layerState(4)}>
               <line
-                className="map-line"
+                className="scroll-map-line"
                 x1="280"
                 y1="740"
                 x2="280"
@@ -491,7 +482,7 @@ export function FullMapDiagram() {
             </g>
 
             {/* Layer 5 — DESIGN.md inside your product repo (dashed zone) */}
-            <g className="map-item" style={at(8)}>
+            <g className="scroll-map-layer" {...layerState(4)}>
               <polygon
                 points="280,788 490,848 280,908 70,848"
                 fill="var(--accent)"
@@ -527,7 +518,7 @@ export function FullMapDiagram() {
 
           {/* Legend — visible content, not decoration: the words carry the key,
                the swatches reinforce it. */}
-          <figcaption className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-border pt-4 text-xs text-muted-foreground">
+          <figcaption className="mx-auto mt-4 flex w-full max-w-[560px] flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-border pt-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-2">
               <span aria-hidden className="size-3 rounded-xs border border-border-strong bg-muted" />
               solid — the harness plugin
@@ -543,6 +534,5 @@ export function FullMapDiagram() {
           </figcaption>
         </figure>
       </div>
-    </div>
   );
 }

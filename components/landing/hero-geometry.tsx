@@ -138,6 +138,15 @@ export function HeroGeometry() {
           fill="var(--primary-wash)"
         />
         <path
+          className="hero-geometry-mark-complete"
+          d={markPath()}
+          fill="none"
+          stroke="var(--tw-blue)"
+          strokeWidth="11"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
           className="hero-geometry-mark-draw"
           d={markPath()}
           pathLength="1"
@@ -149,7 +158,7 @@ export function HeroGeometry() {
         />
 
         <g aria-hidden className="font-mono text-xs tracking-[0.14em] fill-muted-foreground">
-          <text x="120" y="135">DXD MASTER / P=4</text>
+          <text x="120" y="135">FIG 0.1</text>
           <text x="120" y="875">45° ROTATION</text>
           <text x="665" y="875">W/B = 0.500</text>
         </g>

@@ -81,10 +81,9 @@
   --motion-slow: 300ms;
   --motion-story: 600ms;
   /* The hero mark uses the logo-grid-generator's draw treatment: the complete
-     closed path traces once, then its fill settles. Narrative brand motion,
-     never task feedback. */
-  --motion-mark-draw: 1800ms;
-  --motion-mark-fill-delay: 1500ms;
+     closed path traces, holds, and resets as a slow loop. Narrative brand
+     motion, never task feedback. */
+  --motion-mark-cycle: 4200ms;
   /* Stagger step for narrative reveals (the diagram): each item's delay is
      its narrative index × this step; every individual motion stays ≤300ms
      (MOT-1) — only the choreography spans longer, and only on story
@@ -273,34 +272,33 @@
     scale: 0;
   }
 
-  /* Full-map figure variant (components/landing/full-map-diagram.tsx): the
-     same arm-then-play contract, but plates settle from above and the SVG
-     connectors draw top-down. The stagger step is --motion-story-step (the
-     tuning knob); each individual motion stays at --motion-slow, ease-out,
-     no overshoot (MOT-1/MOT-2, SLP-8). */
-  [data-reveal] .map-item {
+  /* Scroll map: one stage follows the viewport reading line. Earlier layers
+     remain as quiet context while the current layer carries full contrast. */
+  .scroll-map-layer {
     transition:
       opacity var(--motion-slow) var(--ease-out),
-      translate var(--motion-slow) var(--ease-out),
-      scale var(--motion-slow) var(--ease-out);
-    transition-delay: calc(var(--reveal-i, 0) * var(--motion-story-step));
+      translate var(--motion-slow) var(--ease-out);
   }
-  [data-reveal="armed"] .map-item {
+  .scroll-map-figure {
+    transition: translate var(--motion-story) var(--ease-in-out);
+  }
+  .scroll-map-layer[data-visible="false"] {
     opacity: 0;
     translate: 0 -12px;
-    transition: none;
   }
-  /* --reveal-i inherits from the connector group, so the line's draw lands
-     on the same beat as its group's fade. */
-  [data-reveal] .map-line {
+  .scroll-map-layer[data-visible="true"][data-current="false"] {
+    opacity: 0.42;
+  }
+  .scroll-map-layer[data-current="true"] {
+    opacity: 1;
+  }
+  .scroll-map-line {
     transform-box: fill-box;
     transform-origin: top center;
     transition: scale var(--motion-slow) var(--ease-out);
-    transition-delay: calc(var(--reveal-i, 0) * var(--motion-story-step));
   }
-  [data-reveal="armed"] .map-line {
+  .scroll-map-layer[data-visible="false"] .scroll-map-line {
     scale: 1 0;
-    transition: none;
   }
 }
 
@@ -315,13 +313,17 @@
     animation: hero-geometry-grid var(--motion-story) var(--ease-out) both;
   }
   .hero-geometry-mark-draw {
-    stroke-dasharray: 1;
+    /* Slightly longer than the normalized path so the final join closes
+       cleanly before the fill appears. */
+    stroke-dasharray: 1.01;
     stroke-dashoffset: 1;
-    animation: hero-geometry-mark-draw var(--motion-mark-draw) linear both;
+    animation: hero-geometry-mark-draw var(--motion-mark-cycle) linear infinite;
   }
   .hero-geometry-mark-fill {
-    animation: hero-geometry-mark-fill var(--motion-slow) var(--ease-out)
-      var(--motion-mark-fill-delay) both;
+    animation: hero-geometry-mark-fill var(--motion-mark-cycle) linear infinite;
+  }
+  .hero-geometry-mark-complete {
+    animation: hero-geometry-mark-complete var(--motion-mark-cycle) linear infinite;
   }
   @keyframes hero-enter {
     from {
@@ -335,12 +337,42 @@
     }
   }
   @keyframes hero-geometry-mark-draw {
-    to {
+    0%, 3% {
+      opacity: 0;
+      stroke-dashoffset: 1;
+    }
+    5% {
+      opacity: 1;
+      stroke-dashoffset: 1;
+    }
+    22% {
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+    24%, 100% {
+      opacity: 0;
       stroke-dashoffset: 0;
     }
   }
+  @keyframes hero-geometry-mark-complete {
+    0%, 22% {
+      opacity: 0;
+    }
+    24%, 88% {
+      opacity: 1;
+    }
+    94%, 100% {
+      opacity: 0;
+    }
+  }
   @keyframes hero-geometry-mark-fill {
-    from {
+    0%, 27% {
+      opacity: 0;
+    }
+    32%, 88% {
+      opacity: 1;
+    }
+    94%, 100% {
       opacity: 0;
     }
   }

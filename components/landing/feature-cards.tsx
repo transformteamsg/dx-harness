@@ -1,169 +1,164 @@
 import { Reveal } from "@/components/landing/reveal";
 
-/* FeatureCards — three equally weighted columns for the orchestrator, control
-   catalog, and DESIGN.md. Hairline rules group the non-interactive units
-   without card affordances (SLP-4/5/11).
-
-   Each column carries a mini-diagram. The diagrams are decoration: the claim
-   and the sentence under it already say what the column means, so the notation
-   is aria-hidden and assistive tech reads the prose alone (A11Y-6). Nothing
-   here is interactive, so nothing carries a hover affordance that would
-   promise a click (CMP-7).
-
-   Reveal choreography matches the architecture diagram: one --reveal-i per
-   column, staggered in reading order, armed client-side so no-JS and
-   reduced-motion get the finished row (MOT-3, A11Y-5). */
-
 type RevealStyle = React.CSSProperties & { "--reveal-i"?: number };
-const at = (i: number): RevealStyle => ({ "--reveal-i": i });
+const at = (index: number): RevealStyle => ({ "--reveal-i": index });
 
-/* Diagram notation shared by the three figures. */
-const node =
-  "rounded-md border border-border bg-muted px-2 py-1 font-mono text-xs whitespace-nowrap text-foreground";
-const nodeAccent =
-  "rounded-md border border-(--primary-line) bg-accent px-2 py-1 font-mono text-xs whitespace-nowrap text-tw-blue-text";
-const connector = "mx-auto h-3.5 w-px bg-border-strong";
+const figureStroke = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  vectorEffect: "non-scaling-stroke" as const,
+};
 
-function FeatureColumn({
-  eyebrow,
-  claim,
-  children,
-  index,
-}: {
-  eyebrow: string;
-  claim: string;
-  children: React.ReactNode;
-  index: number;
-}) {
+function OrchestratorFigure() {
   return (
-    <li
-      className="reveal-item py-8 first:pt-0 last:pb-0 md:px-6 md:py-0 md:first:pl-0 md:last:pr-0"
-      style={at(index)}
-    >
-      <p className="font-mono text-xs break-words text-tw-blue-text">{eyebrow}</p>
-      <h3 className="mt-2.5 font-display text-lg font-semibold tracking-tight text-balance text-foreground">
-        {claim}
-      </h3>
-      {children}
-    </li>
+    <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
+      <g className="text-border-strong" {...figureStroke}>
+        <path d="M58 83 179 22l123 61-123 63L58 83Z" fill="var(--primary-wash)" strokeWidth="1.25" />
+        <path d="m58 83 .2 18L179 164l123-63V83" className="text-muted-foreground" strokeWidth="1.25" />
+        <path d="m58 112 .2 18L179 193l123-63v-18" strokeWidth="1" opacity=".72" />
+        <path d="m58 141 .2 18L179 222l123-63v-18" strokeWidth="1" opacity=".5" />
+        <path d="M179 146v76" strokeDasharray="2 5" opacity=".65" />
+      </g>
+
+      <g className="text-tw-blue-text" {...figureStroke}>
+        <path d="M131 83h96" strokeWidth="1.4" />
+        <path d="m179 52 48 31-48 31-48-31 48-31Z" strokeWidth="1.6" />
+        <circle cx="179" cy="83" r="8" strokeWidth="1.6" />
+        <path d="M179 75V63M171 83h-17m33 0h17m-25 8v11" strokeWidth="1.2" />
+      </g>
+    </svg>
   );
 }
 
-/* The one sentence under the claim — the column's meaning in prose, which is
-   what assistive tech gets in place of the hidden figure. */
-function Support({ children }: { children: React.ReactNode }) {
-  return <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{children}</p>;
-}
-
-function MiniDiagram({ caption, children }: { caption: string; children: React.ReactNode }) {
+function CatalogFigure() {
   return (
-    <div aria-hidden className="mt-4 border-t border-border pt-4">
-      <p className="mb-2.5 text-xs text-muted-foreground">{caption}</p>
-      {children}
-    </div>
+    <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
+      <g className="text-border-strong" {...figureStroke}>
+        <path d="m38 112 66-34 65 34-65 35-66-35Z" fill="var(--primary-wash)" strokeWidth="1.25" />
+        <path d="m38 112 .3 75 65.7 36 65-36v-75" className="text-muted-foreground" strokeWidth="1.25" />
+
+        <path d="m126 50 64-33 65 33-65 34-64-34Z" fill="var(--primary-wash)" strokeWidth="1.25" />
+        <path d="m126 50 .2 57 63.8 34 65-34V50" className="text-muted-foreground" strokeWidth="1.25" />
+
+        <path d="m190 125 65-34 67 34-67 35-65-35Z" fill="var(--primary-wash)" strokeWidth="1.25" />
+        <path d="m190 125 .2 62 64.8 35 67-35v-62" className="text-muted-foreground" strokeWidth="1.25" />
+      </g>
+
+      <g className="fill-tw-blue text-tw-blue-text">
+        <circle cx="104" cy="112" r="4.5" />
+        <circle cx="190" cy="50" r="4.5" />
+        <circle cx="255" cy="125" r="4.5" />
+      </g>
+      <g className="font-mono text-xs fill-muted-foreground">
+        <text x="95" y="173">L0</text>
+        <text x="181" y="108">L1</text>
+        <text x="246" y="187">L2</text>
+      </g>
+    </svg>
   );
 }
+
+function DesignFileFigure() {
+  const pages = Array.from({ length: 10 }, (_, index) => ({
+    x: 46 + index * 17,
+    y: 187 - index * 14,
+    height: 34 + index * 14,
+    opacity: 0.38 + index * 0.055,
+  }));
+
+  return (
+    <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
+      <g className="text-border-strong" {...figureStroke}>
+        {pages.map(({ x, y, height, opacity }, index) => (
+          <path
+            key={index}
+            d={`M${x} ${y}v-${height - 10}a5 5 0 0 1 7-4l146 72a8 8 0 0 1 4 7v${height - 12}a5 5 0 0 1-7 4L${x + 4} ${y + 7}a8 8 0 0 1-4-7Z`}
+            fill={index === pages.length - 1 ? "var(--primary-wash)" : "var(--background)"}
+            opacity={opacity}
+            strokeWidth={index === pages.length - 1 ? "1.4" : "1"}
+          />
+        ))}
+      </g>
+
+      <g className="text-tw-blue-text" {...figureStroke}>
+        <path d="m214 58 39 19" strokeWidth="1.6" />
+        <path d="m214 68 53 26" strokeWidth="1.1" opacity=".65" />
+        <path d="m214 78 44 22" strokeWidth="1.1" opacity=".65" />
+      </g>
+    </svg>
+  );
+}
+
+const features = [
+  {
+    figure: "FIG 0.2",
+    eyebrow: "/dx-harness:dx-design",
+    claim: "One way in. One way to ship.",
+    support: (
+      <>
+        Ask in plain words. <span className="font-mono text-foreground">dx-design</span>{" "}
+        routes you to the right pass, and only{" "}
+        <span className="font-mono text-foreground">dx-design-execute</span> edits
+        your product.
+      </>
+    ),
+    illustration: <OrchestratorFigure />,
+  },
+  {
+    figure: "FIG 0.3",
+    eyebrow: "Control catalog",
+    claim: "Not every rule is a lint check.",
+    support: (
+      <>
+        Every control carries a tier, so you know which rules never bend and
+        which leave room for judgement.
+      </>
+    ),
+    illustration: <CatalogFigure />,
+  },
+  {
+    figure: "FIG 0.4",
+    eyebrow: "DESIGN.md",
+    claim: "Your design language, written down once.",
+    support: (
+      <>
+        Keep product decisions and standing overrides in one file the whole
+        team—human and agent—can work from.
+      </>
+    ),
+    illustration: <DesignFileFigure />,
+  },
+];
 
 export function FeatureCards() {
   return (
     <Reveal>
-      <ul className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-        {/* ── One way in: the orchestrator fans out, one skill builds ── */}
-        <FeatureColumn eyebrow="/dx-harness:dx-design" claim="One way in. One way to ship." index={0}>
-          <Support>
-            Ask in plain words.{" "}
-            <span className="font-mono text-foreground">dx-design</span> routes you to a
-            pass, and only{" "}
-            <span className="font-mono text-foreground">dx-design-execute</span> ever
-            edits your product.
-          </Support>
-          <MiniDiagram caption="orchestrator → propose-only skills → the one builder">
-            <div className="flex justify-center">
-              <span className={nodeAccent}>dx-design</span>
-            </div>
-            <div className={connector} />
-            <div className="flex flex-wrap justify-center gap-1.5">
-              <span className={node}>dx-design-critique</span>
-              <span className={node}>dx-design-copy</span>
-              <span className={node}>dx-design-flow</span>
-              <span className={node}>dx-design-pattern</span>
-              <span className={node}>dx-design-motion</span>
-              <span className={node}>dx-design-polish</span>
-            </div>
-            <div className={connector} />
-            <div className="flex justify-center">
-              <span className={nodeAccent}>dx-design-execute — builds</span>
-            </div>
-          </MiniDiagram>
-        </FeatureColumn>
-
-        {/* ── The catalog: three tiers across the spectrum of design calls ── */}
-        <FeatureColumn eyebrow="Control catalog" claim="Not every rule is a lint check." index={1}>
-          <Support>
-            Every control carries a tier, so you know which rules never bend and which
-            leave you room to argue.
-          </Support>
-          <MiniDiagram caption="L0 · L1 · L2">
-            <div className="grid grid-cols-3 gap-1.5">
-              {[
-                ["L0", "blocks outright"],
-                ["L1", "named approver"],
-                ["L2", "room to judge"],
-              ].map(([tier, meaning]) => (
-                <div
-                  key={tier}
-                  className="rounded-md border border-border bg-muted px-2 py-2 text-center"
-                >
-                  <span className="block font-mono text-xs font-medium text-foreground">
-                    {tier}
-                  </span>
-                  <span className="mt-1 block text-xs leading-snug text-muted-foreground">
-                    {meaning}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <p className="mt-2.5 flex items-center gap-2 text-xs text-muted-foreground">
-              <span>a check settles it</span>
-              <span className="h-px min-w-4 flex-1 bg-border" />
-              <span>a person judges it</span>
+      <ul className="grid divide-y divide-border border-y border-border md:grid-cols-3 md:divide-x md:divide-y-0">
+        {features.map((feature, index) => (
+          <li
+            key={feature.figure}
+            className="reveal-item py-8 md:px-7 md:py-9 md:first:pl-0 md:last:pr-0"
+            style={at(index)}
+          >
+            <p className="font-mono text-xs tracking-[0.14em] text-muted-foreground">
+              {feature.figure}
             </p>
-          </MiniDiagram>
-        </FeatureColumn>
-
-        {/* ── DESIGN.md: the per-product file, overrides and all ── */}
-        <FeatureColumn
-          eyebrow="DESIGN.md"
-          claim="Your design language, written down once."
-          index={2}
-        >
-          <Support>
-            DESIGN.md records the decisions unique to your product, plus any standing
-            override — L0 never, L1 needs a named approver, L2 needs a reason.
-          </Support>
-          <MiniDiagram caption="a file in your repo">
-            <div className="overflow-hidden rounded-md border border-border bg-muted">
-              <p className="border-b border-border bg-accent px-2.5 py-1.5 font-mono text-xs text-foreground">
-                DESIGN.md
-              </p>
-              <div className="px-2.5 py-2.5">
-                {/* Body text of the file, drawn as rules rather than lorem — the
-                    example that matters is the override line below. */}
-                <span className="block h-1.5 w-3/4 rounded-full bg-border" />
-                <span className="mt-1.5 block h-1.5 w-11/12 rounded-full bg-border" />
-                <span className="mt-1.5 block h-1.5 w-1/2 rounded-full bg-border" />
-                {/* A real control, a real tier, a role instead of a name (CNT-4:
-                    an illustrative artifact stays faithful to the real one). */}
-                <p className="mt-2.5 rounded-sm bg-(--primary-wash) px-2 py-1.5 font-mono text-xs leading-relaxed text-tw-blue-text">
-                  ## Overrides
-                  <br />
-                  COL-1 (L1): campaign pages lead with the event colour, not the
-                  product primary — approver: design lead
-                </p>
-              </div>
+            <div className="mt-2 h-56 w-full text-border-strong sm:h-64 md:h-60 lg:h-64 [&_svg]:overflow-visible">
+              {feature.illustration}
             </div>
-          </MiniDiagram>
-        </FeatureColumn>
+            <p className="mt-5 font-mono text-xs break-words text-tw-blue-text">
+              {feature.eyebrow}
+            </p>
+            <h3 className="mt-2.5 font-display text-lg font-semibold tracking-tight text-balance text-foreground">
+              {feature.claim}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {feature.support}
+            </p>
+          </li>
+        ))}
       </ul>
     </Reveal>
   );
