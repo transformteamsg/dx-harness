@@ -55,3 +55,7 @@ _Avoid_: Branch check, git precheck
 **Source-of-truth election**:
 The human's choice, during a dx-design-language session, of which evidence source — code, Figma, or a hybrid split per part — seeds DESIGN.md's decisions when sources disagree. Guides elicitation only; code stays the runtime authority, and fix-todos bring it in line with the elected source.
 _Avoid_: Precedence override, truth source
+
+**Quality bar**:
+The ceiling artifact kept beside the control catalogue: what good looks like once no control is broken. Four criteria — design quality, originality, craft, functionality — each graded strong / acceptable / weak, with every grade quoting the pairing or threshold that decided it. Read at plan, graded at design review; it never blocks — a miss is evidence for a grade, never a finding.
+_Avoid_: Ceiling file, rubric, taste standard
