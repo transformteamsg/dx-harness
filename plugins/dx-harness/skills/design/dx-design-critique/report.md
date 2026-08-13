@@ -22,7 +22,7 @@ captured.
 PIL (Pillow) is a setup dependency, not a runtime surprise. Detect it before
 cropping: run `python3 -c "import PIL"`. If that fails, install it with
 `pip install Pillow` (or `pip3 install Pillow`), re-run the check, and only then
-proceed. The general environment checklist lives in `../dx-setup/setup.md`, but
+proceed. The general environment checklist lives in `../dx-design-setup/setup.md`, but
 this step never depends on it: the check and the fix above are complete on their
 own. Never fake crops, and never ship a report with placeholder images.
 

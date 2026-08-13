@@ -14,7 +14,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 
 - Content lives in `content/`, not in components. Page chrome lives in `components/`. Don't hardcode standard content into TSX.
 - Copy: second person, active voice, sentence case, plain language. Error messages say what happened and what to do next.
-- When editing prose in `content/`, apply SLP-9 (AI-writing tells) — canonical lists and calibration in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-copy skill.
+- When editing prose in `content/`, apply SLP-9 (AI-writing tells) — canonical lists and calibration in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-design-copy skill.
 - Status frontmatter matters: `settled` vs `proposed` renders different badges. Don't mark proposed things settled.
 
 ## Verify
