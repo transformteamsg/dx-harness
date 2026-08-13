@@ -28,7 +28,7 @@ and both get NOTED and routed.
 
 **Named-pattern fit.** Beyond the structural controls, judge each region against the
 pattern inventory: diagnose a wrong pattern and propose the swap (cards to list,
-table to cards, tabs to accordion, add an empty state), up to a whole-page rebuild to
+table to cards, list to master-detail, add an empty state), up to a whole-page rebuild to
 a different pattern when the page shows the same information and functionality after
 the change. A whole-page rebuild always stops at plan approval before
 dx-design-execute builds it; a smaller accepted finding counts as approved and

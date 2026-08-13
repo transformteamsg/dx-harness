@@ -54,9 +54,13 @@ A pass keeps two entries:
    nothing is silently dropped. In return-to-caller mode, skip the ask: return the
    ranked findings to the caller, which merges them and runs the one plan approval.
 5. **Hand off; never build.** Hand the accepted findings to `dx-design-execute` as a
-   specified-change run. Execute owns plan approval, implement, design review, and
-   verify, through `../../../procedures/plan-approval.md`,
-   `../../../procedures/implement.md`, and `../../../procedures/design-review.md`. A
+   specified-change run in `return-to-caller` mode: the handoff carries the mode
+   token, the accepted findings, and the design-ticket reference. The token makes
+   execute skip its own intent interview; the person already accepted each finding in
+   step 4, and that acceptance is the approval context execute works from. Execute
+   owns plan approval, implement, design review, and verify, through
+   `../../../procedures/plan-approval.md`, `../../../procedures/implement.md`, and
+   `../../../procedures/design-review.md`. A
    smaller accepted finding counts as plan approval and proceeds without a second
    stop; a whole-page rebuild always stops at plan approval before any edit. When the
    human declines every finding, the run ends here: the Findings comment stands, with
