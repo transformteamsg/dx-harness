@@ -119,15 +119,22 @@ def walk_md_files(*dirs):
 
 # Frontmatter fields compared against the catalog in the Step-6 reverse check.
 FRONTMATTER_FIELDS = ["id", "source", "title", "tier", "check", "phase",
-                      "applies_to", "verify", "waiver", "enforced", "script"]
+                      "applies_to", "verify", "waiver", "enforced", "script",
+                      "gap"]
 
 
 def load_schema_bits(repo_root):
     """
     Load standards/schema.json from repo_root and derive the allowed-value
-    sets, required fields, tier→waiver map, and the id / cross-ref regexes.
-    Returns a dict (passed to the per-control validator). Done inside a
-    function so the self-test can point at a fixture root.
+    sets, required fields, tier→waiver map, the tiers that may not carry a
+    'gap' reason, and the id / cross-ref regexes. Returns a dict (passed to
+    the per-control validator). Done inside a function so the self-test can
+    point at a fixture root.
+
+    The schema's 'optional_fields' roster is deliberately NOT loaded: it
+    documents which optional keys the format spec allows, and nothing here
+    rejects a key outside it. Unknown-key rejection is not a rule this
+    catalog has.
 
     Allowed values come from standards/schema.json, shared with the website's
     build guard (scripts/check-standards.mjs); edit the schema, not this file.
@@ -149,6 +156,7 @@ def load_schema_bits(repo_root):
         "allowed_audiences": set(schema["audiences"]),
         "allowed_enforced": set(schema["enforced"]),
         "allowed_status": set(schema["status"]),
+        "gap_forbidden_tiers": set(schema["gap_forbidden_tiers"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
     }
@@ -1427,6 +1435,20 @@ def run_self_test():
                          "invalid status 'settled'")
     # status absent → clean (the base valid_control carries no status).
     assert_control_clean("status absent", dict(valid_control))
+
+    # ── Gap field declaration ────────────────────────────────────────────
+    # The 'gap' key and its L0 backstop are policy in the shared schema, not
+    # constants in this file. If either declaration is deleted, say so here
+    # rather than letting the rule quietly lose its source of truth.
+    case_count += 1
+    with open(os.path.join(REPO_ROOT, "standards", "schema.json")) as fh:
+        raw_schema = json.load(fh)
+    want = (True, {"L0"}, True)
+    got = ("gap" in raw_schema.get("optional_fields", []),
+           set(raw_schema.get("gap_forbidden_tiers", [])),
+           "gap" in FRONTMATTER_FIELDS)
+    if want != got:
+        failures.append(f"FAIL gap field declared in schema: want: {want!r}; got: {got!r}")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
