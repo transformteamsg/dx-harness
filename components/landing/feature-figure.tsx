@@ -7,6 +7,8 @@ const line = {
   strokeLinejoin: "round" as const,
   vectorEffect: "non-scaling-stroke" as const,
 };
+const DESIGN_FILE_RULES = [86, 99, 112, 125, 138];
+const DESIGN_FILE_DOTS = [64, 77, 90, 103];
 
 function OrchestratorFigure() {
   return (
@@ -54,13 +56,11 @@ function CatalogFigure() {
 }
 
 function DesignFileFigure() {
-  const rules = [86, 99, 112, 125, 138];
-
   return (
     <>
       <g className="text-border-strong" {...line}>
         <rect x="40" y="64" width="100" height="136" rx="6" fill="var(--site-accent-wash)" strokeWidth="1.25" />
-        {rules.map((y, index) => (
+        {DESIGN_FILE_RULES.map((y, index) => (
           <line key={y} x1="52" y1={y} x2={118 - index * 4} y2={y} strokeWidth="1" opacity={0.84 - index * 0.1} />
         ))}
         <path d="M272 78a18 18 0 0 1 36 0" fill="var(--site-accent-wash)" strokeWidth="1.25" />
@@ -73,7 +73,7 @@ function DesignFileFigure() {
         <path d="M150 132 172 96 290 60M150 132 172 168 290 204" strokeWidth="1.4" />
       </g>
       <g fill="var(--site-accent-text)">
-        {[64, 77, 90, 103].map((x) => <circle key={x} cx={x} cy="172" r="3" />)}
+        {DESIGN_FILE_DOTS.map((x) => <circle key={x} cx={x} cy="172" r="3" />)}
       </g>
     </>
   );

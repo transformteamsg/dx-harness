@@ -121,6 +121,13 @@ const COLLABORATORS = [
   },
 ] as const;
 
+const SKILL_MARK_EYES = (
+  <>
+    <circle cx="26" cy="29" r="3" fill="var(--surface)" />
+    <circle cx="38" cy="29" r="3" fill="var(--surface)" />
+  </>
+);
+
 function SkillMark({ role }: { role: string }) {
   const common = {
     className: "size-16 shrink-0",
@@ -129,54 +136,47 @@ function SkillMark({ role }: { role: string }) {
     "aria-hidden": true,
     "data-skill-mark": role,
   } as const;
-  const eyes = (
-    <>
-      <circle cx="26" cy="29" r="3" fill="var(--surface)" />
-      <circle cx="38" cy="29" r="3" fill="var(--surface)" />
-    </>
-  );
-
   switch (role) {
     case "Orchestrator":
       return (
         <svg {...common}>
           <rect x="7" y="7" width="50" height="50" rx="16" fill="var(--sec-foundations)" />
-          {eyes}
+          {SKILL_MARK_EYES}
         </svg>
       );
     case "Copy":
       return (
         <svg {...common}>
           <circle cx="32" cy="32" r="27" fill="var(--sec-guidelines)" />
-          {eyes}
+          {SKILL_MARK_EYES}
         </svg>
       );
     case "Pattern":
       return (
         <svg {...common}>
           <path d="M31 5c3-1 6 1 8 5l20 37c3 6-1 12-8 12H13c-7 0-11-7-7-13L26 10c1-3 3-4 5-5Z" fill="var(--sec-getting-started)" />
-          {eyes}
+          {SKILL_MARK_EYES}
         </svg>
       );
     case "Polish":
       return (
         <svg {...common}>
           <path d="M32 5 59 32 32 59 5 32 32 5Z" fill="var(--sec-getting-started)" />
-          {eyes}
+          {SKILL_MARK_EYES}
         </svg>
       );
     case "Execute":
       return (
         <svg {...common}>
           <path d="M18 6h28l14 26-14 26H18L4 32 18 6Z" fill="var(--sec-principles)" />
-          {eyes}
+          {SKILL_MARK_EYES}
         </svg>
       );
     default:
       return (
         <svg {...common}>
           <rect x="5" y="13" width="54" height="38" rx="19" fill="var(--sec-standards)" />
-          {eyes}
+          {SKILL_MARK_EYES}
         </svg>
       );
   }
