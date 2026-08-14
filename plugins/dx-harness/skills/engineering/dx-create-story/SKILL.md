@@ -27,6 +27,8 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 6. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
 7. **Design assets**: Figma links, screenshots, or a vibe-coded prototype. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
 
+Item 2 is a gate, not just a field. Settle it before gathering the rest: if nobody who actually uses the product benefits, this is not a story. Say so, point the author at `dx-create-task`, and stop. Do not collect the remaining items and do not continue to Step 2, because reading the code to sharpen acceptance criteria is wasted when there will be no acceptance criteria, and it buries the recommendation the author needs under work they did not ask for. If the code reading would help the task issue instead, offer it rather than doing it unasked.
+
 ### Step 2: Read the code for missed edge cases
 
 The author knows the happy path better than anyone. They cannot be expected to know every way the product already breaks around it. Read the code behind the scope and surface cases their criteria do not cover yet, so the story ships with the edges the author would otherwise find in QA or production.
