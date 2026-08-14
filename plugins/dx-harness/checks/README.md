@@ -350,7 +350,13 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (46 cases)`.
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
+(see "The ast-grep front end" above); the type scale, both floors, the line-height
+band and per-rule selection are unchanged Python. TYP-2's band stays body-scoped,
+but ancestry answers "am I inside an `h1`–`h6` rule" now, which retired the
+hand-rolled CSS brace state machine and the heading-tag line regex.
+
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (72 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
 ## Component manifest (built)
 
