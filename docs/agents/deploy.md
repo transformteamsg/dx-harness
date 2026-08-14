@@ -4,6 +4,16 @@ The website deploys as a container to Airbase, a Singapore Government platform t
 
 The old Vercel project (`tfx-design-standard`) was deleted; there is no auto-deploy from `main` yet (tracked separately, see Out of scope on issue #142).
 
+## Known blocker: Airbase's CSP breaks this site (as of 2026-08-14)
+
+The site deploys and every route answers HTTP 200, but **the page renders blank in a real browser.** Confirmed by comparing a raw `curl` (full, correct HTML: header, nav, heading text all present) against an actual browser screenshot (blank) and the live DOM after JS ran (the visible markup is gone, replaced by inert, never-executed script tags).
+
+Root cause: Airbase's edge unconditionally adds `Content-Security-Policy: script-src 'self'` to every response, with no override. Their own docs confirm this in [reference/security-csp](https://docs.app.tc1.airbase.sg/reference/security-csp/): "You cannot: Override the CSP policy, Add additional CSP directives, Disable CSP enforcement." (The one workaround listed, an Nginx proxy, is Python-only and explicitly documented as weakening security.)
+
+This CSP blocks Next.js's inline `<script>self.__next_f.push(...)</script>` tags, which the framework always emits to carry server-rendered data to the client for hydration (App Router's RSC payload; the Pages Router's `__NEXT_DATA__` script has the same shape). This isn't specific to how this site is built or rendered; it's how Next.js delivers data to the browser at all, so a static export wouldn't avoid it either as long as the page has any client-side interactivity to hydrate. Airbase's own [how-to/csp-compliance](https://docs.app.tc1.airbase.sg/how-to/csp-compliance/) guide claims "Next.js 13+ is CSP-compliant by default"; that claim doesn't hold for real Next.js apps with client components, which this site has (sidebar, mobile nav).
+
+No documented self-serve fix exists (checked `reference/security-csp`, `how-to/csp-compliance`, `how-to/troubleshoot-csp`). This needs either an exception from Airbase's platform team, or a decision to rearchitect the site to avoid Next.js's hydration model entirely (a large change, not a config fix). Until one of those happens, treat the site as **not actually usable** on Airbase despite passing every automated HTTP check.
+
 ## One-time setup (human only, needs TechPass)
 
 1. Install the CLI: `curl -fsSL https://console.airbase.tech.gov.sg/dist/install.sh | sh`
