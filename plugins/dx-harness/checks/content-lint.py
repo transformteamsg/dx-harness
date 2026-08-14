@@ -604,6 +604,11 @@ ORIGIN_TEMPLATE_SEGMENT = "template_segment"
 ORIGIN_MDX_PROSE = "mdx_prose"
 PROP_ORIGIN_PREFIX = "prop:"
 
+# The origins CNT-1's raw-code half can judge. See _check_cnt1_text: measured on
+# this repo, giving that half rendered text called the product's own wordmark
+# (`components/topbar.tsx:26`, a `<span>TFX</span>`) a raw error code.
+RAW_CODE_ORIGINS = {ORIGIN_LITERAL, ORIGIN_MDX_PROSE}
+
 # text: the string to lint, interpolations already removed.
 # line/col: 1-based position the string STARTS at, the number that reaches the
 #   ERROR line (col is not printed; it is carried so a later AST-based extractor
@@ -634,6 +639,10 @@ RENDERING_PROPS = {
 MASKED_CALLS = {"cn", "clsx", "classnames", "twmerge", "cva", "require", "import"}
 # Keywords after which a string literal is a module path, not copy.
 MODULE_PATH_KEYWORDS = {"from", "import"}
+# Operators and keywords whose string operand is a value being tested, never
+# copy: `tag === "INPUT"`, `case "TEXTAREA":`. Masked like a class value.
+COMPARISON_OPERATORS = ("===", "!==", "==", "!=")
+COMPARISON_KEYWORDS = {"case"}
 # Keywords after which `<` opens an element rather than a comparison or a
 # TypeScript generic argument list.
 JSX_AFTER_KEYWORDS = {"return", "case", "yield", "await", "else", "do", "typeof"}
@@ -713,6 +722,20 @@ def _lookback_name(line, i):
     while k >= 0 and (line[k].isalnum() or line[k] in "_$-"):
         k -= 1
     return line[k + 1:end].lower() or None
+
+
+def _is_comparison_operand(line, start, end):
+    """
+    True if the literal spanning [start, end) is compared rather than shown:
+    `tag === "INPUT"`, `"INPUT" === tag`, or a `case "INPUT":` label. A tested
+    value is not copy, whichever side of the operator it sits on.
+    """
+    before = line[:start].rstrip()
+    if before.endswith(COMPARISON_OPERATORS):
+        return True
+    if _lookback_word(line, start) in COMPARISON_KEYWORDS:
+        return True
+    return line[end:].lstrip().startswith(COMPARISON_OPERATORS)
 
 
 def _is_tagged_template(line, i):
@@ -892,7 +915,8 @@ class UserFacingScanner:
                 return n
             name = _lookback_name(line, i)
             if ((name and name in NEVER_COPY_CODE_NAMES)
-                    or _lookback_word(line, i) in MODULE_PATH_KEYWORDS):
+                    or _lookback_word(line, i) in MODULE_PATH_KEYWORDS
+                    or _is_comparison_operand(line, i, end)):
                 self._mask_range(i, end)
             else:
                 origin = (PROP_ORIGIN_PREFIX + name
@@ -1192,7 +1216,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
                 continue  # unresolvable, out of static reach, do not flag
             at = emitter(es.line)
             _check_cnt3_text(es.text, at)
-            _check_cnt1_text(es.text, es.line, lines, at)
+            _check_cnt1_text(es.text, es.line, lines, at, es.origin)
             _check_cnt5_text(es.text, at, device_re)
             _check_cnt6_text(es.text, at, cnt6_res, es.starts_literal)
             _check_cnt13_text(es.text, at, cnt13_res)
@@ -1398,19 +1422,27 @@ def _check_cnt13_text(text, emit, cnt13_res):
         emit("CNT-13", f'spelling "{found}"', f'use "{right}"')
 
 
-def _check_cnt1_text(text, lineno, all_lines, emit):
+def _check_cnt1_text(text, lineno, all_lines, emit, origin=ORIGIN_MDX_PROSE):
     """
     CNT-1: flag a user-facing string that is ONLY a raw error code, or the bare
     "Something went wrong" with no actionable next step on this or the next line.
     Conservative — when unsure, do not flag.
+
+    The raw-code half runs on the origins where "this string is nothing but a
+    code" is decidable: a bare string literal and an MDX prose line. It does not
+    run on rendered text, a rendering prop or a template segment, where an
+    all-caps token is as likely a wordmark, a badge or an acronym as a code.
+    The bare-"Something went wrong" half is unambiguous prose and runs on every
+    origin.
     """
     t = text.strip().strip('.!')
     if not t:
         return
     # Raw-code-only string.
     if RAW_CODE_RE.match(t):
-        emit("CNT-1", f'raw error code "{t}" as primary copy',
-             "say what happened and what to do next")
+        if origin in RAW_CODE_ORIGINS:
+            emit("CNT-1", f'raw error code "{t}" as primary copy',
+                 "say what happened and what to do next")
         return
     # Bare "Something went wrong" with no next step on this or the next line.
     if re.match(r"^something went wrong", text.strip(), re.IGNORECASE):
@@ -1848,6 +1880,41 @@ def run_self_test():
         "SCOPE: inline script content in HTML is code, not copy",
         '<script>\nconst m = "There is a problem here.";\n</script>',
         ".html",
+    )
+
+    # ── Scope: CNT-1's raw-code half ───────────────────────────────────────────
+    assert_clean(
+        "SCOPE: a DOM comparison literal is not error copy",
+        'const isTyping = tag === "INPUT" || tag === "TEXTAREA";',
+        ".tsx",
+    )
+    assert_clean(
+        "SCOPE: a comparison reads the same with the literal on the left",
+        'const isTyping = "INPUT" === tag;',
+        ".tsx",
+    )
+    assert_clean(
+        "SCOPE: a switch case label is a tested value, not error copy",
+        'switch (tag) {\n  case "INPUT":\n    return;\n}',
+        ".tsx",
+    )
+    assert_clean(
+        "SCOPE: an acronym in rendered text is not a raw error code",
+        '<span className="font-display">TFX</span>',
+        ".tsx",
+    )
+    assert_clean(
+        # The accepted gap that buys the case above: a code shown as the whole of
+        # a text child is out of the lint's reach, and the evaluator half judges
+        # error anatomy anyway.
+        "SCOPE: a raw code in rendered text is out of the lint half's reach",
+        "<p>ERR_SYNC_500</p>",
+        ".tsx",
+    )
+    assert_violations(
+        "SCOPE: 'Something went wrong' still flags in rendered text",
+        "<p>Something went wrong.</p>",
+        ".tsx", ["CNT-1"],
     )
 
     # ── Scope: user-facing strings are still linted ────────────────────────────
