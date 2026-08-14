@@ -1,34 +1,37 @@
 # Design decision record — the dx-harness front page (`/`)
 
 - **Date:** 2026-08-14
-- **Product:** other — outside the portfolio. This is the dx-harness website (the
-  TFX Design Standard site), not a Teacher & School product. It has no product
-  primary of its own and uses Teacher & School Blue `--tw-blue` as its anchor, the
-  convention already established in `app/globals.css` and `CLAUDE.md`.
+- **Product:** other — outside the portfolio. This is the DX Harness website (the
+  former TFX Design Standard site), not a Teacher & School product. Its site-level
+  primary is Radix Lime: lime 9 for fills, lime 10 for hover, and lime 11 for text,
+  borders, and focus rings. Teacher & School Blue remains available only for product
+  examples in the foundations documentation.
   `products:`-scoped controls (IDN-4) are therefore **deliberately out of scope —
   product outside the portfolio**, a decision, not a silent drop.
 - **Change type:** new page (replaces the previous `app/page.tsx`)
 - **Page type:** marketing / landing
-- **Audience:** builders and their agents, not teachers. The one test ("does this
-  help teachers work faster with less stress?") is served indirectly: the harness
-  exists so teacher-facing surfaces reach the bar without waiting for a designer.
+- **Audience:** designers and builders working with coding agents, not teachers.
+  The harness exists so they can carry design intent into code with confidence,
+  while teacher-facing surfaces still reach the bar.
 - **Run type:** attended
-- **The teacher and the moment:** none directly. The reader is an engineer or an
-  agent-operator arriving cold, deciding in under a minute whether the harness is
-  worth installing.
+- **The teacher and the moment:** none directly. The reader is a designer or builder
+  arriving cold, deciding in under a minute whether the harness is worth installing.
 
 ## Sprint contract (done-criteria)
 
-1. The page carries PR 83's information architecture and copy **verbatim** — hero,
-   the four parts, how it works, the compare demo, the skills collection — in order.
-2. It reads in the approved **Frame** visual language: a 1040 sheet with hairline
+1. The hero leads with confidence in building in code, explains the harness in plain
+   language, and offers Quick start as its only action.
+2. The page names the orchestrator, control catalog, `DESIGN.md`, and review skill;
+   follows a real prompt through the harness; compares the output; introduces six
+   design roles; and closes on human-agent collaboration.
+3. It reads in the approved **Frame** visual language: a 1040 sheet with hairline
    flanks, every section seam a hairline, and section headings that carry the
    hierarchy rather than a tint.
-3. The hero carries the DXD mark drawn as a **measured blueprint** whose every
+4. The hero carries the DXD mark drawn as a **measured blueprint** whose every
    number derives from the mark's construction.
-4. Blue is reserved for the drawing's instrumentation and exactly one primary
+5. Lime is reserved for the drawing's instrumentation and exactly one primary
    button; the page reads muted at a glance.
-5. No new waivers. The build removes rather than adds catalogue deviations.
+6. No new waivers. The build removes rather than adds catalogue deviations.
 
 ## Chosen approach
 
@@ -54,14 +57,15 @@ and the headings inside it.
 
 ## Tradeoffs, named
 
-- **The brand blue nearly disappears as decoration.** It survives as instrumentation
-  and one button. A reader who expects a blue-forward page will find this quiet. That
-  is the point, and it is a real trade.
+- **Radix lime replaces brand blue as the site accent.** It appears as instrumentation
+  and one button. A reader who expects a blue-forward page will find this quieter and
+  more distinct from Teacher Workspace. That is the point, and it is a real trade.
 - **The frame's rules are unforgiving.** One notch darker than `--border` and the
   page reads busy. The treatment depends on the hairline staying a hairline.
 - **The blueprint is a hero moment that does not recur.** F2 and F3 existed to carry
   the idea down the page; F1 deliberately does not, so the drawing is the only place
-  the conceit appears.
+  the conceit appears. The content pass keeps it until the planned logo-grid asset is
+  ready.
 - **The route-group split touches every doc route.** Twelve directories moved into
   `app/(docs)/` so the landing could stop inheriting the docs sidebar. No URL
   changed, but the diff is wide for a "restyle the front page" ask.
@@ -103,8 +107,7 @@ verified in the built output by the reviewer.
 
 - **Brand moments use the product's own primary (COL-1)** — was waived for the mark
   drawn in the lime steps. No longer needed: the mark is ink `--foreground`
-  instrumented in `--blueprint-ink` (an alias of `--tw-blue`), so no non-portfolio hue
-  appears.
+  instrumented in `--blueprint-ink`, now an alias of the DX Harness lime 11 accent.
 - **Only Plus Jakarta Sans and Inter (TYP-1)** — was waived for EB Garamond headings
   plus Departure Mono, scoped to `.landing-manual`. No longer needed: display is Plus
   Jakarta Sans, body is Inter, and the code chips are pinned to the body face.
@@ -250,6 +253,18 @@ overflow at 1440 / 390 / 320, and 14 keyboard stops all land on the site's ring.
 intentional deviations in their required waiver forms. This closes the review's
 remaining control findings without a visual code change; the re-check measurements
 and screenshots above remain representative of the rendered page.
+
+### Post-review iteration — 2026-08-14
+
+The product metadata now consistently names **DX Harness** and explains the current
+design harness: one front door, checkable standards, and an independent reviewer.
+The hero's redundant `dx-harness` eyebrow was removed. The site primary moved from
+Teacher & School Blue to the requested Radix Lime scale: lime 9 (`#bdee63`) for solid
+fills, lime 10 (`#b0e64c`) for hover, and lime 11 (`#5c7c2f`) for text, borders, and
+focus rings. Solid lime controls use the dark foreground (`#18181b`); the primary
+button measures 13.14:1 for text and its lime 11 border remains visible against the
+lime 9 fill. This amendment supersedes the earlier blue-specific implementation
+notes while leaving the original review evidence intact as historical evidence.
 
 ### Accepted inherited deviations and residual finding
 

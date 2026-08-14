@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { DxdMark } from "@/components/dxd-mark";
 
 export function TopBar() {
   const pathname = usePathname();
@@ -19,12 +20,10 @@ export function TopBar() {
             />
           )}
           <Link href="/" className="flex min-h-11 shrink-0 items-center gap-2 sm:min-h-6 sm:gap-2.5">
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-tw-blue text-xs font-semibold text-white">
-              tf
-            </span>
+            <DxdMark className="size-7 shrink-0 text-(--dxd-lime-deep)" />
             <span className="font-display text-base font-semibold tracking-tight">
-              <span className="sm:hidden">TFX</span>
-              <span className="hidden sm:inline">TFX Design Standard</span>
+              <span className="sm:hidden">dx</span>
+              <span className="hidden sm:inline">dx-harness</span>
             </span>
             <span className="hidden rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground sm:inline-flex">
               v0.1 draft

@@ -12,6 +12,56 @@ export type DirectoryGroup = {
   start: string;
 };
 
+type FeaturedSkill = {
+  number: string;
+  role: string;
+  description: string;
+  command?: string;
+  note?: string;
+};
+
+/* The front page introduces the harness as a small design team. These are roles,
+   not a hierarchy: dx-design brings in whichever ones the request needs, while
+   review runs automatically after execute. */
+export const FEATURED_SKILLS: FeaturedSkill[] = [
+  {
+    number: "01",
+    role: "Orchestrator",
+    description: "Understands the request and brings in the skills it needs.",
+    command: "dx-design",
+  },
+  {
+    number: "02",
+    role: "Copy",
+    description: "Makes interface language clear, useful, and consistent.",
+    command: "dx-design-copy",
+  },
+  {
+    number: "03",
+    role: "Pattern",
+    description: "Sets the structure, hierarchy, and density of the page.",
+    command: "dx-design-pattern",
+  },
+  {
+    number: "04",
+    role: "Polish",
+    description: "Refines spacing, type, colour, and the small details.",
+    command: "dx-design-polish",
+  },
+  {
+    number: "05",
+    role: "Execute",
+    description: "Turns the approved direction into working product code.",
+    command: "dx-design-execute",
+  },
+  {
+    number: "06",
+    role: "Review",
+    description: "Checks the result against the control catalog and DESIGN.md.",
+    note: "Runs automatically after execute",
+  },
+];
+
 export const SKILL_DIRECTORY: DirectoryGroup[] = [
   {
     number: "01",

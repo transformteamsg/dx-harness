@@ -12,7 +12,7 @@ Next.js 15's App Router does not meet that output contract by default: prerender
 
 `pnpm build` fixes the generated artifact in its `postbuild` step. `scripts/externalize-next-inline-scripts.mjs` moves executable inline scripts from every prerendered `.next/server/app/**/*.html` page into content-hashed files under `.next/static/csp-inline/`, then replaces them with same-origin `src` references. External scripts, empty scripts, and non-executable data blocks such as `type="application/json"` remain unchanged. The build fails if the expected prerendered output is missing or an executable inline script remains after processing.
 
-Do not remove the `postbuild` step or run `next build` directly for an Airbase image. `pnpm build` runs the standards checks, the Next.js build, and CSP externalization in order. `scripts/verify-deploy.mjs` also rejects live HTML that still contains executable inline scripts, so an HTTP 200 alone can no longer hide this failure.
+Do not remove the `postbuild` step or run `next build` directly for an Airbase image. `pnpm build` runs the standards checks, the Next.js build, and CSP externalization in order. `scripts/verify-deploy.mjs` derives every concrete public route from that build's `.next/prerender-manifest.json`, then checks the live deployment and rejects HTML that still contains executable inline scripts. An HTTP 200 on a small sample can no longer hide a missing page or CSP failure.
 
 ## One-time setup (human only, needs TechPass)
 
@@ -37,9 +37,10 @@ local image that happens to carry its default tag, even when the working tree ha
 
 The site will be live at `https://staging--dx-harness.app.tc1.airbase.sg`.
 
-Check every page and agent surface answers correctly:
+From the same checkout, run `pnpm build` so the verifier has the route manifest for the exact source you deployed. Then check every page and agent surface:
 
 ```sh
+pnpm build
 node scripts/verify-deploy.mjs https://staging--dx-harness.app.tc1.airbase.sg
 ```
 

@@ -37,10 +37,10 @@ export function Toc({ headings }: { headings: TocHeading[] }) {
             <a
               href={`#${h.id}`}
               className={clsx(
-                "-ml-px block border-l-2 py-1 pr-2 text-xs leading-snug transition-colors duration-150",
+                "-ml-px block border-l-2 py-1 pr-2 text-sm leading-snug transition-colors duration-150",
                 h.depth === 3 ? "pl-6" : "pl-3",
                 active === h.id
-                  ? "border-tw-blue font-medium text-tw-blue"
+                  ? "border-site-accent-text font-medium text-site-accent-text"
                   : "border-transparent text-muted-foreground hover:text-foreground"
               )}
             >

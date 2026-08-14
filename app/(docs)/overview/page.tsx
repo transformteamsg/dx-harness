@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { getDoc } from "@/lib/content";
-import { sectionInk, SectionTile, TopicRow } from "@/components/thumbnails";
+import { sectionInk, SectionTile } from "@/components/thumbnails";
 import { sectionTopics } from "@/lib/directory";
-import { Illo } from "@/components/illo";
 import { mdAlternate } from "@/lib/markdown-twin";
 
 export const metadata = { title: "Overview", ...mdAlternate("/overview") };
@@ -11,114 +10,130 @@ export const metadata = { title: "Overview", ...mdAlternate("/overview") };
    representative glyph per section. */
 const tiles = [
   { key: "principles", href: "/principles", art: "principles/brand-principles" },
-  { key: "standards", href: "/standards", art: "standards/catalog" },
+  { key: "standards", href: "/standards/catalog", art: "standards/catalog" },
   { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
   { key: "foundations", href: "/foundations", art: "foundations/colour" },
   { key: "research", href: "/research", art: "research/research-brief" },
-  { key: "products", href: "/products", art: "products/teacher-workspace" },
-  { key: "harness", href: "/harness", art: "harness/loop" },
 ];
 
+const harnessStart = [
+  {
+    href: "/harness/install",
+    title: "Quick start",
+    description: "Add the plugin and its control catalog to your agent.",
+    artKey: "harness/install",
+  },
+  {
+    href: "/harness/skills",
+    title: "Skills",
+    description: "Choose from 21 shipped commands, grouped by when you reach for them.",
+    artKey: "harness/skills",
+  },
+  {
+    href: "/harness/loop",
+    title: "The loop",
+    description: "See the main design flow and where human decisions belong.",
+    artKey: "harness/loop",
+  },
+] as const;
+
 export default function Overview() {
-  const home = getDoc("sections", "home");
-  const governance = getDoc("governance", "governance");
   return (
     <div className="max-w-[760px]">
-      <p className="text-xs font-semibold text-tw-blue">
-        TransformX · Teacher &amp; School portfolio
-      </p>
-      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">
-        Kind Utility,<br />held to a standard.
+      <h1 className="font-display text-3xl font-semibold tracking-tight">
+        A shared design bar,<br />built into the work.
       </h1>
-      <p className="mt-5 text-lg text-muted-foreground">
-        How TransformX designs for Singapore&apos;s teachers — utility-first at the core,
-        human-first at the surface. Principles that settle arguments, standards a machine can
-        check, and a harness so every builder ships at the bar, with or without a designer
-        on the team.
+      <p className="mt-5 text-base text-muted-foreground">
+        dx-harness turns product intent, design decisions, and checkable standards into a
+        workflow every team can use. It helps people and agents ship coherent interfaces,
+        with or without a designer on every task.
       </p>
 
-      {home?.illustration && <Illo subject={home.illustration} />}
-
-      <div
-        className="mt-6 rounded-lg border border-border p-4 text-base"
-        style={{ background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))" }}
-      >
-        <strong>The one test:</strong> does this help teachers work faster with less stress?
-        If not — we don&apos;t build it.
-      </div>
-
-      {/* SLP-5 (L2) rationale: the tile grid IS the navigation — six distinct
-          graphics, ladder tags, and a row variant below break the template. */}
-      <div className="mt-12 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2">
-        {tiles.map((t) => {
-          const doc = getDoc("sections", t.key);
-          if (!doc) return null;
-          return (
-            <SectionTile
-              key={t.key}
-              tag={doc.answers}
-              count={sectionTopics(t.key).length || undefined}
-              topic={{
-                href: t.href,
-                title: doc.title,
-                description: doc.description,
-                artKey: t.art,
-                ink: sectionInk[t.key] ?? "var(--foreground)",
-              }}
-            />
-          );
-        })}
-      </div>
-
-      <div className="mt-12 border-t border-border pt-9">
-        {governance && (
-          <TopicRow
-            topic={{
-              href: "/governance",
-              title: governance.title,
-              description: governance.description,
-              artKey: "governance/governance",
-              ink: sectionInk.governance,
-            }}
-          />
-        )}
-        <p className="mt-7 text-sm text-muted-foreground">
-          New here?{" "}
-          <Link href="/how-to-read" className="text-tw-blue underline underline-offset-2">
-            How to read this standard
-          </Link>{" "}
-          explains the ladder and what each layer may demand of you.
+      <section className="mt-12">
+        <h2 className="font-display text-xl font-semibold tracking-tight">
+          Start with the harness
+        </h2>
+        <p className="mt-2 max-w-[62ch] text-base text-muted-foreground">
+          Install it once, pick the skill that fits the work, then follow the loop when a
+          change needs design decisions and review.
         </p>
-      </div>
+        <div className="mt-6 grid grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-3">
+          {harnessStart.map((topic) => (
+            <SectionTile
+              key={topic.href}
+              topic={{ ...topic, ink: sectionInk.harness }}
+            />
+          ))}
+        </div>
+      </section>
 
-      <h2 className="mt-14 font-display text-xl font-semibold">Three readers, one standard</h2>
-      <div className="mt-5 grid gap-8 sm:grid-cols-3">
-        <div>
-          <h3 className="text-base font-semibold">Humans</h3>
-          <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-            Browse the sections above. Principles and guidelines are written for judgement
-            calls only a person can make.
-          </p>
+      <section className="mt-16 border-t border-border pt-10">
+        <h2 className="font-display text-xl font-semibold tracking-tight">
+          Design reference
+        </h2>
+        <p className="mt-2 max-w-[62ch] text-base text-muted-foreground">
+          Use the control catalog for enforceable requirements. Use principles,
+          guidelines, foundations, and research when the work needs judgement.
+        </p>
+        <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2">
+          {tiles.map((t) => {
+            const doc = getDoc("sections", t.key);
+            if (!doc) return null;
+            return (
+              <SectionTile
+                key={t.key}
+                tag={doc.answers}
+                count={sectionTopics(t.key).length || undefined}
+                topic={{
+                  href: t.href,
+                  title: doc.title,
+                  description: doc.description,
+                  artKey: t.art,
+                  ink: sectionInk[t.key] ?? "var(--foreground)",
+                }}
+              />
+            );
+          })}
         </div>
-        <div>
-          <h3 className="text-base font-semibold">Humans → machines</h3>
-          <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-            <Link href="/harness/skills" className="text-tw-blue underline underline-offset-2">
-              Skills
-            </Link>{" "}
-            are guidelines packaged as markdown you can read and an agent can execute.
-          </p>
+      </section>
+
+      <section className="mt-16 border-t border-border pt-10">
+        <h2 className="font-display text-xl font-semibold">Reference</h2>
+        <div className="mt-5 grid gap-8 sm:grid-cols-3">
+          <div>
+            <h3 className="text-base font-semibold">Humans</h3>
+            <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
+              Browse the sections above. Principles and guidelines are written for judgement
+              calls only a person can make.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-base font-semibold">Humans → machines</h3>
+            <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
+              <Link href="/harness/skills" className="text-site-accent-text underline underline-offset-2">
+                Skills
+              </Link>{" "}
+              package repeatable processes as Markdown you can read and an agent can execute.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-base font-semibold">Machines</h3>
+            <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
+              <Link href="/for-agents" className="text-site-accent-text underline underline-offset-2">
+                For agents
+              </Link>
+              : the standard as /llms.txt and the control catalog as YAML.
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className="text-base font-semibold">Machines</h3>
-          <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-            <Link href="/for-agents" className="text-tw-blue underline underline-offset-2">
-              For agents
-            </Link>
-            : the standard as /llms.txt and the control catalog as YAML.
-          </p>
-        </div>
-      </div>
+        <p className="mt-8 text-sm text-muted-foreground">
+          Need the rules behind the structure?{" "}
+          <Link href="/how-to-read" className="text-site-accent-text underline underline-offset-2">
+            How to read the system
+          </Link>{" "}
+          explains what each layer may demand of you.
+        </p>
+      </section>
     </div>
   );
 }

@@ -158,7 +158,7 @@ function AfterPanel() {
           <p className="text-xs text-muted-foreground">Draft · saved just now</p>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-muted-foreground">Save draft</span>
-            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-primary-foreground">
+            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-surface">
               Send to 4 classes
             </span>
           </div>
@@ -226,7 +226,7 @@ export function SlopCompare() {
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
            the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        className="relative aspect-[16/10] w-full max-w-[760px] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
+        className="relative mx-auto aspect-[16/10] w-full rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
         style={{ "--exposure": "50%" } as CSSProperties}
       >
         <BeforePanel />
@@ -248,12 +248,12 @@ export function SlopCompare() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-tw-blue"
+          className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-site-accent-text"
           style={{ left: "var(--exposure)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-tw-blue) motion-reduce:transition-none"
+          className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-ring) motion-reduce:transition-none"
           style={{ left: "var(--exposure)" }}
         >
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
@@ -267,7 +267,7 @@ export function SlopCompare() {
         standard. Every chip is a control ID from the{" "}
         <Link
           href="/standards/catalog"
-          className="text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          className="text-site-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
         >
           catalog
         </Link>

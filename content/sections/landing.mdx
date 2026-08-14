@@ -1,55 +1,66 @@
 ---
-title: dx-harness — design skills your agent runs
-description: A Claude Code plugin that carries a design loop, a checkable standards catalog, and a design reviewer into your agent. One brief in, one reviewed interface out.
+title: DX Harness — design in code with confidence
+description: DX Harness gives coding agents a shared design language, the right skills for each task, and a review before the work returns to you.
 ---
 
-Your agent already builds the UI. The harness gives it one front door, checkable
-standards, and an independent reviewer before the work ships.
+Design in code with confidence.
 
-Route → build → check → review → ship.
+A design harness gives your coding agent a shared design language, the right skills
+for each task, and a review before the work comes back to you.
 
-## Core features of the design harness
+## What the harness gives your agent
 
-The four parts everything else hangs off.
+Four parts keep every design request grounded in the same language and standards.
 
-**One way in. One way to ship.** Ask in plain words. `dx-design` routes you to the
-right pass, and only `dx-design-execute` edits your product.
+**Start with a plain-language request.** `dx-design` understands what you want and
+brings in the right skills. Call it directly, or let it step in when a request needs
+design work.
 
-**Not every rule is a lint check.** Every control carries a tier, so you know which
-rules never bend and which leave room for judgement.
+**Shared design guidance agents can use.** The control catalog turns good interface
+design into clear context that every skill can read and check.
 
-**Your design language, written down once.** Keep product decisions and standing
-overrides in one file the whole team, human and agent, can work from.
+**Your product's design language.** Keep the decisions that make your product
+distinct in its repository. Every agent works from the same `DESIGN.md` context as
+the product grows.
 
-**The builder never grades its own work.** A fresh-context reviewer reads the
-contract, screenshots, and controls, then sends findings back through the same gate
-for a re-check.
+**A review grounded in both.** A separate reviewer checks the work against the
+control catalog and `DESIGN.md`, then returns specific findings before the work
+ships.
 
-## How it works
+## From a request to a reviewed result
 
-The whole harness on one map. You brief one skill; everything else works behind it.
+Speak your intent, collaborate on the same standard, and get better design outcomes.
 
-1. **You**, in the chat — one ask, in plain words. You never pick a skill.
-2. **`dx-design`, the single front door**, in the harness plugin — the orchestrator
-   grills first, then routes. Rule and waiver questions stop here too.
-3. **The propose-only passes**, dispatched as subagents — copy, flow, pattern,
-   motion, and polish plan for `dx-design-execute`, the one builder.
-4. **Shared context**, in the harness plugin — every skill reads the same control
-   catalog, tokens, and components.
-5. **`DESIGN.md`**, in your product repo — your product decisions and deviations stay
-   where any agent can read them.
+1. **Your prompt**, in Claude Code: “Make this lesson planner easier to scan and keep
+   it consistent with our product.”
+2. **The harness at work**, running automatically: `dx-design` brings in the skills
+   this request needs. Each one reads the control catalog and your `DESIGN.md`.
+3. **A reviewed result**, back in your product: Execute makes the approved change. A
+   separate review checks the result before it comes back to you.
 
-## Skills collection
+## Compare the output
 
-Grouped by the job each skill does in the flow. Everything is one command away.
+See the same brief with and without the harness.
 
-| Group | What it is for | Start with |
+## Meet your new collaborators
+
+Six roles cover the path from an open request to a reviewed interface. DX Design
+calls the right ones for you.
+
+| Role | What it does | Command |
 | --- | --- | --- |
-| Getting started | None of these change your product; they get you set up and unstuck. | `/dx-harness:dx-design` |
-| The design loop | Critique finds the work and numbers it; execute is the only skill that changes your product. | `/dx-harness:dx-design-execute` |
-| The five passes | The loop routes to these, one named dimension each; you rarely type them yourself. | `/dx-harness:dx-design-pattern` |
-| Shaping the work | Settle an open question and write it down, so the loop has something to hold you to. | `/dx-harness:dx-design-research-brief` |
-| Shipping the code | Carry a change from an idea to a merged pull request. | `/dx-harness:dx-create-issue` |
-| Repo upkeep | Set the gates once and they catch things before a reviewer has to. | `/dx-harness:dx-lint-setup` |
+| Orchestrator | Understands the request and brings in the skills it needs. | `/dx-harness:dx-design` |
+| Copy | Makes interface language clear, useful, and consistent. | `/dx-harness:dx-design-copy` |
+| Pattern | Sets the structure, hierarchy, and density of the page. | `/dx-harness:dx-design-pattern` |
+| Polish | Refines spacing, type, colour, and the small details. | `/dx-harness:dx-design-polish` |
+| Execute | Turns the approved direction into working product code. | `/dx-harness:dx-design-execute` |
+| Review | Checks the result against the control catalog and `DESIGN.md`. | Runs automatically after execute |
 
-See [all the skills](/harness/skills), or start at the [quick start](/harness/install).
+See [all the skills](/harness/skills).
+
+## A shared language for you and your agent
+
+DX Harness bridges human judgment and agent execution. It gives both of you the
+same design language and the checks to build safely on each other's work.
+
+[Quick start](/harness/install)

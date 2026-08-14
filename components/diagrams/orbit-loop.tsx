@@ -201,7 +201,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
             Painted beneath the nodes so it slides behind each station. */}
         {!reduced && (
           <g ref={dotRef} transform={START_TRANSFORM}>
-            <circle cx={C} cy={C - R} r={4} className="fill-tw-blue" />
+            <circle cx={C} cy={C - R} r={4} className="fill-site-accent" />
           </g>
         )}
 
@@ -218,7 +218,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
                   cx={x}
                   cy={y}
                   r={GATE_RING_R}
-                  className="fill-none stroke-tw-blue"
+                  className="fill-none stroke-site-accent-text"
                   strokeWidth={1.25}
                   strokeOpacity={0.55}
                 />
@@ -230,9 +230,9 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
                 strokeWidth={1.25}
                 className={
                   (isSelected
-                    ? "fill-tw-blue stroke-tw-blue"
+                    ? "fill-site-accent stroke-site-accent-text"
                     : isHovered
-                      ? "fill-surface stroke-tw-blue"
+                      ? "fill-surface stroke-site-accent-text"
                       : "fill-surface stroke-border-strong") + colorTransition
                 }
               />
@@ -301,8 +301,8 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
                   className={
                     "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold " +
                     (p.gate === "plan"
-                      ? "bg-tw-blue text-primary-foreground"
-                      : "border border-tw-blue text-tw-blue")
+                      ? "bg-site-accent text-primary-foreground"
+                      : "border border-site-accent-text text-site-accent-text")
                   }
                 >
                   {p.gateLabel}
@@ -345,7 +345,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
               onPointerDown={() => setPointerDown(true)}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
-              className="pointer-events-auto absolute grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+              className="pointer-events-auto absolute grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
               style={{
                 left: `${(POS[i].x / VIEW) * 100}%`,
                 top: `${(POS[i].y / VIEW) * 100}%`,
@@ -379,7 +379,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
       aria-labelledby={tabId(phase.id)}
       tabIndex={0}
       className={
-        "rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) " +
+        "rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) " +
         (variant === "full" ? "min-h-[152px] lg:min-h-[264px]" : "min-h-[152px]")
       }
     >
@@ -390,7 +390,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
         transition={reduced ? { duration: 0 } : { duration: DUR.base, ease: EASE_OUT }}
       >
         <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1.5">
-          <span className="font-display text-base font-semibold tabular-nums text-tw-blue">
+          <span className="font-display text-base font-semibold tabular-nums text-site-accent-text">
             0{phase.n}
           </span>
           <span className="font-display text-lg font-semibold text-foreground">
@@ -400,8 +400,8 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
             <span
               className={
                 phase.gate === "plan"
-                  ? "rounded-full bg-tw-blue px-2 py-0.5 text-xs font-semibold text-primary-foreground"
-                  : "rounded-full border border-tw-blue px-2 py-0.5 text-xs font-semibold text-tw-blue"
+                  ? "rounded-full bg-site-accent px-2 py-0.5 text-xs font-semibold text-primary-foreground"
+                  : "rounded-full border border-site-accent-text px-2 py-0.5 text-xs font-semibold text-site-accent-text"
               }
             >
               {phase.gateLabel}

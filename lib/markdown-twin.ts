@@ -3,9 +3,9 @@ import { contentMap } from "@/lib/content-map";
 import { getCatalog, getPublicCatalogYaml } from "@/lib/catalog";
 import { getControlDetail, listControlIds } from "@/lib/control-detail";
 
-/* The single source of which `.md` twin URLs exist and how each renders.
-   The route handler, generateStaticParams, the /llms.txt index, and the
-   sitemap all derive from allTwins() so they cannot diverge.
+/* The single source of which canonical `.md` twin URLs exist and how each
+   renders. The /llms.txt index and sitemap derive from allTwins(); the route
+   handler also includes the narrow compatibility aliases below.
 
    A twin is "frontmatter-derived header + the raw MDX body, JSX stripped" —
    no HTML→Markdown conversion, because getDoc() already hands back the raw
@@ -184,6 +184,7 @@ function sectionIndexTwins(): Twin[] {
   // Each section key (incl. standards) → content/sections/<key>.mdx if present.
   for (const key of Object.keys(contentMap)) {
     if (contentMap[key].root) continue; // root sections render at their own path, handled as a doc
+    if (key === "standards") continue; // /standards redirects to the combined catalog page
     const doc = getDoc("sections", key);
     if (!doc) continue;
     const htmlPath = `/${key}`;
@@ -221,15 +222,16 @@ function catalogTwin(): Twin {
   return {
     mdPath: "/standards/catalog.md",
     htmlPath,
-    title: "Control catalog",
+    title: "Standards and control catalog",
     description:
-      "Every control in the standard — one verifiable statement each, with its tier, how it's checked, and its fail conditions.",
+      "How the standard works, followed by every control and its verifiable fail conditions.",
     render: () => renderCatalogMarkdown(),
   };
 }
 
 function renderCatalogMarkdown(): string {
   const controls = getCatalog();
+  const standards = getDoc("sections", "standards");
   const sorted = [...controls].sort((a, b) =>
     a.category === b.category ? a.id.localeCompare(b.id, undefined, { numeric: true }) : a.category.localeCompare(b.category),
   );
@@ -260,11 +262,9 @@ function renderCatalogMarkdown(): string {
     getPublicCatalogYaml().trimEnd() +
     "\n```\n";
 
-  const header = toMarkdown(
-    "Control catalog",
-    "Every control in the standard — one verifiable statement each, with its tier, how it's checked, and its fail conditions.",
-    "",
-  ).trimEnd();
+  const header = standards
+    ? `${toMarkdown(standards.title, standards.description, standards.content).trimEnd()}\n\n## Control catalog`
+    : "# Standards\n\n## Control catalog";
 
   return `${header}\n\n${table}${failsBlock}${yamlBlock}`;
 }
@@ -320,16 +320,31 @@ export function allTwins(): Twin[] {
   return cached;
 }
 
+/* Keep previously published machine-reader URLs working without advertising
+   duplicate documents in /llms.txt, /llms-full.txt, or the sitemap. */
+function compatibilityTwins(): Twin[] {
+  return [
+    {
+      mdPath: "/standards.md",
+      htmlPath: "/standards/catalog",
+      title: "Standards and control catalog",
+      description: "Compatibility alias for the combined Standards page.",
+      render: () => renderCatalogMarkdown(),
+    },
+  ];
+}
+
 export function mdPaths(): string[] {
-  return allTwins().map((t) => t.mdPath);
+  return [...allTwins(), ...compatibilityTwins()].map((t) => t.mdPath);
 }
 
 /* Resolve a list of URL segments (e.g. ["guidelines","voice-tone.md"]) to a
-   twin. Requires a trailing `.md`; matches against allTwins() by mdPath. */
+   twin. Requires a trailing `.md`; matches canonical twins and compatibility
+   aliases by mdPath. */
 export function resolveTwin(segments: string[]): Twin | null {
   const joined = "/" + segments.join("/");
   if (!joined.endsWith(".md")) return null;
-  return allTwins().find((t) => t.mdPath === joined) ?? null;
+  return [...allTwins(), ...compatibilityTwins()].find((t) => t.mdPath === joined) ?? null;
 }
 
 export function markdownResponse(text: string, htmlPath: string): Response {

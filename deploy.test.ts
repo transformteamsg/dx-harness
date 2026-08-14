@@ -87,9 +87,10 @@ describe("Airbase CSP build output", () => {
     expect(pkg.scripts.postbuild).toBe("node scripts/externalize-next-inline-scripts.mjs");
   });
 
-  it("checks deployed HTML for executable inline scripts", () => {
+  it("derives deployed routes from the production build and checks HTML scripts", () => {
     const verifier = readRoot("scripts/verify-deploy.mjs");
 
+    expect(verifier).toContain("prerender-manifest.json");
     expect(verifier).toContain("findExecutableInlineScripts");
     expect(verifier).toContain("executable inline script(s)");
   });

@@ -117,7 +117,7 @@ export function TopicCard({ topic }: { topic: Topic }) {
   return (
     <Link
       href={topic.href}
-      className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+      className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
     >
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
       <p className="mt-2.5 text-sm font-semibold leading-snug">{topic.title}</p>
@@ -135,7 +135,7 @@ export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string;
   return (
     <Link
       href={topic.href}
-      className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+      className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
     >
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
       <div className="mt-3 flex items-baseline justify-between gap-3">
@@ -163,7 +163,7 @@ export function TopicRow({ topic }: { topic: Topic }) {
   return (
     <Link
       href={topic.href}
-      className="group flex items-center gap-5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+      className="group flex items-center gap-5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
     >
       <div className="w-36 shrink-0">
         <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />

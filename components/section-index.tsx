@@ -5,7 +5,13 @@ import { sectionInk, TopicCard } from "@/components/thumbnails";
 import { Illo } from "@/components/illo";
 
 /* Apple HIG-style section landing: short intro, illustration, thumbnail grid. */
-export function SectionIndex({ sectionKey }: { sectionKey: string }) {
+export function SectionIndex({
+  sectionKey,
+  showTopics = true,
+}: {
+  sectionKey: string;
+  showTopics?: boolean;
+}) {
   const doc = getDoc("sections", sectionKey);
   const topics = sectionTopics(sectionKey);
   if (!doc) return null;
@@ -22,7 +28,7 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
       )}
       <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">{doc.title}</h1>
       {doc.description && (
-        <p className="mt-3 text-lg text-muted-foreground">{doc.description}</p>
+        <p className="mt-3 text-base text-muted-foreground">{doc.description}</p>
       )}
       {doc.content.trim() && (
         <div className="prose mt-4 text-base">
@@ -30,11 +36,13 @@ export function SectionIndex({ sectionKey }: { sectionKey: string }) {
         </div>
       )}
       {doc.illustration && <Illo subject={doc.illustration} />}
-      <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3">
-        {topics.map((t) => (
-          <TopicCard key={t.href} topic={t} />
-        ))}
-      </div>
+      {showTopics && (
+        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3">
+          {topics.map((t) => (
+            <TopicCard key={t.href} topic={t} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

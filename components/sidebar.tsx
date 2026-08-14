@@ -20,121 +20,14 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-type NavLeaf = { href: string; title: string };
-type NavSubGroup = { label: string; items: NavLeaf[] };
-type NavItem = NavLeaf | NavSubGroup;
-type NavGroup = { label: string; href?: string; items: NavItem[] };
+import { visibleNav as nav, isSubGroup, type NavItem, type NavLeaf } from "@/lib/nav";
 
-const isSubGroup = (item: NavItem): item is NavSubGroup => "items" in item;
 const leafHrefs = (items: NavItem[]): string[] =>
   items.flatMap((item) =>
     isSubGroup(item) ? item.items.map((leaf) => leaf.href) : [item.href],
   );
 
-const nav: NavGroup[] = [
-  {
-    label: "Get oriented",
-    items: [
-      { href: "/overview", title: "Overview" },
-      { href: "/how-to-read", title: "How to read this" },
-      { href: "/for-agents", title: "For agents" },
-    ],
-  },
-  {
-    label: "Start with code",
-    items: [
-      { href: "/getting-started", title: "Overview" },
-      { href: "/getting-started/git-basics", title: "Introducing Git" },
-      { href: "/getting-started/guardrails", title: "Step 0: Prep guardrails" },
-      { href: "/getting-started/set-up", title: "Step 1: Set up" },
-      { href: "/getting-started/plan", title: "Step 2: Plan" },
-      { href: "/getting-started/build", title: "Step 3: Build" },
-      { href: "/getting-started/ship", title: "Step 4: Ship" },
-      { href: "/getting-started/help", title: "Help & prompts" },
-    ],
-  },
-  {
-    label: "Principles",
-    href: "/principles",
-    items: [
-      { href: "/principles/brand-principles", title: "Brand Principles" },
-      { href: "/principles/product-design-principles", title: "Product Design Principles" },
-    ],
-  },
-  {
-    label: "Standards",
-    href: "/standards",
-    items: [{ href: "/standards/catalog", title: "Control catalog" }],
-  },
-  {
-    label: "Guidelines",
-    href: "/guidelines",
-    items: [
-      {
-        label: "Content",
-        items: [
-          { href: "/guidelines/voice-tone", title: "Voice & tone" },
-          { href: "/guidelines/ui-text", title: "UI text" },
-          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
-          { href: "/guidelines/text-patterns", title: "Components & text patterns" },
-          { href: "/guidelines/naming", title: "Naming" },
-        ],
-      },
-      { href: "/guidelines/interaction", title: "Interaction" },
-      { href: "/guidelines/web-interface", title: "Web interface" },
-      { href: "/guidelines/data-viz", title: "Data visualization" },
-      { href: "/guidelines/illustration", title: "Illustration" },
-      { href: "/guidelines/product-icons", title: "Product icons" },
-    ],
-  },
-  {
-    label: "Foundations",
-    href: "/foundations",
-    items: [
-      { href: "/foundations/colour", title: "Colour" },
-      { href: "/foundations/typography", title: "Typography" },
-      { href: "/foundations/spacing-radius", title: "Spacing & radius" },
-      { href: "/foundations/iconography", title: "Iconography" },
-      { href: "/foundations/motion", title: "Motion" },
-      { href: "/foundations/tokens", title: "Tokens" },
-    ],
-  },
-  {
-    label: "Research",
-    href: "/research",
-    items: [{ href: "/research/research-brief", title: "Research brief" }],
-  },
-  {
-    label: "Products",
-    href: "/products",
-    items: [
-      { href: "/products/teacher-workspace", title: "Teacher Workspace" },
-      { href: "/products/casesync", title: "CaseSync" },
-      { href: "/products/glow", title: "Glow" },
-    ],
-  },
-  {
-    label: "Harness",
-    href: "/harness",
-    items: [
-      { href: "/harness/install", title: "Install" },
-      { href: "/harness/loop", title: "The loop" },
-      { href: "/harness/skills", title: "Skills" },
-      { href: "/harness/tools", title: "Tools" },
-      { href: "/harness/on-ramp", title: "Designer on-ramp" },
-    ],
-  },
-  {
-    label: "Governance",
-    href: "/governance",
-    items: [
-      { href: "/governance", title: "How this evolves" },
-      { href: "/governance/changes", title: "Change log" },
-    ],
-  },
-];
-
-const groupLabel = "px-1 py-1.5 text-xs font-semibold";
+const groupLabel = "px-1 py-1.5 text-sm font-semibold";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -149,6 +42,7 @@ export function AppSidebar() {
       <SidebarMenuButton
         isActive={pathname === item.href}
         render={<Link href={item.href} />}
+        className="text-sm text-muted-foreground hover:text-foreground data-active:text-foreground"
       >
         <span>{item.title}</span>
       </SidebarMenuButton>
@@ -159,6 +53,23 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent className="px-2 py-4">
         {nav.map((group) => {
+          if (group.items.length === 0 && group.href) {
+            return (
+              <SidebarGroup key={group.label} className="mb-0.5 p-0">
+                <Link
+                  href={group.href}
+                  className={clsx(
+                    "block rounded-md text-foreground/80 hover:text-foreground",
+                    groupLabel,
+                    pathname === group.href && "text-foreground",
+                  )}
+                >
+                  {group.label}
+                </Link>
+              </SidebarGroup>
+            );
+          }
+
           const holdsCurrentPage =
             pathname === group.href || leafHrefs(group.items).includes(pathname);
           const open = toggled[group.label] ?? holdsCurrentPage;
@@ -173,23 +84,14 @@ export function AppSidebar() {
               className="mb-0.5"
             >
               <SidebarGroup className="p-0">
+                {/* Clerk-style group row: label on the left, collapse chevron
+                    on the right edge. */}
                 <div className="flex items-center gap-0.5">
-                  <CollapsibleTrigger
-                    aria-label={`${open ? "Collapse" : "Expand"} ${group.label}`}
-                    className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-                  >
-                    <ChevronRight
-                      className={clsx(
-                        "size-3.5 transition-transform duration-200",
-                        open && "rotate-90"
-                      )}
-                    />
-                  </CollapsibleTrigger>
                   {group.href ? (
                     <Link
                       href={group.href}
                       className={clsx(
-                        "flex-1 rounded-md text-muted-foreground hover:text-foreground",
+                        "flex-1 rounded-md text-foreground/80 hover:text-foreground",
                         groupLabel,
                         pathname === group.href && "text-foreground"
                       )}
@@ -199,17 +101,28 @@ export function AppSidebar() {
                   ) : (
                     <CollapsibleTrigger
                       className={clsx(
-                        "flex-1 rounded-md text-left text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)",
+                        "flex-1 rounded-md text-left text-foreground/80 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)",
                         groupLabel
                       )}
                     >
                       {group.label}
                     </CollapsibleTrigger>
                   )}
+                  <CollapsibleTrigger
+                    aria-label={`${open ? "Collapse" : "Expand"} ${group.label}`}
+                    className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
+                  >
+                    <ChevronRight
+                      className={clsx(
+                        "size-3.5 transition-transform duration-200",
+                        open ? "rotate-90" : "rotate-0"
+                      )}
+                    />
+                  </CollapsibleTrigger>
                 </div>
                 <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
                   <SidebarGroupContent className="pt-0.5">
-                    <SidebarMenu className="ml-6 gap-0.5 border-l border-sidebar-border pl-2">
+                    <SidebarMenu className="ml-2 gap-0.5 border-l border-sidebar-border pl-2">
                       {group.items.map((item) => {
                         if (!isSubGroup(item)) return renderLeaf(item);
 
@@ -228,15 +141,15 @@ export function AppSidebar() {
                             >
                               <CollapsibleTrigger
                                 aria-label={`${subOpen ? "Collapse" : "Expand"} ${item.label}`}
-                                className="flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+                                className="flex w-full items-center gap-1 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
                               >
+                                <span className="flex-1 text-left">{item.label}</span>
                                 <ChevronRight
                                   className={clsx(
                                     "size-3.5 shrink-0 transition-transform duration-200",
                                     subOpen && "rotate-90"
                                   )}
                                 />
-                                <span>{item.label}</span>
                               </CollapsibleTrigger>
                               <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
                                 <SidebarMenu className="ml-3 gap-0.5 border-l border-sidebar-border pl-2 pt-0.5">

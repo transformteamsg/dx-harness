@@ -4,9 +4,9 @@ import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "TFX Design Standard", template: "%s — TFX Design Standard" },
+  title: { default: "DX Harness", template: "%s — DX Harness" },
   description:
-    "How TransformX designs the Teacher & School portfolio: principles, checkable standards, guidelines, foundations, and the AI design harness. For human builders and AI agents.",
+    "DX Harness gives your agent one front door, checkable standards, and an independent reviewer before the work ships.",
 };
 
 /* Root layout carries only what every route group shares: the document, the
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:outline-2 focus:outline-offset-2 focus:outline-(--color-tw-blue)"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:outline-2 focus:outline-offset-2 focus:outline-(--color-ring)"
         >
           Skip to main content
         </a>

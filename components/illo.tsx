@@ -15,7 +15,7 @@ function aspectOf(subject: string): string {
 export function Illo({ subject }: { subject: string }) {
   return (
     <details className="group my-8 rounded-lg border border-dashed border-border bg-surface">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-medium text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-xs font-medium text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) [&::-webkit-details-marker]:hidden">
         <span
           aria-hidden="true"
           className="transition-transform duration-(--motion-fast) group-open:rotate-90"
