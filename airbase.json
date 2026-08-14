@@ -1,6 +1,6 @@
 {
   "framework": "container",
-  "handle": "<team-name>/dx-harness",
+  "handle": "dxd-design/dx-harness",
   "port": 3000,
   "instanceType": "nano"
 }
