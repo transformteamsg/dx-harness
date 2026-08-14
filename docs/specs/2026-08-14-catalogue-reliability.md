@@ -1,7 +1,7 @@
 # Control Catalogue Reliability — Spec
 
 **Date:** 2026-08-14
-**Status:** Locked — assembled from [wayfinder map #109](https://github.com/transformteamsg/dx-harness/issues/109)
+**Status:** Locked — assembled from [wayfinder map #109](https://github.com/transformteamsg/dx-harness/issues/109); amended after the post-assembly review (2026-08-14)
 **Owner:** Reza Ilmi
 
 ## Purpose
@@ -19,7 +19,9 @@ design. It does three things:
 Every decision below was resolved on a wayfinder ticket. This document is the single
 hand-off for a separate implementation effort. Each section cites its source ticket. The
 mark **(assembly)** shows a decision made or sharpened while this spec was assembled, as
-the map planned.
+the map planned. The mark **(review)** shows a correction or ruling from the post-assembly
+review (2026-08-14) — an adversarial pass checking this spec against the ticket record and
+the repo — each ruling confirmed by the design lead.
 
 **The thing this spec does not do:** it does not implement any of it. No catalogue edit,
 no script, no schema change lands here. The prototype artifact on
@@ -85,7 +87,7 @@ choice, recorded here so a later reader does not mistake it for an oversight.
 
 ([#110](https://github.com/transformteamsg/dx-harness/issues/110))
 
-**One file, not a split.** The catalogue splits into an index plus detail files because 70
+**One file, not a split.** The catalogue splits into an index plus detail files because 69
 controls cannot sit in context at once and the website renders the index raw. Four criteria
 can. And the boundaries *are* the anchor — "dense but not cramped" only calibrates against
 "calm but not empty", so splitting criteria into separate files breaks the thing that makes
@@ -118,12 +120,15 @@ than a new genre.
 
 **Size and fallback.** ~530 lines today, ~5,100 words, read whole at every plan. If that
 proves too heavy in practice, the documented fallback is this file as an index (pairings +
-registers + grades) with procedures and thresholds moved to `quality/<criterion>.md`. Do
-not take the fallback pre-emptively.
+registers + grades) with procedures and thresholds moved to `quality/<criterion>.md` — the
+specific split and the don't-take-it-pre-emptively directive are **(assembly)** sharpening
+of the ticket's briefer "fallback stays available".
 
 **Citation without links.** 23 of the 69 controls have no detail file, including SLP-5/6/7 and
 TOK-2, all cited in the artifact. The artifact therefore cites by bare control id with no
-link. Verified: all 13 control ids cited in the prototype resolve in `catalog.yaml`.
+link. Verified **(review)**: all **34** control ids cited in the finished prototype resolve
+in `catalog.yaml` — the count was 13 when the shape ticket first checked it, and grew as
+the criteria filled.
 
 ### `validate.py` checks three things, and never the prose
 
@@ -159,7 +164,7 @@ rejected; frequency and flow detail live in each criterion's thresholds instead.
 | Criterion | Procedure | What its thresholds carry |
 |---|---|---|
 | **design-quality** | The layout read, moved in from `layout-patterns.md` | Six pairings, six surface rows, seven thresholds; running text never centred |
-| **originality** | Self-similarity test · unchanged-product test · remove-one pass | Kicker labels, the ghost card, pulse-on-static-data, unearned numbered markers, and the two AI looks SLP-1 misses (cream+serif+terracotta; broadsheet hairlines) |
+| **originality** | Self-similarity test · unchanged-product test · remove-one pass | Its four pairings (familiar but not lazy · distinctive but not novel · specific but not branded · character only where idle); kicker labels, the ghost card, pulse-on-static-data, unearned numbered markers, and the two AI looks SLP-1 misses (cream+serif+terracotta; broadsheet hairlines) |
 | **craft** | Browser-surfaces pass · 10% motion replay · full state walk · edge-content pass | Motion restraint by interaction frequency, interruptibility, icon-stroke-to-text-weight, the 40×40 dense-desktop hit floor, text-wrap |
 | **functionality** | Flow-map walk · repeat-user (fortieth-entry) pass · failure walk · one persona lens (the relief teacher) | Submit disabled while pending, undo preferred over confirmation where recovery is safe, a designed state per failure class, keyboard accelerators for per-row tasks |
 
@@ -202,7 +207,9 @@ declared-but-unused `audiences:` axis) was rejected as speculation.
 We-are / We-are-not pairings are the portfolio's shared vocabulary and are
 register-invariant. A register note is opt-in per anchor, written inline as
 `[standards-site: …]`; absent means global, never an empty list. A register that seems to
-need different pairings is evidence the criterion's prose is wrong.
+need different pairings is evidence the criterion's prose is wrong. This rule forced one
+rewrite recorded on the ticket: Originality's opening no longer says a pairing is
+"inverted for this register" — the inversion it describes holds on every declared register.
 
 **Selection.** DESIGN.md declares at most **one** register per product repo, in a
 `## Quality bar` section (json key `quality_bar`), as one bullet:
@@ -317,6 +324,12 @@ untouched.
 - `quality-bar.md` and `layout-patterns.md` join `validate.py`'s `cross_ref_files`.
 - `implement-craft.md` survives as the build-time how-to and gains **one pointer line** to
   the Craft criterion. No fold.
+- **(review)** The quoted-anchor rule gets a mechanical backstop: each `QUALITY GRADES`
+  line must contain a **verbatim substring of `quality-bar.md`** (minimum span left to the
+  implementation). Anchors keep no ids and the prose stays unvalidated; the check catches
+  invented and rotted quotes, which reviewer discipline alone cannot. It lives beside the
+  ledger enforcement in `audit-record.py` — not `validate.py`, which never sees runtime
+  report blocks.
 
 ### The register at run time
 
@@ -400,9 +413,9 @@ reused verbatim by the triage (§8).
 | A11Y-2 keyboard + focus (L0) | jsx-a11y `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`; bespoke FOCUS rule | — (no focus-indicator rule exists) | traversal order |
 | A11Y-3 labels (L0) | jsx-a11y `label-has-associated-control` | axe `label` | cross-file `htmlFor`↔`id` |
 | A11Y-4 target size | — | axe `target-size` (enabled) | 44px-on-mobile judgment |
-| A11Y-5 reduced motion | — | reduced-motion emulation | none — candidate for `enforced: script` |
+| A11Y-5 reduced motion | — | reduced-motion emulation | none |
 | A11Y-6 text alternatives | jsx-a11y `alt-text` | axe `image-alt`, `svg-img-alt` | informative-vs-decorative judgment |
-| A11Y-7 semantic structure | — | axe `list`, `listitem`, `heading-order` + the `structure` check | descriptive headings/labels |
+| A11Y-7 semantic structure | the `structure` check — a static AST walk, also carrying CMP-6 (§9.2) **(review)** | axe `list`, `listitem`, `heading-order` | descriptive headings/labels |
 | A11Y-8 name/role/value | jsx-a11y aria rules | axe aria suite, visible components only | closed overlays + state changes |
 | A11Y-9 title + lang | — | axe `document-title`, `html-has-lang` | SPA per-view title updates |
 | A11Y-10 bypass blocks | — | axe `bypass` (report-only) | skip-link-first confirmation |
@@ -411,9 +424,11 @@ reused verbatim by the triage (§8).
 ### Labels
 
 Honest recount; **most stay `partial`**. `enforced: script` only when the check fully
-decides the control with no manual remainder. A11Y-5 can reach `script`. **No label
-upgrades for coverage that depends on a URL being available.** `script:` fields update to
-the new checks.
+decides the control with no manual remainder. **No label upgrades for coverage that
+depends on a URL being available.** **(review)** That rule decides A11Y-5 too: its only
+coverage is the rendered emulation, which needs an open page, so it **stays `partial`** —
+the ticket's "may reach `script`" contradicted the URL rule and is withdrawn. `script:`
+fields update to the new checks.
 
 ### Declined, on the record
 
@@ -477,6 +492,11 @@ Implementation touches: `standards/schema.json` (declare the field);
 should cover it). **Verified during assembly:** `catalog.yaml` has no unknown-key
 rejection, so adding `gap:` breaks nothing that exists today.
 
+**(review, recording the assembly ticket's note)** MOT-2 is today the file's **only**
+explicit `enforced: manual` and carries no reason — already in breach of the rule this
+spec writes. Its `gap:` (or, post-ratification, its script) lands first in the
+implementation effort, so the validator's new rule starts clean.
+
 ### The rubric outlives the triage
 
 `standards/README.md` gains a short authoring rule: **a new `deterministic` or `hybrid`
@@ -536,7 +556,7 @@ import, not of the ideas.
 | CMP-3 | L1 | build | static | only "async call in a file with no error path at all"; visibility, loading and success halves stay evaluator |
 | CMP-4 | L1 | **relabel→judgment** | — | — |
 | CMP-5 | L2 | **accept** | — | — |
-| CMP-6 | L2 | build (inside the A11Y-7 `structure` check) | rendered | `<table>`/`role="table"` with no `<th>`/`columnheader` only; alignment and tabular figures never guessed |
+| CMP-6 | L2 | build (inside the A11Y-7 `structure` check) | **static (review)** | `<table>`/`role="table"` with no `<th>`/`columnheader` only; alignment and tabular figures never guessed |
 | CMP-8 | L1 | **relabel→judgment** | — | — |
 | CMP-9 | L1 | build | static | render-sink token with no sanitiser identifier in the same file → ERROR; sanitiser present → NOTE, never a silent pass |
 
@@ -549,9 +569,9 @@ a destructive-variant button), so each line reads "candidate, companion found / 
 Drowning is prevented by a **hard denylist applied before anything is emitted**:
 `removeEventListener`, `removeChild`, `.remove()` on a DOM ref, `clearTimeout`/
 `clearInterval`, `Map`/`Set` `.delete()`, `revokeObjectURL`, `reset()` on a form. Not
-theoretical: a naive `delete|remove|archive|discard|revoke` grep over `app components lib`
-returns exactly 5 hits here, all `window.removeEventListener`; the denylist takes it to 0 —
-the correct answer for a docs site with no destructive actions.
+theoretical: a naive `delete|remove|archive|discard|revoke` grep over the `.tsx` files in
+`app components lib` returns exactly 5 hits here, all `window.removeEventListener`; the
+denylist takes it to 0 — the correct answer for a docs site with no destructive actions.
 
 **Ruling: the lister exits 0 and forces ledger disposition.** Each candidate is written into
 the reviewer's verification ledger — the `| Control | Method | Evidence |` table
@@ -627,6 +647,12 @@ as violations. And a new ~200-line `layout-scan.py` would serve an L2 control th
 N/A in every repo that exists — **no `.dx/design.json` exists anywhere**, including the
 harness's own site.
 
+**(review)** Note that inertness cuts both ways in this table: IDN-1/2 **build** and LAY-1
+**accepts**, both under an N/A-everywhere premise. What decides is **cost and
+false-positive risk** — `identity-scan.py` is small, clean, and its gap self-closes on
+declaration; `layout-scan.py` is ~200 new lines with a proven false-positive class. Cite
+cost, never the N/A gate alone, when using either call as precedent.
+
 **Why TYP-5 is accepted but TYP-6 is built.** Both are hybrid already. TYP-5's mechanical
 half is *presence-requiring*, and a presence-requiring rule only works once the subject is
 identified — which is the judgment half. Statically it either flags every `<td>` or proves
@@ -669,17 +695,27 @@ The 16 builds collapse to **7 build targets**, of which two need the rendered ru
 | `a11y-static.py` narrowed to FOCUS | A11Y-2 |
 | `contrast.py` rebuilt as a token-pair check | A11Y-1 |
 | **The rendered runner itself** (`@axe-core/playwright`) | A11Y-1/3/4/6/7/8/9/10 + reduced-motion for A11Y-5 |
-| The `structure` check inside the rendered runner | **A11Y-7 and CMP-6**, under two control ids |
+| The `structure` check — a **static** AST walk **(review**; §9.2**)** | **A11Y-7 and CMP-6**, under two control ids |
 | The rule → control-id mapping file | all |
 
 **One rendered runner serves three clusters** — accessibility (§7), anti-slop (SLP-4) and
 typography (SLP-6). This is why the rendered check pays for itself: the verify phase already
 opens a browser at the target viewport, so running against it is close to free.
 
+**(review)** Two honesty notes on that economy. First, SLP-4 and SLP-6 are **bespoke
+injected-DOM evaluations, not axe rules** — a computed-background walk and a rendered
+type-ramp assembly are new machinery with their own false-positive surface. Second, unlike
+every static rule above, **they ship with no calibration evidence** — none is possible
+until the runner exists. Calibrate both against this repo's pages before either gates
+anything.
+
 **All new rules ride ast-grep**, per the scanner research §5.4: `kind: string_fragment`
 reaches `className` values, `style={{}}` objects and template literals from harness-held
 rules with **nothing installed in the target repo** — preserving the constraint `detect.py`
-depends on.
+depends on. **(review)** ast-grep is a **harness-side dependency the harness does not yet
+declare** — 0.44.1 sits on the dev machine via Homebrew and nothing records it. How the
+harness provisions it (declared dependency, install check, bundled binary) is the
+implementation effort's call; the target repo still gets nothing either way.
 
 ## 11. Catalogue corrections and documentation fixes
 
@@ -694,7 +730,8 @@ edit in the implementation effort.
 | **Delete every "planned script" note** | `standards/controls/*.md` | Each is replaced by a real build item or by a `gap:` reason. Four of seven CMP notes named a concrete script for claims that are runtime-only or pure judgment; only CMP-9's — the most modestly worded — survived triage intact. And they propagated: CMP-4 and CMP-8 cited a CMP-7 precedent that was itself only planned. `CONTEXT.md`'s **Accepted gap** entry already lists "planned script" under *Avoid* |
 | **Apply the 7 relabels to `hybrid` and 4 to `judgment`** | `catalog.yaml` | §9. Each relabel-to-judgment closes its gap by definition — the evaluator becomes the enforcement, per README §Enforcement |
 | **Update the stale control count** | `standards/quality-bar.md:27` and `:416` | Both say "70 controls"; the catalogue is 69 since IDN-4's removal. Fix on adoption, with the PROTOTYPE banner |
-| **Correct the planned-check table** | `checks/README.md:333–336` | **Found during assembly.** The table plans four checks that the triage has now overtaken: `slop-scan` is listed as SLP-1..4 (SLP-4 moves to the rendered runner); **`slop-layout` is listed as SLP-5..7 and should be deleted outright** — SLP-5 and SLP-7 relabel to `judgment` and SLP-6 moves to the rendered runner, so the script has no controls left; `motion` is listed as MOT-1 + SLP-8 and gains MOT-2; `identity` is listed as IDN-1 and gains IDN-2. The `slop-layout` row also still carries SLP-6's superseded 1.25 figure |
+| **Correct the planned-check table** | `checks/README.md:330–336` | **Found during assembly.** The table plans checks the triage has now overtaken: `slop-scan` is listed as SLP-1..4 (SLP-4 moves to the rendered runner); **`slop-layout` is listed as SLP-5..7 and should be deleted outright** — SLP-5 and SLP-7 relabel to `judgment` and SLP-6 moves to the rendered runner, so the script has no controls left; `motion` is listed as MOT-1 + SLP-8 and gains MOT-2; `identity` is listed as IDN-1 and gains IDN-2. The `slop-layout` row also still carries SLP-6's superseded 1.25 figure. **(review)** The `destructive` and `async-states` rows (`:330–331`) are overtaken too — both collapse into `cmp-scan.py` (build target 3), which also carries CMP-9, a control no planned row names |
+| **Recount coverage labels once the 16 builds land** **(review)** | `catalog.yaml` | The assembly ticket's instruction, in the same spirit as §7's accessibility recount: `enforced:`/`coverage:` reflect what each shipped check actually decides, nothing more |
 
 ### The teaching exhibit **(assembly, 2026-08-14)**
 
@@ -708,6 +745,17 @@ mechanism the triage already chose for vendored `components/ui/*` under MOT-1 �
 no new convention. A quarantine folder and a change to the L1 waiver rule were both
 considered and declined: the folder invents a convention and moves files, and the waiver
 change has portfolio-wide blast radius for one file's problem.
+
+**(review)** That entry covers the **static layer only** — and the exhibit *renders* on
+the live site, deliberately exhibiting SLP-4 and SLP-6, both of which land in the rendered
+runner. The first honest rendered run against this repo would fail the standards site on
+its own anti-specimen. (The file also carries `dx-waive` markers for SLP-9, CMP-5 and
+SLP-6, beyond the three controls named above.) **Ruling: the rendered analogue is an
+element-scoped DOM marker** — `data-dx-waive="<CTL> reason=…"` on the exhibit container;
+the runner skips that subtree for the named controls only. This is the inline `dx-waive`
+comment convention translated to the DOM: element-scoped, and it travels with the exhibit.
+A per-URL ignore list (exempts the whole page, hiding real regressions elsewhere on it)
+and register scoping (a permanent blind spot for the site) were considered and declined.
 
 ### CMP-9's sanitiser allowlist **(assembly, 2026-08-14)**
 
@@ -741,7 +789,9 @@ The research proposed handing the rule bodies to Vale, on the grounds that CNT-5
 CNT-12 and CNT-9's acronym half exist near-verbatim in the Microsoft and Google styles, and
 that maintained AI-tells packages cover much of SLP-9.
 
-**Declined, for a reason the research did not weigh.** `content-lint.py` reads its word
+**Declined, on the coupling cost the research flagged but left open** (its open question 5)
+**(review** — an earlier draft of this section wrongly claimed the research had not weighed
+it**)**. `content-lint.py` reads its word
 lists at runtime from `standards/controls/slp-9.md`, `cnt-5.md`, `cnt-6.md` and `cnt-13.md`,
 so the lint and the catalogue cannot diverge — grow a list in a detail file and the check
 picks it up. Moving the rule bodies to Vale styles breaks that coupling, or replaces it with
@@ -791,8 +841,9 @@ of it (build target 2) is unaffected by the swap in either order.
 | New check: every register id named in a DESIGN.md exists in `quality-bar.md` | new code |
 | New check: rubric §4's slug list matches the artifact's four slugs | **no new code** — the `dx-sync` fence-parity mechanism already does it |
 | New check: any `deterministic`/`hybrid` control that is effectively manual (the `enforced:` default included) with no `gap:` → error | new code |
-| Remove the IDN-1 "planned but unbuilt" grandfather at `:587` | one edit, once `identity-scan.py` ships |
+| Remove the stale `SKILL_WIRING_GRANDFATHERED` entries as their checks land **(review** — the assembly named only IDN-1**)**: IDN-1 (`identity-scan.py`), A11Y-9 and A11Y-10 (the rendered runner), TYP-6 (build target 5) | one edit each |
 | `[WIRING-SYNC]` will need the new scripts registered as they land | mechanical |
+| **(review)** `audit-record.py` gains the `QUALITY GRADES` quoted-substring check (§6) | new code, beside the ledger enforcement |
 
 ### `standards/schema.json`
 
@@ -810,6 +861,11 @@ Two additions:
 
 Rule 5 needs no amendment for the ceiling: registers are declared portfolio-wide and merely
 *selected* per product, which rule 5 already permits as nuance calibration (§4).
+
+**(review, recording the assembly ticket's warning)** The eleven relabels rewrite `verify:`
+text and detail-file frontmatter, which trips the validator's frontmatter-parity and
+`[SKILL-SYNC]` checks. Sequence the relabels and those check updates together in the
+implementation effort — do not land them as independent edits.
 
 ### The website — **no work in this effort**
 
@@ -862,7 +918,9 @@ Two more this spec uses often:
   pass keeps finding what it would catch.
 - **A per-product sanitiser allowlist** for CMP-9, if a product ever needs one (§11).
 - **An evidence run** — proving the harness passes weak design. Deliberately skipped during
-  charting; the ceiling rests on gap analysis.
+  charting; the ceiling rests on gap analysis. **(review)** Run it **first** in the
+  implementation effort, not last: grade a known-weak surface before the wiring lands, so
+  a mis-aimed ceiling is caught while everything is still cheap to move.
 - **The twelve anchoring devices** from the inspiration research that were catalogued but
   not adopted here (an advisory class that reports but never fails, "considered but
   rejected" with an anti-filler clause, score calibration in prose, judgment-before-detector
@@ -885,6 +943,7 @@ Two more this spec uses often:
 | [#139](https://github.com/transformteamsg/dx-harness/issues/139) | CMP cluster triage; CMP-2's lister; the false CMP-7 precedent |
 | [#140](https://github.com/transformteamsg/dx-harness/issues/140) | IDN/LAY/MOT/TYP triage; the honest-inert registry pattern |
 | [#119](https://github.com/transformteamsg/dx-harness/issues/119) | This assembly: the scanner rulings, the exhibit file, the sanitiser allowlist, the registry shape, the README section, the website call |
+| Post-assembly review (2026-08-14, recorded on [#119](https://github.com/transformteamsg/dx-harness/issues/119)) | The **(review)** amendments: the `structure` check restored to static per [#139](https://github.com/transformteamsg/dx-harness/issues/139); A11Y-5 stays `partial`; the rendered-layer exhibit DOM marker; the `QUALITY GRADES` quoted-substring backstop; plus the transcription repairs and honesty notes |
 
 **Research notes** (each on a throwaway branch, every claim cited to `file:line` or a
 primary source):
