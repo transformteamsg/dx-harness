@@ -194,7 +194,13 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (29 cases)` (includes the `fixtures/token-audit/` pass/fail files).
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
+(see "The ast-grep front end" above); the design-scale policy, the exemption
+machinery and the L1 waiver downgrade are unchanged Python. A style context is a
+syntax-tree position now, not a regex tracker, so a multi-line `style="…"`
+attribute is covered and comment text is never read as code.
+
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (56 cases)` (includes the `fixtures/token-audit/` pass/fail files, the `fixtures/parity/` corpus, and the ast-grep provisioning contract).
 
 ## Audit record (built)
 
