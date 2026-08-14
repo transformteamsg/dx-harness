@@ -278,11 +278,11 @@ restated.
 
 Five files point at `layout-patterns.md` today. After the fold:
 
-- `dx-critique` step 2's layout read → the quality bar's Design quality procedure.
+- `dx-design-critique` step 2's layout read → the quality bar's Design quality procedure.
 - LAY-7's detail file → the quality bar's Design quality procedure.
-- **`dx-critique`'s "layout-patterns.md #4" example citation must be rewritten** — the
+- **`dx-design-critique`'s "layout-patterns.md #4" example citation must be rewritten** — the
   numbered principles no longer exist.
-- `dx-layout` and `dx-design` split their pointer: named patterns stay in
+- `dx-design-pattern` and `dx-design-execute` split their pointer: named patterns stay in
   `layout-patterns.md`, the layout read moves to the quality bar.
 
 ## 6. Wiring into plan and verify
@@ -294,17 +294,17 @@ Five files point at `layout-patterns.md` today. After the fold:
 | Reader | Loads | When |
 |---|---|---|
 | `dx-design-execute` (builder) | The whole file | **Before diverge** — directions are where a strong decision is born; plan time is too late to shape them. The scoped modification loop reads the whole file too: one rule, no judgment call about change size |
-| `dx-critique` | The whole file | Reads it and **grades the four criteria** in its report |
-| `dx-layout` | design-quality | Its pass |
-| `dx-polish` | craft | Its pass |
-| `dx-motion` | craft | Its pass |
-| `dx-flow` | functionality | Its pass |
-| `dx-copy` | none | The voice table already calibrates copy |
+| `dx-design-critique` | The whole file | Reads it and **grades the four criteria** in its report |
+| `dx-design-pattern` | design-quality | Its pass |
+| `dx-design-polish` | craft | Its pass |
+| `dx-design-motion` | craft | Its pass |
+| `dx-design-flow` | functionality | Its pass |
+| `dx-design-copy` | none | The voice table already calibrates copy |
 | `dx-design-language` | The register list | To offer and write DESIGN.md's `## Quality bar` section |
 | `dx-design-review` | The whole file | Grades at verify |
 
-Any pass may quote any anchor as **finding evidence**, never as a violation. `dx-start` is
-untouched.
+Any pass may quote any anchor as **finding evidence**, never as a violation. `dx-design`
+(the orchestrator) is untouched.
 
 ### What the human sees
 
@@ -313,7 +313,7 @@ untouched.
   grading unbuilt work is fake.
 - **At verify:** `QUALITY GRADES` becomes a **four-line block** — one line per criterion
   slug, the grade plus one sentence quoting its anchor — under a header line naming the
-  register in effect and the dark-mode condition (graded / N/A). `dx-critique` reuses the
+  register in effect and the dark-mode condition (graded / N/A). `dx-design-critique` reuses the
   same block, so both graded surfaces stay in one format.
 
 ### Keeping copies honest
@@ -385,7 +385,7 @@ in `CONTEXT.md` at `b0c8c5a`.
 **Rendered check** — runs when a page is open:
 
 - axe via `@axe-core/playwright` on **the page the verify browser already has open**.
-  Standalone runs (`dx-critique`, re-audit) ask the person for a URL.
+  Standalone runs (`dx-design-critique`, re-audit) ask the person for a URL.
 - **The harness never boots the target app.** No dev server, no static export, no jsdom.
 - Shape: `target-size` explicitly enabled (axe ships it off; Lighthouse re-enables it); run
   at **360 and 1280**; page **fully scrolled** (axe skips `outsideViewport`); **once per

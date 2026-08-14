@@ -151,6 +151,7 @@ def load_schema_bits(repo_root):
         "allowed_status": set(schema["status"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
+        "retired_ids": set(schema.get("retired_ids", [])),
     }
 
 
@@ -1106,13 +1107,21 @@ def collect_errors(repo_root, _return_count=False):
 
     all_xref_files = cross_ref_files + swept_files
 
+    # A catalog-change record documenting a removal has to name the id it
+    # removed, so records — and only records — also accept schema.json's
+    # retired_ids. Everywhere else a retired id is still an error: a skill
+    # citing a dead control is the drift this sweep exists to catch.
+    retired_ids = schema_bits["retired_ids"]
+    record_ids = set(catalog_by_id) | retired_ids
+
     for fpath in all_xref_files:
         if not os.path.isfile(fpath):
             continue
         rel = os.path.relpath(fpath, repo_root)
         with open(fpath) as fh:
             content = fh.read()
-        errors.extend(cross_ref_errors(rel, content, catalog_by_id, xref_re))
+        known = record_ids if fpath.startswith(catalog_changes_dir) else catalog_by_id
+        errors.extend(cross_ref_errors(rel, content, known, xref_re))
 
     # ── Step 8: dx-sync parity sub-checks ───────────────────────────────────
     # Inline restatements (L0 list, SLP-9 buzzwords) must not drift from source.

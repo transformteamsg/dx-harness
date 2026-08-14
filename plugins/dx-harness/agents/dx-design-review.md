@@ -169,7 +169,8 @@ Apply each when in scope.
 **Identity grading.** Grade IDN-3 (tone register per the calibration table in
 controls/idn-3.md) on all copy-bearing surfaces. On CaseSync surfaces, also check the
 product's DESIGN.md guardrails (celebration restraint around case data moved there from
-the former IDN-4, 2026-08-14). Flag IDN-2 violations (product icons redrawn or
+the catalogue on 2026-08-14 — record: docs/catalog-changes/idn-4-removal.md). Flag
+IDN-2 violations (product icons redrawn or
 regenerated outside the approved family, L1) as deterministic findings pending the
 identity check script.
 

@@ -229,7 +229,8 @@ A name that requires explanation has already failed.
 Same character everywhere; calibrate weight, never switch systems. This table is the
 register IDN-3 checks (normative table in `standards/controls/idn-3.md`); the
 CaseSync row's harder prohibition on celebration/gamification around case data is a
-guardrail in CaseSync's DESIGN.md (moved from the former IDN-4, 2026-08-14):
+guardrail in CaseSync's DESIGN.md (moved out of the catalogue on 2026-08-14 — record:
+`../../../docs/catalog-changes/idn-4-removal.md`):
 
 - **Teacher Workspace** — calm daily command centre: neutral, steady, quietly confident.
 - **CaseSync** — higher gravity: more reserved, restrained celebration, privacy-forward

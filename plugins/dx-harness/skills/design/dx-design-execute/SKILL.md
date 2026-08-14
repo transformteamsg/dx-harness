@@ -225,7 +225,7 @@ Establish the rest, asking the user only what you cannot infer:
    "closest fit" is never recorded as the product), and what kind of surface:
    workspace view, form, flow step, dashboard, settings, empty state, onboarding.
    Page type selects controls via `applies_to`. For **other**, every
-   `products:`-scoped control (e.g. IDN-4) is recorded in the decision record as
+   `products:`-scoped control is recorded in the decision record as
    **deliberately out of scope — product outside the portfolio**, a decision, not
    a silent drop. **Audience**: who does this surface serve —
    teachers (the default; assume it when unstated), students (ask which band:

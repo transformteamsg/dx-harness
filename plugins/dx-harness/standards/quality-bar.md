@@ -57,10 +57,11 @@ boundary between this file and the catalogue, and it holds in both directions:
   anchor — under a header line naming the register in effect and the dark-mode condition
   (graded / N/A). The register arrives in the reviewer's dispatch payload, resolved once by the
   builder; the reviewer does not re-resolve it.
-- **The graded review** (`dx-critique`) reads this file and grades the four criteria in its
-  report, reusing the same four-line block. The dimension passes read one named criterion —
-  `dx-layout` → design quality, `dx-polish` → craft, `dx-motion` → craft, `dx-flow` →
-  functionality, `dx-copy` → none (the voice table already calibrates copy) — and any pass may
+- **The graded review** (`dx-design-critique`) reads this file and grades the four criteria in
+  its report, reusing the same four-line block. The dimension passes read one named criterion —
+  `dx-design-pattern` → design quality, `dx-design-polish` → craft, `dx-design-motion` → craft,
+  `dx-design-flow` → functionality, `dx-design-copy` → none (the voice table already calibrates
+  copy) — and any pass may
   quote any anchor as finding evidence, never as a violation. `dx-design-language` reads the
   register list, so it can write `DESIGN.md`'s `## Quality bar` section.
 - **Cited by quotation, never by id.** Anchors have no ids on purpose. An id-shaped reference in
@@ -501,10 +502,11 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
 22. **The scoped modification loop reads the whole file too.** One rule, no judgment call about
     change size — a padding tweak can still make a surface read worse. On-demand and skip-it
     variants were rejected as letting the builder decide what counts.
-23. **Every proposing skill reads it**: `dx-critique` grades the four criteria in its report;
-    the dimension passes read one named criterion (`dx-layout` → design quality, `dx-polish` →
-    craft, `dx-motion` → craft, `dx-flow` → functionality, `dx-copy` → none — the voice table
-    already calibrates copy) and may quote any anchor as finding evidence, never as a
+23. **Every proposing skill reads it**: `dx-design-critique` grades the four criteria in its
+    report; the dimension passes read one named criterion (`dx-design-pattern` → design quality,
+    `dx-design-polish` → craft, `dx-design-motion` → craft, `dx-design-flow` → functionality,
+    `dx-design-copy` → none — the voice table already calibrates copy) and may quote any anchor
+    as finding evidence, never as a
     violation; `dx-design-language` reads the register list to write `DESIGN.md`'s
     `## Quality bar` section. "Each pass decides" was rejected — two runs of one pass would
     calibrate differently.
@@ -513,7 +515,7 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
     as fake — grading unbuilt work — and a free-text ceiling note as more words at the gate.
 25. **QUALITY GRADES becomes a four-line block with a header line** — one line per criterion
     slug (grade + one sentence quoting its anchor); the header names the register in effect
-    and the dark-mode condition. `dx-critique`'s report reuses the same block, so both graded
+    and the dark-mode condition. `dx-design-critique`'s report reuses the same block, so both graded
     surfaces stay in one format.
 26. **The rubric §4 stub's slug list sits in a `dx-sync` fence**, enforced by `validate.py`'s
     existing fence-parity mechanism — this discharges the third check of decision 5 with no
