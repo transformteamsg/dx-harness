@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 (2026-08-13)
+
+**The 0.2.0 rename stubs are deleted.** The 11 deprecated stub skills that pointed the pre-0.2.0 design names at their replacements are gone, so `/dx-harness:dx-start`, `/dx-harness:dx-critique`, `/dx-harness:dx-copy`, `/dx-harness:dx-flow`, `/dx-harness:dx-layout`, `/dx-harness:dx-motion`, `/dx-harness:dx-polish`, `/dx-harness:dx-setup`, `/dx-harness:dx-git-buddy`, `/dx-harness:dx-feedback`, and `/dx-harness:dx-research-brief` no longer resolve. Use the `dx-design-*` names in the 0.2.0 table below.
+
+**The design skill directories now match their names.** Each of the 13 folders under `skills/design/` was still on its pre-0.2.0 name: `dx-start/` held `dx-design`, `dx-design/` held `dx-design-execute`, and so on. The folders are renamed to the frontmatter names and the relative cross-references between them are rewritten. This is what completes the 0.2.0 rename: the directory name is a live fallback in the skill namespace, so until folders matched frontmatter, every renamed skill collided with its own former name. `dx-harness:dx-design` actually loaded the builder from the `dx-design/` folder, not the orchestrator ([#121](https://github.com/transformteamsg/dx-harness/issues/121)).
+
+**The catalog validator checks the real tree.** `checks/validate.py` resolved every sync consumer under a `.claude/` layout the restructure removed, so drift in the files the loop actually reads passed silently. Consumers now point at `skills/`, `agents/`, and `procedures/`; a declared consumer that cannot be found is an error, never a skip; the ghost-id sweep covers `procedures/**`; and the skill/check counts and prebuild wiring are checked against the consuming site found by walking up from the plugin ([#122](https://github.com/transformteamsg/dx-harness/issues/122)). A11Y-7 and CMP-6, which the sweep exposed as wired into no skill, are named in `procedures/implement.md`.
+
+**`checks/contrast.py` composites Tailwind opacity modifiers.** `bg-destructive/10` previously dropped the `/10` and measured a token against itself (1:1), hard-failing A11Y-1 on ordinary tinted backgrounds. The tint now composites over the page ground (`--background`, else `--surface`) before measuring; genuinely low-contrast pairs still fail ([#122](https://github.com/transformteamsg/dx-harness/issues/122)).
+
+**First-run gaps in the standards closed** ([#123](https://github.com/transformteamsg/dx-harness/issues/123)): `docs/catalog-changes/` now exists and carries the normative `evd-1-async-evidence.md` the verify phase and decision-record template cite, with an explicit `N/A: state does not exist` outcome for surfaces CMP-3's do-not-flag clause exempts; `verify.md` and the `dx-design-review` agent explain how to resolve `checks/` from a product repo (the scripts ship with the plugin, not the product); the catalog gains an `other` product identity so a repo outside the portfolio answers Phase 1 truthfully and records `products:`-scoped controls as deliberately out of scope; and the two ratchet candidates from the first end-to-end run are decided (both admitted) in `docs/catalog-changes/`.
+
 ## 0.3.0 (2026-08-12)
 
 Six shared procedure docs now live in `procedures/` at the plugin root: `plan-approval.md`, `implement.md` (with the branch guard), `design-review.md` (with the verdict re-check), `rule-proposal.md`, `catalogue-mechanics.md`, and `design-tickets.md`. The loop skill, the orchestrator, the five passes, critique, and the `dx-design-review` agent load them.

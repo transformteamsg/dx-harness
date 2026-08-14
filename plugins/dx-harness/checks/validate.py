@@ -9,12 +9,17 @@ Validates standards/catalog.yaml for internal consistency:
   5. Every detail: path exists relative to standards/; judgment/hybrid
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
-  7. Cross-reference sweep: every control ID mentioned in prose exists in catalog.
+  7. Cross-reference sweep: every control ID mentioned in prose exists in
+     catalog — swept over skills/**, agents/**, procedures/**, and
+     docs/catalog-changes/.
   8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
-     claim in README.md or docs/index.html must equal the catalog's actual
-     control count), [WIRING-SYNC] (enforced:script|partial claims actually run
-     in prebuild/CI or are exempted), and [SKILL-SYNC] (every catalog id is
-     wired into >=1 skill/agent file or grandfathered; no ghost ids in skills).
+     claim in README.md or docs/index.html — the plugin's or the consuming
+     site's — must equal the catalog's actual control count), [WIRING-SYNC]
+     (enforced:script|partial claims actually run in prebuild/CI or are
+     exempted), and [SKILL-SYNC] (every catalog id is wired into >=1
+     skill/agent file or grandfathered; no ghost ids in skills).
+     A declared sync consumer that cannot be found on disk is an ERROR, never
+     a silent skip — a moved consumer must not look in sync (#122).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -46,6 +51,71 @@ except ImportError:
 
 # ── Path setup ─────────────────────────────────────────────────────────────────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# The plugin's own consumers live under skills/ (nested one level per group,
+# e.g. skills/design/dx-design-execute/), agents/, and procedures/ — there is
+# no .claude/ tree inside the plugin. The consuming site (package.json,
+# content/) sits ABOVE the plugin (../.. in this repo); the walk-up helpers
+# find it and return None when the harness ships standalone as a plugin.
+
+
+def _walk_up(repo_root, predicate, levels=4):
+    node = os.path.dirname(os.path.abspath(repo_root))
+    for _ in range(levels):
+        if predicate(node):
+            return node
+        parent = os.path.dirname(node)
+        if parent == node:
+            break
+        node = parent
+    return None
+
+
+def find_site_root(repo_root):
+    """Nearest ancestor carrying a package.json or CI workflow — the consuming
+    site's repo root. None when the harness ships standalone."""
+    return _walk_up(repo_root, lambda d: (
+        os.path.isfile(os.path.join(d, "package.json"))
+        or os.path.isfile(os.path.join(d, ".github", "workflows", "ci.yml"))))
+
+
+def find_content_root(repo_root):
+    """Nearest ancestor carrying content/guidelines/ — the website tree the
+    copy-skill parity checks compare against. None when absent."""
+    return _walk_up(repo_root, lambda d: os.path.isdir(
+        os.path.join(d, "content", "guidelines")))
+
+
+def required_consumer_errors(repo_root, consumers, tag):
+    """Split declared harness-shipped consumer paths into (present, errors).
+    In a real harness tree (`<repo_root>/skills` exists) every declared
+    consumer must resolve; a missing one is an ERROR — a consumer that moved
+    must never be indistinguishable from one that is in sync (#122). When
+    `skills/` itself is absent (synthetic fixture / partial tree) missing
+    consumers are skipped without error, mirroring skill_sync_errors'
+    bail-out."""
+    full_tree = os.path.isdir(os.path.join(repo_root, "skills"))
+    present, errors = [], []
+    for fpath in consumers:
+        if os.path.isfile(fpath):
+            present.append(fpath)
+        elif full_tree:
+            rel = os.path.relpath(fpath, repo_root)
+            errors.append(
+                f"ERROR {rel} [{tag}]: declared consumer does not exist — "
+                f"fix the file or the consumer list in checks/validate.py")
+    return present, errors
+
+
+def walk_md_files(*dirs):
+    """All .md files under the given directories, recursively, sorted."""
+    found = []
+    for d in dirs:
+        if not os.path.isdir(d):
+            continue
+        for root, _dirs, fnames in os.walk(d):
+            found.extend(os.path.join(root, f) for f in fnames if f.endswith(".md"))
+    return sorted(found)
 
 # Frontmatter fields compared against the catalog in the Step-6 reverse check.
 FRONTMATTER_FIELDS = ["id", "source", "title", "tier", "check", "phase",
@@ -282,16 +352,13 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     Missing markers are an error. Set comparison, so prose/order around the IDs
     is free.
     """
-    errors = []
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
     consumers = [
-        os.path.join(repo_root, "CLAUDE.md"),
-        os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
+        os.path.join(repo_root, "skills", "design", "dx-design-execute", "SKILL.md"),
         os.path.join(repo_root, "checks", "detect.py"),
     ]
-    for fpath in consumers:
-        if not os.path.isfile(fpath):
-            continue
+    present, errors = required_consumer_errors(repo_root, consumers, "L0-SYNC")
+    for fpath in present:
         rel = os.path.relpath(fpath, repo_root)
         with open(fpath) as fh:
             text = fh.read()
@@ -315,16 +382,14 @@ def lay_parity_errors(repo_root, catalog_by_id, xref_re):
     must equal the catalog's LAY-* id set. Missing markers are an error. Set
     comparison, so prose/order/detail around the IDs is free.
     """
-    errors = []
     source = {cid for cid in catalog_by_id if cid.startswith("LAY-")}
     consumers = [
-        os.path.join(repo_root, ".claude", "skills", "design", "SKILL.md"),
-        os.path.join(repo_root, ".claude", "agents", "dx-design-review.md"),
-        os.path.join(repo_root, ".claude", "skills", "layout", "SKILL.md"),
+        os.path.join(repo_root, "skills", "design", "dx-design-execute", "SKILL.md"),
+        os.path.join(repo_root, "agents", "dx-design-review.md"),
+        os.path.join(repo_root, "skills", "design", "dx-design-pattern", "SKILL.md"),
     ]
-    for fpath in consumers:
-        if not os.path.isfile(fpath):
-            continue
+    present, errors = required_consumer_errors(repo_root, consumers, "LAY-SYNC")
+    for fpath in present:
         rel = os.path.relpath(fpath, repo_root)
         with open(fpath) as fh:
             text = fh.read()
@@ -347,12 +412,13 @@ def slp9_parity_errors(repo_root):
     canonical slp-9.md buzzword list (the skill may show fewer words, never more),
     and REQUIRED_CORE must appear in both. Missing markers are an error.
     """
-    errors = []
     src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
-    con_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
+    con_path = os.path.join(repo_root, "skills", "design", "dx-design-copy", "SKILL.md")
+    present, errors = required_consumer_errors(repo_root, [src_path, con_path],
+                                               "SLP9-SYNC")
 
     source = None
-    if os.path.isfile(src_path):
+    if src_path in present:
         with open(src_path) as fh:
             src_span = extract_sync_block(fh.read(), "slp9-buzzwords")
         if src_span is None:
@@ -361,7 +427,7 @@ def slp9_parity_errors(repo_root):
             source = tokenize_buzzwords(src_span)
 
     consumer = None
-    if os.path.isfile(con_path):
+    if con_path in present:
         rel = os.path.relpath(con_path, repo_root)
         with open(con_path) as fh:
             con_span = extract_sync_block(fh.read(), "slp9-buzzwords")
@@ -403,16 +469,18 @@ COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
 
 def live_skills_count(repo_root):
     """
-    Number of dirs under `<repo_root>/.claude/skills` that contain a
-    `SKILL.md`. This is the "N skills" claimed in prose (the `dx-design-review`
-    subagent is counted separately as "+ 1 agent", never folded in).
+    Number of dirs under `<repo_root>/skills` (recursive — the live layout
+    nests one level per group, e.g. skills/design/dx-design-execute/) that
+    contain a `SKILL.md`. This is the "N skills" claimed in prose (the
+    `dx-design-review` subagent is counted separately as "+ 1 agent", never
+    folded in).
     """
-    skills_dir = os.path.join(repo_root, ".claude", "skills")
+    skills_dir = os.path.join(repo_root, "skills")
     if not os.path.isdir(skills_dir):
         return 0
     count = 0
-    for name in os.listdir(skills_dir):
-        if os.path.isfile(os.path.join(skills_dir, name, "SKILL.md")):
+    for root, _dirs, fnames in os.walk(skills_dir):
+        if "SKILL.md" in fnames:
             count += 1
     return count
 
@@ -464,6 +532,13 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
     if checks_count is None:
         checks_count = live_checks_count(repo_root)
 
+    # The live roster claims sit in the consuming site's README as well as the
+    # plugin's own (the plugin nests under plugins/ in this repo); scan both.
+    scan_paths = [(repo_root, rel) for rel in relpaths]
+    site_root = find_site_root(repo_root)
+    if site_root is not None and os.path.abspath(site_root) != os.path.abspath(repo_root):
+        scan_paths += [(site_root, rel) for rel in relpaths]
+
     claim_types = (
         (r"(\d+) controls", "controls", catalog_count, "catalog has"),
         (r"(\d+) skills", "skills", skills_count, "stack has"),
@@ -472,8 +547,8 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
     )
 
     errors = []
-    for relpath in relpaths:
-        path = os.path.join(repo_root, relpath)
+    for base, relpath in scan_paths:
+        path = os.path.join(base, relpath)
         if not os.path.isfile(path):
             continue
         rel = os.path.relpath(path, repo_root)
@@ -510,10 +585,12 @@ def wiring_parity_errors(repo_root, catalog_by_id):
     drift where a catalog control claims automated enforcement that no
     automation delivers.
 
-    `repo_root` is this validator's own root (harness/); package.json and
-    ci.yml live one level up, at the consuming site's repo root. If neither
-    file exists there (e.g. the harness ships standalone as a plugin with no
-    consuming site checked out), there is nothing to check — return clean.
+    `repo_root` is this validator's own root (the plugin directory);
+    package.json and ci.yml live at the consuming site's repo root, found by
+    walking up (../.. in this repo — the plugin sits under plugins/). If no
+    ancestor carries either file (e.g. the harness ships standalone as a
+    plugin with no consuming site checked out), there is nothing to check —
+    return clean.
     """
     errors = []
 
@@ -531,8 +608,11 @@ def wiring_parity_errors(repo_root, catalog_by_id):
             if isinstance(sp, str):
                 claimed.setdefault(sp, []).append((cid, enforced))
 
-    # Running set: scan package.json + ci.yml one level above repo_root.
-    top_root = os.path.dirname(repo_root)
+    # Running set: scan package.json + ci.yml at the consuming site's root,
+    # found by walking up from repo_root (the plugin nests under plugins/).
+    top_root = find_site_root(repo_root)
+    if top_root is None:
+        return errors
     consumer_paths = [
         os.path.join(top_root, "package.json"),
         os.path.join(top_root, ".github", "workflows", "ci.yml"),
@@ -582,8 +662,6 @@ def wiring_parity_errors(repo_root, catalog_by_id):
 # it is not yet wired. Additions need a reason; removals (once a control gets
 # wired) are free — shrink-only in practice.
 SKILL_WIRING_GRANDFATHERED = {
-    "A11Y-9": "title/lang check (title-lang) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
-    "A11Y-10": "skip-link check is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
     "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
     "TYP-6": "hybrid measure (line-length) control — unwired at introduction of SKILL-SYNC — wire into layout/polish skill or justify",
 }
@@ -593,11 +671,11 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
     """
     [SKILL-SYNC] Two guarantees over the catalog<->skill-layer boundary:
     (a) no ghost ids — every control id mentioned anywhere under
-    `.claude/skills/**/*.md` or `.claude/agents/*.md` exists in the catalog;
-    (b) no orphan controls — every catalog id is mentioned in at least one of
-    those files, or sits on SKILL_WIRING_GRANDFATHERED with a documented
-    reason. Catches the drift class from plan 063: a control lands in the
-    catalog but no skill or agent is taught to apply it.
+    `skills/**/*.md`, `agents/**/*.md`, or `procedures/**/*.md` exists in the
+    catalog; (b) no orphan controls — every catalog id is mentioned in at
+    least one of those files, or sits on SKILL_WIRING_GRANDFATHERED with a
+    documented reason. Catches the drift class from plan 063: a control lands
+    in the catalog but no skill or agent is taught to apply it.
 
     An allowlisted id that is no longer an orphan (someone wired it) prints a
     NOTE (not an error) suggesting its removal from the allowlist — never
@@ -607,27 +685,21 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
     errors = []
 
     consumer_dirs = [
-        os.path.join(repo_root, ".claude", "skills"),
-        os.path.join(repo_root, ".claude", "agents"),
+        os.path.join(repo_root, "skills"),
+        os.path.join(repo_root, "agents"),
+        os.path.join(repo_root, "procedures"),
     ]
 
-    # Nothing to check when neither consumer dir exists at all (e.g. a
-    # synthetic/partial repo_root fixture with no .claude tree) — mirrors
+    # Nothing to check when no consumer dir exists at all (e.g. a
+    # synthetic/partial repo_root fixture with no skill tree) — mirrors
     # wiring_parity_errors' "no consumer found" bail-out.
     if not any(os.path.isdir(d) for d in consumer_dirs):
         return errors
 
-    consumer_files = []
-    for d in consumer_dirs:
-        if not os.path.isdir(d):
-            continue
-        for root, _dirs, fnames in os.walk(d):
-            for fname in fnames:
-                if fname.endswith(".md"):
-                    consumer_files.append(os.path.join(root, fname))
+    consumer_files = walk_md_files(*consumer_dirs)
 
     mentioned = set()
-    for fpath in sorted(consumer_files):
+    for fpath in consumer_files:
         rel = os.path.relpath(fpath, repo_root)
         with open(fpath) as fh:
             text = fh.read()
@@ -669,12 +741,13 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
 
 
 # ── Copy-skill ↔ guideline parity (VOICE / TONE / UITEXT) ────────────────────────
-# The copy skill (.claude/skills/copy/SKILL.md) inlines the voice-attributes and
-# tone-by-context tables and the draft-phase editing sequence; the website guidelines
-# restate them for human readers. Source = the plugin-shipped skill; consumers = the
-# website mdx under content/guidelines/, which live OUTSIDE harness/ (one level up, like
-# package.json in wiring_parity_errors) — so these are website-optional sub-checks that
-# return clean when the site tree is absent (the harness ships standalone as a plugin).
+# The copy skill (skills/design/dx-design-copy/SKILL.md) inlines the voice-attributes
+# and tone-by-context tables and the draft-phase editing sequence; the website
+# guidelines restate them for human readers. Source = the plugin-shipped skill;
+# consumers = the website mdx under content/guidelines/, which live OUTSIDE the plugin
+# (found by find_content_root, like package.json in wiring_parity_errors) — so these
+# are website-optional sub-checks that return clean when the site tree is absent (the
+# harness ships standalone as a plugin).
 # MDX (next-mdx-remote + remark-gfm, MDX v3) rejects raw <!-- --> HTML comments, so the
 # consumer markers use the JSX-expression comment {/* … */}; the skill keeps <!-- -->.
 
@@ -738,20 +811,23 @@ def _table_parity_errors(repo_root, name, tag, consumer_rel):
     normalized row sets. Website-optional — a missing guideline file returns
     clean. A missing source or consumer marker is an error.
     """
-    errors = []
-    skill_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
-    consumer_path = os.path.join(os.path.dirname(repo_root), consumer_rel)
-
-    if not os.path.isfile(skill_path):
+    skill_path = os.path.join(repo_root, "skills", "design", "dx-design-copy",
+                              "SKILL.md")
+    present, errors = required_consumer_errors(repo_root, [skill_path], tag)
+    if skill_path not in present:
         return errors
     with open(skill_path) as fh:
         src_span = extract_sync_block_any(fh.read(), name)
     if src_span is None:
         errors.append(
-            f"ERROR .claude/skills/copy/SKILL.md [{tag}]: missing dx-sync:{name} source markers")
+            f"ERROR skills/design/dx-design-copy/SKILL.md [{tag}]: "
+            f"missing dx-sync:{name} source markers")
         return errors
 
-    if not os.path.isfile(consumer_path):
+    content_root = find_content_root(repo_root)
+    consumer_path = None if content_root is None else os.path.join(content_root,
+                                                                   consumer_rel)
+    if consumer_path is None or not os.path.isfile(consumer_path):
         return errors  # website tree absent — nothing to compare
     with open(consumer_path) as fh:
         con_span = extract_sync_block_any(fh.read(), name)
@@ -789,22 +865,25 @@ def uitext_parity_errors(repo_root):
     not equality: the skill's step 6 'Check' deliberately collapses ui-text
     sections 6–11 (human-reviewed, not parity-checked). Website-optional.
     """
-    errors = []
-    skill_path = os.path.join(repo_root, ".claude", "skills", "copy", "SKILL.md")
+    skill_path = os.path.join(repo_root, "skills", "design", "dx-design-copy",
+                              "SKILL.md")
     consumer_rel = "content/guidelines/ui-text.mdx"
-    consumer_path = os.path.join(os.path.dirname(repo_root), consumer_rel)
-
-    if not os.path.isfile(skill_path):
+    present, errors = required_consumer_errors(repo_root, [skill_path],
+                                               "UITEXT-SYNC")
+    if skill_path not in present:
         return errors
     with open(skill_path) as fh:
         src_span = extract_sync_block_any(fh.read(), "uitext-sequence")
     if src_span is None:
         errors.append(
-            "ERROR .claude/skills/copy/SKILL.md [UITEXT-SYNC]: missing "
+            "ERROR skills/design/dx-design-copy/SKILL.md [UITEXT-SYNC]: missing "
             "dx-sync:uitext-sequence source markers")
         return errors
 
-    if not os.path.isfile(consumer_path):
+    content_root = find_content_root(repo_root)
+    consumer_path = None if content_root is None else os.path.join(content_root,
+                                                                   consumer_rel)
+    if consumer_path is None or not os.path.isfile(consumer_path):
         return errors
     with open(consumer_path) as fh:
         con_span = extract_sync_block_any(fh.read(), "uitext-sequence")
@@ -836,15 +915,15 @@ def collect_errors(repo_root, _return_count=False):
     controls_dir = os.path.join(repo_root, "standards", "controls")
 
     cross_ref_files = [
-        os.path.join(repo_root, "CLAUDE.md"),
         os.path.join(repo_root, "README.md"),
         os.path.join(repo_root, "checks", "README.md"),
         os.path.join(repo_root, "docs", "decisions", "TEMPLATE.md"),
     ]
-    # Glob .claude/skills/*/SKILL.md, .claude/agents/*.md, and
+    # Walk skills/**/*.md, agents/**/*.md, procedures/**/*.md, and glob
     # docs/catalog-changes/*.md at runtime
-    skills_dir = os.path.join(repo_root, ".claude", "skills")
-    agents_dir = os.path.join(repo_root, ".claude", "agents")
+    skills_dir = os.path.join(repo_root, "skills")
+    agents_dir = os.path.join(repo_root, "agents")
+    procedures_dir = os.path.join(repo_root, "procedures")
     catalog_changes_dir = os.path.join(repo_root, "docs", "catalog-changes")
 
     schema_bits = load_schema_bits(repo_root)
@@ -1019,29 +1098,13 @@ def collect_errors(repo_root, _return_count=False):
                     f"(catalog detail: {cat_entry.get('detail')!r}, expected: {expected_detail!r})")
 
     # ── Step 7: Cross-reference sweep ────────────────────────────────────────
-    # Collect skill SKILL.md files
-    skill_files = []
-    if os.path.isdir(skills_dir):
-        for skill_name in os.listdir(skills_dir):
-            skill_path = os.path.join(skills_dir, skill_name, "SKILL.md")
-            if os.path.isfile(skill_path):
-                skill_files.append(skill_path)
+    # Every .md under skills/, agents/, and procedures/ (recursive — skills
+    # nest one level per group, and skill dirs carry sibling docs such as
+    # verify.md beside SKILL.md), plus catalog-change records.
+    swept_files = walk_md_files(skills_dir, agents_dir, procedures_dir,
+                                catalog_changes_dir)
 
-    # Collect agent files
-    agent_files = []
-    if os.path.isdir(agents_dir):
-        for fname in os.listdir(agents_dir):
-            if fname.endswith(".md"):
-                agent_files.append(os.path.join(agents_dir, fname))
-
-    # Collect catalog-change records
-    catalog_change_files = []
-    if os.path.isdir(catalog_changes_dir):
-        for fname in os.listdir(catalog_changes_dir):
-            if fname.endswith(".md"):
-                catalog_change_files.append(os.path.join(catalog_changes_dir, fname))
-
-    all_xref_files = cross_ref_files + skill_files + agent_files + catalog_change_files
+    all_xref_files = cross_ref_files + swept_files
 
     for fpath in all_xref_files:
         if not os.path.isfile(fpath):
@@ -1405,7 +1468,7 @@ def run_self_test():
         # Fabricate a skills tree (2 real skills + 1 dir with no SKILL.md,
         # which must not count) and a checks tree (3 check scripts +
         # validate.py + checklib.py, neither of which counts).
-        skills_dir = os.path.join(count_tmp, ".claude", "skills")
+        skills_dir = os.path.join(count_tmp, "skills")
         for skill_name in ("alpha", "beta"):
             skill_path = os.path.join(skills_dir, skill_name)
             os.makedirs(skill_path, exist_ok=True)
@@ -1504,7 +1567,7 @@ def run_self_test():
     # ── [SKILL-SYNC] cases ────────────────────────────────────────────────────
     skillsync_tmp = tempfile.mkdtemp(prefix="validate-selftest-skillsync-")
     try:
-        skill_dir = os.path.join(skillsync_tmp, ".claude", "skills", "x")
+        skill_dir = os.path.join(skillsync_tmp, "skills", "x")
         os.makedirs(skill_dir, exist_ok=True)
         skill_path = os.path.join(skill_dir, "SKILL.md")
 
@@ -1560,14 +1623,15 @@ def run_self_test():
         shutil.rmtree(skillsync_tmp, ignore_errors=True)
 
     # ── [VOICE-SYNC] / [TONE-SYNC] / [UITEXT-SYNC] cases ─────────────────────
-    # Lay out a synthetic repo: harness/.claude/skills/copy/SKILL.md (source,
-    # <!-- --> markers) and content/guidelines/*.mdx one level up (consumers,
-    # {/* */} markers) — mirroring the real placement so the helpers' top_root
-    # resolution and website-absent bail-out are exercised for real.
+    # Lay out a synthetic repo: harness/skills/design/dx-design-copy/SKILL.md
+    # (source, <!-- --> markers) and content/guidelines/*.mdx one level up
+    # (consumers, {/* */} markers) — mirroring the real placement so the
+    # helpers' find_content_root walk-up and website-absent bail-out are
+    # exercised for real.
     copy_tmp = tempfile.mkdtemp(prefix="validate-selftest-copysync-")
     try:
         harness_dir = os.path.join(copy_tmp, "harness")
-        skill_dir = os.path.join(harness_dir, ".claude", "skills", "copy")
+        skill_dir = os.path.join(harness_dir, "skills", "design", "dx-design-copy")
         os.makedirs(skill_dir)
         skill_path = os.path.join(skill_dir, "SKILL.md")
         guide_dir = os.path.join(copy_tmp, "content", "guidelines")

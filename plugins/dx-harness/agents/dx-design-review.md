@@ -85,6 +85,12 @@ the record audit validates, so "verified manually" carries evidence rather than 
 an unauditable claim. Any deterministic violation you can see — in a screenshot or in
 the code — is a finding regardless, belt and braces. Which scripts exist and the
 static subset each covers: `checks/README.md`.
+**Locating the scripts:** `checks/` ships with this harness, not with the product
+repo — resolve it relative to this agent file, one level up:
+`<this-agent-dir>/../checks/` (the same path works in the harness dev repo and when
+installed as the `dx-harness` plugin; do not expect a `checks/` directory in the
+product cwd, which is where you run). `checks/…` paths in this file are written
+repo-relative for brevity; prefix them with that resolved path when running one.
 
 **Findings sort by tier and waiver status, never by how you found them:**
 

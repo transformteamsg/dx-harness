@@ -421,18 +421,33 @@ mid-run; setup exists so it never comes to that.
 [plugin-skill-renames.md on `research/plugin-skill-renames`](https://github.com/transformteamsg/dx-harness/blob/research/plugin-skill-renames/docs/research/plugin-skill-renames.md))
 
 Facts: Claude Code has no skill-level alias or deprecation mechanism. The invocation
-string comes from the SKILL.md frontmatter `name`; the directory name is independent.
-Updates are pull-based and gated by the `plugin.json` version string.
+string comes from the SKILL.md frontmatter `name` when present, **falling back to the
+directory name** — so a directory name never leaves the namespace, and a directory
+whose name differs from its frontmatter `name` claims *both* strings. Renaming
+frontmatter while keeping directories does not move a name; it makes the name
+ambiguous, and the first end-to-end run observed the directory winning
+([#121](https://github.com/transformteamsg/dx-harness/issues/121):
+`dx-harness:dx-design` loaded the builder from the `dx-design/` directory, not the
+orchestrator whose frontmatter claimed the name). Updates are pull-based and gated by
+the `plugin.json` version string.
 
-Staging:
+Staging — **corrected by #121**: step 3's directory renames were originally staged as
+optional cleanup, but given the fallback they are the step that actually completes a
+rename, so they are **required**, and a stub under a retired name cannot fire while a
+live directory still holds that name:
 
 1. **Release 1:** frontmatter `name:` renames + a full doc/prose sweep (~15 command
    strings in the READMEs, ONBOARDING.md, and skill bodies; two routing descriptions) +
-   a version bump — one atomic release. Directory names (and their 20 relative-path
-   cross-references) do not change.
+   a version bump — one atomic release. As shipped, directory names (and their 20
+   relative-path cross-references) did not change — which left every renamed skill
+   colliding with its own former name until step 3 landed.
 2. **Stub shims:** a deprecated stub skill under each old name, pointing to the new name.
-   Keep it for a release or two. (Renamed skills only — not `dx-standards`.)
-3. **Later commit:** optional directory renames + relative-path rewrite. Mechanical.
+   (Renamed skills only — not `dx-standards`.) As shipped under `deprecated-*`
+   directories, every stub was shadowed by the live directory still holding its
+   declared name, so no stub ever fired; the stub layer was retired unshipped and the
+   stubs deleted outright when the directories were renamed (#121).
+3. **Directory renames + relative-path rewrite.** Required, not optional — until
+   directories match frontmatter, the old names stay live and ambiguous.
 4. **CHANGELOG** entry with the old→new mapping. There is no forced migration —
    stragglers keep old names until they update.
 

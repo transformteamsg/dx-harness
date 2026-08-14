@@ -7,7 +7,7 @@ propose changes before you have seen and judged the current state:
 1. **Capture the current page.** Take a screenshot of the live surface at 1280
    (and 360 if the change is responsive). Capture mechanism, in order of
    preference: (1) the `agent-browser` CLI if installed (`agent-browser --help`
-   to confirm; not installed → offer setup once via `../dx-setup/setup.md` before
+   to confirm; not installed → offer setup once via `../dx-design-setup/setup.md` before
    falling through) — navigate to the route, set the viewport to the target
    width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
    the local Playwright fallback; (4) ask the user to provide the screenshot.
