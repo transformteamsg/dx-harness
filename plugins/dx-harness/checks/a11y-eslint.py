@@ -76,7 +76,6 @@ Exit 1 with ERROR lines on any violation, and on an operational failure
 import importlib.util
 import json
 import os
-import re
 import subprocess
 import sys
 
@@ -262,48 +261,16 @@ def build_env(toolchain, base_env=None):
 
 # ── Fallback reporting ─────────────────────────────────────────────────────────
 
-_CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
-_CATALOG_TIER_RE = re.compile(r"^\s*tier:\s*(\S+)\s*$")
-
-
-def catalog_tiers(path=None):
-    """
-    {control id: tier} read from standards/catalog.yaml with the same stdlib
-    regex the design-json generator uses — the check scripts stay
-    dependency-free. Returns {} when the catalogue cannot be read (the L0
-    sentence is then omitted; never a crash).
-    """
-    if path is None:
-        path = os.path.join(os.path.dirname(_CHECKS_DIR), "standards", "catalog.yaml")
-    tiers, current = {}, None
-    try:
-        with open(path, encoding="utf-8") as fh:
-            for line in fh:
-                m = _CATALOG_ID_RE.match(line)
-                if m:
-                    current = m.group(1)
-                    continue
-                if current:
-                    t = _CATALOG_TIER_RE.match(line)
-                    if t:
-                        tiers[current] = t.group(1)
-                        current = None
-    except OSError:
-        return {}
-    return tiers
-
-
 def manual_verification_notes(reason, controls, tiers=None):
     """
     The did-not-run report: name the reason, name every control the layer
     covers, and say that an L0 control still blocks. A control is never
     reported as passing by a layer that did not check it.
     """
-    tiers = catalog_tiers() if tiers is None else tiers
     lines = [f"NOTE  a11y-eslint: did not run — {reason}",
              f"NOTE  a11y-eslint: {', '.join(controls)} go to manual verification "
              f"(not reported as passing)"]
-    l0 = [c for c in controls if tiers.get(c) == "L0"]
+    l0 = checklib.l0_subset(controls, tiers)
     if l0:
         lines.append(f"NOTE  a11y-eslint: {', '.join(l0)} are L0 — they block until "
                      f"verified by some path")
@@ -313,14 +280,13 @@ def manual_verification_notes(reason, controls, tiers=None):
 def parser_gap_notes(controls, tiers=None):
     """The .tsx half of the run is missing: say so and name the controls whose
     coverage of those files goes to manual verification."""
-    tiers = catalog_tiers() if tiers is None else tiers
     lines = [
         "NOTE  a11y-eslint: no TypeScript-capable parser in the target's "
         "node_modules — linting .js/.jsx only",
         f"NOTE  a11y-eslint: {', '.join(controls)} go to manual verification for the "
         f"unparsed .ts/.tsx files (not reported as passing)",
     ]
-    l0 = [c for c in controls if tiers.get(c) == "L0"]
+    l0 = checklib.l0_subset(controls, tiers)
     if l0:
         lines.append(f"NOTE  a11y-eslint: {', '.join(l0)} are L0 — they block until "
                      f"verified by some path")
@@ -375,7 +341,7 @@ def run(paths, target_root=None, node="node"):
     except checklib.RuleMapError as exc:
         return 1, [f"ERROR a11y-eslint: {exc}"]
 
-    tiers = catalog_tiers()
+    tiers = checklib.catalog_tiers()
     out = []
     _, missing, _ = partition_targets(paths)
     for p in missing:
@@ -514,7 +480,7 @@ def run_self_test():
           len(fatal_notes) == 1 and "broken.tsx" in fatal_notes[0])
 
     # ── a layer that did not run does not silently pass ────────────────────────
-    tiers = catalog_tiers()
+    tiers = checklib.catalog_tiers()
     check("the catalogue tiers are readable", "L0", tiers.get("A11Y-2"))
     skip = manual_verification_notes("no eslint in /repo's node_modules", controls, tiers)
     check("the skip report is NOTEs only", True, all(n.startswith("NOTE") for n in skip))
@@ -561,7 +527,7 @@ def run_self_test():
     jsx_rules = [r for r in rule_map["rules"] if r.startswith("jsx-a11y/")]
     check("every rule in jsx-a11y's recommended preset has a row", 31, len(jsx_rules))
     check("the map has no rows outside the preset", len(jsx_rules), len(rule_map["rules"]))
-    catalog_ids = set(catalog_tiers())
+    catalog_ids = set(checklib.catalog_tiers())
     check("every mapped control id is in the catalogue", set(),
           set(rule_map["rules"].values()) - catalog_ids)
     check("every layer's controls are in the catalogue", set(),

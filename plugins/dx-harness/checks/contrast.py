@@ -439,15 +439,19 @@ def inert_notes(reason, controls):
     """The honest-inert report: nothing was declared, so the check grades N/A
     and says which controls go to manual verification instead of passing."""
     verb = "goes" if len(controls) == 1 else "go"
-    return [
+    lines = [
         f"NOTE  contrast: no declared foreground/background token pairs — {reason}",
         "NOTE  contrast: grade A11Y-1 N/A for this check and verify it by hand "
         "(declare `- pairs: [[\"--fg\", \"--bg\"], …]` under `## Colour` in DESIGN.md "
         "to switch it on)",
         f"NOTE  contrast: {', '.join(controls)} {verb} to manual verification "
-        f"(not reported as passing); A11Y-1 is L0 and blocks until verified by "
-        f"some path",
+        f"(not reported as passing)",
     ]
+    l0 = checklib.l0_subset(controls)
+    if l0:
+        lines.append(f"NOTE  contrast: {', '.join(l0)} is L0 and blocks until verified "
+                     f"by some path")
+    return lines
 
 
 def find_design_root(start):

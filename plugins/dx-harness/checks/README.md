@@ -23,9 +23,12 @@ tails). `emit_error` also takes an optional `extra=` that fills the second brack
 tolerates and discards, so a finding can name the rule that fired without changing
 the line shape. checklib also loads the a11y rule map (`load_rule_map`,
 `layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
-below) so the three a11y layers read one file rather than three copies of it.
-checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (45 cases)`.
+below) so the three a11y layers read one file rather than three copies of it, and
+reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
+`l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
+`waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
+bodies. checklib has its own gate: `python3 checks/checklib.py --self-test` →
+`SELF-TEST OK (48 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 

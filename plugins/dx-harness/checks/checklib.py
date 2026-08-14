@@ -649,6 +649,49 @@ def emit_error(rel, lineno, ctl, found, suggest, extra=None):
     return f"ERROR {rel}:{lineno} [{ctl}]{tail} {found} — suggest: {suggest}"
 
 
+_CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
+_CATALOG_TIER_RE = re.compile(r"^\s*tier:\s*(\S+)\s*$")
+
+
+def catalog_tiers(path=None):
+    """
+    {control id: tier} from `standards/catalog.yaml`, parsed with a stdlib
+    regex (the same shape scripts/generate-design-json.py uses) so a check that
+    needs a tier stays dependency-free. `waiver-reconcile.py` keeps its own
+    yaml-based reader because it needs whole control bodies; this one reads two
+    fields and must work where PyYAML is absent.
+
+    Returns {} when the catalogue cannot be read — a caller states less, it
+    never crashes and never guesses a tier.
+    """
+    if path is None:
+        checks_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(os.path.dirname(checks_dir), "standards", "catalog.yaml")
+    tiers, current = {}, None
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                m = _CATALOG_ID_RE.match(line)
+                if m:
+                    current = m.group(1)
+                    continue
+                if current:
+                    t = _CATALOG_TIER_RE.match(line)
+                    if t:
+                        tiers[current] = t.group(1)
+                        current = None
+    except OSError:
+        return {}
+    return tiers
+
+
+def l0_subset(controls, tiers=None):
+    """The L0 members of `controls`, in the order given. Used to say "this one
+    still blocks" when a layer could not verify it."""
+    tiers = catalog_tiers() if tiers is None else tiers
+    return [c for c in controls if tiers.get(c) == "L0"]
+
+
 class RuleMapError(Exception):
     """Raised when the a11y rule map is missing or unreadable — a
     misconfiguration, not a finding."""
@@ -961,6 +1004,18 @@ def _self_test():
     check(
         "layer_controls: the eslint layer names its controls",
         layer_controls("eslint-jsx-a11y", rule_map) == ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"],
+    )
+    check(
+        "catalog_tiers: reads a control's tier without yaml",
+        catalog_tiers().get("A11Y-2") == "L0",
+    )
+    check(
+        "catalog_tiers: an unreadable catalogue yields {}, never a guess",
+        catalog_tiers(os.path.join("no", "such", "catalog.yaml")) == {},
+    )
+    check(
+        "l0_subset: keeps only the L0 controls, in order",
+        l0_subset(["A11Y-6", "A11Y-2", "A11Y-3"]) == ["A11Y-2", "A11Y-3"],
     )
     raised_layer = False
     try:
