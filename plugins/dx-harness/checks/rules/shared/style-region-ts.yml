@@ -1,0 +1,24 @@
+# A tagged style template literal — css`…`, styled.x`…`, styled(X)`…`,
+# createGlobalStyle`…`, injectGlobal`…`. The body is CSS, so
+# checklib.astgrep_scan() re-scans it with the css rules. Ancestry decides this
+# now, which retires the old tracker's rule that a template literal ended on a
+# line whose entire content was a backtick.
+id: shared-style-region-ts
+language: ts
+severity: warning
+message: style region
+metadata:
+  check: shared
+  surface: style-region
+  kind: string_fragment
+rule:
+  kind: string_fragment
+  inside:
+    kind: template_string
+    inside:
+      any:
+        - pattern: styled.$TAG`$$$BODY`
+        - pattern: styled($COMPONENT)`$$$BODY`
+        - pattern: css`$$$BODY`
+        - pattern: createGlobalStyle`$$$BODY`
+        - pattern: injectGlobal`$$$BODY`

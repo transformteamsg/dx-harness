@@ -18,10 +18,22 @@ so scripts import this module by path with the same importlib snippet
 
 Rule logic stays in each script; this module holds only the scaffolding that
 was duplicated across them.
+
+astgrep_scan() is the one door every check uses to reach ast-grep. It is here
+and not in a new checks/*.py file because validate.py's live_checks_count()
+counts every checks/*.py except validate.py and checklib.py, and a new file
+would be counted as a check script.
 """
 
+import json
 import os
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
+
+_CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # The 8 extensions the general lint-style checks scan. content-lint.py scans
 # prose too and keeps its own, larger set — it uses iter_target_files() with
@@ -106,6 +118,484 @@ def iter_target_files(paths, extensions=TARGET_EXTENSIONS, skip_dirs=SKIP_DIRS):
             yield ("missing", p)
 
 
+# ── ast-grep front end ────────────────────────────────────────────────────────
+#
+# Every harness check that matches source structure goes through astgrep_scan().
+# No check shells out to `ast-grep` itself: the version floor, the config path,
+# the explicit file list, the JSON shape and the 0-based to 1-based line
+# conversion are enforced once, here. A second copy of any of that is where the
+# floor silently stops being enforced.
+
+ASTGREP_MIN_VERSION = (0, 44, 1)
+ASTGREP_MIN_VERSION_STR = "0.44.1"
+
+# The harness's own ast-grep project config. It travels with the harness and is
+# reached with `-c`, so nothing is written into the repo being checked.
+SGCONFIG_PATH = os.path.join(_CHECKS_DIR, "sgconfig.yml")
+
+# Extension to ast-grep language bucket. Four buckets, because an ast-grep rule
+# is per language, not per control.
+#   - .vue and .svelte are not ast-grep languages at 0.44.1; sgconfig.yml's
+#     languageGlobs map them to html so their attributes are reachable.
+#   - .js and .jsx alias to tsx safely. .ts does NOT: measured at 0.44.1, a .ts
+#     file holding an old-style `<Foo>bar` type assertion returns zero findings
+#     at exit 0 under a tsx rule and one finding under a `language: ts` rule.
+#     The tsx parse fails and the file's matches vanish with no error.
+ASTGREP_LANGUAGE_BY_EXT = {
+    ".css": "css",
+    ".html": "html",
+    ".vue": "html",
+    ".svelte": "html",
+    ".tsx": "tsx",
+    ".jsx": "tsx",
+    ".js": "tsx",
+    ".ts": "ts",
+}
+
+# The root node of each bucket's grammar. A non-empty file that yields no root
+# node was not parsed, and a zero-findings result for it cannot be trusted.
+ASTGREP_ROOT_KIND = {
+    "css": "stylesheet",
+    "html": "document",
+    "tsx": "program",
+    "ts": "program",
+}
+
+# How many files to hand one ast-grep invocation. Keeps the argv well inside
+# every platform's limit without making the walk itself chatty.
+_ASTGREP_BATCH = 100
+
+_astgrep_binary_cache = {}
+
+
+class AstGrepError(Exception):
+    """
+    A provisioning or tool failure, not a finding. `str()` is the finished ERROR
+    line to print; `stderr` is ast-grep's own stderr, forwarded unchanged.
+
+    Never swallow one of these into a zero-findings result: ast-grep can lose an
+    entire file's matches at exit 0, so silence is the failure mode being
+    designed against. Print the line, exit 1, print no findings.
+    """
+
+    def __init__(self, line, stderr=""):
+        super().__init__(line)
+        self.line = line
+        self.stderr = stderr
+
+    def report(self, out=None, err=None):
+        """Print the ERROR line on stdout and ast-grep's stderr on stderr."""
+        print(self.line, file=out or sys.stdout)
+        if self.stderr:
+            print(self.stderr.rstrip("\n"), file=err or sys.stderr)
+
+
+def parse_astgrep_version(text):
+    """
+    Read a version tuple out of `ast-grep --version` output ("ast-grep 0.44.1").
+    Returns None when no `<major>.<minor>.<patch>` can be found.
+    """
+    m = re.search(r"(\d+)\.(\d+)\.(\d+)", text or "")
+    if not m:
+        return None
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+
+
+def astgrep_version_ok(found, floor=ASTGREP_MIN_VERSION):
+    """True when `found` (a version tuple) is at or above `floor`."""
+    return found is not None and found >= floor
+
+
+def astgrep_language_for(path):
+    """The ast-grep language bucket for a path, or None when it has no bucket."""
+    return ASTGREP_LANGUAGE_BY_EXT.get(os.path.splitext(path)[1].lower())
+
+
+def _resolve_astgrep(check_name):
+    """Return the ast-grep binary path, or raise AstGrepError."""
+    if "binary" in _astgrep_binary_cache:
+        return _astgrep_binary_cache["binary"]
+    binary = shutil.which("ast-grep") or shutil.which("sg")
+    if binary is None:
+        raise AstGrepError(
+            f"ERROR {check_name}: cannot run ast-grep, install ast-grep >= "
+            f"{ASTGREP_MIN_VERSION_STR} "
+            f"(brew install ast-grep, or npm i -g @ast-grep/cli)"
+        )
+    try:
+        proc = subprocess.run(
+            [binary, "--version"], capture_output=True, text=True, check=False
+        )
+    except OSError:
+        raise AstGrepError(
+            f"ERROR {check_name}: cannot run ast-grep, install ast-grep >= "
+            f"{ASTGREP_MIN_VERSION_STR} "
+            f"(brew install ast-grep, or npm i -g @ast-grep/cli)"
+        )
+    raw = (proc.stdout or proc.stderr or "").strip()
+    found = parse_astgrep_version(raw)
+    if found is None:
+        raise AstGrepError(
+            f"ERROR {check_name}: cannot read ast-grep version from '{raw}', "
+            f"require >= {ASTGREP_MIN_VERSION_STR}"
+        )
+    if not astgrep_version_ok(found):
+        shown = ".".join(str(n) for n in found)
+        raise AstGrepError(
+            f"ERROR {check_name}: ast-grep {shown} is below the required "
+            f"{ASTGREP_MIN_VERSION_STR}, upgrade ast-grep"
+        )
+    _astgrep_binary_cache["binary"] = binary
+    return binary
+
+
+def _astgrep_rule_filter(check_name):
+    """Rule ids this check runs: its own, plus the shared structural rules."""
+    return f"^(shared|{re.escape(check_name)})-"
+
+
+def _run_astgrep(binary, check_name, files):
+    """One `ast-grep scan` invocation over an explicit file list. Returns the
+    parsed JSON list, or raises AstGrepError."""
+    cmd = [
+        binary, "scan",
+        "-c", SGCONFIG_PATH,
+        "--filter", _astgrep_rule_filter(check_name),
+        "--include-metadata",
+        "--json=compact",
+    ] + list(files)
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    except OSError as exc:
+        raise AstGrepError(f"ERROR {check_name}: cannot run ast-grep — {exc}")
+    stderr = proc.stderr or ""
+    if proc.returncode not in (0, 1):
+        bad_rule = re.search(r"Cannot parse rule (\S+)", stderr)
+        if bad_rule:
+            raise AstGrepError(
+                f"ERROR {check_name}: rule {bad_rule.group(1)} is not a valid "
+                f"ast-grep rule, see stderr",
+                stderr,
+            )
+        raise AstGrepError(
+            f"ERROR {check_name}: ast-grep exited {proc.returncode}, see stderr",
+            stderr,
+        )
+    try:
+        return json.loads(proc.stdout or "[]")
+    except ValueError:
+        raise AstGrepError(
+            f"ERROR {check_name}: cannot parse ast-grep JSON output", stderr
+        )
+
+
+def _candidate_from_match(match, host_file=None, embedded=False):
+    """Normalise one ast-grep JSON match into a candidate record."""
+    meta = match.get("metadata") or {}
+    start = match["range"]["start"]
+    end = match["range"]["end"]
+    return {
+        "control": meta.get("control"),
+        "check": meta.get("check"),
+        "surface": meta.get("surface"),
+        "context": meta.get("context"),
+        "rule_id": match.get("ruleId"),
+        "file": host_file or match["file"],
+        # ast-grep's JSON line and column are 0-based; emit_error is 1-based.
+        # This is the only place the conversion happens.
+        "line": start["line"] + 1,
+        "column": start["column"] + 1,
+        "end_line": end["line"] + 1,
+        "end_column": end["column"] + 1,
+        "text": match.get("text", ""),
+        "node_kind": meta.get("kind"),
+        "language": match.get("language"),
+        "metadata": meta,
+        "embedded": embedded,
+    }
+
+
+def _blanked_prefix(source, line, column):
+    """
+    The part of `source` before (1-based) `line`/`column`, with every character
+    except the newlines replaced by a space. Prefixing an extracted region with
+    this makes the region's line and column numbers in a standalone file equal
+    its line and column numbers in the host file.
+    """
+    lines = source.splitlines(keepends=True)
+    out = []
+    for raw in lines[: line - 1]:
+        out.append(re.sub(r"[^\n]", " ", raw))
+    if line - 1 < len(lines):
+        out.append(re.sub(r"[^\n]", " ", lines[line - 1][: column - 1]))
+    return "".join(out)
+
+
+def _terminated(text):
+    """
+    Close an embedded region's last declaration if the author left it open.
+
+    Measured at 0.44.1: tree-sitter-css yields no declaration node for a
+    declaration list with no trailing semicolon, so `style="padding: 15px"` and
+    styled.div`color: red` would each lose their only candidate. The semicolon is
+    appended past the end of the region, so no line or column before it moves.
+    """
+    stripped = text.rstrip()
+    if stripped and not stripped.endswith((";", "}", "{")):
+        return text + ";"
+    return text
+
+
+def _scan_embedded_css(binary, check_name, regions):
+    """
+    Re-scan embedded CSS regions (a <style> block or a style="…" attribute in
+    html/vue/svelte, a tagged style template literal in js/ts/jsx/tsx) with the
+    css rules, so a style context is matched by CSS rules wherever it is written.
+
+    Each region is written to a temp .css file behind a blanked prefix, so every
+    line and column the css rules report is already the host file's own.
+    """
+    if not regions:
+        return []
+    sources = {}
+    out = []
+    with tempfile.TemporaryDirectory(prefix="dx-astgrep-") as tmp:
+        region_by_temp = {}
+        for i, region in enumerate(regions):
+            host = region["file"]
+            if host not in sources:
+                try:
+                    with open(host, encoding="utf-8", errors="replace") as fh:
+                        sources[host] = fh.read()
+                except OSError:
+                    sources[host] = None
+            source = sources[host]
+            if source is None:
+                continue
+            prefix = _blanked_prefix(source, region["line"], region["column"])
+            temp_path = os.path.join(tmp, f"region-{i}.css")
+            with open(temp_path, "w", encoding="utf-8") as fh:
+                fh.write(prefix + _terminated(region["text"]))
+            region_by_temp[os.path.realpath(temp_path)] = region
+        if not region_by_temp:
+            return []
+        temp_files = sorted(region_by_temp)
+        for i in range(0, len(temp_files), _ASTGREP_BATCH):
+            batch = temp_files[i:i + _ASTGREP_BATCH]
+            for match in _run_astgrep(binary, check_name, batch):
+                region = region_by_temp.get(os.path.realpath(match["file"]))
+                if region is None:
+                    continue
+                cand = _candidate_from_match(match, host_file=region["file"], embedded=True)
+                if cand["surface"] in ("parsed", "style-region"):
+                    continue
+                out.append(_clamp_to_region(cand, region))
+    return out
+
+
+def _clamp_to_region(cand, region):
+    """
+    Pull a candidate's end back inside its region. Only _terminated()'s appended
+    semicolon can push it past, and that character is not in the host file, so a
+    candidate must never claim it.
+    """
+    end = (cand["end_line"], cand["end_column"])
+    limit = (region["end_line"], region["end_column"])
+    if end > limit:
+        cand["end_line"], cand["end_column"] = limit
+        if cand["text"].endswith(";"):
+            cand["text"] = cand["text"][:-1]
+    return cand
+
+
+def astgrep_scan(paths, check_name):
+    """
+    The single entry point every harness check uses to reach ast-grep.
+
+    `paths` is an explicit list of FILES — the caller walks the tree with
+    iter_target_files(), because `ast-grep scan` applies .gitignore semantics
+    when it walks a directory itself and iter_target_files() does not. Files
+    whose extension has no ast-grep language bucket are ignored.
+
+    `check_name` is the check's own name ("token-audit"). It selects the rules
+    (`^(shared|<check_name>)-`) and prefixes every ERROR line raised.
+
+    Returns a list of candidate records, sorted by (file, line, column, rule id).
+    Each record is a plain dict:
+
+        control    str or None   rule metadata.control, e.g. "TOK-1". None on a
+                                 structural rule that carries no control id
+        check      str           rule metadata.check
+        surface    str           rule metadata.surface — what the candidate is
+                                 for ("style", "text", "code", "comment",
+                                 "style-region", "parsed", …)
+        context    str or None   rule metadata.context, e.g. "className"
+        rule_id    str           the ast-grep rule id that matched
+        file       str           the path as handed in (the HOST path, even for
+                                 a candidate found inside an embedded region)
+        line       int           1-based, matching emit_error
+        column     int           1-based
+        end_line   int           1-based
+        end_column int           1-based
+        text       str           the matched node's text — what policy parses
+        node_kind  str or None   rule metadata.kind
+        language   str           the ast-grep language that matched
+        metadata   dict          the rule's whole metadata block
+        embedded   bool          True when found by re-scanning an embedded
+                                 CSS region rather than the host file itself
+
+    Raises AstGrepError for every tool and provisioning failure, including a
+    non-empty file that produced no syntax tree. A caller prints the error and
+    exits 1; it never treats the failure as a clean run.
+    """
+    files = []
+    for p in paths:
+        if astgrep_language_for(p) is not None:
+            files.append(p)
+    if not files:
+        # `ast-grep scan` with no PATHS scans "." — never let that happen.
+        return []
+    if not os.path.isfile(SGCONFIG_PATH):
+        raise AstGrepError(
+            f"ERROR {check_name}: cannot read ast-grep config {SGCONFIG_PATH}"
+        )
+    binary = _resolve_astgrep(check_name)
+
+    candidates = []
+    parsed_files = set()
+    regions = []
+    ordered = sorted(dict.fromkeys(files))
+    for i in range(0, len(ordered), _ASTGREP_BATCH):
+        batch = ordered[i:i + _ASTGREP_BATCH]
+        for match in _run_astgrep(binary, check_name, batch):
+            cand = _candidate_from_match(match)
+            if cand["surface"] == "parsed":
+                parsed_files.add(os.path.realpath(cand["file"]))
+                continue
+            if cand["surface"] == "style-region":
+                # A region ast-grep already parsed as CSS needs no re-scan: that
+                # covers a .css file and, measured at 0.44.1, a <style> block
+                # inside html/vue/svelte, which ast-grep parses as CSS in place.
+                # A style="…" attribute and a tagged style template literal are
+                # not parsed as CSS, so those two are re-scanned.
+                if (cand["language"] or "").lower() != "css":
+                    regions.append(cand)
+            candidates.append(cand)
+
+    for path in ordered:
+        try:
+            empty = os.path.getsize(path) == 0
+        except OSError:
+            empty = False
+        if empty or os.path.realpath(path) in parsed_files:
+            continue
+        lang = astgrep_language_for(path)
+        raise AstGrepError(
+            f"ERROR {check_name}: ast-grep parsed no {lang} syntax tree for "
+            f"{path}, a zero-findings result cannot be trusted"
+        )
+
+    candidates.extend(_scan_embedded_css(binary, check_name, regions))
+    candidates.sort(key=lambda c: (c["file"], c["line"], c["column"], c["rule_id"] or ""))
+    return candidates
+
+
+def surface_lines(source_lines, candidates, surfaces):
+    """
+    Rebuild each source line as only the text ast-grep offered as a candidate on
+    the wanted `surfaces`, with every other character blanked to a space and
+    every comment span removed. Returns a dict of 1-based line number to text.
+
+    This is the seam: ast-grep decides which spans of a file are code, and which
+    of those are a style context; the policy layer then reads the values out of
+    those spans exactly as it always has. A parser never offers comment text as
+    code, so the comment-stripping machinery is gone rather than moved.
+    """
+    wanted = set(surfaces)
+    spans = {}
+    comments = {}
+    for cand in candidates:
+        bucket = comments if cand["surface"] == "comment" else (
+            spans if cand["surface"] in wanted else None
+        )
+        if bucket is None:
+            continue
+        for lineno, start, end in _candidate_line_spans(cand, source_lines):
+            bucket.setdefault(lineno, []).append((start, end))
+
+    out = {}
+    for lineno, keep in spans.items():
+        raw = source_lines[lineno - 1] if lineno - 1 < len(source_lines) else ""
+        chars = [" "] * len(raw)
+        for start, end in keep:
+            for i in range(max(0, start), min(len(raw), end)):
+                chars[i] = raw[i]
+        for start, end in comments.get(lineno, ()):
+            for i in range(max(0, start), min(len(raw), end)):
+                chars[i] = " "
+        out[lineno] = "".join(chars)
+    return out
+
+
+def _candidate_line_spans(cand, source_lines):
+    """Yield (1-based line, start col, end col) 0-based-column spans a candidate
+    covers. A multi-line node covers each of its lines."""
+    first, last = cand["line"], cand["end_line"]
+    for lineno in range(first, last + 1):
+        if lineno - 1 >= len(source_lines):
+            break
+        width = len(source_lines[lineno - 1])
+        start = cand["column"] - 1 if lineno == first else 0
+        end = cand["end_column"] - 1 if lineno == last else width
+        yield (lineno, start, end)
+
+
+# ── Parity corpus ─────────────────────────────────────────────────────────────
+#
+# fixtures/parity/ holds the known-positive and known-negative corpus, plus one
+# expected/<fixture>.<check>.txt record per fixture and check. Every record was
+# produced by the PRE-swap engine and committed before the swap, so a diff to
+# expected/ in review means either a fixture changed or the swap changed a
+# decision — and the second is forbidden. See fixtures/parity/README.md.
+
+PARITY_DIR = os.path.join(_CHECKS_DIR, "fixtures", "parity")
+PARITY_GROUPS = ("known-positive", "known-negative")
+
+
+def parity_fixtures():
+    """(group, basename, path) for every parity-corpus fixture, in a stable order."""
+    out = []
+    for group in PARITY_GROUPS:
+        d = os.path.join(PARITY_DIR, group)
+        if not os.path.isdir(d):
+            continue
+        for name in sorted(os.listdir(d)):
+            if name.startswith("."):
+                continue
+            out.append((group, name, os.path.join(d, name)))
+    return out
+
+
+def parity_expected(name, check_name):
+    """The recorded pre-swap output lines for one fixture and check."""
+    path = os.path.join(PARITY_DIR, "expected", f"{name}.{check_name}.txt")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return fh.read().splitlines()
+    except OSError:
+        return None
+
+
+def parity_normalise(lines, path, name):
+    """
+    Rewrite emitted lines into the path-independent form the records hold: the
+    fixture's basename in place of whatever relative path the caller's working
+    directory produced.
+    """
+    rel = os.path.relpath(path)
+    return [ln.replace(rel, name) for ln in lines]
+
+
 def emit_error(rel, lineno, ctl, found, suggest):
     """The canonical `ERROR {rel}:{lineno} [{ctl}] {found} — suggest: {suggest}`
     line. detect.py's `_FINDING_RE` reverse-parses this exact shape — change
@@ -128,6 +618,136 @@ def report_self_test(failures, case_count):
     sys.exit(0)
 
 
+_PROVISIONING_CHILD_ENV = "DX_ASTGREP_PROVISIONING_CHILD"
+
+
+def astgrep_provisioning_cases(script, target, check_eq):
+    """
+    Assert one check script's provisioning contract end to end: a missing,
+    unreadable or too-old ast-grep prints exactly one ERROR line naming the tool
+    and the required floor, exits 1, prints no findings, and never reports
+    SELF-TEST OK. A layer that did not run sends its controls to manual
+    verification; it never lets a control pass in silence.
+
+    Called from each check script's own --self-test, so the contract is asserted
+    where the script is gated. `script` is a filename in checks/ and `target` is a
+    path to scan, both relative to checks/. `check_eq(name, want, got)` is the
+    caller's assertion helper.
+
+    A no-op inside a child this function spawned, so it can never recurse.
+    """
+    if os.environ.get(_PROVISIONING_CHILD_ENV):
+        return
+    name = script[: -len(".py")] if script.endswith(".py") else script
+
+    def run(args, path_dir):
+        env = dict(os.environ)
+        env["PATH"] = path_dir
+        env[_PROVISIONING_CHILD_ENV] = "1"
+        proc = subprocess.run(
+            [sys.executable, os.path.join(_CHECKS_DIR, script)] + args,
+            capture_output=True, text=True, cwd=_CHECKS_DIR, env=env,
+        )
+        errs = [ln for ln in proc.stdout.splitlines() if ln.startswith("ERROR")]
+        return proc, errs
+
+    def shim_dir(tmp, version_line):
+        shim = os.path.join(tmp, "ast-grep")
+        with open(shim, "w", encoding="utf-8") as fh:
+            fh.write(f'#!/bin/sh\necho "{version_line}"\n')
+        os.chmod(shim, 0o755)
+        return tmp
+
+    with tempfile.TemporaryDirectory(prefix="dx-no-astgrep-") as empty:
+        proc, errs = run([target], empty)
+        check_eq(f"{name}: missing ast-grep exits 1", 1, proc.returncode)
+        check_eq(f"{name}: missing ast-grep prints exactly one ERROR line", 1, len(errs))
+        check_eq(
+            f"{name}: missing ast-grep names the tool and the floor",
+            True,
+            bool(errs) and "ast-grep" in errs[0] and ASTGREP_MIN_VERSION_STR in errs[0],
+        )
+        check_eq(
+            f"{name}: missing ast-grep prints no findings",
+            [],
+            [ln for ln in proc.stdout.splitlines() if "[TOK-" in ln or "[TYP-" in ln],
+        )
+        proc, _ = run(["--self-test"], empty)
+        check_eq(f"{name}: missing ast-grep never reports SELF-TEST OK",
+                 (1, False), (proc.returncode, "SELF-TEST OK" in proc.stdout))
+
+    with tempfile.TemporaryDirectory(prefix="dx-old-astgrep-") as tmp:
+        proc, errs = run([target], shim_dir(tmp, "ast-grep 0.41.0"))
+        check_eq(f"{name}: ast-grep below the floor exits 1", 1, proc.returncode)
+        check_eq(
+            f"{name}: ast-grep below the floor names both versions",
+            True,
+            len(errs) == 1 and "0.41.0" in errs[0] and ASTGREP_MIN_VERSION_STR in errs[0],
+        )
+
+    with tempfile.TemporaryDirectory(prefix="dx-odd-astgrep-") as tmp:
+        proc, errs = run([target], shim_dir(tmp, "sg (unknown build)"))
+        check_eq(
+            f"{name}: an unreadable ast-grep version is refused",
+            True,
+            proc.returncode == 1 and len(errs) == 1
+            and "cannot read ast-grep version" in errs[0]
+            and ASTGREP_MIN_VERSION_STR in errs[0],
+        )
+
+
+def _astgrep_config_failure_cases(check_eq):
+    """A broken or missing harness config is refused, never treated as clean."""
+    fixture = os.path.join("fixtures", "parity", "known-positive", "declaration.css")
+    # A rule file ast-grep cannot parse (exit 8) is named, its stderr forwarded.
+    global SGCONFIG_PATH
+    real_config = SGCONFIG_PATH
+    with tempfile.TemporaryDirectory(prefix="dx-bad-rule-") as bad:
+        os.makedirs(os.path.join(bad, "rules"))
+        rule_path = os.path.join(bad, "rules", "broken.yml")
+        with open(rule_path, "w", encoding="utf-8") as fh:
+            fh.write("id: shared-broken-css\nlanguage: css\nseverity: warning\n"
+                     "message: m\nrule:\n  notAnAstGrepField: x\n")
+        config = os.path.join(bad, "sgconfig.yml")
+        with open(config, "w", encoding="utf-8") as fh:
+            fh.write("ruleDirs:\n  - rules\n")
+        target = os.path.join(bad, "probe.css")
+        with open(target, "w", encoding="utf-8") as fh:
+            fh.write(".a { color: #fff }\n")
+        SGCONFIG_PATH = config
+        try:
+            astgrep_scan([target], "token-audit")
+            raised = None
+        except AstGrepError as exc:
+            raised = exc
+        finally:
+            SGCONFIG_PATH = real_config
+    check_eq(
+        "malformed rule: names the rule path and forwards ast-grep's stderr",
+        True,
+        raised is not None
+        and raised.line.startswith("ERROR token-audit: rule ")
+        and raised.line.endswith("is not a valid ast-grep rule, see stderr")
+        and "broken.yml" in raised.line
+        and "Cannot parse rule" in raised.stderr,
+    )
+
+    # A missing config is a loud failure too, never a clean run.
+    SGCONFIG_PATH = os.path.join(_CHECKS_DIR, "no-such-sgconfig.yml")
+    try:
+        astgrep_scan([os.path.join(_CHECKS_DIR, fixture)], "token-audit")
+        missing = None
+    except AstGrepError as exc:
+        missing = exc
+    finally:
+        SGCONFIG_PATH = real_config
+    check_eq(
+        "missing config: refused rather than treated as a clean run",
+        True,
+        missing is not None and "cannot read ast-grep config" in missing.line,
+    )
+
+
 def _self_test():
     failures = []
     case_count = 0
@@ -137,6 +757,12 @@ def _self_test():
         case_count += 1
         if not cond:
             failures.append(f"FAIL {name}")
+
+    def check_eq(name, want, got):
+        nonlocal case_count
+        case_count += 1
+        if want != got:
+            failures.append(f"FAIL {name}: want: {want!r}; got: {got!r}")
 
     # ── strip_block_comments / ends_in_block_comment ────────────────────────
     check(
@@ -224,6 +850,59 @@ def _self_test():
         emit_error("app/page.tsx", 12, "TYP-2", "font size 12px", "use >= 14px")
         == "ERROR app/page.tsx:12 [TYP-2] font size 12px — suggest: use >= 14px",
     )
+
+    # ── ast-grep version floor ────────────────────────────────────────────────
+    check_eq("version: reads ast-grep --version output",
+             (0, 44, 1), parse_astgrep_version("ast-grep 0.44.1"))
+    check_eq("version: reads a bare number", (1, 2, 3), parse_astgrep_version("1.2.3"))
+    check_eq("version: unreadable output is None", None, parse_astgrep_version("sg (unknown)"))
+    check_eq("version: empty output is None", None, parse_astgrep_version(""))
+    check_eq("version: the floor itself passes", True, astgrep_version_ok((0, 44, 1)))
+    check_eq("version: above the floor passes", True, astgrep_version_ok((0, 45, 0)))
+    check_eq("version: below the floor fails", False, astgrep_version_ok((0, 41, 0)))
+    check_eq("version: unreadable fails", False, astgrep_version_ok(None))
+
+    # ── language buckets ──────────────────────────────────────────────────────
+    check_eq("bucket: .ts is its own bucket, never tsx", "ts", astgrep_language_for("a.ts"))
+    check_eq("bucket: .js aliases to tsx", "tsx", astgrep_language_for("a.js"))
+    check_eq("bucket: .vue reaches html", "html", astgrep_language_for("a.vue"))
+    check_eq("bucket: an unknown extension has none", None, astgrep_language_for("a.md"))
+
+    # ── surface_lines: the seam ───────────────────────────────────────────────
+    src = ['.a { color: #fff } /* say #000 */']
+    cands = [
+        {"surface": "style", "line": 1, "column": 6, "end_line": 1, "end_column": 18},
+        {"surface": "comment", "line": 1, "column": 20, "end_line": 1, "end_column": 34},
+    ]
+    check_eq("surface: keeps the candidate span and blanks the rest",
+             "     color: #fff                 ", surface_lines(src, cands, ("style",))[1])
+    check_eq("surface: a line with no candidate is absent",
+             {}, surface_lines(["plain"], [], ("style",)))
+    over = [{"surface": "style", "line": 1, "column": 1, "end_line": 2, "end_column": 4}]
+    check_eq("surface: a multi-line candidate covers each of its lines",
+             {1: "ab", 2: "cde"}, surface_lines(["ab", "cde"], over, ("style",)))
+
+    check_eq("blanked prefix: keeps newlines, blanks everything else",
+             "     \n  ", _blanked_prefix("abcde\nfghij\n", 2, 3))
+    check_eq("terminated: closes an open declaration list",
+             "padding: 15px;", _terminated("padding: 15px"))
+    check_eq("terminated: leaves a closed one alone",
+             "padding: 15px;", _terminated("padding: 15px;"))
+    check_eq("terminated: leaves a braced body alone",
+             ".a { color: red }", _terminated(".a { color: red }"))
+    clamped = _clamp_to_region(
+        {"end_line": 1, "end_column": 15, "text": "padding: 15px;"},
+        {"end_line": 1, "end_column": 14},
+    )
+    check_eq("clamp: an appended semicolon never claims a host character",
+             (1, 14, "padding: 15px"),
+             (clamped["end_line"], clamped["end_column"], clamped["text"]))
+
+    # ── astgrep_scan guards ───────────────────────────────────────────────────
+    check_eq("scan: no scannable file means no ast-grep run and no directory walk",
+             [], astgrep_scan(["notes.md"], "token-audit"))
+
+    _astgrep_config_failure_cases(check_eq)
 
     if failures:
         for f in failures:

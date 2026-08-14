@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>inline-style.html — parity fixture</title>
+</head>
+<!--
+  Expected findings (recorded from the pre-swap engine, see expected/):
+    token-audit  TOK-1  #0064ff in the style attribute
+    token-audit  TOK-2  15px in the style attribute
+    type-scan    TYP-2 + TYP-3  font size 13px in the style attribute
+    type-scan    TYP-2  line-height 1.2 in the style attribute
+-->
+<body>
+  <div style="color: #0064ff; padding: 15px;">Inline style</div>
+  <p style="font-size: 13px; line-height: 1.2;">Copy</p>
+</body>
+</html>

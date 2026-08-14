@@ -1,0 +1,12 @@
+# Every tsx node that carries author text: a whole JSX attribute (its name as
+# well as its value), a quoted string, a template literal and JSX text. Between
+# them these reach a className value, a style={{}} object value, a
+# styled-components body and visible copy. Comments are not in the set.
+id: tsx-code-node
+language: tsx
+rule:
+  any:
+    - kind: jsx_attribute
+    - kind: string
+    - kind: template_string
+    - kind: jsx_text

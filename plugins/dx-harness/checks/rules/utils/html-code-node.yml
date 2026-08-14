@@ -1,0 +1,11 @@
+# Every html node that carries author text: a whole attribute (its name as well
+# as its value, because a locator may need to know it is a class attribute),
+# element text, and the raw body of a <script> or <style> block. Markup and
+# comments are not in the set, so comment text is never offered as code.
+id: html-code-node
+language: html
+rule:
+  any:
+    - kind: attribute
+    - kind: text
+    - kind: raw_text

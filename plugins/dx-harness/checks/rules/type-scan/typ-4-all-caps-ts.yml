@@ -1,0 +1,14 @@
+# An all-caps transform: a text-transform declaration or the `uppercase`
+# utility. Deciding that a quoted string is a class list rather than prose stays
+# in Python, because narrowing it would change what the check reports.
+id: type-scan-typ-4-all-caps-ts
+language: ts
+severity: warning
+message: candidate typ 4 all caps
+metadata:
+  control: TYP-4
+  check: type-scan
+  surface: code
+rule:
+  matches: ts-code-node
+  regex: '(?i)(text-transform\s*:|\buppercase\b)'

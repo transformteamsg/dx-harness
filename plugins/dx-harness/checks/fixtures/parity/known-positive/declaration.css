@@ -1,0 +1,18 @@
+/*
+ * declaration.css — parity fixture: one CSS rule holding a spacing shorthand, a
+ * radius, a size and a line-height.
+ *
+ * Expected findings (recorded from the pre-swap engine, see expected/):
+ *   token-audit  TOK-2  15px
+ *   token-audit  TOK-2  15px and 18px   — both members of the shorthand
+ *   token-audit  TOK-3  10px
+ *   type-scan    TYP-2 + TYP-3  font size 13px
+ *   type-scan    TYP-2  line-height 1.2
+ */
+.panel {
+  margin: 15px;
+  padding: 15px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.2;
+}

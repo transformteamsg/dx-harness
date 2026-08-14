@@ -1,0 +1,13 @@
+/*
+ * waiver-claimed.css — parity fixture: an inline dx-waive on an L1 control
+ * downgrades the line to [waiver-claimed] and still exits 1. The marker is read
+ * from the raw source line, not from the parser's view, because the parser has no
+ * comments in it.
+ *
+ * Expected findings (recorded from the pre-swap engine, see expected/):
+ *   token-audit  TOK-1 with the [waiver-claimed] marker
+ *   type-scan    none
+ */
+.brand {
+  color: #0064ff; /* dx-waive TOK-1 reason="approved in DR-004" */
+}

@@ -1,0 +1,2 @@
+ERROR type-assertion.ts:17 [TYP-2] font size 13px below the 14px body floor (text-[…px]) — suggest: body >= 14px; only short labels may go to 12px
+ERROR type-assertion.ts:17 [TYP-3] font size 13px not on the Tailwind default type scale (text-[…px]) — suggest: use a scale size: [128, 96, 72, 60, 48, 36, 30, 24, 20, 18, 16, 14, 12]
