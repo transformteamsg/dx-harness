@@ -596,6 +596,39 @@ def parity_normalise(lines, path, name):
     return [ln.replace(rel, name) for ln in lines]
 
 
+def parity_cases(check_name, scan_one):
+    """
+    Compare every corpus fixture against its recorded pre-swap output. Returns
+    (failures, case_count) for the caller's --self-test to fold in.
+
+    `scan_one(path)` runs the check over one fixture and returns its emitted
+    lines. Both check scripts call this rather than each keeping a copy of the
+    comparison, so the corpus is read one way only.
+    """
+    failures = []
+    count = 0
+    for group, name, path in parity_fixtures():
+        count += 1
+        want = parity_expected(name, check_name)
+        got = parity_normalise(scan_one(path), path, name)
+        if want is None:
+            failures.append(f"FAIL parity {group}/{name}: no expected record")
+        elif want != got:
+            failures.append(f"FAIL parity {group}/{name}: want: {want!r}; got: {got!r}")
+        if group == "known-negative" and got:
+            failures.append(f"FAIL parity {group}/{name}: want no ERROR; got: {got!r}")
+    return failures, count
+
+
+def group_candidates(candidates):
+    """Bucket astgrep_scan()'s records by the file they belong to, so a check can
+    walk files while paying for one ast-grep invocation."""
+    by_file = {}
+    for cand in candidates:
+        by_file.setdefault(os.path.realpath(cand["file"]), []).append(cand)
+    return by_file
+
+
 def emit_error(rel, lineno, ctl, found, suggest):
     """The canonical `ERROR {rel}:{lineno} [{ctl}] {found} — suggest: {suggest}`
     line. detect.py's `_FINDING_RE` reverse-parses this exact shape — change

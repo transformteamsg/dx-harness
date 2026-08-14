@@ -471,14 +471,6 @@ def check_file(filepath, type_scale=None, rules=None, candidates=None):
     return results
 
 
-def group_candidates(candidates):
-    """Bucket astgrep_scan()'s records by the file they belong to."""
-    by_file = {}
-    for cand in candidates:
-        by_file.setdefault(os.path.realpath(cand["file"]), []).append(cand)
-    return by_file
-
-
 def scan_paths(paths, rules=None):
     """Walk paths, collect ERROR/NOTE lines. Prints scale-fallback NOTE once.
     `rules` (additive, optional) restricts emitted findings to those control
@@ -501,7 +493,7 @@ def scan_paths(paths, rules=None):
             all_results.append(f"ERROR type-scan: path not found: {val}")
         else:
             files.append(val)
-    by_file = group_candidates(checklib.astgrep_scan(files, CHECK_NAME))
+    by_file = checklib.group_candidates(checklib.astgrep_scan(files, CHECK_NAME))
     for val in files:
         all_results.extend(
             check_file(val, type_scale, rules, by_file.get(os.path.realpath(val), []))
@@ -731,18 +723,11 @@ def run_self_test():
     # Every record in fixtures/parity/expected/ was produced by the pre-swap
     # engine and committed before the matching layer moved to ast-grep. A diff
     # here means either a fixture changed or the swap changed a decision.
-    for group, fname, fpath in checklib.parity_fixtures():
-        case_count += 1
-        want = checklib.parity_expected(fname, CHECK_NAME)
-        got = checklib.parity_normalise(check_file(fpath, type_scale), fpath, fname)
-        if want is None:
-            failures.append(f"FAIL parity {group}/{fname}: no expected record")
-        elif want != got:
-            failures.append(
-                f"FAIL parity {group}/{fname}: want: {want!r}; got: {got!r}"
-            )
-        if group == "known-negative" and got:
-            failures.append(f"FAIL parity {group}/{fname}: want no ERROR; got: {got!r}")
+    parity_failures, parity_count = checklib.parity_cases(
+        CHECK_NAME, lambda path: check_file(path, type_scale)
+    )
+    failures.extend(parity_failures)
+    case_count += parity_count
 
     # ── Per-rule selection over the corpus, as detect.py invokes it ────────────
     # detect.py's curated profile runs `type-scan --rules TYP-1`, so the filter
