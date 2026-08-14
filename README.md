@@ -5,12 +5,14 @@ bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
 - **21 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
   `dx-groom-issue`, `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`,
-  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 13 design (`dx-start`,
-  `dx-setup`, `dx-design`, `dx-critique`, `dx-standards`, `dx-copy`, `dx-polish`,
-  `dx-motion`, `dx-flow`, `dx-layout`, `dx-feedback`, `dx-git-buddy`,
-  `dx-research-brief`).
+  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 13 design (`dx-design`,
+  `dx-design-setup`, `dx-design-execute`, `dx-design-critique`,
+  `dx-design-language`, `dx-design-copy`, `dx-design-polish`, `dx-design-motion`,
+  `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`, `dx-design-git`,
+  `dx-design-research-brief`). The old pre-0.2.0 design names no longer resolve.
 - The design skills ship with their standards catalog (`plugins/dx-harness/standards/`),
-  deterministic checks (`plugins/dx-harness/checks/`), and an `evaluator` agent.
+  shared procedure docs (`plugins/dx-harness/procedures/`), deterministic checks
+  (`plugins/dx-harness/checks/`), and an `evaluator` agent.
 
 **DX Harness: one prefix, every discipline.** A harness for digital excellence — born in
 DXD Xperience Studio, built for everyone.
@@ -38,10 +40,18 @@ still announces where it came from.
 
 Skills appear as `/dx-harness:dx-<name>` (e.g. `/dx-harness:dx-code-review`,
 `/dx-harness:dx-design`). Update with `/plugin marketplace update dx-harness` then
-`/reload-plugins`.
+`/reload-plugins`. Claude Code installs updates only when the version in `plugin.json`
+changes.
 
-The design skills need Python 3 + PyYAML for the `checks/` scripts. Run `/dx-harness:dx-setup`
-(or `/dx-harness:dx-start`) for the per-user tool checklist.
+If the update reports no changes and the installed plugin is still `0.3.0`, remove
+only that version's cached plugin directory, then reinstall and reload:
+
+    rm -rf ~/.claude/plugins/cache/dx-harness/dx-harness/0.3.0
+    /plugin install dx-harness@dx-harness
+    /reload-plugins
+
+The design skills need Python 3 + PyYAML for the `checks/` scripts. Run `/dx-harness:dx-design-setup`
+(or `/dx-harness:dx-design`) for the per-user tool checklist.
 
 ### Claude Desktop / web app (plugin marketplace)
 
