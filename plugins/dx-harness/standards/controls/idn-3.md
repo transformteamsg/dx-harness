@@ -64,6 +64,7 @@ carrying an inline `dx-waive IDN-3 reason="…"` (L2).
 **Deconfliction.** COL-1 is the per-product *colour* register; this is the per-product
 *tone* register — orthogonal (a surface can pass one and fail the other). CNT-2/CNT-3 are
 portfolio-wide voice mechanics this control depends on, not restates. The CaseSync row
-here is the calm parent register; IDN-4 hardens CaseSync's sensitivity into a concrete
-prohibition on gamified/celebratory *elements* (not just copy) — this control covers the
-words, IDN-4 covers the interface treatment.
+here is the calm parent register; the harder prohibition on gamified/celebratory
+*elements* (not just copy) is a guardrail in CaseSync's DESIGN.md (moved from control
+IDN-4, 2026-08-14) — this control covers the words, the guardrail covers the interface
+treatment.

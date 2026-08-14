@@ -34,8 +34,8 @@ CNT-9 (clarity — one idea per sentence, simple present tense, no noun stacks, 
 defined on the surface), CNT-10 (one term per thing within a product), CNT-11 (match the
 UI term teachers already know — "Search" not "Find"), CNT-12 (sentence case), CNT-13
 (Singapore English spelling, proofread), CNT-14 (voice quality + tone-fit — the copy sounds
-Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
-(IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's reference: it is what
+Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and
+IDN-3**. The rest of this file is that pass's reference: it is what
 "on-voice" means. Catalogue mechanics (filtering, tiers, plain-title naming):
 `../../../procedures/catalogue-mechanics.md`. Findings are recorded per
 `../../../procedures/design-tickets.md`; accepted findings go to dx-design-execute,
@@ -228,8 +228,8 @@ A name that requires explanation has already failed.
 
 Same character everywhere; calibrate weight, never switch systems. This table is the
 register IDN-3 checks (normative table in `standards/controls/idn-3.md`); the
-CaseSync row is hardened by IDN-4 (L1, CaseSync-scoped: no celebration/gamification
-around case data):
+CaseSync row's harder prohibition on celebration/gamification around case data is a
+guardrail in CaseSync's DESIGN.md (moved from the former IDN-4, 2026-08-14):
 
 - **Teacher Workspace** — calm daily command centre: neutral, steady, quietly confident.
 - **CaseSync** — higher gravity: more reserved, restrained celebration, privacy-forward

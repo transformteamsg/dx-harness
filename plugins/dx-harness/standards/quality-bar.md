@@ -243,7 +243,7 @@ Before judging, work through this in order:
 | Data entry (marks, attendance, bulk edit) | Invisible | Zero novelty; the tool disappears into the task |
 | Scanning / comparison (lists, tables) | Regular | A break in rhythm must carry meaning, never decorate |
 | Reading (guidance, policy, a case note) | Measured | Typographic care is the allowed expression |
-| Decision (approve, submit, escalate) | Sober | No character near consequences — **IDN-4**'s instinct, applied product-wide |
+| Decision (approve, submit, escalate) | Sober | No character near consequences — celebration restraint, applied product-wide |
 | Empty state | One moment of character | It must not outrank the next action |
 | Overview / dashboard | Deliberate wayfinding | Semantic colour is design (**COL-2**); unmotivated multi-hue is the tell |
 
@@ -265,7 +265,7 @@ Before judging, work through this in order:
 | **SLP-1..SLP-11** | Any generic-AI tell with a control id is a finding — cite it, do not fold it into the grade. |
 | **CMP-1** | The mandate to use the stack component. Grade only whether the divergences that remain earned themselves. |
 | **CMP-7** | Consistency with design-system defaults and sibling pages. |
-| **IDN-1..IDN-4** | Lockups, product icons, tone registers, celebration boundaries. |
+| **IDN-1..IDN-3** | Lockups, product icons, tone registers. Celebration boundaries around case data are a CaseSync DESIGN.md guardrail. |
 | Craft | Whether a divergence is well executed. Grade here only whether it was warranted. |
 
 ---

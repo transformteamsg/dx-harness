@@ -161,11 +161,11 @@ priority order — the squint test, L2 — controls/lay-7.md).
 Apply each when in scope.
 
 **Identity grading.** Grade IDN-3 (tone register per the calibration table in
-controls/idn-3.md) on all copy-bearing surfaces. Grade IDN-4 (no
-celebration/gamification around case data, L1 — controls/idn-4.md) only when the
-surface's product is CaseSync (`products: [casesync]` — check the run's declared
-product). Flag IDN-2 violations (product icons redrawn or regenerated outside the
-approved family, L1) as deterministic findings pending the identity check script.
+controls/idn-3.md) on all copy-bearing surfaces. On CaseSync surfaces, also check the
+product's DESIGN.md guardrails (celebration restraint around case data moved there from
+the former IDN-4, 2026-08-14). Flag IDN-2 violations (product icons redrawn or
+regenerated outside the approved family, L1) as deterministic findings pending the
+identity check script.
 
 **Domain fidelity (CNT-4, L2, judgment — controls/cnt-4.md).** Where a surface models
 a real-world artifact (a curriculum, a form, a policy document), read its content
