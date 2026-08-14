@@ -20,7 +20,10 @@ Run in this order; do not present output to the user while a step is failing:
      outline removed with no focus-visible replacement on the same line. No tool
      covers it, and focus styling in a stylesheet it cannot see flags as a false
      positive: confirm the rendered element with a keyboard before treating it as a bug.
-   - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset of A11Y-1.
+   - `python3 checks/contrast.py --tokens <globals.css> --repo-root <product root>` — the
+     foreground/background token pairs declared under `## Colour` in DESIGN.md, measured
+     against AA (A11Y-1). With no pairs declared it grades A11Y-1 N/A and says so: that
+     is a manual check, never a pass.
    Each reads line-local code only: traversal order, computed hit-area, ARIA-state,
    inherited/computed backgrounds, and font-size classification all stay in the manual
    pass. Everything without a script: verify by hand against the control's detail file

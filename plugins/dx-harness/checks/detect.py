@@ -269,8 +269,9 @@ def expand_targets(paths, ignore_globs, repo_root):
 def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     """Return the ordered list of check specs for the chosen profile. Each spec:
     {"name", "args" (script + flags, before targets), "mode"}. mode "targets"
-    appends the scanned targets; mode "manifest" runs against `.dx/component-
-    manifest.json`."""
+    appends the scanned targets; mode "repo" appends `--repo-root <repo_root>`
+    and no targets (contrast grades the declared token pairs, not source files);
+    mode "manifest" runs against `.dx/component-manifest.json`."""
     allow = list(allow_values or [])
     specs = []
 
@@ -282,7 +283,7 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     co = ["contrast.py"]
     if tokens_file:
         co += ["--tokens", tokens_file]
-    specs.append({"name": "contrast", "args": co, "mode": "targets"})
+    specs.append({"name": "contrast", "args": co, "mode": "repo"})
 
     specs.append({"name": "a11y-static", "args": ["a11y-static.py"], "mode": "targets"})
     specs.append({"name": "a11y-eslint", "args": ["a11y-eslint.py"], "mode": "targets"})
@@ -400,6 +401,9 @@ def run_checks(specs, targets, ignore_rules, repo_root):
                 continue
             argv = [sys.executable, os.path.join(CHECKS_DIR, spec["args"][0]),
                     manifest, repo_root]
+        elif spec["mode"] == "repo":
+            script = os.path.join(CHECKS_DIR, spec["args"][0])
+            argv = [sys.executable, script] + spec["args"][1:] + ["--repo-root", repo_root]
         else:
             script = os.path.join(CHECKS_DIR, spec["args"][0])
             argv = [sys.executable, script] + spec["args"][1:] + list(targets)
@@ -651,7 +655,10 @@ def run_self_test():
     check("curated excludes content-lint / component-manifest",
           "content-lint" not in names_c and "component-manifest" not in names_c)
 
-    # 1b. the new lint layer runs over the scanned targets.
+    # 1b. contrast runs against the repo, not a file list: it grades the
+    # declared token pairs, so it takes --repo-root and no targets.
+    co_c = next(s for s in curated if s["name"] == "contrast")
+    check("contrast runs in repo mode", co_c["mode"] == "repo")
     check("a11y-eslint runs over the scanned targets",
           next(s for s in curated if s["name"] == "a11y-eslint")["mode"] == "targets")
 

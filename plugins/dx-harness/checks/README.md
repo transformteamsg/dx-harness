@@ -349,25 +349,75 @@ instead, so the case count never depends on the environment.
 
 **Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)` (includes the `fixtures/a11y-static/` pass/fail files, a case proving the deleted rules leave no coverage claim behind, and two that hold the docstring's load-bearing paragraphs in place).
 
-## Contrast scan (built — static subset)
+## Contrast on declared token pairs (built — honest-inert)
 
-`python3 checks/contrast.py --tokens <globals.css> <path>...` — computes WCAG 2.1 text-contrast ratios (A11Y-1) for the subset that is statically resolvable: a foreground and a background colour set together on the **same line** (class string or CSS rule) where both resolve to known token colours. This is the static half of A11Y-1 that needs no rendered DOM — the complement to `a11y-static.py`, whose docstring lists contrast as out of scope. Scans the same extensions as `a11y-static.py`. Exit 0 on pass or NOTEs-only; exit 1 with `ERROR` lines on any sub-AA pair.
+`python3 checks/contrast.py [--tokens <globals.css>] [--repo-root <dir>]` — answers the
+one part of A11Y-1 no rendered page can: do the design system's **declared** foreground
+and background token combinations clear WCAG AA? A declared pair is a design-system
+statement, measurable before anything renders; a rendered scan only ever sees the pairings
+a page happens to use. Exit 0 on pass or NOTEs-only; exit 1 with `ERROR` lines on any
+sub-AA declared pair.
 
-**Token resolution (`--tokens <file>`):** the colour map is built from a product's CSS token file (for this repo's own site, `../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains (transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`) so a Tailwind `text-foo`/`bg-foo` utility resolves through. An unresolved token stays unresolved — never guessed.
+**Where the pairs come from:** `- pairs: [["--foreground", "--background"], …]` under
+`## Colour` in the product's DESIGN.md, projected into `.dx/design.json` as
+`colour.pairs` by `scripts/generate-design-json.py` (its existing `- key: [json array]`
+parse already handles it — the generator needed no change). Each name resolves as a
+custom property (`--foo`) or as a Tailwind utility name (`foo`, through the `@theme`
+alias).
 
-**What counts as a candidate (line-local):** a `text-<colour>` **and** a `bg-<colour>` on the same Tailwind class string (bare names that resolve to a token colour, or arbitrary `text-[#hex]`/`bg-[var(--t)]`), or a CSS rule / `style="…"` with both `color:` and `background[-color]:`.
+**Honest-inert until pairs are declared.** Nothing declares pairs today, so with no
+`colour.pairs` (or no `.dx/design.json` at all) the check grades A11Y-1 **N/A**, prints a
+`NOTE` saying so, exits 0, and names A11Y-1 as going to manual verification — adding that
+A11Y-1 is L0 and blocks until verified by some path. It never reports A11Y-1 as passing
+on the strength of a check that had nothing to measure. Same shape as CMP-1 with
+`coverage: "complete"` and IDN-1/IDN-2 with the approved-asset registry.
 
-**Thresholds:** ratio `< 3.0` → ERROR (fails even large text); `3.0 ≤ ratio < 4.5` → ERROR noting it passes only as large text (≥24px / 18.66px bold — confirm the size); `≥ 4.5` → clean.
+**Token resolution (`--tokens <file>`, else `Tokens.source` in `.dx/design.json`):** the
+colour map is built from a product's CSS token file (for this repo's own site,
+`../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains
+(transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per
+the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`). An unresolved
+token stays unresolved — never guessed: the pair becomes a `NOTE` naming the token and
+goes to manual verification. `detect.py`'s auto-discovery of `app/globals.css` still
+supplies `--tokens` when it runs the check.
 
-**Unresolvable, never silent:** when a candidate pair is detected but a colour can't be resolved (unknown token, dynamic/`clsx` arbitrary value), the check emits a `NOTE … — verify manually` and exits 0 — it never passes silently and never raises a false ERROR.
+**Thresholds (unchanged):** ratio `< 3.0` → ERROR (fails even large text);
+`3.0 ≤ ratio < 4.5` → ERROR noting it passes only as large text (≥24px / 18.66px bold —
+confirm the size); `≥ 4.5` → clean. A finding points at the line in the token CSS where
+the foreground token is declared, so it is navigable:
+`ERROR app/globals.css:42 [A11Y-1] declared pair --foreground (#18181b) on --tw-blue
+(#0064ff) = 3.60:1 (below 4.5:1) — suggest: …`.
 
-**Static-subset caveat — what this script does NOT verify:**
+**What replaced the line-local source scan, and why.** The old ERROR path paired a text
+colour and a background colour found on the same line of source. Its colour maths was
+sound — the Tailwind opacity compositing added for #122 works, and its last finding on
+this repo was a real composited pair at 4.29:1, not a colour compared with itself. Two
+limits ended it anyway: a line-local scan **cannot see an inherited or computed
+background** (a rule setting only a text colour was never a candidate, which this file's
+own docstring called the largest false-negative surface), and axe's `color-contrast` on a
+rendered page answers that question on computed colours and is strictly better at it. Two
+layers disagreeing about one L0 control is worse than one layer that is right. Deleted
+with it: the Tailwind and CSS pairing regexes, `_classify_tw_value`, `_looks_like_colour`,
+`_check_line`, `check_file` and `scan_paths`. **Kept:** `TokenResolver` (with `resolve`,
+`_resolve_value`, `resolve_utility`, `resolve_colour_expr`, `page_base`), the OKLab
+`color-mix` maths, `_parse_tw_alpha`, `_composite`, `_band`, `_verdict_line` and the
+`--tokens` flag — the resolver surface another build reuses verbatim.
 
-- **Inherited / computed backgrounds.** A rule or class that sets only a text colour (background inherited from a parent) is **not** a candidate — there is no background to compare against, so it is skipped, not flagged. This is the largest false-negative surface and remains the manual / axe pass's job.
-- **Font-size-dependent large-text classification.** The 3.0–4.5 band is flagged conservatively with a "confirm the text size" note; the check does not infer font size line-locally.
-- **Non-text (UI component) contrast**, `color-mix` in spaces other than `oklab`, multi-line CSS rules, and dynamic class names beyond an arbitrary value it can read.
+**What this check does NOT verify:**
 
-**Self-test:** `python3 checks/contrast.py --self-test` → `SELF-TEST OK (15 cases)` (path-independent; uses inline temp fixtures).
+- **Any rendered element**, and any pairing a product uses but never declared. That is the
+  rendered check's half of A11Y-1.
+- **Font-size-dependent large-text classification.** The 3.0–4.5 band is flagged
+  conservatively with a "confirm the text size" note.
+- **Non-text (UI component) contrast**, and `color-mix` in spaces other than `oklab`.
+
+Path arguments are no longer scanned. A path on the command line only locates the repo
+root (and says so in a `NOTE`); `detect.py` passes `--repo-root` instead of targets.
+
+**Self-test:** `python3 checks/contrast.py --self-test` → `SELF-TEST OK (45 cases)`
+(path-independent; builds throwaway product repos in a tempdir). It includes a case
+asserting the resolver surface survives, and one proving a source file holding a
+deliberately bad pairing is not scanned.
 
 ## Waiver reconcile (built)
 
@@ -511,13 +561,15 @@ scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged).
 
 `content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
-on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason: per the
+on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the
 harness rule "never wire a failing check into the build," `content-lint` surfaces
-pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/`, and
-`contrast` surfaces a pre-existing sub-AA pair in `components/ui/button.tsx` (A11Y-1);
-neither is wired until that content is fixed or waived. `component-manifest` targets a
-product's `.dx/component-manifest.json`, which this repo (the harness/site itself)
-does not have — wiring it here would have nothing to check.
+pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/` and is
+not wired until that content is fixed or waived. `contrast` is exempt for a different
+reason since it became a token-pair check: it is **honest-inert** until a product
+declares `colour.pairs` in DESIGN.md, and this repo declares none, so wiring it would
+gate on a check that can only print a `NOTE`. `component-manifest` targets a product's
+`.dx/component-manifest.json`, which this repo (the harness/site itself) does not
+have — wiring it here would have nothing to check.
 
 `a11y-eslint.py` is **not wired** either, and it is deliberately **not** on
 `WIRING_EXEMPT`: no control names it in a `script:` field yet (the A11Y recount is a

@@ -584,7 +584,7 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
 # in sync with the "Wiring status" prose in checks/README.md.
 WIRING_EXEMPT = {
     "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
-    "checks/contrast.py": "pre-existing A11Y-1 finding (components/ui/button.tsx) — wire after cleanup",
+    "checks/contrast.py": "token-pair check is honest-inert until a product declares colour.pairs in DESIGN.md; this repo declares none, so there is nothing to gate on",
     "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
 }
 
