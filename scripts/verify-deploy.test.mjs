@@ -77,4 +77,25 @@ describe("verifyDeployment", () => {
       { route: "/broken", status: "network unavailable", ok: false, detail: "" },
     ]);
   });
+
+  it("limits simultaneous route checks", async () => {
+    let active = 0;
+    let maxActive = 0;
+    const fetchImpl = vi.fn(async () => {
+      active += 1;
+      maxActive = Math.max(maxActive, active);
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      active -= 1;
+      return new Response("ok", { status: 200 });
+    });
+
+    await verifyDeployment({
+      base: "https://example.test",
+      routes: Array.from({ length: 8 }, (_, index) => `/route-${index}`),
+      fetchImpl,
+      concurrency: 2,
+    });
+
+    expect(maxActive).toBe(2);
+  });
 });

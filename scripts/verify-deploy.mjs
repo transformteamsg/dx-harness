@@ -68,7 +68,9 @@ export async function verifyDeployment({
   routes,
   fetchImpl = fetch,
   timeoutMs = 10_000,
-  concurrency = 12,
+  // The deployed nano instance has 0.25 vCPU. Keep the full-manifest probe
+  // bounded so verification does not become its own availability incident.
+  concurrency = 4,
 }) {
   if (!base) throw new Error("A base URL is required.");
   if (!Array.isArray(routes) || routes.length === 0) {
