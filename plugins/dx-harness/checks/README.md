@@ -326,27 +326,28 @@ which proves the three rules the maintainers switch off stay off). The fixture c
 need the target toolchain; where it cannot be resolved they assert the honest skip path
 instead, so the case count never depends on the environment.
 
-## A11y static scan (built — static subset)
+## A11y focus scan (built — one bespoke rule)
 
-`python3 checks/a11y-static.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for three high-confidence a11y violations that are detectable from source text alone, without a rendered DOM. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+`python3 checks/a11y-static.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the one accessibility rule no maintained tool provides: a focus outline removed with no visible replacement. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Rules:**
+**Rule:**
 
 - **FOCUS (A11Y-2, L0):** A class string or CSS rule containing an outline-removal token (`outline-none`, `outline-0`, `focus:outline-none`, or CSS `outline: none/0`) with no focus-visible replacement (`focus-visible:outline`, `focus-visible:ring`, `focus-visible:border`, `focus-visible:shadow`, or CSS `:focus-visible { … outline|box-shadow|border … }`) on the same line.
-- **KBD (A11Y-2, L0):** A `<div`, `<span`, `<li`, or `<p` opening tag carrying a click handler (`onClick`, `onMouseDown`, `onclick`, `(click)`, `@click`) with no `role=` and no `tabIndex`/`tabindex` on the same tag.
-- **NAME (A11Y-3, L0):** A `<button` or `role="button"` tag with no `aria-label`, `aria-labelledby`, or `title`, that is self-closing or whose same-line content is only an icon (`<svg`, a `*Icon` component, or an `aria-hidden` child) with no visible text. Only flags the same-line / self-closing case.
+
+**Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted**: jsx-a11y decides both on a real AST with maintained ARIA exception tables, which a line-local regex cannot match — see the a11y lint above. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
 
 **Static-subset caveat — what this script does NOT verify:**
 
-- Computed contrast ratios (A11Y-1) — needs rendered colours.
+- Keyboard reachability and accessible names (A11Y-2's reachability half, A11Y-3) — `a11y-eslint`'s `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus` and `label-has-associated-control`.
+- Computed contrast ratios (A11Y-1) — `contrast.py` answers the declared token pairs; computed colours need rendered ones.
 - Interactive hit-area size (A11Y-4) — needs computed layout.
 - Focus traversal order and completeness (A11Y-2 traversal half) — needs a live DOM.
 - ARIA state tracking — `aria-expanded`/`aria-pressed`/`aria-checked` updating to match visual state (A11Y-8 state half) — cannot be detected statically without cross-file variable mutation tracking. Deferred; manual pass required.
-- Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core.
+- Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core, and this false-positive class is **accepted** rather than answered with a new dependency (`stylelint-a11y` was declined). Confirm the rendered element with a keyboard before treating a flag as a bug.
 
-**Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
+**Waiver suppression:** A11Y-2 is L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
 
-**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (18 cases)` (includes the `fixtures/a11y-static/` pass/fail files).
+**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)` (includes the `fixtures/a11y-static/` pass/fail files, a case proving the deleted rules leave no coverage claim behind, and two that hold the docstring's load-bearing paragraphs in place).
 
 ## Contrast scan (built — static subset)
 
@@ -473,13 +474,13 @@ Planned for V1 (remaining):
 | Check | Controls | Approach |
 |---|---|---|
 | `contrast` | A11Y-1 | axe-core contrast scan: 4.5:1 body, 3:1 large text + UI components |
-| ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal) + KBD (click on non-focusable element); traversal order and hit-area still need a rendered DOM |
-| ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-static` covers NAME (icon-only button without aria-label); placeholder-only label and multi-line label association still need a rendered DOM |
+| ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal), `a11y-eslint` covers keyboard reachability (`click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`); traversal order and hit-area still need a rendered DOM |
+| ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-eslint` covers `label-has-associated-control` and `autocomplete-valid`; placeholder-only label and cross-file `htmlFor`/`id` association still need a rendered DOM |
 | `targets` | A11Y-4 | Computed hit area of interactive elements ≥ 24×24 CSS px |
 | `reduced-motion` | A11Y-5 | With prefers-reduced-motion set, non-essential animation does not run |
 | ~~`alt-scan`~~ | ~~A11Y-6~~ | ✅ built (static subset) — `a11y-eslint` covers `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`; the informative-versus-decorative judgment and every non-JSX image stay manual |
 | `structure` | A11Y-7 (deterministic half) | Heading-hierarchy walk; lists/tables/groups are semantic elements |
-| ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-static` covers KBD (non-focusable click handler without role/name); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
+| ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-eslint` covers the aria suite (`aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, the role-conversion rules); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
 | `title-lang` | A11Y-9 | Descriptive document title present; html lang attribute set |
 | `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
