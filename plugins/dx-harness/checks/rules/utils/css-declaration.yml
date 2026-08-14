@@ -1,0 +1,6 @@
+# A single CSS declaration: the property name, the colon and the value, e.g.
+# `margin: 12px 24px;`. That whole text is what the design-scale policy reads.
+id: css-declaration
+language: css
+rule:
+  kind: declaration

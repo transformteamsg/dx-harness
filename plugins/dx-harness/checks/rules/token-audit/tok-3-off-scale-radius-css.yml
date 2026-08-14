@@ -1,0 +1,14 @@
+# A border-radius declaration. The radius scale stays in Python.
+id: token-audit-tok-3-off-scale-radius-css
+language: css
+severity: warning
+message: candidate tok 3 off scale radius
+metadata:
+  control: TOK-3
+  check: token-audit
+  surface: style
+  kind: declaration
+  context: declaration
+rule:
+  matches: css-declaration
+  regex: '(?i)\bborder-radius'

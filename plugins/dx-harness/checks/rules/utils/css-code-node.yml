@@ -1,0 +1,11 @@
+# Every braced CSS body plus every rule with its selector group. Coarser than
+# css-declaration on purpose: a locator that has to see the closing brace needs
+# it, because an unterminated final declaration such as `.b { line-height: 1.2 }`
+# carries no semicolon of its own, and an at-rule body such as `@font-face { … }`
+# is a block with no rule around it.
+id: css-code-node
+language: css
+rule:
+  any:
+    - kind: rule_set
+    - kind: block

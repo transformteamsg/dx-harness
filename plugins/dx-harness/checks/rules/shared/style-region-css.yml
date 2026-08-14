@@ -1,0 +1,12 @@
+# A .css file is a style context end to end, so its root node is the region.
+id: shared-style-region-css
+language: css
+severity: warning
+message: style region
+metadata:
+  check: shared
+  surface: style-region
+  kind: stylesheet
+  context: stylesheet
+rule:
+  kind: stylesheet

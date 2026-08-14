@@ -1,0 +1,17 @@
+/*
+ * tokens-only.css — parity fixture: every value goes through a token or is on
+ * scale. Both engines return zero findings, so the expected records are empty.
+ */
+:root {
+  --brand: #0064ff;
+  --space-4: 1rem;
+  --radius-md: 0.375rem;
+}
+
+.card {
+  color: var(--brand);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  line-height: 1.5;
+}

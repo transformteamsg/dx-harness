@@ -1,0 +1,15 @@
+# A Tailwind palette utility that bypasses the semantic layer. Unlike the
+# colour rules this one is not scoped to a style context, because a class list is
+# not one — it reads every node that carries author text. Whether the project's
+# @theme licences the name is an exemption, so it stays in Python.
+id: token-audit-col-2-palette-class-tsx
+language: tsx
+severity: warning
+message: candidate col 2 palette class
+metadata:
+  control: COL-2
+  check: token-audit
+  surface: text
+rule:
+  matches: tsx-code-node
+  regex: '\b(bg|text|border)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-[0-9]{1,3}\b'

@@ -1,0 +1,6 @@
+# A whole CSS rule: its selector group, its braces and its declarations. Read
+# for ancestry — "which rule is this line inside" — not as a locator.
+id: css-rule-set
+language: css
+rule:
+  kind: rule_set

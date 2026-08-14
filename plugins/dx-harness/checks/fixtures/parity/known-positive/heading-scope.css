@@ -1,0 +1,25 @@
+/*
+ * heading-scope.css — parity fixture: TYP-2's line-height band is body-scoped.
+ *
+ * Expected findings (recorded from the pre-swap engine, see expected/):
+ *   type-scan    none for the h1 rule      — headings run tighter by design
+ *   type-scan    TYP-2 for the .lead rule
+ *   type-scan    TYP-2 for the mixed .lead, h2 group
+ *   type-scan    none for the .card h2 descendant rule
+ *   token-audit  none
+ */
+h1 {
+  line-height: 1.2;
+}
+
+.lead {
+  line-height: 1.2;
+}
+
+.lead, h2 {
+  line-height: 1.2;
+}
+
+.card h2 {
+  line-height: 1.1;
+}

@@ -1,0 +1,2 @@
+ERROR type-assertion.ts:17 [COL-2] Tailwind palette class 'bg-red-500' — suggest: use a semantic token class (e.g. bg-primary, text-destructive)
+ERROR type-assertion.ts:17 [TOK-1] raw colour '#00ff00' in arbitrary value — suggest: define it as a token and reference var(--…)

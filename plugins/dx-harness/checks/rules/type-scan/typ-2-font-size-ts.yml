@@ -1,0 +1,16 @@
+# A font size. One locator serves two controls: TYP-2's 14px body floor and
+# 12px label floor, and TYP-3's on-scale test. Both floors, the type scale read
+# from TYP-3's catalog verify field, and the rule that a fractional pixel size is
+# off-scale by definition all stay in Python.
+id: type-scan-typ-2-font-size-ts
+language: ts
+severity: warning
+message: candidate typ 2 font size
+metadata:
+  control: TYP-2
+  check: type-scan
+  surface: code
+  controls: TYP-2 TYP-3
+rule:
+  matches: ts-code-node
+  regex: '(?i)(font-size\s*:|\btext-\[)'

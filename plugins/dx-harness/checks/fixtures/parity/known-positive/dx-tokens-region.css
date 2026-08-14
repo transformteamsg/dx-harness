@@ -1,0 +1,18 @@
+/*
+ * dx-tokens-region.css — parity fixture: the comment-delimited exemption stays a
+ * Python line filter, because ast-grep 0.44.1 has no rule field that expresses
+ * "the span between two sibling comments".
+ *
+ * Expected findings (recorded from the pre-swap engine, see expected/):
+ *   token-audit  TOK-1  only the value OUTSIDE the region
+ *   type-scan    none
+ */
+/* dx-tokens */
+.tokens {
+  --brand: #0064ff;
+}
+/* /dx-tokens */
+
+.outside {
+  color: #0064ff;
+}
