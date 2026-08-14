@@ -258,10 +258,10 @@ export function SlopCompare() {
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
+      <p className="mt-2 max-w-[48ch] text-xs text-muted-foreground">
         Drag the handle — or focus it and use arrow keys.
       </p>
-      <figcaption className="mt-2 max-w-[62ch] text-xs leading-normal text-muted-foreground">
+      <figcaption className="mt-2 max-w-[48ch] text-xs leading-normal text-muted-foreground">
         The same screen twice: what defaults produce, and what ships under the
         standard. Every chip is a control ID from the{" "}
         <Link

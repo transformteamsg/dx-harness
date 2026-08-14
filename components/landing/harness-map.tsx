@@ -14,8 +14,16 @@ const connector = "mx-auto h-4 w-px bg-border";
 
 export function HarnessMap() {
   return (
-    <figure className="m-0 flex w-full max-w-[13rem] flex-col gap-2">
-      <div>
+    /* role="img" with a label, because the shape is the content: without it a screen
+       reader walks six unlabelled cells and a caption about a dash it cannot see.
+       Not aria-hidden — the five stage rows beside this carry the same words, but
+       only the drawing says which stage sits in your repository rather than ours. */
+    <figure
+      className="m-0 flex w-full max-w-[13rem] flex-col gap-2"
+      role="img"
+      aria-label="The harness in one column: your ask enters dx-design, the single front door, which dispatches five propose-only passes and one builder. All of them read the same shared context — catalog, tokens, and components. The last stage, DESIGN.md, is drawn dashed because it lives in your own repository, not in the plugin."
+    >
+      <div aria-hidden="true">
         <div className={cell}>You</div>
         {/* the one blue link in the chain: the brief entering the front door */}
         <div className="mx-auto h-4 w-px bg-blueprint-ink" />
@@ -34,7 +42,7 @@ export function HarnessMap() {
         <div className={connector} />
         <div className={`${cell} border-dashed font-medium`}>DESIGN.md</div>
       </div>
-      <figcaption className="text-xs text-muted-foreground">
+      <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
         Dashed: lives in your repo, not the plugin.
       </figcaption>
     </figure>

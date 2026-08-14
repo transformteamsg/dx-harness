@@ -17,14 +17,21 @@ const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
 /* Commands and file names sit on a muted chip, and the chip is what marks them as
-   code — not a third typeface. `font-body` is load-bearing: a bare <code> inherits
-   the browser's default monospace, which puts a face outside Plus Jakarta Sans and
-   Inter on the page (TYP-1, L1, no waiver held here). The docs prose has always
-   rendered inline code in that UA monospace; that is a pre-existing gap this page
-   declines to widen, not one it invented. */
+   code — not a third typeface. Two things here are load-bearing:
+
+   `font-body`, because a bare <code> inherits the browser's default monospace, which
+   puts a face outside Plus Jakarta Sans and Inter on the page (TYP-1, L1). The docs
+   prose has always rendered inline code in that UA monospace; that is a pre-existing
+   gap this page declines to widen, not one it invented.
+
+   And no font-size of its own. An earlier draft set `text-[0.9em]`, which rendered
+   10.8px inside a `text-xs` parent — under TYP-2's 12px label floor and off the
+   Tailwind scale (TYP-3), while `checks/type-scan.py` passed it because the script
+   reads declarations and cannot resolve a relative unit. The chip now inherits its
+   parent's size, so it is on-scale wherever it is used. */
 function Cmd({ children }: { children: React.ReactNode }) {
   return (
-    <code className="rounded-sm bg-muted px-1.5 py-0.5 font-body text-[0.9em] text-foreground">
+    <code className="rounded-sm bg-muted px-1.5 py-0.5 font-body text-foreground">
       {children}
     </code>
   );
@@ -39,7 +46,7 @@ function SectionHead({ title, children }: { title: string; children: React.React
       <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight text-balance text-foreground">
         {title}
       </h2>
-      <p className="mt-2 max-w-[58ch] text-base text-pretty text-muted-foreground">{children}</p>
+      <p className="mt-2 max-w-[48ch] text-base text-pretty text-muted-foreground">{children}</p>
     </div>
   );
 }
@@ -149,7 +156,7 @@ export default function Landing() {
           <h1 className="mt-5 max-w-[13ch] text-4xl leading-[1.02] font-semibold tracking-tighter text-balance text-foreground sm:text-5xl lg:text-6xl">
             One brief in. One reviewed interface out.
           </h1>
-          <p className="mt-6 max-w-[46ch] text-base leading-relaxed text-pretty text-(--prose-body)">
+          <p className="mt-6 max-w-[44ch] text-base leading-relaxed text-pretty text-(--prose-body)">
             Your agent already builds the UI. The harness gives it one front door, checkable
             standards, and an independent reviewer before the work ships.
           </p>
@@ -190,7 +197,7 @@ export default function Landing() {
         {FEATURES.map((f) => (
           <li
             key={f.eyebrow}
-            className="-mr-px -mb-px border-r border-b border-border p-6 sm:p-8"
+            className="-mr-px -mb-px border-r border-b border-border px-6 py-6 sm:px-10 sm:py-8"
           >
             <p className="text-xs font-semibold tracking-wide break-words text-tw-blue">
               {f.eyebrow}
@@ -198,7 +205,7 @@ export default function Landing() {
             <h3 className="mt-3 max-w-[24ch] text-lg font-semibold tracking-tight text-balance text-foreground">
               {f.claim}
             </h3>
-            <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-pretty text-muted-foreground">
+            <p className="mt-2 max-w-[48ch] text-sm leading-relaxed text-pretty text-muted-foreground">
               {f.support}
             </p>
           </li>
@@ -217,7 +224,7 @@ export default function Landing() {
           {STAGES.map((s) => (
             <li
               key={s.n}
-              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-b border-border px-6 py-4 last:border-b-0 sm:px-8"
+              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-b border-border px-6 py-4 last:border-b-0 sm:px-10"
             >
               <p className="pt-0.5 text-xs text-tw-blue tabular-nums">{s.n}</p>
               <div>
@@ -225,7 +232,7 @@ export default function Landing() {
                   {s.heading}
                 </h3>
                 <p className="text-xs text-muted-foreground">{s.where}</p>
-                <p className="mt-1 max-w-[62ch] text-sm leading-relaxed text-pretty text-muted-foreground">
+                <p className="mt-1 max-w-[48ch] text-sm leading-relaxed text-pretty text-muted-foreground">
                   {s.body}
                 </p>
               </div>
@@ -249,7 +256,7 @@ export default function Landing() {
       </SectionHead>
       <ul className="grid border-b border-border sm:grid-cols-2 lg:grid-cols-3">
         {SKILL_DIRECTORY.map((g) => (
-          <li key={g.number} className="-mr-px -mb-px border-r border-b border-border p-6">
+          <li key={g.number} className="-mr-px -mb-px border-r border-b border-border px-6 py-6 sm:px-10 sm:py-8">
             <p className="text-xs text-tw-blue tabular-nums">{g.number}</p>
             <h3 className="mt-2 text-lg font-semibold tracking-tight text-foreground">
               {g.heading}
@@ -258,7 +265,10 @@ export default function Landing() {
               {g.role}
             </p>
             {/* Not a link: it is the command to type, and every one of them works. */}
-            <p className="mt-4 border-t border-border pt-3 text-xs break-words text-muted-foreground">
+            {/* text-sm, not text-xs: these are the commands the page asks the reader
+                to type, so they are the last text on the surface that should be set
+                at the label floor. */}
+            <p className="mt-4 border-t border-border pt-3 text-sm break-words text-muted-foreground">
               Start with <Cmd>/dx-harness:{g.start}</Cmd>
             </p>
           </li>
@@ -276,13 +286,13 @@ export default function Landing() {
       {/* ── Close. The action steps down to outline: the hero already holds the
              page's one filled primary (CMP-5). ──────────────────────────────── */}
       <section className="bg-tw-blue-wash px-6 py-16 sm:px-10">
-        <p className="max-w-[20ch] text-3xl leading-tight font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
+        <h2 className="max-w-[20ch] text-3xl leading-tight font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
           Your agent already builds the UI. Give it something to answer to.
-        </p>
+        </h2>
         <div className="mt-8">
           <Link
             href="/harness/install"
-            className={`inline-flex min-h-11 items-center rounded-lg border border-border-strong bg-surface px-5 text-sm font-semibold text-foreground transition-colors duration-(--motion-fast) hover:bg-accent ${focusRing}`}
+            className={`inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-surface px-5 text-sm font-semibold text-foreground transition-colors duration-(--motion-fast) hover:border-foreground hover:bg-accent ${focusRing}`}
           >
             Quick start
           </Link>
