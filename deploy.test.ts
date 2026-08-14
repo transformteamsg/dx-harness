@@ -108,8 +108,8 @@ describe("docs/agents/deploy.md", () => {
   const doc = readRoot("docs/agents/deploy.md");
 
   it("documents the build and deploy commands", () => {
-    expect(doc).toContain("airbase container build");
-    expect(doc).toContain("airbase container deploy");
+    expect(doc).toContain('airbase container build --tag "$IMAGE"');
+    expect(doc).toContain('airbase container deploy --yes --image "$IMAGE" staging');
   });
 
   it("documents the staging URL pattern", () => {

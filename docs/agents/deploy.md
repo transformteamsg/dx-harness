@@ -27,9 +27,13 @@ Do not remove the `postbuild` step or run `next build` directly for an Airbase i
 From the repository root, with Docker running:
 
 ```sh
-airbase container build
-airbase container deploy --yes staging
+IMAGE="dx-harness:$(git rev-parse --short HEAD)"
+airbase container build --tag "$IMAGE"
+airbase container deploy --yes --image "$IMAGE" staging
 ```
+
+Pass the image tag to both commands. `airbase container deploy` can otherwise reuse an older
+local image that happens to carry its default tag, even when the working tree has changed.
 
 The site will be live at `https://staging--dx-harness.app.tc1.airbase.sg`.
 
@@ -41,7 +45,9 @@ node scripts/verify-deploy.mjs https://staging--dx-harness.app.tc1.airbase.sg
 
 ## Deploying again
 
-Re-running the same two commands from an updated branch replaces the running staging version. There's no need to delete the previous deployment first; this is standard Airbase behavior, not something this repo configures.
+Re-running the same commands from an updated branch replaces the running staging version. The
+commit-specific tag makes the deployed source explicit. There's no need to delete the previous
+deployment first; this is standard Airbase behavior, not something this repo configures.
 
 ## What's deliberately not automated yet
 
