@@ -29,6 +29,19 @@
   --accent: #fafafa;         /* zinc-50 — hover fill */
   --border-strong: #a1a1aa;  /* zinc-400 — hover border */
 
+  /* ── Landing sheet — the front page is drawn as a measured sheet: hairline
+     flanks, a whisper-tinted heading band, and a blue reserved for the drawing's
+     own instrumentation. The sheet reuses --background and --border rather than
+     minting near-identical greys; only these three are genuinely new. ── */
+  --sheet-band: #f7f7f8;     /* between --accent and --muted: reads as a band, never as a fill */
+  /* The wash stays at 4% so --tw-blue text on it keeps ≥4.5:1 (A11Y-1). Raising
+     the mix needs a recomputed contrast fact, not a guess. */
+  --tw-blue-wash: color-mix(in oklab, var(--tw-blue) 4%, var(--surface));
+  /* The construction lines, dimension marks, and registration crosses on the
+     landing blueprint. An alias, not a new hue — the drawing's chrome IS the
+     brand blue, and naming the role keeps the intent legible at the call site. */
+  --blueprint-ink: var(--tw-blue);
+
   /* Prose body ink — a touch softer than --foreground */
   --prose-body: #3f3f46;     /* zinc-700 */
 
@@ -128,6 +141,9 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-border-strong: var(--border-strong);
+  --color-sheet-band: var(--sheet-band);
+  --color-tw-blue-wash: var(--tw-blue-wash);
+  --color-blueprint-ink: var(--blueprint-ink);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
   --color-success-muted: var(--success-muted);

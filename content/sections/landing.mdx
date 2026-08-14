@@ -1,44 +1,55 @@
 ---
-title: Design that gives teachers their time back.
-description: The TFX Design Standard is how TransformX builds the Teacher & School portfolio (Teacher Workspace, CaseSync, and Glow). It turns our design quality bar into something every builder can reach, with or without a designer in the room.
-illustration: a busy Singapore school staff room transformed into calm, teachers chatting over coffee while their marking sits finished beside them, morning light --ar 21:9
-cta: See the TFX Design Standard
-readersHeading: One standard, three readers
-readersLead: Most design systems are written for designers. This one is written so a person, a person working with an agent, and an agent on its own all reach the same bar.
-readers:
-  - key: human
-    kicker: Human
-    title: Read it, use judgement
-    text: Designers and PMs read the principles and guidelines like any standard, then decide. Priority-ordered principles settle trade-offs; status badges show what's settled and what's still proposed.
-    href: /how-to-read
-    link: How to read this standard
-  - key: human-machine
-    kicker: Human + machine
-    title: Hand the skills to your agent
-    text: Skills carry the guidelines into your agent's context. You stay on the decisions and the taste; the harness keeps the output on standard while you steer.
-    href: /harness
-    link: See the harness
-  - key: machine
-    kicker: Machine
-    title: The machine checks itself
-    text: Agents read llms.txt and the control catalog directly. Each control is one tiered statement with explicit fail conditions that a separate evaluator grades the built screen against.
-    href: /for-agents
-    link: Start at for-agents
-why:
-  - title: Arguments get settled once
-    text: Most design debates repeat. Principles are priority-ordered beliefs that resolve trade-offs the same way every time, so teams spend their energy on the hard, novel decisions instead.
-  - title: The bar is checkable
-    text: Every standard is one verifiable statement with a tier and explicit failure conditions. A machine can read the catalog and tell you whether a screen passes before review even starts.
-  - title: Builders ship without waiting
-    text: Engineers and AI agents carry the standard with them through skills and the harness. Quality stops depending on whether a designer was free that sprint.
-team:
-  - name: Add designer name
-    role: Principal Product Designer
-    focus: Owns the standard · Teacher Workspace
-  - name: Add designer name
-    role: Product Designer
-    focus: CaseSync
-  - name: Add designer name
-    role: Product Designer
-    focus: Glow
+title: dx-harness — design skills your agent runs
+description: A Claude Code plugin that carries a design loop, a checkable standards catalog, and a design reviewer into your agent. One brief in, one reviewed interface out.
 ---
+
+Your agent already builds the UI. The harness gives it one front door, checkable
+standards, and an independent reviewer before the work ships.
+
+Route → build → check → review → ship.
+
+## Core features of the design harness
+
+The four parts everything else hangs off.
+
+**One way in. One way to ship.** Ask in plain words. `dx-design` routes you to the
+right pass, and only `dx-design-execute` edits your product.
+
+**Not every rule is a lint check.** Every control carries a tier, so you know which
+rules never bend and which leave room for judgement.
+
+**Your design language, written down once.** Keep product decisions and standing
+overrides in one file the whole team, human and agent, can work from.
+
+**The builder never grades its own work.** A fresh-context reviewer reads the
+contract, screenshots, and controls, then sends findings back through the same gate
+for a re-check.
+
+## How it works
+
+The whole harness on one map. You brief one skill; everything else works behind it.
+
+1. **You**, in the chat — one ask, in plain words. You never pick a skill.
+2. **`dx-design`, the single front door**, in the harness plugin — the orchestrator
+   grills first, then routes. Rule and waiver questions stop here too.
+3. **The propose-only passes**, dispatched as subagents — copy, flow, pattern,
+   motion, and polish plan for `dx-design-execute`, the one builder.
+4. **Shared context**, in the harness plugin — every skill reads the same control
+   catalog, tokens, and components.
+5. **`DESIGN.md`**, in your product repo — your product decisions and deviations stay
+   where any agent can read them.
+
+## Skills collection
+
+Grouped by the job each skill does in the flow. Everything is one command away.
+
+| Group | What it is for | Start with |
+| --- | --- | --- |
+| Getting started | None of these change your product; they get you set up and unstuck. | `/dx-harness:dx-design` |
+| The design loop | Critique finds the work and numbers it; execute is the only skill that changes your product. | `/dx-harness:dx-design-execute` |
+| The five passes | The loop routes to these, one named dimension each; you rarely type them yourself. | `/dx-harness:dx-design-pattern` |
+| Shaping the work | Settle an open question and write it down, so the loop has something to hold you to. | `/dx-harness:dx-design-research-brief` |
+| Shipping the code | Carry a change from an idea to a merged pull request. | `/dx-harness:dx-create-issue` |
+| Repo upkeep | Set the gates once and they catch things before a reviewer has to. | `/dx-harness:dx-lint-setup` |
+
+See [all the skills](/harness/skills), or start at the [quick start](/harness/install).
