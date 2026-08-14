@@ -71,3 +71,7 @@ _Avoid_: Tier 1, static pass, source scan
 **Rendered check**:
 A deterministic check that runs against the open page during verify, or against a URL the person supplies; the harness never boots the target app to get one. A control whose rendered check did not run falls back to manual verification — it never silently passes.
 _Avoid_: Tier 2, rendered pass, rendered-DOM tier
+
+**Accepted gap**:
+A control nobody checks by machine, on purpose — recorded on the control itself with a one-line reason. An accepted gap is the only thing that makes an unchecked deterministic or hybrid control legal; without one the catalogue is in error. An L0 control can never hold one.
+_Avoid_: Known gap, TODO, planned script, honest gap
