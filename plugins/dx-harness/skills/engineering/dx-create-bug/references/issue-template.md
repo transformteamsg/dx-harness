@@ -28,6 +28,10 @@
 
 <who is affected, how often, and whether a workaround exists>
 
+## Priority
+
+<P0-P4, with one line tying the level to the impact above. P0: outage or a critical function unusable, drop everything. P1: a major function broken for many users with no reasonable workaround. P2: affects some users, or has a workaround. P3: minor, fix when convenient. P4: cosmetic or trivial.>
+
 ## Out of scope
 
 - <related problem this fix will not address, or "None">
