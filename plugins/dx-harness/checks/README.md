@@ -113,7 +113,7 @@ wire to (plan 060) — "fast signal without asking an AI".
 
 **Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
 Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
-contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
+contrast, a11y-static, a11y-eslint, TYP-1) on an edited UI file and reminds the agent on new
 findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
 a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
 
@@ -135,8 +135,8 @@ no parseable `ERROR` line is treated as a crash — detect fails loud rather tha
 silently.
 
 **Profiles.** The default is the **curated, low-false-positive subset**:
-`token-audit`, `contrast`, `a11y-static`, and `type-scan`'s **TYP-1 rule only** (via
-`type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
+`token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, and `type-scan`'s **TYP-1 rule
+only** (via `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
 recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
 full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
 only when a `.dx/component-manifest.json` exists; otherwise it is reported skipped).
@@ -185,7 +185,7 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (43 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (69 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
@@ -261,6 +261,70 @@ hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 **Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
+
+## A11y lint — jsx-a11y `recommended` (built — static subset)
+
+`python3 checks/a11y-eslint.py [--repo-root <dir>] <path>...` — runs
+eslint-plugin-jsx-a11y's maintained `recommended` preset (31 of its 39 rules) over a
+target repo's `.js`/`.jsx`/`.mjs`/`.cjs`/`.ts`/`.tsx` source and prints every finding
+under the control id its rule maps to. Exit 0 silent (or NOTEs only) on pass; exit 1
+with `ERROR` lines on any violation.
+
+**Nothing is installed or configured in the target repo.** The preset is switched on
+from `checks/eslint/jsx-a11y.config.mjs` with `--no-config-lookup` and the target root
+as CWD, so the target's own eslint config never loads and never changes the result: no
+config file, no plugin entry, no dependency, no lockfile change. eslint, the plugin and
+a TypeScript-capable parser are resolved from the **target's** `node_modules` —
+directly, or through a package that declares them, because pnpm keeps a transitive
+dependency out of the target root. `eslint-config-next` already carries all three.
+
+**Coverage:** A11Y-2 (`click-events-have-key-events`, `no-static-element-interactions`,
+`interactive-supports-focus`, `no-noninteractive-element-interactions`,
+`mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`,
+`anchor-is-valid`, `no-autofocus`, `no-access-key`), A11Y-3
+(`label-has-associated-control`, `autocomplete-valid`), A11Y-6 (`alt-text`,
+`img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`),
+A11Y-8 (the aria suite). Every one of those controls keeps a manual remainder, so none
+of them reaches `enforced: script`.
+
+**Why the preset, not all 39.** The maintainers' preset encodes real ARIA exceptions.
+Measured on this repo: 1 finding under `recommended` against 8 under all 39, and all 7
+extras are deliberately suppressed — 6 by rules the preset disables
+(`prefer-tag-over-role` ×2, `control-has-associated-label` ×3, `label-has-for` ×1) and
+1 by a rule the preset keeps but calibrates with its own options
+(`no-noninteractive-tabindex`, exempted for `role="tabpanel"`). The preset's severities
+and per-rule options are used verbatim; no rule outside it is enabled.
+
+**Findings name the rule:** `ERROR <file>:<line> [<CTL>][jsx-a11y/<rule>] <message> —
+suggest: fix per jsx-a11y/<rule>`, formatted by `checklib.emit_error`, so a finding
+traces back to its row in `a11y-rule-map.json`.
+
+**Static-subset caveat — what this layer does NOT verify:**
+
+- Contrast (A11Y-1) — `contrast.py` answers declared token pairs; computed colours need
+  a rendered page.
+- A visible focus indicator (A11Y-2's focus half) — no eslint or axe rule exists, which
+  is why `a11y-static.py`'s FOCUS rule stays bespoke.
+- Focus traversal order (A11Y-2), cross-file `htmlFor`/`id` association (A11Y-3),
+  informative-versus-decorative judgment (A11Y-6), closed overlays and ARIA state
+  changes (A11Y-8).
+- Anything a rendered DOM is needed for: that is the rendered check's half.
+
+**A layer that did not run does not silently pass.** When eslint or the plugin cannot
+be resolved, when there is nothing to lint, or when the TypeScript parser is missing
+and `.ts`/`.tsx` files were in scope (the run then covers `.js`/`.jsx` only), the check
+says so and names A11Y-2, A11Y-3, A11Y-6 and A11Y-8 as going to manual verification,
+adding that A11Y-2 and A11Y-3 are L0 and block until verified by some path. Those are
+`NOTE` lines: exit 0, never a gate, and never a claim of a clean pass. A rule that fires
+with no row in the map, an unreadable map, an eslint crash and a timeout are operational
+`ERROR`s (exit 1) carrying no `<file>:<line> [<CTL>]` shape, so `detect.py` keeps them as
+control-less findings.
+
+**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (41 cases)`
+(includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`
+which proves the three rules the maintainers switch off stay off). The fixture cases
+need the target toolchain; where it cannot be resolved they assert the honest skip path
+instead, so the case count never depends on the environment.
 
 ## A11y static scan (built — static subset)
 
@@ -413,7 +477,7 @@ Planned for V1 (remaining):
 | ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-static` covers NAME (icon-only button without aria-label); placeholder-only label and multi-line label association still need a rendered DOM |
 | `targets` | A11Y-4 | Computed hit area of interactive elements ≥ 24×24 CSS px |
 | `reduced-motion` | A11Y-5 | With prefers-reduced-motion set, non-essential animation does not run |
-| `alt-scan` | A11Y-6 | Every img/svg/icon has a text alternative or is marked decorative |
+| ~~`alt-scan`~~ | ~~A11Y-6~~ | ✅ built (static subset) — `a11y-eslint` covers `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`; the informative-versus-decorative judgment and every non-JSX image stay manual |
 | `structure` | A11Y-7 (deterministic half) | Heading-hierarchy walk; lists/tables/groups are semantic elements |
 | ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-static` covers KBD (non-focusable click handler without role/name); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
 | `title-lang` | A11Y-9 | Descriptive document title present; html lang attribute set |
@@ -453,6 +517,18 @@ pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/`, 
 neither is wired until that content is fixed or waived. `component-manifest` targets a
 product's `.dx/component-manifest.json`, which this repo (the harness/site itself)
 does not have — wiring it here would have nothing to check.
+
+`a11y-eslint.py` is **not wired** either, and it is deliberately **not** on
+`WIRING_EXEMPT`: no control names it in a `script:` field yet (the A11Y recount is a
+separate change), and `[WIRING-SYNC]` reads an exemption for a script no control claims
+as a dead exemption, which is an error. `[WIRING-SYNC]` therefore has nothing to ask of
+it. It stays unwired on its own merit too: on this tree the layer reports one finding,
+`jsx-a11y/interactive-supports-focus` at `components/diagrams/orbit-loop.tsx:319`
+("Elements with the 'tablist' interactive role must be focusable"), on a tablist whose
+tabs carry the roving `tabIndex` and whose arrow keys are handled on the container. That
+belongs to the manual A11Y-2 pass, and per the harness rule a failing check is never
+wired into the build. Run it from the design skills' verify step
+(`skills/design/dx-design-execute/verify.md`) and through `detect.py`'s curated profile.
 
 The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control claiming
 `enforced: script|partial` via a `script:` field must run in prebuild or CI, or be on

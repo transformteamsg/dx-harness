@@ -11,8 +11,8 @@ makes checks actually get run ("fast signal without asking an AI").
 Profiles
 ────────
 - default = the curated, low-false-positive subset: token-audit, contrast,
-  a11y-static, and type-scan's TYP-1 rule only. The noisier rules (TYP-2 size
-  floor, etc.) stay recording-only.
+  a11y-static, a11y-eslint, and type-scan's TYP-1 rule only. The noisier rules
+  (TYP-2 size floor, etc.) stay recording-only.
 - `--all` = every page-check script: the curated set with type-scan's full rule set
   plus content-lint and (when a manifest exists) component-manifest.
 
@@ -285,6 +285,7 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     specs.append({"name": "contrast", "args": co, "mode": "targets"})
 
     specs.append({"name": "a11y-static", "args": ["a11y-static.py"], "mode": "targets"})
+    specs.append({"name": "a11y-eslint", "args": ["a11y-eslint.py"], "mode": "targets"})
 
     if all_profile:
         # Full rule set — TYP-2 (and the rest) run.
@@ -644,10 +645,15 @@ def run_self_test():
     # 1. Profile selection — curated set + membership.
     curated = build_check_specs(False)
     names_c = [s["name"] for s in curated]
-    check("curated has the four low-FP checks",
-          {"token-audit", "contrast", "a11y-static", "type-scan"} <= set(names_c))
+    check("curated has the five low-FP checks",
+          {"token-audit", "contrast", "a11y-static", "a11y-eslint", "type-scan"}
+          <= set(names_c))
     check("curated excludes content-lint / component-manifest",
           "content-lint" not in names_c and "component-manifest" not in names_c)
+
+    # 1b. the new lint layer runs over the scanned targets.
+    check("a11y-eslint runs over the scanned targets",
+          next(s for s in curated if s["name"] == "a11y-eslint")["mode"] == "targets")
 
     # 2. type-scan curated runs TYP-1 only (TYP-2 excluded).
     ts_c = next(s for s in curated if s["name"] == "type-scan")
