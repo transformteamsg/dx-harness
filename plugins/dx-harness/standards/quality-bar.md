@@ -17,9 +17,9 @@ registers:
 > all four criteria are now written end to end and the anchors are human-confirmed. The register
 > model was settled on [#113](https://github.com/transformteamsg/dx-harness/issues/113); the fold of
 > `layout-patterns.md` and reviewer rubric §4 on
-> [#114](https://github.com/transformteamsg/dx-harness/issues/114). Still open —
-> [#115](https://github.com/transformteamsg/dx-harness/issues/115) owns
-> the plan/verify wiring. Delete this banner on adoption. Decisions recorded are listed at the bottom.
+> [#114](https://github.com/transformteamsg/dx-harness/issues/114); the plan/verify wiring on
+> [#115](https://github.com/transformteamsg/dx-harness/issues/115).
+> Delete this banner on adoption. Decisions recorded are listed at the bottom.
 
 # Quality bar (the ceiling)
 
@@ -44,10 +44,25 @@ boundary between this file and the catalogue, and it holds in both directions:
 
 ## How it is used
 
-- **At plan** — the designing agent reads this file whole before building. That is the point of
-  the ceiling: calibration arrives before the work, not after it.
+- **At plan** — the builder (`dx-design-execute`) reads this file whole **before diverge**:
+  directions are where a strong decision is born, and plan time is too late to shape them. The
+  scoped modification loop reads the whole file too — one rule, no size judgment call. That is
+  the point of the ceiling: calibration arrives before the work, not after it.
+- **At the plan gate** — the plan summary table carries one quality-bar row: the register in
+  effect, and the one decision this surface makes that should read as strong. Never a predicted
+  grade; grading unbuilt work is fake.
 - **At verify** — `dx-design-review` grades the four criteria against it, quoting the anchor it
-  judged against, the way CNT-14 quotes the voice table.
+  judged against, the way CNT-14 quotes the voice table. The verdict's QUALITY GRADES section is
+  a four-line block — one line per criterion slug, the grade plus one sentence quoting its
+  anchor — under a header line naming the register in effect and the dark-mode condition
+  (graded / N/A). The register arrives in the reviewer's dispatch payload, resolved once by the
+  builder; the reviewer does not re-resolve it.
+- **The graded review** (`dx-critique`) reads this file and grades the four criteria in its
+  report, reusing the same four-line block. The dimension passes read one named criterion —
+  `dx-layout` → design quality, `dx-polish` → craft, `dx-motion` → craft, `dx-flow` →
+  functionality, `dx-copy` → none (the voice table already calibrates copy) — and any pass may
+  quote any anchor as finding evidence, never as a violation. `dx-design-language` reads the
+  register list, so it can write `DESIGN.md`'s `## Quality bar` section.
 - **Cited by quotation, never by id.** Anchors have no ids on purpose. An id-shaped reference in
   a finding would read as a control and send the reader to `catalog.yaml` to look for it. Quote
   the pairing or the threshold instead: *"reads airless — text pressed to its container edge."*
@@ -394,7 +409,8 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
 [#110](https://github.com/transformteamsg/dx-harness/issues/110). Items 8–10 were settled on
 [#112](https://github.com/transformteamsg/dx-harness/issues/112). Items 11–14 were settled on
 [#113](https://github.com/transformteamsg/dx-harness/issues/113). Items 15–20 were settled on
-[#114](https://github.com/transformteamsg/dx-harness/issues/114).
+[#114](https://github.com/transformteamsg/dx-harness/issues/114). Items 21–28 were settled on
+[#115](https://github.com/transformteamsg/dx-harness/issues/115).
 
 1. **Markdown with YAML frontmatter, not a YAML index plus detail files.** The catalogue splits
    because 70 controls cannot all sit in context and the site renders the index raw. Four
@@ -479,3 +495,36 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
     **COL-2** and **SLP-1**. Keeping it as reviewer text was rejected — the planning agent
     would never see it; dropping the operational detail (aria-hidden wayfinding, Radix status
     colour) risked a reviewer flagging a deliberate colour system as slop.
+21. **The builder reads the whole file before diverge**, not at the plan phase and not in the
+    Load-first block. Directions are where a strong decision is born; loading at skill start
+    was rejected because routing-only turns would pay the read for nothing.
+22. **The scoped modification loop reads the whole file too.** One rule, no judgment call about
+    change size — a padding tweak can still make a surface read worse. On-demand and skip-it
+    variants were rejected as letting the builder decide what counts.
+23. **Every proposing skill reads it**: `dx-critique` grades the four criteria in its report;
+    the dimension passes read one named criterion (`dx-layout` → design quality, `dx-polish` →
+    craft, `dx-motion` → craft, `dx-flow` → functionality, `dx-copy` → none — the voice table
+    already calibrates copy) and may quote any anchor as finding evidence, never as a
+    violation; `dx-design-language` reads the register list to write `DESIGN.md`'s
+    `## Quality bar` section. "Each pass decides" was rejected — two runs of one pass would
+    calibrate differently.
+24. **The plan gate gains one plan-table row, nothing more**: the register in effect and the
+    one decision this surface makes that should read as strong. Predicted grades were rejected
+    as fake — grading unbuilt work — and a free-text ceiling note as more words at the gate.
+25. **QUALITY GRADES becomes a four-line block with a header line** — one line per criterion
+    slug (grade + one sentence quoting its anchor); the header names the register in effect
+    and the dark-mode condition. `dx-critique`'s report reuses the same block, so both graded
+    surfaces stay in one format.
+26. **The rubric §4 stub's slug list sits in a `dx-sync` fence**, enforced by `validate.py`'s
+    existing fence-parity mechanism — this discharges the third check of decision 5 with no
+    new code. `quality-bar.md` and `layout-patterns.md` also join `validate.py`'s
+    `cross_ref_files` list (one line each).
+27. **`implement-craft.md` survives as the build-time how-to, plus one pointer line** — the
+    reviewer grades Craft against this file, so read that criterion's anchors as you build.
+    Folding it in was rejected as new fold work outside the wiring ticket.
+28. **A `DESIGN.md` register id that resolves to nothing falls back to the default and flags
+    the drift** to the human; `validate.py` still fails the structural check where it can see
+    the `DESIGN.md`. A blocking stop was rejected — the ceiling never blocks, so an error stop
+    would give this file more power than it has. The builder resolves the register once and
+    passes it to the reviewer in the dispatch payload; independent re-resolution was rejected
+    because builder and reviewer could resolve a bad id differently.
