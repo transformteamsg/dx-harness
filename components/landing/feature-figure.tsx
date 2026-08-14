@@ -101,7 +101,7 @@ function ReviewFigure() {
 
 export function FeatureFigure({ kind, number }: { kind: FeatureFigureKind; number: string }) {
   return (
-    <figure className="relative h-44 overflow-hidden border-b border-border" aria-hidden="true" data-feature-figure={kind}>
+    <figure className="relative h-44 overflow-hidden" aria-hidden="true" data-feature-figure={kind}>
       <p className="absolute top-4 left-5 z-10 text-xs tracking-widest text-muted-foreground">{number}</p>
       <svg viewBox="0 0 360 260" className="mx-auto block h-full w-full max-w-xs">
         {kind === "orchestrator" ? <OrchestratorFigure /> : null}
