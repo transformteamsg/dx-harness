@@ -6,6 +6,8 @@
 //
 //   node scripts/verify-deploy.mjs https://staging--dx-harness.app.tc1.airbase.sg
 
+import { findExecutableInlineScripts } from "./externalize-next-inline-scripts.mjs";
+
 const base = process.argv[2];
 if (!base) {
   console.error("Usage: node scripts/verify-deploy.mjs <base-url>");
@@ -38,15 +40,23 @@ const results = await Promise.all(
     const url = new URL(route, base).toString();
     try {
       const res = await fetch(url);
-      return { route, status: res.status, ok: res.status === 200 };
+      const isHtml = res.headers.get("content-type")?.includes("text/html") ?? false;
+      const inlineScripts = isHtml ? findExecutableInlineScripts(await res.text()).length : 0;
+      return {
+        route,
+        status: res.status,
+        ok: res.status === 200 && inlineScripts === 0,
+        detail: inlineScripts > 0 ? `${inlineScripts} executable inline script(s)` : "",
+      };
     } catch (err) {
-      return { route, status: err.message, ok: false };
+      const message = err instanceof Error ? err.message : String(err);
+      return { route, status: message, ok: false, detail: "" };
     }
   }),
 );
 
-for (const { route, status, ok } of results) {
-  console.log(`${ok ? "PASS" : "FAIL"}  ${status}  ${route}`);
+for (const { route, status, ok, detail } of results) {
+  console.log(`${ok ? "PASS" : "FAIL"}  ${status}  ${route}${detail ? `  ${detail}` : ""}`);
 }
 
 const failed = results.filter((r) => !r.ok);
@@ -54,4 +64,6 @@ if (failed.length > 0) {
   console.error(`\n${failed.length} of ${routes.length} routes failed.`);
   process.exit(1);
 }
-console.log(`\nAll ${routes.length} routes returned 200.`);
+console.log(
+  `\nAll ${routes.length} routes returned 200, and every HTML route contains no executable inline scripts.`,
+);

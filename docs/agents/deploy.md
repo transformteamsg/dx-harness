@@ -4,15 +4,15 @@ The website deploys as a container to Airbase, a Singapore Government platform t
 
 The old Vercel project (`tfx-design-standard`) was deleted; there is no auto-deploy from `main` yet (tracked separately, see Out of scope on issue #142).
 
-## Known blocker: Airbase's CSP breaks this site (as of 2026-08-14)
+## Airbase CSP compatibility
 
-The site deploys and every route answers HTTP 200, but **the page renders blank in a real browser.** Confirmed by comparing a raw `curl` (full, correct HTML: header, nav, heading text all present) against an actual browser screenshot (blank) and the live DOM after JS ran (the visible markup is gone, replaced by inert, never-executed script tags).
+Airbase adds `Content-Security-Policy: script-src 'self'` to every response and does not allow applications to override it. Its [CSP reference](https://docs.app.tc1.airbase.sg/reference/security-csp/) permits JavaScript served from the application's own origin but blocks inline scripts, `eval()`, and the `Function()` constructor. Its [CSP compliance guide](https://docs.app.tc1.airbase.sg/how-to/csp-compliance/) therefore requires framework build output to keep all JavaScript in external `.js` files.
 
-Root cause: Airbase's edge unconditionally adds `Content-Security-Policy: script-src 'self'` to every response, with no override. Their own docs confirm this in [reference/security-csp](https://docs.app.tc1.airbase.sg/reference/security-csp/): "You cannot: Override the CSP policy, Add additional CSP directives, Disable CSP enforcement." (The one workaround listed, an Nginx proxy, is Python-only and explicitly documented as weakening security.)
+Next.js 15's App Router does not meet that output contract by default: prerendered HTML includes inline `self.__next_f.push(...)` scripts containing the React Server Components payload. Airbase blocks those scripts, so the allowed external Next.js runtime starts without its payload and clears the server-rendered page.
 
-This CSP blocks Next.js's inline `<script>self.__next_f.push(...)</script>` tags, which the framework always emits to carry server-rendered data to the client for hydration (App Router's RSC payload; the Pages Router's `__NEXT_DATA__` script has the same shape). This isn't specific to how this site is built or rendered; it's how Next.js delivers data to the browser at all, so a static export wouldn't avoid it either as long as the page has any client-side interactivity to hydrate. Airbase's own [how-to/csp-compliance](https://docs.app.tc1.airbase.sg/how-to/csp-compliance/) guide claims "Next.js 13+ is CSP-compliant by default"; that claim doesn't hold for real Next.js apps with client components, which this site has (sidebar, mobile nav).
+`pnpm build` fixes the generated artifact in its `postbuild` step. `scripts/externalize-next-inline-scripts.mjs` moves executable inline scripts from every prerendered `.next/server/app/**/*.html` page into content-hashed files under `.next/static/csp-inline/`, then replaces them with same-origin `src` references. External scripts, empty scripts, and non-executable data blocks such as `type="application/json"` remain unchanged. The build fails if the expected prerendered output is missing or an executable inline script remains after processing.
 
-No documented self-serve fix exists (checked `reference/security-csp`, `how-to/csp-compliance`, `how-to/troubleshoot-csp`). This needs either an exception from Airbase's platform team, or a decision to rearchitect the site to avoid Next.js's hydration model entirely (a large change, not a config fix). Until one of those happens, treat the site as **not actually usable** on Airbase despite passing every automated HTTP check.
+Do not remove the `postbuild` step or run `next build` directly for an Airbase image. `pnpm build` runs the standards checks, the Next.js build, and CSP externalization in order. `scripts/verify-deploy.mjs` also rejects live HTML that still contains executable inline scripts, so an HTTP 200 alone can no longer hide this failure.
 
 ## One-time setup (human only, needs TechPass)
 

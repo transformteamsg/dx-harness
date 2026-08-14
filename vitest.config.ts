@@ -1,13 +1,13 @@
 import path from "node:path";
 import { defineConfig } from "vitest/config";
 
-/* Node environment only — the modules under test (lib/markdown-twin.ts,
-   lib/catalog.ts) read content/ and harness/standards/ from disk; no DOM
-   needed. Alias mirrors tsconfig.json's "@/*": ["./*"]. */
+/* Node environment only — the modules and build scripts under test read the
+   repository and temporary fixtures from disk; no DOM needed. Alias mirrors
+   tsconfig.json's "@/*": ["./*"]. */
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["lib/**/*.test.ts", "*.test.ts"],
+    include: ["lib/**/*.test.ts", "scripts/**/*.test.mjs", "*.test.ts"],
   },
   resolve: {
     alias: {

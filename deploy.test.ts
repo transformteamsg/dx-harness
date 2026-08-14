@@ -80,6 +80,21 @@ describe("next.config.mjs", () => {
   });
 });
 
+describe("Airbase CSP build output", () => {
+  it("externalizes Next.js inline scripts after every production build", () => {
+    const pkg = JSON.parse(readRoot("package.json"));
+
+    expect(pkg.scripts.postbuild).toBe("node scripts/externalize-next-inline-scripts.mjs");
+  });
+
+  it("checks deployed HTML for executable inline scripts", () => {
+    const verifier = readRoot("scripts/verify-deploy.mjs");
+
+    expect(verifier).toContain("findExecutableInlineScripts");
+    expect(verifier).toContain("executable inline script(s)");
+  });
+});
+
 describe(".dockerignore", () => {
   const ignore = readRoot(".dockerignore");
 
