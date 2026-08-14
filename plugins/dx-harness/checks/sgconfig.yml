@@ -19,8 +19,8 @@ utilDirs:
   - rules/utils
 languageGlobs:
   html:
-    # Not ast-grep languages at 0.44.1 — `--lang vue` and `--lang svelte` both
-    # fail with "is not supported!" — yet both extensions are in
+    # Not ast-grep languages at 0.44.1: `--lang vue` and `--lang svelte` both
+    # fail with "is not supported!", yet both extensions are in
     # checklib.TARGET_EXTENSIONS. Mapped to html, their attributes and text are
     # reachable. The cost: a <script> block inside one is html text, not JS.
     # A <style> block is covered anyway, because astgrep_scan() re-scans every

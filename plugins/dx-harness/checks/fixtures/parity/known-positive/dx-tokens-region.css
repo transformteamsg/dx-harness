@@ -1,5 +1,5 @@
 /*
- * dx-tokens-region.css — parity fixture: the comment-delimited exemption stays a
+ * dx-tokens-region.css: a parity fixture where the comment-delimited exemption stays a
  * Python line filter, because ast-grep 0.44.1 has no rule field that expresses
  * "the span between two sibling comments".
  *

@@ -272,7 +272,7 @@ _HEADING_SUBJECT_RE = re.compile(r"^h[1-6](?![a-z0-9-])", re.IGNORECASE)
 # A heading ELEMENT is no longer found with a regex on the line: the
 # type-scan-heading-element-html and -tsx rules match the opening tag, and
 # ancestry says which lines it covers. The brace state machine that used to
-# track "am I inside an h1 to h6 CSS rule" is gone the same way — the
+# track "am I inside an h1 to h6 CSS rule" is gone the same way, because the
 # type-scan-heading-rule-css rule hands over the enclosing rule directly.
 
 
@@ -457,7 +457,7 @@ def check_file(filepath, type_scale=None, rules=None, candidates=None):
         for ctl, found, suggest in _check_size_rules(scan_line, type_scale):
             emit(ctl, found, suggest)
 
-        # TYP-2 line-height — body-scoped, so ancestry decides heading context.
+        # TYP-2 line-height is body-scoped, so ancestry decides heading context.
         for found, suggest in _check_line_height_rule(
             scan_line, lineno in heading_lines
         ):

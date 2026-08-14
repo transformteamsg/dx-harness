@@ -1,6 +1,6 @@
 # A typeface choice: a CSS font-family declaration, a Tailwind font-[…]
 # arbitrary value, or the font-serif / font-mono family utilities. Which
-# typefaces are approved is policy and stays in Python — and so does the rule
+# typefaces are approved is policy and stays in Python, and so does the rule
 # that a weight utility (font-semibold, …) is never a typeface choice.
 id: type-scan-typ-1-font-family-css
 language: css

@@ -9,7 +9,7 @@ is found changed, never what is reported about it.**
 ```
 known-positive/   files both engines must report, in every context that matters
 known-negative/   files both engines must stay silent on
-expected/         <fixture>.<check>.txt — the recorded PRE-SWAP output
+expected/         <fixture>.<check>.txt, the recorded PRE-SWAP output
 ```
 
 Each `expected/*.txt` holds the exact lines the **pre-swap** engine printed for
@@ -39,7 +39,7 @@ changed or the swap changed a decision, and the second is not allowed.
 | Fixture | What it pins |
 |---|---|
 | `known-positive/className.tsx` | a raw value inside a `className` string |
-| `known-positive/style-object.tsx` | a `style={{}}` object — reached by the front end, still declined by the unchanged style-context policy |
+| `known-positive/style-object.tsx` | a `style={{}}` object, reached by the front end and still declined by the unchanged style-context policy |
 | `known-positive/template-literal.tsx` | a styled-components body spanning several lines; each finding lands on the value's own line |
 | `known-positive/multiline-jsx.tsx` | the attribute three lines below its opening tag |
 | `known-positive/declaration.css` | a spacing shorthand, a radius, a size and a line-height in one rule |
@@ -70,7 +70,7 @@ Both are silent at exit 0 before and after the swap.
 
 ## Two places the swap sharpens a message
 
-Neither changes a decision about real code, so neither has a record here — a
+Neither changes a decision about real code, so neither has a record here, because a
 record made by the pre-swap engine would enshrine the old text. Each has its own
 self-test case instead, in the script that owns it:
 

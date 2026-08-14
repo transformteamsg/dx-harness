@@ -1,5 +1,5 @@
 /*
- * tokens-only.css — parity fixture: every value goes through a token or is on
+ * tokens-only.css: a parity fixture where every value goes through a token or is on
  * scale. Both engines return zero findings, so the expected records are empty.
  */
 :root {

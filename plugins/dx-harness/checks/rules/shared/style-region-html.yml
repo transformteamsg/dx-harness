@@ -1,6 +1,6 @@
 # A style="…" attribute value: a CSS declaration list with no braces around it.
 # checklib.astgrep_scan() re-scans it with the css rules, which is how a
-# multi-line style attribute is reached — the old regex tracker documented that
+# multi-line style attribute is reached. The old regex tracker documented that
 # it handled the single-line case only.
 #
 # A <style> block needs no rule of its own: measured at 0.44.1, ast-grep parses

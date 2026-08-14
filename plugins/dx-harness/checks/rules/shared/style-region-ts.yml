@@ -1,4 +1,4 @@
-# A tagged style template literal — css`…`, styled.x`…`, styled(X)`…`,
+# A tagged style template literal: css`…`, styled.x`…`, styled(X)`…`,
 # createGlobalStyle`…`, injectGlobal`…`. The body is CSS, so
 # checklib.astgrep_scan() re-scans it with the css rules. Ancestry decides this
 # now, which retires the old tracker's rule that a template literal ended on a
