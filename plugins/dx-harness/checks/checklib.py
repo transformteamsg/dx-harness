@@ -40,6 +40,12 @@ _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 # extensions=<its own set>, not this default.
 TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
 
+# The one rule -> control-id mapping file for the accessibility layers. Every
+# check that reports an a11y finding resolves its control id through it, and
+# every layer that could not run reads its own `layers` row to name the
+# controls going to manual verification.
+RULE_MAP_FILENAME = "a11y-rule-map.json"
+
 # Unified, stricter skip policy (component-manifest.py's set). Most scripts
 # previously skipped only dotdirs and would have descended into node_modules
 # if pointed at a repo root; iter_target_files() now skips both everywhere.
@@ -713,11 +719,65 @@ def group_candidates(candidates):
     return by_file
 
 
-def emit_error(rel, lineno, ctl, found, suggest):
+def emit_error(rel, lineno, ctl, found, suggest, extra=None):
     """The canonical `ERROR {rel}:{lineno} [{ctl}] {found} — suggest: {suggest}`
     line. detect.py's `_FINDING_RE` reverse-parses this exact shape — change
-    them together."""
-    return f"ERROR {rel}:{lineno} [{ctl}] {found} — suggest: {suggest}"
+    them together.
+
+    `extra` fills the optional second bracket — `[{ctl}][{extra}]` — which
+    `_FINDING_RE` already tolerates and discards. a11y-eslint.py names the
+    jsx-a11y rule that fired there, so a finding traces back to its mapping
+    row; token-audit.py's `[waiver-claimed]` uses the same slot.
+    """
+    tail = f"[{extra}]" if extra else ""
+    return f"ERROR {rel}:{lineno} [{ctl}]{tail} {found} — suggest: {suggest}"
+
+
+class RuleMapError(Exception):
+    """Raised when the a11y rule map is missing or unreadable — a
+    misconfiguration, not a finding."""
+
+
+def load_rule_map(path=None):
+    """
+    Load the rule -> control-id map (`checks/a11y-rule-map.json`). Returns the
+    parsed dict with `version`, `rules` (one rule id -> exactly one control
+    id) and `layers` (layer name -> the control ids it covers).
+
+    A missing or malformed map is a misconfiguration, never a finding and
+    never a silent pass: it raises RuleMapError for the caller to report as an
+    operational ERROR.
+    """
+    if path is None:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            RULE_MAP_FILENAME)
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        raise RuleMapError(f"cannot read {os.path.basename(path)}: {exc}")
+    if not isinstance(data, dict) or not isinstance(data.get("rules"), dict) \
+            or not isinstance(data.get("layers"), dict):
+        raise RuleMapError(
+            f"{os.path.basename(path)} must be an object with 'rules' and 'layers'")
+    for rule, ctl in data["rules"].items():
+        if not isinstance(ctl, str):
+            raise RuleMapError(f"rule '{rule}' must map to exactly one control id")
+    return data
+
+
+def layer_controls(layer, rule_map=None):
+    """
+    The control ids a named layer covers, from the rule map's `layers` block.
+    Used by a layer that could not run to name the controls going to manual
+    verification — a control never silently passes. An unknown layer name is a
+    misconfiguration (RuleMapError), not an empty list.
+    """
+    data = rule_map if rule_map is not None else load_rule_map()
+    controls = data["layers"].get(layer)
+    if not isinstance(controls, list) or not controls:
+        raise RuleMapError(f"no controls listed for layer '{layer}' in {RULE_MAP_FILENAME}")
+    return list(controls)
 
 
 def report_self_test(failures, case_count):
@@ -967,6 +1027,42 @@ def _self_test():
         emit_error("app/page.tsx", 12, "TYP-2", "font size 12px", "use >= 14px")
         == "ERROR app/page.tsx:12 [TYP-2] font size 12px — suggest: use >= 14px",
     )
+    check(
+        "emit_error: optional second bracket names the rule that fired",
+        emit_error("app/x.tsx", 3, "A11Y-2", "not focusable", "add tabIndex",
+                   extra="jsx-a11y/interactive-supports-focus")
+        == "ERROR app/x.tsx:3 [A11Y-2][jsx-a11y/interactive-supports-focus] "
+           "not focusable — suggest: add tabIndex",
+    )
+
+    # ── rule map ──────────────────────────────────────────────────────────────
+    rule_map = load_rule_map()
+    check("rule map: version 1", rule_map["version"] == 1)
+    check(
+        "rule map: one rule maps to exactly one control id",
+        all(isinstance(v, str) for v in rule_map["rules"].values()),
+    )
+    check(
+        "layer_controls: the eslint layer names its controls",
+        layer_controls("eslint-jsx-a11y", rule_map) == ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"],
+    )
+    raised_layer = False
+    try:
+        layer_controls("no-such-layer", rule_map)
+    except RuleMapError:
+        raised_layer = True
+    check("layer_controls: unknown layer is a misconfiguration, not an empty list",
+          raised_layer)
+    with tempfile.TemporaryDirectory() as td:
+        bad = os.path.join(td, "broken.json")
+        with open(bad, "w", encoding="utf-8") as fh:
+            fh.write("{ not json")
+        raised_map = False
+        try:
+            load_rule_map(bad)
+        except RuleMapError:
+            raised_map = True
+        check("load_rule_map: malformed map raises, never returns empty", raised_map)
 
     # ── ast-grep version floor ────────────────────────────────────────────────
     check_eq("version: reads ast-grep --version output",

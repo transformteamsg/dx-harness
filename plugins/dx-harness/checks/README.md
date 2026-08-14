@@ -18,8 +18,14 @@ package, so each script imports it by path with the same importlib snippet
 `waiver-reconcile.py` already used for `audit-record.py`. A few pieces keep
 their own formatting where they genuinely differ (`token-audit.py`'s
 `[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
-tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (42 cases)`.
+tails). `emit_error` also takes an optional `extra=` that fills the second bracket
+(`[A11Y-2][jsx-a11y/interactive-supports-focus]`) — the slot `_FINDING_RE` already
+tolerates and discards, so a finding can name the rule that fired without changing
+the line shape. checklib also loads the a11y rule map (`load_rule_map`,
+`layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
+below) so the three a11y layers read one file rather than three copies of it.
+checklib has its own gate: `python3 checks/checklib.py --self-test` →
+`SELF-TEST OK (45 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -66,6 +72,36 @@ them is where the floor silently stops being enforced.
 - **Parity.** `checks/fixtures/parity/` is the corpus that gated the swap, with one
   recorded pre-swap output per fixture and check. See
   [`fixtures/parity/README.md`](fixtures/parity/README.md).
+
+## A11y rule map: `a11y-rule-map.json` + `checks/eslint/`
+
+One file maps every accessibility rule the harness runs to exactly one control id:
+`checks/a11y-rule-map.json` (JSON, not YAML — the check scripts are stdlib-only).
+
+- `rules` — `"jsx-a11y/<rule>": "<CTL>"`, one control id per rule, never a list. All
+  31 rules in jsx-a11y's `recommended` preset have a row, so a rule that fires can
+  never be silently dropped; a rule with no row is reported as a misconfiguration,
+  not attributed to a guessed control.
+- `layers` — the control ids each layer covers (`eslint-jsx-a11y`,
+  `a11y-static-focus`, `contrast-token-pairs`). A layer that could not run reads its
+  own row to name the controls going to manual verification, so a control is never
+  reported as passing by a layer that did not check it. The rendered check's axe rows
+  are a later addition to the same file.
+
+Four rows attribute a finding to a control the eslint layer claims **no** coverage
+for: `heading-has-content` and `scope` (A11Y-7, whose static half is the separate
+`structure` check), `html-has-lang` (A11Y-9) and `no-distracting-elements` (A11Y-5).
+They exist so a fired rule is reported honestly; only the `layers` row states
+coverage.
+
+`checks/eslint/jsx-a11y.config.mjs` is the harness-side eslint flat config the lint
+layer runs. It sits in its own subdirectory because a `.mjs` file there is invisible
+to `checklib.TARGET_EXTENSIONS` and to `validate.py`'s `live_checks_count` (which
+counts `checks/*.py`), so it can neither become a scan target nor move a count.
+
+The map's integrity — every mapped control id exists in `standards/catalog.yaml`, all
+31 preset rules present, one control id per rule — is asserted by
+`python3 checks/a11y-eslint.py --self-test`, not by `validate.py`.
 
 ## Detector — one entry over the checks (built)
 
