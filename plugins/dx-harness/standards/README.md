@@ -162,6 +162,12 @@ summary count. This replaces hand-maintained gap lists, which drift.
 5. **One catalog for the whole portfolio.** No per-product control overlays; per-product
    difference is nuance calibration or a standing override declared in that product's
    DESIGN.md (L0 never; L1 needs a named approver; L2 needs a reason) — never separate rules.
+6. **A machine-checked control arrives with a check, a reason, or an honest label.** A new
+   `deterministic` or `hybrid` control lands with a script, a `gap:` reason (an accepted
+   gap), or an honest relabel to `judgment`. `checks/validate.py` enforces the same thing:
+   a `deterministic` or `hybrid` control whose effective `enforced` is `manual` and which
+   carries no `gap:` is an error. A "planned script" note is not a reason, and an `L0`
+   control has no reason available to it at all: only a script.
 
 ## Detail file format (`controls/<id>.md`)
 
