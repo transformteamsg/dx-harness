@@ -16,7 +16,10 @@ Run in this order; do not present output to the user while a step is failing:
      product's JSX: static halves of A11Y-2, A11Y-3, A11Y-6, A11Y-8. Needs no setup in
      the product repo. When it prints `did not run`, the controls it names go to manual
      verification, never a pass.
-   - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8.
+   - `python3 checks/a11y-static.py <path>...` — the bespoke FOCUS rule (A11Y-2): an
+     outline removed with no focus-visible replacement on the same line. No tool
+     covers it, and focus styling in a stylesheet it cannot see flags as a false
+     positive: confirm the rendered element with a keyboard before treating it as a bug.
    - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset of A11Y-1.
    Each reads line-local code only: traversal order, computed hit-area, ARIA-state,
    inherited/computed backgrounds, and font-size classification all stay in the manual
@@ -62,8 +65,9 @@ Run in this order; do not present output to the user while a step is failing:
    - **Inventory checkoff**: walk the Phase-1 component inventory and tick each
      interactive control as operated — tab to it (focus visible per A11Y-2),
      activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).
-     Run `checks/a11y-static` (if built) as the static pre-pass, then operate what
-     a static scan can't see. An un-operated control is uncovered, not clean.
+     Run `checks/a11y-eslint` and `checks/a11y-static` as the static pre-pass, then
+     operate what a static scan can't see. An un-operated control is uncovered, not
+     clean.
    - **Dark mode: supported?** Before grading anything as dark-safe, establish
      whether the product actually supports dark mode: is there a visible theme
      toggle, and does a `.dark` (or `[data-theme="dark"]`) layer re-render the
