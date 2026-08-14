@@ -20,6 +20,11 @@ Validates standards/catalog.yaml for internal consistency:
      skill/agent file or grandfathered; no ghost ids in skills).
      A declared sync consumer that cannot be found on disk is an ERROR, never
      a silent skip — a moved consumer must not look in sync (#122).
+  9. Accepted gaps: a deterministic or hybrid control whose effective
+     enforced is manual (the default included) carries a one-line 'gap:'
+     reason saying why no script exists, or a temporary GAP_GRANDFATHERED
+     allowance. 'gap:' is forbidden on L0 and on any control a script or the
+     evaluator already covers.
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -748,6 +753,165 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
     return errors
 
 
+# ── Accepted gaps: the `gap:` reason ────────────────────────────────────────
+# A deterministic or hybrid control whose effective enforcement is manual
+# promises a machine check that nothing delivers. `enforced: manual` stays
+# legal, but only with a one-line `gap:` reason saying why no script exists (an
+# accepted gap; see the spec's glossary in
+# docs/specs/2026-08-14-catalogue-reliability.md section 14). This closes the
+# drift where a "planned script" note in a detail file stood in for a check
+# nobody wrote: nothing verified those notes and nothing expired them.
+
+# Controls that are effectively manual with no `gap:` reason yet, grandfathered
+# when this rule landed (#146). Their scripts, relabels and reasons arrive
+# progressively across the effort, so without this list the rule would fail the
+# build for the length of it. Shrink-only, on the discipline
+# SKILL_WIRING_GRANDFATHERED already enforces: an entry leaves in the commit
+# that ships what the entry names, never earlier and never on its own. An entry
+# whose control no longer needs the allowance prints a NOTE and never fails the
+# build; an entry that is not a catalog id at all is an ERROR. The list is
+# temporary: #162 removes the last entries and deletes it.
+GAP_GRANDFATHERED = {
+    # #150, the relabels: four controls relabel to judgment, which closes the
+    # gap by definition, and three take a written reason.
+    "CMP-4": "relabels to judgment in #150",
+    "CMP-8": "relabels to judgment in #150",
+    "SLP-5": "relabels to judgment in #150",
+    "SLP-7": "relabels to judgment in #150",
+    "CMP-5": "accepted gap; its reason lands with the relabels in #150",
+    "LAY-1": "accepted gap; its reason lands with the relabels in #150",
+    "TYP-5": "accepted gap; its reason lands with the relabels in #150",
+    # #155, the rendered runner's anti-slop rules.
+    "SLP-4": "rendered nested-card rule pending in #155",
+    "SLP-6": "rendered type-ramp rule pending in #155",
+    # #156, checks/slop-scan.py.
+    "SLP-1": "script pending in #156",
+    "SLP-2": "script pending in #156",
+    "SLP-3": "script pending in #156",
+    # #157, checks/motion-scan.py.
+    "MOT-1": "script pending in #157",
+    "SLP-8": "script pending in #157",
+    # #158, checks/cmp-scan.py. CMP-2 is L0, so a gap: reason can never
+    # legalise it: its only exit is the script, which is why the candidate
+    # lister has to be built.
+    "CMP-2": "L0, so no gap: reason can ever stand in; script pending in #158",
+    "CMP-3": "script pending in #158",
+    "CMP-9": "script pending in #158",
+    # #159, checks/identity-scan.py.
+    "IDN-1": "script pending in #159",
+    "IDN-2": "script pending in #159",
+    # #160, the static structure check.
+    "A11Y-7": "structure check pending in #160",
+    "CMP-6": "structure check pending in #160",
+    # #161, the type-scan.py measure rules.
+    "LAY-4": "type-scan rule pending in #161",
+    "TYP-6": "type-scan rule pending in #161",
+    # #162, the coverage recount. Each of these is decided by the rendered
+    # runner or the static accessibility config (#151, #154), and its label is
+    # corrected in the recount; A11Y-11 needs interaction, so it has no script
+    # half at all and takes a written reason there.
+    "A11Y-4": "rendered target-size check; label recount pending in #162",
+    "A11Y-5": "rendered reduced-motion check; label recount pending in #162",
+    "A11Y-6": "static and rendered alt-text checks; label recount pending in #162",
+    "A11Y-9": "rendered title and lang checks; label recount pending in #162",
+    "A11Y-10": "rendered bypass check, report-only; label recount pending in #162",
+    "A11Y-11": "needs interaction, so no script half exists; reason pending in #162",
+}
+
+
+def gap_required(control):
+    """
+    True when a control must carry a `gap:` reason: its check is deterministic
+    or hybrid AND its effective enforcement resolves to manual, the schema
+    default included. Reads the default through effective_enforcement; never
+    materialises it. Pure, with no I/O.
+    """
+    enforced, _ = effective_enforcement(control)
+    return (control.get("check") in ("deterministic", "hybrid")
+            and enforced == "manual")
+
+
+def gap_allowance_needed(control):
+    """
+    True when only a GAP_GRANDFATHERED entry keeps this control legal: a
+    `gap:` reason is required and none is written. Pure, with no I/O.
+    """
+    return gap_required(control) and "gap" not in control
+
+
+def gap_rule_errors(control, schema_bits):
+    """
+    The `gap:` rule for one control. Catalog-level rather than part of
+    validate_control because the allowance list is a catalog-wide policy, like
+    WIRING_EXEMPT. Pure, with no I/O. Reports, in order:
+      - a required reason that is missing (unless the id is allowanced);
+      - a reason on a tier the schema forbids one on (the L0 backstop: a
+        non-waivable floor nobody checks by machine is a promise, not a floor);
+      - a reason that is not a non-empty string (`gap:` with no value parses to
+        None, and the key is still present);
+      - a reason on a control that is not effectively manual, so a script or
+        the evaluator already covers it and the reason is stale;
+      - a reason claiming a planned script, which is not an accepted gap.
+    """
+    errors = []
+    ctrl_id = control.get("id", "<no id>")
+    loc = f"standards/catalog.yaml ({ctrl_id})"
+    enforced, defaulted = effective_enforcement(control)
+    # The '(default)' marker is load-bearing: when enforced: is absent nothing
+    # in the file shows which value the rule read. Borrowed from
+    # print_coverage's table.
+    enforced_label = f"'{enforced}' (default)" if defaulted else f"'{enforced}'"
+
+    def err(message):
+        errors.append(f"ERROR {loc}: {message}")
+
+    if "gap" not in control:
+        if gap_required(control) and ctrl_id not in GAP_GRANDFATHERED:
+            err(f"check '{control.get('check')}' with enforced {enforced_label} "
+                f"requires a 'gap' reason")
+        return errors
+
+    gap = control.get("gap")
+    tier = control.get("tier")
+    if tier in schema_bits["gap_forbidden_tiers"]:
+        err(f"tier {tier} cannot carry a 'gap' reason; an {tier} floor needs a script")
+
+    if not isinstance(gap, str) or not gap.strip():
+        err(f"'gap' must be a non-empty string, got {gap!r}")
+        return errors
+
+    if not gap_required(control):
+        err(f"'gap' is present but enforced is {enforced_label}; a gap records "
+            f"why no script exists")
+    if re.search(r"planned\s+script", gap, re.IGNORECASE):
+        err("'gap' claims a planned script, which is not an accepted gap")
+    return errors
+
+
+def gap_allowlist_errors(catalog_by_id):
+    """
+    GAP_GRANDFATHERED staleness, mirroring SKILL_WIRING_GRANDFATHERED's: an
+    entry naming an id the catalog does not have is a dead entry (ERROR); an
+    entry whose control no longer needs the allowance, because it now carries
+    a reason, a script, or a judgment label, prints a NOTE and never fails the
+    build. Forgetting to remove one is silent; removing one carelessly is loud.
+    """
+    errors = []
+    for cid in sorted(GAP_GRANDFATHERED):
+        control = catalog_by_id.get(cid)
+        if control is None:
+            errors.append(
+                f"ERROR checks/validate.py: GAP_GRANDFATHERED entry '{cid}' is "
+                f"not a catalog id (dead entry)"
+            )
+        elif not gap_allowance_needed(control):
+            print(
+                f"NOTE checks/validate.py: {cid} no longer needs a gap "
+                f"allowance; consider removing it from GAP_GRANDFATHERED"
+            )
+    return errors
+
+
 # ── Copy-skill ↔ guideline parity (VOICE / TONE / UITEXT) ────────────────────────
 # The copy skill (skills/design/dx-design-copy/SKILL.md) inlines the voice-attributes
 # and tone-by-context tables and the draft-phase editing sequence; the website
@@ -983,6 +1147,11 @@ def collect_errors(repo_root, _return_count=False):
         # Steps 2–4: required fields, allowed values, tier→waiver, id shape
         errors.extend(validate_control(control, idx, schema_bits))
 
+        # Step 9: the gap: reason for an effectively manual deterministic or
+        # hybrid control (see gap_rule_errors on why it is not in
+        # validate_control).
+        errors.extend(gap_rule_errors(control, schema_bits))
+
         check = control.get("check")
 
         # 4. ID uniqueness (shape is checked in validate_control)
@@ -1024,6 +1193,9 @@ def collect_errors(repo_root, _return_count=False):
         if prefix not in meta_categories:
             err("standards/catalog.yaml (meta.categories)",
                 f"id prefix '{prefix}' ({ctrl_id}) has no category mapping")
+
+    # ── Step 9b: the gap: allowance list, checked for staleness ──────────────
+    errors.extend(gap_allowlist_errors(catalog_by_id))
 
     # ── Step 6: Reverse check — controls/*.md frontmatter ────────────────────
     # Collect all .md files in controls/
@@ -1144,6 +1316,8 @@ def run_self_test():
     Embedded self-test cases.  Prints SELF-TEST OK (N cases) and exits 0 on
     success, or prints failures and exits 1.
     """
+    import contextlib
+    import io
     import tempfile
     import shutil
 
@@ -1449,6 +1623,101 @@ def run_self_test():
            "gap" in FRONTMATTER_FIELDS)
     if want != got:
         failures.append(f"FAIL gap field declared in schema: want: {want!r}; got: {got!r}")
+
+    # ── Gap-reason rule cases ────────────────────────────────────────────
+    # TOK-9 is deliberately not a catalog id, so no GAP_GRANDFATHERED entry
+    # can mask these cases, and L2 rather than L0 because the backstop denies
+    # an L0 control a reason at all.
+    gap_base = dict(valid_control, id="TOK-9", tier="L2", waiver="rationale")
+    real_gap = "No script: the boundary call is the evaluator's half of this control."
+
+    # A written enforced: manual with no reason → error. This is MOT-2's state
+    # before this effort, and the catalog's only written manual.
+    assert_error("gap missing on written manual",
+                 gap_rule_errors(dict(gap_base, enforced="manual"), schema_bits),
+                 "check 'deterministic' with enforced 'manual' requires a 'gap' reason")
+    # No enforced: key at all → the rule reaches the silent default, and says
+    # so, because nothing in the file shows the value was defaulted.
+    assert_error("gap missing on defaulted manual",
+                 gap_rule_errors(dict(gap_base, check="hybrid"), schema_bits),
+                 "check 'hybrid' with enforced 'manual' (default) requires a 'gap' reason")
+    # A reason is what makes the manual label legal.
+    assert_clean("gap reason legalises manual",
+                 gap_rule_errors(dict(gap_base, enforced="manual", gap=real_gap),
+                                 schema_bits))
+    # judgment: the evaluator IS the enforcement, so there is no gap to record.
+    assert_clean("judgment needs no gap",
+                 gap_rule_errors(dict(gap_base, check="judgment"), schema_bits))
+    # L0 cannot buy its way out with a reason; its only exit is a script.
+    assert_error("gap forbidden on L0",
+                 gap_rule_errors(dict(valid_control, check="hybrid", gap=real_gap),
+                                 schema_bits),
+                 "tier L0 cannot carry a 'gap' reason")
+    # A reason left behind on a control a script now covers is stale, not free.
+    assert_error("gap left on a scripted control",
+                 gap_rule_errors(dict(gap_base, enforced="partial", script=real_script,
+                                      gap=real_gap), schema_bits),
+                 "'gap' is present but enforced is 'partial'")
+    # An empty or whitespace-only value is not a reason.
+    assert_error("gap empty string",
+                 gap_rule_errors(dict(gap_base, gap=""), schema_bits),
+                 "'gap' must be a non-empty string, got ''")
+    assert_error("gap whitespace only",
+                 gap_rule_errors(dict(gap_base, gap="   "), schema_bits),
+                 "'gap' must be a non-empty string")
+    # `gap:` with no value parses to None, and the key is still present, so
+    # presence is tested by key, never by value.
+    assert_error("gap key with no value",
+                 gap_rule_errors(dict(gap_base, gap=None), schema_bits),
+                 "'gap' must be a non-empty string, got None")
+    # A planned script is not an accepted gap.
+    assert_error("gap claims a planned script",
+                 gap_rule_errors(dict(gap_base, gap="No script: a planned script "
+                                      "lands later."), schema_bits),
+                 "claims a planned script")
+    # The bare word 'planned' in a real reason is not the phrase, so a
+    # legitimate reason that happens to use it stays clean.
+    assert_clean("gap using the word planned legitimately",
+                 gap_rule_errors(dict(gap_base, gap="no registry is planned for any "
+                                      "product yet, so the check would grade N/A "
+                                      "everywhere it ran."), schema_bits))
+    # An allowanced control keeps the build green while the script, relabel or
+    # reason it waits for is still to come.
+    pending_id = sorted(GAP_GRANDFATHERED)[0]
+    assert_clean("gap allowance suppresses a pending control",
+                 gap_rule_errors(dict(gap_base, id=pending_id), schema_bits))
+
+    # An allowance naming an id the catalog does not have is a dead entry.
+    assert_error("gap allowance dead entry", gap_allowlist_errors({}),
+                 "is not a catalog id (dead entry)")
+    # An allowance whose control now carries a reason is stale: it prints a
+    # NOTE and never fails the build. Captured so the self-test stays quiet.
+    resolved = {cid: dict(gap_base, id=cid, gap=real_gap) for cid in GAP_GRANDFATHERED}
+    note_buffer = io.StringIO()
+    with contextlib.redirect_stdout(note_buffer):
+        resolved_errs = gap_allowlist_errors(resolved)
+    assert_clean("gap allowance resolved never blocks", resolved_errs)
+    case_count += 1
+    want = True
+    got = (f"NOTE checks/validate.py: {pending_id} no longer needs a gap allowance"
+           in note_buffer.getvalue())
+    if want != got:
+        failures.append(f"FAIL gap allowance resolved prints a NOTE: want: {want!r}; "
+                        f"got: {got!r}")
+
+    # MOT-2 is the control this rule was written around. Assert against the
+    # real catalog that its reason is there, that it still claims no script,
+    # and that the rule passes it, so an edit deleting the reason fails here.
+    case_count += 1
+    with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
+        live_controls = yaml.safe_load(fh)["controls"]
+    mot2 = next((c for c in live_controls if c.get("id") == "MOT-2"), {})
+    want = (True, False, [])
+    got = (bool(str(mot2.get("gap", "")).strip()), "script" in mot2,
+           gap_rule_errors(mot2, schema_bits))
+    if want != got:
+        failures.append(f"FAIL MOT-2 carries a reason and no script: want: {want!r}; "
+                        f"got: {got!r}")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
@@ -1761,10 +2030,38 @@ def run_self_test():
             os.path.join(standards_dir, "schema.json"),
         )
 
+        # A script both fixture controls can claim. They are L0, so the gap
+        # backstop denies them a reason: a real script is their only way to be
+        # a valid effectively-scripted control.
+        os.makedirs(os.path.join(tmp_root, "checks"))
+        open(os.path.join(tmp_root, "checks", "stub-scan.py"), "w").close()
+
+        # Every GAP_GRANDFATHERED id also rides in the fixture catalog, gapless
+        # and effectively manual, mirroring production, per the WIRING_EXEMPT
+        # and SKILL_WIRING_GRANDFATHERED fixtures above, so the real allowance
+        # list's own entries do not read as dead entries here.
+        pending_controls = [
+            {
+                "id": cid,
+                "source": "DX-DS",
+                "title": f"Pending build for {cid}",
+                "tier": "L2",
+                "check": "deterministic",
+                "phase": ["implement"],
+                "applies_to": ["component"],
+                "verify": "manual until its script lands",
+                "waiver": "rationale",
+            }
+            for cid in sorted(GAP_GRANDFATHERED)
+        ]
+
         # Minimal valid catalog: two L0 deterministic controls, meta.categories
-        # covering both prefixes, no detail files (deterministic ⇒ not required).
+        # covering every prefix, no detail files (deterministic ⇒ not required).
         valid_catalog = {
-            "meta": {"categories": {"TOK": "Tokens", "A11Y": "Accessibility"}},
+            "meta": {"categories": {"TOK": "Tokens", "A11Y": "Accessibility",
+                                    "CMP": "Components", "IDN": "Identity",
+                                    "LAY": "Layout", "MOT": "Motion",
+                                    "SLP": "Anti-slop", "TYP": "Typography"}},
             "controls": [
                 {
                     "id": "TOK-1",
@@ -1776,6 +2073,8 @@ def run_self_test():
                     "applies_to": ["component"],
                     "verify": "token-audit",
                     "waiver": "none",
+                    "enforced": "script",
+                    "script": "checks/stub-scan.py",
                 },
                 {
                     "id": "A11Y-1",
@@ -1787,8 +2086,10 @@ def run_self_test():
                     "applies_to": ["page"],
                     "verify": "contrast",
                     "waiver": "none",
+                    "enforced": "script",
+                    "script": "checks/stub-scan.py",
                 },
-            ],
+            ] + pending_controls,
         }
         catalog_path = os.path.join(standards_dir, "catalog.yaml")
         with open(catalog_path, "w") as fh:
@@ -1833,7 +2134,41 @@ def run_self_test():
         if not any("checks/does-not-exist.py" in e and "does not exist" in e for e in errs):
             failures.append(f"FAIL integration missing script path: expected a script-path error — got: {errs}")
 
-        # Case 14: missing catalog → "file not found"
+        # Case 14: a control that is effectively manual (no enforced: key at
+        # all) with no gap: reason and no allowance → the gap rule fires
+        # through the real catalog path, not only against a fixture dict.
+        gapless_catalog = json.loads(json.dumps(valid_catalog))
+        del gapless_catalog["controls"][0]["enforced"]
+        del gapless_catalog["controls"][0]["script"]
+        with open(catalog_path, "w") as fh:
+            yaml.safe_dump(gapless_catalog, fh)
+        case_count += 1
+        errs = collect_errors(tmp_root)
+        want = True
+        got = any("TOK-1" in e and "requires a 'gap' reason" in e for e in errs)
+        if want != got:
+            failures.append(f"FAIL integration gapless manual control: want: {want!r}; "
+                            f"got: {got!r}, errors: {errs!r}")
+
+        # Case 15: the same control with a reason, and off L0 because the
+        # backstop denies an L0 control one → the whole run is clean again.
+        gapped_catalog = json.loads(json.dumps(gapless_catalog))
+        gapped_catalog["controls"][0].update({
+            "tier": "L2",
+            "waiver": "rationale",
+            "gap": "No script: the boundary call is the evaluator's half of this control.",
+        })
+        with open(catalog_path, "w") as fh:
+            yaml.safe_dump(gapped_catalog, fh)
+        case_count += 1
+        errs = collect_errors(tmp_root)
+        want = []
+        got = errs
+        if want != got:
+            failures.append(f"FAIL integration gap reason legalises manual: "
+                            f"want: {want!r}; got: {got!r}")
+
+        # Case 16: missing catalog → "file not found"
         os.remove(catalog_path)
         case_count += 1
         errs = collect_errors(tmp_root)
