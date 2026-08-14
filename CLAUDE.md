@@ -34,3 +34,7 @@ Default label vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `read
 ### Domain docs
 
 Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Deploy
+
+The website deploys as a container to Airbase (staging only so far). See `docs/agents/deploy.md`.

@@ -88,3 +88,17 @@ describe(".dockerignore", () => {
     expect(ignore).toContain(".env*");
   });
 });
+
+describe("docs/agents/deploy.md", () => {
+  const doc = readRoot("docs/agents/deploy.md");
+
+  it("documents the build and deploy commands", () => {
+    expect(doc).toContain("airbase container build");
+    expect(doc).toContain("airbase container deploy");
+  });
+
+  it("documents the staging URL pattern", () => {
+    expect(doc).toContain("staging--");
+    expect(doc).toContain("app.tc1.airbase.sg");
+  });
+});
