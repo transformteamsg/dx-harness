@@ -2036,6 +2036,90 @@ def run_self_test():
             f"typos-keys={sorted(cnt13_lists['typos'])[:5]}…"
         )
 
+    # ── Runtime coupling to the detail files ──────────────────────────────────
+    # A word added to a list in a detail file must be enforced with no change to
+    # this script. Write a slp-9.md-shaped file carrying a nonce buzzword, load
+    # it the way every scan does, and lint prose that uses the word.
+    case_count += 1
+    with tempfile.TemporaryDirectory() as td:
+        detail = os.path.join(td, "slp-9.md")
+        with open(detail, "w", encoding="utf-8") as fh:
+            fh.write(
+                "# SLP-9\n\n## How to verify\n\n"
+                "- the buzzword list — <!-- dx-sync:slp9-buzzwords source --> "
+                "zorbify, streamline <!-- /dx-sync:slp9-buzzwords --> — plus the\n"
+                "  AI-vocabulary list: delve, robust;\n"
+                '- the filler list — "in order to";\n'
+                '- the chatbot-artifact list — "great question";\n'
+            )
+        grown, grown_fallback, _grown_note = load_slp9_lists(detail)
+        grown_words = {
+            "buzzwords": _build_word_regex(grown["buzzwords"]),
+            "ai_vocab": _build_word_regex(grown["ai_vocab"]),
+        }
+        grown_phrases = {
+            "filler": _build_phrase_regex(grown["filler"]),
+            "chatbot": _build_phrase_regex(grown["chatbot"]),
+        }
+        prose = os.path.join(td, "page.mdx")
+        with open(prose, "w", encoding="utf-8") as fh:
+            fh.write("We zorbify the marks before the term ends.\n")
+        got = check_file(prose, grown, grown_phrases, grown_words, device_re,
+                         cnt6_res, cnt13_res)
+        want = 'zorbify'
+        if grown_fallback or not any(want in e and "[SLP-9]" in e for e in got):
+            failures.append(
+                f"FAIL coupling: a word added to slp-9.md must be enforced "
+                f"with no code change. want: {want!r}; got: {got!r} "
+                f"(used_fallback={grown_fallback})"
+            )
+
+    # An unreadable detail file falls back loudly, and the fallback still does
+    # not lint class values.
+    case_count += 1
+    with tempfile.TemporaryDirectory() as td:
+        fb_lists, fb_used, fb_note = load_cnt13_lists(
+            os.path.join(td, "no-such-cnt-13.md"))
+        fb_res = _build_cnt13_res(fb_lists)
+        source = os.path.join(td, "card.tsx")
+        with open(source, "w", encoding="utf-8") as fh:
+            fh.write('<div className="bg-[color:var(--tw-blue)]" '
+                     'title="Organize the class list" />\n')
+        got = check_file(source, lists, phrase_res, word_res, device_re, cnt6_res,
+                         fb_res)
+        want = ['1 [CNT-13] spelling "Organize"']
+        trimmed = [
+            re.sub(r"^ERROR [^ ]*:", "", e).split(" — suggest:")[0] for e in got
+        ]
+        if not (fb_used and fb_note and fb_note.startswith(
+                "NOTE content-lint: could not read")):
+            failures.append(
+                f"FAIL fallback: an unreadable cnt-13.md must fall back "
+                f"loudly. want: a NOTE; got: {fb_note!r} (used_fallback={fb_used})"
+            )
+        if trimmed != want:
+            failures.append(f"FAIL fallback: want: {want!r}; got: {trimmed!r}")
+
+    # ── Fixtures ───────────────────────────────────────────────────────────────
+    # The standing regression corpus. A `pass` file must stay silent; a `fail`
+    # file must report every control id its `want:` labels name, so the corpus
+    # says which rule each planted violation belongs to rather than only that
+    # something fired.
+    fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "content-lint")
+    for fname in sorted(os.listdir(fixtures_dir)):
+        case_count += 1
+        fpath = os.path.join(fixtures_dir, fname)
+        errs = check_file(fpath, lists, phrase_res, word_res, device_re, cnt6_res,
+                          cnt13_res)
+        found = set(re.findall(r"\[([A-Z0-9-]+)\]", " ".join(errs)))
+        with open(fpath, encoding="utf-8") as fh:
+            want = set(re.findall(r"want:\s*([A-Z0-9-]+)", fh.read()))
+        if "pass" in fname and errs:
+            failures.append(f"FAIL fixture {fname}: want: no findings; got: {errs}")
+        elif "fail" in fname and not (want and want <= found):
+            failures.append(
+                f"FAIL fixture {fname}: want: {sorted(want)}; got: {sorted(found)}")
+
     # ── Report ─────────────────────────────────────────────────────────────────
     if not failures and used_fallback and note:
         print(note)
