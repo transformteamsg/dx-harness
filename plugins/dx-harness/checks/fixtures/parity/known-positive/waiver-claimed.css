@@ -1,5 +1,5 @@
 /*
- * waiver-claimed.css — parity fixture: an inline dx-waive on an L1 control
+ * waiver-claimed.css: a parity fixture where an inline dx-waive on an L1 control
  * downgrades the line to [waiver-claimed] and still exits 1. The marker is read
  * from the raw source line, not from the parser's view, because the parser has no
  * comments in it.

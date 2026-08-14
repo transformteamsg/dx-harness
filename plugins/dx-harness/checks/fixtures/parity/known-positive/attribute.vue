@@ -1,5 +1,5 @@
 <!--
-  attribute.vue — parity fixture. .vue is not an ast-grep language at 0.44.1, so
+  attribute.vue, a parity fixture. .vue is not an ast-grep language at 0.44.1, so
   this file is reached only through sgconfig.yml's languageGlobs mapping to html.
 
   A multi-line html comment is a syntax node now, so nothing written in here can

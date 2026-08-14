@@ -267,7 +267,7 @@ def _run_astgrep(binary, check_name, files):
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
     except OSError as exc:
-        raise AstGrepError(f"ERROR {check_name}: cannot run ast-grep — {exc}")
+        raise AstGrepError(f"ERROR {check_name}: cannot run ast-grep, {exc}")
     stderr = proc.stderr or ""
     if proc.returncode not in (0, 1):
         bad_rule = re.search(r"Cannot parse rule (\S+)", stderr)
@@ -412,7 +412,7 @@ def astgrep_scan(paths, check_name):
     """
     The single entry point every harness check uses to reach ast-grep.
 
-    `paths` is an explicit list of FILES — the caller walks the tree with
+    `paths` is an explicit list of FILES, because the caller walks the tree with
     iter_target_files(), because `ast-grep scan` applies .gitignore semantics
     when it walks a directory itself and iter_target_files() does not. Files
     whose extension has no ast-grep language bucket are ignored.
@@ -426,7 +426,7 @@ def astgrep_scan(paths, check_name):
         control    str or None   rule metadata.control, e.g. "TOK-1". None on a
                                  structural rule that carries no control id
         check      str           rule metadata.check
-        surface    str           rule metadata.surface — what the candidate is
+        surface    str           rule metadata.surface, what the candidate is
                                  for ("style", "text", "code", "comment",
                                  "style-region", "parsed", …)
         context    str or None   rule metadata.context, e.g. "className"
@@ -437,7 +437,7 @@ def astgrep_scan(paths, check_name):
         column     int           1-based
         end_line   int           1-based
         end_column int           1-based
-        text       str           the matched node's text — what policy parses
+        text       str           the matched node's text, what policy parses
         node_kind  str or None   rule metadata.kind
         language   str           the ast-grep language that matched
         metadata   dict          the rule's whole metadata block
@@ -453,7 +453,7 @@ def astgrep_scan(paths, check_name):
         if astgrep_language_for(p) is not None:
             files.append(p)
     if not files:
-        # `ast-grep scan` with no PATHS scans "." — never let that happen.
+        # `ast-grep scan` with no PATHS scans ".", so never let that happen.
         return []
     if not os.path.isfile(SGCONFIG_PATH):
         raise AstGrepError(
@@ -556,7 +556,7 @@ def _candidate_line_spans(cand, source_lines):
 # expected/<fixture>.<check>.txt record per fixture and check. Every record was
 # produced by the PRE-swap engine and committed before the swap, so a diff to
 # expected/ in review means either a fixture changed or the swap changed a
-# decision — and the second is forbidden. See fixtures/parity/README.md.
+# decision, and the second is forbidden. See fixtures/parity/README.md.
 
 PARITY_DIR = os.path.join(_CHECKS_DIR, "fixtures", "parity")
 PARITY_GROUPS = ("known-positive", "known-negative")

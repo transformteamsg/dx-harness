@@ -1,5 +1,5 @@
 /**
- * template-literal.tsx — parity fixture: raw values inside a styled-components
+ * template-literal.tsx: a parity fixture for raw values inside a styled-components
  * template literal that spans several lines. Each finding must land on the
  * value's own line inside the literal, not on the tagged-template line.
  *

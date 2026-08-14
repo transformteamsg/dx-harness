@@ -1,5 +1,5 @@
 /**
- * semantic-classes.tsx — parity fixture: every colour goes through a semantic
+ * semantic-classes.tsx: a parity fixture where every colour goes through a semantic
  * class and every size is on scale. Both engines return zero findings, so the
  * expected records are empty.
  */

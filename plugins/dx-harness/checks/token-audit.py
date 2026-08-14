@@ -250,7 +250,7 @@ class TokenDefTracker:
     behaviour must not shift.
 
     What did move is the answer to "is this line in a style context". That was a
-    regex tracker with two documented defects — a style="…" attribute it read
+    regex tracker with two documented defects: a style="…" attribute it read
     single-line only, and a template literal it closed on a line whose entire
     content was a backtick. It is now `in_style`, an ast-grep style region.
     """

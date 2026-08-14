@@ -1,5 +1,5 @@
 /**
- * type-assertion.ts — parity fixture guarding the .ts language bucket.
+ * type-assertion.ts: a parity fixture guarding the .ts language bucket.
  *
  * The old-style `<Foo>bar` assertion below breaks a tsx parse. Measured at
  * ast-grep 0.44.1: aliasing .ts to tsx returns zero findings at exit 0 for this

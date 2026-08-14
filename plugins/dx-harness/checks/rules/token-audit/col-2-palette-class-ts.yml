@@ -1,6 +1,6 @@
 # A Tailwind palette utility that bypasses the semantic layer. Unlike the
 # colour rules this one is not scoped to a style context, because a class list is
-# not one — it reads every node that carries author text. Whether the project's
+# not one, so it reads every node that carries author text. Whether the project's
 # @theme licences the name is an exemption, so it stays in Python.
 id: token-audit-col-2-palette-class-ts
 language: ts

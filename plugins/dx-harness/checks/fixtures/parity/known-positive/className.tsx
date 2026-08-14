@@ -1,5 +1,5 @@
 /**
- * className.tsx — parity fixture: a raw value inside a className string.
+ * className.tsx: a parity fixture for a raw value inside a className string.
  *
  * Expected findings (recorded from the pre-swap engine, see expected/):
  *   token-audit  COL-2  bg-slate-200
