@@ -23,13 +23,38 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 2. **User story**: who needs what, and why? Format: "As a [user persona], I want [capability], so that [benefit]." The persona is whoever actually uses the product. Do not invent one to fit technical work: if no real user benefits, this is probably a `dx-create-task`, not a story.
 3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
 4. **Open questions**: is anything about these requirements still unclear or undecided (an ambiguous edge case, a policy nobody has settled, a dependency on someone else's decision)? Capture these rather than guessing or blocking creation on an answer now. If genuinely nothing is unresolved, record "None."
-5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour.
+5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour. Step 1b adds to what the author supplies here: do not ask them to produce every edge case unaided.
 6. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
 7. **Design assets**: Figma links, screenshots, or a vibe-coded prototype. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
 
-### Step 1b: Evaluate for split
+### Step 1b: Read the code for missed edge cases
 
-After gathering the acceptance criteria scenarios, evaluate them before continuing. Check for these signals:
+The author knows the happy path better than anyone. They cannot be expected to know every way the product already breaks around it. Read the code behind the scope and surface cases their criteria do not cover yet, so the story ships with the edges the author would otherwise find in QA or production.
+
+Look for:
+
+- **States the flow can start in**: empty, partially filled, stale, already completed, or mid-way through a previous attempt
+- **Ways the action can fail**: validation rejections, permission denials, timeouts, duplicate or concurrent submissions
+- **Who else is affected**: other personas who read or act on the same data, and what they see once this changes
+- **What exists today**: current behaviour this story would replace, especially behaviour another feature relies on
+
+Report every finding as something a person experiences, never as implementation. "A teacher who double-clicks submit sends the same assignment twice" is a candidate scenario; "the submit handler has no idempotency key" is not. If a finding can only be stated in implementation terms, it belongs in a `dx-create-task` issue, not in this story.
+
+Present the findings and let the author decide:
+
+> "Reading the code behind `<scope>`, I found N cases the criteria do not cover yet:
+>
+> - <what a person would experience>: <what happens today>
+>
+> Which of these should become acceptance criteria? Any you would rather put out of scope, or record as an open question?"
+
+Write confirmed cases into the acceptance criteria as Given-When-Then scenarios. Put dismissed ones in out of scope, or in open questions if the answer is genuinely undecided. Never add a scenario the author has not confirmed.
+
+If the code is not available (no repository to hand, or the scope is not built yet), say so and move on rather than guessing at findings.
+
+### Step 1c: Evaluate for split
+
+After the acceptance criteria are settled, evaluate them before continuing. Check for these signals:
 
 - **Multiple actors**: scenarios describe actions by different roles with no shared outcome
 - **Unrelated starting states**: scenarios have Givens that describe completely different parts of the system
@@ -39,11 +64,11 @@ If any signal is present, pause and surface it:
 
 > "These scenarios describe two separate capabilities: [A] and [B]. Creating one issue would make it too large for an engineer or coding agent to implement safely in a single PR. Would you like to create two linked stories instead?"
 
-If the user confirms a split: complete Step 1 for each capability separately and create them as two issues. Run Steps 2 and 3 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
+If the user confirms a split: complete Steps 1 and 1b for each capability separately and create them as two issues. Run Steps 2 and 3 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
 
 If the user wants to keep it as one issue: note it explicitly in the out of scope section and continue.
 
-### Step 1c: Identify dependencies from the backlog
+### Step 1d: Identify dependencies from the backlog
 
 After the split evaluation, attempt to fetch open issues to surface likely blockers or dependents. These are linked as GitHub relationships after the issue is created (Step 3), not written into the body.
 
@@ -100,7 +125,7 @@ gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-story"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-story*` footer in the body template gives human-readable attribution.
 
-- **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1b/1c as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
+- **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1d as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 
   ```sh
   # Resolve an issue number to its node ID
@@ -123,7 +148,7 @@ The label makes usage queryable with `gh issue list --label "skill:dx-create-sto
 
 - Never leave a section blank. Every section must be explicitly filled or marked `N/A` / `None`.
 - Acceptance criteria must use Given-When-Then format and be outcome-first named.
-- Do not describe implementation in acceptance criteria: write what a user or system actor observes.
+- Do not describe implementation in acceptance criteria: write what a user or system actor observes. This holds for edge cases found by reading the code, which must be restated as experiences before they are offered to the author.
 - Pick one term per concept and use it consistently across all scenarios (e.g. always "customer", never mixing with "user").
 - Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
 - The PR that implements this issue (or the task issues delivering it) will squash-merge using its title as the commit message, so titles must be valid commit messages.
