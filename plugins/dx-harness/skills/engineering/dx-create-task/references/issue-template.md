@@ -1,18 +1,12 @@
-## Parent story
+## Parent
 
 Part of #NNN
 
 ## Description
 
-<what this task is and why it is needed to deliver the parent story>
+<what this task is and why it is needed to deliver the parent>
 
 ## Acceptance criteria
-
-<!-- Use ONE shape, whichever makes the finish line clearest, and delete the other.
-     Shape A (Given-When-Then): observable system behaviour, e.g. an endpoint, a migration, a job.
-     Shape B (Done when): a deliverable or set of states, usually design work. -->
-
-<!-- Shape A -->
 
 ### <Outcome-first scenario name (happy path)>
 
@@ -26,12 +20,14 @@ Part of #NNN
 - **When** <action>
 - **Then** <observable outcome>
 
-<!-- Shape B -->
+<!-- Optional. Only for criteria with no trigger: the ones a reviewer confirms by
+     looking rather than by acting. Delete this heading when there are none,
+     rather than filling it with "None". -->
 
-### Done when
+### Also true when done
 
-- [ ] <observable, independently checkable condition, e.g. "empty, loading, and error states are designed">
-- [ ] <another condition, e.g. "layout holds at mobile, tablet, and desktop breakpoints">
+- [ ] <independently checkable condition, e.g. "colours come only from tokens in `app/globals.css`, no raw hex">
+- [ ] <another, e.g. "the layout holds at the mobile, tablet, and desktop breakpoints">
 
 ## Out of scope
 
