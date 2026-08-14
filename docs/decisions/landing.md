@@ -89,7 +89,13 @@ and the headings inside it.
 
 | Control | Tier | Reason | Approver | Where recorded |
 |---------|------|--------|----------|----------------|
-| — | — | **None.** No waiver was requested or granted this run. | — | — |
+| SLP-1 | L1 | The comparison's quarantined before panel must exhibit the purple-gradient anti-pattern it teaches readers to identify. | rezailmi | `components/compare.tsx` |
+| SLP-2 | L1 | The comparison's quarantined before panel must exhibit gradient text so the labelled violation remains concrete. | rezailmi | `components/compare.tsx` |
+| SLP-4 | L1 | The comparison's quarantined before panel must exhibit nested cards so the structural violation is visible beside the corrected treatment. | rezailmi | `components/compare.tsx` |
+| SLP-5 | L2 | The three icon tiles are an intentional anti-specimen, labelled in-product and contrasted with the corrected panel. | rezailmi | `components/compare.tsx` |
+| SLP-9 | L2 | The buzzword-heavy sentence is deliberate bad copy inside the labelled anti-specimen. | rezailmi | `components/compare.tsx` |
+| CMP-5 | L2 | Two filled actions deliberately demonstrate competing primaries inside the labelled anti-specimen. | rezailmi | `components/compare.tsx` |
+| SLP-6 | L2 | The deliberately flat status treatment demonstrates weak hierarchy inside the labelled anti-specimen. | rezailmi | `components/compare.tsx` |
 
 **Waivers this build retires.** PR 83's landing carries two that this treatment does
 not need, because it uses the portfolio's own colour and faces. Both retirements were
@@ -103,13 +109,12 @@ verified in the built output by the reviewer.
   plus Departure Mono, scoped to `.landing-manual`. No longer needed: display is Plus
   Jakarta Sans, body is Inter, and the code chips are pinned to the body face.
 
-**Waivers this build inherits and cannot grant.** `components/compare.tsx` is reused
-unchanged and carries six inline `dx-waive` markers with **no recorded waiver row**
-(`checks/waiver-reconcile.py`): SLP-1, SLP-2 and SLP-4 are **L1** and need a named
-human approver; SLP-9, CMP-5 and SLP-6 are L2 and need a recorded reason. A seventh,
-SLP-5 (the demo's three icon tiles), carries no marker at all. This is pre-existing —
-the front-page move newly exposes it — and it is **open**: the builder cannot grant an
-L1 waiver, and the L1 approver has not been asked. See "Open findings" below.
+**Waivers this build inherits for the comparison demo.** `components/compare.tsx`
+is reused as a quarantined anti-specimen. On 2026-08-14, rezailmi approved its three
+L1 deviations (SLP-1, SLP-2 and SLP-4) and the specific reasons for its four L2
+deviations (SLP-5, SLP-9, CMP-5 and SLP-6). All seven now have an inline marker and
+a matching row above. The front-page move did not create the deviations; it made the
+existing component part of this surface's review scope.
 
 ## Plan approval
 
@@ -221,7 +226,8 @@ here, because the ledger above is this record's own and the two must not be conf
 ### Fix re-check — round 1
 
 Six blocking findings. Four were the builder's; all four are fixed and re-measured in
-the production render. Two are pre-existing in `components/compare.tsx` and stay open.
+the production render. The inherited `components/compare.tsx` deviations were accepted
+by the named human approver and recorded in the required waiver form.
 **The narration below is not the evidence — the measurements are, and each was taken
 from a fresh build with the stylesheet confirmed at HTTP 200 first.**
 
@@ -233,30 +239,33 @@ from a fresh build with the stylesheet confirmed at HTTP 200 first.**
 | Shared edges align (LAY-6) | L2 | **resolved** | Every cell moved to the band's gutter (`sm:px-10`). All full-width and first-column content now lands on **one 241px rule** at 1440 — h2 bands, hero h1, both grids, nav, footer. The stage rows read 529px because that column legitimately begins after the 18rem map cell, not from a padding mismatch. |
 | Measure ≤ 80ch (LAY-4 / TYP-6) | L2 | **resolved** | Running-prose caps retuned 62ch/58ch/52ch → **48ch** (≈66 real characters, LAY-4's target rather than its ceiling), and two uncapped lines in `components/compare.tsx` given the same cap. Widest measure on the page is now **58 characters**; the only wider block is the 67-character line inside the waived anti-specimen, which is deliberate slop copy. |
 | Closing band has no heading; `HarnessMap` unlabelled (A11Y-7) | L2 | **resolved** | The closing statement is now an `h2` — **5 `h2` in `main`**, matching the five bands the eye sees. `HarnessMap` carries `role="img"` with a full label, and its decorative cells and caption are `aria-hidden`. Both of this page's figures are now labelled. |
-| Purple gradient / gradient text / nested cards (SLP-1, SLP-2, SLP-4) | L1 ×3 | **open — not the builder's to close** | Pre-existing in `components/compare.tsx`, reused unchanged. Inline `dx-waive` markers exist but carry no recorded row with a named approver. An L1 waiver needs the named human approver; the builder cannot grant one. |
-| Icon-tile template (SLP-5) | L2 | **open** | Same component, and this one carries no inline marker at all. |
+| Purple gradient / gradient text / nested cards (SLP-1, SLP-2, SLP-4) | L1 ×3 | **accepted by waiver** | Pre-existing in `components/compare.tsx`, reused as a quarantined anti-specimen. rezailmi approved the three documented waivers on 2026-08-14; each inline marker now has a matching decision-record row. |
+| Icon-tile template (SLP-5) | L2 | **accepted with rationale** | The demo intentionally exhibits this template in its labelled before panel. The inline marker and specific reason were recorded on 2026-08-14. |
 
 Regression check after the fixes: `pnpm build` clean (70 controls, 36 docs),
-`tsc --noEmit` clean, no horizontal overflow at 1440 / 390 / 320, 14 keyboard stops
-all landing on the site's ring.
+`tsc --noEmit` clean, 58 unit tests and 37 Playwright contracts pass, no horizontal
+overflow at 1440 / 390 / 320, and 14 keyboard stops all land on the site's ring.
 
-### Open findings
+**Human resolution — 2026-08-14.** rezailmi accepted the comparison demo's seven
+intentional deviations in their required waiver forms. This closes the review's
+remaining control findings without a visual code change; the re-check measurements
+and screenshots above remain representative of the rendered page.
 
-Everything below is pre-existing in `components/compare.tsx`, a component this build
-reuses without changing its markup. The front-page move is what exposed it.
+### Accepted inherited deviations and residual finding
 
-1. **Six inline waivers with no recorded row** — SLP-1, SLP-2, SLP-4 (all **L1**,
-   needing a named approver) and SLP-9, CMP-5, SLP-6 (L2, needing a recorded reason).
-   `checks/waiver-reconcile.py app components docs/decisions` lists all six.
-2. **One unwaived L2 finding** — SLP-5, the demo's three icon tiles (`compare.tsx:87-102`).
-3. **The demo's `figure` has no accessible label**, unlike the two this build added.
-4. **The demo is illegible at 320–390** — its default 50% divider leaves both panels
+The comparison demo predates this build. Moving it onto the front page brought its
+intentional anti-patterns into this run's scope.
+
+1. **Seven intentional deviations are accepted and recorded** — SLP-1, SLP-2 and
+   SLP-4 as L1 waivers approved by rezailmi; SLP-5, SLP-9, CMP-5 and SLP-6 with
+   specific L2 rationales. Each record matches an inline marker in
+   `components/compare.tsx`.
+2. **The figure is labelled** — the comparison frame has `role="group"` and an
+   accessible name describing the before/after content. The earlier review note that
+   it was unlabelled was stale.
+3. **The demo remains hard to read at 320–390** — its default 50% divider leaves both panels
    clipped mid-sentence. LAY-2 expressly does not cover it (a drag recovers it), so it
-   is an uncovered defect, logged in the Ratchet.
-
-Two paths, and it is the L1 approver's call, not the builder's: record the waivers
-against `components/compare.tsx`'s own decision record with a named approver, or fix
-the demo so fewer are needed. Nothing here blocks the landing's own treatment.
+   is an uncovered defect logged in the Ratchet, not an unrecorded control failure.
 
 ## Ratchet
 

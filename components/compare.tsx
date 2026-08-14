@@ -84,6 +84,7 @@ function BeforePanel() {
             <span className="text-sm text-(--demo-slop-ink)">4 classes · 127 parents</span>
           </div>
         </div>
+        {/* dx-waive SLP-5 reason="quarantined anti-specimen: the before panel demonstrates the icon-tile feature-card template" */}
         <div className="grid shrink-0 grid-cols-3 gap-2">
           {SLOP_TILES.map((tile) => (
             <div
