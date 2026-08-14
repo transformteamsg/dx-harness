@@ -15,9 +15,10 @@ registers:
 > **PROTOTYPE — not adopted.** Built for [#110](https://github.com/transformteamsg/dx-harness/issues/110)
 > to make the *shape* reactable, then filled for [#112](https://github.com/transformteamsg/dx-harness/issues/112):
 > all four criteria are now written end to end and the anchors are human-confirmed. The register
-> model was settled on [#113](https://github.com/transformteamsg/dx-harness/issues/113). Still open —
-> [#114](https://github.com/transformteamsg/dx-harness/issues/114) owns the fold of
-> `layout-patterns.md` and reviewer rubric §4, [#115](https://github.com/transformteamsg/dx-harness/issues/115)
+> model was settled on [#113](https://github.com/transformteamsg/dx-harness/issues/113); the fold of
+> `layout-patterns.md` and reviewer rubric §4 on
+> [#114](https://github.com/transformteamsg/dx-harness/issues/114). Still open —
+> [#115](https://github.com/transformteamsg/dx-harness/issues/115) owns
 > the plan/verify wiring. Delete this banner on adoption. Decisions recorded are listed at the bottom.
 
 # Quality bar (the ceiling)
@@ -67,6 +68,11 @@ you can say where.
 
 Self-check against drift: **if you have graded three surfaces in a row strong, you are grading
 the controls, not the ceiling.** A three-point scale with no stated distribution drifts upward.
+
+**Dark mode is a condition, not a criterion.** When the product supports dark mode and a dark
+frame was captured, every criterion grades both frames. When the product has no dark mode (no
+toggle, no re-rendering `.dark` layer), dark-mode checks are **N/A — product has no dark mode**.
+Never grade a "dark-safe" pass from token resolution alone for a mode that never renders.
 
 ## Registers
 
@@ -159,6 +165,7 @@ not survive a waiver argument — and these are not waivable, because they do no
 | Body text at least 16px from the viewport edge, 24–32px preferred | **LAY-2** covers 320px reflow, not gutters at comfortable widths. Text flush to the edge reads as unfinished. |
 | About four distinct left edges at 1280, not more | Past four the composition is drifting even when every individual region is internally aligned. |
 | Concentric radius `outer = inner + padding`, unless padding exceeds ~24px | **TOK-3** states the formula with no upper bound. Past ~24px the layers are far enough apart that the eye stops relating them, and the math produces a wrong-looking outer radius. |
+| Running text ragged-left, never centred | Each centred line starts somewhere new, so the eye's return sweep has no anchor. **LAY-4** fixes the measure; it says nothing about the rag. |
 
 *[standards-site: the density row inverts. A reading surface is allowed — expected — to run
 calmer than a marks-entry table, and "padded out" is judged against the measure, not the row
@@ -234,6 +241,7 @@ Before judging, work through this in order:
 | No pulse animation on data that is not live | It claims liveness the data does not have — an honesty failure, not a style one. |
 | No numbered markers (01 / 02 / 03) where order carries no information | Sequence as decoration; a real process or a typed timeline earns them. |
 | The named AI looks are defaults, not choices: warm cream + high-contrast serif + terracotta accent; broadsheet hairlines at zero radius | They appear regardless of subject. **SLP-1** names only the purple/glow cluster; these are the other two. |
+| Per-section or per-status colour doing wayfinding or status work is a colour system, not slop | Decorative (`aria-hidden`) wayfinding colour and Radix status colour (**COL-2**) are deliberate design. **SLP-1** names the purple/glow tell; flag unmotivated multi-hue decoration, never a deliberate system. |
 
 ## Not this criterion's job
 
@@ -385,7 +393,8 @@ Before judging, work through this in order:
 Items 1–7 are shape decisions committed by the prototype and confirmed on
 [#110](https://github.com/transformteamsg/dx-harness/issues/110). Items 8–10 were settled on
 [#112](https://github.com/transformteamsg/dx-harness/issues/112). Items 11–14 were settled on
-[#113](https://github.com/transformteamsg/dx-harness/issues/113).
+[#113](https://github.com/transformteamsg/dx-harness/issues/113). Items 15–20 were settled on
+[#114](https://github.com/transformteamsg/dx-harness/issues/114).
 
 1. **Markdown with YAML frontmatter, not a YAML index plus detail files.** The catalogue splits
    because 70 controls cannot all sit in context and the site renders the index raw. Four
@@ -446,3 +455,27 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
 14. **No ceiling overrides in `DESIGN.md`.** The ceiling never blocks, so there is nothing
     to waive. The reviewer reads Essence and Voice beside this file; a recurring conflict
     is evidence to change this file, not grounds for a per-product adjustment grammar.
+15. **The eight numbered principles of `layout-patterns.md` are dropped, absorbed.** Each maps
+    to a pairing, a procedure step, or a control (**LAY-7**, **SLP-4**, **SLP-7**, **LAY-4**,
+    **LAY-6**). The one residue with no home — running text never centred — became a Design
+    quality threshold rather than surviving as a ninth principle.
+16. **`layout-patterns.md` survives, slimmed to the named patterns, under its own name.**
+    List vs cards, master-detail, wizard presentation, empty-state structure — exactly
+    `CONTEXT.md`'s definition of the pattern inventory. Swap guidance produces pass findings,
+    so it cannot live in a file that never blocks; its header points here for registers and
+    the layout read. Folding it in was rejected: ~55 more lines read whole at every plan, and
+    a findings-producing section inside a grades-only file.
+17. **Reviewer rubric §4 becomes a short stub** — about 5–8 lines: it names the four criterion
+    slugs (`validate.py` checks this), points at this file, and requires each grade to quote
+    the anchor that decided it. No criterion text is restated in the agent.
+18. **The HIG lens and the Kind Utility line leave the reviewer.** HIG's useful ideas are
+    already absorbed (Agency → the escapable-flow anchors, Delight → character only where
+    idle); Kind Utility reaches the reviewer through `DESIGN.md`'s Essence, read beside this
+    file (decision 14).
+19. **Dark mode is a global condition beside the Grades section**, not a note under Craft and
+    not reviewer-only text: it conditions all four criteria, and the planning agent must see
+    it at plan time. The stub does not restate it.
+20. **The semantic-colour carve-out folded in as an Originality threshold row**, naming
+    **COL-2** and **SLP-1**. Keeping it as reviewer text was rejected — the planning agent
+    would never see it; dropping the operational detail (aria-hidden wayfinding, Radix status
+    colour) risked a reviewer flagging a deliberate colour system as slop.
