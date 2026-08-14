@@ -351,13 +351,15 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
                 top: `${(POS[i].y / VIEW) * 100}%`,
               }}
             >
+              {/* Dark in both states. Both node fills are light — --surface when
+                  idle, --site-accent when selected — so the white label that used
+                  to mark selection measured 1.348:1 on lime (A11Y-1, L0, and the
+                  exact pairing COL-1 names as a failure). Selection is already
+                  carried by the fill and stroke, so the label does not need to
+                  change colour to signal it. */}
               <span
                 aria-hidden="true"
-                className={
-                  "text-xs font-semibold" +
-                  (isSelected ? " text-surface" : " text-foreground") +
-                  colorTransition
-                }
+                className={"text-xs font-semibold text-foreground" + colorTransition}
               >
                 {p.n}
               </span>

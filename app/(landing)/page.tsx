@@ -41,15 +41,21 @@ function Cmd({ children }: { children: React.ReactNode }) {
 }
 
 /* Every section opens the same way: a heading cell on the whisper band, then the
-   content in cells below it. The heading carries the hierarchy — 30px over the
-   18px headings inside, a 1.67x step (SLP-6). */
-function SectionHead({ title, children }: { title: string; children: React.ReactNode }) {
+   content in cells below it. The heading carries the hierarchy on its own — 30px
+   over the 18px headings inside, a 1.67x step (SLP-6) — with no sub-line under it.
+   A band that restates its own heading in smaller grey type is the page telling you
+   twice; the cells below are the explanation.
+
+   `action` is for a section-level link (the skills directory). It wraps under the
+   title rather than truncating, so nothing goes out of reach at 320px (LAY-2), and
+   it stays a link: the hero holds the page's one filled action (CMP-5). */
+function SectionHead({ title, action }: { title: string; action?: React.ReactNode }) {
   return (
-    <div className="border-b border-border bg-sheet-band px-6 py-8 sm:px-10">
+    <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-1 border-b border-border bg-sheet-band px-6 py-8 sm:px-10 sm:py-10">
       <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight text-balance text-foreground">
         {title}
       </h2>
-      <p className="mt-2 max-w-[48ch] text-base text-pretty text-muted-foreground">{children}</p>
+      {action}
     </div>
   );
 }
@@ -182,54 +188,36 @@ function SkillMark({ role }: { role: string }) {
   }
 }
 
+/* Figure, label, claim. The claim is the whole cell: a support paragraph under it
+   restated the label in a longer sentence, and four of those stacked down the page
+   read as filler rather than argument. */
 const FEATURES = [
   {
     figure: "FIG 0.2",
     kind: "orchestrator" as FeatureFigureKind,
     eyebrow: "Orchestrator skill",
     claim: "Start with a plain-language request.",
-    support: (
-      <>
-        <Cmd>dx-design</Cmd> understands what you want and brings in the right skills. Call
-        it directly, or let it step in when a request needs design work.
-      </>
-    ),
   },
   {
     figure: "FIG 0.3",
     kind: "catalog" as FeatureFigureKind,
     eyebrow: "Control catalog",
     claim: "Shared design guidance agents can use.",
-    support: (
-      <>
-        The catalog turns good interface design into clear context that every skill can
-        read and check.
-      </>
-    ),
   },
   {
     figure: "FIG 0.4",
     kind: "design-file" as FeatureFigureKind,
     eyebrow: "DESIGN.md",
     claim: "Your product’s design language.",
-    support: (
-      <>
-        Keep the decisions that make your product distinct in its repository. Every agent
-        works from the same context as the product grows.
-      </>
-    ),
   },
   {
     figure: "FIG 0.5",
     kind: "review" as FeatureFigureKind,
     eyebrow: "Review skill",
-    claim: "A review grounded in both.",
-    support: (
-      <>
-        A separate reviewer checks the work against the control catalog and{" "}
-        <Cmd>DESIGN.md</Cmd>, then returns specific findings before the work ships.
-      </>
-    ),
+    /* Names both things it checks against. "A review grounded in both." relied on
+       a support paragraph that this page no longer carries, so "both" pointed at
+       nothing on screen (CNT-14). */
+    claim: "A review against the catalog and your DESIGN.md.",
   },
 ];
 
@@ -237,13 +225,11 @@ const STAGES = [
   {
     n: "01",
     heading: "Your prompt",
-    where: "Claude Code",
     body: "“Make this lesson planner easier to scan and keep it consistent with our product.”",
   },
   {
     n: "02",
     heading: "The harness at work",
-    where: "runs automatically",
     body: (
       <>
         <Cmd>dx-design</Cmd> brings in the skills this request needs. Each one reads the
@@ -254,7 +240,6 @@ const STAGES = [
   {
     n: "03",
     heading: "A reviewed result",
-    where: "back in your product",
     body:
       "Execute makes the approved change. A separate review checks the result before it comes back to you.",
   },
@@ -265,7 +250,10 @@ export default function Landing() {
     <div>
       {/* ── Hero: the claim and the working logo studio ────────────────── */}
       <section className="grid border-b border-border lg:grid-cols-2">
-        <div className="border-border px-6 py-16 sm:px-10 sm:py-20 lg:border-r">
+        {/* The words centre in their half. Top-aligned, they left a gap under the
+            button as tall as the block itself, because the drawing — not the copy —
+            was setting the row's height. */}
+        <div className="flex flex-col justify-center border-border px-6 py-16 sm:px-10 sm:py-20 lg:border-r">
           <h1 className="max-w-[13ch] text-4xl leading-[1.02] font-semibold tracking-tighter text-balance text-foreground sm:text-5xl lg:text-6xl">
             Design in code with confidence.
           </h1>
@@ -288,9 +276,7 @@ export default function Landing() {
       </section>
 
       {/* ── The four parts ─────────────────────────────────────────────────── */}
-      <SectionHead title="What the harness gives your agent.">
-        Four parts keep every design request grounded in the same language and standards.
-      </SectionHead>
+      <SectionHead title="What the harness gives your agent." />
       {/* Cell borders, not per-index rules: every cell draws its own right and
           bottom hairline and is pulled back a pixel, so the outermost ones land
           exactly on the sheet's flank and the section seam. The grid can then
@@ -302,42 +288,35 @@ export default function Landing() {
             className="-mb-px flex min-w-0 flex-col border-b border-border sm:[&:nth-child(odd)]:border-r"
           >
             <FeatureFigure kind={f.kind} number={f.figure} />
-            <div className="px-6 py-6 sm:px-10 sm:py-8">
+            <div className="px-6 py-8 sm:px-10 sm:py-10">
               <p className="text-xs font-semibold tracking-wide break-words text-site-accent-text">
                 {f.eyebrow}
               </p>
               <h3 className="mt-3 max-w-[24ch] text-lg font-semibold tracking-tight text-balance text-foreground">
                 {f.claim}
               </h3>
-              <p className="mt-2 max-w-[48ch] text-sm leading-relaxed text-pretty text-muted-foreground">
-                {f.support}
-              </p>
             </div>
           </li>
         ))}
       </ul>
 
       {/* ── How it works: a real request moving through the harness ─────────── */}
-      <SectionHead title="From a request to a reviewed result.">
-        Speak your intent, collaborate on the same standard, and get better design
-        outcomes.
-      </SectionHead>
+      <SectionHead title="From a request to a reviewed result." />
       <div className="grid border-b border-border lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <div className="flex items-center justify-center border-border px-6 py-8 max-lg:border-b lg:border-r">
+        <div className="flex items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r">
           <ClaudeCodeChat />
         </div>
         <ol>
           {STAGES.map((s) => (
             <li
               key={s.n}
-              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-b border-border px-6 py-4 last:border-b-0 sm:px-10"
+              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-b border-border px-6 py-5 last:border-b-0 sm:px-10 sm:py-6"
             >
               <p className="pt-0.5 text-xs text-site-accent-text tabular-nums">{s.n}</p>
               <div>
                 <h3 className="text-lg font-semibold tracking-tight text-foreground">
                   {s.heading}
                 </h3>
-                <p className="text-xs text-muted-foreground">{s.where}</p>
                 <p className="mt-1 max-w-[48ch] text-sm leading-relaxed text-pretty text-muted-foreground">
                   {s.body}
                 </p>
@@ -348,21 +327,30 @@ export default function Landing() {
       </div>
 
       {/* ── The proof ──────────────────────────────────────────────────────── */}
-      <SectionHead title="Compare the output.">
-        Move the divider to see the same brief with and without the harness.
-      </SectionHead>
-      <div className="border-b border-border px-6 py-8 sm:px-10">
+      <SectionHead title="Compare the output." />
+      <div className="border-b border-border px-6 py-8 sm:px-10 sm:py-10">
         <SlopCompare />
       </div>
 
       {/* ── The skills, by the job they do ─────────────────────────────────── */}
-      <SectionHead title="Meet your new collaborators">
-        Six roles cover the path from an open request to a reviewed interface. DX Design
-        calls the right ones for you.
-      </SectionHead>
+      <SectionHead
+        title="Meet your new collaborators"
+        action={
+          /* -my-1 keeps the 44px hit area (A11Y-4) while letting the flex line stay
+             as tall as the heading, so this band matches the ones without an action
+             instead of standing 11px taller (LAY-6). The box still measures 44px;
+             only its contribution to the line height shrinks. */
+          <Link
+            href="/harness/skills"
+            className={`-my-1 inline-flex min-h-11 items-center text-sm font-medium text-site-accent-text underline underline-offset-4 ${focusRing}`}
+          >
+            See all skills
+          </Link>
+        }
+      />
       <ul className="grid border-b border-border sm:grid-cols-2 lg:grid-cols-3">
         {FEATURED_SKILLS.map((skill) => (
-          <li key={skill.number} className="-mr-px -mb-px border-r border-b border-border px-6 py-6 sm:px-10 sm:py-8">
+          <li key={skill.number} className="-mr-px -mb-px border-r border-b border-border px-6 py-8 sm:px-10 sm:py-10">
             <div className="flex items-start justify-between gap-4">
               <SkillMark role={skill.role} />
               <p className="text-xs text-site-accent-text tabular-nums">{skill.number}</p>
@@ -383,19 +371,11 @@ export default function Landing() {
           </li>
         ))}
       </ul>
-      <p className="border-b border-border px-6 py-4 sm:px-10">
-        <Link
-          href="/harness/skills"
-          className={`inline-flex min-h-11 items-center text-sm font-medium text-site-accent-text underline underline-offset-4 ${focusRing}`}
-        >
-          See all skills
-        </Link>
-      </p>
 
       {/* ── Close. The action steps down to outline: the hero already holds the
              page's one filled primary (CMP-5). ──────────────────────────────── */}
       <section className="grid bg-site-accent-wash lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <div className="px-6 py-16 sm:px-10">
+        <div className="px-6 py-16 sm:px-10 sm:py-20">
           <h2 className="max-w-[20ch] text-3xl leading-tight font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
             A shared language for you and your agent.
           </h2>

@@ -15,7 +15,16 @@
 
    A11Y-1 note: the before panel violates only waivable style/content tiers —
    every text/background pair in BOTH panels passes WCAG AA against the
-   --demo-slop-* token values in globals.css. L0 is never demonstrated broken. */
+   --demo-slop-* token values in globals.css. L0 is never demonstrated broken.
+
+   That claim was false for a while, which is worth recording. The panel's labels
+   on the purple fills used --primary-foreground, and when that token was mapped
+   to --foreground (the dark label the lime primary needs), the labels became
+   #18181b on #7c3aed — 3.109:1, an L0 breach inside the exhibit that exists to
+   prove L0 is never breached. They take --surface now: 5.699:1 on the gradient's
+   near stop, 6.323:1 on its far one. The lesson is that a prose assertion about
+   contrast is not a check; the waivers here cover SLP and CMP only, and no
+   waiver can ever cover A11Y-1. */
 
 import Link from "next/link";
 import { useEffect, useId, useRef, type CSSProperties } from "react";
@@ -55,7 +64,7 @@ function BeforePanel() {
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
         style={{ background: SLOP_GRADIENT }}
       >
-        <span className="text-sm text-primary-foreground">Communication Hub</span>
+        <span className="text-sm text-surface">Communication Hub</span>
         <Violation>SLP-1 gradient palette</Violation>
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
@@ -92,7 +101,7 @@ function BeforePanel() {
               className="flex flex-col items-center gap-1.5 rounded-lg border border-(--demo-slop-border) bg-surface px-1 py-3 text-center shadow-sm"
             >
               <span
-                className="grid size-8 shrink-0 place-items-center rounded-md text-primary-foreground"
+                className="grid size-8 shrink-0 place-items-center rounded-md text-surface"
                 style={{ background: SLOP_GRADIENT }}
               >
                 <tile.icon className="size-4" aria-hidden />
@@ -104,10 +113,10 @@ function BeforePanel() {
         <div className="mt-auto flex flex-col gap-3">
           {/* dx-waive CMP-5 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-surface shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Get started!
             </span>
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-surface shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Learn more
             </span>
             <Violation>CMP-5 two primaries</Violation>
@@ -148,10 +157,31 @@ function AfterPanel() {
         <p className="mt-1.5 max-w-[44ch] text-sm leading-normal text-muted-foreground">
           Reaches every parent by Friday morning. Drafts save automatically.
         </p>
-        <div className="mt-4 border-t border-border pt-3">
-          <p className="text-sm text-foreground">
-            To: <span className="font-medium">4 classes</span>
-            <span className="text-muted-foreground"> · 127 parents</span>
+        {/* Label left, value right — and that is load-bearing, not styling. This
+            panel is only ever seen through a divider that shows its RIGHT side, so
+            content anchored to the left edge is content nobody sees: the earlier
+            single left-aligned row rendered as a hairline and an empty box, which
+            made "on standard" read as "nothing here". Summary rows put a real value
+            in the right half at every divider position, and they are what a
+            broadcast composer actually shows: who, when, what. */}
+        <div className="mt-4 flex items-baseline justify-between gap-x-6 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">To</p>
+          <p className="text-sm font-medium text-foreground">4 classes · 127 parents</p>
+        </div>
+        <div className="mt-3 flex items-baseline justify-between gap-x-6 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">Sends</p>
+          <p className="text-sm font-medium text-foreground">Friday, 7:00am</p>
+        </div>
+        <div className="mt-3 flex items-baseline justify-between gap-x-6 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">Attached</p>
+          <p className="text-sm font-medium text-foreground">Term 3 report slip</p>
+        </div>
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">Message</p>
+          <p className="mt-1 max-w-[62ch] text-sm leading-normal text-foreground">
+            Term 3 report books go home this Friday. Please sign the acknowledgement
+            slip and return it with your child by Monday. If you would like to
+            discuss the report, reply here and I will arrange a time.
           </p>
         </div>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4">

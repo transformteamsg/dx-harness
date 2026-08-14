@@ -18,7 +18,18 @@
      dark foreground: --foreground on lime-9 clears AA at 13.14:1. */
   --site-accent: #bdee63;       /* Radix lime-9 */
   --site-accent-hover: #b0e64c; /* Radix lime-10 */
-  --site-accent-text: #5c7c2f;  /* Radix lime-11 */
+  /* Darkened from Radix lime-11 so accent text clears WCAG AA 4.5:1 on every
+     ground it actually lands on, not just the page bg (A11Y-1, L0) — the same
+     correction --muted-foreground carries above, for the same reason.
+
+     "Every ground" is the whole point, and it took two passes to get right. Plain
+     lime-11 measures 4.479:1 on the --sheet-band, which the "See all skills" link
+     crossed the moment it moved into a heading band. The first correction fixed
+     the band and left the --muted fill at 4.489:1 — still short, because a docs
+     link wrapping an inline-code chip sits on --muted, not on the page. This step
+     measures 4.624:1 on --muted, 4.747:1 on --sheet-band, 4.869:1 on --background
+     and 5.082:1 on --surface. */
+  --site-accent-text: #587828;  /* Radix lime-11 #5c7c2f, darkened */
   --site-accent-wash: color-mix(in oklab, var(--site-accent) 8%, var(--surface));
   --ring: var(--site-accent-text);
 
@@ -43,11 +54,10 @@
      minting near-identical greys; only these three are genuinely new. ── */
   --sheet-band: #f7f7f8;     /* between --accent and --muted: reads as a band, never as a fill */
   /* The construction lines, dimension marks, and registration crosses on the
-     landing blueprint use the readable text step of the site accent. */
+     landing blueprint use the readable text step of the site accent — including
+     the hero drawing, which is inked on the --sheet-band rather than on a plate
+     of its own, so the whole sheet is one paper. */
   --blueprint-ink: var(--site-accent-text);
-  /* The hero construction plate: the deep step of the accent scale rather than
-     a neutral near-black, so the panel and its lime instrumentation share a hue. */
-  --hero-panel: #37401c;     /* Radix lime-12 */
 
   /* Prose body ink — a touch softer than --foreground */
   --prose-body: #3f3f46;     /* zinc-700 */
@@ -60,6 +70,11 @@
   --success: #2a7e3b;        /* Radix grass-11 — text */
   --warning: #8a5300;        /* Radix amber-11 (#ab6400) darkened → 6.1:1 on --warning-subtle. The darken is needed because amber-11 itself caps ~4.6:1 even on white (amber is intrinsically low-contrast) and fails AA on a tinted bg. */
   --danger:  #ce2c31;        /* Radix red-11 — text */
+  /* Radix red-12 — small text on a danger tint. COL-2 asks for the step-12 of the
+     scale here: red-11 on a 10% danger fill measures 4.29:1, which is why the
+     destructive button variant needed its own label token rather than --danger.
+     On that same fill this measures 10.23:1. */
+  --danger-strong: #641723;
   /* Subtle (badge bg) kept at 8% so step-11 text clears the 4.5:1 floor with margin (A11Y-1, L0). */
   --success-subtle: color-mix(in oklab, var(--success-9) 8%, var(--surface));
   --warning-subtle: color-mix(in oklab, var(--warning-9) 8%, var(--surface));
@@ -161,6 +176,7 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-warning-muted: var(--warning-muted);
   --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
   --color-danger-subtle: var(--danger-subtle);
   --color-danger-muted: var(--danger-muted);
 
