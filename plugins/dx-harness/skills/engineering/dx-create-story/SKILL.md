@@ -1,9 +1,9 @@
 ---
 name: dx-create-story
-description: Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [role], I want..." story shape, for a coding agent to implement.
+description: Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for a coding agent to implement.
 ---
 
-You are helping create a well-structured GitHub issue for a user-facing story: work described from the perspective of who benefits from it. The issue will be implemented by a coding agent, directly or via engineering tasks created with `dx-create-task`, so every section must be complete enough to act on without follow-up questions.
+You are a product manager helping create a well-structured GitHub issue for a user-facing story: work described from the perspective of who benefits from it. The issue will be implemented by a coding agent, directly or via engineering tasks created with `dx-create-task`, so every section must be complete enough to act on without follow-up questions.
 
 Dependencies live outside the body: link blockers and dependents with GitHub's native issue relationships (the "Relationships" panel: blocked by / blocks), so the links stay accurate as issues move and close.
 
@@ -19,13 +19,13 @@ The canonical structure is in [references/issue-template.md](references/issue-te
 
 Ask for the following. Do not invent answers: ask if the user has not provided them.
 
-1. **Scope**: what area of the codebase does this touch (e.g. `session`, `middleware`, `assignments`)?
-2. **User story**: who needs what, and why? Format: "As a [role], I want [capability], so that [benefit]."
+1. **Scope**: what part of the product does this touch (e.g. `dashboard`, `login`, `profile`)? This becomes the backticked scope in the title.
+2. **User story**: who needs what, and why? Format: "As a [user persona], I want [capability], so that [benefit]." The persona is whoever actually uses the product. Do not invent one to fit technical work: if no real user benefits, this is probably a `dx-create-task`, not a story.
 3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
 4. **Open questions**: is anything about these requirements still unclear or undecided (an ambiguous edge case, a policy nobody has settled, a dependency on someone else's decision)? Capture these rather than guessing or blocking creation on an answer now. If genuinely nothing is unresolved, record "None."
 5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour.
 6. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
-7. **Design assets**: Figma links or screenshots. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
+7. **Design assets**: Figma links, screenshots, or a vibe-coded prototype. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
 
 ### Step 1b: Evaluate for split
 
@@ -33,11 +33,11 @@ After gathering the acceptance criteria scenarios, evaluate them before continui
 
 - **Multiple actors**: scenarios describe actions by different roles with no shared outcome
 - **Unrelated starting states**: scenarios have Givens that describe completely different parts of the system
-- **Multiple unrelated endpoints**: the user has described what would become two or more unrelated API endpoints
+- **Multiple unrelated outcomes**: the scenarios deliver two capabilities a user would ask for separately, rather than one capability plus its edge cases
 
 If any signal is present, pause and surface it:
 
-> "These scenarios describe two separate capabilities: [A] and [B]. Creating one issue would make it too large for a coding agent to implement safely in a single PR. Would you like to create two linked stories instead?"
+> "These scenarios describe two separate capabilities: [A] and [B]. Creating one issue would make it too large for an engineer or coding agent to implement safely in a single PR. Would you like to create two linked stories instead?"
 
 If the user confirms a split: complete Step 1 for each capability separately and create them as two issues. Run Steps 2 and 3 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
 

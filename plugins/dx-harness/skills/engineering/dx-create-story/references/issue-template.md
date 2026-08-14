@@ -1,6 +1,6 @@
 ## User story
 
-As a [role], I want [capability], so that [benefit].
+As a [user persona], I want [capability], so that [benefit].
 
 ## Background
 
@@ -30,7 +30,7 @@ As a [role], I want [capability], so that [benefit].
 
 ## Design assets
 
-<Figma links, screenshots, a Mermaid diagram, or N/A>
+<Figma links, screenshots, a vibe-coded prototype, a Mermaid diagram, or N/A>
 
 ---
 
