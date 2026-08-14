@@ -40,7 +40,15 @@ still announces where it came from.
 
 Skills appear as `/dx-harness:dx-<name>` (e.g. `/dx-harness:dx-code-review`,
 `/dx-harness:dx-design`). Update with `/plugin marketplace update dx-harness` then
-`/reload-plugins`.
+`/reload-plugins`. Claude Code installs updates only when the version in `plugin.json`
+changes.
+
+If the update reports no changes and the installed plugin is still `0.3.0`, remove
+only that version's cached plugin directory, then reinstall and reload:
+
+    rm -rf ~/.claude/plugins/cache/dx-harness/dx-harness/0.3.0
+    /plugin install dx-harness@dx-harness
+    /reload-plugins
 
 The design skills need Python 3 + PyYAML for the `checks/` scripts. Run `/dx-harness:dx-design-setup`
 (or `/dx-harness:dx-design`) for the per-user tool checklist.
