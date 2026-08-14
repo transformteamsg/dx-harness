@@ -88,6 +88,12 @@ negative-parallelism density. See `docs/catalog-changes/slp-9-ai-writing-tells.m
 
 Each hit is a finding.
 
+In code, `checks/content-lint.py` runs the word and phrase scans over the whole source
+line, not only over string literals: a buzzword in a shipped component or variable name
+is still a tell. Comments are stripped first, and so are the spans that are never copy
+(class values, style values, class-builder calls, module paths), so a Tailwind class
+name is never read as prose.
+
 **Evaluator half:** structural tells need judgment — see below.
 
 ## Evaluator guidance
