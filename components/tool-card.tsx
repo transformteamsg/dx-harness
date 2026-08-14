@@ -34,7 +34,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
           href={tool.href}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-tw-blue px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tw-blue-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
         >
           Open {tool.name}
           <ArrowUpRight size={15} aria-hidden="true" />

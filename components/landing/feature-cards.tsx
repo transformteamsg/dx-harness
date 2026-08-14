@@ -1,110 +1,258 @@
+import { DxdMark } from "@/components/dxd-mark";
 import { Reveal } from "@/components/landing/reveal";
 
 type RevealStyle = React.CSSProperties & { "--reveal-i"?: number };
 const at = (index: number): RevealStyle => ({ "--reveal-i": index });
 
-const figureStroke = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
+type FigureKind = "orchestrator" | "catalog" | "design-file" | "reviewer";
+
+const stroke = {
+  stroke: "var(--border-strong)",
+  strokeWidth: 1.5,
   vectorEffect: "non-scaling-stroke" as const,
 };
 
-function OrchestratorFigure() {
-  return (
-    <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
-      <g className="text-border-strong" {...figureStroke}>
-        <path d="M58 83 179 22l123 61-123 63L58 83Z" fill="var(--primary-wash)" strokeWidth="1.25" />
-        <path d="m58 83 .2 18L179 164l123-63V83" className="text-muted-foreground" strokeWidth="1.25" />
-        <path d="m58 112 .2 18L179 193l123-63v-18" strokeWidth="1" opacity=".72" />
-        <path d="m58 141 .2 18L179 222l123-63v-18" strokeWidth="1" opacity=".5" />
-        <path d="M179 146v76" strokeDasharray="2 5" opacity=".65" />
-      </g>
+const accentStroke = {
+  stroke: "var(--dxd-lime-ink)",
+  strokeWidth: 1.5,
+  vectorEffect: "non-scaling-stroke" as const,
+};
 
-      <g className="text-tw-blue-text" {...figureStroke}>
-        <path d="M131 83h96" strokeWidth="1.4" />
-        <path d="m179 52 48 31-48 31-48-31 48-31Z" strokeWidth="1.6" />
-        <circle cx="179" cy="83" r="8" strokeWidth="1.6" />
-        <path d="M179 75V63M171 83h-17m33 0h17m-25 8v11" strokeWidth="1.2" />
-      </g>
-    </svg>
-  );
-}
+const label = {
+  fill: "var(--muted-foreground)",
+  fontFamily: "var(--font-landing-mono)",
+  fontSize: 18,
+};
 
-function CatalogFigure() {
-  return (
-    <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
-      <g className="text-border-strong" {...figureStroke}>
-        <path d="m38 112 66-34 65 34-65 35-66-35Z" fill="var(--primary-wash)" strokeWidth="1.25" />
-        <path d="m38 112 .3 75 65.7 36 65-36v-75" className="text-muted-foreground" strokeWidth="1.25" />
-
-        <path d="m126 50 64-33 65 33-65 34-64-34Z" fill="var(--primary-wash)" strokeWidth="1.25" />
-        <path d="m126 50 .2 57 63.8 34 65-34V50" className="text-muted-foreground" strokeWidth="1.25" />
-
-        <path d="m190 125 65-34 67 34-67 35-65-35Z" fill="var(--primary-wash)" strokeWidth="1.25" />
-        <path d="m190 125 .2 62 64.8 35 67-35v-62" className="text-muted-foreground" strokeWidth="1.25" />
-      </g>
-
-      <g className="fill-tw-blue text-tw-blue-text">
-        <circle cx="104" cy="112" r="4.5" />
-        <circle cx="190" cy="50" r="4.5" />
-        <circle cx="255" cy="125" r="4.5" />
-      </g>
-      <g className="font-mono text-xs fill-muted-foreground">
-        <text x="95" y="173">L0</text>
-        <text x="181" y="108">L1</text>
-        <text x="246" y="187">L2</text>
-      </g>
-    </svg>
-  );
-}
-
-function DesignFileFigure() {
-  const fields = [
-    { y: 86, x2: 118 },
-    { y: 99, x2: 104 },
-    { y: 112, x2: 112 },
-    { y: 125, x2: 96 },
-    { y: 138, x2: 108 },
-  ];
-  const tokens = [64, 77, 90, 103];
+function FigureArtwork({ kind }: { kind: FigureKind }) {
+  const patternId = `${kind}-grid`;
+  const arrowId = `${kind}-arrow`;
 
   return (
-    <svg viewBox="0 0 360 260" className="size-full" aria-hidden>
-      <g className="text-border-strong" {...figureStroke}>
-        <rect x="40" y="64" width="100" height="136" rx="6" fill="var(--primary-wash)" strokeWidth="1.25" />
-        {fields.map(({ y, x2 }, index) => (
-          <line
-            key={y}
-            x1="52"
-            y1={y}
-            x2={x2}
-            y2={y}
-            className={index === 0 ? "text-muted-foreground" : undefined}
-            strokeWidth={index === 0 ? "1.1" : "1"}
-            opacity={index === 0 ? 0.85 : 0.7 - index * 0.08}
+    <svg
+      viewBox="0 0 720 420"
+      role="img"
+      aria-labelledby={`${kind}-title ${kind}-desc`}
+      className="block h-auto w-full"
+    >
+      <title id={`${kind}-title`}>
+        {kind === "orchestrator"
+          ? "The DX Harness orchestrator"
+          : kind === "catalog"
+            ? "The three control-catalog tiers"
+            : kind === "design-file"
+              ? "A shared DESIGN.md file"
+              : "A fresh-context design review"}
+      </title>
+      <desc id={`${kind}-desc`}>
+        {kind === "orchestrator"
+          ? "One request passes through the DXD front door into proposal paths and one builder."
+          : kind === "catalog"
+            ? "Three measured rule sheets show the L0, L1, and L2 control tiers."
+            : kind === "design-file"
+              ? "Human and agent decisions enter one design file and leave as shared design tokens."
+              : "A built interface and its evidence enter a separate review gate and leave with a checked verdict."}
+      </desc>
+      <defs>
+        <pattern id={patternId} width="28" height="28" patternUnits="userSpaceOnUse">
+          <path
+            d="M 28 0 L 0 0 0 28"
+            fill="none"
+            stroke="var(--dxd-lime-dot)"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
           />
-        ))}
+        </pattern>
+        <marker
+          id={arrowId}
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--dxd-lime-ink)" />
+        </marker>
+      </defs>
+      <rect width="720" height="420" fill="var(--surface)" />
+      <rect x="20" y="20" width="680" height="380" fill={`url(#${patternId})`} />
 
-        <path d="M272 78a18 18 0 0 1 36 0" fill="var(--primary-wash)" strokeWidth="1.25" />
-        <circle cx="290" cy="44" r="9" fill="var(--primary-wash)" strokeWidth="1.25" />
+      {kind === "orchestrator" ? (
+        <>
+          <g>
+            <rect x="52" y="142" width="128" height="136" fill="var(--surface)" {...stroke} />
+            <path d="M 70 172 H 162 M 70 194 H 146" fill="none" {...stroke} />
+            <rect x="70" y="218" width="92" height="36" fill="var(--muted)" {...stroke} />
+            <text x="52" y="310" {...label} fill="var(--foreground)">one ask</text>
+          </g>
+          <path d="M 180 210 H 234" fill="none" {...accentStroke} markerEnd={`url(#${arrowId})`} />
+          <circle cx="326" cy="210" r="92" fill="none" {...stroke} opacity="0.48" />
+          <circle cx="326" cy="210" r="58" fill="none" {...stroke} opacity="0.48" />
+          <DxdMark x={240} y={124} width={172} height={172} />
+          <text x="326" y="330" textAnchor="middle" {...label} fill="var(--foreground)">
+            dx-design
+          </text>
 
-        <rect x="274" y="188" width="32" height="28" rx="5" fill="var(--primary-wash)" strokeWidth="1.25" />
-        <path d="m284 196 6 5-6 5" strokeWidth="1.3" opacity=".75" />
-      </g>
+          {[82, 139, 196, 253, 310].map((y, index) => (
+            <g key={y}>
+              <path
+                d={`M 418 210 H 442 V ${y + 17} H 478`}
+                fill="none"
+                {...(index === 4 ? accentStroke : stroke)}
+                markerEnd={`url(#${arrowId})`}
+              />
+              <rect
+                x="482"
+                y={y}
+                width="176"
+                height="34"
+                rx="6"
+                fill={index === 4 ? "var(--dxd-lime-wash)" : "var(--surface)"}
+                {...(index === 4 ? accentStroke : stroke)}
+              />
+              <text x="498" y={y + 23} {...label} fill="var(--foreground)">
+                {index === 4 ? "one builder" : `proposal ${String(index + 1).padStart(2, "0")}`}
+              </text>
+            </g>
+          ))}
+        </>
+      ) : null}
 
-      <g className="text-tw-blue-text" {...figureStroke}>
-        <circle cx="150" cy="132" r="6" fill="var(--surface)" strokeWidth="1.6" />
-        <path d="M150 132 172 96 290 60" strokeWidth="1.4" />
-        <path d="M150 132 172 168 290 204" strokeWidth="1.4" />
-      </g>
+      {kind === "catalog" ? (
+        <>
+          <line x1="116" y1="334" x2="590" y2="334" {...stroke} strokeDasharray="7 8" />
+          {[
+            { x: 138, y: 206, tier: "L2", note: "specific reason", fill: "var(--surface)" },
+            { x: 214, y: 146, tier: "L1", note: "named approver", fill: "var(--muted)" },
+            { x: 290, y: 86, tier: "L0", note: "never waived", fill: "var(--dxd-lime-wash)" },
+          ].map((sheet, index) => (
+            <g key={sheet.tier}>
+              <rect
+                x={sheet.x + 12}
+                y={sheet.y + 12}
+                width="286"
+                height="156"
+                fill="var(--muted)"
+                {...stroke}
+                opacity="0.48"
+              />
+              <rect x={sheet.x} y={sheet.y} width="286" height="156" fill={sheet.fill} {...stroke} />
+              <text
+                x={sheet.x + 24}
+                y={sheet.y + 42}
+                fill="var(--foreground)"
+                fontFamily="var(--font-landing-mono)"
+                fontSize="30"
+              >
+                {sheet.tier}
+              </text>
+              <text x={sheet.x + 84} y={sheet.y + 40} {...label}>{sheet.note}</text>
+              {[0, 1, 2].map((row) => (
+                <g key={row}>
+                  <circle
+                    cx={sheet.x + 30}
+                    cy={sheet.y + 76 + row * 24}
+                    r="4"
+                    fill={index === 2 ? "var(--dxd-lime-ink)" : "var(--border-strong)"}
+                  />
+                  <line
+                    x1={sheet.x + 48}
+                    y1={sheet.y + 76 + row * 24}
+                    x2={sheet.x + 250 - row * 18}
+                    y2={sheet.y + 76 + row * 24}
+                    {...stroke}
+                  />
+                </g>
+              ))}
+            </g>
+          ))}
+          <text x="116" y="370" {...label}>one catalog / three tiers</text>
+        </>
+      ) : null}
 
-      <g className="fill-tw-blue text-tw-blue-text">
-        {tokens.map((x) => (
-          <circle key={x} cx={x} cy="172" r="3" />
-        ))}
-      </g>
+      {kind === "design-file" ? (
+        <>
+          <g>
+            <rect x="54" y="104" width="126" height="70" rx="6" fill="var(--surface)" {...stroke} />
+            <circle cx="76" cy="128" r="6" fill="var(--dxd-lime-ink)" />
+            <path d="M 92 128 H 160 M 70 150 H 146" fill="none" {...stroke} />
+            <text x="54" y="94" {...label}>human decisions</text>
+
+            <rect x="54" y="246" width="126" height="70" rx="6" fill="var(--surface)" {...stroke} />
+            <rect x="70" y="262" width="12" height="12" fill="var(--dxd-lime-wash)" {...accentStroke} />
+            <path d="M 92 268 H 160 M 70 292 H 146" fill="none" {...stroke} />
+            <text x="54" y="344" {...label}>agent context</text>
+          </g>
+
+          <path d="M 180 139 H 238 V 184" fill="none" {...accentStroke} markerEnd={`url(#${arrowId})`} />
+          <path d="M 180 281 H 238 V 236" fill="none" {...accentStroke} markerEnd={`url(#${arrowId})`} />
+
+          <g>
+            <rect x="246" y="62" width="244" height="296" fill="var(--surface)" {...stroke} />
+            <path d="M 436 62 L 490 116 H 436 Z" fill="var(--muted)" {...stroke} />
+            <DxdMark x={270} y={88} width={52} height={52} />
+            <text
+              x="338"
+              y="122"
+              fill="var(--foreground)"
+              fontFamily="var(--font-landing-mono)"
+              fontSize="24"
+            >
+              DESIGN.md
+            </text>
+            <path d="M 274 168 H 452 M 274 198 H 432 M 274 228 H 446 M 274 258 H 410" fill="none" {...stroke} />
+            <rect x="274" y="288" width="112" height="36" rx="6" fill="var(--dxd-lime-wash)" {...accentStroke} />
+            <text x="290" y="312" {...label} fill="var(--foreground)">override</text>
+          </g>
+
+          <path d="M 490 210 H 548" fill="none" {...accentStroke} markerEnd={`url(#${arrowId})`} />
+          {[110, 178, 246, 314].map((y, index) => (
+            <g key={y}>
+              <circle cx="582" cy={y} r="18" fill={index === 0 ? "var(--dxd-lime-wash)" : "var(--muted)"} {...stroke} />
+              <line x1="600" y1={y} x2="656" y2={y} {...stroke} />
+            </g>
+          ))}
+          <text x="548" y="370" {...label}>shared tokens</text>
+        </>
+      ) : null}
+
+      {kind === "reviewer" ? (
+        <>
+          <g>
+            <rect x="54" y="78" width="270" height="264" fill="var(--surface)" {...stroke} />
+            <text x="78" y="112" {...label}>built interface</text>
+            <rect x="78" y="136" width="222" height="76" fill="var(--muted)" {...stroke} />
+            <path d="M 96 158 H 218 M 96 178 H 274 M 96 198 H 244" fill="none" {...stroke} />
+            <rect x="78" y="234" width="104" height="70" fill="var(--surface)" {...stroke} />
+            <path d="M 94 252 H 166 M 94 270 H 154 M 94 288 H 172" fill="none" {...stroke} />
+            <rect x="196" y="234" width="104" height="70" fill="var(--surface)" {...stroke} />
+            <circle cx="216" cy="256" r="5" fill="var(--dxd-lime-ink)" />
+            <path d="M 230 256 H 282 M 212 278 H 282" fill="none" {...stroke} />
+          </g>
+
+          <path d="M 324 210 H 392" fill="none" {...accentStroke} markerEnd={`url(#${arrowId})`} />
+
+          <g>
+            <rect x="402" y="78" width="264" height="264" fill="var(--surface)" {...stroke} />
+            <text x="426" y="112" {...label}>fresh-context review</text>
+            {[
+              ["contract", 154],
+              ["screenshots", 202],
+              ["controls", 250],
+            ].map(([text, y]) => (
+              <g key={text}>
+                <circle cx="438" cy={Number(y)} r="12" fill="var(--dxd-lime-wash)" {...accentStroke} />
+                <path d={`M 432 ${Number(y)} L 437 ${Number(y) + 5} L 445 ${Number(y) - 5}`} fill="none" {...accentStroke} />
+                <text x="466" y={Number(y) + 6} {...label} fill="var(--foreground)">{text}</text>
+              </g>
+            ))}
+            <line x1="426" y1="286" x2="642" y2="286" {...stroke} />
+            <text x="426" y="316" {...label} fill="var(--foreground)">verdict / re-check</text>
+          </g>
+          <text x="360" y="378" textAnchor="middle" {...label}>builder and reviewer stay separate</text>
+        </>
+      ) : null}
     </svg>
   );
 }
@@ -112,6 +260,8 @@ function DesignFileFigure() {
 const features = [
   {
     figure: "FIG 0.2",
+    caption: "[ ORCHESTRATOR ]",
+    kind: "orchestrator" as const,
     eyebrow: "/dx-harness:dx-design",
     claim: "One way in. One way to ship.",
     support: (
@@ -122,10 +272,11 @@ const features = [
         your product.
       </>
     ),
-    illustration: <OrchestratorFigure />,
   },
   {
     figure: "FIG 0.3",
+    caption: "[ CONTROL CATALOG ]",
+    kind: "catalog" as const,
     eyebrow: "Control catalog",
     claim: "Not every rule is a lint check.",
     support: (
@@ -134,47 +285,69 @@ const features = [
         which leave room for judgement.
       </>
     ),
-    illustration: <CatalogFigure />,
   },
   {
     figure: "FIG 0.4",
+    caption: "[ DESIGN.MD ]",
+    kind: "design-file" as const,
     eyebrow: "DESIGN.md",
     claim: "Your design language, written down once.",
     support: (
       <>
         Keep product decisions and standing overrides in one file the whole
-        team—human and agent—can work from.
+        team, human and agent, can work from.
       </>
     ),
-    illustration: <DesignFileFigure />,
+  },
+  {
+    figure: "FIG 0.5",
+    caption: "[ FRESH REVIEW ]",
+    kind: "reviewer" as const,
+    eyebrow: "Independent review",
+    claim: "The builder never grades its own work.",
+    support: (
+      <>
+        A fresh-context reviewer reads the contract, screenshots, and controls,
+        then sends findings back through the same gate for a re-check.
+      </>
+    ),
   },
 ];
 
 export function FeatureCards() {
   return (
     <Reveal>
-      <ul className="grid divide-y divide-border border-y border-border md:grid-cols-3 md:divide-x md:divide-y-0">
+      <ul className="grid border-t border-l border-border md:grid-cols-2">
         {features.map((feature, index) => (
           <li
             key={feature.figure}
-            className="reveal-item py-8 md:px-7 md:py-9 md:first:pl-0 md:last:pr-0"
+            className="reveal-item flex min-w-0 flex-col border-r border-b border-border"
             style={at(index)}
           >
-            <p className="font-mono text-xs tracking-[0.14em] text-muted-foreground">
-              {feature.figure}
-            </p>
-            <div className="mt-2 h-56 w-full text-border-strong sm:h-64 md:h-60 lg:h-64 [&_svg]:overflow-visible">
-              {feature.illustration}
+            <figure className="relative overflow-hidden border-b border-border">
+              <p className="absolute top-3 left-4 z-10 font-mono text-xs tracking-[0.16em] text-muted-foreground">
+                {feature.figure}
+              </p>
+              <span
+                aria-hidden
+                className="absolute top-3 right-4 z-10 font-mono text-xs tracking-[0.16em] text-muted-foreground"
+              >
+                {feature.caption}
+              </span>
+              <FigureArtwork kind={feature.kind} />
+            </figure>
+
+            <div className="flex flex-1 flex-col p-6 sm:p-8">
+              <p className="font-mono text-xs break-words text-(--dxd-lime-ink)">
+                {feature.eyebrow}
+              </p>
+              <h3 className="mt-3 max-w-[22ch] font-display text-2xl font-semibold leading-tight tracking-[-0.015em] text-balance text-foreground">
+                {feature.claim}
+              </h3>
+              <p className="mt-3 max-w-[52ch] leading-relaxed text-pretty text-muted-foreground">
+                {feature.support}
+              </p>
             </div>
-            <p className="mt-5 font-mono text-xs break-words text-tw-blue-text">
-              {feature.eyebrow}
-            </p>
-            <h3 className="mt-2.5 font-display text-lg font-semibold tracking-tight text-balance text-foreground">
-              {feature.claim}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {feature.support}
-            </p>
           </li>
         ))}
       </ul>

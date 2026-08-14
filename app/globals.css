@@ -15,14 +15,32 @@
   --ring: #0064ff;
 
   /* Product primaries (Radix-based for CaseSync/Glow) */
-  --tw-blue: #0064ff;        /* Teacher Workspace — brand anchor */
+  --tw-blue-brand: #0064ff;  /* Teacher Workspace — fixed product brand anchor */
+  --tw-blue: var(--tw-blue-brand);
   --casesync: #3e63dd;       /* Radix indigo-9 (proposed) */
   --glow: #f76b15;           /* Radix orange-9 (proposed) */
 
-  /* The harness's own mark (app/(landing)/layout.tsx) — a deliberate second
-     accent alongside --tw-blue, not a product primary (COL-1 exempts the
-     brand mark itself; see the inline dx-waive at its call site). */
+  /* The harness's own mark (components/dxd-mark.tsx) — a deliberate second
+     accent alongside --tw-blue, not a product primary. A recorded COL-1
+     standing override (DESIGN.md Colour,
+     docs/decisions/landing-lime-figures.md) covers the mark and the
+     landing's technical figures; inline dx-waive markers sit at the
+     drawing sites. */
   --dxd-lime: #bdee63;       /* Radix lime-9 — harness mark accent */
+  /* Lime figure steps — the spec-sheet illustration system on the landing
+     (docs/decisions/landing-lime-figures.md). Ink carries structure: lime-9
+     itself is ~1.3:1 on the page and can never draw a meaningful stroke, so
+     strokes and figure labels use lime-11 (≈4.6:1, clears AA and the 3:1
+     non-text floor). Wash/line/dot are derived tints for fills, faint
+     construction lines, and the graph-paper dots. Figures only — never
+     interactive chrome. */
+  --dxd-lime-ink: #516d29;   /* Radix lime-11 (#5c7c2f) darkened ~12% so small
+     text on --dxd-lime-wash clears 4.5:1 (A11Y-1) — lime-11 itself measures
+     ~4.4:1 on the 22% wash. Same darken precedent as --warning. */
+  --dxd-lime-deep: #b0e64c;  /* Radix lime-10 — the nav mark's fill, one step darker so the glyph holds against the white header */
+  --dxd-lime-wash: color-mix(in oklab, var(--dxd-lime) 22%, var(--surface));
+  --dxd-lime-line: color-mix(in oklab, var(--dxd-lime) 60%, var(--surface));
+  --dxd-lime-dot: color-mix(in oklab, var(--dxd-lime-ink) 20%, transparent);
 
   /* Hover darken for the TW-blue primary — kept off the call site so component
      code stays free of raw colour (TOK-1); the `black` mix lives here, in the
@@ -36,6 +54,10 @@
      retired dark world; see docs/decisions/landing-light-return.md.) */
   --primary-line: color-mix(in oklab, var(--tw-blue) 30%, var(--surface));
   --primary-wash: color-mix(in oklab, var(--tw-blue) 4%, var(--surface));
+  /* Fixed Teacher Workspace sample steps. Unlike --tw-blue, these do not
+     inherit the landing's lime instrumentation override. */
+  --tw-blue-brand-line: color-mix(in oklab, var(--tw-blue-brand) 30%, var(--surface));
+  --tw-blue-brand-wash: color-mix(in oklab, var(--tw-blue-brand) 5%, var(--surface));
 
   /* Neutral UI fills — zinc scale, shadcn convention */
   --muted: #f4f4f5;          /* zinc-100 — active fill, code background */
@@ -86,8 +108,9 @@
   --motion-slow: 300ms;
   --motion-story: 600ms;
   /* The hero mark uses the logo-grid-generator's draw treatment: the complete
-     closed path traces, holds, and resets as a slow loop. Narrative brand
-     motion, never task feedback. */
+     closed path traces once, the closed stroke and the fill land, and the
+     finished mark holds for the rest of the run. It never repeats. Narrative
+     brand motion, never task feedback. */
   --motion-mark-cycle: 4200ms;
   /* Stagger step for narrative reveals (the diagram): each item's delay is
      its narrative index × this step; every individual motion stays ≤300ms
@@ -110,8 +133,13 @@
   --card-foreground: var(--foreground);
   --popover: var(--surface);
   --popover-foreground: var(--foreground);
-  --primary: var(--tw-blue);
+  /* Primary action is ink: black fill, white label (builder decision,
+     2026-08-13 — docs/decisions/landing-lime-figures.md). TW blue stays the
+     link / code / focus-ring accent; it no longer fills buttons. */
+  /* dx-waive COL-1 reason="primary action is ink sitewide — the builder's explicit direction (2026-08-13), a standing override recorded in DESIGN.md Colour and docs/decisions/landing-lime-figures.md; approver rezailmi" */
+  --primary: var(--foreground);
   --primary-foreground: var(--surface);
+  --primary-hover: color-mix(in oklab, var(--foreground) 84%, white);
   --secondary: var(--muted);
   --secondary-foreground: var(--foreground);
   --accent-foreground: var(--foreground);
@@ -171,6 +199,10 @@
   --color-tw-blue-hover: var(--tw-blue-hover);
   --color-tw-blue-text: var(--tw-blue-text);
   --color-dxd-lime: var(--dxd-lime);
+  --color-dxd-lime-ink: var(--dxd-lime-ink);
+  --color-dxd-lime-deep: var(--dxd-lime-deep);
+  --color-dxd-lime-wash: var(--dxd-lime-wash);
+  --color-dxd-lime-line: var(--dxd-lime-line);
   --color-casesync: var(--casesync);
   --color-glow: var(--glow);
   --color-muted: var(--muted);
@@ -195,6 +227,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent-foreground: var(--accent-foreground);
@@ -213,11 +246,72 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
+  --font-display: "EB Garamond", Georgia, serif;
   --font-body: "Inter Variable", system-ui, sans-serif;
-  /* The third voice: code, commands, and data labels (sanctioned in
-     type-scan.py's ALLOWED_FONT_TOKENS). */
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Code, commands, data labels, and the dx-harness wordmark. */
+  --font-mono: "Departure Mono", ui-monospace, monospace;
+}
+
+/* Landing-only colour and reading register. Inter carries body/interface text;
+   EB Garamond is reserved for headings. Departure Mono remains the measured
+   voice. All landing chrome resolves through Radix gray and lime. */
+.landing-manual {
+  /* dx-waive TYP-1 approver="rezailmi" reason="the builder explicitly chose the illustrated-manual register for this landing: EB Garamond headings, Inter body text, and Departure Mono instrumentation; confined to .landing-manual and recorded in DESIGN.md" */
+  --font-landing-serif: "EB Garamond", Georgia, serif;
+  --font-landing-mono: "Departure Mono", ui-monospace, monospace;
+  --landing-dropcap-leading: 0.72;
+  --background: var(--gray-1);
+  --surface: var(--gray-1);
+  --foreground: var(--gray-12);
+  --prose-body: var(--gray-12);
+  --muted-foreground: var(--gray-11);
+  --muted: var(--gray-3);
+  --accent: var(--lime-3);
+  --border: var(--gray-6);
+  --border-strong: var(--gray-8);
+  --ring: var(--lime-11);
+  --tw-blue: var(--lime-11);
+  --dxd-lime: var(--lime-9);
+  --dxd-lime-deep: var(--lime-10);
+  --dxd-lime-ink: var(--lime-11);
+  --dxd-lime-wash: var(--lime-3);
+  --dxd-lime-line: var(--lime-7);
+  --dxd-lime-dot: color-mix(in oklab, var(--lime-11) 20%, transparent);
+  --primary: var(--gray-12);
+  --primary-foreground: var(--gray-1);
+  --primary-hover: var(--gray-11);
+  /* The quarantined comparison anti-specimen intentionally inherits the
+     purple/fuchsia --demo-slop-* tokens from :root. Do not neutralise them:
+     their job is to make SLP-1 visible, not to join the landing palette. */
+  font-family: var(--font-body);
+}
+
+.landing-manual .font-display,
+.landing-manual h1,
+.landing-manual h2,
+.landing-manual h3,
+.landing-manual h4 {
+  font-family: var(--font-landing-serif);
+}
+
+.landing-manual .font-mono {
+  font-family: var(--font-landing-mono);
+}
+
+.manual-rule {
+  height: 9px;
+  background: radial-gradient(var(--gray-8) 0.75px, transparent 0.75px) 0 0 / 4px 4px;
+}
+
+.manual-dropcap::first-letter {
+  float: left;
+  margin: 0.04em 0.08em 0 0;
+  font-family: var(--font-landing-serif);
+  font-size: 4.5em;
+  /* Decorative initial, not multi-line body copy: TYP-2's body-leading band
+     does not apply. The surrounding paragraph remains 1.45. */
+  line-height: var(--landing-dropcap-leading);
+  color: var(--foreground);
 }
 
 /* Default border colour for the shadcn/ui components (Base UI): their borders set
@@ -278,46 +372,6 @@
     scale: 0;
   }
 
-  /* Scroll map: one stage follows the viewport reading line. Earlier layers
-     remain as quiet context while the current layer carries full contrast. */
-  .scroll-map-layer {
-    transition:
-      opacity var(--motion-slow) var(--ease-out),
-      translate var(--motion-slow) var(--ease-out);
-  }
-  .scroll-map-figure {
-    transition: translate var(--motion-story) var(--ease-in-out);
-  }
-  .scroll-map-layer[data-visible="false"] {
-    opacity: 0;
-    translate: 0 -12px;
-  }
-  .scroll-map-layer[data-visible="true"][data-current="false"] {
-    opacity: 0.42;
-  }
-  .scroll-map-layer[data-current="true"] {
-    opacity: 1;
-  }
-  .scroll-map-line {
-    transform-box: fill-box;
-    transform-origin: top center;
-    transition: scale var(--motion-slow) var(--ease-out);
-  }
-  .scroll-map-layer[data-visible="false"] .scroll-map-line {
-    scale: 1 0;
-  }
-}
-
-/* Scroll map viewport edge fade: the clipped sticky window (md+ only — below
-   md the figure is unclipped and shows the complete static map, so no mask)
-   can cut an adjacent layer's text mid-glyph at its top/bottom edge as the
-   camera pans. A soft fade reads as "more context above/below", not a hard
-   crop. Independent of prefers-reduced-motion: the clip itself is static. */
-@media (min-width: 768px) {
-  .scroll-map-viewport {
-    mask-image: linear-gradient(to bottom, transparent, var(--foreground) 10%, var(--foreground) 90%, transparent);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, var(--foreground) 10%, var(--foreground) 90%, transparent);
-  }
 }
 
 /* Landing hero entrance — the page's one authored load motion (plan: opacity
@@ -327,73 +381,53 @@
   .hero-enter {
     animation: hero-enter var(--motion-base) var(--ease-out) both;
   }
-  .hero-geometry-grid {
-    animation: hero-geometry-grid var(--motion-story) var(--ease-out) both;
-  }
-  .hero-geometry-mark-draw {
-    /* Slightly longer than the normalized path so the final join closes
-       cleanly before the fill appears. */
-    stroke-dasharray: 1.01;
-    stroke-dashoffset: 1;
-    animation: hero-geometry-mark-draw var(--motion-mark-cycle) linear infinite;
-  }
-  .hero-geometry-mark-fill {
-    animation: hero-geometry-mark-fill var(--motion-mark-cycle) linear infinite;
-  }
-  .hero-geometry-mark-complete {
-    animation: hero-geometry-mark-complete var(--motion-mark-cycle) linear infinite;
-  }
   @keyframes hero-enter {
     from {
       opacity: 0;
       transform: translateY(8px);
     }
   }
-  @keyframes hero-geometry-grid {
-    from {
-      opacity: 0;
-    }
-  }
-  @keyframes hero-geometry-mark-draw {
-    0%, 3% {
-      opacity: 0;
-      stroke-dashoffset: 1;
-    }
-    5% {
-      opacity: 1;
-      stroke-dashoffset: 1;
-    }
-    22% {
-      opacity: 1;
-      stroke-dashoffset: 0;
-    }
-    24%, 100% {
-      opacity: 0;
-      stroke-dashoffset: 0;
-    }
-  }
-  @keyframes hero-geometry-mark-complete {
-    0%, 22% {
-      opacity: 0;
-    }
-    24%, 88% {
-      opacity: 1;
-    }
-    94%, 100% {
-      opacity: 0;
-    }
-  }
-  @keyframes hero-geometry-mark-fill {
-    0%, 27% {
-      opacity: 0;
-    }
-    32%, 88% {
-      opacity: 1;
-    }
-    94%, 100% {
-      opacity: 0;
-    }
-  }
+}
+
+/* ── Spec-sheet figure panel (landing figures, FIG 0.1 and FIG 0.6) — hairline frame,
+   lime corner ticks, and a rotated mono edge caption. Each authored SVG owns
+   its construction grid so the grid scales with the drawing instead of
+   creating a second, competing raster-like pattern behind it.
+   The frame is a figure mount, not card chrome (SLP-11: the content inside is
+   an illustration, the panel is its instrument). Tokens only (TOK-1);
+   decision: docs/decisions/landing-lime-figures.md. ── */
+.spec-panel {
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.spec-panel::before,
+.spec-panel::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.spec-panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--dxd-lime-ink);
+  border-left: 2px solid var(--dxd-lime-ink);
+}
+.spec-panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--dxd-lime-ink);
+  border-right: 2px solid var(--dxd-lime-ink);
+}
+.spec-panel-caption {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  white-space: nowrap;
 }
 
 /* Anchor targets clear the sticky topbar; smooth only when motion is welcome. */
@@ -405,11 +439,11 @@ html { scroll-padding-top: 80px; }
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Inter Variable", system-ui, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-serif; letter-spacing: -0.01em; }
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
 
 /* prose defaults for MDX — layered as components so Tailwind utilities on
    embedded UI (diagrams, figures) can override them. */
@@ -439,7 +473,7 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
   .prose code { font-size: 0.9em; background: var(--muted); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; word-break: break-word; }
   .prose pre { background: transparent; color: inherit; padding: 0; margin: 0; border-radius: 0; overflow-x: auto; }
   .prose pre code { background: transparent; padding: 0; overflow-wrap: normal; word-break: normal; white-space: inherit; }
-  .prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
+  .prose blockquote { border-inline-start: 1px solid var(--border-strong); padding-inline-start: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
   .prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
   .prose strong { color: var(--foreground); font-weight: 600; }
   /* Preflight gives hr 0 margin, so a `---` inherits its neighbours' asymmetric

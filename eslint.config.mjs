@@ -10,6 +10,6 @@ export default [
     // lint-ignored like ink-icons.generated.ts, not "fixed".
     // .claude/worktrees/ holds throwaway agent worktrees whose own .next/ and
     // node_modules/ escape the root-relative ignores above — never lint them.
-    ignores: [".next/**", "node_modules/**", ".claude/worktrees/**", "components/ink-icons.generated.ts", "next-env.d.ts", "plugins/dx-harness/checks/fixtures/**"],
+    ignores: [".next/**", ".next-dev/**", "node_modules/**", ".claude/worktrees/**", "components/ink-icons.generated.ts", "next-env.d.ts", "plugins/dx-harness/checks/fixtures/**"],
   },
 ];

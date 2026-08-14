@@ -1,33 +1,110 @@
 # Product
 
-## Register
+<!-- impeccable:product-schema 1 -->
 
-product
+## Platform
+
+web
 
 ## Users
 
-Two audiences. Humans: TFX builders, designers, and engineers across the Teacher & School portfolio (Teacher Workspace, CaseSync, Glow) who consult the standard while shipping; they arrive mid-task and want an answer, not a brochure. Agents: AI coding tools that read /llms.txt and the YAML control catalog to build to the bar without a designer present.
+The primary users are product builders, designers, and engineers who use coding
+agents while they work. They arrive mid-task and need a reliable next action,
+an implementation workflow, or a standard they can apply without translating a
+separate design document first.
+
+AI coding agents are a second, first-class audience. They read the same skills,
+control catalog, `/llms.txt`, and machine-readable files as the humans who
+review their work.
+
+DX Harness began in TransformX's TFX and DXD practice, where teams build for
+Singapore's teachers, and is now a general-purpose open-source product for
+teams using coding agents.
 
 ## Product Purpose
 
-The TFX Design Standard site is the single source of truth for how TransformX designs for Singapore's teachers. It publishes principles that settle arguments, machine-checkable controls (the catalog), guidelines, foundations, and a harness. Success: any builder, human or agent, ships UI that passes the catalog on the first review.
+DX Harness gives a team one front door for agent-assisted product development.
+It bundles engineering and design workflows, shared standards, deterministic
+checks, and independent review so an agent can move from an ask to reviewed
+work without each team rebuilding the process around it.
 
-## Brand Personality
+Success means a human or agent can find the right workflow quickly, produce
+work against an explicit standard, and reach review with fewer avoidable design
+and engineering failures.
 
-Kind Utility. Calm, exact, quietly warm. The site reads like a knowledgeable colleague: plain language, second person, active voice, sentence case. It must exemplify the standard it documents; every surface is a living specimen.
+## Positioning
 
-## Anti-references
+DX Harness is not only a collection of prompts or skills. Its durable `dx-`
+namespace routes work into a connected system: specialist workflows share one
+control catalog, deterministic checks verify what code can prove, and a
+separate reviewer evaluates the result. TFX is the origin and proving ground,
+not the boundary of who can use it.
 
-The default AI aesthetic, codified as the catalog's SLP controls: purple/violet gradients, cyan-on-dark, glow accents (SLP-1), gradient text (SLP-2), thick side-tab accent borders (SLP-3), nested cards (SLP-4), icon-tile-above-heading feature-card grids (SLP-5), flat type hierarchy (SLP-6), uniform spacing (SLP-7), bounce easing (SLP-8), buzzword copy (SLP-9), complex tasks in modals (SLP-10). Also: dark, heavy themes as default; corporate flat-pack illustration; hand-coded SVG mascots.
+## Operating Context
 
-## Design Principles
+People invoke DX Harness inside agent coding environments while planning,
+designing, implementing, reviewing, or maintaining a product. Claude Code is
+the primary plugin distribution today; the canonical `SKILL.md` sources can
+also be consumed by other compatible agent harnesses.
 
-1. Practice what you preach: the site must pass its own control catalog; violations in site chrome are bugs.
-2. Utility by default: aesthetics layer on top of genuine usefulness, never instead of it.
-3. Kind at surface: warm copy, light palettes, generous white space, gentle states.
-4. Calm guidance: progressive disclosure; show less, reveal on demand.
-5. Light weight: fast loads, minimal clutter, every element justifies its existence.
+The documentation website serves two reading paths. Humans browse principles,
+guidelines, foundations, setup instructions, and the control catalog. Agents
+consume `/llms.txt`, `/llms-full.txt`, Markdown routes, and
+`/standards/catalog.yaml` from the same repository truth.
+
+## Capabilities and Constraints
+
+- The repository currently ships 21 `dx-` skills: 8 engineering workflows and
+  13 design workflows.
+- Design workflows include a shared standards catalog, deterministic Python
+  checks, procedures, and an independent design-review agent.
+- Human approval remains part of consequential design and implementation
+  workflows; automation does not silently replace product judgment.
+- The local catalog under `plugins/dx-harness/standards/` is canonical for
+  agents and for the website.
+- The website is a Next.js application and the design checks require Python 3
+  with PyYAML in local development.
+
+## Brand Commitments
+
+The product name is **DX Harness** and its durable command namespace is `dx-`.
+“DX” deliberately supports Digital Experience, Digital Excellence, Developer
+Experience, and Designer Experience while retaining the DXD Xperience Studio
+origin.
+
+The voice is Kind Utility: calm, exact, quietly warm, and useful before it is
+promotional. Copy uses plain language, second person, active voice, and
+sentence case. The public product may acknowledge its TFX origin without
+presenting itself as limited to one organisation or portfolio.
+
+## Evidence on Hand
+
+Repository evidence includes the shipped skill sources, the 70-control catalog,
+the deterministic check suite, the separate reviewer definition, the public
+documentation routes, and the human- and machine-readable catalog outputs.
+
+No external adoption numbers, customer claims, testimonials, benchmarks,
+pricing, or outcome metrics are currently established in the repository.
+Future product work must not fabricate them.
+
+## Product Principles
+
+1. **One front door.** A stable namespace should make the right specialist
+   workflow easier to find than an improvised prompt.
+2. **One truth for humans and agents.** Documentation, skills, checks, and
+   machine-readable outputs should resolve to the same standards.
+3. **Judgment stays visible.** Human approval and documented decisions remain
+   explicit where automation cannot settle the answer.
+4. **Verification is independent.** Builders should not be the sole judges of
+   their own output; deterministic checks and separate review have different
+   jobs.
+5. **The harness must exemplify its standard.** Its website, skills, and
+   workflows are evidence of whether the system works.
 
 ## Accessibility & Inclusion
 
-WCAG AA is L0 (non-waivable): 4.5:1 body contrast, 3:1 large text and UI components (A11Y-1); full keyboard reachability with visible focus (A11Y-2); programmatic visible labels (A11Y-3). Targets ≥ 24px desktop / 44px mobile (A11Y-4). prefers-reduced-motion disables non-essential animation (A11Y-5). Never rely on colour alone; pair with text labels.
+WCAG AA is non-waivable: body text meets 4.5:1 contrast; large text and UI
+components meet 3:1; all controls are keyboard reachable with visible focus;
+visible controls have programmatic labels; targets are at least 24px on desktop
+and 44px on mobile; reduced-motion preferences preserve content and task state;
+and meaning never relies on colour alone.

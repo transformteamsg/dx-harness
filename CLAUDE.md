@@ -1,6 +1,6 @@
 # dx-harness
 
-AI harness for agentic-driven product development (the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`) plus the TFX Design Standard website (TransformX, Teacher & School portfolio). The website is Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
+Open-source harness for agent-assisted product development (the `dx-harness` Claude Code plugin in `plugins/dx-harness/`) plus its documentation and standards website. It originated in TransformX's TFX and DXD practice. The website is Next.js 15 App Router + Tailwind v4 + MDX content + YAML control catalog. Package manager: pnpm.
 
 This site must pass its own standard. Before changing UI, read [plugins/dx-harness/standards/catalog.yaml](plugins/dx-harness/standards/catalog.yaml) (the single source of truth — the site reads it directly) — especially the SLP (anti-slop) controls.
 
@@ -8,7 +8,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 
 - No gradient text, no nested cards, no side-tab borders, no bounce easing, no purple gradients (SLP controls).
 - Tokens: only the CSS variables in `app/globals.css`. No raw hex in components (TOK-1). Product colours: `--tw-blue` #0064FF, `--casesync` (Radix indigo-9), `--glow` (Radix orange-9).
-- Fonts: Plus Jakarta Sans Variable (display), Inter Variable (body) via Fontsource. No other typefaces (TYP-1).
+- Fonts: documentation uses Inter Variable for body and interface text, including buttons; EB Garamond 400/600 is reserved for titles/headings and owns landing-page reading; Departure Mono is for the wordmark, code, commands, data, and measured labels. Load locally via Fontsource-compatible packages (TYP-1 decision recorded in `DESIGN.md`).
 
 ## Content & copy
 

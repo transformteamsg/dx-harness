@@ -17,8 +17,9 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
-    "@fontsource-variable/inter": "^5.2.8",
-    "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
+    "@fontsource-variable/inter": "5.2.8",
+    "@fontsource/eb-garamond": "5.3.0",
+    "@proj-airi/font-departure-mono": "0.11.3",
     "@radix-ui/colors": "^3.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
