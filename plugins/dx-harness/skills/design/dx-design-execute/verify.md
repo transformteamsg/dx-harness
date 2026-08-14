@@ -10,8 +10,12 @@ Run in this order; do not present output to the user while a step is failing:
    `<this-skill-dir>/../../../checks/` (the same path works in the harness dev repo
    and when installed as the `dx-harness` plugin; do not expect a `checks/`
    directory in the project cwd). The commands below are written repo-relative for
-   brevity; prefix each with that resolved path. The three that catch the most:
+   brevity; prefix each with that resolved path. The four that catch the most:
    - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
+   - `python3 checks/a11y-eslint.py <path>...` — jsx-a11y's `recommended` preset over the
+     product's JSX: static halves of A11Y-2, A11Y-3, A11Y-6, A11Y-8. Needs no setup in
+     the product repo. When it prints `did not run`, the controls it names go to manual
+     verification, never a pass.
    - `python3 checks/a11y-static.py <path>...` — static subset of A11Y-2/3/8.
    - `python3 checks/contrast.py --tokens <globals.css> <path>...` — static subset of A11Y-1.
    Each reads line-local code only: traversal order, computed hit-area, ARIA-state,
