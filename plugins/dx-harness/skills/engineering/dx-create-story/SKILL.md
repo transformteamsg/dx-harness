@@ -23,15 +23,15 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 2. **User story**: who needs what, and why? Format: "As a [user persona], I want [capability], so that [benefit]." The persona is whoever actually uses the product. Do not invent one to fit technical work: if no real user benefits, this is probably a `dx-create-task`, not a story.
 3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
 4. **Open questions**: is anything about these requirements still unclear or undecided (an ambiguous edge case, a policy nobody has settled, a dependency on someone else's decision)? Capture these rather than guessing or blocking creation on an answer now. If genuinely nothing is unresolved, record "None."
-5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour. Step 1b adds to what the author supplies here: do not ask them to produce every edge case unaided.
+5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour. Step 2 adds to what the author supplies here: do not ask them to produce every edge case unaided.
 6. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
 7. **Design assets**: Figma links, screenshots, or a vibe-coded prototype. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
 
-### Step 1b: Read the code for missed edge cases
+### Step 2: Read the code for missed edge cases
 
 The author knows the happy path better than anyone. They cannot be expected to know every way the product already breaks around it. Read the code behind the scope and surface cases their criteria do not cover yet, so the story ships with the edges the author would otherwise find in QA or production.
 
-Look for:
+The scope from Step 1 is the handle: search the repository for the screen, component, or route it names, then read what that code does today. Look for:
 
 - **States the flow can start in**: empty, partially filled, stale, already completed, or mid-way through a previous attempt
 - **Ways the action can fail**: validation rejections, permission denials, timeouts, duplicate or concurrent submissions
@@ -52,7 +52,7 @@ Write confirmed cases into the acceptance criteria as Given-When-Then scenarios.
 
 If the code is not available (no repository to hand, or the scope is not built yet), say so and move on rather than guessing at findings.
 
-### Step 1c: Evaluate for split
+### Step 3: Evaluate for split
 
 After the acceptance criteria are settled, evaluate them before continuing. Check for these signals:
 
@@ -60,17 +60,19 @@ After the acceptance criteria are settled, evaluate them before continuing. Chec
 - **Unrelated starting states**: scenarios have Givens that describe completely different parts of the system
 - **Multiple unrelated outcomes**: the scenarios deliver two capabilities a user would ask for separately, rather than one capability plus its edge cases
 
+Judge the signals on the capability, not on the count of scenarios. An edge case added in Step 2 does not justify a split just because it names a second persona or a different starting state: if it is the same capability seen from another angle, it belongs in this story.
+
 If any signal is present, pause and surface it:
 
 > "These scenarios describe two separate capabilities: [A] and [B]. Creating one issue would make it too large for an engineer or coding agent to implement safely in a single PR. Would you like to create two linked stories instead?"
 
-If the user confirms a split: complete Steps 1 and 1b for each capability separately and create them as two issues. Run Steps 2 and 3 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
+If the user confirms a split: complete Steps 1 and 2 for each capability separately and create them as two issues. Run Steps 5 and 6 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
 
 If the user wants to keep it as one issue: note it explicitly in the out of scope section and continue.
 
-### Step 1d: Identify dependencies from the backlog
+### Step 4: Identify dependencies from the backlog
 
-After the split evaluation, attempt to fetch open issues to surface likely blockers or dependents. These are linked as GitHub relationships after the issue is created (Step 3), not written into the body.
+After the split evaluation, attempt to fetch open issues to surface likely blockers or dependents. These are linked as GitHub relationships after the issue is created (Step 6), not written into the body.
 
 ```sh
 gh issue list --state open --json number,title,body --limit 100
@@ -96,12 +98,12 @@ gh issue list --state open --json number,title,body --limit 100
   >
   > Are any of these actual dependencies, or are they unrelated?"
 
-  Let the author confirm or dismiss each suggestion. Use the confirmed ones to link as GitHub relationships in Step 3. If no related issues are found, proceed without prompting: do not ask the author to confirm a null result.
+  Let the author confirm or dismiss each suggestion. Use the confirmed ones to link as GitHub relationships in Step 6. If no related issues are found, proceed without prompting: do not ask the author to confirm a null result.
 
 - **If the command fails with "command not found" or "'gh' is not recognized"**: skip the automated scan. Ask the author to identify any blocking or dependent issues manually, or confirm "none".
 - **If the command fails for any other reason**: surface the real error and stop.
 
-### Step 2: Preview and confirm
+### Step 5: Preview and confirm
 
 Render the complete issue body in a markdown code block. If the Open Questions section is non-empty, call it out explicitly before asking for confirmation:
 
@@ -109,7 +111,7 @@ Render the complete issue body in a markdown code block. If the Open Questions s
 
 Ask for confirmation before creating the issue either way.
 
-### Step 3: Create the issue
+### Step 6: Create the issue
 
 The title must follow the commit convention from CLAUDE.md: `feat(<scope>): <short description>` using backticks around the scope.
 
@@ -125,7 +127,7 @@ gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-story"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-story*` footer in the body template gives human-readable attribution.
 
-- **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1d as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
+- **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 4 as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 
   ```sh
   # Resolve an issue number to its node ID
