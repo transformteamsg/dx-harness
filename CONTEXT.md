@@ -63,3 +63,11 @@ _Avoid_: Ceiling file, rubric, taste standard
 **Register**:
 A class of surface with its own idea of what good looks like, declared in the quality bar and selected once per product repo in DESIGN.md's Quality bar section; no declaration selects the default. A register may vary a criterion's By-surface rows and thresholds, never its pairings. Distinct from the tone register (IDN-3), which calibrates one product's voice.
 _Avoid_: Surface class, surface register, mode
+
+**Static check**:
+A deterministic check that reads source files only, run from harness-held config with nothing installed in the target repo.
+_Avoid_: Tier 1, static pass, source scan
+
+**Rendered check**:
+A deterministic check that runs against the open page during verify, or against a URL the person supplies; the harness never boots the target app to get one. A control whose rendered check did not run falls back to manual verification — it never silently passes.
+_Avoid_: Tier 2, rendered pass, rendered-DOM tier
