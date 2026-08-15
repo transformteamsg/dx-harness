@@ -943,6 +943,129 @@ def run_self_test():
         "line 'craft' quotes no anchor",
     )
 
+    # Case 24 (assertion 11): a dark frame was captured — the other header value
+    assert_passes(
+        "dark mode graded in the header",
+        PASSING_RECORD.replace("dark mode: N/A", "dark mode: graded"),
+    )
+
+    # Case 25 (assertion 11): the header states no dark-mode condition. N/A is a
+    # truthful outcome and never an error; saying nothing at all is.
+    assert_fails(
+        "header with no dark-mode condition",
+        PASSING_RECORD.replace("  dark mode: N/A", ""),
+        "names no dark-mode condition",
+    )
+
+    # Case 26 (assertion 11): the header names no register
+    assert_fails(
+        "header with no register",
+        PASSING_RECORD.replace("register: product  ", ""),
+        "names no register",
+    )
+
+    # Case 27 (assertion 11): a criterion slug has no line
+    assert_fails(
+        "three criterion lines",
+        PASSING_RECORD.replace(
+            'originality     acceptable  No divergence is '
+            '"A custom pattern where a stack component exists".\n',
+            "",
+        ),
+        "no line for the 'originality' criterion",
+    )
+
+    # Case 28 (assertion 11): a slug the artifact does not declare
+    assert_fails(
+        "criterion slug outside the declared four",
+        PASSING_RECORD.replace(
+            "functionality   strong",
+            'accessibility   strong      "The submit control is disabled" reads well.\n'
+            "functionality   strong",
+        ),
+        "line 'accessibility' names no declared criterion",
+    )
+
+    # Case 29 (assertion 11): one criterion graded twice
+    assert_fails(
+        "one criterion on two lines",
+        PASSING_RECORD.replace(
+            "functionality   strong",
+            'craft           weak        Hover, active, disabled left as browser '
+            "defaults on the row menu.\n"
+            "functionality   strong",
+        ),
+        "names the 'craft' criterion on 2 lines",
+    )
+
+    # Cases 30 and 31 (assertion 11): the minimum span, just above and just
+    # below. Both lines quote the same anchor; the failing one is one character
+    # shorter. The quote marks matter — they keep the shared span from running
+    # into the space the artifact puts before the anchor, which would make the
+    # 16-character case measure 17.
+    for label, anchor, expect_pass in (
+        ("16 characters", "one focal region", True),
+        ("15 characters", "one focal regio", False),
+    ):
+        line = (f'design-quality  acceptable  The dashboard keeps "{anchor}" '
+                f"and nothing competes with it.")
+        record = PASSING_RECORD.replace(
+            'design-quality  acceptable  The roster reads "Dense but not '
+            'cramped" at the 12-row default.',
+            line,
+        )
+        if expect_pass:
+            assert_passes(f"anchor span of {label}", record)
+        else:
+            assert_fails(f"anchor span of {label}", record,
+                         "line 'design-quality' quotes no anchor")
+
+    # Case 32 (assertion 11): lower case where the artifact capitalises
+    assert_passes(
+        "quote case-folded against the artifact",
+        PASSING_RECORD.replace(
+            'No divergence is "A custom pattern where a stack component exists".',
+            "Nothing fails the self-similarity test, and no divergence demands "
+            "to be remembered.",
+        ),
+    )
+
+    # Case 33 (assertion 11): the artifact writes the motion band with an en
+    # dash; a report typed at a terminal writes a hyphen. Both are the same
+    # quote, and the fixture ships the hyphen form.
+    assert_passes(
+        "quote dash-folded against the artifact",
+        PASSING_RECORD.replace(
+            '"150-250ms on a tool surface"', '"150–250ms on a tool surface"'
+        ),
+    )
+
+    # Case 34 (assertion 11): a sentence that wrapped onto a second line still
+    # carries its quote — the block is four criteria, not four physical lines.
+    assert_passes(
+        "wrapped grade sentence keeps its anchor",
+        PASSING_RECORD.replace(
+            'design-quality  acceptable  The roster reads "Dense but not '
+            'cramped" at the 12-row default.',
+            "design-quality  acceptable  The roster holds its rhythm at the "
+            "12-row default and\n"
+            '  reads "Dense but not cramped" rather than airless.',
+        ),
+    )
+
+    # Case 35 (assertion 11): the whole block pasted under a bullet. Indentation
+    # is measured against the header, so an indented paste parses the same.
+    block_lines = [ln for ln in PASSING_RECORD.splitlines()
+                   if ln.startswith(("QUALITY GRADES", "design-quality",
+                                     "originality", "craft", "functionality"))]
+    assert_passes(
+        "block pasted indented under a bullet",
+        PASSING_RECORD.replace(
+            "\n".join(block_lines),
+            "\n".join("  " + ln for ln in block_lines),
+        ),
+    )
+
     checklib.report_self_test(failures, case_count)
 
 
