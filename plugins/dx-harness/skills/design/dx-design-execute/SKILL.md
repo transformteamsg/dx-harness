@@ -99,7 +99,10 @@ started the run spawns it, exactly once, per
 `../../../procedures/design-review.md`. Instead, return the full review bundle to
 the caller: the built changes, the sprint contract (or the one-line intent), the
 approved plan, the component inventory, the in-scope judgment and hybrid controls,
-the waivers applied, and the evidence captured. This is every input reviewer
+the waivers applied, the evidence captured, and the quality-bar register you
+resolved (with the fallback noted, when a declared id resolved to nothing) so the
+caller dispatches the reviewer with the id you graded to, never one it resolved
+again. This is every input reviewer
 dispatch in `../../../procedures/design-review.md` requires; a return of changes
 and evidence alone leaves the caller unable to dispatch the reviewer.
 
@@ -236,7 +239,17 @@ Establish the rest, asking the user only what you cannot infer:
    primary, or secondary and up), or parents? Record it in the sprint contract;
    it scopes `audiences:`-scoped controls for the rest of the loop. If the product
    repo has a `DESIGN.md`, load it now — it calibrates colour/tone/motion for
-   everything downstream. **Any
+   everything downstream. **Resolve the quality-bar register here, once**, from
+   `.dx/design.json`'s `quality_bar.register`; an absent key, an absent section and
+   an absent file all select the default, `product`. The rules are in the harness's
+   `docs/DESIGN-CONTEXT.md`, "Loading rules" — follow them, never restate them, and
+   never prompt anyone to declare a register: silence is a complete answer. A
+   declared id that resolves to nothing falls back to the default and rides the
+   drift banner ("`DESIGN.md` names the register `prodcut`, which the quality bar
+   does not declare; grading against `product`"); it never stops the run, because
+   the ceiling never blocks. Carry the resolved id to the plan summary table's
+   quality-bar row and into the reviewer's dispatch payload — this is the run's
+   only resolution point. **Any
    surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
    page — do not let the page/flow split scope them out.

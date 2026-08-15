@@ -9,9 +9,16 @@ positive, which is why the role exists separately.
 - **Whoever started the run spawns the reviewer, one time per run.** Spawn the
   `dx-design-review` subagent (a genuinely separate agent; do not write the verdict
   yourself) with: the sprint contract, the approved plan, the screenshots, the
-  component inventory, the judgment/hybrid controls in scope, and the absolute path
+  component inventory, the judgment/hybrid controls in scope, the absolute path
   to the harness's `standards/` directory (the reviewer cannot resolve it from the
-  product cwd).
+  product cwd), and **the quality-bar register the builder already resolved**. Pass
+  the id you resolved at intent, and when a declared id resolved to nothing, say so
+  and name the default you fell back to — the reviewer's header line has to be
+  honest about which register it graded against. The reviewer never resolves this
+  itself; that is what makes it impossible for the two of you to grade one surface
+  against different bars, or for a mid-run edit to move the bar under the work.
+  Resolution rules, for whoever resolves: `../docs/DESIGN-CONTEXT.md`, "Loading
+  rules".
 - **If you cannot spawn subagents** (you are yourself a subagent, or running
   unattended), stop and report. The proven pattern is orchestrator dispatch:
   whoever orchestrates you spawns the reviewer and routes its verdict back. Never

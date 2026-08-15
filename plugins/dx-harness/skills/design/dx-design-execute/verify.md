@@ -83,7 +83,9 @@ Run in this order; do not present output to the user while a step is failing:
 3. **Evaluator review** — run the reviewer dispatch in
    `../../../procedures/design-review.md`: it holds who spawns the `dx-design-review`
    subagent, the inputs to pass (contract, approved plan, screenshots, component
-   inventory, in-scope judgment/hybrid controls, and the absolute `standards/` path),
+   inventory, in-scope judgment/hybrid controls, the absolute `standards/` path, and
+   the quality-bar register you resolved at intent — hand over the id you graded to,
+   never an instruction to resolve one),
    the cannot-spawn rule, the verbatim-verdict rule, and the verdict re-check from
    new screenshots. You never write the verdict yourself, and never present
    unverified work as verified while waiting.

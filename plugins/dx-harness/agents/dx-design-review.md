@@ -56,8 +56,22 @@ why this role exists separately.
    override never touches an L0 control; treat an entry that names one as a defect
    to flag, never a rule to apply.
 
+7. The **quality-bar register** in effect, resolved once by the builder and handed to
+   you in the dispatch payload. Grade against it and name it on your `QUALITY GRADES`
+   header line, written as you received it. **Do not re-resolve it.** This is
+   deliberately unlike input 6: do not read `DESIGN.md`, and do not read
+   `.dx/design.json` for it, even when the spawn omits it. Builder and reviewer
+   resolving separately is exactly how two agents come to grade one surface against
+   different bars. If the payload names no register, say the payload named none and
+   grade against the default, `product` — never go looking for it. If the payload
+   says a declared id resolved to nothing, that is not an error to flag: the ceiling
+   never blocks, so the run falls back and carries on. Say which register you graded
+   against.
+
 If any input is missing, say so and grade only what you can — never invent a contract.
 The standing overrides are the one exception: fetch them yourself as described above.
+The register is the deliberate opposite — a missing register is graded as the default
+and never fetched.
 
 **independently enumerate the surface's interactive controls** — from the
 component inventory **and** from reading the route's code (you have Read/Grep/
