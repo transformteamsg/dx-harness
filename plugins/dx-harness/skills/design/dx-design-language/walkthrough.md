@@ -1,6 +1,6 @@
 # The walkthrough (companion to SKILL.md)
 
-One ordered pass through the ten sections on a first run; a targeted single-section
+One ordered pass through the eleven sections on a first run; a targeted single-section
 edit on a re-run. Confirm-or-correct is the approval: what the person confirms is
 what gets written.
 
@@ -28,8 +28,8 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
   the person confirm or correct. In interview-first mode, ask the guiding questions
   instead; record decisions with no code target with a "not yet implemented" note
   plus a fix-todo.
-- **Interview** for Essence, Voice & Tone, and Guardrails. These cannot be mined;
-  ask, listen, and draft in the person's words.
+- **Interview** for Essence, Voice & Tone, Quality bar, and Guardrails. These cannot
+  be mined; ask, listen, and draft in the person's words.
 - **Skip** = portfolio default, said out loud: "Skipping Motion: portfolio defaults
   now apply to motion." The assembled file then has no such section.
 - **Defer** = one tracker issue for that section: title `DESIGN.md: <section>`,
@@ -41,7 +41,7 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
   cited, never a restated rule. Layout system bullets are machine-read; keep them
   exact (`- key: value`).
 
-## The ten sections, in order
+## The eleven sections, in order
 
 1. **Essence** (interview). What should this product feel like, in one sentence?
    When two good options compete, which instinct wins?
@@ -55,14 +55,22 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
    ease? Signature moves only; MOT, SLP, and A11Y controls bind unstated.
 6. **Voice & Tone** (interview). Register? Person? Locale? What do empty states do?
    This product's weighting of content §6 only.
-7. **Layout system** (mine, then confirm; machine-read, bullets kept exact).
+7. **Quality bar** (interview). Which class of surface is this product — a dense
+   task tool someone works in, or something people sit and read? Read the Registers
+   section of `../../../standards/quality-bar.md` (that section only, never the whole
+   file), offer the registers it declares by name and by what each says good looks
+   like, and write the chosen one as a single `- register:` bullet. At most one.
+   Skipping is a real answer and takes the default; say which default they get, and
+   never press for a choice. The ceiling has no override grammar, so there is nothing
+   else to record here.
+8. **Layout system** (mine, then confirm; machine-read, bullets kept exact).
    Columns, gutter, margins, breakpoints, max content width?
-8. **Components** (mine, then confirm). Manifest path? Product-level component
+9. **Components** (mine, then confirm). Manifest path? Product-level component
    decisions (pairing rules, fallback conventions)?
-9. **Guardrails** (interview). What must an agent never do in this product? What
-   realities does no catalogue control cover? Ten bullets max, never restating a
-   control.
-10. **Overrides**. Starts empty; filled only by the waiver promotion flow or a
+10. **Guardrails** (interview). What must an agent never do in this product? What
+    realities does no catalogue control cover? Ten bullets max, never restating a
+    control.
+11. **Overrides**. Starts empty; filled only by the waiver promotion flow or a
     volunteered deviation (SKILL.md). Never ask whether the team "has any
     deviations". If one is volunteered, record it as a structured line in the
     grammar with its reason (and approver on L1), and let the generator validate it.
@@ -84,4 +92,4 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
 When `DESIGN.md` already exists, default to a targeted edit: name the section the
 person wants changed (or the waiver being promoted), run just that section's
 mechanics, preview only the changed section in context, then write and regenerate as
-above. Do not re-walk the other nine sections unless asked.
+above. Do not re-walk the other ten sections unless asked.

@@ -38,6 +38,10 @@ root fails with file-not-found.
   never hand-edits it.
 - An absent DESIGN.md, or an absent section, means portfolio defaults and is a valid
   state. Say so; never treat it as a failure.
+- **Read the register list, never the whole quality bar.** The Quality bar section
+  takes one question, so it reads the Registers section of
+  `../../../standards/quality-bar.md` and stops there. Loading the whole ceiling to
+  ask one question would cost every session hundreds of lines it never uses.
 
 ## Start of session: drift check
 
@@ -65,7 +69,7 @@ clean check.
    correct each minable section), **interview-first** on an inconsistent or token-less
    one. The person can overrule either verdict.
 2. **Walkthrough.** Run `walkthrough.md` (beside this file). First run: one ordered
-   pass through the ten sections. Re-runs default to a targeted single-section edit;
+   pass through the eleven sections. Re-runs default to a targeted single-section edit;
    the two guided entry points are a human-asked change and a waiver promotion.
 3. **Preview and write.** The per-section confirm-or-correct is the approval. Render
    one preview of the assembled file, get a yes, then write `DESIGN.md`, regenerate
