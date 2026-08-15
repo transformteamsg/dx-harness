@@ -478,7 +478,7 @@ controls:
     source: DX-DS
     title: Every empty-state view unambiguously signals "no content exists" — distinct from loading, error, or permissions failure — through a heading, explanatory subtext, and the absence of loading chrome such as skeleton rows or spinners
     tier: L1
-    check: hybrid
+    check: judgment
     phase: [plan, implement, verify]
     applies_to: [page, component]
     verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
@@ -552,7 +552,7 @@ controls:
     source: DX-DS
     title: A multi-step or data-entry task offers a non-destructive exit at every step, and in-progress work is preserved or explicitly discarded on interruption — never silently lost
     tier: L1
-    check: hybrid
+    check: judgment
     phase: [plan, implement, verify]
     applies_to: [flow]
     verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
@@ -900,7 +900,7 @@ controls:
     source: DX-DS
     title: Interface motion is 100-300ms with standard easing; no decorative motion on critical paths
     tier: L2
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Animation durations in 100-300ms with standard easing; none on critical paths beyond functional feedback"
@@ -908,6 +908,7 @@ controls:
     fails_when:
       - animations over 300ms on task flows
       - transition-all
+    detail: controls/mot-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # MOT-2: ratchet PROPOSAL 2026-07-12 — motion tokens, from the site's own
@@ -919,7 +920,7 @@ controls:
     title: Motion values come from the declared motion token set — durations and easings are never hardcoded in component code
     tier: L2
     status: proposed
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [component, page]
     verify: "Grep transition/animation values in component code: every duration and easing resolves to a motion token (--motion-*/--ease-* or their declared code mirror); no raw ms or cubic-bezier literals outside the token definitions"
@@ -930,6 +931,7 @@ controls:
       - the narrative tier (--motion-story) used on interface or task UI
     enforced: manual
     gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
+    detail: controls/mot-2.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for
@@ -958,13 +960,14 @@ controls:
     source: DX-DS
     title: Product lockups and logos render only from approved assets; no recreations
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page]
     verify: "Logo/lockup files resolve to the approved asset library; no inline redraws"
     waiver: documented
     fails_when:
       - rebuilt or distorted logo marks
+    detail: controls/idn-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # IDN-2..4: branding controls activated via the ratchet 2026-07-06 (plan 057),
@@ -975,7 +978,7 @@ controls:
     source: DX-DS
     title: Product icons render only from the approved product-icon family; no ad-hoc, redrawn, or regenerated icons
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Icon files resolve to the approved product-icon set (the guideline's icon family); no inline-drawn or regenerated marks; new marks are pre-verified via the Icon Generator before entering the set"
@@ -984,6 +987,7 @@ controls:
       - a redrawn, distorted, or regenerated product-icon mark
       - a per-product background colour or gradient applied to the icon container
       - wordmarks, photos, shadows, or gloss inside the icon
+    detail: controls/idn-2.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: IDN-3
@@ -1026,13 +1030,14 @@ controls:
     source: DX-DS
     title: No purple/violet gradient palettes, cyan-on-dark theming, or glow accents
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Stylesheet scan: no purple/violet gradient palettes, no cyan-on-dark theming, no glow box-shadow accents"
     waiver: documented
     fails_when:
       - the default AI aesthetic anywhere in product UI
+    detail: controls/slp-1.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-2
@@ -1078,39 +1083,42 @@ controls:
     source: DX-DS
     title: No icon-tile-above-heading feature-card template; no identical card grids as default layout
     tier: L2
-    check: deterministic
+    check: judgment
     phase: [plan, implement, verify]
     applies_to: [page]
     verify: "Layout scan: no icon-tile-above-heading card template; no grid of identical cards as the default page layout"
     waiver: rationale
     fails_when:
       - the universal AI feature-card shape repeated in a grid
+    detail: controls/slp-5.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-6
     source: DX-DS
     title: Adjacent type-scale steps differ by at least 1.25x; no flat hierarchy
     tier: L2
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page]
     verify: "Adjacent steps used on the page differ by ratio >= 1.25; flag flat heading/subheading/body hierarchies"
     waiver: rationale
     fails_when:
       - heading/subheading/body at nearly the same size
+    detail: controls/slp-6.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-7
     source: DX-DS
     title: Spacing has rhythm — related items grouped tighter than unrelated ones
     tier: L2
-    check: deterministic
+    check: judgment
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Spacing scan: related items grouped tighter than unrelated; flag a single spacing value used uniformly"
     waiver: rationale
     fails_when:
       - one spacing value used everywhere
+    detail: controls/slp-7.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-8
@@ -1216,7 +1224,7 @@ controls:
     source: DX-DS
     title: "Body-text columns cap at a comfortable measure — target ~66ch, never above 80ch (WCAG 1.4.8); full-bleed running text is a finding"
     tier: L2
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"

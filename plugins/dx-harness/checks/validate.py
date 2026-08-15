@@ -772,12 +772,8 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
 # build; an entry that is not a catalog id at all is an ERROR. The list is
 # temporary: #162 removes the last entries and deletes it.
 GAP_GRANDFATHERED = {
-    # #150, the relabels: four controls relabel to judgment, which closes the
-    # gap by definition, and three take a written reason.
-    "CMP-4": "relabels to judgment in #150",
-    "CMP-8": "relabels to judgment in #150",
-    "SLP-5": "relabels to judgment in #150",
-    "SLP-7": "relabels to judgment in #150",
+    # #150, the relabels: the four judgment relabels are done, so their entries
+    # are gone. Three accepted gaps still wait for their written reasons.
     "CMP-5": "accepted gap; its reason lands with the relabels in #150",
     "LAY-1": "accepted gap; its reason lands with the relabels in #150",
     "TYP-5": "accepted gap; its reason lands with the relabels in #150",
@@ -1734,6 +1730,56 @@ def run_self_test():
     if want != got:
         failures.append(f"FAIL MOT-2 carries a reason and no script: want: {want!r}; "
                         f"got: {got!r}")
+
+    # ── The 11 relabels (#150) ───────────────────────────────────────────
+    # The triage found 11 controls whose label promised a check no script can
+    # deliver. Asserted against the live catalog, with the detail file each
+    # relabel forces, because both requirements have to hold in the same run:
+    # a judgment or hybrid control with no detail file fails validate.py AND
+    # check-standards.mjs, and the .mjs gate runs first in prebuild. Reverting
+    # one half of the pair fails here rather than in a red build.
+    relabelled = {
+        "SLP-1": "hybrid", "SLP-6": "hybrid", "IDN-1": "hybrid",
+        "IDN-2": "hybrid", "LAY-4": "hybrid", "MOT-1": "hybrid",
+        "MOT-2": "hybrid",
+        "SLP-5": "judgment", "SLP-7": "judgment", "CMP-4": "judgment",
+        "CMP-8": "judgment",
+    }
+    live_by_id = {c.get("id"): c for c in live_controls}
+    case_count += 1
+    want = (7, 4, [])
+    off_label, missing_detail = [], []
+    for cid, expected in sorted(relabelled.items()):
+        control = live_by_id.get(cid, {})
+        if control.get("check") != expected:
+            off_label.append(f"{cid}={control.get('check')!r} want {expected!r}")
+        detail = control.get("detail")
+        if not detail or not os.path.isfile(
+                os.path.join(REPO_ROOT, "standards", detail)):
+            missing_detail.append(f"{cid} detail={detail!r}")
+    got = (sum(1 for v in relabelled.values() if v == "hybrid"),
+           sum(1 for v in relabelled.values() if v == "judgment"),
+           off_label + missing_detail)
+    if want != got:
+        failures.append(f"FAIL the 11 relabels carry their label and a detail "
+                        f"file: want: {want!r}; got: {got!r}")
+
+    # The four judgment relabels close their gap by derivation: with no
+    # enforced: written, effective_enforcement resolves judgment to evaluator,
+    # so gap_required is False and no reason is owed. Asserting the derivation
+    # rather than the absence catches an 'enforced: evaluator' written back
+    # into the catalog, which standards/README.md forbids.
+    case_count += 1
+    want = [(cid, "evaluator", True, False) for cid in
+            ("CMP-4", "CMP-8", "SLP-5", "SLP-7")]
+    got = []
+    for cid in ("CMP-4", "CMP-8", "SLP-5", "SLP-7"):
+        control = live_by_id.get(cid, {})
+        enforced, defaulted = effective_enforcement(control)
+        got.append((cid, enforced, defaulted, gap_required(control)))
+    if want != got:
+        failures.append(f"FAIL the judgment relabels derive evaluator and owe no "
+                        f"gap: want: {want!r}; got: {got!r}")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

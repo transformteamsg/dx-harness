@@ -3,7 +3,7 @@ id: LAY-4
 source: DX-DS
 title: "Body-text columns cap at a comfortable measure — target ~66ch, never above 80ch (WCAG 1.4.8); full-bleed running text is a finding"
 tier: L2
-check: deterministic
+check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
 verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"

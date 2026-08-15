@@ -3,7 +3,7 @@ id: CMP-4
 source: DX-DS
 title: Every empty-state view unambiguously signals "no content exists" — distinct from loading, error, or permissions failure — through a heading, explanatory subtext, and the absence of loading chrome such as skeleton rows or spinners
 tier: L1
-check: hybrid
+check: judgment
 phase: [plan, implement, verify]
 applies_to: [page, component]
 verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"

@@ -3,7 +3,7 @@ id: CMP-8
 source: DX-DS
 title: A multi-step or data-entry task offers a non-destructive exit at every step, and in-progress work is preserved or explicitly discarded on interruption — never silently lost
 tier: L1
-check: hybrid
+check: judgment
 phase: [plan, implement, verify]
 applies_to: [flow]
 verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
