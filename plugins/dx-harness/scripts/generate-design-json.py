@@ -135,17 +135,26 @@ def _clean_key(k):
     return k.strip().strip("`*").strip()
 
 
-def parse_fields(body):
-    """Return the `- key: value` fields in `body`, in document order (comments pre-stripped)."""
-    fields = {}
+def field_lines(body):
+    """Every `- key: value` bullet in `body` as a (key, value) pair, in document
+    order, repeats included (comments pre-stripped). `parse_fields` collapses these
+    into a dict; a consumer that must see how many times a key was written, or which
+    one came first, reads them here."""
+    pairs = []
     for line in body.splitlines():
         m = FIELD_RE.match(line)
         if not m:
             continue
         key = _clean_key(m.group(1))
         if key:
-            fields[key] = coerce_value(m.group(2))
-    return fields
+            pairs.append((key, coerce_value(m.group(2))))
+    return pairs
+
+
+def parse_fields(body):
+    """The `- key: value` fields in `body` as a dict (comments pre-stripped). A key
+    written twice keeps its last value; `field_lines` is where both survive."""
+    return dict(field_lines(body))
 
 
 def _is_field_line(line):
