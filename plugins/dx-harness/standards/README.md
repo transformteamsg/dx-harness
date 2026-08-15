@@ -10,6 +10,17 @@ The normative source is the **DX Design Standard (DX-DS)**. The litmus test for
 what belongs here: *if you can't check it, it's a principle or a guideline — not a
 standard.* Standards are the only layer the harness can enforce automatically. Run `python3 checks/validate.py` to verify the catalog, detail files, and all cross-references are consistent.
 
+## The ceiling
+
+The litmus test above sends a lot of real design judgment away, and it had nowhere to
+go. It does now: `quality-bar.md`, beside this file, is the **quality bar** — what good
+looks like once no control is broken. It grades four criteria strong / acceptable / weak
+and **never blocks**. Its anchors — the pairings, By-surface rows and thresholds a grade
+quotes — carry no ids and never become findings, because an id-shaped reference in a
+report would send the reader here looking for a control that does not exist. A ceiling
+miss worth blocking on is ratchet evidence for a new control, taken to `catalog.yaml`
+with the observed failure attached (authoring rule 4), never promoted in place.
+
 ## Schema
 
 ```yaml
