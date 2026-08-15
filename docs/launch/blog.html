@@ -1,0 +1,411 @@
+<title>Launching dx-harness</title>
+<style>
+  /* dx-harness launch post — one light world (brand decision 2026-08-13).
+     Tokens mirror app/globals.css; lime is figure/mark accent only. */
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --ink: #18181b;
+    --body: #3f3f46;
+    --muted: #67676f;
+    --border: #e4e4e7;
+    --fill: #f4f4f5;
+    --link: #0064ff;
+    --lime: #bdee63;
+    --lime-ink: #2a3410;
+    --display: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    --body-face: "Inter", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: var(--body-face);
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 72px 24px 96px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 22px; height: 10px;
+    background: var(--lime);
+    border-radius: 2px;
+    flex: none;
+  }
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(34px, 6vw, 46px);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    color: var(--ink);
+    margin: 0 0 20px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin: 0 0 12px;
+    max-width: 58ch;
+  }
+  .byline {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 56px;
+  }
+  h2 {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 640;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 64px 0 16px;
+    text-wrap: balance;
+  }
+  p { margin: 0 0 18px; max-width: 66ch; }
+  strong { color: var(--ink); font-weight: 600; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover, a:focus-visible { text-decoration: underline; }
+  a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 2px; }
+
+  /* Four parts */
+  .parts { display: grid; gap: 0; margin: 28px 0 8px; border-top: 1px solid var(--border); }
+  .part {
+    display: grid;
+    grid-template-columns: 172px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .part dt {
+    font-family: var(--display);
+    font-weight: 620;
+    font-size: 15.5px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .part dt .tag {
+    display: block;
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+  .part dd { margin: 0; font-size: 15.5px; line-height: 1.6; }
+  @media (max-width: 560px) {
+    .part { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* Figures */
+  figure { margin: 40px -12px; }
+  @media (min-width: 900px) { figure { margin: 44px -60px; } }
+  figure img {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  figcaption {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-top: 12px;
+    padding-left: 14px;
+    position: relative;
+    max-width: 70ch;
+  }
+  figcaption::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 5px;
+    width: 6px; height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+  }
+  .ph {
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .ph .chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: var(--lime);
+    color: var(--lime-ink);
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .ph .note { font-size: 14px; color: var(--muted); max-width: 44ch; }
+
+  /* Code */
+  pre {
+    background: var(--fill);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 0 0 18px;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--fill);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--ink);
+  }
+  pre code { background: none; border: none; padding: 0; }
+
+  /* Try-it steps */
+  ol.steps { padding-left: 0; margin: 24px 0 8px; list-style: none; counter-reset: step; }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 26px 44px;
+  }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 1px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--surface);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  ol.steps > li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 12.5px; top: 32px; bottom: 4px;
+    width: 1px;
+    background: var(--border);
+  }
+  ol.steps p { margin-bottom: 10px; }
+
+  .domain {
+    font-family: var(--mono);
+    background: var(--fill);
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--ink);
+    font-size: 0.9em;
+  }
+  .footer {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 14.5px;
+    color: var(--muted);
+    max-width: 66ch;
+  }
+</style>
+
+<div class="page">
+  <p class="eyebrow">dx-harness &middot; official launch &middot; v0.4</p>
+
+  <h1>Design in code, with confidence</h1>
+
+  <p class="standfirst">
+    dx-harness is a Claude Code plugin that teaches your agent the design
+    standard it never had. It is live today for every product repo in DXD.
+  </p>
+  <p class="byline">DXD Xperience Studio &middot; August 2026</p>
+
+  <figure>
+    <div class="ph">
+      <span class="chip">image 1 — hero</span>
+      <span class="note">The animated harness mark from the logo grid generator: the compass drawing itself, lime on light.</span>
+    </div>
+  </figure>
+
+  <h2>Your agent can build the interface. It can't tell if it's good.</h2>
+
+  <p>
+    Designers here design in code now. Real screens, in the product repo, built
+    in conversation with an agent. The agent is fast, and it will produce an
+    interface for any prompt you give it.
+  </p>
+  <p>
+    What it won't hold is a bar. Ask twice and you get two different answers.
+    It has read the whole internet and learned the average of it, and the
+    average is slop: purple gradients, cards nested in cards, copy that says
+    <!-- dx-waive SLP-9 reason="cites the buzzword as a specimen of slop, not as copy" -->
+    "streamline" and means nothing. It also knows nothing about your product.
+    Your colour, your voice, the reason your buttons look the way they do.
+  </p>
+  <p>
+    We stopped trying to fix that with better prompting. We fixed the context instead.
+  </p>
+
+  <h2>What ships today</h2>
+
+  <p>
+    One plugin. Install it in a product repo and everyone who opens Claude Code
+    there works against the same standard: designer, engineer, or agent. Four
+    parts do the work.
+  </p>
+
+  <dl class="parts">
+    <div class="part">
+      <dt>The orchestrator<span class="tag">skill &middot; dx-design</span></dt>
+      <dd>You describe what you want in plain language. It asks what a senior
+      designer would ask, then routes the work to specialists for copy, flow,
+      pattern, motion and polish. No command names to remember.</dd>
+    </div>
+    <div class="part">
+      <dt>The control catalog<span class="tag">agent context &middot; shared</span></dt>
+      <dd>70 rules for what good interfaces do, written to be checked. Scripts
+      measure what scripts can measure: contrast, tokens, missing labels. A
+      reviewer judges the rest against written criteria. Eleven of the rules
+      name the default AI aesthetic as violations, each with a number.</dd>
+    </div>
+    <div class="part">
+      <dt>DESIGN.md<span class="tag">agent context &middot; your product</span></dt>
+      <dd>The catalog carries what is true everywhere. DESIGN.md carries what
+      is true of your product: its colour, its type, its voice, its standing
+      exceptions. The harness generates it and keeps it current, so one plugin
+      serves many products without flattening them into one look.</dd>
+    </div>
+    <div class="part">
+      <dt>The design review<span class="tag">skill &middot; auto-triggered</span></dt>
+      <dd>A separate reviewer grades the finished work against the catalog and
+      your DESIGN.md, with evidence rules: a state nobody saw is a state
+      nobody verified. The agent that built the screen never marks its own work.</dd>
+    </div>
+  </dl>
+
+  <h2>How a session runs</h2>
+
+  <p>
+    You open Claude Code in your repo and type the screen you want: "design a
+    student profile page". The orchestrator reads the intent, loads the catalog
+    and your DESIGN.md, asks its questions, and runs the specialists. When the
+    work is done, the review checks the result against the same two context
+    files the session started from. Context in at the start, checked against at
+    the end.
+  </p>
+
+  <figure>
+    <img src="./assets/harness-architecture.png" alt="Architecture sketch of the harness: a context block holding the control catalog, primitives and design.md on the left; a human triggers skills in the centre; the dx-design orchestrator fans out to specialist skills on the right, with curated external skills beyond them.">
+    <figcaption>The working sketch. Context on the left stays in the harness
+    and your repo; the orchestrator in the centre routes your intent to the
+    specialist skills on the right. Skill names shown are from an early
+    draft.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="ph">
+      <span class="chip">image 3 — before / after</span>
+      <span class="note">The same brief with and without the harness, from the landing page slider.</span>
+    </div>
+  </figure>
+
+  <h2>What keeps it honest</h2>
+
+  <p>
+    Standards documents rot. This one is wired so it can't rot quietly. The
+    site that documents the catalog reads the same YAML file the checks
+    enforce. A validator fails the build when any doc drifts from the catalog.
+    When a rule doesn't fit your case, you waive it with a written reason, and
+    a waiver that keeps recurring becomes a proposal to change the rule.
+  </p>
+  <p>
+    The first end-to-end run found real gaps in our own checks: a validator
+    that skipped moved files, a contrast check that failed correct code. We
+    fixed the checks and kept the findings as decision records. The standard
+    gets stricter the same way code does: by review.
+  </p>
+
+  <figure>
+    <div class="ph">
+      <span class="chip">image 4 — the skills</span>
+      <span class="note">The six skills as characters: orchestrator, copy, pattern, polish, executor, reviewer. Grid, no hierarchy.</span>
+    </div>
+  </figure>
+
+  <h2>Try it on your repo</h2>
+
+  <p>
+    The harness runs where Claude Code runs: the CLI, the desktop app, and the
+    web app. Docs and quick start live at
+    <a href="#"><span class="domain">https://dx-harness.example</span></a>
+    (final domain to follow).
+  </p>
+
+  <ol class="steps">
+    <li>
+      <p><strong>Install the plugin.</strong> In Claude Code, in your product repo:</p>
+      <pre><code>/plugin marketplace add transformteamsg/dx-harness
+/plugin install dx-harness@dx-harness</code></pre>
+      <p>On Claude Desktop and the web app, add the marketplace and install
+      from the plugin directory. No command line needed.</p>
+    </li>
+    <li>
+      <p><strong>Run setup once.</strong> The design checks need Python&nbsp;3 and
+      PyYAML. <code>/dx-harness:dx-design-setup</code> walks you through the
+      checklist and generates your repo's DESIGN.md.</p>
+    </li>
+    <li>
+      <p><strong>Type what you want to build.</strong> "Design the empty state
+      for the marks page." The orchestrator takes it from there. To browse all
+      21 skills, type <code>/dx</code> and they surface.</p>
+    </li>
+  </ol>
+
+  <figure>
+    <div class="ph">
+      <span class="chip">image 5 — quick start</span>
+      <span class="note">Screen recording or still: the install commands and the first prompt in Claude Code.</span>
+    </div>
+  </figure>
+
+  <p class="footer">
+    Built in DXD Xperience Studio, for anyone who ships interfaces with an
+    agent. The harness is open source at
+    <a href="https://github.com/transformteamsg/dx-harness">github.com/transformteamsg/dx-harness</a>.
+    Tell us what breaks in #dx-harness, and what you build with it.
+  </p>
+</div>
