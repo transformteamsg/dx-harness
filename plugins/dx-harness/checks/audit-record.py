@@ -164,7 +164,7 @@ def find_ledger_table(body):
 # are audited, never the artifact they are graded against. Same rule as
 # waiver-reconcile's catalogue tiers.
 QUALITY_BAR_PATH = os.path.join(REPO_ROOT, "standards", "quality-bar.md")
-QUALITY_BAR_REL = os.path.join("standards", "quality-bar.md")
+QUALITY_BAR_REL = "standards/quality-bar.md"  # for messages, as validate.py writes it
 _VALIDATE_PATH = os.path.join(_CHECKS_DIR, "validate.py")
 
 GRADES_HEADER = "QUALITY GRADES"
