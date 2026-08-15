@@ -16,6 +16,9 @@ design-ui loop and the TEMPLATE.md structure:
  10. Verify verdict carries a verification ledger (| Control | Method |
      Evidence | table); each method is script / manual / unverified, and a
      manual or unverified row states its evidence/reason.
+ 11. The QUALITY GRADES block is one header line naming the register and the
+     dark-mode condition, plus one line per criterion slug, and every grade
+     sentence quotes a verbatim span of standards/quality-bar.md.
 
 Usage:
   python3 checks/audit-record.py [record.md ...]   # default: all
@@ -152,6 +155,171 @@ def find_ledger_table(body):
                 return header, rows
             current = []
     return None, []
+
+
+# ── Quality-bar anchors (assertion 11) ─────────────────────────────────────
+
+# The quality bar ships with the harness, never with the product repo, so it
+# always resolves from the module REPO_ROOT: `--repo-root` moves which records
+# are audited, never the artifact they are graded against. Same rule as
+# waiver-reconcile's catalogue tiers.
+QUALITY_BAR_PATH = os.path.join(REPO_ROOT, "standards", "quality-bar.md")
+QUALITY_BAR_REL = os.path.join("standards", "quality-bar.md")
+_VALIDATE_PATH = os.path.join(_CHECKS_DIR, "validate.py")
+
+GRADES_HEADER = "QUALITY GRADES"
+
+# The shortest verbatim span that counts as quoting an anchor, measured against
+# the live artifact. The shortest complete pairing label is 18 characters ("Calm
+# but not empty") and the shortest threshold anchor is 39, so 16 admits every
+# complete anchor with headroom, and keeps working if a future pairing label
+# comes in shorter. The longest accidental overlap measured between a grade
+# sentence that quotes nothing and the file is 15 ("for a per-row"), so 16 sits
+# just above coincidence. Going higher rejects honest quoting: at 19 the
+# shortest pairing label stops qualifying, and so does the paraphrase-plus-
+# short-quote pattern the artifact encourages ("one focal region", 16).
+MIN_ANCHOR_SPAN = 16
+
+_DASH_FOLD = str.maketrans({"–": "-", "—": "-"})
+_MARKUP_RE = re.compile(r"[*_`|]")
+_WHITESPACE_RE = re.compile(r"\s+")
+_REPORT_LABEL_RE = re.compile(r"^[A-Z]{3,}")
+_REGISTER_RE = re.compile(r"register:\s*\S", re.IGNORECASE)
+_DARK_MODE_RE = re.compile(r"dark mode:\s*(graded|n/?a)", re.IGNORECASE)
+_TOKEN_TRIM = ":.,;—–-"
+
+_ANCHOR_CACHE = {}
+
+
+def normalise_anchor_text(text):
+    """Fold a grade sentence and the artifact the same way, so an honest quote
+    survives the trip through a terminal.
+
+    Case-folded, en/em dashes folded to an ASCII hyphen, whitespace runs
+    collapsed, markdown emphasis and table pipes dropped. All four are load
+    bearing, not cosmetic: the artifact capitalises "Self-similarity test" while
+    a report writes it lower case, and it writes the motion band with an en dash
+    while a report typed at a terminal uses a hyphen. Without folding, both
+    honest quotes fail."""
+    text = text.translate(_DASH_FOLD)
+    text = _MARKUP_RE.sub("", text)
+    return _WHITESPACE_RE.sub(" ", text).casefold()
+
+
+def _load_validate():
+    """`validate.py`, for its `frontmatter` reader.
+
+    The quality bar's frontmatter already has exactly one parser in this layer —
+    `validate.py`, where [QUALITY-SYNC] and [REGISTER-SYNC] read it. A second one
+    here could disagree with it about the same file, which is the failure a
+    shared reader exists to prevent, so this imports it by path the way
+    validate.py imports the DESIGN.md parser rather than growing its own.
+    Returns None when the module cannot be loaded (it needs PyYAML); the caller
+    turns that into an ERROR rather than a silent pass."""
+    try:
+        spec = importlib.util.spec_from_file_location("_dx_validate",
+                                                      _VALIDATE_PATH)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    except (OSError, ImportError, SyntaxError):
+        return None
+
+
+def _read_quality_bar():
+    """(criteria, grades, spans) from the harness's quality bar, or None."""
+    validate = _load_validate()
+    if validate is None:
+        return None
+    try:
+        with open(QUALITY_BAR_PATH, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError:
+        return None
+    front = validate.frontmatter(text) or {}
+    criteria, grades = front.get("criteria"), front.get("grades")
+    if not isinstance(criteria, list) or not isinstance(grades, list):
+        return None
+    normalised = normalise_anchor_text(text)
+    spans = {normalised[i:i + MIN_ANCHOR_SPAN]
+             for i in range(len(normalised) - MIN_ANCHOR_SPAN + 1)}
+    return ([str(c) for c in criteria],
+            {str(g).casefold() for g in grades},
+            spans)
+
+
+def quality_bar_anchors():
+    """Memoised `_read_quality_bar` — the artifact is ~30 KB and every record
+    audited in one run measures against the same spans."""
+    if "value" not in _ANCHOR_CACHE:
+        _ANCHOR_CACHE["value"] = _read_quality_bar()
+    return _ANCHOR_CACHE["value"]
+
+
+def _criterion_tokens(line):
+    """(slug, grade) from a criterion line's first two words, punctuation
+    trimmed, so `craft acceptable …` and `craft: acceptable. …` read alike."""
+    parts = line.lstrip("-*• ").split()
+    slug = parts[0].strip(_TOKEN_TRIM).casefold() if parts else ""
+    grade = parts[1].strip(_TOKEN_TRIM).casefold() if len(parts) > 1 else ""
+    return slug, grade
+
+
+def grade_sentence(line):
+    """The reasoning half of a criterion line — slug and grade removed, so
+    neither can supply the quoted span by accident."""
+    parts = line.lstrip("-*• ").split(None, 2)
+    return parts[2] if len(parts) > 2 else ""
+
+
+def quotes_an_anchor(sentence, spans):
+    """True when the sentence shares a normalised span of at least
+    MIN_ANCHOR_SPAN characters with the quality bar. Comparing fixed-width
+    windows against a prebuilt set answers the threshold question exactly, and
+    in one pass over the sentence rather than a full longest-common-substring."""
+    normalised = normalise_anchor_text(sentence)
+    return any(normalised[i:i + MIN_ANCHOR_SPAN] in spans
+               for i in range(len(normalised) - MIN_ANCHOR_SPAN + 1))
+
+
+def find_quality_grades_block(body, criteria, grades):
+    """Return (header, entries, unexpected) for the QUALITY GRADES block in
+    `body`, or (None, [], []) when the block is absent.
+
+    `entries` is a list of (slug, line) in the order written, with wrapped
+    sentences joined back onto their criterion line. `unexpected` names any
+    criterion-shaped line whose slug the artifact does not declare. A line
+    counts as a criterion line when its first word is a slug and its second is a
+    grade — a pair no prose line produces by accident. Indentation is measured
+    against the header, so a block pasted wholesale under a bullet parses the
+    same as one at column 0."""
+    lines = body.splitlines()
+    start = next((i for i, ln in enumerate(lines) if GRADES_HEADER in ln), None)
+    if start is None:
+        return None, [], []
+
+    header = lines[start]
+    base_indent = len(header) - len(header.lstrip())
+    entries, unexpected = [], []
+    for raw in lines[start + 1:]:
+        stripped = raw.strip()
+        if not stripped:
+            continue
+        at_base = (len(raw) - len(raw.lstrip())) <= base_indent
+        if at_base and (_REPORT_LABEL_RE.match(stripped)
+                        or stripped[0] in "#|"
+                        or stripped.startswith("```")):
+            break  # the next report section, a table, or the closing fence
+        slug, grade = _criterion_tokens(stripped)
+        if grade in grades:
+            if slug in criteria:
+                entries.append([slug, stripped])
+            else:
+                unexpected.append(slug)
+            continue
+        if entries:
+            entries[-1][1] += " " + stripped  # a wrapped sentence
+    return header, [(slug, line) for slug, line in entries], unexpected
 
 
 def audit_record(text, name, repo_root):
@@ -320,6 +488,83 @@ def audit_record(text, name, repo_root):
                 if m == "unverified" and not evidence.strip():
                     messages.append(
                         f"ledger row '{control}' is 'unverified' with no reason"
+                    )
+
+    # ── 11. QUALITY GRADES quotes the anchor that decided each grade ──────────
+    # The quoted-anchor rule, mechanically: every criterion line must contain a
+    # verbatim span of standards/quality-bar.md, so an invented or rotted quote
+    # cannot pass as a grade's reasoning. Absence of the block is assertion 4's
+    # message and is never repeated here.
+    #
+    # This exits 1, and that is consistent with "the ceiling never blocks". That
+    # rule governs DESIGN MISSES — a weak grade, a missed threshold, an anchor a
+    # surface did not reach. None of those may become a BLOCKING or ADVISORY
+    # finding, and none of them is checked here: this reads the record, never the
+    # surface, and it has no opinion about which grade a line carries. A
+    # fabricated or rotted quote is a process failure of the RECORD, the same
+    # family as a missing VERDICT: line, a summary pasted in place of the
+    # verbatim verdict, or a manual ledger row with no evidence — all of which
+    # this script already exits 1 on. Record integrity is not design judgment, so
+    # do not "fix" this by demoting it to advisory; there is no advisory channel
+    # here to demote it to.
+    if verdict_section is not None and GRADES_HEADER in verdict_section:
+        anchors = quality_bar_anchors()
+        if anchors is None:
+            # A check that did not run never silently passes.
+            messages.append(
+                f"QUALITY GRADES could not be checked: {QUALITY_BAR_REL} is "
+                f"unreadable, or its frontmatter declares no criteria and grades "
+                f"— fix the harness install rather than trusting the block"
+            )
+        else:
+            criteria, grades, spans = anchors
+            header, entries, unexpected = find_quality_grades_block(
+                verdict_section, criteria, grades
+            )
+            slugs = ", ".join(criteria)
+
+            if not _REGISTER_RE.search(header):
+                messages.append(
+                    "QUALITY GRADES header names no register — write "
+                    "'QUALITY GRADES  register: <id>  dark mode: graded | N/A', "
+                    "so the record says which register the grades were judged "
+                    "against"
+                )
+            if not _DARK_MODE_RE.search(header):
+                messages.append(
+                    "QUALITY GRADES header names no dark-mode condition — write "
+                    "'dark mode: graded' when a dark frame was captured, "
+                    "'dark mode: N/A' when the product has no dark mode"
+                )
+
+            for slug in unexpected:
+                messages.append(
+                    f"QUALITY GRADES line '{slug}' names no declared criterion "
+                    f"— the block is one line per criterion slug ({slugs})"
+                )
+            written = [slug for slug, _ in entries]
+            for slug in criteria:
+                count = written.count(slug)
+                if count == 0:
+                    messages.append(
+                        f"QUALITY GRADES has no line for the '{slug}' criterion "
+                        f"— the block is exactly one line per criterion slug "
+                        f"({slugs})"
+                    )
+                elif count > 1:
+                    messages.append(
+                        f"QUALITY GRADES names the '{slug}' criterion on "
+                        f"{count} lines — one line per criterion slug"
+                    )
+
+            for slug, line in entries:
+                if not quotes_an_anchor(grade_sentence(line), spans):
+                    messages.append(
+                        f"QUALITY GRADES line '{slug}' quotes no anchor — every "
+                        f"grade must quote the pairing or threshold that decided "
+                        f"it, verbatim from {QUALITY_BAR_REL} and at least "
+                        f"{MIN_ANCHOR_SPAN} characters. An invented quote and a "
+                        f"quote the artifact has since reworded read alike here"
                     )
 
     return messages
@@ -667,6 +912,35 @@ def run_self_test():
             "",
         ),
         "no verification ledger",
+    )
+
+    # ── Assertion 11: every grade quotes the anchor that decided it ──────────
+    # These measure against the LIVE standards/quality-bar.md, not a fixture, so
+    # the fixture's four quotes are themselves under the rotted-quote guard: if
+    # an anchor is reworded, PASSING_RECORD fails until it is requoted. That is
+    # the check working, not the test being brittle.
+
+    # Case 22 (assertion 11): a quote that never existed in the artifact
+    assert_fails(
+        "invented quote in a grade sentence",
+        PASSING_RECORD.replace(
+            '"Dense but not cramped" at the 12-row default',
+            '"generously airy without sprawl" at the 12-row default',
+        ),
+        "line 'design-quality' quotes no anchor",
+    )
+
+    # Case 23 (assertion 11): a quote the artifact has since reworded. The check
+    # cannot tell this apart from case 22 and does not need to — the sentence
+    # names the right anchor and quotes none of it either way.
+    assert_fails(
+        "rotted quote in a grade sentence",
+        PASSING_RECORD.replace(
+            'Row hover is a 120ms background change, inside '
+            '"150-250ms on a tool surface".',
+            "Transitions land between 150 and 250 milliseconds on this surface.",
+        ),
+        "line 'craft' quotes no anchor",
     )
 
     checklib.report_self_test(failures, case_count)

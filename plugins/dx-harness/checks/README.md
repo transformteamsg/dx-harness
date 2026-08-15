@@ -256,12 +256,20 @@ nothing uncovered" counts), a CMP-1-in-scope record carries exactly one fixed-fo
 CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 `| Control | Method | Evidence |` table — each method is `script` / `manual` /
 `unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
-"verified manually" is an auditable claim rather than a prose blob). Exit 0 with
+"verified manually" is an auditable claim rather than a prose blob), and the
+**`QUALITY GRADES` block** is well formed (a header line naming the register and the
+dark-mode condition, one line per criterion slug declared in
+`standards/quality-bar.md`, and every grade sentence carrying a verbatim span of that
+file — at least 16 characters, compared case-folded with dashes and whitespace
+normalised, so an honest quote survives a terminal while an invented or rotted one
+fails). That last one is the quoted-anchor rule's mechanical backstop: it audits the
+*record*, never a surface, so it does not bend "the ceiling never blocks" — a missed
+anchor is still grade evidence and never a finding. Exit 0 with
 `OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
 failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
 hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (23 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
