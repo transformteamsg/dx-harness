@@ -228,7 +228,24 @@ SUGGESTIONS (not violations — layout/pattern improvements the builder may take
   ideas in BLOCKING/ADVISORY, and do not withhold a suggestion because
   everything passed.)
 
-QUALITY GRADES: design quality / originality / craft / functionality — with reasons
+QUALITY GRADES  register: <register-id>  dark mode: graded | N/A
+design-quality  <grade>  <one sentence quoting the anchor that decided it>
+originality     <grade>  <one sentence quoting the anchor that decided it>
+craft           <grade>  <one sentence quoting the anchor that decided it>
+functionality   <grade>  <one sentence quoting the anchor that decided it>
+  A header line and exactly four criterion lines, one per criterion slug, in the
+  order above — never three, never five, and never an extra line for dark mode.
+  `register:` is the id the dispatch payload handed you (input 7), written as you
+  received it; you never resolve it yourself. `dark mode: graded` when a dark frame
+  was captured, `dark mode: N/A` when the product has no dark mode — a truthful
+  outcome, never a pass, and it conditions all four criteria rather than being one.
+  `<grade>` is strong / acceptable / weak. Acceptable is the expected result: say it
+  out loud rather than inflating it. Three strongs in one grading means you are
+  grading the controls, not the ceiling — re-read before you ship it.
+  Each sentence must contain a **verbatim span of `standards/quality-bar.md`** — the
+  pairing or threshold that decided the grade, quoted, never cited by an id, because
+  anchors have none. A grade with no quoted anchor is unfinished, and
+  `checks/audit-record.py` fails the record it lands in.
 
 JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
 - plain rule title (control-id) pass | pass-with-caveat | fail — the evidence you

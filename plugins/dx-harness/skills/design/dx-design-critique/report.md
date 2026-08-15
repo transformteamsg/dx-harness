@@ -61,8 +61,9 @@ Do not restructure or reorder it.
    changed".
 2. **Fact grid** (not prose): run URL or mocks, pages captured + widths,
    deterministic checks run, catalogue coverage, date.
-3. **Summary block**: a one-sentence verdict leading with the dominant theme;
-   finding counts by tier (L0/L1/L2/craft/passing/N-A); a "how to respond" line
+3. **Summary block**: a one-sentence verdict leading with the dominant theme; the
+   `QUALITY GRADES` block (below); finding counts by tier
+   (L0/L1/L2/craft/passing/N-A); a "how to respond" line
    ("reply with S-numbers to approve"); a tier legend (L0 floor-no-waiver / L1
    documented / L2 rationale); a linked table of contents.
 4. **Suggestions table first**: it is the decision surface. Columns: S#,
@@ -82,6 +83,28 @@ Do not restructure or reorder it.
 8. **What works, preserve**: deliberate choices protected from restyling;
    compliance still checked.
 9. **Appendix**: full captures.
+
+### The `QUALITY GRADES` block
+
+The same block the verify verdict carries, in the same format, so both graded
+surfaces read alike. A header line plus exactly four criterion lines, one per
+criterion slug, in the order `quality-bar.md`'s frontmatter declares:
+
+```
+QUALITY GRADES  register: <register-id>  dark mode: graded | N/A
+design-quality  <grade>  <one sentence quoting the anchor that decided it>
+originality     <grade>  <one sentence quoting the anchor that decided it>
+craft           <grade>  <one sentence quoting the anchor that decided it>
+functionality   <grade>  <one sentence quoting the anchor that decided it>
+```
+
+`<grade>` is strong / acceptable / weak, and acceptable is the expected result.
+Each sentence quotes a verbatim span of `../../../standards/quality-bar.md` — the
+pairing or threshold that decided the grade, never an id, because anchors have
+none. `dark mode: N/A` when the product has no dark mode; that is a truthful
+outcome, not a pass. A grade is not a finding: a missed anchor never appears in
+the findings, keeps no F-number, and takes no tier pill — it lives in its
+criterion's sentence and nowhere else.
 
 ## 5. Numbering rules
 

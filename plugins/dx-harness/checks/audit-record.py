@@ -420,9 +420,11 @@ VERDICT: pass
 BLOCKING (must fix before ship):
 - None.
 
-QUALITY GRADES:
-- Design quality — strong.
-- Craft — strong.
+QUALITY GRADES  register: product  dark mode: N/A
+design-quality  acceptable  The roster reads "Dense but not cramped" at the 12-row default.
+originality     acceptable  No divergence is "A custom pattern where a stack component exists".
+craft           acceptable  Row hover is a 120ms background change, inside "150-250ms on a tool surface".
+functionality   strong      "The submit control is disabled while its request is pending" holds on the mark form.
 
 | Control | Method | Evidence |
 |---------|--------|----------|
@@ -512,7 +514,7 @@ def run_self_test():
     # Case 7 (assertion 4): QUALITY GRADES block missing
     assert_fails(
         "no QUALITY GRADES block",
-        PASSING_RECORD.replace("QUALITY GRADES:", "GRADES:"),
+        PASSING_RECORD.replace("QUALITY GRADES  ", "GRADES  "),
         "QUALITY GRADES",
     )
 
