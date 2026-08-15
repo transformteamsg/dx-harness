@@ -772,11 +772,9 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
 # build; an entry that is not a catalog id at all is an ERROR. The list is
 # temporary: #162 removes the last entries and deletes it.
 GAP_GRANDFATHERED = {
-    # #150, the relabels: the four judgment relabels are done, so their entries
-    # are gone. Three accepted gaps still wait for their written reasons.
-    "CMP-5": "accepted gap; its reason lands with the relabels in #150",
-    "LAY-1": "accepted gap; its reason lands with the relabels in #150",
-    "TYP-5": "accepted gap; its reason lands with the relabels in #150",
+    # #150 is done: its four judgment relabels closed their gaps by derivation,
+    # and CMP-5, LAY-1 and TYP-5 now carry written reasons, so all seven of its
+    # entries are gone.
     # #155, the rendered runner's anti-slop rules.
     "SLP-4": "rendered nested-card rule pending in #155",
     "SLP-6": "rendered type-ramp rule pending in #155",
@@ -1780,6 +1778,37 @@ def run_self_test():
     if want != got:
         failures.append(f"FAIL the judgment relabels derive evaluator and owe no "
                         f"gap: want: {want!r}; got: {got!r}")
+
+    # The three accepted gaps (#150). Each is hybrid and effectively manual, so
+    # each owes a reason, and the reason is what makes the label legal. Asserted
+    # against the live catalog so deleting one fails here rather than being
+    # caught only by the allowance list it no longer sits on.
+    case_count += 1
+    accepted_gaps = ("CMP-5", "LAY-1", "TYP-5")
+    want = [(cid, True, True, []) for cid in accepted_gaps]
+    got = []
+    for cid in accepted_gaps:
+        control = live_by_id.get(cid, {})
+        got.append((cid, gap_required(control),
+                    bool(str(control.get("gap", "")).strip()),
+                    gap_rule_errors(control, schema_bits)))
+    if want != got:
+        failures.append(f"FAIL the three accepted gaps carry their reasons: "
+                        f"want: {want!r}; got: {got!r}")
+
+    # The allowance list shrank by exactly the seven entries #150 resolves, and
+    # by nothing else. The six controls this issue leaves hybrid-and-manual stay
+    # on it until their build issues ship their scripts: an entry leaves only in
+    # the commit that ships what it was waiting for.
+    case_count += 1
+    want = (set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"})
+    resolved_by_150 = {"CMP-4", "CMP-8", "SLP-5", "SLP-7", "CMP-5", "LAY-1", "TYP-5"}
+    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"}
+    got = (resolved_by_150 & set(GAP_GRANDFATHERED),
+           still_pending & set(GAP_GRANDFATHERED))
+    if want != got:
+        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven "
+                        f"entries: want: {want!r}; got: {got!r}")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

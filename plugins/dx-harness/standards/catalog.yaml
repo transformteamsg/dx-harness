@@ -355,6 +355,7 @@ controls:
     fails_when:
       - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
       - a live counter, timer, or total that reflows horizontally as its digits change
+    gap: "No script: which figures align in a column or update in place is a rendered-content property; a source scan can only flag every table cell, which cries wolf."
     detail: controls/typ-5.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
@@ -507,6 +508,7 @@ controls:
       - two or more filled/primary buttons competing in one view with no deliberate co-equal reason
       - a destructive action styled as the primary instead of a distinct destructive variant (CMP-2)
       - every button rendered at the same weight, so nothing reads as the main action
+    gap: "No script: the primary-button count depends on view/region boundaries that source does not mark, and the boundary call is the evaluator's half of this control."
     detail: controls/cmp-5.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
@@ -1202,6 +1204,7 @@ controls:
     fails_when:
       - a declared grid exists and the layout uses an ad-hoc column count not drawn from it
       - a declared grid exists and gutters/margins don't match the spacing scale (TOK-2) with no deliberate reason
+    gap: "No script: no product has yet declared a .dx/design.json layout_system, so the check would grade N/A everywhere it ran."
     detail: controls/lay-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
