@@ -1859,6 +1859,34 @@ def run_self_test():
         failures.append(f"FAIL no file cites a check that does not exist: "
                         f"want: {want!r}; got: {got!r}")
 
+    # SLP-6 and TYP-3 can both pass on the same page (#150). Read both controls
+    # from the live catalog and measure, rather than restating the numbers: the
+    # old 1.25x threshold failed seven of TYP-3's twelve adjacent pairs, so a
+    # page could not satisfy both controls at once. The tightest pair is the
+    # invariant — if TYP-3's scale gains a closer step, or SLP-6's threshold
+    # rises, this fails and the contradiction is caught before it ships.
+    case_count += 1
+    slp6 = live_by_id.get("SLP-6", {})
+    typ3 = live_by_id.get("TYP-3", {})
+    threshold = re.search(r">=\s*([\d.]+)", str(slp6.get("verify", "")))
+    sizes = sorted((int(n) for n in re.findall(
+        r"\d+", re.search(r"\{([^}]*)\}", str(typ3.get("verify", ""))).group(1))),
+        reverse=True)
+    ratios = [sizes[i] / sizes[i + 1] for i in range(len(sizes) - 1)]
+    title_figure = re.search(r"([\d.]+)x", str(slp6.get("title", "")))
+    want = (True, True, True, True)
+    got = (threshold is not None,
+           title_figure is not None,
+           # the title and the verify: string quote one threshold, not two
+           threshold is not None and title_figure is not None
+           and float(threshold.group(1)) == float(title_figure.group(1)),
+           # and every adjacent pair TYP-3 mandates clears it
+           threshold is not None and min(ratios) >= float(threshold.group(1)))
+    if want != got:
+        failures.append(f"FAIL SLP-6's threshold clears TYP-3's whole scale: "
+                        f"want: {want!r}; got: {got!r} "
+                        f"(tightest adjacent pair {min(ratios):.4f})")
+
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
     try:

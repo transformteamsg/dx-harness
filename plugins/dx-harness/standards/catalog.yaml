@@ -1097,12 +1097,12 @@ controls:
 
   - id: SLP-6
     source: DX-DS
-    title: Adjacent type-scale steps differ by at least 1.25x; no flat hierarchy
+    title: Adjacent type-scale steps differ by at least 1.10x; no flat hierarchy
     tier: L2
     check: hybrid
     phase: [implement, verify]
     applies_to: [page]
-    verify: "Adjacent steps used on the page differ by ratio >= 1.25; flag flat heading/subheading/body hierarchies"
+    verify: "Adjacent steps used on the page differ by ratio >= 1.10; flag flat heading/subheading/body hierarchies"
     waiver: rationale
     fails_when:
       - heading/subheading/body at nearly the same size
