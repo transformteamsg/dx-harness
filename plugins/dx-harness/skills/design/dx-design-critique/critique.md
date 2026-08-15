@@ -12,16 +12,15 @@ propose changes before you have seen and judged the current state:
    width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
    the local Playwright fallback; (4) ask the user to provide the screenshot.
    Never critique a page you cannot see, and never fabricate what it looks like.
-2. **Layout read (do this before judging).** Read the pattern inventory at
-   `../../../standards/layout-patterns.md` (beside the catalogue). From the 1280 frame (and 360 when responsive behaviour is in
-   scope), write down — in this order, before any judgment: (a) the page's
-   regions and what each is for; (b) where the eye lands first, second, third
-   (squint test) and whether that matches the task's priority; (c) the
-   distinct left/top alignment edges; (d) a density map — which regions are
-   dense, which calm, and whether that fits the task; (e) how grouping is
-   encoded (space / divider / box). THEN judge: violations go to the
-   critique's "what underperforms" list as before; everything else that would
-   make the layout better becomes a **suggestion**.
+2. **Layout read (do this before judging).** Walk the Design quality Procedure in
+   `../../../standards/quality-bar.md` against the 1280 frame (and 360 when
+   responsive behaviour is in scope), and **write it down before judging** — the
+   point of the procedure is that it turns a feel into an observation, which it
+   cannot do in your head. Name the page's regions and what each is for as you go.
+   THEN judge: violations go to the critique's "what underperforms" list as before;
+   everything else that would make the layout better becomes a **suggestion**.
+   Which named pattern fits which moment is the pattern inventory at
+   `../../../standards/layout-patterns.md`.
 3. **Write a short design critique of what is there** — against the in-scope
    catalog controls *and* Kind Utility: what works and should be preserved
    (call out established iconography, radius, layout, and copy that are
@@ -35,7 +34,8 @@ propose changes before you have seen and judged the current state:
 4. **Layout suggestions (ranked).** Up to 5, ordered by impact on the
    teacher's task. Each names: the concrete change ("merge the two summary
    cards into one calm header row"), the pattern or control it serves
-   (layout-patterns.md #4, LAY-5), and the cost (S/M). Suggestions are OFFERS:
+   ("dense but not cramped", LAY-5), and the cost (S/M). A quality-bar anchor is
+   quoted, never cited by number — anchors have no ids. Suggestions are OFFERS:
    the human approves them by S-number on the surface's design ticket, and
    `dx-design-execute` builds accepted ones in a later run. A suggestion stays
    pending until the human replies; unpicked ones are marked `not accepted` on

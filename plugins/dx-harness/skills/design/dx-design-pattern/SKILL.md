@@ -37,10 +37,13 @@ or screens is never a pattern finding; it is a dx-design-execute intent. A patte
 swap ask stays with this pass even when stated as an edit ("these cards should be a
 list"); other stated structural edits go to dx-design-execute.
 
-**Reference:** the pattern inventory at `../../../standards/layout-patterns.md`: the
-regions, squint-test, alignment, density, and grouping read, plus the named patterns
-(list vs cards, master-detail, wizard presentation, empty-state structure). The
-inventory is guidance, not controls; a control always wins on conflict. When the
+**Reference:** two files beside the catalogue. The layout read — regions, squint test,
+edge count, density map, grouping check — is the Design quality Procedure in
+`../../../standards/quality-bar.md`, whose pairings and thresholds you may quote as
+finding evidence, never as a violation. The named patterns (list vs cards,
+master-detail, wizard presentation, empty-state structure) are the pattern inventory at
+`../../../standards/layout-patterns.md`. Neither is controls; a control always wins on
+conflict, and the quality bar never blocks at all. When the
 product ships one, `.dx/design.json` `layout_system` declares its column grid; where
 declared, LAY-1 makes the grid checkable; treat it as layout context otherwise.
 

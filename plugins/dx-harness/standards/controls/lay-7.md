@@ -41,8 +41,10 @@ scorable without a gaze model.
 - **Region enumeration:** list the page's distinct visual regions (not DOM elements) and
   rank them by apparent weight — size, colour saturation, position (top/centre draws first),
   whitespace isolation. A finding is two or more regions within the same rank with no task
-  reason. Align this read with the pattern inventory (`../layout-patterns.md`, beside the
-  catalogue) item 1 rather than inventing a separate procedure.
+  reason. Align this read with the Design quality Procedure's squint-test step in
+  `../quality-bar.md`, beside the catalogue, rather than inventing a separate procedure.
+  The quality bar never blocks: a competing second focal region is this control's
+  finding, and what the ceiling grades is whatever is left once that is fixed.
 
 ## Passes when
 

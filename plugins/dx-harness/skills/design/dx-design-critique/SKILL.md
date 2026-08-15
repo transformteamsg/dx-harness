@@ -26,9 +26,10 @@ For any waiver or applicability question read `../../../standards/README.md`
 ## Run it
 
 1. **Critique, don't change.** Read and run `critique.md` (beside this file) end to end:
-   capture the live surface, do the structured layout read against the pattern
-   inventory (`../../../standards/layout-patterns.md`, beside the catalogue), write
-   what works and should be preserved and what genuinely
+   capture the live surface, do the structured layout read against the quality bar's
+   Design quality Procedure (`../../../standards/quality-bar.md`) and the named
+   patterns (`../../../standards/layout-patterns.md`), both beside the catalogue,
+   write what works and should be preserved and what genuinely
    underperforms, then produce **up to five ranked suggestions**. Each suggestion carries
    its score — impact on the teacher's task (the ranking) and cost (S/M) — and names the
    control or layout pattern it serves. **Preserved is not waived:** a "preserve" call
