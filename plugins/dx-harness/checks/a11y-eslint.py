@@ -455,7 +455,7 @@ def run_self_test():
     check("the finding matches detect's finding shape", True, parsed is not None)
     check("the finding carries its control id", "A11Y-2", parsed.group("control"))
     check("the finding path is repo-relative", "components/row.tsx", parsed.group("file"))
-    check("the finding keeps eslint's line number", 12, int(parsed.group("line")))
+    check("the finding keeps eslint's line number", 12, int(parsed.group("pos")))
     check("the rule that fired is named in the second bracket", True,
           "[jsx-a11y/click-events-have-key-events]" in errors[0])
     check("a clean run of the translator adds no notes", [], notes)

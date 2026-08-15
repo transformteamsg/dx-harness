@@ -21,7 +21,22 @@ their own formatting where they genuinely differ (`token-audit.py`'s
 tails). `emit_error` also takes an optional `extra=` that fills the second bracket
 (`[A11Y-2][jsx-a11y/interactive-supports-focus]`) — the slot `_FINDING_RE` already
 tolerates and discards, so a finding can name the rule that fired without changing
-the line shape. checklib also loads the a11y rule map (`load_rule_map`,
+the line shape.
+
+**The position slot takes a cell as well as a line.** A rendered finding has a URL
+and a DOM node where a static one has a file and a line, so `emit_rendered_error`
+writes `ERROR <route>:<cell> [<CTL>] …` — the served path with its leading slash
+(`/standards/slp-4`) and the run-matrix cell that produced it (`1280-dark`). A
+leading slash is what tells the two apart, because `emit_error` is always given a
+repo-relative path and never starts with one. `_FINDING_RE`'s position group is
+`[^\s\[]+` rather than `\d+` so both parse; `parse_findings` reports `position` as
+the raw token and `line` as an integer only where the token is digits, so a
+rendered finding asserts no source line it cannot see. Writing a synthetic `1` or a
+selector hash into the line slot was rejected: it asserts a location the check
+cannot see, which is the failure this layer exists to remove. `emit_error` and
+`_FINDING_RE` are one contract in two files — change them together.
+
+checklib also loads the a11y rule map (`load_rule_map`,
 `layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
 below) so the three a11y layers read one file rather than three copies of it, and
 reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
@@ -188,9 +203,11 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (69 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (79 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
-each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
+each ignore type, invalid-config → exit 1, `ERROR`-line parsing (both the static
+`<file>:<line>` and the rendered `<route>:<cell>` shape, at both of `_FINDING_RE`'s call
+sites), and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
 their behaviour is proven by their own `--self-test`s and a real-corpus run over
 `docs/loop-run/`.

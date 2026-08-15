@@ -728,9 +728,33 @@ def emit_error(rel, lineno, ctl, found, suggest, extra=None):
     `_FINDING_RE` already tolerates and discards. a11y-eslint.py names the
     jsx-a11y rule that fired there, so a finding traces back to its mapping
     row; token-audit.py's `[waiver-claimed]` uses the same slot.
+
+    `lineno` is a 1-based source line for a static check. A rendered check has
+    no source line, so the slot carries a run-matrix cell instead — see
+    `emit_rendered_error` — and `_FINDING_RE`'s position group is wide enough
+    for both. A digits-only position still parses back to an integer line.
     """
     tail = f"[{extra}]" if extra else ""
     return f"ERROR {rel}:{lineno} [{ctl}]{tail} {found} — suggest: {suggest}"
+
+
+def emit_rendered_error(route, cell, ctl, found, suggest, extra=None):
+    """The rendered check's finding line: `ERROR {route}:{cell} [{ctl}] …`.
+
+    A rendered finding has a URL and a DOM node where a static one has a file
+    and a line, so the two-field shape is kept and filled with the rendered
+    analogue: `route` is the served path with its leading slash
+    (`/standards/slp-4`) and `cell` names the run-matrix cell that produced it
+    (`360-light`, `1280-dark`, `1280-reduced-motion`).
+
+    A leading slash is what tells the two apart: `emit_error` is always given a
+    repo-relative path, which never starts with one. The route is the path
+    only, never the full URL — a scheme's `//` would put a second colon in the
+    file half and mis-split the line. The origin belongs in a NOTE.
+    """
+    if not str(route).startswith("/"):
+        route = "/" + str(route).lstrip("/")
+    return emit_error(route, cell, ctl, found, suggest, extra=extra)
 
 
 _CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
