@@ -2645,6 +2645,92 @@ def run_self_test():
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)
 
+    # ── DESIGN.md's section roster and the register contract ─────────────────
+    # The template is the shape; DESIGN-CONTEXT.md's table and the two
+    # dx-design-language files each restate how many sections there are. Add one
+    # to the template alone and an author gets walked through a roster that no
+    # longer matches the file they are writing, so the count is held here rather
+    # than left to whoever adds the next section.
+    NUMBER_WORDS = {9: "nine", 10: "ten", 11: "eleven", 12: "twelve",
+                    13: "thirteen", 14: "fourteen"}
+    template_path = os.path.join(REPO_ROOT, "docs", "templates", "DESIGN.md")
+    context_path = os.path.join(REPO_ROOT, "docs", "DESIGN-CONTEXT.md")
+    language_dir = os.path.join(REPO_ROOT, "skills", "design", "dx-design-language")
+    walk_path = os.path.join(language_dir, "walkthrough.md")
+    language_path = os.path.join(language_dir, "SKILL.md")
+    roster_paths = (template_path, context_path, walk_path, language_path)
+    if all(os.path.isfile(p) for p in roster_paths):
+        with open(template_path) as fh:
+            template_text = fh.read()
+        with open(context_path) as fh:
+            context_text = fh.read()
+        with open(walk_path) as fh:
+            walk_text = fh.read()
+        with open(language_path) as fh:
+            language_text = fh.read()
+
+        template_sections = re.findall(r"^## (.+)$", template_text, re.MULTILINE)
+        word = NUMBER_WORDS.get(len(template_sections))
+
+        case_count += 1
+        if word is None:
+            failures.append(f"FAIL DESIGN.md roster: {len(template_sections)} template "
+                            f"sections has no word in NUMBER_WORDS — add it")
+        else:
+            for rel, text in (("docs/DESIGN-CONTEXT.md", context_text),
+                              ("dx-design-language/walkthrough.md", walk_text),
+                              ("dx-design-language/SKILL.md", language_text)):
+                case_count += 1
+                if f"{word} sections" not in text:
+                    failures.append(f"FAIL {rel} states the section count: expected "
+                                    f'"{word} sections" for {len(template_sections)} '
+                                    f"template sections")
+            # The re-run line counts the sections it does NOT re-walk.
+            case_count += 1
+            others = NUMBER_WORDS.get(len(template_sections) - 1)
+            if others and f"the other {others} sections" not in walk_text:
+                failures.append(f"FAIL dx-design-language/walkthrough.md re-run count: "
+                                f'expected "the other {others} sections"')
+
+        # One table row per template section, so neither list can grow alone.
+        case_count += 1
+        table = re.search(r"^\| Section \(`## `\).*?\n(?:\|.*\n)+", context_text,
+                          re.MULTILINE)
+        rows = [ln for ln in (table.group(0).splitlines() if table else [])
+                if ln.startswith("| `")]
+        if len(rows) != len(template_sections):
+            failures.append(f"FAIL DESIGN-CONTEXT.md section table: {len(rows)} rows "
+                            f"for {len(template_sections)} template sections")
+
+        # The Quality bar section itself: shipped in the template, named in the
+        # table, and offered by the walkthrough.
+        case_count += 1
+        if "## Quality bar" not in template_text or "- register:" not in template_text:
+            failures.append("FAIL the template ships a Quality bar section with a "
+                            "register bullet")
+        case_count += 1
+        if "`quality_bar`" not in context_text:
+            failures.append("FAIL DESIGN-CONTEXT.md names the quality_bar key")
+        case_count += 1
+        if "Quality bar" not in walk_text or "quality-bar.md" not in walk_text:
+            failures.append("FAIL the walkthrough offers the register list")
+
+        # The three run-time rules the ceiling depends on. They bind a design run,
+        # which no check can watch, so the only guard is that the sentences stating
+        # them survive an edit to this file.
+        case_count += 1
+        loading = re.search(r"^## Loading rules.*", context_text,
+                            re.DOTALL | re.MULTILINE)
+        # Whitespace-normalised, so rewrapping a paragraph is free and only
+        # deleting a rule fails.
+        span = re.sub(r"\s+", " ", loading.group(0)) if loading else ""
+        missing = [rule for rule in ("quality_bar.register", "never stops the run",
+                                     "One resolution point per run")
+                   if rule not in span]
+        if missing:
+            failures.append(f"FAIL DESIGN-CONTEXT.md loading rules carry the register "
+                            f"resolution contract: missing {missing}")
+
     # ── The ceiling's own invariants ─────────────────────────────────────────
     # Four properties the quality bar and its fold depend on that no other check
     # can see, asserted against the live files rather than a fixture.

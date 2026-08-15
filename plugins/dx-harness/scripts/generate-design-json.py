@@ -782,6 +782,28 @@ def run_self_test():
     check("register is not an override control id",
           OVERRIDE_RE.match("- register: standards-site") is None)
 
+    # 41. the whole file absent: exit 1, a message that says so plainly, and a
+    # reader on the default. A repo with no DESIGN.md is a complete state.
+    with tempfile.TemporaryDirectory() as td:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc_none = main([td])
+        check("absent DESIGN.md exits 1", rc_none == 1)
+        check("absent DESIGN.md says it is not a failure",
+              "not a failure" in buf.getvalue())
+        check("absent DESIGN.md resolves to the default", register_of("") is None)
+
+    # 42. the shipped template declares a register this parser reads back, so a
+    # template edit cannot quietly break the shape every author copies
+    template_path = os.path.join(os.path.dirname(SCRIPT_DIR), "docs", "templates",
+                                 DESIGN_MD)
+    if os.path.isfile(template_path):
+        with open(template_path, encoding="utf-8") as fh:
+            template = parse_sections(fh.read())
+        check("the shipped template declares one register",
+              isinstance(template.get("quality_bar"), dict)
+              and isinstance(template["quality_bar"].get(REGISTER_FIELD), str))
+
     # ── Overrides parsing and tier validation ─────────────────────────────────
     controls = fake_catalog["controls"]
 
