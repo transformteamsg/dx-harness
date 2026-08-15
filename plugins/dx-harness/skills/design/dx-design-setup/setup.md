@@ -27,6 +27,7 @@ the check. Then continue with the tracker and commit-signing steps below.
 | `gh` CLI, authenticated | The `feedback` skill files issues through `scripts/file-feedback-issue.py` | `gh auth status` | `brew install gh`, then the user runs `gh auth login` themselves (interactive — never run it for them) |
 | Python 3 + PyYAML | The `checks/*.py` scripts import `yaml` | `python3 -c "import yaml"` | `python3 -m pip install --user pyyaml` |
 | Pillow | The critique report step crops and annotates screenshots | `python3 -c "import PIL"` | `python3 -m pip install --user Pillow` |
+| axe on Playwright (harness-side) | The rendered check drives axe against the page already open in the capture session | `node -e "require('node:module').createRequire(process.env.DX_HARNESS + '/').resolve('@axe-core/playwright')"` with `DX_HARNESS` set to the plugin directory | `npm install --prefix <plugin dir>` — installs into the plugin's own `node_modules` only; nothing is installed into the repo being checked. Missing is not a failure: the rendered check says it did not run and sends its controls to manual verification |
 | `dx-harness` plugin (product repos only) | The harness itself; skills load from the installed `dx-harness` plugin, same as any product repo | ask the user: `/plugin list` shows `dx-harness` | the two commands in the README Install section (`../../../README.md`) |
 
 ## Wire the design-ticket tracker
