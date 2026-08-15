@@ -73,8 +73,10 @@ and should.
 better than the obvious build, and say what it was. **Weak** means a teacher would hesitate, and
 you can say where.
 
-Self-check against drift: **if you have graded three surfaces in a row strong, you are grading
-the controls, not the ceiling.** A three-point scale with no stated distribution drifts upward.
+Self-check against drift: **if three of the four criteria in one grading read strong, or if you
+have graded three surfaces in a row strong, you are grading the controls, not the ceiling.** A
+three-point scale with no stated distribution drifts upward. The first check applies to a single
+surface, so it is the one a reviewer can run without a history.
 
 **Dark mode is a condition, not a criterion.** When the product supports dark mode and a dark
 frame was captured, every criterion grades both frames. When the product has no dark mode (no
@@ -142,7 +144,7 @@ Before judging, work through this in order — it turns a feel into an observati
 | --- | --- |
 | Dense but not cramped | Airless — text pressed to its container edge, rows with no room to breathe |
 | Calm but not empty | Padded out — space standing in for structure that was never built |
-| Ordered but not monotonous | One spacing value doing every job; a rhythm you cannot feel |
+| Ordered but not monotonous | A rhythm you cannot feel, even where the values differ |
 | Hierarchical but not shouty | Flat — nothing wins the first read; or three regions fighting over it |
 | Aligned but not boxed | Drifting — every region on its own edge, or borders doing alignment's work |
 | Deliberate but not fussy | Decoration that encodes neither hierarchy nor state |
@@ -152,7 +154,7 @@ Before judging, work through this in order — it turns a feel into an observati
 | Surface | Reads as | Direction |
 | --- | --- | --- |
 | Data entry (marks, attendance, bulk edit) | Dense, tabbable | Short rows, tabular figures, minimal padding; the next field is always reachable without scrolling |
-| Scanning / comparison (lists, tables) | Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular enough that a break in it means something |
+| Scanning / comparison (lists, tables) | Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular enough that a break in it means something. Where a row carries a full sentence rather than a field, the sentence is held to the reading measure; a row of fields is not |
 | Reading (guidance, policy, a case note) | Calm, measured | Measure at most 80 characters, targeting ~66 (**LAY-4**); more space between sections than inside them |
 | Decision (approve, submit, escalate) | Calm, focused | One primary action (**CMP-5**); the consequence sits beside the action, not in a footer |
 | Empty state | Inviting, quiet | Lead with the next action; no illustration outranking the page's real hierarchy |
@@ -167,10 +169,10 @@ not survive a waiver argument — and these are not waivable, because they do no
 | --- | --- |
 | More space above a heading than below it | A heading belongs to what follows. Equal space orphans it and the eye groups it upward, into the section it just left. |
 | At least two but not more than about three distinct spacing values in a region | One value everywhere reads as a template rather than a composition; past three the rhythm stops being perceptible as rhythm. |
-| Largest-to-smallest type size on the page around 2× or more | Adjacent steps can each clear **SLP-6**'s 1.25× and the page still read flat at a glance. This is the cheaper second read that catches it. |
-| Text in a bordered box: vertical padding at least `max(4px, 0.3 × font-size)`, horizontal at least `max(8px, 0.5 × font-size)` | Below this the text reads as pressed against the border, whatever the token said. |
+| Largest-to-smallest type size on the page around 2× or more | Adjacent steps can each clear **SLP-6**'s 1.25× and the page still read flat at a glance. This is the cheaper second read that catches it. The reverse also happens: a page can clear this read at 2.5× while three of its four adjacent steps miss **SLP-6**. This read does not stand in for the control. |
+| Text in a bordered box: at least `max(4px, 0.3 × font-size)` between the text's line box and the border vertically, and `max(8px, 0.5 × font-size)` horizontally | Below this the text reads as pressed against the border, whatever the token said. Measure the gap, not the padding property: a 12px pill with a 16px line box and 2px padding leaves 3px of air and does not read airless. |
 | Body text at least 16px from the viewport edge, 24–32px preferred | **LAY-2** covers 320px reflow, not gutters at comfortable widths. Text flush to the edge reads as unfinished. |
-| About four distinct left edges at 1280, not more | Past four the composition is drifting even when every individual region is internally aligned. |
+| About four distinct left edges at 1280, not more, counted on regions. Inline flow inside a region does not create an edge | Past four the composition is drifting even when every individual region is internally aligned. Counted mechanically the number is meaningless: a row of inline badges starts each one wherever the last ended, and a human reads none of them as an edge. |
 | Concentric radius `outer = inner + padding`, unless padding exceeds ~24px | **TOK-3** states the formula with no upper bound. Past ~24px the layers are far enough apart that the eye stops relating them, and the math produces a wrong-looking outer radius. |
 | Running text ragged-left, never centred | Each centred line starts somewhere new, so the eye's return sweep has no anchor. **LAY-4** fixes the measure; it says nothing about the rag. |
 
@@ -184,7 +186,7 @@ height.]*
 | --- | --- |
 | **LAY-7** | A page with two competing focal regions is a **finding**, not a weak grade. |
 | **SLP-6** | Adjacent type steps below 1.25×. |
-| **SLP-7** | Related items grouped no tighter than unrelated ones. |
+| **SLP-7** | Related items grouped no tighter than unrelated ones, and one spacing value used everywhere. |
 | **LAY-5** / **LAY-6** | Density-to-task fit; grid coherence where a grid is declared. |
 | **TOK-2** / **TOK-3** | Where a spacing or radius value came from. |
 | Craft | Whether the *states* around this layout were designed. Grade only the composition here. |
@@ -243,7 +245,7 @@ Before judging, work through this in order:
 
 | Anchor | Why it is there |
 | --- | --- |
-| No kicker or eyebrow label above a heading | Imported marketing furniture. The source that names it calls it a ban, not a default — no brief on this register earns it back. |
+| No kicker or eyebrow label above a heading. A badge that names the document's own state or version (`proposed`, `draft`, `v0.1`) is not a kicker: it carries information the heading does not, and there is nowhere else for the reader to learn it. A label that restates the section, the audience, or the value proposition is | Imported marketing furniture. The source that names it calls it a ban, not a default — no brief on this register earns it back. |
 | No 1px border under a wide soft shadow — the ghost card | Elevation declared twice; commit to one. **SLP-3** and **SLP-4** cover other card tells, not this one. |
 | No pulse animation on data that is not live | It claims liveness the data does not have — an honesty failure, not a style one. |
 | No numbered markers (01 / 02 / 03) where order carries no information | Sequence as decoration; a real process or a typed timeline earns them. |
@@ -300,7 +302,7 @@ Before judging, work through this in order:
 | Surface | Reads as | Direction |
 | --- | --- | --- |
 | Data entry (marks, attendance, bulk edit) | Focused, instant | The focus ring is designed for the theme, not left default; feedback on every commit is immediate |
-| Scanning / comparison (lists, tables) | Restrained | Row hover is a ≤150ms opacity or background change; no per-row choreography |
+| Scanning / comparison (lists, tables) | Restrained | Where the row itself is clickable, row hover is a ≤150ms opacity or background change; no per-row choreography either way |
 | Reading (guidance, policy, a case note) | Set with care | Selection colour, underline offset, and wrapping read as chosen |
 | Decision (approve, submit, escalate) | Still | Motion at its minimum near consequences; the confirm moment never animates for effect |
 | Empty state | Finished | The rarest state carries the same furniture as the busiest — no orphaned defaults |
@@ -311,10 +313,10 @@ Before judging, work through this in order:
 | Anchor | Why it is there |
 | --- | --- |
 | High-frequency interactions get instant feedback or a ≤150ms opacity/background change | An animation on something triggered constantly charges its attention cost on every trigger. Expressive motion is for infrequent moments. |
-| Most transitions 150–250ms on a tool surface; exits faster than entrances | Tightens **MOT-1**'s 100–300ms band for this register, as grade evidence only. The teacher is in flow; long feedback reads as latency. |
+| Most transitions 150–250ms on a tool surface; exits faster than entrances *[product: the band is this register's; a reading surface may run slower]* | Tightens **MOT-1**'s 100–300ms band for the `product` register, as grade evidence only. The teacher is in flow; long feedback reads as latency. |
 | CSS transitions for interactive state changes; keyframes only for one-shot sequences | A keyframe cannot be interrupted — a drawer re-toggled mid-flight snaps, and passes every static motion control while doing it. |
 | Icon stroke matches adjacent text weight: 1.5px beside regular (400), 2px beside semibold (600) | A mismatched stroke reads as a different voice in the same sentence. **IDN-2** governs the product-icon family, not UI icon sets. |
-| Hit areas at least 40×40 in dense desktop UI, and two hit areas never overlap | Tightens **A11Y-4**'s 24×24 floor for this register, as grade evidence only. At marks-grid density a mis-tap is a data error. |
+| Hit areas at least 40×40 in dense desktop UI, and two hit areas never overlap *[product: 40×40; a reading surface is held to **A11Y-4**'s floor and no more]* | Tightens **A11Y-4**'s 24×24 floor for the `product` register, as grade evidence only. At marks-grid density a mis-tap is a data error. |
 | `text-wrap: balance` on headings (up to ~6 lines); `pretty` on short body | Cheap and register-neutral; the line cap prevents the common misapplication. |
 
 ## Not this criterion's job
@@ -351,7 +353,8 @@ Before judging, work through this in order:
 - **Failure walk.** For each failure class the flow can hit — bad input, no permission, not
   found, rate limit, server error — is there a designed state and a way back?
 - **Persona lens.** Walk once as the relief teacher: unfamiliar class, no history, no time to
-  learn the tool.
+  learn the tool. *[standards-site: walk once as a first-time reader of the standard: no idea
+  which controls exist, arriving from a cited control id.]*
 
 ## Pairings
 
@@ -367,7 +370,7 @@ Before judging, work through this in order:
 | Surface | Reads as | Direction |
 | --- | --- | --- |
 | Data entry (marks, attendance, bulk edit) | Keyboard-complete | Tab order matches reading order; submit disabled while pending; a bulk path for per-student tasks |
-| Scanning / comparison (lists, tables) | Recoverable | "No results for this filter" differs from "nothing exists yet"; the filter clears in place |
+| Scanning / comparison (lists, tables) | Recoverable | "No results for this filter" differs from "nothing exists yet"; the filter clears in place, and a filter combination worth keeping survives a reload and travels in a link |
 | Reading (guidance, policy, a case note) | Resumable | Return preserves position |
 | Decision (approve, submit, escalate) | Reversible first | Undo where recovery is safe; confirmation only where it is not |
 | Empty state | Actionable | Each empty variety names its own next action — first use, cleared, no results, no permission read differently |
@@ -402,7 +405,8 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
 [#112](https://github.com/transformteamsg/dx-harness/issues/112). Items 11–14 were settled on
 [#113](https://github.com/transformteamsg/dx-harness/issues/113). Items 15–20 were settled on
 [#114](https://github.com/transformteamsg/dx-harness/issues/114). Items 21–28 were settled on
-[#115](https://github.com/transformteamsg/dx-harness/issues/115).
+[#115](https://github.com/transformteamsg/dx-harness/issues/115). Item 29 was settled on
+[#147](https://github.com/transformteamsg/dx-harness/issues/147), which adopted this file.
 
 1. **Markdown with YAML frontmatter, not a YAML index plus detail files.** The catalogue splits
    because 69 controls cannot all sit in context and the site renders the index raw. Four
@@ -521,3 +525,15 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
     would give this file more power than it has. The builder resolves the register once and
     passes it to the reviewer in the dispatch payload; independent re-resolution was rejected
     because builder and reviewer could resolve a bad id differently.
+29. **Eleven anchors were amended on adoption, all on evidence.** The evidence run in
+    [#145](https://github.com/transformteamsg/dx-harness/issues/145) graded one known-weak
+    surface against this file and recorded eleven anchors that could not decide, or decided
+    wrongly, against a real frame. Their recorded findings are the only grounds on which any
+    anchor may change, so all eleven were taken as written: the kicker threshold now admits a
+    state badge; the two register-specific craft rows carry the register they were written
+    for; the bordered-box threshold measures the gap rather than the padding property; the
+    edge count says what an edge is; the SLP-7 boundary claims both halves of the control and
+    its pairing stops restating it; the scanning rows reach prose measure, filter durability
+    and the unclickable row; the persona lens carries a `standards-site` analogue; the 2×
+    type read names both directions of the gap; and the drift self-check states both of its
+    readings. No pairing vocabulary, no grade scale, and no surface row was changed.
