@@ -967,10 +967,13 @@ controls:
       - rebuilt or distorted logo marks
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
-  # IDN-2..4: branding controls activated via the ratchet 2026-07-06 (plan 057),
+  # IDN-2..3: branding controls activated via the ratchet 2026-07-06 (plan 057),
   # from recorded facts (COL-1 table, content skill §6, product-icons guideline).
   # Design-lead approved: Reza Ilmi, 2026-07-06 (in-session). Records:
-  # docs/catalog-changes/idn-{2,3,4}-*.md. IDN-4 is the first product-scoped control.
+  # docs/catalog-changes/idn-{2,3,4}-*.md. IDN-4 (CaseSync celebration restraint,
+  # the first and only product-scoped control) was removed 2026-08-14 per README
+  # rule 5 — it moves to CaseSync's DESIGN.md as a guardrail. Record:
+  # docs/catalog-changes/idn-4-removal.md.
   - id: IDN-2
     source: DX-DS
     title: Product icons render only from the approved product-icon family; no ad-hoc, redrawn, or regenerated icons
@@ -999,23 +1002,6 @@ controls:
       - copy adopts another product's register (a switched voice system, not calibrated weight)
       - a TW-adjacent surface (Posts / PG Staff Portal) carries nuance instead of plain TW voice
     detail: controls/idn-3.md
-    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
-
-  - id: IDN-4
-    source: DX-DS
-    title: "CaseSync surfaces treat casework as sensitive: restrained celebration, no gamified or playful elements around case data"
-    tier: L1
-    check: judgment
-    phase: [implement, verify]
-    applies_to: [content, page, component]
-    products: [casesync]
-    verify: "On CaseSync surfaces, the evaluator confirms case-data moments are treated with restraint — no confetti/celebration animations, streak/badge/points gamification, or exclamatory congratulatory copy around case outcomes; acknowledgement is calm and privacy-forward"
-    waiver: documented
-    fails_when:
-      - celebratory or confetti-style motion on a case-closure or case-outcome moment
-      - streak / badge / points / leaderboard gamification attached to casework
-      - exclamatory congratulatory copy on a sensitive case outcome
-    detail: controls/idn-4.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Anti-slop (SLP-1..10) ─────────────────────────────────────────────

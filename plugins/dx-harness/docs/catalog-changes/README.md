@@ -1,10 +1,14 @@
 # Catalog-change records
 
 One file per catalogue decision: a ratchet admission or rejection, a harness rule
-(like `evd-1-async-evidence.md`), or a control amendment. The catalog validator
-(`checks/validate.py`) sweeps every `.md` here for control-id cross-references,
-and `checks/audit-record.py` requires that any record a decision record cites
-actually exists.
+(like `evd-1-async-evidence.md`), a control amendment, or a removal (like
+`idn-4-removal.md`). The catalog validator (`checks/validate.py`) sweeps every `.md`
+here for control-id cross-references, and `checks/audit-record.py` requires that any
+record a decision record cites actually exists.
+
+A removal record is the one place a retired control id may still be named — the sweep
+reads `retired_ids` from `standards/schema.json` for files in this directory only.
+See authoring rule 7 in `standards/README.md`.
 
 ## Records cited before this directory existed
 

@@ -11,5 +11,6 @@
   "audiences": ["teachers", "students-primary", "students-secondary", "parents"],
   "enforced": ["script", "partial", "manual", "evaluator"],
   "status": ["proposed"],
-  "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"]
+  "id_prefixes": ["A11Y", "TOK", "TYP", "COL", "CMP", "CNT", "MOT", "IDN", "SLP", "LAY"],
+  "retired_ids": ["IDN-4"]
 }

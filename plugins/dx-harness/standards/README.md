@@ -168,6 +168,12 @@ summary count. This replaces hand-maintained gap lists, which drift.
    a `deterministic` or `hybrid` control whose effective `enforced` is `manual` and which
    carries no `gap:` is an error. A "planned script" note is not a reason, and an `L0`
    control has no reason available to it at all: only a script.
+7. **A removal leaves a record and a retired id.** When a control leaves the catalog,
+   write `docs/catalog-changes/<id>-removal.md` saying what the constraint became and
+   why, and add the id to `retired_ids` in `schema.json`. The cross-reference sweep
+   accepts a retired id inside a catalog-change record and nowhere else — so a skill,
+   agent, or procedure still citing the dead control fails the build, while the record
+   that explains the removal can name it. By rule 2 the number is not reissued.
 
 ## Detail file format (`controls/<id>.md`)
 
