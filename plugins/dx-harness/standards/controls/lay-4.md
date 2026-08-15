@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"
+verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/type-scan measure rule (built in #161) judges ch caps already present, and the evaluator judges the rendered measure"
 waiver: rationale
 refs:
   - https://www.w3.org/TR/WCAG21/#visual-presentation
@@ -35,12 +35,11 @@ which is within the target range and shows the intent is already operationalised
 
 ## How to verify
 
-**Deterministic half** — `checks/layout-scan` (**planned — verify manually until built**):
+**Deterministic half** — the `checks/type-scan.py` measure rule, built in #161. It judges
+`ch` caps that are already present against the 80ch ceiling; it never flags a missing cap,
+because a container with no declared cap may still render inside the ceiling.
 
-- Flag any prose/body container with no `max-width` declaration.
-- Flag any `max-width` value that resolves to more than 80ch.
-
-Until built: inspect prose containers in the component source, check for a `max-width`
+Until it ships: inspect prose containers in the component source, check for a `max-width`
 rule, and estimate the rendered measure at 1280 px. Label findings "verified manually."
 
 **Judgment half** — the evaluator:

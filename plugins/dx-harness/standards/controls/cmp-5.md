@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [plan, implement, verify]
 applies_to: [page, component]
-verify: "Script counts filled/primary-variant buttons per view; evaluator judges view/region boundaries and any deliberately co-equal actions"
+verify: "Evaluator judges the view/region boundaries, counts filled/primary-variant buttons inside each, and allows any deliberately co-equal actions; no script, per this control's accepted gap"
 waiver: rationale
 fails_when:
   - two or more filled/primary buttons competing in one view with no deliberate co-equal reason
@@ -61,11 +61,12 @@ is meant to prevent.
 
 ## How to verify
 
-**Deterministic half** (`checks/` — planned): count filled/primary-variant buttons
-within a view's DOM subtree (e.g. `<Button variant="default">` / the product's solid
-button class). More than one in a single view is a flag pending the judgment read.
-Until the script exists, count by hand against the rendered output and label it
-"verified manually".
+**No script — this control accepts its gap.** Counting filled buttons is buildable, but
+the denominator is not: "a view" has no marker in source, a dialog and a toolbar each own
+a primary, and the default button variant is both filled and the default, so a bare
+`<Button>` counts. The boundary the count depends on is the evaluator's half, which is
+why the catalogue records an accepted gap here rather than a build item. Count by hand
+against the rendered output, inside the boundaries you set below.
 
 **Judgment half:** the evaluator sets the view/region boundaries (a dialog or a
 self-contained card is its own region and may have its own primary) and judges whether

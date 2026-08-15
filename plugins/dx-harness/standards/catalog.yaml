@@ -350,7 +350,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan tabular-nums subcheck (planned)"
+    verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update, and confirms the markup carries the class; no script, per this control's accepted gap"
     waiver: rationale
     fails_when:
       - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
@@ -363,8 +363,8 @@ controls:
   # "Check readability" step of the writing guide. Fills the measure gap in the TYP
   # family: TYP covers typeface, size floors, scale, all-caps, and tabular figures —
   # nothing holds running prose to a comfortable characters-per-line. Hybrid: a static
-  # scan can flag full-viewport prose blocks with no max-width cap (planned type-scan
-  # subcheck); the evaluator judges which blocks are running prose versus headings,
+  # check can flag full-viewport prose blocks with no max-width cap (the type-scan
+  # measure rule, built in #161); the evaluator judges which blocks are running prose versus headings,
   # tables, and data grids, which are out of scope.
   - id: TYP-6
     source: DX-DS
@@ -373,7 +373,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure subcheck (planned)"
+    verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure rule (built in #161)"
     waiver: rationale
     fails_when:
       - a paragraph that spans the full viewport width with no measure cap
@@ -482,7 +482,7 @@ controls:
     check: judgment
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
+    verify: "Evaluator reads the empty-state view: no skeleton-row element and no loading spinner render alongside the empty-state heading, and the heading + subtext pair answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
     waiver: documented
     fails_when:
       - a skeleton row, shimmer, or loading spinner is visible in the DOM alongside the empty-state heading
@@ -502,7 +502,7 @@ controls:
     check: hybrid
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Script counts filled/primary-variant buttons per view; evaluator judges view/region boundaries and any deliberately co-equal actions"
+    verify: "Evaluator judges the view/region boundaries, counts filled/primary-variant buttons inside each, and allows any deliberately co-equal actions; no script, per this control's accepted gap"
     waiver: rationale
     fails_when:
       - two or more filled/primary buttons competing in one view with no deliberate co-equal reason
@@ -538,7 +538,7 @@ controls:
     check: judgment
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance"
     waiver: rationale
     fails_when:
       - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
@@ -557,7 +557,7 @@ controls:
     check: judgment
     phase: [plan, implement, verify]
     applies_to: [flow]
-    verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
+    verify: "Evaluator walks the flow map, confirms every step has a reachable cancel/back affordance, interrupts the flow, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
     waiver: documented
     fails_when:
       - a wizard/dialog with no cancel/back at some step
@@ -577,7 +577,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [component, flow]
-    verify: "Deterministic: grep detector (planned) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
+    verify: "Deterministic: checks/cmp-scan.py (built in #158) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
     waiver: documented
     fails_when:
       - dangerouslySetInnerHTML/v-html renders another user's authored content with no sanitiser in the render path
@@ -1199,7 +1199,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
+    verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared; no script, per this control's accepted gap"
     waiver: rationale
     fails_when:
       - a declared grid exists and the layout uses an ad-hoc column count not drawn from it
@@ -1230,7 +1230,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"
+    verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/type-scan measure rule (built in #161) judges ch caps already present, and the evaluator judges the rendered measure"
     waiver: rationale
     fails_when:
       - body-text column has no max-width and spans the full viewport at 1280

@@ -6,7 +6,7 @@ tier: L1
 check: judgment
 phase: [plan, implement, verify]
 applies_to: [page, component]
-verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
+verify: "Evaluator reads the empty-state view: no skeleton-row element and no loading spinner render alongside the empty-state heading, and the heading + subtext pair answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
 waiver: documented
 fails_when:
   - a skeleton row, shimmer, or loading spinner is visible in the DOM alongside the empty-state heading
@@ -61,19 +61,29 @@ not by whichever reviewer happens to notice the leftover skeleton row.
 - An empty state ships with list chrome (row dividers, placeholder rows) that could be
   mistaken for a populated-but-loading list.
 
+## Why this is judgment
+
+Both readings this control needs are the evaluator's, so the evaluator is the
+enforcement rather than half of it.
+
+Co-presence looks mechanical and is not. A skeleton row is only a finding when it renders
+*while the empty-state heading is visible*, and whether those two ever co-exist depends on
+the runtime state a component reaches, not on what its source declares. A component can
+hold both branches and never show them together. The second reading — whether the copy
+could be mistaken for a loading state or a permissions error — is a reading of language,
+with no mechanical form at all.
+
 ## Evaluator guidance
 
-Two halves, one hybrid check:
+One check, two readings, both yours:
 
-1. **Deterministic sub-check** (manual until a script exists — the deterministic
-   override-detection precedent CMP-7 set applies here too): read the rendered DOM at the
-   moment the empty-state heading is visible. Confirm no skeleton-row element and no
-   loading-spinner element render alongside it. Report "verified manually" and name what
-   you checked when no script exists yet.
-2. **Judgment sub-check**: read the heading and subtext together and ask, "could a
-   first-time user mistake this for a loading state or a permissions error?" Pass = no
-   plausible confusion; fail = any reasonable reading supports the loading-or-error
-   interpretation. Quote the heading/subtext text you judged.
+1. **Read the rendered view** at the moment the empty-state heading is visible. Confirm no
+   skeleton-row element and no loading-spinner element render alongside it. Name the state
+   you put the surface in to see it.
+2. **Read the heading and subtext together** and ask, "could a first-time user mistake this
+   for a loading state or a permissions error?" Pass = no plausible confusion; fail = any
+   reasonable reading supports the loading-or-error interpretation. Quote the
+   heading/subtext text you judged.
 
 This control applies whenever a page or component can render an empty state — most often
 lists, tables (CMP-6 already names "design the empty and loading states" as part of the

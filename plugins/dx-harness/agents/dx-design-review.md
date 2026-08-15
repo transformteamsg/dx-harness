@@ -124,23 +124,22 @@ plan was the human-approved artifact.
 "Evaluator guidance" section. Quote the specific text or element you judged. Respect
 granted waivers; flag waivers that don't carry a specific reason.
 
-**Empty-state clarity (CMP-4, L1, hybrid — controls/cmp-4.md).** For every empty-state
-view in scope: confirm no skeleton row, shimmer, or spinner is present in the DOM
-alongside the empty-state heading (deterministic half, manual until a script exists),
-then read the heading + subtext pair and judge — could a first-time user mistake this for
-a loading state or a permissions error? Quote the heading/subtext text you judged.
+**Empty-state clarity (CMP-4, L1, judgment — controls/cmp-4.md).** For every empty-state
+view in scope: confirm no skeleton row, shimmer, or spinner is present alongside the
+empty-state heading, naming the state you put the surface in to see it, then read the
+heading + subtext pair and judge — could a first-time user mistake this for a loading
+state or a permissions error? Quote the heading/subtext text you judged.
 
 **Component consistency (CMP-7, L2 — controls/cmp-7.md).** Check the surface's components
 against their design-system defaults and against the same component on sibling pages: an
 override that changes a default's colour/contrast/shape, or a control group whose members
 don't share a resting affordance, is a finding unless recorded with a reason. Re-check any
-colour/contrast override under A11Y-1. Judgment for now — the deterministic
-override-detection sub-check is planned once the CMP-1 manifest is wired; say "verified
-manually" and name what you checked.
+colour/contrast override under A11Y-1. This control is judgment: you are the enforcement,
+and no script grades any half of it.
 
-**Draft safety / escapability (CMP-8, L1, hybrid — controls/cmp-8.md).** For a
+**Draft safety / escapability (CMP-8, L1, judgment — controls/cmp-8.md).** For a
 multi-step or data-entry flow in scope: confirm every step has a reachable, visible
-cancel/back affordance (deterministic half, manual until a script exists), then walk
+cancel/back affordance, then walk
 the flow, interrupt it at a plausible point, and judge whether the teacher's
 in-progress input survives or was explicitly, confirmably discarded — never silently
 lost. Keep this distinct from CMP-2: grade CMP-8 for whether a non-silent exit/discard
@@ -171,7 +170,9 @@ controls/idn-3.md) on all copy-bearing surfaces. Grade IDN-4 (no
 celebration/gamification around case data, L1 — controls/idn-4.md) only when the
 surface's product is CaseSync (`products: [casesync]` — check the run's declared
 product). Flag IDN-2 violations (product icons redrawn or regenerated outside the
-approved family, L1) as deterministic findings pending the identity check script.
+approved family, L1, hybrid) as findings; `checks/identity-scan.py` is built in #159 and
+covers the reference-resolution half, while the container-colour, gloss, and wordmark
+clauses stay yours.
 
 **Domain fidelity (CNT-4, L2, judgment — controls/cnt-4.md).** Where a surface models
 a real-world artifact (a curriculum, a form, a policy document), read its content

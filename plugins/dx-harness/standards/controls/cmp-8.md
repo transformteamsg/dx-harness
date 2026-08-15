@@ -6,7 +6,7 @@ tier: L1
 check: judgment
 phase: [plan, implement, verify]
 applies_to: [flow]
-verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
+verify: "Evaluator walks the flow map, confirms every step has a reachable cancel/back affordance, interrupts the flow, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
 waiver: documented
 fails_when:
   - a wizard/dialog with no cancel/back at some step
@@ -78,14 +78,21 @@ clause:
   page-based flow and a modal-based flow are equally in scope for "can the teacher
   leave without losing work."
 
+## Why this is judgment
+
+A flow is not a source construct. Deciding which steps make up a flow, where it can be
+interrupted, and whether an affordance is *reachable and visible* rather than merely
+present all require walking the flow as a user. No static or rendered check can enumerate
+the steps of a task that spans components, routes, and state, so the evaluator is the
+enforcement rather than half of it.
+
 ## Evaluator guidance
 
-Two halves, one hybrid check:
+One check, two readings, both yours:
 
-1. **Deterministic sub-check** (manual until a script exists): for each step in the
-   flow map, confirm a cancel/back affordance is reachable and visible, not only
-   discoverable via an unlabelled gesture.
-2. **Judgment sub-check**: walk the flow, interrupt it at a plausible point
+1. **Walk the flow map** and, for each step, confirm a cancel/back affordance is reachable
+   and visible, not only discoverable via an unlabelled gesture.
+2. **Interrupt the flow** at a plausible point
    (mid-step navigation away, a simulated timeout or network loss), and confirm the
    teacher's input is either still there on return, or the teacher was told plainly
    what happened to it. Quote the specific step and the observed behaviour.
@@ -102,6 +109,6 @@ defect actually violates.
   *multi-step or data-entry* tasks specifically, not every form.
 - An explicit, confirmed discard the teacher chose — CMP-8 requires the *option* to
   preserve or explicitly discard, not that discarding is always wrong.
-- A flow whose deterministic per-step cancel/back check has not been run mechanically
-  yet — say "verified manually" and name what you checked, per the planned-script
-  precedent CMP-4/CMP-7 set.
+- A step whose cancel/back affordance is reachable and visible but styled quietly — the
+  requirement is that a non-destructive exit exists and can be found, not that it competes
+  with the primary action (CMP-5).

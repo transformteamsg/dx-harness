@@ -1810,6 +1810,55 @@ def run_self_test():
         failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven "
                         f"entries: want: {want!r}; got: {got!r}")
 
+    # No file cites a check that does not exist (#150). A "planned script" note
+    # is the drift class this closes: nothing verified those notes and nothing
+    # expired them, so they outlived the plans they described. checks/layout-scan
+    # never existed on any branch; CMP-7 is judgment and has no script, so citing
+    # it as a deterministic precedent invented one; and slop-layout's row planned
+    # for three controls that no longer need it.
+    #
+    # Scoped to the catalog, the triaged detail files, and the planned-check
+    # table, because two classes of "planned" note are deliberately left alone:
+    # the A11Y controls (excluded by this issue's Out of scope) and eight notes
+    # describing checks that already ship, which are a separate error class.
+    triaged = ["cmp-2", "cmp-3", "cmp-5", "cmp-6", "cmp-7", "cmp-8", "cmp-9",
+               "lay-1", "lay-4", "typ-5", "typ-6"]
+    scoped = {"standards/catalog.yaml": os.path.join(REPO_ROOT, "standards",
+                                                     "catalog.yaml"),
+              "checks/README.md": os.path.join(REPO_ROOT, "checks", "README.md")}
+    for slug in triaged:
+        scoped[f"standards/controls/{slug}.md"] = os.path.join(
+            REPO_ROOT, "standards", "controls", f"{slug}.md")
+
+    case_count += 1
+    want = []
+    got = []
+    for rel, path in sorted(scoped.items()):
+        with open(path) as fh:
+            text = fh.read()
+        for needle in ("layout-scan", "precedent CMP-7", "CMP-4/CMP-7"):
+            if needle in text:
+                got.append(f"{rel} cites {needle!r}")
+        # The 'planned' sweep runs over the triaged detail files only. The
+        # catalog still carries CNT-12's note (content-lint.py ships, so it is
+        # the shipped-script error class, filed separately) and README.md's own
+        # "Planned for V1" heading, which names a table of real build targets.
+        if rel.startswith("standards/controls/") and re.search(r"planned", text,
+                                                               re.IGNORECASE):
+            got.append(f"{rel} still carries a 'planned' note")
+    if "slop-layout" in open(os.path.join(REPO_ROOT, "checks", "README.md")).read():
+        got.append("checks/README.md still has a slop-layout row")
+    # The triaged controls' own verify: strings, read as data rather than text,
+    # so a promise reintroduced through the catalog is caught too.
+    for slug in triaged:
+        control = live_by_id.get(slug.upper(), {})
+        verify = str(control.get("verify", ""))
+        if re.search(r"planned|until a script exists", verify, re.IGNORECASE):
+            got.append(f"{slug.upper()} verify: still promises a script")
+    if want != got:
+        failures.append(f"FAIL no file cites a check that does not exist: "
+                        f"want: {want!r}; got: {got!r}")
+
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
     try:
