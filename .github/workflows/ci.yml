@@ -1,14 +1,17 @@
 name: CI
 
 # Runs the fast checks (lint, typecheck, unit tests, standards gate) on pushes
-# to main and on pull requests targeting main. Separate from deploy.yml — this
-# workflow never deploys; deploy.yml runs only after this workflow succeeds.
+# to main and on pull requests targeting main or an epic integration branch.
+# An epic branch collects a multi-issue effort whose children stack on each
+# other before any of it reaches main, so its PRs need the same gate. Separate
+# from deploy.yml — this workflow never deploys, and deploy.yml triggers only on
+# a CI run whose branch is main, so widening the trigger here cannot deploy.
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, "epic/**"]
 
 permissions:
   contents: read
