@@ -374,6 +374,103 @@ def run_cell(job, node="node", runner=None):
 
 WAIVE_ATTRIBUTE = "data-dx-waive"
 
+# The DOM analogue of the inline `dx-waive <CTL> reason="…"` comment, for a
+# layer whose findings have no source file to carry a comment. It is element
+# scoped, permanently: a per-URL ignore list would exempt a whole page and hide
+# real regressions elsewhere on it, and a register-scoped exemption would make
+# a permanent blind spot. Both were considered and declined on the record.
+#
+#     data-dx-waive="<CTL-ID>[ <CTL-ID>...] reason=<free text to the end>"
+#
+# Two deliberate departures from the inline grammar, and one from the inline
+# convention:
+#   - No quotes around the reason. The inline form's `reason="…"` cannot survive
+#     inside a JSX attribute value that is itself double quoted.
+#   - The reason is required here where it is optional inline: a rendered
+#     waiver has no surrounding comment or file context to explain itself, so
+#     an unexplained one is malformed.
+#   - It SUPPRESSES where the inline form downgrades to `[waiver-claimed]` and
+#     still exits 1. A downgrade would still fail a repo on its own teaching
+#     exhibit, which is the whole problem the ruling solves.
+DOM_WAIVE_RE = re.compile(
+    r'^\s*(?P<ids>[A-Z0-9]+-\d+(?:\s+[A-Z0-9]+-\d+)*)\s+reason=(?P<reason>\S.*?)\s*$'
+)
+
+# The bracket a marker error rides when no control id is recoverable. It is not
+# a catalogue control and must never be added to catalog.yaml; it exists only so
+# the line keeps the parseable finding shape.
+WAIVE_MARKER_ID = "DX-WAIVE"
+
+
+class MarkerError(Exception):
+    """A malformed marker. Authored content, so it is an ERROR and it
+    suppresses nothing — silently ignoring a broken one either over-suppresses
+    or under-suppresses."""
+
+
+def parse_dom_waiver(value):
+    """`(ids, reason)` from a marker's attribute value. `ids` is
+    order-preserving and de-duplicated; `reason` is the verbatim tail."""
+    match = DOM_WAIVE_RE.match(value or "")
+    if not match:
+        raise MarkerError(f"does not parse: expected `<CTL-ID>... reason=<text>`, "
+                          f"got `{(value or '').strip()}`")
+    ids, seen = [], set()
+    for cid in match.group("ids").split():
+        if cid not in seen:
+            seen.add(cid)
+            ids.append(cid)
+    return ids, match.group("reason")
+
+
+def read_markers(payload, tiers, cell_id):
+    """Turn the driver's raw markers into (suppression, errors, notes).
+
+    `suppression` maps a node key to the control ids waived for it; a nested
+    marker's ids union with its enclosing marker's, because a node inside both
+    is reported as inside both. A marker naming an L0 control, or a control the
+    catalogue does not have, is an ERROR and suppresses nothing for that id —
+    the inline path already refuses an L0 waiver, and the DOM form must not
+    become the way around it."""
+    route = payload.get("route") or "/"
+    suppression, errors, notes = {}, [], []
+    for marker in payload.get("waived") or []:
+        selector = marker.get("selector") or "(unknown element)"
+        try:
+            ids, reason = parse_dom_waiver(marker.get("value"))
+        except MarkerError as exc:
+            errors.append(checklib.emit_rendered_error(
+                route, cell_id, WAIVE_MARKER_ID,
+                f"{WAIVE_ATTRIBUTE} on `{selector}` {exc}",
+                f"write `{WAIVE_ATTRIBUTE}=\"<CTL-ID> reason=<why>\"`; a rendered "
+                f"waiver with no reason explains nothing"))
+            continue
+        honoured = []
+        for cid in ids:
+            tier = tiers.get(cid)
+            if tier is None:
+                errors.append(checklib.emit_rendered_error(
+                    route, cell_id, cid,
+                    f"{WAIVE_ATTRIBUTE} on `{selector}` references an unknown control id",
+                    "name a control that exists in standards/catalog.yaml"))
+                continue
+            if tier == "L0":
+                errors.append(checklib.emit_rendered_error(
+                    route, cell_id, cid,
+                    f"{WAIVE_ATTRIBUTE} on `{selector}` names an L0 control; "
+                    f"L0 is never waivable",
+                    "fix the finding; an L0 control has no waiver of any kind"))
+                continue
+            honoured.append(cid)
+        if not honoured:
+            continue
+        for key in marker.get("contains") or []:
+            suppression.setdefault(key, set()).update(honoured)
+        notes.append(
+            f"NOTE  rendered-check: {route}:{cell_id} honoured {WAIVE_ATTRIBUTE} on "
+            f"`{selector}` for {', '.join(honoured)} — reason: {reason}")
+    return suppression, errors, notes
+
 
 def node_target(node):
     """axe names a node by a list of selectors, one per frame. The last is the
@@ -399,7 +496,7 @@ def demote_hidden(control, node, hidden_keys):
     return control == "A11Y-8" and node_key(node) in set(hidden_keys or ())
 
 
-def translate_violations(payload, rule_map, cell_id):
+def translate_violations(payload, rule_map, cell_id, suppression=None):
     """axe's violations become ERROR lines under the control each rule maps to.
     A rule with no row is a misconfiguration, not a dropped finding: it is
     reported as an operational ERROR and no control id is guessed.
@@ -410,11 +507,14 @@ def translate_violations(payload, rule_map, cell_id):
     route = payload.get("route") or "/"
     aria = set(payload.get("aria_rules") or [])
     hidden = payload.get("hidden_nodes") or []
+    waived = suppression or {}
     for rule in payload.get("violations", []):
         rule_id = rule.get("id") or "(unknown rule)"
         control = control_for_rule(rule_id, rule_map, aria)
         for node in rule.get("nodes", []):
             selector = node_target(node)
+            if control in waived.get(node_key(node), ()):
+                continue  # inside a marker naming this control, for this subtree only
             if control is None:
                 errors.append(
                     f"ERROR rendered-check: axe rule '{rule_id}' fired at {route} "
@@ -448,6 +548,8 @@ def translate_violations(payload, rule_map, cell_id):
             errors.append(
                 f"ERROR rendered-check: page evaluation '{rule_id}' has no row in "
                 f"{checklib.RULE_MAP_FILENAME} — add one; no control id is guessed")
+            continue
+        if control in waived.get(f"eval:{rule_id}:{finding.get('selector')}", ()):
             continue
         errors.append(checklib.emit_rendered_error(
             route, cell_id, control,
@@ -617,7 +719,11 @@ def run(session=None, url=None, viewports=DEFAULT_VIEWPORTS, themes="auto",
     errors = []
     for payload in payloads:
         cell_id = payload.get("cell")
-        cell_errors, demoted = translate_violations(payload, rule_map, cell_id)
+        suppression, marker_errors, marker_notes = read_markers(payload, tiers, cell_id)
+        errors.extend(marker_errors)
+        out.extend(marker_notes)
+        cell_errors, demoted = translate_violations(payload, rule_map, cell_id,
+                                                    suppression)
         errors.extend(cell_errors)
         out.extend(translate_incomplete(payload, rule_map, cell_id, demoted))
         out.extend(inapplicable_notes(payload, rule_map, controls, cell_id))
@@ -932,6 +1038,107 @@ def run_self_test():
     check("a control with a rule that did apply records no N/A", [],
           inapplicable_notes(_axe_payload(inapplicable=["image-alt"]),
                              rule_map, controls, "1280-light"))
+
+    # ── the DOM marker's grammar ─────────────────────────────────────────────
+    check("one id and a reason parse", (["SLP-4"], "quarantined anti-specimen"),
+          parse_dom_waiver("SLP-4 reason=quarantined anti-specimen"))
+    check("several ids ride one attribute, since HTML forbids a duplicate",
+          (["SLP-4", "SLP-6"], "quarantined anti-specimen"),
+          parse_dom_waiver("SLP-4 SLP-6 reason=quarantined anti-specimen"))
+    check("the reason runs verbatim to the end of the value",
+          "the before panel of the standards demo, reason= and all",
+          parse_dom_waiver("SLP-4 reason=the before panel of the standards demo, "
+                           "reason= and all")[1])
+    check("ids are de-duplicated, order preserved", ["SLP-6", "SLP-4"],
+          parse_dom_waiver("SLP-6 SLP-4 SLP-6 reason=x")[0])
+    for bad, why in [("SLP-4", "no reason at all"),
+                     ("SLP-4 reason=", "an empty reason"),
+                     ("reason=x", "no control id"),
+                     ("slp-4 reason=x", "a lowercase id")]:
+        raised = False
+        try:
+            parse_dom_waiver(bad)
+        except MarkerError:
+            raised = True
+        check(f"a marker with {why} is malformed", True, raised)
+
+    # ── a marker skips only its named controls, and only its subtree ─────────
+    inside = {"target": [".exhibit p"], "html": "<p/>"}
+    outside = {"target": [".sibling p"], "html": "<p/>"}
+    exhibit = _axe_payload(
+        cell="1280-light", route="/standards",
+        violations=[
+            {"id": "color-contrast", "help": "contrast",
+             "nodes": [inside, outside]},
+        ],
+        waived=[{"selector": ".exhibit",
+                 "value": "SLP-4 SLP-6 reason=quarantined anti-specimen",
+                 "contains": [node_key(inside)]}])
+    suppression, marker_errors, marker_notes = read_markers(exhibit, tiers, "1280-light")
+    check("a well-formed marker raises no ERROR", [], marker_errors)
+    check("it records a NOTE naming the element, the ids and the reason", True,
+          len(marker_notes) == 1 and ".exhibit" in marker_notes[0]
+          and "SLP-4, SLP-6" in marker_notes[0]
+          and "quarantined anti-specimen" in marker_notes[0])
+    check("it waives its named controls for its own subtree only",
+          {node_key(inside): {"SLP-4", "SLP-6"}}, suppression)
+    exhibit_errors, _ = translate_violations(exhibit, rule_map, "1280-light", suppression)
+    check("a contrast violation inside the marked subtree is still reported",
+          True, any(".exhibit p" in e for e in exhibit_errors))
+    check("a contrast violation on a sibling outside it is still reported",
+          True, any(".sibling p" in e for e in exhibit_errors))
+    check("no page-level or register-level exemption was applied", 2, len(exhibit_errors))
+    waived_finding = _axe_payload(
+        violations=[{"id": "dx/slp-4-stand-in", "help": "x", "nodes": [inside]}],
+        waived=exhibit["waived"])
+    supp2, _, _ = read_markers(waived_finding, tiers, "1280-light")
+    check("the marker's own controls are the ones it suppresses",
+          {"SLP-4", "SLP-6"}, supp2[node_key(inside)])
+
+    # ── a nested marker's ids union with the enclosing one's ─────────────────
+    nested = _axe_payload(
+        violations=[{"id": "color-contrast", "help": "c", "nodes": [inside]}],
+        waived=[{"selector": ".exhibit", "value": "SLP-4 reason=outer",
+                 "contains": [node_key(inside)]},
+                {"selector": ".exhibit .inner", "value": "SLP-6 reason=inner",
+                 "contains": [node_key(inside)]}])
+    nested_supp, _, _ = read_markers(nested, tiers, "1280-light")
+    check("a nested marker unions rather than replaces",
+          {"SLP-4", "SLP-6"}, nested_supp[node_key(inside)])
+
+    # ── an L0 id in a marker is refused ──────────────────────────────────────
+    l0_marker = _axe_payload(
+        violations=[{"id": "color-contrast", "help": "c", "nodes": [inside]}],
+        waived=[{"selector": ".exhibit", "value": "A11Y-1 reason=looks fine to me",
+                 "contains": [node_key(inside)]}])
+    l0_supp, l0_errors, l0_notes = read_markers(l0_marker, tiers, "1280-light")
+    check("an L0 id in a marker is one ERROR", 1, len(l0_errors))
+    check("the ERROR says L0 is never waivable", True,
+          "L0 is never waivable" in l0_errors[0])
+    check("the ERROR keeps the parseable finding shape", "A11Y-1",
+          detect._FINDING_RE.match(l0_errors[0]).group("control"))
+    check("it suppresses nothing", {}, l0_supp)
+    check("it records no honoured marker", [], l0_notes)
+    l0_findings, _ = translate_violations(l0_marker, rule_map, "1280-light", l0_supp)
+    check("contrast is still checked on that subtree", 1, len(l0_findings))
+
+    # ── a malformed or unknown-id marker fails loudly ────────────────────────
+    broken = _axe_payload(waived=[
+        {"selector": ".a", "value": "SLP-4", "contains": []},
+        {"selector": ".b", "value": "ZZZ-9 reason=x", "contains": []},
+        {"selector": ".c", "value": "SLP-4 reason=", "contains": []},
+    ])
+    broken_supp, broken_errors, _ = read_markers(broken, tiers, "1280-light")
+    check("each broken marker produces its own ERROR", 3, len(broken_errors))
+    check("a marker with no reason names the marker id, not a control",
+          WAIVE_MARKER_ID, detect._FINDING_RE.match(broken_errors[0]).group("control"))
+    check("an unknown control id is named as unknown", True,
+          "unknown control id" in broken_errors[1])
+    check("an empty reason is refused too", True,
+          "does not parse" in broken_errors[2])
+    check("none of them suppresses anything", {}, broken_supp)
+    check("the marker id is not a catalogue control", False,
+          WAIVE_MARKER_ID in tiers)
 
     # ── no page open: the layer did not run, and nothing passed ───────────────
     code, lines, records = run(cdp_resolver=lambda session: None)

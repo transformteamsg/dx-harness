@@ -55,10 +55,21 @@ function Violation({ children }: { children: string }) {
    chips name the control each element fails. Actions render as spans so the
    only focusable element in the frame stays the slider. This panel is the
    frame's one in-flow child: the 16/10 aspect is the floor and this content
-   is the minimum, so nothing clips at narrow widths. */
+   is the minimum, so nothing clips at narrow widths.
+
+   The inline dx-waive comments below answer the static checks, which read
+   source. The rendered check reads a page and has no source line to read a
+   comment from, so the container carries the DOM analogue: data-dx-waive
+   names SLP-4 and SLP-6 — the two the panel exhibits in the rendered DOM —
+   and the runner skips this subtree for those two controls only. Every other
+   control is still checked here, including inside this panel: contrast is L0
+   and no marker of any kind can waive it. */
 function BeforePanel() {
   return (
-    <div className="relative flex min-h-full flex-col bg-(--demo-slop-surface)">
+    <div
+      className="relative flex min-h-full flex-col bg-(--demo-slop-surface)"
+      data-dx-waive="SLP-4 SLP-6 reason=quarantined anti-specimen: the before panel of the standards demo"
+    >
       {/* dx-waive SLP-1 reason="quarantined anti-specimen: the before panel of the standards demo" */}
       <div
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"

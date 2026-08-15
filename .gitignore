@@ -31,3 +31,8 @@ next-env.d.ts
 # Playwright
 /test-results/
 /playwright-report/
+
+# The harness's own Node dependencies (plugins/dx-harness/package.json) are a
+# provisioning surface, like the global ast-grep install: the manifest is
+# tracked, the install output is not.
+plugins/dx-harness/package-lock.json

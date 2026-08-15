@@ -342,36 +342,6 @@ async function main() {
           .options({ runOnly: { type: "rule", values: ruleIds }, rules: forceEnabled })
           .analyze();
 
-    const markers = await evaluateSafely(page, collectMarkersJs(job.waiveAttribute || "data-dx-waive"));
-
-    const nodeTargets = [];
-    const keyOf = (node) => JSON.stringify(node.target);
-    for (const bucket of [results.violations, results.incomplete]) {
-      for (const rule of bucket) {
-        for (const node of rule.nodes) {
-          const target = Array.isArray(node.target) ? node.target[node.target.length - 1] : node.target;
-          nodeTargets.push({ key: keyOf(node), selector: String(target) });
-        }
-      }
-    }
-    let membership = {};
-    if (markers.length && nodeTargets.length) {
-      membership = await evaluateSafely(
-        page,
-        markerMembershipJs(job.waiveAttribute || "data-dx-waive", nodeTargets),
-      );
-    }
-    const reachability = nodeTargets.length
-      ? await evaluateSafely(page, nodeReachabilityJs(nodeTargets))
-      : {};
-    const waived = markers.map((m) => ({
-      selector: m.selector,
-      value: m.value,
-      contains: Object.entries(membership)
-        .filter(([, enclosing]) => enclosing.includes(m.selector))
-        .map(([key]) => key),
-    }));
-
     const evaluationFindings = [];
     for (const evaluation of job.evaluations || []) {
       let found = [];
@@ -395,6 +365,43 @@ async function main() {
         });
       }
     }
+
+    const markers = await evaluateSafely(page, collectMarkersJs(job.waiveAttribute || "data-dx-waive"));
+
+    const nodeTargets = [];
+    const keyOf = (node) => JSON.stringify(node.target);
+    for (const bucket of [results.violations, results.incomplete]) {
+      for (const rule of bucket) {
+        for (const node of rule.nodes) {
+          const target = Array.isArray(node.target) ? node.target[node.target.length - 1] : node.target;
+          nodeTargets.push({ key: keyOf(node), selector: String(target) });
+        }
+      }
+    }
+    // A registered page evaluation's finding is waivable on the same terms as
+    // an axe one, so its element joins the same membership question.
+    for (const finding of evaluationFindings) {
+      if (finding.selector) {
+        nodeTargets.push({ key: `eval:${finding.rule}:${finding.selector}`, selector: finding.selector });
+      }
+    }
+    let membership = {};
+    if (markers.length && nodeTargets.length) {
+      membership = await evaluateSafely(
+        page,
+        markerMembershipJs(job.waiveAttribute || "data-dx-waive", nodeTargets),
+      );
+    }
+    const reachability = nodeTargets.length
+      ? await evaluateSafely(page, nodeReachabilityJs(nodeTargets))
+      : {};
+    const waived = markers.map((m) => ({
+      selector: m.selector,
+      value: m.value,
+      contains: Object.entries(membership)
+        .filter(([, enclosing]) => enclosing.includes(m.selector))
+        .map(([key]) => key),
+    }));
 
     const applied = await evaluateSafely(
       page,
