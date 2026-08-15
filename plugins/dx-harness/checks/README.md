@@ -96,15 +96,25 @@ them is where the floor silently stops being enforced.
 One file maps every accessibility rule the harness runs to exactly one control id:
 `checks/a11y-rule-map.json` (JSON, not YAML — the check scripts are stdlib-only).
 
-- `rules` — `"jsx-a11y/<rule>": "<CTL>"`, one control id per rule, never a list. All
-  31 rules in jsx-a11y's `recommended` preset have a row, so a rule that fires can
-  never be silently dropped; a rule with no row is reported as a misconfiguration,
-  not attributed to a guessed control.
+- `rules` — `"<prefix>/<rule>": "<CTL>"`, one control id per rule, never a list. The
+  prefix names the tool the rule belongs to: `jsx-a11y/` for the static lint layer,
+  `axe/` for the rendered check, `dx/` for the rendered check's own bespoke page
+  evaluations. All 31 rules in jsx-a11y's `recommended` preset have a row, so a rule
+  that fires can never be silently dropped; a rule with no row is reported as a
+  misconfiguration, not attributed to a guessed control.
+- `aria_prefix_control` — the control every axe rule id beginning `aria-` maps to
+  (A11Y-8). It is one key rather than two dozen rows because the aria suite is
+  resolved from the installed axe's `getRules()` at run time: a hardcoded list drifts
+  on the next axe minor, and a rule the harness has never seen would otherwise be
+  dropped.
 - `layers` — the control ids each layer covers (`eslint-jsx-a11y`,
-  `a11y-static-focus`, `contrast-token-pairs`). A layer that could not run reads its
-  own row to name the controls going to manual verification, so a control is never
-  reported as passing by a layer that did not check it. The rendered check's axe rows
-  are a later addition to the same file.
+  `a11y-static-focus`, `contrast-token-pairs`, `axe-rendered`). A layer that could not
+  run reads its own row to name the controls going to manual verification, so a
+  control is never reported as passing by a layer that did not check it.
+
+Per-rule run behaviour stays out of the map: `target-size` being force-enabled,
+`bypass` being report-only and the A11Y-8 visibility demotion all live in the runner,
+so the map keeps one job — rule to control — and one reader per layer.
 
 Four rows attribute a finding to a control the eslint layer claims **no** coverage
 for: `heading-has-content` and `scope` (A11Y-7, whose static half is the separate
