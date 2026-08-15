@@ -11,7 +11,8 @@ Validates standards/catalog.yaml for internal consistency:
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in
      catalog — swept over skills/**, agents/**, procedures/**, and
-     docs/catalog-changes/.
+     docs/catalog-changes/, plus the named files in CROSS_REF_FILES (the
+     standards/ documents the tree walk does not reach).
   8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md, docs/index.html or standards/quality-bar.md — the
      plugin's or the consuming site's — must equal the catalog's actual control
@@ -296,6 +297,19 @@ def validate_control(control, idx, schema_bits):
             err(loc, f"id '{ctrl_id}' does not match pattern {control_id_re.pattern}")
 
     return errors
+
+
+# Files swept for control-id cross-references by name, because the Step-7 tree
+# walk covers skills/, agents/, procedures/ and docs/catalog-changes/ only. The
+# two standards/ documents are here because their control citations are exactly
+# what rots: neither is read at build time by anything else.
+CROSS_REF_FILES = (
+    "README.md",
+    "checks/README.md",
+    "docs/decisions/TEMPLATE.md",
+    "standards/quality-bar.md",
+    "standards/layout-patterns.md",
+)
 
 
 def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
@@ -1091,11 +1105,8 @@ def collect_errors(repo_root, _return_count=False):
     catalog_path = os.path.join(repo_root, "standards", "catalog.yaml")
     controls_dir = os.path.join(repo_root, "standards", "controls")
 
-    cross_ref_files = [
-        os.path.join(repo_root, "README.md"),
-        os.path.join(repo_root, "checks", "README.md"),
-        os.path.join(repo_root, "docs", "decisions", "TEMPLATE.md"),
-    ]
+    cross_ref_files = [os.path.join(repo_root, *rel.split("/"))
+                       for rel in CROSS_REF_FILES]
     # Walk skills/**/*.md, agents/**/*.md, procedures/**/*.md, and glob
     # docs/catalog-changes/*.md at runtime
     skills_dir = os.path.join(repo_root, "skills")
@@ -1439,6 +1450,28 @@ def run_self_test():
     assert_xref_error("retired id outside a removal record",
                       "Grade IDN-4 on CaseSync surfaces.", catalog_ids,
                       "references unknown control id 'IDN-4'")
+
+    # The two standards/ documents sit outside the Step-7 tree walk, so they are
+    # only swept because CROSS_REF_FILES names them. Assert the names, then
+    # sweep the real files against the real catalog: a control id that rots in
+    # either one has to fail here rather than in a reader's head.
+    case_count += 1
+    undeclared = {"standards/quality-bar.md", "standards/layout-patterns.md"} - set(CROSS_REF_FILES)
+    if undeclared:
+        failures.append(f"FAIL standards docs declared for sweeping: missing {sorted(undeclared)}")
+
+    with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
+        live_ids = {c["id"] for c in yaml.safe_load(fh)["controls"] if "id" in c}
+    for rel in ("standards/quality-bar.md", "standards/layout-patterns.md"):
+        path = os.path.join(REPO_ROOT, *rel.split("/"))
+        if not os.path.isfile(path):
+            continue
+        with open(path) as fh:
+            swept_text = fh.read()
+        assert_xref_clean(f"{rel} cites only live control ids", swept_text, live_ids)
+        assert_xref_error(f"{rel} would report a dead control id",
+                          swept_text + "\nSee LAY-99 for the rest.\n", live_ids,
+                          "references unknown control id 'LAY-99'")
 
     # ── dx-sync parity cases (pure helpers) ─────────────────────────────────
 
