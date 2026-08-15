@@ -4,7 +4,15 @@ Whenever the surface **already exists** (a whole-page review, an
 "improve / polish this", an "I don't like it", or a catalogue re-audit), do not
 propose changes before you have seen and judged the current state:
 
-1. **Capture the current page.** Take a screenshot of the live surface at 1280
+1. **Ask for the page.** This is a standalone run, so nothing has a page open
+   yet and the harness never starts one: ask the user for the URL of the
+   surface, already serving. A re-audit is the same path — take the record set
+   from `../../../checks/reaudit-scope.py`, then ask for the URL of each surface
+   it names. If the user gives no URL, say so plainly and carry on with the
+   steps below from a screenshot alone: the rendered check in step 2 cannot run,
+   so every control it would have decided goes to manual verification, never a
+   pass, and A11Y-1 and A11Y-3 still block until verified by some path.
+2. **Capture the current page.** Take a screenshot of the live surface at 1280
    (and 360 if the change is responsive). Capture mechanism, in order of
    preference: (1) the `agent-browser` CLI if installed (`agent-browser --help`
    to confirm; not installed → offer setup once via `../dx-design-setup/setup.md` before
@@ -12,7 +20,13 @@ propose changes before you have seen and judged the current state:
    width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
    the local Playwright fallback; (4) ask the user to provide the screenshot.
    Never critique a page you cannot see, and never fabricate what it looks like.
-2. **Layout read (do this before judging).** Read the pattern inventory at
+   With the session still open, run
+   `python3 ../../../checks/rendered-check.py --session <that session> --url <the URL>`:
+   it attaches to the page you just captured, runs axe across both viewports and
+   both themes plus one reduced-motion cell, and restores the session so the
+   frames you already took stay valid evidence. Its `NOTE` lines are items for
+   the manual accessibility pass, not gates.
+3. **Layout read (do this before judging).** Read the pattern inventory at
    `../../../standards/layout-patterns.md` (beside the catalogue). From the 1280 frame (and 360 when responsive behaviour is in
    scope), write down — in this order, before any judgment: (a) the page's
    regions and what each is for; (b) where the eye lands first, second, third
@@ -22,7 +36,7 @@ propose changes before you have seen and judged the current state:
    encoded (space / divider / box). THEN judge: violations go to the
    critique's "what underperforms" list as before; everything else that would
    make the layout better becomes a **suggestion**.
-3. **Write a short design critique of what is there** — against the in-scope
+4. **Write a short design critique of what is there** — against the in-scope
    catalog controls *and* Kind Utility: what works and should be preserved
    (call out established iconography, radius, layout, and copy that are
    deliberate; do not "fix" them) **but verify, do not assume: every element you list as
@@ -32,7 +46,7 @@ propose changes before you have seen and judged the current state:
    check** — and what
    genuinely underperforms (control violations, hierarchy,
    friction in the teacher's task). Ground each point in the screenshot.
-4. **Layout suggestions (ranked).** Up to 5, ordered by impact on the
+5. **Layout suggestions (ranked).** Up to 5, ordered by impact on the
    teacher's task. Each names: the concrete change ("merge the two summary
    cards into one calm header row"), the pattern or control it serves
    (layout-patterns.md #4, LAY-5), and the cost (S/M). Suggestions are OFFERS:
@@ -41,7 +55,7 @@ propose changes before you have seen and judged the current state:
    pending until the human replies; unpicked ones are marked `not accepted` on
    that reply, not silently dropped. A suggestion
    never bypasses `dx-design-execute`'s plan gate.
-5. The critique's findings and suggestions feed the report step (`report.md`,
+6. The critique's findings and suggestions feed the report step (`report.md`,
    beside this file) and the Findings comment on the surface's design ticket.
    Critique proposes only; it never edits the product. Improvement is the goal,
    and the critique keeps it targeted instead of a blanket restyle.

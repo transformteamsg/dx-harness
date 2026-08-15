@@ -950,6 +950,40 @@ def run_self_test():
     check("the L0 controls it covers still block", True,
           bool(l0) and any("block until" in ln for ln in lines))
 
+    # ── a standalone run that was given a URL but has no open page ───────────
+    # The person is asked for the URL by the skill; the runner still attaches
+    # rather than opening anything, so a URL with nothing serving it is the
+    # same honest not-run case, and it says which URL it was given.
+    code, lines, _ = run(url="https://example.test/standards",
+                         cdp_resolver=lambda session: None)
+    check("a named URL with no open page still exits 0", 0, code)
+    check("the reason names the URL it was given", True,
+          any("https://example.test/standards" in ln for ln in lines))
+    check("the controls still fall back to manual verification", True,
+          any("manual verification" in ln for ln in lines))
+    asked = []
+
+    def record_cli(argv, timeout, stdin_text=None):
+        asked.append(argv)
+        return 0, "ws://127.0.0.1:9222/devtools/browser/abc\n", ""
+
+    endpoint = resolve_cdp_url("verify", runner=record_cli)
+    if asked:
+        check("the runner asks the capture CLI only for its endpoint",
+              ["get", "cdp-url"], asked[0][1:3])
+        check("it never asks the CLI to open anything", False,
+              any("open" in argv for argv in asked))
+        check("it names the session it was given", True, "verify" in asked[0])
+        check("a live endpoint comes back", True,
+              endpoint is not None and endpoint.startswith("ws://"))
+    else:
+        # No capture CLI on this machine: resolve_cdp_url short-circuits before
+        # the runner, which is itself the honest not-run path.
+        check("with no capture CLI installed, no endpoint resolves", None, endpoint)
+        check("it never asks the CLI to open anything", [], asked)
+        check("it names the session it was given", [], asked)
+        check("a live endpoint comes back", [], asked)
+
     # ── axe failing is the same class as no page, never a crash ───────────────
     def boom(_job):
         raise DriverError("connectOverCDP refused")
