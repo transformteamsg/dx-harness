@@ -57,6 +57,15 @@ Neutral, steady, quietly confident. Second person, plain language, Singapore
 English. Empty states teach: one plain sentence about what goes here, then the
 primary action.
 
+## Quality bar
+<!-- Cites: standards/quality-bar.md. Which class of surface this product is, so
+     the ceiling grades a dense task tool and a reading surface by their own
+     idea of good. At most one `- register:` bullet; the ids are the ones
+     quality-bar.md's Registers section declares. Delete this section to take
+     the default (product). Nothing here is waivable: the quality bar never
+     blocks, so it carries no override grammar. -->
+- register: product
+
 ## Layout system
 <!-- Cites: LAY-1. Machine-read by the checks; keep the bullets exact. -->
 - columns: 12

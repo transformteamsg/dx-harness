@@ -35,7 +35,7 @@ source:
 Omit any section that does not differ from the portfolio default. An absent section
 means "portfolio default applies", not "unspecified".
 
-## `DESIGN.md`: the ten sections (all optional)
+## `DESIGN.md`: the eleven sections (all optional)
 
 Each `## ` heading maps to one top-level key in `.dx/design.json`. Cite the
 normative source in each section you keep. Template:
@@ -48,13 +48,45 @@ normative source in each section you keep. Template:
 | `Typography` | `typography` | family, base size/leading, scale steps, tabular numerals | TYP controls |
 | `Tokens` | `tokens` | source file, prefix, spacing base, dark-mode strategy (pointers into code; code is the authority) | TOK controls |
 | `Motion` | `motion` | signature moves only (durations, easing) | MOT-1, SLP-8, A11Y-5 |
-| `Voice & Tone` | `tone` | register, person, locale, empty-state behaviour; this product's weighting of content §6 | content skill §6 |
+| `Voice & Tone` | `tone` | the **tone** register (IDN-3's sense: how this product sounds), person, locale, empty-state behaviour; this product's weighting of content §6 | content skill §6 |
+| `Quality bar` | `quality_bar` | the **surface** register this repo selects — which class of surface it is, at most one, absent means the default | `standards/quality-bar.md` |
 | `Layout system` | `layout_system` | the declared column grid; machine-read, keep bullets exact | LAY-1 |
 | `Components` | `components` | manifest pointer + product-level component decisions | CMP-1, CMP-7 |
 | `Guardrails` | `guardrails` | product-specific agent instructions no catalogue control covers (10 bullets max) | (interview) |
 | `Overrides` | `overrides` | standing, product-level deviations, one structured line each | rule 5 |
 
 The legacy heading `Tone weighting` still maps to `tone`.
+
+**Two senses of *register*, one table.** `Voice & Tone` carries the tone register
+(**IDN-3**), which calibrates how one product sounds. `Quality bar` carries the
+surface register, which says what class of surface this is. The section names keep
+them apart; `CONTEXT.md` defines both.
+
+### The Quality bar section
+
+The guiding question: **which class of surface is this product?** A dense, task-first
+tool a teacher uses between classes reads well by different measures than a page
+someone sits and reads. The registers are declared once, portfolio-wide, in
+`standards/quality-bar.md`'s Registers section; this section only selects one:
+
+```markdown
+## Quality bar
+- register: standards-site
+```
+
+- **At most one register per repo.** Not a list, not a JSON array, not a per-surface
+  mapping. Variety inside one product is what the quality bar's six By-surface rows
+  already handle. A file that writes two bullets is projected from the first and
+  warned about; `checks/validate.py` reports it as an error.
+- **`register` is the only field this section takes.** Any other key (`registers`,
+  `tier`) is a typo that would read as no declaration, so `validate.py` errors on it
+  rather than letting it pass quietly.
+- **No declaration selects the default**, `product` — whether the section is absent,
+  the file is absent, or the section says nothing a parser can read.
+- **No override grammar, ever.** The quality bar never blocks, so there is nothing to
+  waive: no exception field here, and no register on an `## Overrides` line. A
+  conflict that keeps recurring between this product and an anchor is evidence to
+  change `standards/quality-bar.md` itself.
 
 ### The Overrides section
 
@@ -96,6 +128,7 @@ Generated only, never hand-edited. Shape:
   "essence": "Kind Utility: useful first, kind at the surface.",
   "colour": { "primary": "--tw-blue #0064FF", "pairs": [["--foreground", "--background"]] },
   "layout_system": { "columns": 12, "gutter": "space-4", "breakpoints": [360, 768, 1280] },
+  "quality_bar": { "register": "standards-site" },
   "tone": "Neutral, steady, quietly confident.",
   "guardrails": ["Check the component manifest before building anything new."],
   "overrides": [
@@ -130,8 +163,9 @@ Generated only, never hand-edited. Shape:
    joined), verbatim. A section with field lines AND prose keeps both: the fields,
    plus the prose under a reserved `prose` key (so avoid a field literally named
    `prose`). A section that is empty after comment-stripping produces no key.
-5. Guardrails and Overrides are special-cased as described above; a colon inside a
-   guardrail bullet never splits it into a field.
+5. Guardrails, Overrides and Quality bar are special-cased as described above; a
+   colon inside a guardrail bullet never splits it into a field, and a second
+   `- register:` bullet loses to the first.
 
 Use `- key: value` bullets for parameters you want machine-readable; use prose for
 narrative notes.
@@ -150,6 +184,25 @@ narrative notes.
 - **Drift is a start-of-session banner, not a flow.** A stale `catalog_version` or a
   dead token pointer surfaces as a banner at the start of a design session;
   regeneration re-stamps. Staleness is never a hard failure of a design run.
+- **Resolve the quality-bar register once, then pass it on.** Read
+  `quality_bar.register` from `.dx/design.json`. It resolves to that id when the key
+  is present, the value is a non-empty string, and `standards/quality-bar.md`
+  declares a register by that id. In every other case it resolves to the default,
+  `product` — no key, no `register` field, an empty value, a prose-only section (which
+  projects as a bare string), an absent `DESIGN.md`, or an id no register declares.
+  Two `- register:` bullets resolve to the first, matching the generator.
+  Never prompt anyone to declare one: silence is a complete answer.
+- **A register that resolves to nothing rides the drift banner and never stops the
+  run.** Say what did not resolve and what you graded instead — "DESIGN.md names the
+  register `prodcut`, which `standards/quality-bar.md` does not declare; grading
+  against `product`" — then carry on. The quality bar never blocks, so a bad id costs
+  a run a banner and nothing more. `checks/validate.py` is the one place that id is an
+  error, and it is a static check over files, not the ceiling grading a run.
+- **One resolution point per run.** The builder resolves the register at intent and
+  hands the resolved id to the reviewer; the reviewer grades against what it was
+  handed and never re-reads `DESIGN.md`. That is what makes it impossible for the two
+  to disagree about a surface, and what stops a mid-run edit from changing the bar the
+  work is graded against.
 
 ## Regenerating
 
