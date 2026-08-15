@@ -442,12 +442,10 @@ def lay_parity_errors(repo_root, catalog_by_id, xref_re):
 _SLUG_RE = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
 
 
-def quality_criteria(text):
+def frontmatter(text):
     """
-    The `criteria:` list from quality-bar.md's YAML frontmatter, as a set, or
-    None when the frontmatter is absent or declares no list. Frontmatter only:
-    the ceiling's prose is never parsed, because schema-validating it would turn
-    the ceiling into a controls file by the back door.
+    A markdown file's YAML frontmatter as a dict, or None when it is absent,
+    unparseable, or not a mapping.
     """
     match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
     if match is None:
@@ -456,7 +454,17 @@ def quality_criteria(text):
         front = yaml.safe_load(match.group(1))
     except yaml.YAMLError:
         return None
-    criteria = (front or {}).get("criteria")
+    return front if isinstance(front, dict) else None
+
+
+def quality_criteria(text):
+    """
+    The `criteria:` list from quality-bar.md's YAML frontmatter, as a set, or
+    None when the frontmatter is absent or declares no list. Frontmatter only:
+    the ceiling's prose is never parsed, because schema-validating it would turn
+    the ceiling into a controls file by the back door.
+    """
+    criteria = (frontmatter(text) or {}).get("criteria")
     return {str(c) for c in criteria} if isinstance(criteria, list) else None
 
 
