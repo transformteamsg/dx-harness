@@ -13,8 +13,9 @@ Validates standards/catalog.yaml for internal consistency:
      catalog — swept over skills/**, agents/**, procedures/**, and
      docs/catalog-changes/.
   8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
-     claim in README.md or docs/index.html — the plugin's or the consuming
-     site's — must equal the catalog's actual control count), [WIRING-SYNC]
+     claim in README.md, docs/index.html or standards/quality-bar.md — the
+     plugin's or the consuming site's — must equal the catalog's actual control
+     count), [WIRING-SYNC]
      (enforced:script|partial claims actually run in prebuild/CI or are
      exempted), and [SKILL-SYNC] (every catalog id is wired into >=1
      skill/agent file or grandfathered; no ghost ids in skills).
@@ -478,7 +479,10 @@ def slp9_parity_errors(repo_root):
     return errors
 
 
-COUNT_SYNC_PATHS = ("README.md", "docs/index.html")
+# Files whose prose roster claims are held to the live counts. quality-bar.md is
+# here because its own "<N> controls" figures rotted unnoticed while it was a
+# prototype — it is a count claim, not prose the ceiling would ever schema-check.
+COUNT_SYNC_PATHS = ("README.md", "docs/index.html", "standards/quality-bar.md")
 
 
 def live_skills_count(repo_root):
@@ -524,8 +528,8 @@ def live_checks_count(repo_root):
 def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
                          skills_count=None, checks_count=None):
     """
-    [COUNT-SYNC] Every roster-size claim in README.md or docs/index.html
-    must equal the live count it claims to describe. Catches the class of
+    [COUNT-SYNC] Every roster-size claim in a COUNT_SYNC_PATHS file must equal
+    the live count it claims to describe. Catches the class of
     drift where a control/skill/check is added or removed but a prose count
     is never updated. A file with no claim (or that doesn't exist) is not an
     error (nothing to check).
@@ -1826,6 +1830,23 @@ def run_self_test():
             fh.write("No roster claim of any kind in this file at all.")
         assert_clean("count-sync no roster claim",
                      count_parity_errors(count_tmp, 48))
+
+        # The quality bar's own control count is held too — the figure that
+        # rotted to 70 unnoticed while the file sat outside this sweep.
+        standards_dir = os.path.join(count_tmp, "standards")
+        os.makedirs(standards_dir, exist_ok=True)
+        bar_path = os.path.join(standards_dir, "quality-bar.md")
+        with open(index_path, "w") as fh:
+            fh.write('<span class="pill">48 controls</span>')
+        with open(bar_path, "w") as fh:
+            fh.write("A surface can pass all 48 controls and still be forgettable.")
+        assert_clean("count-sync quality-bar matching count",
+                     count_parity_errors(count_tmp, 48))
+
+        with open(bar_path, "w") as fh:
+            fh.write("A surface can pass all 49 controls and still be forgettable.")
+        assert_error("count-sync quality-bar mismatched count",
+                     count_parity_errors(count_tmp, 48), "[COUNT-SYNC]")
     finally:
         shutil.rmtree(count_tmp, ignore_errors=True)
 
