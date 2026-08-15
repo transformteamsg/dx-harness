@@ -21,7 +21,9 @@ Validates standards/catalog.yaml for internal consistency:
      exempted), [SKILL-SYNC] (every catalog id is wired into >=1
      skill/agent file or grandfathered; no ghost ids in skills), and
      [QUALITY-SYNC] (the design reviewer's criterion list equals the quality
-     bar's frontmatter criteria set).
+     bar's frontmatter criteria set), and [REGISTER-SYNC] (a register id
+     DESIGN.md declares is one standards/quality-bar.md declares, and a repo
+     declares at most one — silent where no DESIGN.md is reachable).
      A declared sync consumer that cannot be found on disk is an ERROR, never
      a silent skip — a moved consumer must not look in sync (#122).
   9. Accepted gaps: a deterministic or hybrid control whose effective
@@ -503,6 +505,141 @@ def quality_parity_errors(repo_root):
             f"{{{', '.join(sorted(inline))}}} != quality-bar.md criteria "
             f"{{{', '.join(sorted(source))}}}"
         )
+    return errors
+
+
+QUALITY_BAR_REL = "standards/quality-bar.md"
+DESIGN_MD_NAME = "DESIGN.md"
+REGISTER_TAG = "REGISTER-SYNC"
+_GENERATOR_PATH = os.path.join(os.path.dirname(_CHECKS_DIR), "scripts",
+                               "generate-design-json.py")
+
+
+def quality_registers(text):
+    """
+    The register ids declared by quality-bar.md's frontmatter `registers:`
+    mapping, as a set, or None when the frontmatter declares no mapping.
+    Frontmatter only, for the same reason as `quality_criteria`.
+    """
+    registers = (frontmatter(text) or {}).get("registers")
+    if not isinstance(registers, dict) or not registers:
+        return None
+    return {str(r) for r in registers}
+
+
+def _load_generator():
+    """
+    The DESIGN.md parser, loaded from scripts/generate-design-json.py so this
+    check reads a Quality bar section exactly the way the projection does — a
+    second parser here could pass a file the generator reads differently, which
+    is the one failure this check exists to prevent. None when the script is
+    absent.
+    """
+    if not os.path.isfile(_GENERATOR_PATH):
+        return None
+    spec = importlib.util.spec_from_file_location("_dx_generate_design_json",
+                                                  _GENERATOR_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def find_design_md(repo_root):
+    """
+    The DESIGN.md this validator can see: the consuming site's root first, then
+    the plugin root. None when neither carries one — the common case, and not a
+    problem: a repo with no DESIGN.md takes portfolio defaults everywhere.
+    """
+    site_root = find_site_root(repo_root)
+    for base in (site_root, repo_root):
+        if base is None:
+            continue
+        path = os.path.join(base, DESIGN_MD_NAME)
+        if os.path.isfile(path):
+            return path
+    return None
+
+
+def design_quality_bar_fields(text, generator):
+    """
+    Every `- key: value` bullet under DESIGN.md's `## Quality bar` heading, in
+    document order, comments stripped. Empty when the section is absent.
+    """
+    fields = []
+    for heading, body in generator.split_sections(text):
+        if generator.heading_to_key(heading) != "quality_bar":
+            continue
+        fields.extend(generator.field_lines(generator.strip_comments(body)))
+    return fields
+
+
+def register_sync_errors(repo_root):
+    """
+    [REGISTER-SYNC] A register id DESIGN.md declares must be one
+    standards/quality-bar.md declares, and a repo declares at most one.
+
+    This is the only place a bad register id fails anything. The ceiling never
+    blocks, so a design run falls back to the default and carries on; a static
+    check over files is where the typo gets caught while it is still cheap.
+    Silent when no DESIGN.md is reachable — that is the spec's own condition,
+    and the state of every repo that never declared one.
+    """
+    design_path = find_design_md(repo_root)
+    if design_path is None:
+        return []
+
+    generator = _load_generator()
+    if generator is None:
+        return [f"ERROR scripts/generate-design-json.py [{REGISTER_TAG}]: "
+                f"{DESIGN_MD_NAME} is present but the DESIGN.md parser is missing, "
+                f"so its register could not be read — fix the harness install"]
+
+    with open(design_path) as fh:
+        fields = design_quality_bar_fields(fh.read(), generator)
+    if not fields:
+        return []
+
+    errors = []
+    declared = [str(v) for k, v in fields if k == generator.REGISTER_FIELD]
+    unknown_keys = [k for k, _ in fields if k != generator.REGISTER_FIELD]
+
+    for key in unknown_keys:
+        errors.append(
+            f'ERROR {DESIGN_MD_NAME} [{REGISTER_TAG}]: the Quality bar section '
+            f'declares an unknown field "{key}". The only field it takes is '
+            f'"{generator.REGISTER_FIELD}", so this declares nothing — fix the key '
+            f"or delete the line.")
+
+    if len(declared) > 1:
+        listed = ", ".join(f'"{d}"' for d in declared)
+        errors.append(
+            f"ERROR {DESIGN_MD_NAME} [{REGISTER_TAG}]: the Quality bar section "
+            f"declares {len(declared)} registers ({listed}); at most one is legal. "
+            f"Keep one bullet.")
+
+    if not declared:
+        return errors
+
+    bar_path = os.path.join(repo_root, *QUALITY_BAR_REL.split("/"))
+    known = None
+    if os.path.isfile(bar_path):
+        with open(bar_path) as fh:
+            known = quality_registers(fh.read())
+    if known is None:
+        # A declared id nobody can check must never look like a pass (#122).
+        errors.append(
+            f"ERROR {QUALITY_BAR_REL} [{REGISTER_TAG}]: {DESIGN_MD_NAME} declares a "
+            f"register but no register list was found here — restore the file or its "
+            f"frontmatter `registers:` mapping.")
+        return errors
+
+    for register in declared:
+        if register not in known:
+            errors.append(
+                f'ERROR {DESIGN_MD_NAME} [{REGISTER_TAG}]: register "{register}" is '
+                f"not declared in {QUALITY_BAR_REL} "
+                f"(declared: {', '.join(sorted(known))}). Fix the id here, or declare "
+                f"the register there.")
     return errors
 
 
@@ -1398,6 +1535,7 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(lay_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(quality_parity_errors(repo_root))
+    errors.extend(register_sync_errors(repo_root))
     errors.extend(voice_parity_errors(repo_root))
     errors.extend(tone_parity_errors(repo_root))
     errors.extend(uitext_parity_errors(repo_root))
@@ -1690,6 +1828,132 @@ def run_self_test():
         assert_error("quality source consumer is not skipped",
                      quality_parity_errors(td),
                      "standards/quality-bar.md [QUALITY-SYNC]: declared consumer does not exist")
+
+    # ── [REGISTER-SYNC] cases ────────────────────────────────────────────────
+    # DESIGN.md's Quality bar section is the one place a register id is written
+    # by hand, so it is the one place a typo can enter. A design run treats a bad
+    # id as drift and grades against the default, because the ceiling never
+    # blocks — which leaves this static check as the only thing between a
+    # misspelt id and a surface quietly graded against a register nobody chose.
+
+    LIVE_BAR = (
+        "---\n"
+        "artifact: quality-bar\n"
+        "registers:\n"
+        "  product:\n"
+        "    name: Teacher & School product surfaces\n"
+        "    default: true\n"
+        "  standards-site:\n"
+        "    name: The DX Design Standard website\n"
+        "---\n"
+        "\n# Quality bar\n"
+    )
+
+    def register_errs(design_md, bar_text=LIVE_BAR):
+        """[REGISTER-SYNC] over a harness tree sitting under a site root.
+        `design_md` None means the repo never wrote one; `bar_text` None means
+        the register list is gone."""
+        td = tempfile.mkdtemp(prefix="validate-selftest-register-")
+        try:
+            harness = os.path.join(td, "harness")
+            os.makedirs(os.path.join(harness, "standards"))
+            open(os.path.join(td, "package.json"), "w").close()
+            if design_md is not None:
+                with open(os.path.join(td, "DESIGN.md"), "w") as fh:
+                    fh.write(design_md)
+            if bar_text is not None:
+                with open(os.path.join(harness, "standards", "quality-bar.md"), "w") as fh:
+                    fh.write(bar_text)
+            return register_sync_errors(harness)
+        finally:
+            shutil.rmtree(td, ignore_errors=True)
+
+    # The frontmatter reader: the two live ids, and the shapes that declare none.
+    case_count += 1
+    if quality_registers(LIVE_BAR) != {"product", "standards-site"}:
+        failures.append("FAIL quality-bar registers read: expected the two ids")
+    case_count += 1
+    if quality_registers("---\nartifact: quality-bar\n---\nprose\n") is not None:
+        failures.append("FAIL quality-bar frontmatter without registers: expected None")
+    case_count += 1
+    if quality_registers("# Quality bar\n") is not None:
+        failures.append("FAIL quality-bar with no frontmatter: expected None")
+
+    # A declared id that exists is clean — including the default declared
+    # outright, which is a legitimate choice and not a redundancy to warn about.
+    assert_clean("register declared and known",
+                 register_errs("## Quality bar\n- register: standards-site\n"))
+    assert_clean("default register declared outright",
+                 register_errs("## Quality bar\n- register: product\n"))
+
+    # Every shape of "declared nothing" is clean, and none of them is a prompt.
+    assert_clean("no DESIGN.md within reach", register_errs(None))
+    assert_clean("DESIGN.md with no Quality bar section",
+                 register_errs("## Essence\nCalm tools.\n"))
+    assert_clean("Quality bar section holding only its guidance comment",
+                 register_errs("## Quality bar\n<!-- pick one -->\n"))
+    assert_clean("Quality bar section holding prose",
+                 register_errs("## Quality bar\nWe use the standards-site register.\n"))
+
+    # An id no register declares: named, with the ids that do exist, so the fix
+    # does not need a second file open.
+    unknown = register_errs("## Quality bar\n- register: prodcut\n")
+    assert_error("unknown register id reported", unknown, f"[{REGISTER_TAG}]")
+    assert_error("unknown register id names the bad id", unknown, '"prodcut"')
+    assert_error("unknown register id names the declared ids", unknown,
+                 "declared: product, standards-site")
+
+    # A heading case slip still reaches the check — the generator maps it to the
+    # same key, so a capital letter must not hide a typo from the validator.
+    assert_error("heading case slip is still checked",
+                 register_errs("## Quality Bar\n- register: prodcut\n"),
+                 '"prodcut"')
+
+    # Two registers: one error, both ids named. At most one is legal, and the
+    # generator's first-wins projection is not a fix for a file saying two things.
+    two = register_errs("## Quality bar\n- register: product\n"
+                        "- register: standards-site\n")
+    assert_error("two registers reported", two, "declares 2 registers")
+    assert_error("two registers name both ids", two,
+                 '("product", "standards-site")')
+    case_count += 1
+    if len(two) != 1:
+        failures.append(f"FAIL two valid registers report one error — got: {two}")
+
+    # A field key that is not `register` reads as no declaration to every
+    # consumer, so the person believes they chose something that never applied.
+    assert_error("unknown field key reported",
+                 register_errs("## Quality bar\n- registers: standards-site\n"),
+                 'unknown field "registers"')
+    assert_error("unknown field key names the field that works",
+                 register_errs("## Quality bar\n- tier: standards-site\n"),
+                 'The only field it takes is "register"')
+
+    # A declared id nobody can check must never look like a pass (#122).
+    assert_error("missing register list reported",
+                 register_errs("## Quality bar\n- register: standards-site\n",
+                               bar_text=None),
+                 f"{QUALITY_BAR_REL} [{REGISTER_TAG}]")
+    assert_error("register list with no registers mapping reported",
+                 register_errs("## Quality bar\n- register: standards-site\n",
+                               bar_text="---\nartifact: quality-bar\n---\n\n# Bar\n"),
+                 "no register list was found here")
+    # ...but only when something was declared. A repo that declared nothing has
+    # nothing to check, so a missing list is not its problem.
+    assert_clean("missing register list with nothing declared",
+                 register_errs("## Essence\nCalm tools.\n", bar_text=None))
+
+    # This check and the projection must read one DESIGN.md the same way: a
+    # second parser here could pass a file the generator reads differently.
+    case_count += 1
+    _generator = _load_generator()
+    if _generator is None or _generator.SECTION_MAP.get("quality bar") != "quality_bar":
+        failures.append("FAIL register check reuses the generator's heading map")
+
+    # The live tree: no DESIGN.md sits here, so the check adds nothing and the
+    # "OK: <n> controls valid" line still prints.
+    assert_clean("live harness tree adds no register errors",
+                 register_sync_errors(REPO_ROOT))
 
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
