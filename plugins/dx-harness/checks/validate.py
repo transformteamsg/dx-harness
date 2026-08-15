@@ -18,8 +18,10 @@ Validates standards/catalog.yaml for internal consistency:
      plugin's or the consuming site's — must equal the catalog's actual control
      count), [WIRING-SYNC]
      (enforced:script|partial claims actually run in prebuild/CI or are
-     exempted), and [SKILL-SYNC] (every catalog id is wired into >=1
-     skill/agent file or grandfathered; no ghost ids in skills).
+     exempted), [SKILL-SYNC] (every catalog id is wired into >=1
+     skill/agent file or grandfathered; no ghost ids in skills), and
+     [QUALITY-SYNC] (the design reviewer's criterion list equals the quality
+     bar's frontmatter criteria set).
      A declared sync consumer that cannot be found on disk is an ERROR, never
      a silent skip — a moved consumer must not look in sync (#122).
   9. Accepted gaps: a deterministic or hybrid control whose effective
@@ -432,6 +434,67 @@ def lay_parity_errors(repo_root, catalog_by_id, xref_re):
                 f"ERROR {rel} [LAY-SYNC]: inline LAY list {{{', '.join(sorted(inline))}}} "
                 f"!= catalog LAY set {{{', '.join(sorted(source))}}}"
             )
+    return errors
+
+
+# A criterion slug: lowercase words joined by hyphens. Criterion slugs are not
+# control ids, so xref_re cannot find them.
+_SLUG_RE = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
+
+
+def quality_criteria(text):
+    """
+    The `criteria:` list from quality-bar.md's YAML frontmatter, as a set, or
+    None when the frontmatter is absent or declares no list. Frontmatter only:
+    the ceiling's prose is never parsed, because schema-validating it would turn
+    the ceiling into a controls file by the back door.
+    """
+    match = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+    if match is None:
+        return None
+    try:
+        front = yaml.safe_load(match.group(1))
+    except yaml.YAMLError:
+        return None
+    criteria = (front or {}).get("criteria")
+    return {str(c) for c in criteria} if isinstance(criteria, list) else None
+
+
+def quality_parity_errors(repo_root):
+    """
+    [QUALITY-SYNC] The reviewer's criterion list must equal the quality bar's
+    frontmatter `criteria` set. Missing markers are an error. Set comparison, so
+    reordering the slugs, or rewording the prose around the fence, is free.
+    """
+    src_path = os.path.join(repo_root, "standards", "quality-bar.md")
+    con_path = os.path.join(repo_root, "agents", "dx-design-review.md")
+    present, errors = required_consumer_errors(repo_root, [src_path, con_path],
+                                               "QUALITY-SYNC")
+    if src_path not in present or con_path not in present:
+        return errors
+
+    with open(src_path) as fh:
+        source = quality_criteria(fh.read())
+    if source is None:
+        errors.append("ERROR standards/quality-bar.md [QUALITY-SYNC]: "
+                      "frontmatter declares no criteria list")
+        return errors
+
+    rel = os.path.relpath(con_path, repo_root)
+    with open(con_path) as fh:
+        span = extract_sync_block(fh.read(), "quality-criteria")
+    if span is None:
+        errors.append(f"ERROR {rel} [QUALITY-SYNC]: "
+                      f"missing dx-sync:quality-criteria markers")
+        return errors
+
+    inline = set(_SLUG_RE.findall(span))
+    if inline != source:
+        errors.append(
+            f"ERROR {rel} [QUALITY-SYNC]: inline criterion list "
+            f"{{{', '.join(sorted(inline))}}} != quality-bar.md criteria "
+            f"{{{', '.join(sorted(source))}}}"
+        )
     return errors
 
 
@@ -1326,6 +1389,7 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
     errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(lay_parity_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(quality_parity_errors(repo_root))
     errors.extend(voice_parity_errors(repo_root))
     errors.extend(tone_parity_errors(repo_root))
     errors.extend(uitext_parity_errors(repo_root))
@@ -1559,6 +1623,65 @@ def run_self_test():
     assert_error("LAY missing markers",
                  lay_errs_for_span(extract_sync_block("no markers here", "lay-controls")),
                  "missing dx-sync:lay-controls markers")
+
+    # ── [QUALITY-SYNC] cases ────────────────────────────────────────────────
+    # The frontmatter reader: criteria list, no criteria key, no frontmatter.
+    case_count += 1
+    if quality_criteria("---\ncriteria: [design-quality, craft]\n---\nprose\n") != \
+            {"design-quality", "craft"}:
+        failures.append("FAIL quality-bar frontmatter read: expected the two slugs")
+    case_count += 1
+    if quality_criteria("---\nartifact: quality-bar\n---\nprose\n") is not None:
+        failures.append("FAIL quality-bar frontmatter without criteria: expected None")
+    case_count += 1
+    if quality_criteria("# Quality bar\n\nNo frontmatter at all.\n") is not None:
+        failures.append("FAIL quality-bar with no frontmatter: expected None")
+
+    QUALITY_SOURCE = {"design-quality", "originality", "craft", "functionality"}
+
+    def quality_errs_for_span(span_text):
+        """Drive the QUALITY parity comparison against a synthetic consumer span."""
+        if span_text is None:
+            return ["ERROR scratch.md [QUALITY-SYNC]: "
+                    "missing dx-sync:quality-criteria markers"]
+        inline = set(_SLUG_RE.findall(span_text))
+        if inline != QUALITY_SOURCE:
+            return ["ERROR scratch.md [QUALITY-SYNC]: inline criterion list "
+                    "!= quality-bar.md criteria"]
+        return []
+
+    assert_clean("quality clean span",
+                 quality_errs_for_span(
+                     "design-quality · originality · craft · functionality"))
+    assert_clean("quality order-insensitive",
+                 quality_errs_for_span(
+                     "craft, functionality, design-quality, originality"))
+    assert_error("quality renamed slug",
+                 quality_errs_for_span(
+                     "design-quality · originality · craftsmanship · functionality"),
+                 "[QUALITY-SYNC]")
+    assert_error("quality dropped slug",
+                 quality_errs_for_span("design-quality · originality · craft"),
+                 "[QUALITY-SYNC]")
+    assert_error("quality added slug",
+                 quality_errs_for_span(
+                     "design-quality · originality · craft · functionality · motion"),
+                 "[QUALITY-SYNC]")
+    assert_error("quality missing markers",
+                 quality_errs_for_span(
+                     extract_sync_block("no markers here", "quality-criteria")),
+                 "missing dx-sync:quality-criteria markers")
+
+    # A moved or deleted quality bar is an ERROR, never a silent skip (#122).
+    with tempfile.TemporaryDirectory() as td:
+        os.makedirs(os.path.join(td, "skills"))
+        os.makedirs(os.path.join(td, "agents"))
+        with open(os.path.join(td, "agents", "dx-design-review.md"), "w") as fh:
+            fh.write("<!-- dx-sync:quality-criteria -->\ncraft\n"
+                     "<!-- /dx-sync:quality-criteria -->\n")
+        assert_error("quality source consumer is not skipped",
+                     quality_parity_errors(td),
+                     "standards/quality-bar.md [QUALITY-SYNC]: declared consumer does not exist")
 
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
