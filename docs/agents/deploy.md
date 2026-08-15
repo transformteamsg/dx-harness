@@ -50,10 +50,36 @@ Re-running the same commands from an updated branch replaces the running staging
 commit-specific tag makes the deployed source explicit. There's no need to delete the previous
 deployment first; this is standard Airbase behavior, not something this repo configures.
 
+## Deploy to production
+
+**Pass no environment argument.** Production is Airbase's *default* environment, which is why it
+serves the bare `https://dx-harness.app.tc1.airbase.sg` with no `env--` prefix:
+
+```sh
+IMAGE="dx-harness:$(git rev-parse --short HEAD)"
+airbase container build --tag "$IMAGE"
+airbase container deploy --yes --image "$IMAGE"
+```
+
+The CLI confirms `Environment: default` before it deploys — check that line.
+
+Do **not** write `airbase container deploy ... production`. Airbase creates environments on
+first use, so that command does not update the live site; it stands up a second, publicly
+reachable one at `https://production--dx-harness.app.tc1.airbase.sg`. The same trap applies to
+`prod` or any other guess. There is no CLI command that lists existing environments, so a wrong
+name is not rejected — it silently succeeds against the wrong target.
+
+Verify against the production host, from a checkout that has run `pnpm build` at the deployed
+commit:
+
+```sh
+node scripts/verify-deploy.mjs https://dx-harness.app.tc1.airbase.sg
+```
+
 ## What's deliberately not automated yet
 
-- **Production.** This only covers staging. Production (`https://dx-harness.app.tc1.airbase.sg`, no `staging--` prefix) is a separate, later step.
 - **CI auto-deploy.** Deploying on every green `main` needs an `AIRBASE_TOKEN` repository secret and a workflow; that's a follow-up issue, not part of this one.
+- **Promotion from staging.** Production is deployed from a local build, the same way staging is. Nothing promotes a verified staging image to production, so the two can hold different commits — as they did on 2026-08-15, when production ran ahead of staging.
 - **Image size.** The runtime image ships the full repository tree (including `plugins/dx-harness/checks`, `skills`, etc.), not just the files each route actually reads, so it doesn't need to keep a manual file-tracing list in sync with every route. Worth revisiting once the size becomes a problem.
 
 ## Troubleshooting
