@@ -352,7 +352,7 @@ operational `ERROR`s too. These lines carry no `<file>:<line> [<CTL>]` shape, so
 detector keeps them as control-less findings. When the given paths contain no lintable
 source at all, the layer prints a NOTE and exits 0 because it had nothing in scope.
 
-**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (41 cases)`
+**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (42 cases)`
 (includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`
 which proves the three rules the maintainers switch off stay off). The fixture cases
 need the target toolchain; where it cannot be resolved they assert the honest skip path
@@ -620,7 +620,10 @@ A row counts as a recorded waiver only when column 0 holds a control id (`^[A-Z0
 
 This closes the loop `token-audit.py` leaves open ("a human closes the decision-record loop") — but only for the scanned paths.
 
-**Self-test:** `python3 checks/waiver-reconcile.py --self-test` → `SELF-TEST OK (7 cases)`.
+**Self-test:** `python3 checks/waiver-reconcile.py --self-test` → `SELF-TEST OK (11 cases)`
+(the last four cover the rendered check's `data-dx-waive` attribute: an orphan with no
+record row, the same marker with its row, two ids on one attribute reconciling
+separately, and an L0 id refused).
 
 ## Reaudit scope (built)
 
