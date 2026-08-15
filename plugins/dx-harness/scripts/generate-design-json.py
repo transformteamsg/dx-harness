@@ -11,7 +11,8 @@ The parse is deterministic (stdlib only):
   - Split `DESIGN.md` on `## ` headings; map each to a json key (Essence -> essence,
     Colour/Color -> colour, Typography -> typography, Tokens -> tokens,
     Motion -> motion, Voice & Tone / Tone weighting / Tone -> tone,
-    Layout system -> layout_system, Components -> components, Guardrails -> guardrails,
+    Layout system -> layout_system, Quality bar -> quality_bar,
+    Components -> components, Guardrails -> guardrails,
     Overrides -> overrides; any other heading is slugified so nothing is dropped).
   - Strip HTML comments from the section body (guidance never reaches the json).
   - A bulleted `- key: value` line becomes a structured field: an integer literal -> int,
@@ -21,6 +22,11 @@ The parse is deterministic (stdlib only):
     section produces no key.
   - Guardrails: each bullet projects as one string in a list (bullets there are
     instructions, not fields, so a colon inside one never splits it).
+  - Quality bar: at most one `- register:` bullet, naming a register declared in
+    standards/quality-bar.md. A file that writes two is projected from the first
+    and warned about, never rejected: the quality bar never blocks, so a ceiling
+    problem must not stop a generation. `checks/validate.py` is where a second
+    bullet, or an id no register declares, is an error.
   - Overrides: one structured line per standing override:
       - <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
     The generator validates every line against `standards/catalog.yaml` (ships with the
@@ -73,10 +79,15 @@ SECTION_MAP = {
     "voice and tone": "tone",
     "motion": "motion",
     "layout system": "layout_system",
+    "quality bar": "quality_bar",
     "components": "components",
     "guardrails": "guardrails",
     "overrides": "overrides",
 }
+
+# The only field the Quality bar section takes: the id of a register declared in
+# standards/quality-bar.md. At most one per repo.
+REGISTER_FIELD = "register"
 
 H2_RE = re.compile(r"^##\s+(.+?)\s*$")
 FIELD_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*:\s+(.+?)\s*$")
@@ -193,6 +204,28 @@ def guardrails_value(body):
         return bullets
     prose = "\n".join(ln.strip() for ln in body.splitlines() if ln.strip()).strip()
     return prose or None
+
+
+def quality_bar_value(body):
+    """The Quality bar section, which selects this repo's quality-bar register.
+
+    At most one `- register:` bullet is legal. When a file writes more, the FIRST
+    in document order wins — a person reads a file top-down, and that is the only
+    order they can predict — and a warning names both. Returns (value, warnings);
+    the value follows the generic section shape, so a prose-only section still
+    projects as a string and an empty one still produces no key at all. Both of
+    those mean "nothing declared", which means the default register."""
+    body = strip_comments(body)
+    value = section_value(body)
+    declared = [v for k, v in field_lines(body) if k == REGISTER_FIELD]
+    warnings = []
+    if len(declared) > 1:
+        listed = ", ".join(f'"{d}"' for d in declared)
+        warnings.append(
+            f"the Quality bar section declares {len(declared)} registers ({listed}); "
+            f'at most one is legal. Used the first, "{declared[0]}". Keep one bullet.')
+        value[REGISTER_FIELD] = declared[0]
+    return value, warnings
 
 
 def parse_overrides(body):
@@ -342,16 +375,23 @@ def split_sections(text):
     return sections
 
 
-def parse_sections(text, controls=None):
+def parse_sections(text, controls=None, warnings=None):
     """Map DESIGN.md -> {json_key: value} for every non-empty section. Raises
     OverridesError (carrying every error) when an Overrides line is rejected;
     pass `controls` (a {control id: tier} map) to also validate ids and tiers
-    against the catalogue."""
+    against the catalogue. Pass `warnings` (a list) to collect the non-fatal
+    notes a section raises — today, a Quality bar section with two registers."""
     result = {}
     errors = []
     for heading, body in split_sections(text):
         key = heading_to_key(heading)
-        if key == "overrides":
+        if key == "quality_bar":
+            val, warns = quality_bar_value(body)
+            if warnings is not None:
+                warnings.extend(warns)
+            if val is not None:
+                result["quality_bar"] = val
+        elif key == "overrides":
             items, errs = parse_overrides(strip_comments(body))
             errors.extend(errs)
             if controls is not None:
@@ -371,10 +411,11 @@ def parse_sections(text, controls=None):
     return result
 
 
-def build_document(text, *, now=None, catalog=None):
+def build_document(text, *, now=None, catalog=None, warnings=None):
     """Full .dx/design.json document: header keys (with catalog_version stamped from
     catalog.yaml meta.version), then one key per section. Raises OverridesError when
-    the Overrides section is rejected."""
+    the Overrides section is rejected. Pass `warnings` (a list) to collect the
+    non-fatal section notes; they never change the document."""
     if catalog is None:
         catalog = load_catalog()
     ts = now or datetime.datetime.now(datetime.timezone.utc)
@@ -384,7 +425,8 @@ def build_document(text, *, now=None, catalog=None):
     }
     if catalog.get("version"):
         doc["catalog_version"] = catalog["version"]
-    doc.update(parse_sections(text, controls=catalog.get("controls")))
+    doc.update(parse_sections(text, controls=catalog.get("controls"),
+                              warnings=warnings))
     return doc
 
 
@@ -421,15 +463,22 @@ def write_design_json(repo_root, doc):
     return out_path
 
 
-def is_stale(repo_root, text, catalog=None):
+def is_stale(repo_root, text, catalog=None, warnings=None):
     """True if .dx/design.json is missing, unreadable, or differs from a fresh
     generation (ignoring the always-changing generated_at timestamp). A stale
     catalog_version differs from the fresh stamp, so it counts as stale too."""
-    fresh = _without_ts(build_document(text, catalog=catalog))
+    fresh = _without_ts(build_document(text, catalog=catalog, warnings=warnings))
     existing = read_design_json(repo_root)
     if existing is None:
         return True
     return _without_ts(existing) != fresh
+
+
+def print_warnings(warnings):
+    """Print the non-fatal section notes. A warning never changes the exit code:
+    the generation still ran and the projection still stands."""
+    for w in warnings:
+        print(f"WARNING {DESIGN_MD}: {w}")
 
 
 def main(argv=None):
@@ -461,15 +510,19 @@ def main(argv=None):
               f"fix the harness install and rerun.")
         return 4
 
+    warnings = []
+
     if args.check:
         try:
-            stale = is_stale(args.repo_root, text, catalog=catalog)
+            stale = is_stale(args.repo_root, text, catalog=catalog,
+                             warnings=warnings)
         except OverridesError as exc:
             for e in exc.errors:
                 print(f"ERROR overrides: {e}")
             print(f"REJECTED: the Overrides section in {DESIGN_MD} did not validate. "
                   f"Fix the lines above, then regenerate.")
             return 3
+        print_warnings(warnings)
         if stale:
             existing = read_design_json(args.repo_root) or {}
             stamped = existing.get("catalog_version")
@@ -488,13 +541,14 @@ def main(argv=None):
         return 0
 
     try:
-        doc = build_document(text, catalog=catalog)
+        doc = build_document(text, catalog=catalog, warnings=warnings)
     except OverridesError as exc:
         for e in exc.errors:
             print(f"ERROR overrides: {e}")
         print(f"REJECTED: the Overrides section in {DESIGN_MD} did not validate; "
               f"{DESIGN_JSON} was not written. Fix the lines above, then regenerate.")
         return 3
+    print_warnings(warnings)
     out_path = write_design_json(args.repo_root, doc)
     n = len([k for k in doc if k not in ("generated_from", "generated_at", "catalog_version")])
     print(f"OK: wrote {out_path} ({n} section(s) from DESIGN.md, "
@@ -621,6 +675,112 @@ def run_self_test():
     check("guardrails project as a list",
           guard.get("guardrails") == ["Check the manifest first.",
                                       "Marks are load-bearing: never truncate them."])
+
+    # ── Quality bar: at most one register, absent means the default ───────────
+    # The default register is `product`, and it is selected by silence. Every
+    # "nothing declared" shape below has to reach a reader as the same nothing,
+    # or a person would believe they declared something that never took effect.
+
+    def register_of(text):
+        """What a reader resolves from `text`: the declared id, or None for the
+        default. Mirrors DESIGN-CONTEXT.md's resolution rule."""
+        val = parse_sections(text).get("quality_bar")
+        if not isinstance(val, dict):
+            return None
+        reg = val.get(REGISTER_FIELD)
+        return reg if isinstance(reg, str) and reg.strip() else None
+
+    def register_warnings(text):
+        warns = []
+        parse_sections(text, warnings=warns)
+        return warns
+
+    # 29. a declared register reaches the projection as an object, not a string
+    declared = parse_sections("## Quality bar\n- register: standards-site\n")
+    check("declared register projects as an object",
+          declared == {"quality_bar": {"register": "standards-site"}})
+
+    # 30. the heading is canonical now, not an accident of slugify()
+    check("quality bar heading is mapped, not slugified",
+          SECTION_MAP.get("quality bar") == "quality_bar")
+
+    # 31. a heading case slip maps to the same key, so a declaration is never
+    # silently dropped over a capital letter
+    check("heading case slip keeps the declaration",
+          parse_sections("## Quality Bar\n- register: standards-site\n")
+          == {"quality_bar": {"register": "standards-site"}})
+
+    # 32. the default declared explicitly is legal, and warns about nothing
+    check("explicit default is written",
+          register_of("## Quality bar\n- register: product\n") == "product")
+    check("explicit default warns about nothing",
+          register_warnings("## Quality bar\n- register: product\n") == [])
+
+    # 33. the section is absent -> no key at all -> the default
+    no_section = parse_sections("## Essence\nCalm tools.\n")
+    check("absent section produces no key", "quality_bar" not in no_section)
+    check("absent section resolves to the default",
+          register_of("## Essence\nCalm tools.\n") is None)
+
+    # 34. the section holds only its guidance comment -> no key -> the default
+    comment_only = "## Quality bar\n<!-- Which class of surface this is. -->\n"
+    check("comment-only section produces no key",
+          "quality_bar" not in parse_sections(comment_only))
+    check("comment-only section resolves to the default",
+          register_of(comment_only) is None)
+
+    # 35. prose instead of a bullet projects as a bare string, which is not a
+    # declaration: a reader takes the default and flags the drift
+    prose = "## Quality bar\nWe use the standards-site register.\n"
+    check("prose section projects as a string",
+          isinstance(parse_sections(prose)["quality_bar"], str))
+    check("prose section resolves to the default", register_of(prose) is None)
+
+    # 36. an empty register value is not a declaration either
+    check("empty register value resolves to the default",
+          register_of("## Quality bar\n- register:  \n") is None)
+
+    # 37. two registers: the FIRST wins, both are named, and generation goes on
+    two = ("## Quality bar\n"
+           "- register: product\n"
+           "- register: standards-site\n")
+    check("two registers keep the first", register_of(two) == "product")
+    warns = register_warnings(two)
+    check("two registers warn exactly once", len(warns) == 1)
+    check("the warning names both ids",
+          warns and "product" in warns[0] and "standards-site" in warns[0])
+    check("the warning says which one was used",
+          warns and 'Used the first, "product"' in warns[0])
+
+    # 38. a warning is not an error: the projection is still written, at exit 0
+    with tempfile.TemporaryDirectory() as td:
+        with open(os.path.join(td, DESIGN_MD), "w", encoding="utf-8") as fh:
+            fh.write(two)
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc_two = main([td])
+        out = os.path.join(td, ".dx", "design.json")
+        with open(out, encoding="utf-8") as fh:
+            written = json.load(fh)
+        check("two registers still exit 0", rc_two == 0)
+        check("two registers still write the projection",
+              written.get("quality_bar") == {"register": "product"})
+        check("the warning reaches the person", "WARNING" in buf.getvalue())
+
+    # 39. regeneration stays idempotent: the new key does not make a fresh
+    # projection look stale
+    with tempfile.TemporaryDirectory() as td:
+        with open(os.path.join(td, DESIGN_MD), "w", encoding="utf-8") as fh:
+            fh.write("## Essence\nCalm tools.\n\n## Quality bar\n- register: standards-site\n")
+        quiet(main, [td])
+        check("a quality bar section stays fresh under --check",
+              quiet(main, [td, "--check"]) == 0)
+
+    # 40. the section carries no override grammar: an Overrides line naming a
+    # register is not a thing the ceiling can be waived by, and `register` is a
+    # field key here, never a control id
+    check("register is not an override control id",
+          OVERRIDE_RE.match("- register: standards-site") is None)
 
     # ── Overrides parsing and tier validation ─────────────────────────────────
     controls = fake_catalog["controls"]
