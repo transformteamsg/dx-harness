@@ -291,16 +291,42 @@ def control_for_rule(rule_id, rule_map, aria_rules=()):
 
 # ── Attaching to the page the capture step already opened ──────────────────────
 
+DEFAULT_SESSION = "default"
+
+
+def live_sessions(runner=None):
+    """The capture sessions that already exist, by name.
+
+    This is asked FIRST, and it is the whole reason the runner cannot launch a
+    browser by accident: measured on agent-browser 0.29.1, asking for the CDP
+    endpoint of a session that does not exist CREATES it, browser and all. So
+    the name is checked against this list before any endpoint is requested.
+    """
+    run_cmd = runner or _run_command
+    code, out, _err = run_cmd([BROWSER_CLI, "session", "list", "--json"],
+                              timeout=BROWSER_CLI_TIMEOUT)
+    if code != 0:
+        return []
+    try:
+        data = json.loads((out or "").strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        return []
+    sessions = (data.get("data") or {}).get("sessions") if isinstance(data, dict) else None
+    return [s for s in sessions if isinstance(s, str)] if isinstance(sessions, list) else []
+
+
 def resolve_cdp_url(session=None, runner=None):
     """The CDP endpoint of a live capture session, or None when there is none.
 
-    Asks the CLI the capture step already uses (`agent-browser get cdp-url`).
-    This never opens a page: `agent-browser open` and `chromium.launch` are
-    both out. No CLI, no session, or no endpoint all mean the same thing — the
-    layer did not run.
+    Asks the CLI the capture step already uses, and only about a session that
+    is already listed as live. No CLI, no such session, or no endpoint all mean
+    the same thing — the layer did not run, which is a NOTE and an exit 0.
     """
     run_cmd = runner or _run_command
     if shutil.which(BROWSER_CLI) is None:
+        return None
+    name = session or DEFAULT_SESSION
+    if name not in live_sessions(runner=run_cmd):
         return None
     argv = [BROWSER_CLI, "get", "cdp-url"]
     if session:
@@ -1168,28 +1194,42 @@ def run_self_test():
           any("https://example.test/standards" in ln for ln in lines))
     check("the controls still fall back to manual verification", True,
           any("manual verification" in ln for ln in lines))
+    # ── the runner asks about a session; it never brings one into being ──────
+    # Measured on agent-browser 0.29.1: `get cdp-url --session <unknown>`
+    # creates that session, browser and all. So the live list is asked first,
+    # and an unlisted name never reaches the endpoint call.
     asked = []
 
     def record_cli(argv, timeout, stdin_text=None):
         asked.append(argv)
+        if argv[1:3] == ["session", "list"]:
+            return 0, json.dumps({"success": True,
+                                  "data": {"sessions": ["default", "verify"]}}), ""
         return 0, "ws://127.0.0.1:9222/devtools/browser/abc\n", ""
 
-    endpoint = resolve_cdp_url("verify", runner=record_cli)
-    if asked:
-        check("the runner asks the capture CLI only for its endpoint",
-              ["get", "cdp-url"], asked[0][1:3])
-        check("it never asks the CLI to open anything", False,
-              any("open" in argv for argv in asked))
-        check("it names the session it was given", True, "verify" in asked[0])
-        check("a live endpoint comes back", True,
+    check("the live session list is read from the CLI",
+          ["default", "verify"], live_sessions(runner=record_cli))
+    asked.clear()
+    unknown = resolve_cdp_url("no-such-session", runner=record_cli)
+    check("an unlisted session resolves to no endpoint", None,
+          unknown if shutil.which(BROWSER_CLI) else None)
+    if shutil.which(BROWSER_CLI):
+        check("and no endpoint was ever requested for it", [],
+              [argv for argv in asked if argv[1:3] == ["get", "cdp-url"]])
+        asked.clear()
+        endpoint = resolve_cdp_url("verify", runner=record_cli)
+        check("a listed session resolves to its endpoint", True,
               endpoint is not None and endpoint.startswith("ws://"))
+        check("the runner never asks the CLI to open anything", False,
+              any("open" in argv for argv in asked))
     else:
-        # No capture CLI on this machine: resolve_cdp_url short-circuits before
-        # the runner, which is itself the honest not-run path.
-        check("with no capture CLI installed, no endpoint resolves", None, endpoint)
-        check("it never asks the CLI to open anything", [], asked)
-        check("it names the session it was given", [], asked)
-        check("a live endpoint comes back", [], asked)
+        # No capture CLI on this machine: resolve_cdp_url short-circuits, which
+        # is itself the honest not-run path.
+        check("with no capture CLI installed, nothing is asked of it", [], asked)
+        check("a listed session resolves to its endpoint", None,
+              resolve_cdp_url("verify", runner=record_cli))
+        check("the runner never asks the CLI to open anything", False,
+              any("open" in argv for argv in asked))
 
     # ── axe failing is the same class as no page, never a crash ───────────────
     def boom(_job):
@@ -1235,11 +1275,48 @@ def run_self_test():
     check("the page is scrolled to the document end before axe runs",
           True, "scrollHeight" in driver_source and "AxeBuilder" in driver_source)
 
-    # ── the session is handed back as it was found ────────────────────────────
+    # ── a violation below the fold is caught ─────────────────────────────────
+    # axe skips what is outside the viewport, so the page is scrolled to the
+    # document end in viewport-height steps and back to the top BEFORE axe
+    # runs. The ordering is the load-bearing part; assert it on the source.
+    scroll_at = driver_code.find("SCROLL_JS")
+    axe_at = driver_code.find("AxeBuilder({ page })")
+    check("the driver scrolls the whole page before axe runs", True,
+          0 < scroll_at < axe_at)
+    check("it scrolls in viewport-height steps, not one jump", True,
+          "const step = window.innerHeight;" in driver_code)
+    check("it returns to the top, so the restored offset is deterministic",
+          True, "window.scrollTo(0, 0)" in driver_code)
+    below_fold = translate_violations(
+        _axe_payload(cell="1280-light",
+                     violations=[_violation("color-contrast", "footer > small")]),
+        rule_map, "1280-light")[0]
+    check("a violation the scroll revealed is reported like any other",
+          True, len(below_fold) == 1 and "footer > small" in below_fold[0])
+
+    # ── the session is handed back as it was found ───────────────────────────
     unrestored = _axe_payload(restored=False, restore_error="page closed")
     check("an unrestored session is said out loud", True,
           any("NOT restored" in ln for ln in restore_notes(unrestored)))
     check("a restored session says nothing", [], restore_notes(_axe_payload()))
+    check("the driver reads the session's state before it changes anything",
+          True, driver_code.find("READ_STATE_JS") < driver_code.find("setViewportSize"))
+    for restored_thing in ("setViewportSize", "emulateMedia", "restoreThemeJs"):
+        check(f"the restore puts {restored_thing} back", True,
+              restored_thing in driver_code.split("} finally {")[-1])
+    check("the restore puts the scroll offset back", True,
+          "prior.scrollX" in driver_code and "prior.scrollY" in driver_code)
+    check("it restores on the failure path too, since the restore is the finally",
+          True, driver_code.find("} catch (err) {") < driver_code.find("} finally {"))
+    check("the one JSON object is printed after the restore, not before", True,
+          driver_code.rfind("emit(payload)") > driver_code.find("} finally {"))
+
+    # ── a driver failure writes no traceback and stays exit 0 ────────────────
+    check("the runner never raises out of a driver failure", True,
+          isinstance(run(cdp_resolver=lambda session: "ws://x",
+                         cell_runner=boom), tuple))
+    check("the driver's own failure path is a JSON object, not a stack trace",
+          True, "failure(job," in driver_code and "process.exit" not in driver_code)
 
     # ── the rule map's own integrity for this layer ───────────────────────────
     catalog_ids = set(tiers)
