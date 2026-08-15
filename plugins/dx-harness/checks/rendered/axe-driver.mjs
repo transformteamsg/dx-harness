@@ -46,6 +46,22 @@ async function readStdin() {
   return Buffer.concat(chunks).toString("utf8");
 }
 
+/**
+ * `page.evaluate`, retried once when the page navigated under it. A live
+ * capture session is not frozen: a client-side route change destroys the
+ * execution context mid-call, and losing a whole cell to that would send nine
+ * controls to manual verification for a race rather than for a real gap.
+ */
+async function evaluateSafely(page, expression) {
+  try {
+    return await page.evaluate(expression);
+  } catch (err) {
+    if (!/Execution context was destroyed|Target closed/.test(err.message || "")) throw err;
+    await page.waitForLoadState("domcontentloaded");
+    return await page.evaluate(expression);
+  }
+}
+
 /** The served path, with its leading slash, for the finding line's file half. */
 function routeOf(url) {
   try {
@@ -72,6 +88,7 @@ function failure(job, message) {
     inapplicable: [],
     aria_rules: [],
     evaluation_findings: [],
+    hidden_nodes: [],
     waived: [],
     restored: true,
     restore_error: null,
@@ -188,6 +205,32 @@ function collectMarkersJs(attribute) {
 }
 
 /**
+ * For each axe node target, whether a person can currently reach it: `hidden`,
+ * `aria-hidden="true"`, `display: none` or `visibility: hidden` on the node or
+ * any ancestor. The runner demotes an A11Y-8 finding on unreachable markup
+ * into the incomplete bucket rather than gating on it.
+ */
+function nodeReachabilityJs(targets) {
+  return `(() => {
+    const out = {};
+    for (const entry of ${JSON.stringify(targets)}) {
+      let el = null;
+      try { el = document.querySelector(entry.selector); } catch { el = null; }
+      let hidden = false;
+      let node = el;
+      while (node && node.nodeType === 1) {
+        if (node.hasAttribute("hidden") || node.getAttribute("aria-hidden") === "true") { hidden = true; break; }
+        const style = getComputedStyle(node);
+        if (style.display === "none" || style.visibility === "hidden") { hidden = true; break; }
+        node = node.parentElement;
+      }
+      out[entry.key] = el === null ? null : hidden;
+    }
+    return out;
+  })()`;
+}
+
+/**
  * For each axe node target, the markers whose subtree encloses it. A nested
  * marker's ids union with its enclosing marker's, which falls out of walking
  * every ancestor rather than stopping at the first.
@@ -255,7 +298,7 @@ async function main() {
     if (!pages.length) throw new Error("the attached context has no open page");
     page = pages[0];
 
-    prior = await page.evaluate(READ_STATE_JS);
+    prior = await evaluateSafely(page, READ_STATE_JS);
 
     // The capture step navigates; this driver only follows it to the page it
     // was asked about, and only when the session is somewhere else.
@@ -273,12 +316,12 @@ async function main() {
     if (job.media && job.media.reducedMotion) emulation.reducedMotion = job.media.reducedMotion;
     if (Object.keys(emulation).length) await page.emulateMedia(emulation);
     if (job.theme === "dark" || job.theme === "light") {
-      await page.evaluate(applyThemeJs(job.theme));
+      await evaluateSafely(page, applyThemeJs(job.theme));
     }
 
-    const darkSupported = await page.evaluate(DARK_SUPPORT_JS);
+    const darkSupported = await evaluateSafely(page, DARK_SUPPORT_JS);
 
-    await page.evaluate(SCROLL_JS);
+    await evaluateSafely(page, SCROLL_JS);
 
     const ariaRules = axeCore
       .getRules()
@@ -299,7 +342,7 @@ async function main() {
           .options({ runOnly: { type: "rule", values: ruleIds }, rules: forceEnabled })
           .analyze();
 
-    const markers = await page.evaluate(collectMarkersJs(job.waiveAttribute || "data-dx-waive"));
+    const markers = await evaluateSafely(page, collectMarkersJs(job.waiveAttribute || "data-dx-waive"));
 
     const nodeTargets = [];
     const keyOf = (node) => JSON.stringify(node.target);
@@ -313,10 +356,14 @@ async function main() {
     }
     let membership = {};
     if (markers.length && nodeTargets.length) {
-      membership = await page.evaluate(
+      membership = await evaluateSafely(
+        page,
         markerMembershipJs(job.waiveAttribute || "data-dx-waive", nodeTargets),
       );
     }
+    const reachability = nodeTargets.length
+      ? await evaluateSafely(page, nodeReachabilityJs(nodeTargets))
+      : {};
     const waived = markers.map((m) => ({
       selector: m.selector,
       value: m.value,
@@ -329,7 +376,7 @@ async function main() {
     for (const evaluation of job.evaluations || []) {
       let found = [];
       try {
-        found = await page.evaluate(evaluation.js);
+        found = await evaluateSafely(page, evaluation.js);
       } catch (err) {
         evaluationFindings.push({
           rule: evaluation.id,
@@ -349,7 +396,8 @@ async function main() {
       }
     }
 
-    const applied = await page.evaluate(
+    const applied = await evaluateSafely(
+      page,
       "({width: window.innerWidth, height: window.innerHeight})",
     );
 
@@ -368,6 +416,9 @@ async function main() {
       inapplicable: results.inapplicable.map((r) => r.id),
       aria_rules: ariaRules,
       evaluation_findings: evaluationFindings,
+      hidden_nodes: Object.entries(reachability)
+        .filter(([, hidden]) => hidden === true)
+        .map(([key]) => key),
       waived,
       restored: true,
       restore_error: null,

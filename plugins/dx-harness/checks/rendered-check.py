@@ -384,13 +384,32 @@ def node_target(node):
     return str(target) if target else "(unknown node)"
 
 
+def node_key(node):
+    """The key the driver reports per-node facts under — axe's own target list,
+    which is unique per node including across frames."""
+    return json.dumps(node.get("target") or [])
+
+
+def demote_hidden(control, node, hidden_keys):
+    """"Visible components only" for A11Y-8, enforced by demotion rather than
+    selector surgery: the runner opens nothing, so anything reachable only
+    through interaction is already out of scope, and a finding on markup a
+    person cannot currently reach moves into the incomplete bucket because axe
+    judged something they cannot see."""
+    return control == "A11Y-8" and node_key(node) in set(hidden_keys or ())
+
+
 def translate_violations(payload, rule_map, cell_id):
     """axe's violations become ERROR lines under the control each rule maps to.
     A rule with no row is a misconfiguration, not a dropped finding: it is
-    reported as an operational ERROR and no control id is guessed."""
-    errors = []
+    reported as an operational ERROR and no control id is guessed.
+
+    Returns (errors, demoted): `demoted` carries the findings that moved into
+    the incomplete bucket, so nothing is lost on the way out of this one."""
+    errors, demoted = [], []
     route = payload.get("route") or "/"
     aria = set(payload.get("aria_rules") or [])
+    hidden = payload.get("hidden_nodes") or []
     for rule in payload.get("violations", []):
         rule_id = rule.get("id") or "(unknown rule)"
         control = control_for_rule(rule_id, rule_map, aria)
@@ -401,6 +420,16 @@ def translate_violations(payload, rule_map, cell_id):
                     f"ERROR rendered-check: axe rule '{rule_id}' fired at {route} "
                     f"({cell_id}) on {selector} but has no row in "
                     f"{checklib.RULE_MAP_FILENAME} — add one; no control id is guessed")
+                continue
+            if demote_hidden(control, node, hidden):
+                demoted.append((control, rule_id, selector,
+                                "axe judged markup a person cannot currently reach "
+                                "(hidden subtree)"))
+                continue
+            if control in REPORT_ONLY_CONTROLS:
+                demoted.append((control, rule_id, selector,
+                                "report-only: skip-link-first confirmation stays with "
+                                "the manual pass"))
                 continue
             errors.append(checklib.emit_rendered_error(
                 route, cell_id, control,
@@ -425,7 +454,68 @@ def translate_violations(payload, rule_map, cell_id):
             f"{rule_id} at {finding.get('selector') or '(no element)'}",
             finding.get("message") or "stop this animation under prefers-reduced-motion",
             extra=rule_id))
-    return errors
+    return errors, demoted
+
+
+def translate_incomplete(payload, rule_map, cell_id, demoted=()):
+    """The third bucket, beside violations and passes. axe's `incomplete`
+    results are the ones it could not decide, so they are named as items for
+    the manual accessibility pass to verify by hand: never dropped, never
+    counted as passes, and never gated on. They ride the NOTE channel, which
+    `detect.py` collects while keeping exit 0."""
+    notes = []
+    route = payload.get("route") or "/"
+    aria = set(payload.get("aria_rules") or [])
+    for rule in payload.get("incomplete", []):
+        rule_id = rule.get("id") or "(unknown rule)"
+        control = control_for_rule(rule_id, rule_map, aria) or "(unmapped)"
+        for node in rule.get("nodes", []):
+            notes.append(
+                f"NOTE  rendered-check: {route}:{cell_id} [{control}][{rule_id}] "
+                f"{node_target(node)} — axe could not decide this one; verify it by "
+                f"hand in the manual accessibility pass")
+    for control, rule_id, selector, reason in demoted:
+        notes.append(
+            f"NOTE  rendered-check: {route}:{cell_id} [{control}][{rule_id}] "
+            f"{selector} — {reason}; verify it by hand in the manual "
+            f"accessibility pass")
+    return notes
+
+
+def inapplicable_notes(payload, rule_map, controls, cell_id):
+    """Where every rule mapped to a control came back `inapplicable` for a cell
+    — no images on the page, so `image-alt` never applied — that control records
+    N/A for the cell with the reason. Recording it as a pass would claim
+    coverage the run did not exercise."""
+    inapplicable = set(payload.get("inapplicable") or [])
+    if not inapplicable:
+        return []
+    aria = set(payload.get("aria_rules") or [])
+    by_control = {}
+    for rule in axe_rule_ids(rule_map):
+        control = control_for_rule(rule, rule_map, aria)
+        by_control.setdefault(control, set()).add(rule)
+    for rule in aria:
+        by_control.setdefault(rule_map.get("aria_prefix_control"), set()).add(rule)
+    notes = []
+    for control in controls:
+        rules = by_control.get(control)
+        if rules and rules <= inapplicable:
+            notes.append(
+                f"NOTE  rendered-check: {payload.get('route')}:{cell_id} [{control}] "
+                f"N/A — every rule mapped to it ({', '.join(sorted(rules))}) was "
+                f"inapplicable to this page; not reported as passing")
+    return notes
+
+
+def passes_note(payload, cell_id):
+    """Passes are counted, never printed per node: a per-node pass list invites
+    reading "axe found nothing here" as "this control is met", which it is not
+    — every control this layer covers keeps a manual remainder."""
+    count = payload.get("passes_count") or 0
+    return [f"NOTE  rendered-check: {payload.get('route')}:{cell_id} — {count} node "
+            f"check(s) passed; a pass here is not a control met, since every control "
+            f"this layer covers keeps a manual remainder"]
 
 
 def manual_verification_notes(reason, controls, tiers=None):
@@ -526,28 +616,47 @@ def run(session=None, url=None, viewports=DEFAULT_VIEWPORTS, themes="auto",
 
     errors = []
     for payload in payloads:
-        errors.extend(translate_violations(payload, rule_map, payload.get("cell")))
+        cell_id = payload.get("cell")
+        cell_errors, demoted = translate_violations(payload, rule_map, cell_id)
+        errors.extend(cell_errors)
+        out.extend(translate_incomplete(payload, rule_map, cell_id, demoted))
+        out.extend(inapplicable_notes(payload, rule_map, controls, cell_id))
+        out.extend(passes_note(payload, cell_id))
         out.extend(restore_notes(payload))
-        records.extend(payload_records(payload, rule_map))
+        records.extend(payload_records(payload, rule_map, controls))
 
     out = errors + out
     return (1 if errors else 0), out, records
 
 
-def payload_records(payload, rule_map):
+def payload_records(payload, rule_map, controls=()):
     """The in-memory run record, one row per control decision in a cell. A
-    record never says `pass` for a control the cell did not exercise."""
+    record never says `pass` for a control the cell did not exercise: the
+    outcomes are `violation`, `incomplete`, `n/a` and `not-run`, and the last
+    two both name their control for manual verification."""
     route = payload.get("route")
     cell_id = payload.get("cell")
     aria = set(payload.get("aria_rules") or [])
+    hidden = payload.get("hidden_nodes") or []
     rows = []
     for rule in payload.get("violations", []):
         rule_id = rule.get("id")
         control = control_for_rule(rule_id, rule_map, aria)
         for node in rule.get("nodes", []):
-            rows.append({"control": control, "cell": cell_id, "outcome": "violation",
+            demoted = demote_hidden(control, node, hidden) \
+                or control in REPORT_ONLY_CONTROLS
+            rows.append({"control": control, "cell": cell_id,
+                         "outcome": "incomplete" if demoted else "violation",
                          "rule": rule_id, "route": route, "selector": node_target(node),
                          "message": rule.get("help") or "", "reason": None})
+    for rule in payload.get("incomplete", []):
+        rule_id = rule.get("id")
+        control = control_for_rule(rule_id, rule_map, aria)
+        for node in rule.get("nodes", []):
+            rows.append({"control": control, "cell": cell_id, "outcome": "incomplete",
+                         "rule": rule_id, "route": route, "selector": node_target(node),
+                         "message": rule.get("help") or "", "reason":
+                         "axe could not decide this one"})
     for finding in payload.get("evaluation_findings", []):
         if finding.get("failed"):
             continue
@@ -556,6 +665,15 @@ def payload_records(payload, rule_map):
                      "cell": cell_id, "outcome": "violation", "rule": rule_id,
                      "route": route, "selector": finding.get("selector"),
                      "message": finding.get("message") or "", "reason": None})
+    inapplicable = set(payload.get("inapplicable") or [])
+    for control in controls:
+        rules = {r for r in axe_rule_ids(rule_map)
+                 if control_for_rule(r, rule_map, aria) == control}
+        if rules and rules <= inapplicable:
+            rows.append({"control": control, "cell": cell_id, "outcome": "n/a",
+                         "rule": None, "route": route, "selector": None,
+                         "message": "every rule mapped to it was inapplicable to this page",
+                         "reason": "not exercised"})
     return rows
 
 
@@ -675,7 +793,7 @@ def run_self_test():
     payload = _axe_payload(cell="1280-dark", route="/standards/slop",
                            violations=[_violation("color-contrast", ".card > p",
                                                   "Elements must meet contrast")])
-    errors = translate_violations(payload, rule_map, payload["cell"])
+    errors, _ = translate_violations(payload, rule_map, payload["cell"])
     check("one violated node becomes one finding", 1, len(errors))
     parsed = detect._FINDING_RE.match(errors[0])
     check("the finding matches detect's finding shape", True, parsed is not None)
@@ -691,10 +809,10 @@ def run_self_test():
               detect.parse_findings("rendered-check", errors)[0]))
 
     # ── a theme-conditional failure is reported in the theme that has it ──────
-    dark_only = translate_violations(
+    dark_only, _ = translate_violations(
         _axe_payload(cell="1280-dark", violations=[_violation("color-contrast", ".x")]),
         rule_map, "1280-dark")
-    light_clean = translate_violations(
+    light_clean, _ = translate_violations(
         _axe_payload(cell="1280-light"), rule_map, "1280-light")
     check("the dark cell reports A11Y-1", True, any("[A11Y-1]" in e for e in dark_only))
     check("the light cell reports nothing", [], light_clean)
@@ -702,7 +820,7 @@ def run_self_test():
           ":1280-dark " in dark_only[0])
 
     # ── target-size fires, which proves the rule was enabled ──────────────────
-    targets = translate_violations(
+    targets, _ = translate_violations(
         _axe_payload(cell="360-light", violations=[_violation("target-size", "button.chip")]),
         rule_map, "360-light")
     check("target-size is reported under A11Y-4", True, "[A11Y-4]" in targets[0])
@@ -711,7 +829,7 @@ def run_self_test():
     # ── the aria suite tracks the installed axe ───────────────────────────────
     unseen = _axe_payload(violations=[_violation("aria-brand-new-rule", "div")],
                           aria_rules=["aria-brand-new-rule"])
-    aria_errors = translate_violations(unseen, rule_map, unseen["cell"])
+    aria_errors, _ = translate_violations(unseen, rule_map, unseen["cell"])
     check("an aria rule the harness has never seen still maps to A11Y-8",
           True, "[A11Y-8]" in aria_errors[0])
     check("no hardcoded aria list exists to drift", "A11Y-8",
@@ -721,14 +839,14 @@ def run_self_test():
           (lambda e: (len(e), detect._FINDING_RE.match(e[0])))(
               translate_violations(
                   _axe_payload(violations=[_violation("region", "main")]),
-                  rule_map, "1280-light")))
+                  rule_map, "1280-light")[0]))
 
     # ── the reduced-motion evaluation is A11Y-5's only coverage ───────────────
     motion = _axe_payload(cell=REDUCED_MOTION_CELL, evaluation_findings=[
         {"rule": "dx/reduced-motion", "selector": ".hero__orb",
          "message": "animation still running under prefers-reduced-motion (looping)",
          "failed": False}])
-    motion_errors = translate_violations(motion, rule_map, motion["cell"])
+    motion_errors, _ = translate_violations(motion, rule_map, motion["cell"])
     check("a still-running animation is reported under A11Y-5",
           True, "[A11Y-5]" in motion_errors[0])
     check("the finding names the element that is still moving",
@@ -738,6 +856,82 @@ def run_self_test():
     check("the evaluation looks at both running animations and computed styles",
           True, "getAnimations" in REDUCED_MOTION_JS
           and "animationName" in REDUCED_MOTION_JS)
+
+    # ── incomplete is the third bucket: named, never dropped, never gating ────
+    incomplete_payload = _axe_payload(cell="1280-light", route="/standards", incomplete=[{
+        "id": "color-contrast", "help": "Elements must meet contrast",
+        "nodes": [{"target": [".hero > p"], "html": "<p/>"}]}])
+    inc_errors, _ = translate_violations(incomplete_payload, rule_map, "1280-light")
+    inc_notes = translate_incomplete(incomplete_payload, rule_map, "1280-light")
+    check("an incomplete result raises no ERROR", [], inc_errors)
+    check("it prints as one NOTE", 1, len(inc_notes))
+    check("the NOTE names the control, the rule and the selector", True,
+          "[A11Y-1]" in inc_notes[0] and "[color-contrast]" in inc_notes[0]
+          and ".hero > p" in inc_notes[0])
+    check("the NOTE sends it to the manual accessibility pass", True,
+          "manual accessibility pass" in inc_notes[0])
+    check("an incomplete result does not affect the exit code", 0,
+          1 if inc_errors else 0)
+    check("it appears nowhere in the passes count", 7,
+          incomplete_payload["passes_count"])
+    inc_records = payload_records(incomplete_payload, rule_map, controls)
+    check("its record is an incomplete outcome, never a pass",
+          [("A11Y-1", "incomplete")],
+          [(r["control"], r["outcome"]) for r in inc_records
+           if r["rule"] == "color-contrast"])
+    check("no record anywhere claims a pass", set(),
+          {r["outcome"] for r in inc_records} & {"pass"})
+
+    # ── passes are counted, never printed per node ───────────────────────────
+    counted = passes_note(_axe_payload(), "1280-light")
+    check("the passes count prints once as a NOTE", 1, len(counted))
+    check("it says a pass here is not a control met", True,
+          "not a control met" in counted[0])
+
+    # ── A11Y-8 on markup a person cannot reach is demoted, not gated ─────────
+    hidden_node = {"target": ["#closed-menu > button"], "html": "<button/>"}
+    hidden_payload = _axe_payload(
+        violations=[{"id": "aria-required-attr", "help": "needs attrs",
+                     "nodes": [hidden_node]}],
+        hidden_nodes=[node_key(hidden_node)])
+    hidden_errors, hidden_demoted = translate_violations(
+        hidden_payload, rule_map, hidden_payload["cell"])
+    check("an A11Y-8 finding in a hidden subtree raises no ERROR", [], hidden_errors)
+    check("it moves into the incomplete bucket instead", 1, len(hidden_demoted))
+    check("the NOTE says why it was demoted", True,
+          any("cannot currently reach" in n for n in
+              translate_incomplete(hidden_payload, rule_map,
+                                   hidden_payload["cell"], hidden_demoted)))
+    visible_payload = _axe_payload(
+        violations=[{"id": "aria-required-attr", "help": "needs attrs",
+                     "nodes": [hidden_node]}])
+    visible_errors, _ = translate_violations(visible_payload, rule_map,
+                                             visible_payload["cell"])
+    check("the same finding on reachable markup still gates", 1, len(visible_errors))
+
+    # ── bypass never gates ───────────────────────────────────────────────────
+    bypass_payload = _axe_payload(violations=[_violation("bypass", "body")])
+    bypass_errors, bypass_demoted = translate_violations(
+        bypass_payload, rule_map, bypass_payload["cell"])
+    check("A11Y-10 raises no ERROR and so cannot make the exit non-zero",
+          [], bypass_errors)
+    check("A11Y-10 is still reported, as a report-only NOTE", True,
+          any("[A11Y-10]" in n for n in translate_incomplete(
+              bypass_payload, rule_map, bypass_payload["cell"], bypass_demoted)))
+    check("the NOTE leaves skip-link-first confirmation with the manual pass",
+          True, any("manual pass" in n for n in translate_incomplete(
+              bypass_payload, rule_map, bypass_payload["cell"], bypass_demoted)))
+
+    # ── inapplicable is N/A, not a pass ──────────────────────────────────────
+    na_payload = _axe_payload(inapplicable=["image-alt", "svg-img-alt"])
+    na_notes = inapplicable_notes(na_payload, rule_map, controls, "1280-light")
+    check("a control whose every rule was inapplicable records N/A", 1, len(na_notes))
+    check("the N/A names the control and the reason", True,
+          "[A11Y-6]" in na_notes[0] and "inapplicable" in na_notes[0])
+    check("the N/A says it is not a pass", True, "not reported as passing" in na_notes[0])
+    check("a control with a rule that did apply records no N/A", [],
+          inapplicable_notes(_axe_payload(inapplicable=["image-alt"]),
+                             rule_map, controls, "1280-light"))
 
     # ── no page open: the layer did not run, and nothing passed ───────────────
     code, lines, records = run(cdp_resolver=lambda session: None)
