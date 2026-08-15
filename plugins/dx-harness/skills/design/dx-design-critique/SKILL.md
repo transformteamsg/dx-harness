@@ -26,8 +26,10 @@ For any waiver or applicability question read `../../../standards/README.md`
 ## Run it
 
 1. **Critique, don't change.** Read and run `critique.md` (beside this file) end to end:
-   capture the live surface, do the structured layout read against the quality bar's
-   Design quality Procedure (`../../../standards/quality-bar.md`) and the named
+   capture the live surface, read the quality bar
+   (`../../../standards/quality-bar.md`) whole — you grade all four of its criteria in
+   the report, so the whole ceiling is in scope, not only the layout read — do the
+   structured layout read against its Design quality Procedure and the named
    patterns (`../../../standards/layout-patterns.md`), both beside the catalogue,
    write what works and should be preserved and what genuinely
    underperforms, then produce **up to five ranked suggestions**. Each suggestion carries

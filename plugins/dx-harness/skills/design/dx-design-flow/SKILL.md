@@ -28,6 +28,13 @@ entry points, the done state, every exit (back/cancel/abandon), and what happens
 teacher's work on interruption, partial completion, and resume. Escapability is
 structure, not polish.
 
+Read one criterion of the quality bar, **functionality** in
+`../../../standards/quality-bar.md` — not the whole file. Its flow-map walk,
+repeat-user pass, failure walk, and persona lens are what the reviewer grades this
+dimension against, so quote its pairings and thresholds as finding evidence, never as
+a violation: the quality bar never blocks, and an anchor is never the rule that was
+broken. You may quote an anchor from any other criterion the same way.
+
 **Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics

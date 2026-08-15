@@ -12,8 +12,11 @@ propose changes before you have seen and judged the current state:
    width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
    the local Playwright fallback; (4) ask the user to provide the screenshot.
    Never critique a page you cannot see, and never fabricate what it looks like.
-2. **Layout read (do this before judging).** Walk the Design quality Procedure in
-   `../../../standards/quality-bar.md` against the 1280 frame (and 360 when
+2. **Layout read (do this before judging).** Read
+   `../../../standards/quality-bar.md` whole — you grade its four criteria in the
+   report (`report.md`, beside this file), and each criterion carries its own
+   procedure for turning a feel into an observation. Then walk the Design quality
+   Procedure in that file against the 1280 frame (and 360 when
    responsive behaviour is in scope), and **write it down before judging** — the
    point of the procedure is that it turns a feel into an observation, which it
    cannot do in your head. Name the page's regions and what each is for as you go.

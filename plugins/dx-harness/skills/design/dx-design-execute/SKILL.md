@@ -116,7 +116,10 @@ This loop covers both. Choose the entry depth by change size, never skip the gat
 - **Modification** (add a field, change a layout region, restyle a component) — run a
   scoped loop: a one-line intent, skip diverge if the structure is fixed, a short plan
   naming the controls the *changed surface* pulls in, then implement and verify the
-  changed surface. A modification still binds its controls — adding a field still
+  changed surface. Read the quality bar
+  (`../../../standards/quality-bar.md`) whole here too, exactly as Phase 2 does — one
+  rule, no judgment call about change size, because a padding tweak can still make a
+  surface read worse. A modification still binds its controls — adding a field still
   triggers A11Y-3, restyling still triggers TOK-1..3, touching an async action still
   triggers CMP-3. The common failure is treating "just add a field" as outside the
   harness; it is not.
@@ -256,6 +259,15 @@ Establish the rest, asking the user only what you cannot infer:
 Output: the sprint contract, shown to the user.
 
 ## Phase 2 — Diverge
+
+**Read the quality bar whole before you draw a direction.** It is
+`../../../standards/quality-bar.md`, beside the catalogue and resolved the same way.
+The catalogue is the floor — what a surface must not break; the quality bar is the
+ceiling — what good looks like once nothing is broken, in four criteria with the
+pairings and thresholds each grade quotes. Directions are where a strong decision is
+born, so calibration has to arrive before the work, not after it. It never blocks: a
+miss is grade evidence, never a finding, and no anchor in it is a rule you can
+violate.
 
 Produce 2–3 clearly different directions and render each one as a real,
 self-contained HTML page, so the person picks between things they can see, not

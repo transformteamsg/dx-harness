@@ -23,6 +23,13 @@ structure, wording, motion, and flow are out of scope and get NOTED and routed.
 concentric radius, layered shadows, type polish (`text-wrap`, font-smoothing), image
 edges. It refines these controls; it never replaces them.
 
+Read one criterion of the quality bar, **craft** in
+`../../../standards/quality-bar.md` — not the whole file. Its browser-surfaces pass,
+state walk, and thresholds are what the reviewer grades this dimension against, so
+quote its pairings and thresholds as finding evidence, never as a violation: the
+quality bar never blocks, and an anchor is never the rule that was broken. You may
+quote an anchor from any other criterion the same way.
+
 **Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Card/nested-card

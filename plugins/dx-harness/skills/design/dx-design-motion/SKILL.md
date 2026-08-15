@@ -26,6 +26,15 @@ easing (entrances `ease-out`, exits `ease-in`, changes `ease-in-out`), press fee
 (`scale(0.96)`, never a bounce), and disciplined `will-change`. Keyboard navigation is
 instant — no animation on tab/arrow movement.
 
+Read one criterion of the quality bar, **craft** in
+`../../../standards/quality-bar.md` — not the whole file. Its 10% replay, its
+high-frequency-feedback anchor, and its transition band are what the reviewer grades
+this dimension against, so quote its pairings and thresholds as finding evidence,
+never as a violation: the quality bar never blocks, and an anchor is never the rule
+that was broken. A ceiling threshold sitting tighter than a control's number is still
+only grade evidence — the control's number is the finding. You may quote an anchor
+from any other criterion the same way.
+
 **Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics

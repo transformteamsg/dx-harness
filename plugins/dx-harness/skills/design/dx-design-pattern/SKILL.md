@@ -37,10 +37,13 @@ or screens is never a pattern finding; it is a dx-design-execute intent. A patte
 swap ask stays with this pass even when stated as an edit ("these cards should be a
 list"); other stated structural edits go to dx-design-execute.
 
-**Reference:** two files beside the catalogue. The layout read — regions, squint test,
-edge count, density map, grouping check — is the Design quality Procedure in
-`../../../standards/quality-bar.md`, whose pairings and thresholds you may quote as
-finding evidence, never as a violation. The named patterns (list vs cards,
+**Reference:** two files beside the catalogue. This pass reads one criterion of the
+quality bar, **design-quality** in `../../../standards/quality-bar.md` — not the whole
+file. The layout read — regions, squint test, edge count, density map, grouping
+check — is that criterion's Procedure, and its pairings and thresholds are what you
+quote as finding evidence, never as a violation: the quality bar never blocks, so an
+anchor is never the rule that was broken. You may quote an anchor from any other
+criterion the same way. The named patterns (list vs cards,
 master-detail, wizard presentation, empty-state structure) are the pattern inventory at
 `../../../standards/layout-patterns.md`. Neither is controls; a control always wins on
 conflict, and the quality bar never blocks at all. When the

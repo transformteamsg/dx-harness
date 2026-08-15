@@ -5,6 +5,10 @@ during build. These **refine** the in-scope controls; they never replace them, a
 evaluator grades Craft on whether they were applied. Apply the ones the surface calls
 for as you build — not as a cleanup pass.
 
+This file is the build-time how-to; the reviewer grades Craft against the **craft**
+criterion of `../../../standards/quality-bar.md`, so read that criterion's anchors as
+you build. Nothing there blocks — it is what a grade quotes, never a finding.
+
 - **Tabular figures** on any column of numbers or any number that updates in place —
   `tabular-nums` (TYP-5). Grade tables, attendance counts, and live totals must hold
   still, not jitter as digits change.
