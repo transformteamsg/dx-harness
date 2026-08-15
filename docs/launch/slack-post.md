@@ -24,6 +24,15 @@ builds to the bar instead of to the average of the internet.
 - An auto-triggered design review that grades the result against both. The agent that
   built the screen never marks its own work.
 
+**Why this one, when there are many.** Most agent harnesses are deterministic: rules
+in, one exact answer out. Design never had exact answers, so this one separates
+arithmetic from judgment. Scripts measure what scripts can measure; judgment rules say
+what to weigh; the loop diverges into directions before it builds, and you choose. It
+also has eyes: the review grades the rendered screens, not the code, and shows you
+what to fix the way designers already work. See it, then fix it. And it assumes no
+terminal skills: one of our least technical designers took it from install to shipped
+screen.
+
 **Try it** — docs and quick start: `https://dx-harness.example` _(final domain to follow)_
 
 In Claude Code, in your product repo:
@@ -37,8 +46,9 @@ Then run `/dx-harness:dx-design-setup` once (the design checks need Python 3 +
 PyYAML), and type what you want to build. On Claude Desktop and the web app, add the
 marketplace and install from the plugin directory — no command line needed.
 
-This is a big start, and it grows by use: waive a rule that doesn't fit, and the
-recurring waivers become rule proposals. Tell us what breaks and what you build. 🙌
+Today is a big start, and the harness grows by use: waive a rule that doesn't fit,
+and the recurring waivers become rule proposals. Tell us what breaks and what you
+build. 🙌
 
 ---
 
@@ -47,3 +57,5 @@ recurring waivers become rule proposals. Tell us what breaks and what you build.
 - [ ] Replace `https://dx-harness.example` with the live domain.
 - [ ] Confirm the marketplace install works from a clean machine.
 - [ ] Check the skill count (`21`) and control count (`70`) still match the catalog.
+- [ ] The "least technical designer" line points at a real colleague. Get their OK
+      before posting, or cut the sentence.
