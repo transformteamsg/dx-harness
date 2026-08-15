@@ -221,6 +221,15 @@ BLOCKING (must fix before ship):
 ADVISORY (should fix):
 - ... (L2 violations; waived L1s worth noting; close calls that are not control
   failures)
+  (NO ANCHOR EVER APPEARS HERE OR IN BLOCKING AS THE RULE THAT WAS BROKEN. The
+  quality bar is the ceiling, not a control: it has no tiers, no ids, and no
+  waivers, so nothing in it can be violated. You may quote an anchor inside a
+  finding's evidence — the finding's tier still comes from its control, and the
+  anchor is only how you say what you saw. A missed anchor with no control behind
+  it is not a finding at all: it belongs to its criterion's grade sentence, and
+  if the miss is worth blocking on, to UNCOVERED as ratchet evidence for a new
+  control. A ceiling finding carrying an id would send the reader to the
+  catalogue to look for a rule that is not there.)
 
 SUGGESTIONS (not violations — layout/pattern improvements the builder may take):
 - concrete change — pattern/control it serves — impact on the task (one line each, max 5)
@@ -270,7 +279,10 @@ VERIFICATION LEDGER (one row per in-scope control — the record pastes this ver
   method outside the vocabulary is a defect.
 
 UNCOVERED (defects no control covers — feed the ratchet):
-- ...
+- ... (the one place a quality-bar miss may go beyond its grade sentence: name
+  the observed failure and quote the anchor, so `rule-proposal.md` can take it to
+  `catalog.yaml` as evidence for a control. It arrives here as a candidate rule,
+  never as a rule already broken.)
 ```
 
 Calibration: you are a screening pass, not the final authority. Be decisive on clear
