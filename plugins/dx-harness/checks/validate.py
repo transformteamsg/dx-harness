@@ -1887,6 +1887,107 @@ def run_self_test():
                         f"want: {want!r}; got: {got!r} "
                         f"(tightest adjacent pair {min(ratios):.4f})")
 
+    # The polish skill restates SLP-6's threshold, and no sync check compares a
+    # figure. Read it against the catalog so the two cannot drift apart.
+    case_count += 1
+    polish = os.path.join(REPO_ROOT, "skills", "design", "dx-design-polish",
+                          "SKILL.md")
+    with open(polish) as fh:
+        polish_figure = re.search(r"SLP-6 \(type hierarchy [^\d]*([\d.]+)x\)", fh.read())
+    want = (True, True)
+    got = (polish_figure is not None,
+           polish_figure is not None and threshold is not None
+           and float(polish_figure.group(1)) == float(threshold.group(1)))
+    if want != got:
+        failures.append(f"FAIL the polish skill quotes SLP-6's live threshold: "
+                        f"want: {want!r}; got: {got!r}")
+
+    # The reviewer agent states each control's label inline, and [SKILL-SYNC]
+    # compares ids rather than labels, so a relabel drifts here silently. Every
+    # "(<ID>, L<n>, <label>" the agent writes must match the catalog.
+    case_count += 1
+    agent_path = os.path.join(REPO_ROOT, "agents", "dx-design-review.md")
+    with open(agent_path) as fh:
+        agent_text = fh.read()
+    want = []
+    got = []
+    for match in re.finditer(
+            r"\((?P<id>[A-Z0-9]+-\d+), L\d+, (?P<label>deterministic|judgment|hybrid)\b",
+            agent_text):
+        cid, stated = match.group("id"), match.group("label")
+        actual = live_by_id.get(cid, {}).get("check")
+        if stated != actual:
+            got.append(f"agents/dx-design-review.md calls {cid} {stated!r}, "
+                       f"catalog says {actual!r}")
+    if want != got:
+        failures.append(f"FAIL the reviewer agent's stated labels match the "
+                        f"catalog: want: {want!r}; got: {got!r}")
+
+    # LAY-4's measure is restated inside three dx-sync:lay-controls fences, and
+    # [LAY-SYNC] compares only the LAY id set, so a one-sided edit passes it.
+    # The fences differ in prose by design; the measure figure must not.
+    case_count += 1
+    fence_files = [
+        os.path.join(REPO_ROOT, "agents", "dx-design-review.md"),
+        os.path.join(REPO_ROOT, "skills", "design", "dx-design-pattern", "SKILL.md"),
+        os.path.join(REPO_ROOT, "skills", "design", "dx-design-execute", "SKILL.md"),
+    ]
+    measures = []
+    for path in fence_files:
+        with open(path) as fh:
+            span = re.search(r"<!-- dx-sync:lay-controls -->(.*?)"
+                             r"<!-- /dx-sync:lay-controls -->", fh.read(), re.DOTALL)
+        found = re.search(r"measure ≤ (\d+)ch", span.group(1)) if span else None
+        measures.append(found.group(1) if found else None)
+    want = (True, True)
+    got = (all(m is not None for m in measures), len(set(measures)) == 1)
+    if want != got:
+        failures.append(f"FAIL the three lay-controls fences agree on LAY-4's "
+                        f"measure: want: {want!r}; got: {got!r} ({measures!r})")
+
+    # The teaching exhibit is suppressed at the static-check layer only (#150).
+    # components/compare.tsx is a deliberate anti-specimen carrying six inline
+    # dx-waive markers, so .dx/config.json drops it from the scanned file list.
+    # The rendered layer stays exposed on purpose: the DOM waiver marker
+    # (data-dx-waive) belongs to #154 and #155, so its absence is the assertion,
+    # not an oversight.
+    site_root = find_site_root(REPO_ROOT)
+    if site_root is not None:
+        case_count += 1
+        cfg_path = os.path.join(site_root, ".dx", "config.json")
+        ignore_files = []
+        if os.path.isfile(cfg_path):
+            with open(cfg_path) as fh:
+                ignore_files = json.load(fh).get("detector", {}).get("ignoreFiles", [])
+        exhibit = os.path.join(site_root, "components", "compare.tsx")
+        rendered_marker = False
+        if os.path.isfile(exhibit):
+            with open(exhibit) as fh:
+                rendered_marker = "data-dx-waive" in fh.read()
+        want = (True, False)
+        got = ("components/compare.tsx" in ignore_files, rendered_marker)
+        if want != got:
+            failures.append(f"FAIL the exhibit is suppressed statically and left "
+                            f"exposed to the rendered layer: want: {want!r}; "
+                            f"got: {got!r}")
+
+        # The .mjs gate runs before the Python one in prebuild, so it is the
+        # first thing to fail on a missing detail file. Guarding the order
+        # because the two gates enforce overlapping rules and only this one
+        # decides which error a contributor sees first.
+        case_count += 1
+        pkg_path = os.path.join(site_root, "package.json")
+        prebuild = ""
+        if os.path.isfile(pkg_path):
+            with open(pkg_path) as fh:
+                prebuild = json.load(fh).get("scripts", {}).get("prebuild", "")
+        mjs, py = prebuild.find("check-standards.mjs"), prebuild.find("check:python")
+        want = (True, True, True)
+        got = (mjs != -1, py != -1, mjs != -1 and py != -1 and mjs < py)
+        if want != got:
+            failures.append(f"FAIL prebuild runs check-standards.mjs before the "
+                            f"Python gate: want: {want!r}; got: {got!r}")
+
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
     try:
