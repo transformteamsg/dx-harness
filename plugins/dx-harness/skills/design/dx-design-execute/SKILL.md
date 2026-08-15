@@ -364,8 +364,13 @@ plan:
 - **Plan summary table**: end the plan with a compact table the reader can scan in one
   pass — one row per plan dimension (structure; components; interaction & motion; async
   states + each one's A11Y-11 channel; controls in scope; waivers; tradeoffs; evidence
-  to capture), each cell a tight phrase, not prose. It is a summary the grill and the
-  approver read first, never a substitute for the plan above it.
+  to capture; quality bar), each cell a tight phrase, not prose. It is a summary the
+  grill and the approver read first, never a substitute for the plan above it. The
+  quality-bar row is the last one and carries two things: the register you resolved at
+  intent, and the one decision this surface makes that should read as strong —
+  `Quality bar | register: product | Strong decision: the caseload table reads as one
+  scan, not four cards.` It predicts no grade, and no grade word appears anywhere in
+  the plan (`../../../procedures/plan-approval.md`, stage 1).
 
 Skill-specific notes on the gate:
 

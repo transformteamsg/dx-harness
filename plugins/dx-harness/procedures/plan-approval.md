@@ -23,6 +23,12 @@ human's clear early approval shortens it.
 
 1. **Expose the plan.** The full plan goes in your message body, ending with a
    compact plan summary table (one row per plan dimension, each cell a tight phrase).
+   Its last row is the quality bar: the register in effect, and the one decision this
+   surface makes that should read as strong — what good was aimed at, in the reader's
+   own terms, before anything is built. **Never a predicted grade.** The words
+   `strong`, `acceptable`, and `weak` do not appear anywhere in a plan as a forecast:
+   grading unbuilt work is fake, and the grades arrive at verify against the built
+   surface. One row, not a section and not a second gate.
    Close with a plain-text line that you will grill the plan next. Never put a
    modal or option dialog in the same turn as the plan; that forces a decision
    before the reader has read what they are deciding on.
