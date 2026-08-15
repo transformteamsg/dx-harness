@@ -162,7 +162,7 @@ test("uses the lime site accent without a hero product label", async ({ page }) 
 
   expect(colours).toEqual({
     background: "rgb(189, 238, 99)",
-    border: "rgb(92, 124, 47)",
+    border: "rgb(88, 120, 40)",
     foreground: "rgb(24, 24, 27)",
   });
 });
