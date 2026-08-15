@@ -193,41 +193,14 @@ SLP-9 AI tells) — do not double-flag it here. Boundary with CMP-2: CMP-2 owns 
 destructive-action *behaviour* (consequences + undo/confirm); CNT-14 owns only whether
 the *wording* is sober vs dramatic.
 
-**4. Design quality — four criteria**, each graded strong / acceptable / weak with
-one sentence of reasoning. These draw on Apple's HIG design principles as a
-reference lens (a judgment aid, not a checkable standard):
+**4. Quality grades — the ceiling, not a control.** Grade the four criteria below
+strong / acceptable / weak against `standards/quality-bar.md`, read whole. Each grade
+quotes the anchor that decided it, as CNT-14 quotes the voice table; a grade with no
+quoted anchor is unfinished. A miss is grade evidence, never a finding.
 
-- **Design quality** — hierarchy, spacing rhythm, alignment; does the page read in
-  the order the task needs? Is hierarchy doing its job (HIG: Simplicity) — does the
-  teacher know where they are and what comes next? Does it carry Kind Utility —
-  approachable, frictionless, safe, reliable — or does it merely pass the controls?
-- **Originality** — appropriate distinctiveness. For professional daily-use tools
-  this is inverted from consumer work: flag *unwarranted* novelty (a custom pattern
-  where a stack component exists is a finding) as readily as generic slop. Slop is
-  control-backed since the catalog consolidation: where the generic-AI tell matches
-  an SLP control (SLP-1..11), cite the control id as a graded finding rather than
-  marking it down only in this grade. Apple's
-  test applies (HIG: Delight): don't mistake delight for decoration — character that
-  gets between the teacher and the task is a finding, not a flourish.
-  **Do not flag** deliberate semantic colour-coding as slop: per-section or
-  per-status colour that is decorative (`aria-hidden`) wayfinding, or functional
-  status colour from the Radix scales (COL-2), is intentional design — it is not
-  the SLP-1 "rainbow"/gradient AI tell. Flag *unmotivated* multi-hue decoration,
-  not a deliberate colour system.
-- **Craft** — quality sets the tone (HIG: Craft): is each decision deliberate?
-  States designed (empty, loading, error, focus), edge content lengths,
-  responsive behavior between the three captured widths.
-- **Dark mode** is graded only when the product supports it and a dark frame was
-  captured. If the product has no dark mode (no toggle, no re-rendering `.dark`
-  layer), mark dark-mode checks **N/A — product has no dark mode**; never grade
-  a TOK-1 "dark-safe" pass from token resolution alone for a mode that never
-  renders.
-- **Functionality** — does the flow actually complete the teacher's task; dead ends,
-  missing recovery paths. Recovering from a mistake should not cost the teacher time
-  or work, and any guided flow must be skippable or escapable (HIG: Agency). For
-  flows, grade the journey against the plan's flow map: do entry points, exits, and
-  the interruption/resume cases behave as planned, and is the teacher's work
-  preserved through each of them?
+<!-- dx-sync:quality-criteria -->
+design-quality · originality · craft · functionality
+<!-- /dx-sync:quality-criteria -->
 
 ## Output format
 
