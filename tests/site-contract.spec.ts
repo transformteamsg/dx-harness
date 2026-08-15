@@ -116,6 +116,34 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   await expect(page.getByRole("link", { name: "See all skills" })).toBeVisible();
 });
 
+test("skill-mark eyes follow the pointer and respect reduced motion", async ({ page }) => {
+  await open(page, "/");
+
+  const cards = page.locator("[data-skill-card]");
+  const orchestrator = cards.filter({
+    has: page.getByRole("heading", { name: "Orchestrator", exact: true }),
+  });
+  const eyes = orchestrator.locator("[data-skill-eyes]");
+
+  await expect(cards).toHaveCount(6);
+  await expect(eyes).toHaveCount(1);
+  await orchestrator.hover({ position: { x: 280, y: 24 } });
+  await expect.poll(() => eyes.evaluate((element) => element.style.transform)).not.toBe(
+    "translate(0px, 0px)"
+  );
+
+  await page.mouse.move(0, 0);
+  await expect.poll(() => eyes.evaluate((element) => element.style.transform)).toBe(
+    "translate(0px, 0px)"
+  );
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await orchestrator.hover({ position: { x: 280, y: 24 } });
+  await expect.poll(() => eyes.evaluate((element) => element.style.transform)).toBe(
+    "translate(0px, 0px)"
+  );
+});
+
 test("uses the lime site accent without a hero product label", async ({ page }) => {
   await open(page, "/");
 

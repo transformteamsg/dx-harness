@@ -1,13 +1,13 @@
 "use client";
 
-/* The design loop drawn as a loop: six phases on a ring, two human gates, a
-   travelling dot that pauses where the loop pauses — at the gates. The SVG is
+/* The design loop drawn as a loop: six phases on a ring, one plan approval, and a
+   travelling dot that pauses where the loop waits for approval. The SVG is
    decorative (aria-hidden); the semantics live in an HTML tablist overlaid on
    the nodes (APG Tabs, automatic activation) and a tabpanel that carries each
    phase's detail from loop-data.ts.
 
    Controls this component answers to:
-   - MOT-3: the numbered ring communicates order and gates without motion;
+   - MOT-3: the numbered ring communicates order and plan approval without motion;
      under reduced motion the dot is not rendered and nothing is lost.
    - MOT-1/2 + SLP-8: interface transitions use DUR/EASE tokens, spring-free.
      The dot's revolution is ambient narrative choreography (its numbers are
@@ -50,8 +50,8 @@ const POS = LOOP_PHASES.map((_, i) => ({
 /* Label blocks sit outside the ring, anchored per quadrant: centred above and
    below for the 12 and 6 o'clock nodes, hugging the viewBox edge for the four
    diagonal nodes (the corner zones beyond the arc are the only place their
-   text fits at 360px without crossing the ring). Chips only exist on the two
-   gates, which both sit on the bottom diagonals. */
+   text fits at 360px without crossing the ring). The approval chip sits on the
+   bottom-right diagonal. */
 type LabelSpot = {
   anchor: "start" | "middle" | "end";
   x: number;
@@ -65,12 +65,12 @@ const SPOTS: LabelSpot[] = [
   { anchor: "end", x: 474, labelY: 112, noteY: 127 }, // Diverge (top right)
   { anchor: "end", x: 474, labelY: 364, chipY: 381, chipW: 76, noteY: 400 }, // Plan
   { anchor: "middle", x: C, labelY: 447, noteY: 462 }, // Implement (bottom)
-  { anchor: "start", x: 6, labelY: 364, chipY: 381, chipW: 104, noteY: 400 }, // Verify
-  { anchor: "start", x: 6, labelY: 112, noteY: 127 }, // Ratchet (top left)
+  { anchor: "start", x: 6, labelY: 364, noteY: 400 }, // Design review
+  { anchor: "start", x: 6, labelY: 112, noteY: 127 }, // Rule proposal (top left)
 ];
 
-/* ── Ambient choreography (plan 017): one revolution ≈ 36s, dwelling at the
-   two gates — the motion itself says "the loop stops for humans". The cycle
+/* ── Ambient choreography (plan 017): one revolution ≈ 36s, dwelling at plan
+   approval — the motion itself says "the loop stops before code changes". The cycle
    starts and ends at the Plan gate (120° and 480° are the same angle), so the
    infinite repeat is seamless and velocity-continuous: ease into a stop, hold,
    ease out. Travel easing is the token in-out curve; no springs (SLP-8).
@@ -79,25 +79,16 @@ const SPOTS: LabelSpot[] = [
    token scale (which caps at 600ms). ── */
 const ORBIT_S = 36;
 const DWELL_PLAN_S = 1.6;
-const DWELL_VERIFY_S = 1.2;
-/* The dot dwells just short of each gate node — waiting to be let through,
+/* The dot dwells just short of the plan node — waiting to be let through,
    not parked on top of the numeral. 11° clears the gate ring (7.6°) with a
    visible sliver of track between them. */
 const GATE_WAIT_DEG = 11;
 const PLAN_DEG = 120 - GATE_WAIT_DEG;
-const VERIFY_DEG = 240 - GATE_WAIT_DEG;
 const START_TRANSFORM = `rotate(${PLAN_DEG} ${C} ${C})`;
 
-const TRAVEL_S = ORBIT_S - DWELL_PLAN_S - DWELL_VERIFY_S;
-const KEYFRAMES = [PLAN_DEG, PLAN_DEG, VERIFY_DEG, VERIFY_DEG, PLAN_DEG + 360];
-const TIMES = [
-  0,
-  DWELL_PLAN_S / ORBIT_S,
-  (DWELL_PLAN_S + TRAVEL_S / 3) / ORBIT_S, // Plan→Verify is 120° of the 360°
-  (DWELL_PLAN_S + TRAVEL_S / 3 + DWELL_VERIFY_S) / ORBIT_S,
-  1,
-];
-const EASES = ["linear", EASE_IN_OUT, "linear", EASE_IN_OUT] as const;
+const KEYFRAMES = [PLAN_DEG, PLAN_DEG, PLAN_DEG + 360];
+const TIMES = [0, DWELL_PLAN_S / ORBIT_S, 1];
+const EASES = ["linear", EASE_IN_OUT] as const;
 
 export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" }) {
   const reduced = useReducedMotionSafe();
@@ -299,10 +290,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
               {p.gate && (
                 <span
                   className={
-                    "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold " +
-                    (p.gate === "plan"
-                      ? "bg-site-accent text-primary-foreground"
-                      : "border border-site-accent-text text-site-accent-text")
+                    "inline-flex items-center whitespace-nowrap rounded-full bg-site-accent px-2 py-0.5 text-xs font-semibold text-primary-foreground"
                   }
                 >
                   {p.gateLabel}
@@ -400,11 +388,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
           </span>
           {phase.gate && (
             <span
-              className={
-                phase.gate === "plan"
-                  ? "rounded-full bg-site-accent px-2 py-0.5 text-xs font-semibold text-primary-foreground"
-                  : "rounded-full border border-site-accent-text px-2 py-0.5 text-xs font-semibold text-site-accent-text"
-              }
+              className="rounded-full bg-site-accent px-2 py-0.5 text-xs font-semibold text-primary-foreground"
             >
               {phase.gateLabel}
             </span>
@@ -433,7 +417,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
       </div>
       <figcaption className="mt-3 max-w-[52ch] text-xs leading-normal text-muted-foreground">
         Select a phase to read what happens there.
-        {!reduced && " The dot pauses at the two gates — where the loop waits for you."}
+        {!reduced && " The dot pauses where the plan waits for your approval."}
       </figcaption>
     </figure>
   );

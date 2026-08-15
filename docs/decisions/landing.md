@@ -128,6 +128,35 @@ existing component part of this surface's review scope.
 - **Decisions taken at approval:** base a new branch off `main`; no install commands
   in the hero (Quick start links to the docs quick start instead).
 
+### Scoped follow-up — workflow illustrations (2026-08-15)
+
+- **Intent:** replace the four ambiguous isometric feature drawings with authored
+  workflow schematics that explain the adjacent claims at a glance.
+- **Done-criteria:** each figure depicts a recognisable software artifact; the four
+  figures share one precise line-and-lime drawing grammar; the existing grid, copy,
+  figure labels, responsive behaviour, and decorative accessibility treatment stay
+  unchanged; no internal label renders below the 12px floor.
+- **Component inventory:** `/`; `FeatureFigure`; four decorative, non-interactive
+  inline SVGs (`orchestrator`, `catalog`, `design-file`, `review`). No interactive,
+  async, destructive, loading, success, or error state exists in the changed surface.
+- **Approved by:** rezailmi, 2026-08-15 — picked **workflow schematics** in the grill,
+  then selected **Approve** for the sharpened plan.
+- **Grill decision:** prefer literal prompts, rule sheets, design specimens, interface
+  fragments, and review annotations over abstract geometry or miniature product UI.
+- **Intended diff:** redraw `components/landing/feature-figure.tsx`; add this scoped
+  run record. Preserve the existing uncommitted removal of the figure's bottom border.
+
+| Dimension | Approved plan |
+|-----------|---------------|
+| Structure | Keep the four-cell feature grid; replace artwork only |
+| Components | Four authored inline SVGs with shared stroke properties |
+| Interaction and motion | Static diagrams; no interaction or motion |
+| Async states and A11Y-11 | N/A — no async state exists |
+| Controls in scope | A11Y-1, A11Y-6, TOK-1, TYP-2, TYP-3, SLP-7, LAY-2, LAY-6 |
+| Waivers | None |
+| Tradeoffs | More SVG geometry in exchange for clearer concepts; one component keeps it reversible |
+| Evidence | Deterministic checks and screenshots at 360, 768, and 1280 |
+
 ## Verify verdict
 
 - **Screenshots:** `built-1440.png`, `built-390.png`, `built-320.png` (scratchpad,
@@ -281,6 +310,53 @@ intentional anti-patterns into this run's scope.
 3. **The demo remains hard to read at 320–390** — its default 50% divider leaves both panels
    clipped mid-sentence. LAY-2 expressly does not cover it (a drag recovers it), so it
    is an uncovered defect logged in the Ratchet, not an unrecorded control failure.
+
+### Workflow-illustration follow-up verification — 2026-08-15
+
+- **Evidence:** `/tmp/dx-harness-illustrations-final-1280.png`,
+  `/tmp/dx-harness-illustrations-final-768.png`, and
+  `/tmp/dx-harness-illustrations-final-360.png`, captured from the final production
+  build after confirming the actual viewport width for each frame.
+- **Inventory:** four `FeatureFigure` instances render one SVG each and retain
+  `aria-hidden="true"`. The adjacent headings carry the complete meaning; no SVG
+  contains rendered text or an interactive control.
+- **CMP-3 / A11Y-11:** N/A — no async state exists in this static illustration change.
+- **Dark mode:** N/A — the product has no dark-mode token layer or rendered theme state.
+- **Fresh-context evaluator:** not dispatched in this session; no independent
+  evaluator verdict is claimed for this scoped follow-up. The evidence below is the
+  builder's deterministic and rendered verification.
+
+| Control or gate | Method | Evidence |
+|-----------------|--------|----------|
+| A11Y-1, A11Y-6, TOK-1, TYP-2, TYP-3 | script | Focused token, a11y, type, and contrast scans clean; `pnpm run check:python` clean (`70 controls valid`) |
+| LAY-2 | manual | 360px production DOM reports `scrollWidth - innerWidth === 0`; focused Playwright overflow checks pass at 320 and 360 |
+| LAY-6, SLP-7 | manual | 1280 / 768 / 360 evidence inspected for optical alignment, line density, clipping, and grouping rhythm |
+| Landing feature contract | script | Focused Playwright run: three tests pass, including four feature figures and both mobile overflow widths |
+| Unit regression | script | `pnpm run test`: 12 files, 92 tests pass |
+| Production build | script | `pnpm run build`: 245 static pages generated and CSP post-build completed |
+| Full Playwright file | unverified | 40 of 41 pass; the unrelated site-accent test expects committed lime 11 `#5c7c2f` while the branch renders committed `#587828`; neither file is in this follow-up diff |
+
+### Skill-mark interaction follow-up — 2026-08-15
+
+The six skill marks keep their existing colour and silhouette system, with two scoped
+refinements from the approved visual direction: the Polish diamond and Execute hexagon
+now use softened corners, and each pair of pill eyes follows a fine-pointer position
+while that pointer is inside its card. Eye travel is capped at four pixels so it reads
+as attention rather than displacement. It resets on pointer exit, ignores touch input,
+and stays at rest when `prefers-reduced-motion: reduce` is active.
+
+- **A11Y-5 / MOT-3:** reduced-motion users receive the static resting state; the
+  decorative SVGs remain `aria-hidden`.
+- **MOT-1 / MOT-2:** only the eye group's `transform` changes, with the existing fast
+  motion token and a direct ease-out response.
+- **LAY-2 / SLP-8:** the mark viewBox and 64px footprint are unchanged, so the softened
+  paths and eye travel cannot alter card geometry or page overflow.
+- **Regression contract:** the focused browser check covers all six card hooks,
+  pointer following, exit reset, and the reduced-motion resting state.
+- **Verification:** `/tmp/dx-harness-skill-marks.png` and
+  `/tmp/dx-harness-skill-marks-hover.png` record the resting and pointer-following
+  production states. Typecheck, ESLint, all 92 unit tests, the 70-control design
+  gate, the 245-page production build, and four focused Playwright checks pass.
 
 ## Ratchet
 

@@ -68,14 +68,21 @@ back with 2–3 genuinely different directions as real HTML pages; you pick
 one. No code exists until you approve the plan. If you change your mind
 mid-run, say so — the loop goes back a phase rather than pushing on.
 
-It also builds the findings you accept from the critique and the passes.
+It also builds the findings you accept from the critique and specialist skills.
 
-## The five passes
+## Specialist skills and subagents
 
-When you can already name the problem, skip the full loop. Each pass reviews
-one dimension of an existing page and proposes up to five ranked findings,
-recorded on the surface's design ticket. A pass never edits the product; the
-findings you accept go to `dx-design-execute` to build.
+`dx-design` brings in focused specialists when a request needs more than one
+kind of design judgement. It gives each specialist the same intent, relevant
+`DESIGN.md` decisions, and in-scope control catalog entries. They return their
+findings to the orchestrator, so you get one coordinated plan rather than a
+set of disconnected recommendations.
+
+The five specialists below can run in two ways. Call one directly when you
+already know which dimension needs attention. For a broader improvement,
+`dx-design` runs the relevant ones as propose-only subagents. Each can record
+up to five ranked findings on the surface's design ticket, but none edits the
+product.
 
 - `/dx-harness:dx-design-copy` — wording, tone, names, error messages.
 - `/dx-harness:dx-design-polish` — spacing, type, colour, radius, shadow.
@@ -85,10 +92,17 @@ findings you accept go to `dx-design-execute` to build.
   the page uses the right named pattern (list vs cards, master-detail,
   wizard). It can propose a whole-page rebuild that keeps the same content.
 
-**`/dx-harness:dx-design-critique`** is for "I do not like this page but I
-cannot say why." It captures the page, grades it against the catalog, and
-returns ranked findings with scores. It is also the re-audit: "re-check this
-page against the catalog." Propose-only, like the passes.
+**`/dx-harness:dx-design-critique`** is the whole-page specialist for "I do
+not like this page but I cannot say why." It captures the page, grades it
+against the catalog, and returns ranked findings with scores. It also handles
+re-audits. Like the five specialists, it proposes changes but never builds
+them.
+
+The orchestrator merges accepted findings into one ranked plan and asks for
+approval once. `dx-design-execute` then builds that plan. After implementation,
+`dx-design` sends the full result to the separate `dx-design-review` agent, which
+checks the original intent, approved plan, `DESIGN.md`, and relevant catalog
+controls. The same reviewer re-checks fixes from new screenshots.
 
 ## The design language
 

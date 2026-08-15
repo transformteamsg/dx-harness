@@ -1,12 +1,65 @@
 ---
 title: The loop
-description: Six phases, two human gates. Intent without loss.
+description: One orchestrator, focused specialists, one approved plan, and an independent design review.
 ---
 
-The harness wraps an AI agent so that what it designs complies with this standard, not by asking nicely but by structure. Its central promise: **intent without loss.** What you mean is written as a contract in phase 1. Every later phase is graded against it, and drift is a defect. Every phase grades against the [control catalog](/standards/catalog).
+`dx-design` keeps a design run coherent from the first request to the reviewed
+result. It clarifies the intent once, then carries the same context through every
+specialist, subagent, builder, and reviewer. No stage starts the interview again or
+silently changes the brief.
+
+## What grounds the run
+
+Two sources guide every decision. The [control catalog](/standards/catalog) is the
+portfolio rulebook: the orchestrator filters it to the controls that apply to this
+product, audience, surface, and phase. [`DESIGN.md`](/harness/skills#the-design-language)
+holds the decisions that make this product itself, including its essence, colour,
+type, motion, voice, guardrails, and standing overrides.
+
+The two files do different jobs. `DESIGN.md` adds product context; it never copies
+or replaces catalog rules. Existing code remains the authority for implemented
+components and tokens.
+
+## How `dx-design` orchestrates the work
+
+For a broad improvement, `dx-design` captures the surface and brings in only the
+specialists the request needs. Copy, pattern, polish, motion, and flow can run as
+propose-only subagents. Each receives the same intent, `DESIGN.md` context, and
+in-scope controls, then returns focused, ranked findings to the orchestrator. None
+of them edits the product.
+
+The orchestrator combines those findings into one plan, asks for approval once,
+and hands the accepted work to `dx-design-execute`. A specialist can also run on
+its own when you already know which dimension needs attention; it still proposes
+changes rather than making them.
+
+## From intent to review
+
+The diagram shows the shared run after routing. A new page usually includes several
+directions to choose from. An existing page may enter with accepted findings from
+the specialists. In both cases, `dx-design-execute` is the only skill that changes
+product code.
 
 <OrbitLoop />
 
-## The two gates
+## How design review closes the loop
 
-The loop stops twice, and both stops are yours. The plan gate means nothing is built unseen: you read what the agent intends (components, content, error states, waivers). No code exists until you approve it. An explicit ask to build a specific plan counts as approval — the run just builds. The verify gate means a waiver is a human decision. The checks and the design reviewer report what failed, but only you can accept a deviation from the standard. Between the gates the agent moves fast, because the contract you approved already binds it. If a gate ever surprises you, the defect is upstream — in the intent or the plan, not the build.
+Whoever started the run launches `dx-design-review` after implementation. This is a
+separate, fresh-context agent. It receives the original intent, approved plan,
+screenshots, component inventory, relevant catalog controls, and any standing
+overrides from `DESIGN.md`.
+
+The reviewer reports findings but never edits the product. The builder addresses
+them, then the same reviewer checks new screenshots and marks each finding resolved,
+partial, or unresolved. The builder's explanation is not evidence.
+
+## Where you decide
+
+The run stops once before implementation for plan approval. You see the proposed
+structure, content, states, controls, and any requested waivers before code changes.
+An explicit request to build a specific plan or chosen direction already counts as
+approval.
+
+Agents can report a deviation but cannot approve one. You decide whether to grant a
+permitted waiver at plan approval. After design review, the person who approved the
+plan also decides whether an unresolved finding may remain open.

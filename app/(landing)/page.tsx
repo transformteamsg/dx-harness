@@ -5,6 +5,7 @@ import { inkFilter, inkIcons, inkStroke } from "@/components/ink-icons.generated
 import { FEATURED_SKILLS } from "@/components/landing/data";
 import { DxdConstructionPreview } from "@/components/landing/dxd-construction-preview";
 import { FeatureFigure, type FeatureFigureKind } from "@/components/landing/feature-figure";
+import { SkillMark } from "@/components/landing/skill-mark";
 import { ClaudeCodeChat } from "@/components/landing/claude-code-chat";
 
 export const metadata = {
@@ -127,91 +128,30 @@ const COLLABORATORS = [
   },
 ] as const;
 
-function SkillMark({ role }: { role: string }) {
-  const common = {
-    className: "size-16 shrink-0",
-    viewBox: "0 0 64 64",
-    fill: "none",
-    "aria-hidden": true,
-    "data-skill-mark": role,
-  } as const;
-  const eyes = (
-    <>
-      <circle cx="26" cy="29" r="3" fill="var(--surface)" />
-      <circle cx="38" cy="29" r="3" fill="var(--surface)" />
-    </>
-  );
-
-  switch (role) {
-    case "Orchestrator":
-      return (
-        <svg {...common}>
-          <rect x="7" y="7" width="50" height="50" rx="16" fill="var(--sec-foundations)" />
-          {eyes}
-        </svg>
-      );
-    case "Copy":
-      return (
-        <svg {...common}>
-          <circle cx="32" cy="32" r="27" fill="var(--sec-guidelines)" />
-          {eyes}
-        </svg>
-      );
-    case "Pattern":
-      return (
-        <svg {...common}>
-          <path d="M31 5c3-1 6 1 8 5l20 37c3 6-1 12-8 12H13c-7 0-11-7-7-13L26 10c1-3 3-4 5-5Z" fill="var(--sec-getting-started)" />
-          {eyes}
-        </svg>
-      );
-    case "Polish":
-      return (
-        <svg {...common}>
-          <path d="M32 5 59 32 32 59 5 32 32 5Z" fill="var(--sec-getting-started)" />
-          {eyes}
-        </svg>
-      );
-    case "Execute":
-      return (
-        <svg {...common}>
-          <path d="M18 6h28l14 26-14 26H18L4 32 18 6Z" fill="var(--sec-principles)" />
-          {eyes}
-        </svg>
-      );
-    default:
-      return (
-        <svg {...common}>
-          <rect x="5" y="13" width="54" height="38" rx="19" fill="var(--sec-standards)" />
-          {eyes}
-        </svg>
-      );
-  }
-}
-
 /* Figure, label, claim. The claim is the whole cell: a support paragraph under it
    restated the label in a longer sentence, and four of those stacked down the page
    read as filler rather than argument. */
 const FEATURES = [
   {
-    figure: "FIG 0.2",
+    figure: "FIG 1",
     kind: "orchestrator" as FeatureFigureKind,
     eyebrow: "Orchestrator skill",
     claim: "Start with a plain-language request.",
   },
   {
-    figure: "FIG 0.3",
+    figure: "FIG 2",
     kind: "catalog" as FeatureFigureKind,
     eyebrow: "Control catalog",
     claim: "Shared design guidance agents can use.",
   },
   {
-    figure: "FIG 0.4",
+    figure: "FIG 3",
     kind: "design-file" as FeatureFigureKind,
     eyebrow: "DESIGN.md",
     claim: "Your product’s design language.",
   },
   {
-    figure: "FIG 0.5",
+    figure: "FIG 4",
     kind: "review" as FeatureFigureKind,
     eyebrow: "Review skill",
     /* Names both things it checks against. "A review grounded in both." relied on
@@ -302,15 +242,20 @@ export default function Landing() {
 
       {/* ── How it works: a real request moving through the harness ─────────── */}
       <SectionHead title="From a request to a reviewed result." />
-      <div className="grid border-b border-border lg:grid-cols-[18rem_minmax(0,1fr)]">
+      {/* Two equal halves, and the three stages divide their half into equal
+          thirds — grid-rows-3 makes the row heights the ordering signal, so the
+          hairlines that used to separate them are redundant and gone. Each
+          stage centres in its third; without that the copy floats to the top of
+          a slot taller than it needs and the equal split stops reading. */}
+      <div className="grid border-b border-border lg:grid-cols-2">
         <div className="flex items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r">
           <ClaudeCodeChat />
         </div>
-        <ol>
+        <ol className="grid grid-rows-3">
           {STAGES.map((s) => (
             <li
               key={s.n}
-              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-4 border-b border-border px-6 py-5 last:border-b-0 sm:px-10 sm:py-6"
+              className="grid grid-cols-[2rem_minmax(0,1fr)] content-center gap-4 px-6 py-5 sm:px-10 sm:py-6"
             >
               <p className="pt-0.5 text-xs text-site-accent-text tabular-nums">{s.n}</p>
               <div>
@@ -350,11 +295,12 @@ export default function Landing() {
       />
       <ul className="grid border-b border-border sm:grid-cols-2 lg:grid-cols-3">
         {FEATURED_SKILLS.map((skill) => (
-          <li key={skill.number} className="-mr-px -mb-px border-r border-b border-border px-6 py-8 sm:px-10 sm:py-10">
-            <div className="flex items-start justify-between gap-4">
-              <SkillMark role={skill.role} />
-              <p className="text-xs text-site-accent-text tabular-nums">{skill.number}</p>
-            </div>
+          <li
+            key={skill.role}
+            data-skill-card
+            className="-mr-px -mb-px border-r border-b border-border px-6 py-8 sm:px-10 sm:py-10"
+          >
+            <SkillMark role={skill.role} />
             <h3 className="mt-5 text-lg font-semibold tracking-tight text-foreground">
               {skill.role}
             </h3>

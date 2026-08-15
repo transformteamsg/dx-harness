@@ -66,10 +66,14 @@ function RegistrationDots({
   completed: boolean;
   children: React.ReactNode;
 }) {
+  /* 1.5 is not a taste call: it is the bounding square's stroke, and these dots
+     sit on that square's corners. Both layers draw with non-scaling-stroke, so
+     the numbers are the same unit and the ring reads as part of the drawing
+     rather than a widget pinned on top of it. */
   const shared = {
     fill: "var(--surface)",
     stroke: "var(--blueprint-ink)",
-    strokeWidth: 4,
+    strokeWidth: 1.5,
     vectorEffect: "non-scaling-stroke",
   } as const;
 
