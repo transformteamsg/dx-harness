@@ -2373,6 +2373,74 @@ def run_self_test():
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)
 
+    # ── The ceiling's own invariants ─────────────────────────────────────────
+    # Four properties the quality bar and its fold depend on that no other check
+    # can see, asserted against the live files rather than a fixture.
+    bar_path = os.path.join(REPO_ROOT, "standards", "quality-bar.md")
+    inventory_path = os.path.join(REPO_ROOT, "standards", "layout-patterns.md")
+    reviewer_path = os.path.join(REPO_ROOT, "agents", "dx-design-review.md")
+    if all(os.path.isfile(p) for p in (bar_path, inventory_path, reviewer_path)):
+        with open(bar_path) as fh:
+            bar_text = fh.read()
+        with open(inventory_path) as fh:
+            inventory_text = fh.read()
+        with open(reviewer_path) as fh:
+            reviewer_text = fh.read()
+
+        # Anchors get no ids, ever. Every id-shaped token in the artifact must be
+        # a live catalog control id — an invented namespace would make a ceiling
+        # miss read as a control finding, the one confusion it exists to prevent.
+        case_count += 1
+        id_shaped = set(re.findall(r"\b[A-Z][A-Z0-9]{1,5}-\d+\b", bar_text))
+        invented = id_shaped - live_ids
+        if invented:
+            failures.append(f"FAIL quality-bar anchors carry no ids: "
+                            f"non-catalog id(s) {sorted(invented)}")
+
+        # The artifact names only skills that exist. Pre-rename names are the
+        # failure this catches; every dx-design-* name must resolve on disk.
+        case_count += 1
+        stale = [n for n in ("dx-critique", "dx-layout", "dx-polish", "dx-motion",
+                             "dx-flow", "dx-copy", "dx-start")
+                 if re.search(rf"\b{n}\b", bar_text)]
+        unresolved = [n for n in sorted(set(re.findall(r"dx-design-[a-z]+", bar_text)))
+                      if not os.path.isdir(os.path.join(REPO_ROOT, "skills", "design", n))
+                      and not os.path.isfile(os.path.join(REPO_ROOT, "agents", n + ".md"))]
+        if stale or unresolved:
+            failures.append(f"FAIL quality-bar names only live skills: "
+                            f"pre-rename {stale}, unresolved {unresolved}")
+
+        # The reviewer stub points and does not restate: 8 lines or fewer, no HIG
+        # framing tag, no Kind Utility line, no dark-mode bullet.
+        case_count += 1
+        stub = re.search(r"^\*\*4\. .*?(?=\n## )", reviewer_text,
+                         re.DOTALL | re.MULTILINE)
+        stub_text = stub.group(0).strip() if stub else ""
+        restated = [w for w in ("HIG", "Kind Utility", "dark mode", "Dark mode")
+                    if w in stub_text]
+        stub_lines = len(stub_text.splitlines())
+        if not stub_text or stub_lines > 8 or restated:
+            failures.append(f"FAIL reviewer stub points and does not restate: "
+                            f"{stub_lines} lines, restates {restated}")
+
+        # No numbered-principle citation survives. The inventory has no numbered
+        # list left to cite, and nothing live cites one.
+        case_count += 1
+        numbered = [ln for ln in inventory_text.splitlines()
+                    if re.match(r"^\d+\. ", ln)]
+        citing = []
+        for root, _dirs, fnames in os.walk(REPO_ROOT):
+            for fname in fnames:
+                if not fname.endswith(".md"):
+                    continue
+                fpath = os.path.join(root, fname)
+                with open(fpath) as fh:
+                    if re.search(r"layout-patterns\.md\s*#\d", fh.read()):
+                        citing.append(os.path.relpath(fpath, REPO_ROOT))
+        if numbered or citing:
+            failures.append(f"FAIL no numbered-principle citation survives: "
+                            f"{len(numbered)} numbered line(s), cited by {citing}")
+
     # ── Report ───────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
 
