@@ -33,6 +33,9 @@ carries an inline `dx-waive SLP-9` on that line.
   5. Quick start — install commands and a first prompt in Claude Code
 - **One claim needs confirming.** The standfirst says the harness is live for every
   product repo in DXD. Verify the marketplace install from a clean machine first.
+- **The blog now speaks in the design lead's first person** ("my job is the quality
+  of craft across everything this org ships"). Confirm the author byline matches
+  before publishing, or soften to "our".
 
 ## Counts to keep true
 

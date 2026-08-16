@@ -33,6 +33,12 @@ what to fix the way designers already work. See it, then fix it. And it assumes 
 terminal skills: one of our least technical designers took it from install to shipped
 screen.
 
+**If your team has no designer yet.** The harness is your floor: tokens that hold,
+contrast that passes, states that exist, copy without slop, checked in every session.
+Not the ceiling a designer would reach, but far above default agent output. And the
+designers we do have stop policing that floor: review time goes to the 20% that
+deserves argument.
+
 **Try it** — docs and quick start: `https://dx-harness.example` _(final domain to follow)_
 
 In Claude Code, in your product repo:
