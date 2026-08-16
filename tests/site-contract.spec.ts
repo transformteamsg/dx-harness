@@ -89,13 +89,11 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   ).toBeVisible();
   const featureGrid = page.locator("ul").filter({ hasText: "Start with a plain-language request." });
   await expect(featureGrid).toHaveCount(1);
-  await expect(featureGrid.locator(":scope > li > div:last-child > p:first-child")).toHaveText([
-    "Orchestrator skill",
-    "Control catalog",
-    "DESIGN.md",
-    "Review skill",
-  ]);
+  await expect(
+    featureGrid.locator(":scope > li > a > div:last-child > p:first-child")
+  ).toHaveText(["Orchestrator skill", "Control catalog", "DESIGN.md", "Review skill"]);
   await expect(featureGrid.locator("[data-feature-figure]")).toHaveCount(4);
+  await expect(featureGrid.locator("[data-feature-card]")).toHaveCount(4);
 
   await expect(
     page.getByRole("heading", { name: "From a request to a reviewed result." })
@@ -104,11 +102,13 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   await expect(page.getByText("The harness at work", { exact: true })).toBeVisible();
   await expect(page.getByText("A reviewed result", { exact: true })).toBeVisible();
 
-  await expect(page.getByRole("heading", { name: "Meet your new collaborators" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "The skills inside the harness." })
+  ).toBeVisible();
   for (const role of ["Orchestrator", "Copy", "Pattern", "Polish", "Execute", "Review"]) {
     await expect(page.getByRole("heading", { name: role, exact: true })).toBeVisible();
   }
-  await expect(page.locator("[data-skill-mark]")).toHaveCount(6);
+  await expect(page.locator("[data-skill-tool]")).toHaveCount(6);
 
   await expect(
     page.getByRole("heading", { name: "A shared language for you and your agent." })
@@ -116,32 +116,47 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   await expect(page.getByRole("link", { name: "See all skills" })).toBeVisible();
 });
 
-test("skill-mark eyes follow the pointer and respect reduced motion", async ({ page }) => {
+test("feature cards reveal their why on hover and keep it reachable by keyboard", async ({
+  page,
+}) => {
   await open(page, "/");
 
-  const cards = page.locator("[data-skill-card]");
-  const orchestrator = cards.filter({
-    has: page.getByRole("heading", { name: "Orchestrator", exact: true }),
-  });
-  const eyes = orchestrator.locator("[data-skill-eyes]");
+  const firstCard = page.locator("[data-feature-card]").first();
+  const explain = firstCard.locator("[data-feature-explain]");
+  const height = () => explain.evaluate((element) => element.clientHeight);
 
-  await expect(cards).toHaveCount(6);
-  await expect(eyes).toHaveCount(1);
-  await orchestrator.hover({ position: { x: 280, y: 24 } });
-  await expect.poll(() => eyes.evaluate((element) => element.style.transform)).not.toBe(
-    "translate(0px, 0px)"
-  );
+  // Clipped while idle on a hover-capable pointer; revealed on hover.
+  await expect.poll(height).toBe(0);
+  await firstCard.hover();
+  await expect.poll(height).toBeGreaterThan(0);
 
+  // The card is a link, so keyboard focus reveals the same content.
   await page.mouse.move(0, 0);
-  await expect.poll(() => eyes.evaluate((element) => element.style.transform)).toBe(
-    "translate(0px, 0px)"
-  );
+  await expect.poll(height).toBe(0);
+  await page.keyboard.press("Escape");
+  for (let i = 0; i < 40; i++) {
+    await page.keyboard.press("Tab");
+    const reached = await firstCard.evaluate(
+      (element) => element === document.activeElement
+    );
+    if (reached) break;
+  }
+  await expect(firstCard).toBeFocused();
+  await expect.poll(height).toBeGreaterThan(0);
+});
 
+test("the harness run scrubs by stage and respects reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await orchestrator.hover({ position: { x: 280, y: 24 } });
-  await expect.poll(() => eyes.evaluate((element) => element.style.transform)).toBe(
-    "translate(0px, 0px)"
-  );
+  await open(page, "/");
+
+  // Reduced motion: the finished run is simply visible — no autoplay needed.
+  await expect(page.getByText("design review passed")).toBeVisible();
+
+  // The stages are buttons; picking one moves the current marker.
+  const stage2 = page.getByRole("button", { name: /The harness at work/ });
+  await stage2.click();
+  await expect(stage2).toHaveAttribute("aria-current", "step");
+  await expect(page.getByRole("button", { name: "Replay the run" })).toBeVisible();
 });
 
 test("uses the lime site accent without a hero product label", async ({ page }) => {

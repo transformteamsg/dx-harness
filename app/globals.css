@@ -107,6 +107,12 @@
   --motion-base: 200ms;
   --motion-slow: 300ms;
   --motion-story: 600ms;
+  /* Stagger offsets for the landing's narrative figures — the same "only these
+     values" rule as the durations above, so a choreographed beat never needs a
+     raw millisecond at the call site. */
+  --motion-beat-1: 180ms;
+  --motion-beat-2: 220ms;
+  --motion-beat-3: 320ms;
   --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
   --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
 
@@ -268,4 +274,48 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
      gaps (e.g. 20px above from a table, 0 below from a paragraph). Give it its
      own symmetric breathing room. */
   .prose hr { margin: 32px 0; border: 0; border-top: 1px solid var(--border); }
+}
+
+/* ── Landing feature figures — the drawing performs its card's message.
+   The SVG markup in components/landing/feature-figure.tsx holds each shape's
+   FINAL pose; these rules pull shapes back to their initial pose while the
+   card ([data-feature-card]) is idle. The whole block is gated on a
+   hover-capable pointer and motion being welcome, so touch and reduced-motion
+   readers simply see the resolved final state, never a frozen mid-pose
+   (A11Y-5). The figures are narrative surfaces, so they may use
+   --motion-story; easing is the standard ease-out, never bounce (SLP-8). ── */
+@layer components {
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .ff-anim {
+      transition:
+        transform var(--motion-story) var(--ease-out),
+        fill var(--motion-slow) var(--ease-out);
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .ff-draw { transition: stroke-dashoffset var(--motion-story) var(--ease-out); }
+    /* dash = longest path in the class, so offset=dash hides it fully */
+    .ff-route { stroke-dasharray: 110; }
+    .ff-check { stroke-dasharray: 64; transition-delay: var(--motion-beat-2); }
+    .ff-exit { stroke-dasharray: 60; transition-delay: var(--motion-beat-3); }
+    .ff-pick { transition-delay: var(--motion-beat-1); }
+
+    /* FIG 1 — routes undrawn, no skill picked yet */
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-route { stroke-dashoffset: 110; }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-pick { fill: var(--surface); }
+    /* FIG 2 — shapes scattered left of the rule, off their lines */
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-seat-sq { transform: translate(-164px, -2px) rotate(18deg); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-seat-ci { transform: translate(-152px, -5px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-seat-tr { transform: translate(-166px, -2px) rotate(-14deg); }
+    /* FIG 3 — primitives back on their palette ghosts */
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-prim-ci { transform: translate(-130px, -4px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-prim-sq { transform: translate(-195px, -50px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-prim-tr { transform: translate(-143px, 12px); }
+    /* FIG 4 — the two source rings apart, the check not yet earned, and the
+       arrow home only once the check lands */
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-l { transform: translateX(-18px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-r { transform: translateX(18px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-check { stroke-dashoffset: 64; }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-exit { stroke-dashoffset: 60; }
+  }
 }

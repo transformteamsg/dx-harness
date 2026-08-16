@@ -38,6 +38,13 @@ const TOPIC_ICONS = {
   "landing/human": "user-round",
   "landing/human-machine": "handshake",
   "landing/machine": "bot",
+  /* Landing "skills inside the harness" section — tool marks for the six roles */
+  "skills/orchestrator": "waypoints",
+  "skills/copy": "pen-line",
+  "skills/pattern": "layout-template",
+  "skills/polish": "sparkles",
+  "skills/execute": "hammer",
+  "skills/review": "search-check",
   "harness/install": "download",
   "harness/loop": "refresh-cw",
   "harness/skills": "layers",

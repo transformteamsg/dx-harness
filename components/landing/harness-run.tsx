@@ -1,0 +1,264 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+/* One request played end to end: the terminal types the ask, the run's status
+   lines land one by one, and the reviewed screen comes back underneath — while
+   the stage that corresponds to each beat highlights on the right.
+
+   The player auto-plays once when it scrolls into view; the three stages are
+   real buttons, so a reader can jump to any beat (and keyboard users get the
+   same scrubbing hover users get). Reduced motion sees the finished run and
+   still gets working stage buttons with no animation (A11Y-5).
+
+   Server-rendered and no-JS readers get the FINAL beat — every line and the
+   result visible — so nothing depends on the script running.
+
+   Drawn in markup rather than SVG for the same reason as the old figure:
+   the drawing carries words, and SVG <text> at this width lands under 12px
+   (TYP-2). The window chrome, not the glyphs, says "terminal" (TYP-1). */
+
+const PROMPT = "make the settings page feel calmer";
+
+/* beat: 0 typing · 1 passes line · 2 plan approved line · 3 review line · 4 result */
+const FINAL_BEAT = 4;
+const BEAT_STAGE = [0, 1, 1, 2, 2] as const;
+
+const STAGES = [
+  {
+    n: "01",
+    heading: "Your prompt",
+    beat: 0,
+    body: (
+      <>
+        You type the ask in plain words. No skill names, no settings: &ldquo;make the
+        settings page feel calmer.&rdquo;
+      </>
+    ),
+  },
+  {
+    n: "02",
+    heading: "The harness at work",
+    beat: 2,
+    body: (
+      <>
+        <Cmd>dx-design</Cmd> picks the passes this ask needs: layout and polish. Each
+        one reads the control catalog and your <Cmd>DESIGN.md</Cmd>. You approve the
+        plan before anything is built.
+      </>
+    ),
+  },
+  {
+    n: "03",
+    heading: "A reviewed result",
+    beat: 4,
+    body: (
+      <>
+        Execute makes the approved change. A separate review grades it against both
+        sources; the screen comes back only after it passes.
+      </>
+    ),
+  },
+];
+
+/* Same chip as the page's Cmd: the muted chip marks code, not a third typeface
+   (TYP-1), and it inherits its parent's size so it stays on-scale (TYP-2/3). */
+function Cmd({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="rounded-sm bg-muted px-1.5 py-0.5 font-body text-foreground">
+      {children}
+    </code>
+  );
+}
+
+const statusLine = "flex items-baseline gap-2 text-xs leading-relaxed";
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
+
+export function HarnessRun() {
+  const [beat, setBeat] = useState(FINAL_BEAT);
+  const [typedCount, setTypedCount] = useState(PROMPT.length);
+  const timers = useRef<number[]>([]);
+  const played = useRef(false);
+  const playerRef = useRef<HTMLDivElement>(null);
+
+  const clearTimers = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = [];
+  };
+
+  /* The whole run, including the result's 600ms settle, finishes inside five
+     seconds. Past five seconds an auto-starting animation owes the reader a
+     visible pause/stop control (WCAG 2.2.2); staying under the boundary is the
+     honest fix, not a stop button nobody would find. */
+  const play = () => {
+    clearTimers();
+    setBeat(0);
+    setTypedCount(0);
+    for (let i = 1; i <= PROMPT.length; i++) {
+      timers.current.push(window.setTimeout(() => setTypedCount(i), 250 + i * 26));
+    }
+    const t0 = 250 + PROMPT.length * 26;
+    timers.current.push(window.setTimeout(() => setBeat(1), t0 + 450));
+    timers.current.push(window.setTimeout(() => setBeat(2), t0 + 1150));
+    timers.current.push(window.setTimeout(() => setBeat(3), t0 + 1850));
+    timers.current.push(window.setTimeout(() => setBeat(4), t0 + 2300));
+  };
+
+  /* Jump straight to a stage's end beat; a reader's pick always beats the timer. */
+  const jumpTo = (target: number) => {
+    played.current = true;
+    clearTimers();
+    setTypedCount(PROMPT.length);
+    setBeat(target);
+  };
+
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting || played.current) return;
+        played.current = true;
+        if (!reducedMotion.matches) play();
+        observer.disconnect();
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(player);
+    return () => {
+      observer.disconnect();
+      clearTimers();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const activeStage = BEAT_STAGE[beat];
+  const lineOn = (lineBeat: number) =>
+    beat >= lineBeat ? "opacity-100" : "opacity-0";
+  const lineTransition =
+    "transition-opacity duration-(--motion-base) ease-(--ease-out) motion-reduce:transition-none";
+
+  return (
+    <div className="grid border-b border-border lg:grid-cols-2">
+      <div
+        ref={playerRef}
+        className="flex flex-col items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r"
+      >
+        <figure
+          className="m-0 flex w-full max-w-[13rem] flex-col gap-2"
+          role="img"
+          aria-label="A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. dx-design plans layout and polish passes, the plan is approved, the build runs, the design review passes, and a small finished screen comes back underneath."
+        >
+          <div aria-hidden="true">
+            {/* the terminal window */}
+            <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
+              <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
+                <span className="size-2 rounded-full bg-border" />
+                <span className="size-2 rounded-full bg-border" />
+                <span className="size-2 rounded-full bg-border" />
+                <span className="ml-1.5 truncate text-xs text-muted-foreground">
+                  ~/your-app
+                </span>
+              </div>
+              <div className="flex min-h-[104px] flex-col gap-1.5 px-3 py-3">
+                <p className={statusLine}>
+                  <span className="font-semibold text-site-accent-text">❯</span>
+                  <span className="text-foreground">
+                    {PROMPT.slice(0, typedCount)}
+                    {/* A steady caret, not a blinking one: Tailwind's pulse is a
+                        2s animation on its own easing, outside the motion token
+                        scale this site declares as the only one it uses. */}
+                    {beat < FINAL_BEAT ? (
+                      <span className="ml-0.5 inline-block h-3 w-1.5 translate-y-0.5 bg-foreground" />
+                    ) : null}
+                  </span>
+                </p>
+                <p className={`${statusLine} text-muted-foreground ${lineTransition} ${lineOn(1)}`}>
+                  <span className="text-site-accent-text">●</span>
+                  <span>dx-design · layout + polish passes</span>
+                </p>
+                <p className={`${statusLine} text-muted-foreground ${lineTransition} ${lineOn(2)}`}>
+                  <span className="text-site-accent-text">✓</span>
+                  <span>plan approved · building</span>
+                </p>
+                <p className={`${statusLine} text-muted-foreground ${lineTransition} ${lineOn(3)}`}>
+                  <span className="text-site-accent-text">✓</span>
+                  <span>design review passed</span>
+                </p>
+              </div>
+            </div>
+
+            {/* the one lime link in the chain: the reviewed screen coming back */}
+            <div
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${lineOn(4)}`}
+            />
+
+            {/* the screen that comes back — abstract on purpose: grey bars for
+                the words, one lime primary, so it reads as "a calm settings
+                page" without pretending to be a real product */}
+            <div
+              className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,transform] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
+                beat >= 4 ? "opacity-100" : "translate-y-1.5 opacity-0"
+              }`}
+            >
+              <div className="h-2 w-20 rounded-full bg-border-strong" />
+              <div className="mt-3 flex flex-col gap-2">
+                <div className="h-6 rounded-md border border-border bg-background" />
+                <div className="h-6 rounded-md border border-border bg-background" />
+              </div>
+              <div className="mt-3 flex justify-end">
+                <div className="h-6 w-16 rounded-md bg-site-accent" />
+              </div>
+            </div>
+          </div>
+          <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
+            One ask in plain words; a reviewed screen out.
+          </figcaption>
+        </figure>
+        <button
+          type="button"
+          onClick={play}
+          /* min-h-11: 44px is this page's mobile target floor (A11Y-4), and every
+             other action on it already meets that — an outline button is no
+             reason to sit under the floor. */
+          className={`mt-6 inline-flex min-h-11 items-center rounded-lg border border-border bg-surface px-4 text-sm font-medium text-(--prose-body) transition-colors duration-(--motion-fast) hover:border-border-strong ${focusRing}`}
+        >
+          Replay the run
+        </button>
+      </div>
+      <ol className="grid grid-rows-3">
+        {STAGES.map((s, index) => (
+          <li key={s.n} className="grid">
+            <button
+              type="button"
+              onClick={() => jumpTo(s.beat)}
+              aria-current={activeStage === index ? "step" : undefined}
+              /* Every stage scrubs the player, so every stage carries a resting
+                 affordance: the inactive ones keep a hairline left rule and a
+                 hover wash, and the active one steps that rule up to lime
+                 (CMP-7 — a control group whose members look inert reads as
+                 undiscoverable). */
+              className={`grid w-full cursor-pointer grid-cols-[2rem_minmax(0,1fr)] content-center gap-4 border-l-3 px-6 py-5 text-left transition-colors duration-(--motion-base) motion-reduce:transition-none sm:px-10 sm:py-6 ${focusRing} ${
+                activeStage === index
+                  ? "border-site-accent bg-site-accent-wash"
+                  : "border-border hover:bg-accent"
+              }`}
+            >
+              <p className="pt-0.5 text-xs text-site-accent-text tabular-nums">{s.n}</p>
+              <span className="block">
+                <span className="block text-lg font-semibold tracking-tight text-foreground">
+                  {s.heading}
+                </span>
+                <span className="mt-1 block max-w-[48ch] text-sm leading-relaxed text-pretty text-muted-foreground">
+                  {s.body}
+                </span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}

@@ -1,12 +1,11 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { SlopCompare } from "@/components/compare";
-import { inkFilter, inkIcons, inkStroke } from "@/components/ink-icons.generated";
+import { InkIcon } from "@/components/ink-icon";
 import { FEATURED_SKILLS } from "@/components/landing/data";
 import { DxdConstructionPreview } from "@/components/landing/dxd-construction-preview";
 import { FeatureFigure, type FeatureFigureKind } from "@/components/landing/feature-figure";
-import { SkillMark } from "@/components/landing/skill-mark";
-import { ClaudeCodeChat } from "@/components/landing/claude-code-chat";
+import { HarnessRun } from "@/components/landing/harness-run";
 
 export const metadata = {
   /* Absolute: the root template is for titled documentation pages; the front page
@@ -61,52 +60,6 @@ function SectionHead({ title, action }: { title: string; action?: React.ReactNod
   );
 }
 
-function CollaborationIcon({ artKey }: { artKey: string }) {
-  const icon = inkIcons[artKey];
-  if (!icon) return null;
-  const filterId = `landing-${artKey.replace(/[^a-zA-Z0-9]/g, "-")}`;
-
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width={48}
-      height={48}
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <defs>
-        <filter id={filterId} x="-15%" y="-15%" width="130%" height="130%">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency={inkFilter.baseFrequency}
-            numOctaves={inkFilter.numOctaves}
-            seed={icon.seed}
-            result="noise"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale={inkFilter.displacementScale}
-          />
-        </filter>
-      </defs>
-      <g filter={`url(#${filterId})`}>
-        {icon.paths.map((d, index) => (
-          <path
-            key={index}
-            d={d}
-            stroke="var(--ink)"
-            strokeWidth={inkStroke}
-            fill="none"
-          />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
 const COLLABORATORS = [
   {
     artKey: "landing/human",
@@ -128,27 +81,44 @@ const COLLABORATORS = [
   },
 ] as const;
 
-/* Figure, label, claim. The claim is the whole cell: a support paragraph under it
-   restated the label in a longer sentence, and four of those stacked down the page
-   read as filler rather than argument. */
+/* Figure, label, claim — and on demand, the argument. The claim stays the cell's
+   voice; the `what`/`why` pair is revealed on hover or focus (and stays open on
+   touch, where hover does not exist), so the grid explains itself without four
+   support paragraphs stacked down the page. Each card links to the doc page
+   that carries the full story, which is also what makes the reveal
+   keyboard-reachable (A11Y-2). */
 const FEATURES = [
   {
     figure: "FIG 1",
     kind: "orchestrator" as FeatureFigureKind,
     eyebrow: "Orchestrator skill",
     claim: "Start with a plain-language request.",
+    href: "/harness/skills",
+    what: (
+      <>
+        You say what you want in your own words. <Cmd>dx-design</Cmd> reads the request
+        and brings in only the skills it needs.
+      </>
+    ),
+    why: "No tool names to learn, no pass order to manage. The routing is the harness's job, not yours.",
   },
   {
     figure: "FIG 2",
     kind: "catalog" as FeatureFigureKind,
     eyebrow: "Control catalog",
     claim: "Shared design guidance agents can use.",
+    href: "/standards/catalog",
+    what: "One machine-readable catalog of design rules, from contrast floors to anti-slop checks. Every skill reads it before it works.",
+    why: "Your agent stops guessing at taste. It builds against the same rules your team reads, so results stop drifting run to run.",
   },
   {
     figure: "FIG 3",
     kind: "design-file" as FeatureFigureKind,
     eyebrow: "DESIGN.md",
     claim: "Your product’s design language.",
+    href: "/harness/skills#the-design-language",
+    what: "One file in your repo that holds your colours, type, motion, and voice. The same primitives, arranged your way.",
+    why: "The result looks like your product, not like a page any model would make for anyone.",
   },
   {
     figure: "FIG 4",
@@ -158,30 +128,9 @@ const FEATURES = [
        a support paragraph that this page no longer carries, so "both" pointed at
        nothing on screen (CNT-14). */
     claim: "A review against the catalog and your DESIGN.md.",
-  },
-];
-
-const STAGES = [
-  {
-    n: "01",
-    heading: "Your prompt",
-    body: "“Make this lesson planner easier to scan and keep it consistent with our product.”",
-  },
-  {
-    n: "02",
-    heading: "The harness at work",
-    body: (
-      <>
-        <Cmd>dx-design</Cmd> brings in the skills this request needs. Each one reads the
-        control catalog and your <Cmd>DESIGN.md</Cmd>.
-      </>
-    ),
-  },
-  {
-    n: "03",
-    heading: "A reviewed result",
-    body:
-      "Execute makes the approved change. A separate review checks the result before it comes back to you.",
+    href: "/harness/loop",
+    what: "A separate reviewer grades the built result against both sources before it returns.",
+    why: "Misses are caught inside the run, so you are not the first quality check.",
   },
 ];
 
@@ -227,49 +176,47 @@ export default function Landing() {
             key={f.eyebrow}
             className="-mb-px flex min-w-0 flex-col border-b border-border sm:[&:nth-child(odd)]:border-r"
           >
-            <FeatureFigure kind={f.kind} number={f.figure} />
-            <div className="px-6 py-8 sm:px-10 sm:py-10">
-              <p className="text-xs font-semibold tracking-wide break-words text-site-accent-text">
-                {f.eyebrow}
-              </p>
-              <h3 className="mt-3 max-w-[24ch] text-lg font-semibold tracking-tight text-balance text-foreground">
-                {f.claim}
-              </h3>
-            </div>
+            <Link
+              href={f.href}
+              data-feature-card
+              className={`group flex h-full flex-col ${focusRing} focus-visible:-outline-offset-2`}
+            >
+              <FeatureFigure kind={f.kind} number={f.figure} />
+              <div className="px-6 py-8 sm:px-10 sm:py-10">
+                <p className="text-xs font-semibold tracking-wide break-words text-site-accent-text">
+                  {f.eyebrow}
+                </p>
+                <h3 className="mt-3 max-w-[24ch] text-lg font-semibold tracking-tight text-balance text-foreground">
+                  {f.claim}
+                </h3>
+                {/* What it is, then why it matters — clipped until the card is
+                    hovered or focused; always open where hover doesn't exist
+                    (coarse pointers), so nothing is locked behind a mouse. */}
+                <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-(--motion-base) ease-(--ease-out) group-hover:grid-rows-[1fr] group-focus-visible:grid-rows-[1fr] pointer-coarse:grid-rows-[1fr] motion-reduce:transition-none">
+                  <div data-feature-explain className="min-h-0 overflow-hidden">
+                    <p className="max-w-[52ch] pt-3 text-sm leading-relaxed text-pretty text-muted-foreground">
+                      {f.what}
+                    </p>
+                    <p className="max-w-[52ch] pt-2 text-sm leading-relaxed text-pretty text-(--prose-body)">
+                      <span className="font-semibold text-site-accent-text">
+                        Why it matters
+                      </span>{" "}
+                      — {f.why}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
           </li>
         ))}
       </ul>
 
-      {/* ── How it works: a real request moving through the harness ─────────── */}
+      {/* ── How it works: a real request played through the harness. The player
+             auto-plays once in view and the three stages double as scrub
+             buttons; the component carries the two-half grid so the stage
+             highlight and the drawing stay in one client boundary. ─────────── */}
       <SectionHead title="From a request to a reviewed result." />
-      {/* Two equal halves, and the three stages divide their half into equal
-          thirds — grid-rows-3 makes the row heights the ordering signal, so the
-          hairlines that used to separate them are redundant and gone. Each
-          stage centres in its third; without that the copy floats to the top of
-          a slot taller than it needs and the equal split stops reading. */}
-      <div className="grid border-b border-border lg:grid-cols-2">
-        <div className="flex items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r">
-          <ClaudeCodeChat />
-        </div>
-        <ol className="grid grid-rows-3">
-          {STAGES.map((s) => (
-            <li
-              key={s.n}
-              className="grid grid-cols-[2rem_minmax(0,1fr)] content-center gap-4 px-6 py-5 sm:px-10 sm:py-6"
-            >
-              <p className="pt-0.5 text-xs text-site-accent-text tabular-nums">{s.n}</p>
-              <div>
-                <h3 className="text-lg font-semibold tracking-tight text-foreground">
-                  {s.heading}
-                </h3>
-                <p className="mt-1 max-w-[48ch] text-sm leading-relaxed text-pretty text-muted-foreground">
-                  {s.body}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </div>
+      <HarnessRun />
 
       {/* ── The proof ──────────────────────────────────────────────────────── */}
       <SectionHead title="Compare the output." />
@@ -277,9 +224,11 @@ export default function Landing() {
         <SlopCompare />
       </div>
 
-      {/* ── The skills, by the job they do ─────────────────────────────────── */}
+      {/* ── The skills, by the job they do. Tool marks, not mascots: these are
+             skills your agent picks up, so each card shows its tool through the
+             Icon Generator's Ink preset. ──────────────────────────────────── */}
       <SectionHead
-        title="Meet your new collaborators"
+        title="The skills inside the harness."
         action={
           /* -my-1 keeps the 44px hit area (A11Y-4) while letting the flex line stay
              as tall as the heading, so this band matches the ones without an action
@@ -297,10 +246,12 @@ export default function Landing() {
         {FEATURED_SKILLS.map((skill) => (
           <li
             key={skill.role}
-            data-skill-card
+            data-skill-tool
             className="-mr-px -mb-px border-r border-b border-border px-6 py-8 sm:px-10 sm:py-10"
           >
-            <SkillMark role={skill.role} />
+            <div className="grid size-16 place-items-center rounded-xl border border-border bg-site-accent-wash">
+              <InkIcon name={skill.icon} size={36} ink="var(--foreground)" />
+            </div>
             <h3 className="mt-5 text-lg font-semibold tracking-tight text-foreground">
               {skill.role}
             </h3>
@@ -345,7 +296,7 @@ export default function Landing() {
               className="flex min-w-0 flex-col items-center justify-center px-3 py-8 text-center"
               style={{ "--ink": item.ink } as CSSProperties}
             >
-              <CollaborationIcon artKey={item.artKey} />
+              <InkIcon name={item.artKey} size={48} />
               <p className="mt-4 text-sm font-semibold text-foreground">{item.label}</p>
               <p className="mt-1 text-xs leading-normal text-muted-foreground">{item.detail}</p>
             </div>
