@@ -183,8 +183,9 @@ summary count. This replaces hand-maintained gap lists, which drift.
    write `docs/catalog-changes/<id>-removal.md` saying what the constraint became and
    why, and add the id to `retired_ids` in `schema.json`. The cross-reference sweep
    accepts a retired id inside a catalog-change record and nowhere else — so a skill,
-   agent, or procedure still citing the dead control fails the build, while the record
-   that explains the removal can name it. By rule 2 the number is not reissued.
+   agent, procedure, or control detail still citing the dead control fails the build,
+   while the record that explains the removal can name it. By rule 2 the number is not
+   reissued.
 
 ## Detail file format (`controls/<id>.md`)
 

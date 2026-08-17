@@ -154,7 +154,7 @@ Before judging, work through this in order — it turns a feel into an observati
 | Surface | Reads as | Direction |
 | --- | --- | --- |
 | Data entry (marks, attendance, bulk edit) | Dense, tabbable | Short rows, tabular figures, minimal padding; the next field is always reachable without scrolling |
-| Scanning / comparison (lists, tables) | Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular enough that a break in it means something. Where a row carries a full sentence rather than a field, the sentence is held to the reading measure; a row of fields is not |
+| Scanning / comparison (lists, tables) | Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular enough that a break in it means something |
 | Reading (guidance, policy, a case note) | Calm, measured | Measure at most 80 characters, targeting ~66 (**LAY-4**); more space between sections than inside them |
 | Decision (approve, submit, escalate) | Calm, focused | One primary action (**CMP-5**); the consequence sits beside the action, not in a footer |
 | Empty state | Inviting, quiet | Lead with the next action; no illustration outranking the page's real hierarchy |
@@ -170,7 +170,7 @@ not survive a waiver argument — and these are not waivable, because they do no
 | More space above a heading than below it | A heading belongs to what follows. Equal space orphans it and the eye groups it upward, into the section it just left. |
 | At least two but not more than about three distinct spacing values in a region | One value everywhere reads as a template rather than a composition; past three the rhythm stops being perceptible as rhythm. |
 | Largest-to-smallest type size on the page around 2× or more | Adjacent steps can each clear **SLP-6**'s 1.25× and the page still read flat at a glance. This is the cheaper second read that catches it. The reverse also happens: a page can clear this read at 2.5× while three of its four adjacent steps miss **SLP-6**. This read does not stand in for the control. |
-| Text in a bordered box: at least `max(4px, 0.3 × font-size)` between the text's line box and the border vertically, and `max(8px, 0.5 × font-size)` horizontally | Below this the text reads as pressed against the border, whatever the token said. Measure the gap, not the padding property: a 12px pill with a 16px line box and 2px padding leaves 3px of air and does not read airless. |
+| Text in a bordered box: at least `max(4px, 0.3 × font-size)` of visible space between the glyph ink and the border vertically, and `max(8px, 0.5 × font-size)` horizontally | Below this the text reads as pressed against the border, whatever the token said. This is an optical/browser measurement, not the CSS padding value: a 12px pill with a 16px line box and 2px padding leaves about 3px between visible glyph ink and the border and does not read airless. |
 | Body text at least 16px from the viewport edge, 24–32px preferred | **LAY-2** covers 320px reflow, not gutters at comfortable widths. Text flush to the edge reads as unfinished. |
 | About four distinct left edges at 1280, not more, counted on regions. Inline flow inside a region does not create an edge | Past four the composition is drifting even when every individual region is internally aligned. Counted mechanically the number is meaningless: a row of inline badges starts each one wherever the last ended, and a human reads none of them as an edge. |
 | Concentric radius `outer = inner + padding`, unless padding exceeds ~24px | **TOK-3** states the formula with no upper bound. Past ~24px the layers are far enough apart that the eye stops relating them, and the math produces a wrong-looking outer radius. |
@@ -525,15 +525,16 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
     would give this file more power than it has. The builder resolves the register once and
     passes it to the reviewer in the dispatch payload; independent re-resolution was rejected
     because builder and reviewer could resolve a bad id differently.
-29. **Eleven anchors were amended on adoption, all on evidence.** The evidence run in
+29. **Ten evidence-run findings amended anchors on adoption; one corrected the boundary.** The evidence run in
     [#145](https://github.com/transformteamsg/dx-harness/issues/145) graded one known-weak
-    surface against this file and recorded eleven anchors that could not decide, or decided
-    wrongly, against a real frame. Their recorded findings are the only grounds on which any
-    anchor may change, so all eleven were taken as written: the kicker threshold now admits a
+    surface against this file and recorded ten anchor findings that could not decide, or decided
+    wrongly, against a real frame. Those findings are the only grounds on which any anchor may
+    change: the kicker threshold now admits a
     state badge; the two register-specific craft rows carry the register they were written
     for; the bordered-box threshold measures the gap rather than the padding property; the
     edge count says what an edge is; the SLP-7 boundary claims both halves of the control and
-    its pairing stops restating it; the scanning rows reach prose measure, filter durability
-    and the unclickable row; the persona lens carries a `standards-site` analogue; the 2×
+    its pairing stops restating it; the scanning rows reach filter durability and the
+    unclickable row; the persona lens carries a `standards-site` analogue; the 2×
     type read names both directions of the gap; and the drift self-check states both of its
-    readings. No pairing vocabulary, no grade scale, and no surface row was changed.
+    readings. The eleventh finding corrected the floor/ceiling boundary instead: prose measure
+    remains LAY-4's responsibility and added no ceiling anchor. No grade scale moved.
