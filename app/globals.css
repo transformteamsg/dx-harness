@@ -308,8 +308,8 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
     [data-feature-card]:not(:hover):not(:focus-visible) .ff-share-r { transform: translateX(40px); }
     /* FIG 4 — the two source rings apart, the check not yet earned, and the
        arrow home only once the check lands */
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-l { transform: translateX(-18px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-r { transform: translateX(18px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-l { transform: translateX(-34px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-r { transform: translateX(34px); }
     [data-feature-card]:not(:hover):not(:focus-visible) .ff-check { stroke-dashoffset: 64; }
     [data-feature-card]:not(:hover):not(:focus-visible) .ff-exit { stroke-dashoffset: 60; }
   }

@@ -167,21 +167,21 @@ function ReviewFigure() {
   return (
     <>
       <g className="ff-anim ff-ring-l">
-        <circle cx="114" cy="110" r="80" {...line} className="text-foreground" strokeWidth="2" />
-        <g transform="translate(46 82)" opacity=".6">
+        <circle cx="128" cy="110" r="80" {...line} className="text-foreground" strokeWidth="2" />
+        <g transform="translate(60 82)" opacity=".6">
           <InkIcon name="standards/catalog" size={56} ink="var(--foreground)" idSuffix="-fig4" />
         </g>
       </g>
       <g className="ff-anim ff-ring-r">
-        <circle cx="206" cy="110" r="80" {...line} className="text-foreground" strokeWidth="2" />
-        <g transform="translate(218 82)" opacity=".6">
+        <circle cx="220" cy="110" r="80" {...line} className="text-foreground" strokeWidth="2" />
+        <g transform="translate(232 82)" opacity=".6">
           <InkIcon name="landing/design-file" size={56} ink="var(--foreground)" idSuffix="-fig4" />
         </g>
       </g>
       <g className="text-site-accent-text" {...line}>
-        <path d="m144 110 11 12 21-26" className="ff-draw ff-check" strokeWidth="3.5" />
-        <path d="M296 110h22" className="ff-draw ff-exit" strokeWidth="2" />
-        <path d="m318 103 8 7-8 7" className="ff-draw ff-exit" strokeWidth="2" />
+        <path d="m158 110 11 12 21-26" className="ff-draw ff-check" strokeWidth="3.5" />
+        <path d="M310 110h22" className="ff-draw ff-exit" strokeWidth="2" />
+        <path d="m332 103 8 7-8 7" className="ff-draw ff-exit" strokeWidth="2" />
       </g>
     </>
   );
