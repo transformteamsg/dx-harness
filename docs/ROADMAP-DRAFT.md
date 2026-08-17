@@ -15,18 +15,18 @@ the delivery roadmap carries it from then on. Why these three bets is argued in
 ```mermaid
 flowchart LR
     subgraph BET1["Bet 1 — AI in the SDLC"]
-        M1["M1 · The bar enforces itself"]
-        M2["M2 · The lifecycle is legible"]
-        M3["M3 · Work arrives shaped"]
+        M1["M1 · Quality holds without a reviewer"]
+        M2["M2 · We can see what is happening"]
+        M3["M3 · Work arrives ready to build"]
     end
 
     subgraph BET2["Bet 2 — AI for builders"]
-        M4["M4 · Anyone can build"]
-        M5["M5 · Anyone can ship"]
+        M4["M4 · Anyone on the team can build"]
+        M5["M5 · Anyone on the team can ship"]
     end
 
     subgraph BET3["Bet 3 — AI for teachers"]
-        M6["M6 · The bar travels outside the team"]
+        M6["M6 · Teachers can build"]
     end
 
     M1 --> M5
@@ -42,12 +42,12 @@ run whenever there are people to run it.
 
 | # | Capability | Landed when | Horizon |
 |---|---|---|---|
-| M1 | **The bar enforces itself.** Quality stops depending on someone noticing. What the standard can decide, the machine decides; where it cannot, it says so instead of passing silently. | No control promises a judgement it cannot make. | Now |
-| M2 | **The lifecycle is legible.** We can see what the harness is asked to do, what it costs, and where it fails. | We can quote a median instead of an anecdote. | Now |
-| M3 | **Work arrives shaped.** Intent becomes something buildable before it reaches a backlog, and the ceremonies around it produce the same result whoever ran them. | Someone hands over unshaped intent and gets back work another person can pick up unaided. | Now |
-| M4 | **Anyone can build.** Discipline stops deciding whether you can get the product, and a change of your own, running. | Someone whose title is not engineer has their own change running, unaided. | Now |
-| M5 | **Anyone can ship.** What a non-engineer built reaches production intact, through the same gates, rather than being handed over and rebuilt. | Something a non-engineer built is in production and was not rebuilt to get there. | 2027 |
-| M6 | **The bar travels outside the team.** Teachers build against the same standard, with no specialist in the room. | A teacher-built surface is in production and passed the same gates as everything else. | 2027 |
+| M1 | **Quality holds without a reviewer.** It stops depending on someone noticing. What the standard can decide, the machine decides; where it cannot, it says so instead of passing silently. | No control promises a judgement it cannot make. | Now |
+| M2 | **We can see what is happening.** What the harness is asked to do, what it costs, and where it fails. | We can quote a median instead of an anecdote. | Now |
+| M3 | **Work arrives ready to build.** Intent becomes something buildable before it reaches a backlog, and the ceremonies around it produce the same result whoever ran them. | Someone hands over unshaped intent and gets back work another person can pick up unaided. | Now |
+| M4 | **Anyone on the team can build.** Discipline stops deciding whether you can get the product, and a change of your own, running. | Someone whose title is not engineer has their own change running, unaided. | Now |
+| M5 | **Anyone on the team can ship.** What a non-engineer built reaches production intact, through the same gates, rather than being handed over and rebuilt. | Something a non-engineer built is in production and was not rebuilt to get there. | 2027 |
+| M6 | **Teachers can build.** They build against the same standard, with no specialist in the room, and what they build reaches real use. | A teacher-built surface is in production and passed the same gates as everything else. | 2027 |
 
 **Why this order.** M1 is load-bearing twice over: M5 asks non-engineers to trust the gates,
 and M6 asks teachers to depend on them entirely, with no fallback of reading the catalog.
