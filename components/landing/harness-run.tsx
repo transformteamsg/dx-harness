@@ -45,16 +45,14 @@ const STAGES = [
       </>
     ),
     figureLabel:
-      "A terminal window with the typed request: make the settings page feel calmer. Two notes below it: the ask is plain words, and dx-design reads it to pick the passes.",
-    /* Grounded in the section's own copy (content/sections/landing.mdx: "Start
-       with a plain-language request" and "dx-design reads the request and
-       brings in only the skills it needs"), not invented for this drawing. */
+      "A terminal window with the typed request: make the settings page feel calmer. Below it, a note: dx-design reads it to pick the passes.",
+    /* Only the routing row survives review: the plain-words row restated the
+       body text 350px away in the same viewport with no new information
+       (SLP-9 redundancy) — the one thing the terminal doesn't already show is
+       what happens to the words after you type them. Grounded in the
+       section's own copy (content/sections/landing.mdx: "dx-design reads the
+       request and brings in only the skills it needs"). */
     annotations: [
-      {
-        icon: "guidelines/voice-tone",
-        text: "Plain words, not skill names or settings to manage.",
-        ink: "var(--foreground)",
-      },
       {
         icon: "skills/orchestrator",
         text: "dx-design reads it and brings in only the skills it needs.",
@@ -105,16 +103,17 @@ const STAGES = [
       </>
     ),
     figureLabel:
-      "A small finished settings screen with a display name field, a reminders field, and a Save button, above a badge reading design review passed. Below that, a note: graded against both sources before it returns.",
-    /* Grounded in content/sections/landing.mdx: "A separate reviewer grades the
-       built result against both sources before it returns." */
-    annotations: [
-      {
-        icon: "skills/review",
-        text: "Graded against both sources before it returns to you.",
-        ink: "var(--site-accent-text)",
-      },
-    ],
+      "A small finished settings screen with a display name field, a reminders field, and a Save button, above a badge reading design review passed.",
+    /* No annotation here: the screen plus the "design review passed" badge
+       already carry the message a review row would only restate (SLP-9
+       redundancy), and a supporting row cannot reuse the badge's
+       skills/review mark at the same accent ink without duplicating it
+       44.5px above itself (CMP-7 — accent is reserved for the row's own
+       subject, and this row's subject already has one). Kept as an empty
+       array, not an omitted property, so every stage shares one shape and
+       the render guard below (`.length > 0`) is the only thing that decides
+       whether anything draws. */
+    annotations: [] as { icon: string; text: string; ink: string }[],
   },
 ];
 
@@ -214,14 +213,19 @@ export function HarnessRun() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* The reserve is measured from the figure's OWN resting height, not the
-     chain wrapper's: resting height is the wrapper plus gap-2 plus the
-     figcaption, so reserving anything smaller (the wrapper alone) leaves the
-     focused figure short by exactly the gap and caption — which is what a
-     hardcoded 31.53rem and an earlier wrapper-only measurement both did,
-     independently of each other, for the same reason. Measuring the figure
-     itself makes the reserve self-consistent: it constrains the same box it
-     measures, so max(reserve, focused content) equals resting by construction.
+  /* The reserve is measured from the figure's OWN resting height. The figure
+     now holds a single child (the figcaption this used to also cover was cut
+     as redundant decoration — see the chain wrapper's markup below), so
+     measuring the wrapper instead of the figure would land on the same
+     number today; the figure stays the measured element anyway, because
+     that principle — measure the exact box you constrain, not a proxy for
+     it — is what closed two prior rounds where a value describing one box
+     got applied to a different one (a hardcoded constant, then a
+     wrapper-only measurement, both landing short of the figure's true
+     resting height by the gap and caption they didn't account for).
+     Measuring the figure itself makes the reserve self-consistent: it
+     constrains the same box it measures, so max(reserve, focused content)
+     equals resting by construction.
      No constant could stand in for this measurement either: resting height
      depends on both viewport width and root font size once the 15rem cap
      starts to exceed the column's available width (a 320px-wide column at a
@@ -275,16 +279,12 @@ export function HarnessRun() {
           ref={figureRef}
           /* In focus mode the hidden regions leave the layout, so the column would
              collapse and everything below it would jump. Reserving the run-mode height
-             on the figure itself — not just the chain wrapper — and centring keeps the
-             visible region AND its figcaption together as one group; centring the
-             wrapper alone left the caption stranded at the bottom of the reserve, far
-             from the graphic it captions. The reserve itself is `reserve` state, set
-             by the measurement effect above from the figure's OWN resting height — see
-             that effect for why the reserve must come from this exact element (measuring
-             the wrapper instead leaves the focused figure short by the caption and gap)
-             and why no constant (px or rem) can hold this invariant across viewport
-             widths and root font sizes. When `reserve` is null (not measured yet), no
-             minimum is applied. */
+             on the figure itself and centring the one visible child keeps the column
+             still. The reserve itself is `reserve` state, set by the measurement effect
+             above from the figure's OWN resting height — see that effect for why the
+             reserve must come from this exact element, and why no constant (px or rem)
+             can hold this invariant across viewport widths and root font sizes. When
+             `reserve` is null (not measured yet), no minimum is applied. */
           className={`m-0 flex w-full max-w-[15rem] flex-col gap-2 ${
             inFocus ? "justify-center" : ""
           }`}
@@ -440,18 +440,23 @@ export function HarnessRun() {
             </div>
             {/* Focus-mode enrichment: builder direction is that an isolated step
                 should not sit alone in the column when there is real context to
-                add, so each stage gets a couple of rows drawn in the same
-                statusLineIcon idiom as the rest of the figure (fresh idSuffix —
-                these marks already render elsewhere on the page, and a repeated
-                filter id silently strips the texture). Conditionally RENDERED,
-                not just hidden: a no-JS reader can never set `focused`, so this
-                never exists in the initial HTML either way, but rendering makes
-                that guarantee obvious at the call site instead of relying on
-                CSS. Lives inside the same reserve as the isolated region — the
+                add — but only where a row would add something the reader can't
+                already see. Stage 03 draws none: the screen plus the "design
+                review passed" badge above already carry the message, so its
+                `annotations` array is empty and the `.length > 0` guard means
+                nothing renders there at all, not an empty hairline. Where a
+                stage does have rows, they're drawn in the same statusLineIcon
+                idiom as the rest of the figure (fresh idSuffix — these marks
+                already render elsewhere on the page, and a repeated filter id
+                silently strips the texture). Conditionally RENDERED, not just
+                hidden: a no-JS reader can never set `focused`, so this never
+                exists in the initial HTML either way, but rendering makes that
+                guarantee obvious at the call site instead of relying on CSS.
+                Lives inside the same reserve as the isolated region — the
                 height invariant only holds if region + annotations together
                 stay under the measured resting height at every viewport and
-                root font size; re-run the twelve-cell matrix if this copy grows. */}
-            {focused !== null ? (
+                root font size; re-run the matrix if this copy grows. */}
+            {focused !== null && STAGES[focused].annotations.length > 0 ? (
               <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-xs text-muted-foreground">
                 {STAGES[focused].annotations.map((a) => (
                   <p key={a.icon} className={statusLineIcon}>
@@ -464,9 +469,6 @@ export function HarnessRun() {
               </div>
             ) : null}
           </div>
-          <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
-            One ask in plain words; a reviewed screen out.
-          </figcaption>
         </figure>
         <button
           type="button"

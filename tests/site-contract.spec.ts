@@ -176,28 +176,31 @@ test("selecting a run stage shows only that stage's graphic", async ({ page }) =
     await page.getByRole("button", { name: /Your prompt/ }).click();
     await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeHidden();
     await expect(page.getByText("design review passed")).toBeHidden();
-    // Stage 01's own enrichment shows; the other stages' do not.
-    await expect(page.getByText("Plain words, not skill names or settings to manage.")).toBeVisible();
+    // Stage 01's own enrichment shows; stage 02's does not.
+    await expect(
+      page.getByText("dx-design reads it and brings in only the skills it needs."),
+    ).toBeVisible();
     await expect(
       page.getByText("The control catalog: shared design rules every skill reads first."),
     ).toBeHidden();
-    await expect(page.getByText("Graded against both sources before it returns to you.")).toBeHidden();
 
     // Stage 02: the panel alone, with its own source notes.
     await page.getByRole("button", { name: /The harness at work/ }).click();
     await expect(
       page.getByText("The control catalog: shared design rules every skill reads first."),
     ).toBeVisible();
-    await expect(page.getByText("Plain words, not skill names or settings to manage.")).toBeHidden();
-    await expect(page.getByText("Graded against both sources before it returns to you.")).toBeHidden();
+    await expect(
+      page.getByText("dx-design reads it and brings in only the skills it needs."),
+    ).toBeHidden();
 
-    // Stage 03: the result alone — the panel rows are gone.
+    // Stage 03: the result alone — the panel rows are gone, and it carries no
+    // annotation of its own (the badge above already says what one would say).
     await page.getByRole("button", { name: /A reviewed result/ }).click();
     await expect(page.getByText("design review passed")).toBeVisible();
     await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeHidden();
-    // Stage 03's own enrichment shows; the other stages' do not.
-    await expect(page.getByText("Graded against both sources before it returns to you.")).toBeVisible();
-    await expect(page.getByText("Plain words, not skill names or settings to manage.")).toBeHidden();
+    await expect(
+      page.getByText("dx-design reads it and brings in only the skills it needs."),
+    ).toBeHidden();
     await expect(
       page.getByText("The control catalog: shared design rules every skill reads first."),
     ).toBeHidden();
