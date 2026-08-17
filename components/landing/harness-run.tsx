@@ -21,6 +21,13 @@ import { InkIcon } from "@/components/ink-icon";
 
 const PROMPT = "make the settings page feel calmer";
 
+/* The figure's accessible name at rest, narrating the whole sequence — its
+   wording is review-approved for A11Y-7, so it stays exactly as it is. In
+   focus mode a single stage's `figureLabel` (below) replaces it, because the
+   full narration would describe regions no longer drawn. */
+const RUN_LABEL =
+  "A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the control catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath.";
+
 /* beat: 0 typing · 1 orchestrator picks the passes · 2 layout pass ·
    3 polish pass · 4 plan approved, building · 5 review passed + result */
 const FINAL_BEAT = 5;
@@ -37,6 +44,8 @@ const STAGES = [
         settings page feel calmer.&rdquo;
       </>
     ),
+    figureLabel:
+      "A terminal window with the typed request: make the settings page feel calmer.",
   },
   {
     n: "02",
@@ -49,6 +58,10 @@ const STAGES = [
         plan before anything is built.
       </>
     ),
+    /* Split into two sentences (the plan's single run-on sentence trips CNT-3's
+       25-word cap) without changing what it says. */
+    figureLabel:
+      "A run panel: the dx-design orchestrator picks the layout and polish passes. Each pass reads the control catalog and your DESIGN.md before the plan is approved and the build runs.",
   },
   {
     n: "03",
@@ -60,6 +73,8 @@ const STAGES = [
         sources; the screen comes back only after it passes.
       </>
     ),
+    figureLabel:
+      "A small finished settings screen with a display name field, a reminders field, and a Save button, under a badge reading design review passed.",
   },
 ];
 
@@ -90,6 +105,11 @@ const focusRing =
 
 export function HarnessRun() {
   const [beat, setBeat] = useState(FINAL_BEAT);
+  /* `beat` drives the run as it assembles; `focused` is the reader asking to see
+     one step by itself. null means "playing or resting on the whole chain", and
+     it is the initial state so the server render and no-JS readers still get the
+     complete composition. */
+  const [focused, setFocused] = useState<number | null>(null);
   const [typedCount, setTypedCount] = useState(PROMPT.length);
   const timers = useRef<number[]>([]);
   const played = useRef(false);
@@ -148,11 +168,21 @@ export function HarnessRun() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const activeStage = BEAT_STAGE[beat];
+  /* An explicit pick wins; otherwise the beat says which stage we are in. */
+  const activeStage = focused ?? BEAT_STAGE[beat];
   const lineOn = (lineBeat: number) =>
     beat >= lineBeat ? "opacity-100" : "opacity-0";
   const lineTransition =
     "transition-opacity duration-(--motion-base) ease-(--ease-out) motion-reduce:transition-none";
+  /* In focus mode only the picked step's region is drawn at all — a ghost of a
+     step the reader did not ask for is noise, where mid-run it correctly means
+     "still coming". The connectors belong to the assembled chain, so they go
+     too. `hidden` (display:none), not opacity: an invisible-but-laid-out region
+     would leave the same empty space the reader asked us to remove. */
+  const inFocus = focused !== null;
+  const regionOn = (stageIndex: number) =>
+    !inFocus || focused === stageIndex ? "" : "hidden";
+  const chainOnly = inFocus ? "hidden" : "";
 
   return (
     <div className="grid border-b border-border lg:grid-cols-2">
@@ -163,11 +193,21 @@ export function HarnessRun() {
         <figure
           className="m-0 flex w-full max-w-[15rem] flex-col gap-2"
           role="img"
-          aria-label="A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the control catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath."
+          aria-label={focused === null ? RUN_LABEL : STAGES[focused].figureLabel}
         >
-          <div aria-hidden="true">
+          <div
+            aria-hidden="true"
+            /* In focus mode the hidden regions leave the layout, so the wrapper would
+               collapse and everything below it would jump. Reserving the run-mode height
+               and centring keeps the column still (the chain wrapper measured a constant
+               504.5px in run mode across 320/360/768/1280 — the figure itself measures
+               544.5px, which adds the gap-2 and figcaption; the figure is width-capped at
+               max-w-[15rem], so its text wraps identically at every viewport). Re-measure
+               this if the composition changes. */
+            className={inFocus ? "flex min-h-[504.5px] flex-col justify-center" : undefined}
+          >
             {/* the terminal window */}
-            <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
+            <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-sm ${regionOn(0)}`}>
               <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
                 <span className="size-2 rounded-full bg-border" />
                 <span className="size-2 rounded-full bg-border" />
@@ -196,14 +236,14 @@ export function HarnessRun() {
             </div>
 
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost} ${chainOnly}`}
             />
 
             {/* the orchestrator at work: dx-design reads the ask, then visibly runs the
                 specialised skills — each with the same ink tool mark the skills section
                 uses. This panel is the "one worked example" for the parts above. */}
             <div
-              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost}`}
+              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost} ${regionOn(1)}`}
             >
               <p className={`${statusLineIcon} ${lineTransition} ${lineOn(1)}`}>
                 <span className={statusIconBox}>
@@ -251,7 +291,7 @@ export function HarnessRun() {
 
             {/* the one lime link in the chain: the reviewed screen coming back */}
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 5 ? "opacity-100" : ghost}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 5 ? "opacity-100" : ghost} ${chainOnly}`}
             />
 
             {/* the screen that comes back — a small but real settings surface,
@@ -265,7 +305,7 @@ export function HarnessRun() {
             <div
               className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,translate] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
                 beat >= 5 ? "opacity-100" : `translate-y-1.5 ${ghost}`
-              }`}
+              } ${regionOn(2)}`}
             >
               <div className={`${lineTransition} ${lineOn(5)}`}>
                 <p className="text-xs font-semibold text-foreground">Settings</p>
@@ -291,7 +331,7 @@ export function HarnessRun() {
               </div>
             </div>
             <p
-              className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
+              className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)} ${regionOn(2)}`}
             >
               <span className={statusIconBox}>
                 <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
@@ -305,7 +345,10 @@ export function HarnessRun() {
         </figure>
         <button
           type="button"
-          onClick={play}
+          onClick={() => {
+            setFocused(null);
+            play();
+          }}
           aria-label="Replay the run"
           title="Replay the run"
           /* Icon-only, but never under the floor: size-11 keeps the 44px hit area
@@ -324,7 +367,10 @@ export function HarnessRun() {
           <li key={s.n} className="grid">
             <button
               type="button"
-              onClick={() => jumpTo(s.beat)}
+              onClick={() => {
+                setFocused(index);
+                jumpTo(s.beat);
+              }}
               aria-current={activeStage === index ? "step" : undefined}
               /* Every stage scrubs the player, so every stage carries a resting
                  affordance: the inactive ones keep a hairline left rule and a
