@@ -191,6 +191,21 @@ _TOKEN_TRIM = ":.,;—–-"
 _ANCHOR_CACHE = {}
 
 
+def quality_anchor_text(text):
+    """Only the artifact blocks that define quotable anchors.
+
+    Introductory prose, procedures, boundaries, and the decision log explain the
+    ceiling but are not anchors a grade can cite. Restricting the corpus keeps a
+    generic phrase from those sections from satisfying assertion 11 by accident.
+    """
+    blocks = re.findall(
+        r"^## (?:Pairings|By surface|Thresholds)\s*$\n(.*?)(?=^#{1,2}\s|\Z)",
+        text,
+        re.DOTALL | re.MULTILINE,
+    )
+    return "\n".join(blocks)
+
+
 def normalise_anchor_text(text):
     """Fold a grade sentence and the artifact the same way, so an honest quote
     survives the trip through a terminal.
@@ -240,7 +255,7 @@ def _read_quality_bar():
     criteria, grades = front.get("criteria"), front.get("grades")
     if not isinstance(criteria, list) or not isinstance(grades, list):
         return None
-    normalised = normalise_anchor_text(text)
+    normalised = normalise_anchor_text(quality_anchor_text(text))
     spans = {normalised[i:i + MIN_ANCHOR_SPAN]
              for i in range(len(normalised) - MIN_ANCHOR_SPAN + 1)}
     return ([str(c) for c in criteria],
@@ -1064,6 +1079,18 @@ def run_self_test():
             "\n".join(block_lines),
             "\n".join("  " + ln for ln in block_lines),
         ),
+    )
+
+    # Case 36 (assertion 11): prose elsewhere in quality-bar.md is explanatory,
+    # not an anchor. A long verbatim quote from the introduction must not make a
+    # grade look grounded.
+    assert_fails(
+        "non-anchor quality-bar prose does not satisfy a grade",
+        PASSING_RECORD.replace(
+            'The roster reads "Dense but not cramped" at the 12-row default.',
+            'The roster proves "Nothing here blocks" at the 12-row default.',
+        ),
+        "line 'design-quality' quotes no anchor",
     )
 
     checklib.report_self_test(failures, case_count)

@@ -269,7 +269,7 @@ anchor is still grade evidence and never a finding. Exit 0 with
 failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
 hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (35 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (36 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
