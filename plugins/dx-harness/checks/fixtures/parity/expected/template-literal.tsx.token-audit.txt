@@ -1,0 +1,3 @@
+ERROR template-literal.tsx:16 [TOK-1] raw colour #0064ff — suggest: use a semantic token (var(--color-…))
+ERROR template-literal.tsx:17 [TOK-2] off-scale spacing 15px — suggest: 14px or var(--space-…)
+ERROR template-literal.tsx:18 [TOK-3] off-scale radius 10px — suggest: 8px or var(--radius-…)

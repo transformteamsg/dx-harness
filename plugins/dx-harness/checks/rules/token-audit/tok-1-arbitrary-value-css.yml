@@ -1,0 +1,14 @@
+# A Tailwind arbitrary-value utility, e.g. bg-[color-mix(…)]. The rule finds the
+# utility; Python reads the bracket contents and decides whether what is inside
+# is a raw colour or a var() reference.
+id: token-audit-tok-1-arbitrary-value-css
+language: css
+severity: warning
+message: candidate tok 1 arbitrary value
+metadata:
+  control: TOK-1
+  check: token-audit
+  surface: text
+rule:
+  matches: css-code-node
+  regex: '(bg|text|border|ring|fill|stroke|shadow|from|via|to|outline|decoration)-\['

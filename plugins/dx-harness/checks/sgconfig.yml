@@ -1,0 +1,39 @@
+# ast-grep project config for the harness's own rules.
+#
+# It lives with the harness and is reached with `ast-grep scan -c <this file>`,
+# so nothing is ever written into the repo being checked: no sgconfig.yml, no
+# rule file, no dependency entry, no lockfile change. `ruleDirs` and `utilDirs`
+# resolve relative to this file, so any working directory works.
+#
+# Rule ids are namespaced `<check>-…`, plus `shared-…` for the structural rules
+# every check reuses. checklib.astgrep_scan() selects a check's rules with
+# `--filter '^(shared|<check>)-'`.
+#
+# Every rule is `severity: warning` on purpose. Measured at 0.44.1: `ast-grep
+# scan` exits 1 on any error-severity finding and 0 on warning-severity ones, so
+# with warning a non-zero exit always means a real tool or config problem and the
+# Python layer never has to tell "found candidates" from "broke".
+ruleDirs:
+  - rules
+utilDirs:
+  - rules/utils
+languageGlobs:
+  html:
+    # Not ast-grep languages at 0.44.1: `--lang vue` and `--lang svelte` both
+    # fail with "is not supported!", yet both extensions are in
+    # checklib.TARGET_EXTENSIONS. Mapped to html, their attributes and text are
+    # reachable. The cost: a <script> block inside one is html text, not JS.
+    # A <style> block is covered anyway, because astgrep_scan() re-scans every
+    # embedded style region with the css rules.
+    - "*.vue"
+    - "*.svelte"
+  tsx:
+    # .js and .jsx alias to tsx safely.
+    #
+    # .ts is deliberately absent. Measured at 0.44.1: a .ts file holding an
+    # old-style `<Foo>bar` type assertion returns zero findings at exit 0 under
+    # a tsx-aliased rule, and one finding under a `language: ts` rule. The tsx
+    # parse breaks and the whole file's matches vanish with no error, so .ts
+    # gets `language: ts` rules of its own.
+    - "*.jsx"
+    - "*.js"

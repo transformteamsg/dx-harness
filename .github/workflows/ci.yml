@@ -47,6 +47,14 @@ jobs:
       - name: Install PyYAML
         run: pip install pyyaml
 
+      # The checks layer matches source structure through ast-grep. It is a
+      # harness-side dependency reached with subprocess, like PyYAML above: no
+      # manifest declares it, this step provisions it in CI, and every check
+      # fails loudly with one ERROR line when it is missing or below the floor.
+      # Nothing is installed into the repo being checked.
+      - name: Install ast-grep
+        run: npm install --global @ast-grep/cli@0.44.1
+
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
 

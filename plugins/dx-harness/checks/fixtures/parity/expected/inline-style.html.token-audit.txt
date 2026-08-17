@@ -1,0 +1,2 @@
+ERROR inline-style.html:15 [TOK-1] raw colour #0064ff — suggest: use a semantic token (var(--color-…))
+ERROR inline-style.html:15 [TOK-2] off-scale spacing 15px — suggest: 14px or var(--space-…)

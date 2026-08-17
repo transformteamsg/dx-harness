@@ -1,0 +1,16 @@
+# An h1 to h6 element's opening tag. TYP-2's line-height band is body-scoped, so
+# a leading-[N] or a line-height on a heading element is out of scope.
+id: type-scan-heading-element-html
+language: html
+severity: warning
+message: heading element
+metadata:
+  control: TYP-2
+  check: type-scan
+  surface: heading-element
+  kind: start_tag
+rule:
+  kind: start_tag
+  has:
+    kind: tag_name
+    regex: '^[hH][1-6]$'

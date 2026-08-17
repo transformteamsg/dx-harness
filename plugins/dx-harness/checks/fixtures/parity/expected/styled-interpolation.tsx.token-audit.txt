@@ -1,0 +1,1 @@
+ERROR styled-interpolation.tsx:7 [TOK-2] off-scale spacing 15px — suggest: 14px or var(--space-…)

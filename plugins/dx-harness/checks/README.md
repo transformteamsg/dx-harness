@@ -19,7 +19,53 @@ package, so each script imports it by path with the same importlib snippet
 their own formatting where they genuinely differ (`token-audit.py`'s
 `[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
 tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (16 cases)`.
+`SELF-TEST OK (42 cases)`.
+
+### The ast-grep front end: one door, one version floor
+
+`checklib.astgrep_scan(paths, check_name)` is the **only** way a check reaches
+ast-grep. No check shells out to `ast-grep` itself, so the version floor, the
+config path, the explicit file list, the JSON shape and the 0-based to 1-based
+line conversion are each enforced in exactly one place. A second copy of any of
+them is where the floor silently stops being enforced.
+
+- **Provisioning.** ast-grep is a harness-side dependency reached with
+  `subprocess`, provisioned the same way PyYAML is: a named `Install ast-grep`
+  step in CI, assumed present on a dev machine (`brew install ast-grep`, or
+  `npm i -g @ast-grep/cli`). No manifest declares it, no binary is bundled, and
+  **nothing is installed or configured in the repo being checked**. The harness's
+  `sgconfig.yml` and `rules/` travel with the harness and are reached with `-c`.
+- **The floor is 0.44.1**, compared as a numeric tuple. A missing, unreadable or
+  too-old ast-grep prints one `ERROR <check>: …` line naming the tool and the
+  floor, exits 1, prints no findings, and never reports `SELF-TEST OK` or a clean
+  result. ast-grep can lose an entire file's matches at exit 0, so silence is the
+  failure mode the whole contract is designed against: a layer that did not run
+  sends its controls to manual verification.
+- **Four language buckets, because a rule is per language, not per control:**
+  `css`, `html`, `tsx`, `ts`. `.vue` and `.svelte` are not ast-grep languages at
+  0.44.1 and reach the html rules through `languageGlobs`; `.js` and `.jsx` alias
+  to tsx; **`.ts` never does**, because a `.ts` file holding an old-style `<Foo>bar`
+  assertion measurably returns zero findings at exit 0 under a tsx rule.
+- **The walker does not change.** `iter_target_files` stays the single walk policy
+  and the file list is handed over explicitly, because `ast-grep scan` applies
+  `.gitignore` semantics when it walks a directory itself and a gitignored source
+  file would be skipped in silence.
+- **Rules find candidates; Python judges them.** `checks/rules/<check>/` holds one
+  rule per control per language, `checks/rules/shared/` the structural rules every
+  check reuses (which spans are code, which are comments, which are a style
+  region), and `checks/rules/utils/` the node sets they share. A rule never carries
+  a threshold, a scale value, an allowlist or an exemption. Every rule is
+  `severity: warning`, so a non-zero ast-grep exit always means a real tool or
+  config problem rather than a finding.
+- **Embedded style contexts.** ast-grep parses a `<style>` block inside html as
+  CSS on its own; `astgrep_scan` re-scans the two contexts it does not, namely a
+  `style="…"` attribute and a tagged style template literal (`css`, `styled.x`,
+  `createGlobalStyle`, `injectGlobal`), with the css rules, mapped back to the
+  host file's line and column. This is how one set of css rules reaches all four
+  style contexts, and how a multi-line `style="…"` attribute is finally covered.
+- **Parity.** `checks/fixtures/parity/` is the corpus that gated the swap, with one
+  recorded pre-swap output per fixture and check. See
+  [`fixtures/parity/README.md`](fixtures/parity/README.md).
 
 ## Detector — one entry over the checks (built)
 
@@ -148,7 +194,13 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 **Peer-radius-consistency (TOK-3):** The scanner checks on-scale and concentric nesting per element, but cannot compare peer elements (cross-element). Peer-radius-consistency is **judgment-only** — the evaluator carries consistency against the product's Card/`--radius` anchor.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (29 cases)` (includes the `fixtures/token-audit/` pass/fail files).
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
+(see "The ast-grep front end" above). The design-scale policy, the exemption
+machinery and the L1 waiver downgrade are unchanged Python. A style context is a
+syntax-tree position now, not a regex tracker, so a multi-line `style="…"`
+attribute is covered and comment text is never read as code.
+
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (57 cases)` (includes the `fixtures/token-audit/` pass/fail files, the `fixtures/parity/` corpus, and the ast-grep provisioning contract).
 
 ## Audit record (built)
 
@@ -298,7 +350,13 @@ This closes the loop `token-audit.py` leaves open ("a human closes the decision-
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (46 cases)`.
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
+(see "The ast-grep front end" above). The type scale, both floors, the line-height
+band and per-rule selection are unchanged Python. TYP-2's band stays body-scoped,
+but ancestry answers "am I inside an `h1` to `h6` rule" now, which retired the
+hand-rolled CSS brace state machine and the heading-tag line regex.
+
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
 ## Component manifest (built)
 
@@ -340,8 +398,13 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (full suite). L0 failures block; L1 failures loop the agent back to implement.
 
 Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
-run the same Python gate — `validate.py --self-test`, `validate.py`, `token-audit.py`
-over `app components lib`, `a11y-static.py`, and `type-scan.py` over `app components`.
+run the same Python gate: `validate.py --self-test`, `validate.py`,
+`checklib.py --self-test`, `token-audit.py --self-test`, `type-scan.py --self-test`,
+`token-audit.py` over `app components lib`, `a11y-static.py`, and `type-scan.py` over
+`app components`. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
+the checks layer reaches ast-grep with `subprocess`; the three `--self-test` runs are
+what put the ast-grep provisioning contract and the `fixtures/parity/` corpus in the
+gate rather than leaving them to a dev machine.
 `type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged).

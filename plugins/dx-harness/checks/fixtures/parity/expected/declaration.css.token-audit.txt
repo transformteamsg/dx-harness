@@ -1,0 +1,4 @@
+ERROR declaration.css:13 [TOK-2] off-scale spacing 15px — suggest: 14px or var(--space-…)
+ERROR declaration.css:14 [TOK-2] off-scale spacing 15px — suggest: 14px or var(--space-…)
+ERROR declaration.css:14 [TOK-2] off-scale spacing 18px — suggest: 16px or var(--space-…)
+ERROR declaration.css:15 [TOK-3] off-scale radius 10px — suggest: 8px or var(--radius-…)

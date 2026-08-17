@@ -1,0 +1,1 @@
+ERROR style-object.tsx:17 [COL-2] Tailwind palette class 'bg-zinc-100' — suggest: use a semantic token class (e.g. bg-primary, text-destructive)

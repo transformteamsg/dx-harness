@@ -269,8 +269,11 @@ TW_LEADING_ARBITRARY_RE = re.compile(r"\bleading-\[([0-9.]+)(em)?\]")
 # "line-height under 1.5 on multi-line body text". Headings correctly run tighter, so a
 # line-height inside an h1–h6 rule (or on a heading element) is out of scope, not a fail.
 _HEADING_SUBJECT_RE = re.compile(r"^h[1-6](?![a-z0-9-])", re.IGNORECASE)
-# A heading element opened on this line (JSX/HTML) — scopes `leading-[N]` on it.
-_HEADING_TAG_RE = re.compile(r"<h[1-6][\s/>]", re.IGNORECASE)
+# A heading ELEMENT is no longer found with a regex on the line: the
+# type-scan-heading-element-html and -tsx rules match the opening tag, and
+# ancestry says which lines it covers. The brace state machine that used to
+# track "am I inside an h1 to h6 CSS rule" is gone the same way, because the
+# type-scan-heading-rule-css rule hands over the enclosing rule directly.
 
 
 def _selector_is_heading_only(selector_text):
@@ -365,7 +368,35 @@ def _check_allcaps_rule(scan_line):
 
 
 
-def check_file(filepath, type_scale=None, rules=None):
+CHECK_NAME = "type-scan"
+
+
+def heading_context_lines(candidates):
+    """
+    The 1-based lines where TYP-2's line-height band does not apply, because they
+    sit inside an h1 to h6 CSS rule or on a heading element. Ancestry answers it
+    now; the hand-rolled CSS brace state machine is gone.
+
+    Which selectors count as heading-only stays in Python: ast-grep 0.44.1's rule
+    fields cannot express "the rightmost compound selector of every comma group",
+    so _selector_is_heading_only() reads the selector text ast-grep hands over.
+    The innermost rule containing a line wins, matching the old tracker.
+    """
+    state = {}
+    enclosing = [c for c in candidates if c["surface"] == "heading-rule"]
+    enclosing.sort(key=lambda c: c["end_line"] - c["line"], reverse=True)
+    for cand in enclosing:
+        is_heading = _selector_is_heading_only(cand["text"].split("{", 1)[0])
+        for lineno in range(cand["line"], cand["end_line"] + 1):
+            state[lineno] = is_heading
+    for cand in candidates:
+        if cand["surface"] == "heading-element":
+            for lineno in range(cand["line"], cand["end_line"] + 1):
+                state[lineno] = True
+    return {lineno for lineno, is_heading in state.items() if is_heading}
+
+
+def check_file(filepath, type_scale=None, rules=None, candidates=None):
     """
     Scan a single file. Returns a list of ERROR / NOTE strings.
     `type_scale` is the allowed-size set; built from the catalog if omitted.
@@ -374,6 +405,9 @@ def check_file(filepath, type_scale=None, rules=None):
     given, only findings whose control id is in the set are emitted — the
     per-rule selection detect.py's curated profile needs. Operational errors
     (path not found, unreadable file) are never filtered by `rules`.
+    `candidates`: this file's records from checklib.astgrep_scan(). Omit it and
+    the file is scanned on its own; scan_paths() passes a pre-grouped list so a
+    whole tree costs one ast-grep invocation.
     """
     rule_filter = set(rules) if rules is not None else None
     results = []
@@ -391,9 +425,16 @@ def check_file(filepath, type_scale=None, rules=None):
         results.append(f"ERROR {filepath}: cannot read file — {exc}")
         return results
 
+    if candidates is None:
+        candidates = checklib.astgrep_scan([filepath], CHECK_NAME)
+
     rel = os.path.relpath(filepath)
-    in_block_comment = False
-    in_heading_block = False  # inside an h1–h6 CSS rule (TYP-2 is body-scoped)
+    source = [raw.rstrip("\n") for raw in lines]
+    # The candidate surface, per line: every node ast-grep offered as code, with
+    # comment spans removed. A parser never offers comment text as code, so the
+    # block-comment tracker, the <!-- --> strip and the // strip are all gone.
+    code_by_line = checklib.surface_lines(source, candidates, ("code",))
+    heading_lines = heading_context_lines(candidates)
 
     for lineno, raw_line in enumerate(lines, start=1):
         line = raw_line.rstrip("\n")
@@ -406,11 +447,7 @@ def check_file(filepath, type_scale=None, rules=None):
         def note(msg):
             results.append(f"NOTE {rel}:{lineno} {msg}")
 
-        scan_line = checklib.strip_block_comments(line, in_block_comment)
-        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
-        scan_line = re.sub(r"<!--.*?-->", "", scan_line)
-        if ext in (".js", ".ts", ".jsx", ".tsx"):
-            scan_line = re.sub(r"//.*$", "", scan_line)
+        scan_line = code_by_line.get(lineno, "")
 
         # TYP-1 fonts
         for found, suggest in _check_font_rule(scan_line):
@@ -420,19 +457,10 @@ def check_file(filepath, type_scale=None, rules=None):
         for ctl, found, suggest in _check_size_rules(scan_line, type_scale):
             emit(ctl, found, suggest)
 
-        # TYP-2 line-height — body-scoped, so establish heading context first.
-        opens_heading = (
-            _selector_is_heading_only(scan_line.split("{", 1)[0])
-            if "{" in scan_line else False
-        )
-        effective_heading = opens_heading if "{" in scan_line else in_heading_block
-        if _HEADING_TAG_RE.search(scan_line):
-            effective_heading = True  # `leading-[N]` on a heading element
-        if "}" in scan_line:
-            in_heading_block = False
-        if "{" in scan_line and "}" not in scan_line:
-            in_heading_block = opens_heading
-        for found, suggest in _check_line_height_rule(scan_line, effective_heading):
+        # TYP-2 line-height is body-scoped, so ancestry decides heading context.
+        for found, suggest in _check_line_height_rule(
+            scan_line, lineno in heading_lines
+        ):
             emit("TYP-2", found, suggest)
 
         # TYP-4 all-caps
@@ -446,17 +474,30 @@ def check_file(filepath, type_scale=None, rules=None):
 def scan_paths(paths, rules=None):
     """Walk paths, collect ERROR/NOTE lines. Prints scale-fallback NOTE once.
     `rules` (additive, optional) restricts emitted findings to those control
-    ids — passed straight through to check_file."""
+    ids — passed straight through to check_file.
+
+    checklib.iter_target_files() stays the single walk policy and the file list
+    is handed to ast-grep explicitly: letting ast-grep walk a directory would
+    import .gitignore semantics the Python walker does not have, and a gitignored
+    source file would be skipped silently.
+
+    Raises checklib.AstGrepError when ast-grep is missing, too old or broken."""
     type_scale, scale_note = load_type_scale()
     if scale_note:
         print(scale_note)
     all_results = []
+    files = []
     for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
         if kind == "missing":
             print(f"ERROR type-scan: path not found: {val}")
             all_results.append(f"ERROR type-scan: path not found: {val}")
         else:
-            all_results.extend(check_file(val, type_scale, rules))
+            files.append(val)
+    by_file = checklib.group_candidates(checklib.astgrep_scan(files, CHECK_NAME))
+    for val in files:
+        all_results.extend(
+            check_file(val, type_scale, rules, by_file.get(os.path.realpath(val), []))
+        )
     return all_results
 
 
@@ -678,6 +719,58 @@ def run_self_test():
     except ValueError:
         pass
 
+    # ── Parity corpus ──────────────────────────────────────────────────────────
+    # Every record in fixtures/parity/expected/ was produced by the pre-swap
+    # engine and committed before the matching layer moved to ast-grep. A diff
+    # here means either a fixture changed or the swap changed a decision.
+    parity_failures, parity_count = checklib.parity_cases(
+        CHECK_NAME, lambda path: check_file(path, type_scale)
+    )
+    failures.extend(parity_failures)
+    case_count += parity_count
+
+    # ── Per-rule selection over the corpus, as detect.py invokes it ────────────
+    # detect.py's curated profile runs `type-scan --rules TYP-1`, so the filter
+    # has to survive the swap. declaration.css trips TYP-2 and TYP-3 and no TYP-1.
+    case_count += 1
+    decl = os.path.join(checklib.PARITY_DIR, "known-positive", "declaration.css")
+    only1 = [r for r in check_file(decl, type_scale, {"TYP-1"}) if r.startswith("ERROR")]
+    if only1:
+        failures.append(f"FAIL corpus --rules TYP-1: want: []; got: {only1!r}")
+    case_count += 1
+    only3 = [r for r in check_file(decl, type_scale, {"TYP-3"}) if r.startswith("ERROR")]
+    if len(only3) != 1 or "[TYP-3]" not in only3[0]:
+        failures.append(f"FAIL corpus --rules TYP-3: want one TYP-3; got: {only3!r}")
+
+    # ── The one place the swap sharpens the message, on purpose ────────────────
+    # A multi-line html comment is a syntax node, so its text is no longer read as
+    # code. Pre-swap the `<!-- … -->` strip was per line, so a size named inside a
+    # multi-line comment was reported. This changes no decision about real code,
+    # so it does not belong in a record made by the pre-swap engine.
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".html", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write("<!--\n  Never write font-size: 9px here.\n-->\n<p>ok</p>\n")
+        tf.flush()
+        res = check_file(tf.name, type_scale)
+    os.unlink(tf.name)
+    if res:
+        failures.append(
+            f"FAIL multi-line html comment is not code: want: []; got: {res!r}"
+        )
+
+    # ── The provisioning contract ─────────────────────────────────────────────
+    def check_eq(name, want, got):
+        nonlocal case_count
+        case_count += 1
+        if want != got:
+            failures.append(f"FAIL {name}: want: {want!r}; got: {got!r}")
+
+    checklib.astgrep_provisioning_cases(
+        "type-scan.py",
+        os.path.join("fixtures", "parity", "known-positive", "declaration.css"),
+        check_eq,
+    )
+
     checklib.report_self_test(failures, case_count)
 
 
@@ -725,7 +818,12 @@ def main():
         print("Usage: python3 checks/type-scan.py [--rules TYP-1,TYP-3] <path>... | --self-test")
         sys.exit(1)
     if "--self-test" in args:
-        run_self_test()
+        try:
+            run_self_test()
+        except checklib.AstGrepError as exc:
+            # A layer that did not run never reports SELF-TEST OK.
+            exc.report()
+            sys.exit(1)
         return
     try:
         rules = parse_rules_flag(args)
@@ -735,7 +833,14 @@ def main():
     if not args:
         print("Usage: python3 checks/type-scan.py [--rules TYP-1,TYP-3] <path>... | --self-test")
         sys.exit(1)
-    results = scan_paths(args, rules)
+    try:
+        results = scan_paths(args, rules)
+    except checklib.AstGrepError as exc:
+        # One ERROR line, exit 1, no findings printed. Never a clean result:
+        # ast-grep can lose a whole file's matches at exit 0, so a check that
+        # could not run must say so and send its controls to manual verification.
+        exc.report()
+        sys.exit(1)
     errors = [r for r in results if r.startswith("ERROR")]
     for r in results:
         print(r)
