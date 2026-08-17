@@ -168,8 +168,28 @@ def load_schema_bits(repo_root):
         "gap_forbidden_tiers": set(schema["gap_forbidden_tiers"]),
         "control_id_re": re.compile(rf"^({prefixes})-\d+$"),
         "xref_re": re.compile(rf"\b({prefixes})-\d+\b"),
-        "retired_ids": set(schema.get("retired_ids", [])),
+        "retired_ids": schema.get("retired_ids", []),
     }
+
+
+def retired_id_errors(retired_ids, catalog_ids, control_id_re):
+    """Validate the retired-id registry before it relaxes record references."""
+    if not isinstance(retired_ids, list):
+        return ["ERROR standards/schema.json: 'retired_ids' must be a list"]
+
+    errors = []
+    seen = set()
+    for idx, control_id in enumerate(retired_ids):
+        location = f"standards/schema.json retired_ids[{idx}]"
+        if not isinstance(control_id, str) or not control_id_re.fullmatch(control_id):
+            errors.append(f"ERROR {location}: invalid control id '{control_id}'")
+            continue
+        if control_id in seen:
+            errors.append(f"ERROR {location}: duplicate retired id '{control_id}'")
+        seen.add(control_id)
+        if control_id in catalog_ids:
+            errors.append(f"ERROR {location}: '{control_id}' is still live in catalog.yaml")
+    return errors
 
 
 def validate_control(control, idx, schema_bits):
@@ -1263,6 +1283,9 @@ def collect_errors(repo_root, _return_count=False):
                 if not os.path.isfile(script_abs):
                     err(loc, f"script path '{sp}' does not exist")
 
+    errors.extend(retired_id_errors(schema_bits["retired_ids"], set(catalog_by_id),
+                                    schema_bits["control_id_re"]))
+
     # ── Step 5b: meta.categories covers every ID prefix ──────────────────────
     # The DX-DS website derives control categories from this map; a missing
     # prefix breaks the site build.
@@ -1369,7 +1392,8 @@ def collect_errors(repo_root, _return_count=False):
     # removed, so records — and only records — also accept schema.json's
     # retired_ids. Everywhere else a retired id is still an error: a skill
     # citing a dead control is the drift this sweep exists to catch.
-    retired_ids = schema_bits["retired_ids"]
+    retired_ids = set(schema_bits["retired_ids"]) \
+        if isinstance(schema_bits["retired_ids"], list) else set()
     record_ids = set(catalog_by_id) | retired_ids
 
     for fpath in all_xref_files:
@@ -1514,6 +1538,21 @@ def run_self_test():
     assert_xref_error("retired id outside a removal record",
                       "Grade IDN-4 on CaseSync surfaces.", catalog_ids,
                       "references unknown control id 'IDN-4'")
+
+    retired_cases = (
+        ("valid retired-id registry", ["IDN-4"], set(), None),
+        ("retired-id registry must be a list", "IDN-4", set(), "must be a list"),
+        ("retired id has control-id shape", ["idn-4"], set(), "invalid control id"),
+        ("retired id is unique", ["IDN-4", "IDN-4"], set(), "duplicate retired id"),
+        ("retired id is not live", ["IDN-4"], {"IDN-4"}, "is still live"),
+    )
+    for name, retired, live, expected in retired_cases:
+        case_count += 1
+        retired_errors = retired_id_errors(retired, live, schema_bits["control_id_re"])
+        if expected is None and retired_errors:
+            failures.append(f"FAIL {name}: expected no errors — got: {retired_errors}")
+        elif expected is not None and not any(expected in e for e in retired_errors):
+            failures.append(f"FAIL {name}: expected '{expected}' — got: {retired_errors}")
 
     # The two standards/ documents sit outside the Step-7 tree walk, so they are
     # only swept because CROSS_REF_FILES names them. Assert the names, then
