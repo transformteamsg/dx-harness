@@ -147,15 +147,15 @@ function DesignFileFigure() {
         <rect x="186" y="30" width="144" height="160" rx="10" fill="var(--surface)" />
       </g>
       <g className="text-border-strong" {...line} strokeWidth="1.5">
-        <rect x="224" y="52" width="76" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="194" y="86" width="128" height="42" rx="6" fill="var(--site-accent-wash)" />
-        <rect x="206" y="98" width="60" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="206" y="110" width="42" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="232" y="52" width="76" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="202" y="86" width="112" height="42" rx="6" fill="var(--site-accent-wash)" />
+        <rect x="214" y="98" width="60" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="214" y="110" width="42" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
       </g>
       {/* the primitives land as real parts: avatar, field mark, action */}
-      <circle cx="204" cy="56" r="9" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
-      <rect x="194" y="144" width="52" height="26" rx="6" {...line} className="text-foreground" strokeWidth="1.5" fill="var(--surface)" />
-      <path d="M214 150 L224 157 L214 164 Z" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <circle cx="212" cy="56" r="9" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <rect x="202" y="144" width="52" height="26" rx="6" {...line} className="text-foreground" strokeWidth="1.5" fill="var(--surface)" />
+      <path d="M222 150 L232 157 L222 164 Z" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
     </>
   );
 }
