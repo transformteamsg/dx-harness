@@ -52,8 +52,8 @@ asking an engineer first. Automated review is another — bet 1 builds the gate,
 what the gate makes possible.
 
 Bets 1 and 2 run at the same time and pull against each other; see
-[the tension to manage in 2026](#the-tension-to-manage-in-2026). Bet 3 is hard-gated on
-bet 1.
+[the tension to manage in 2026](#the-tension-to-manage-in-2026). Bet 3 leans on bet 1: how
+much of it has landed is what decides whether 2027 is the right time to start.
 
 ## Bet 1: AI in the SDLC (2026)
 
@@ -80,8 +80,8 @@ Where this stands, what gets built and in what order: see the
 
 ## Bet 3: AI for teachers — TWLabs (2027)
 
-**Working name, open definition.** What follows is a hypothesis and its entry conditions,
-not a plan.
+**Working name, open definition.** What follows is a hypothesis and what would make it a
+good idea, not a plan.
 
 **Hypothesis.** The machine that lets a designer ship safely can let a teacher assemble
 something useful inside Teacher Workspace, because the constraint was never job title. It
@@ -94,21 +94,22 @@ catalog it would need already exists.
 inside one team. Product team to teacher changes everything else: no shared vocabulary, no
 L1 approver standing over the work, and no professional stake in the catalog.
 
-**Entry gate — all four true before this starts, and signed open by this document's owner:**
+**What would make 2027 the right time.** Four things decide whether starting is a good
+idea. None of them is a permission to be granted.
 
-1. **Every control that claims a deterministic check has one**, and the set has been run
-   against a deliberately bad surface without a person correcting the result. A designer
-   who hits a bad check can fall back on reading the catalog; a teacher cannot.
-2. **The harness is instrumented**, with enough recorded runs to state a median cost rather
-   than repeat a single report. Extending to a non-technical audience on anecdote is a
-   guess, not a decision.
-3. **A design run costs under five minutes of human attention**, taken from that
-   instrumentation rather than estimated.
-4. **The three open questions below have written answers** that someone outside the team
-   can read and disagree with.
+1. **The gates hold.** A designer who hits a bad check can fall back on reading the
+   catalog. A teacher cannot, so every gap left in bet 1 costs more once the audience
+   widens again.
+2. **We can see what a run costs.** Extending to a non-technical audience on anecdote is a
+   guess rather than a decision.
+3. **A run is cheap enough that a teacher would pay it.** Nobody outside a product team
+   spends twenty minutes on a review.
+4. **The questions below have written answers**, in a form someone outside the team can
+   read and disagree with.
 
-Each condition is checkable by a person who did not build the thing, which is the point. A
-gate whose conditions are prose gets waived under delivery pressure and nobody notices.
+Starting before these hold is not forbidden. It is expensive: it puts the weakest version
+of the harness in front of the audience least able to work around it. If we choose to start
+anyway, that is the trade being made, and it should be made out loud.
 
 **Open questions, parked deliberately.** Is TWLabs a surface inside Teacher Workspace or a
 sandbox beside it. Do teachers build, or do they specify and review while the harness
@@ -124,16 +125,16 @@ So the risk this year is width outrunning depth. Two consequences worth holding 
 
 - **Bet 1 is not hygiene.** It is what makes bet 2 cheap. Deferring it raises the running
   cost of every bet 2 win.
-- **The gate is soft in 2026 and hard at the 2027 boundary.** We can tolerate a designer
-  working around a missing check. We cannot hand that to a teacher.
+- **A teacher will have no fallback.** We can tolerate a designer working around a missing
+  check, because they can read the catalog themselves. The same gap costs far more the
+  next time the audience widens.
 
 ## If a bet does not land
 
-Bet 1 is the one with a dependent. If it has not landed by the end of 2026, bet 3 slips
-rather than shrinks. Starting TWLabs on leaky gates would put the weakest version of the
-harness in front of the audience least able to work around it. Slipping is the designed
-response, and writing it down now is what stops it being renegotiated later under delivery
-pressure.
+Bet 1 is the one the others lean on. If it has not landed by the end of 2026, the sensible
+answer is to give bet 3 more time rather than a smaller scope: a thinner TWLabs still puts
+the weakest version of the harness in front of the audience least able to work around it.
+Writing that down now is cheaper than arguing it later under delivery pressure.
 
 Bet 2 failing looks different. Nothing depends on it, so it degrades quietly rather than
 blocking anything: the harness stays useful to the people who already know how to use it,
