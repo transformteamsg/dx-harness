@@ -1033,7 +1033,12 @@ class UserFacingScanner:
             self.jsx_depth += 1
             if self.tag_name in RAW_TEXT_TAGS:
                 self.raw_text = self.tag_name
-        self.mode = _TEXT if self.jsx_depth > 0 else _CODE
+        # A JSX element can itself sit inside a `{...}` expression. After its
+        # closing tag, resume that expression until its closing brace instead
+        # of treating callback punctuation such as `))}` as rendered text.
+        # The stack is non-empty only for an expression entered from text, a
+        # tag attribute, or a template interpolation.
+        self.mode = _CODE if self.stack else (_TEXT if self.jsx_depth > 0 else _CODE)
         self.run = 0
         self.attr = None
 
@@ -1915,6 +1920,20 @@ def run_self_test():
         "SCOPE: 'Something went wrong' still flags in rendered text",
         "<p>Something went wrong.</p>",
         ".tsx", ["CNT-1"],
+    )
+    assert_finding(
+        "SCOPE: text after a JSX callback expression is not prefixed by code punctuation",
+        "export function List({ items }) {\n"
+        "  return (\n"
+        "    <div>\n"
+        "      {items.map((item) => (\n"
+        "        <span>{item.name}</span>\n"
+        "      ))}\n"
+        "      Something went wrong.\n"
+        "    </div>\n"
+        "  );\n"
+        "}\n",
+        ".tsx", '7 [CNT-1] "Something went wrong" with no next step',
     )
 
     # ── Scope: user-facing strings are still linted ────────────────────────────

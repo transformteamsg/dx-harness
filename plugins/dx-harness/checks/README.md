@@ -495,7 +495,7 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 - CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
 - CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (84 cases)` (includes the `fixtures/content-lint/` pass/fail files, the runtime-coupling case, and the loud-fallback case).
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (85 cases)` (includes the `fixtures/content-lint/` pass/fail files, the runtime-coupling case, and the loud-fallback case).
 
 ## Type scan (built — static subset)
 
