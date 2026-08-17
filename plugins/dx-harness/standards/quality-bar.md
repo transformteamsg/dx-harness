@@ -154,7 +154,7 @@ Before judging, work through this in order — it turns a feel into an observati
 | Surface | Reads as | Direction |
 | --- | --- | --- |
 | Data entry (marks, attendance, bulk edit) | Dense, tabbable | Short rows, tabular figures, minimal padding; the next field is always reachable without scrolling |
-| Scanning / comparison (lists, tables) | Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular enough that a break in it means something. Where a row carries a full sentence rather than a field, the sentence is held to the reading measure; a row of fields is not |
+| Scanning / comparison (lists, tables) | Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular enough that a break in it means something |
 | Reading (guidance, policy, a case note) | Calm, measured | Measure at most 80 characters, targeting ~66 (**LAY-4**); more space between sections than inside them |
 | Decision (approve, submit, escalate) | Calm, focused | One primary action (**CMP-5**); the consequence sits beside the action, not in a footer |
 | Empty state | Inviting, quiet | Lead with the next action; no illustration outranking the page's real hierarchy |
@@ -525,15 +525,16 @@ Items 1–7 are shape decisions committed by the prototype and confirmed on
     would give this file more power than it has. The builder resolves the register once and
     passes it to the reviewer in the dispatch payload; independent re-resolution was rejected
     because builder and reviewer could resolve a bad id differently.
-29. **Eleven anchors were amended on adoption, all on evidence.** The evidence run in
+29. **Ten evidence-run findings amended anchors on adoption; one corrected the boundary.** The evidence run in
     [#145](https://github.com/transformteamsg/dx-harness/issues/145) graded one known-weak
-    surface against this file and recorded eleven anchors that could not decide, or decided
-    wrongly, against a real frame. Their recorded findings are the only grounds on which any
-    anchor may change, so all eleven were taken as written: the kicker threshold now admits a
+    surface against this file and recorded ten anchor findings that could not decide, or decided
+    wrongly, against a real frame. Those findings are the only grounds on which any anchor may
+    change: the kicker threshold now admits a
     state badge; the two register-specific craft rows carry the register they were written
     for; the bordered-box threshold measures the gap rather than the padding property; the
     edge count says what an edge is; the SLP-7 boundary claims both halves of the control and
-    its pairing stops restating it; the scanning rows reach prose measure, filter durability
-    and the unclickable row; the persona lens carries a `standards-site` analogue; the 2×
+    its pairing stops restating it; the scanning rows reach filter durability and the
+    unclickable row; the persona lens carries a `standards-site` analogue; the 2×
     type read names both directions of the gap; and the drift self-check states both of its
-    readings. No pairing vocabulary, no grade scale, and no surface row was changed.
+    readings. The eleventh finding corrected the floor/ceiling boundary instead: prose measure
+    remains LAY-4's responsibility and added no ceiling anchor. No grade scale moved.
