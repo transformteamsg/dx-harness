@@ -883,7 +883,12 @@ def gap_rule_errors(control, schema_bits):
     if not gap_required(control):
         err(f"'gap' is present but enforced is {enforced_label}; a gap records "
             f"why no script exists")
-    if re.search(r"planned\s+script", gap, re.IGNORECASE):
+    if re.search(
+        r"\b(?:planned\s+(?:script|scanner|check)|"
+        r"(?:script|scanner|check)\s+is\s+planned)\b",
+        gap,
+        re.IGNORECASE,
+    ):
         err("'gap' claims a planned script, which is not an accepted gap")
     return errors
 
@@ -1674,6 +1679,10 @@ def run_self_test():
     assert_error("gap claims a planned script",
                  gap_rule_errors(dict(gap_base, gap="No script: a planned script "
                                       "lands later."), schema_bits),
+                 "claims a planned script")
+    assert_error("gap claims a script is planned",
+                 gap_rule_errors(dict(gap_base, gap="No script today; the script "
+                                      "is planned for issue #155."), schema_bits),
                  "claims a planned script")
     # The bare word 'planned' in a real reason is not the phrase, so a
     # legitimate reason that happens to use it stays clean.
