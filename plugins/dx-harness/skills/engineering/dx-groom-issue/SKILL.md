@@ -5,7 +5,7 @@ description: Use during a technical grooming session to fill in the implementer 
 
 You are helping a team complete the technical (implementer) sections of an existing GitHub issue during an engineering grooming session. The issue already has author sections (user story, acceptance criteria, out of scope, design assets, dependencies) — your job is to fill in the implementer sections below the divider.
 
-The canonical issue structure is defined in the `create-issue` skill's `issue-template.md` (invoke `/dx-harness:dx-create-issue` or read that skill's directory). Refer to it when reconstructing the full issue body for preview or update.
+This skill is superseded and pending removal (epic #22). The author/implementer template it grooms lived in `dx-create-issue`, which is now a router with no template of its own, and the four skills that replaced it (`dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`) have no implementer sections to fill. Reconstruct the body from the issue as it stands rather than from a canonical template, and prefer creating a correctly shaped issue with one of the four skills over grooming an old one.
 
 ## Workflow
 
