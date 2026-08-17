@@ -217,7 +217,11 @@ export function HarnessRun() {
                 <span className="font-semibold text-foreground">dx-design</span>
                 <span className="text-muted-foreground">picks the passes</span>
               </p>
-              <div className="mt-2 flex flex-col gap-1.5 border-l border-border pl-3">
+              {/* The indent rule arrives with its first row; drawn earlier it
+                  hangs as an orphan hairline inside the ghost. */}
+              <div
+                className={`mt-2 flex flex-col gap-1.5 border-l border-border pl-3 ${lineTransition} ${lineOn(2)}`}
+              >
                 <p
                   className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(2)}`}
                 >
@@ -254,8 +258,12 @@ export function HarnessRun() {
                 not abstract bars, so the worked example lands as a product,
                 not a diagram. The frame ghosts before its beat; the contents
                 land with it. */}
+            {/* transition-[opacity,translate], not transform: Tailwind v4's
+                translate-y-* utilities set the `translate` property, so a
+                `transform` transition never animates them — the visible ghost
+                would snap its 6px rise instead of easing it. */}
             <div
-              className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,transform] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
+              className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,translate] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
                 beat >= 5 ? "opacity-100" : `translate-y-1.5 ${ghost}`
               }`}
             >
@@ -274,7 +282,8 @@ export function HarnessRun() {
                 <div className="mt-3 flex justify-end">
                   {/* The depicted primary carries its label: an unlabeled filled
                       block beside real field labels reads as a Save button with
-                      its label missing. Foreground on lime measures 13.6:1. */}
+                      its label missing. Foreground on lime measures 13.14:1
+                      (app/globals.css:18). */}
                   <div className="grid h-6 w-16 place-items-center rounded-md bg-site-accent text-xs font-semibold text-foreground">
                     Save
                   </div>
