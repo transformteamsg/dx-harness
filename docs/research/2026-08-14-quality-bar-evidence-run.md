@@ -78,12 +78,12 @@ Writing the shape into a note is not wiring: no agent file, no skill and no chec
 ```
 QUALITY GRADES  register: standards-site  ·  dark mode: N/A (product has no dark mode)
 
-design-quality: weak. The filter region marks its five dimensions with four aria-hidden "|"
-  glyphs that four of the five groups straddle at 1280, which is "Decoration that encodes
-  neither hierarchy nor state".
-originality: acceptable. Four divergences from the obvious build each earn themselves, so the
-  surface is not "The template answer — the default any competent build lands on, no divergence
-  examined"; the remove-one pass names a removable element, so it is not strong.
+design-quality: weak. The zero-results view gives the reader no route back to results, against the
+  Empty-state direction "Lead with the next action; no illustration outranking the page's real
+  hierarchy".
+originality: strong. Five divergences from the obvious build each earn themselves, including
+  filter-group boundaries that retain meaning when their groups wrap, so this is not "The template
+  answer — the default any competent build lands on, no divergence examined".
 craft: weak. No active state exists on any interactive element on the surface and the one
   near-disabled affordance still fires, which is "Hover, active, disabled left as browser
   defaults".
@@ -91,7 +91,7 @@ functionality: weak. A filter combination that yields zero results offers no way
   any width, against "the filter clears in place".
 ```
 
-**Drift self-check: did not fire.** Zero of four criteria graded strong. See
+**Drift self-check: did not fire.** One of four criteria graded strong. See
 [Drift self-check](#drift-self-check) for what the check's own text says and why applying it
 raised a finding.
 
@@ -126,29 +126,27 @@ is data entry.
 **Grouping check.** Relatedness in the filter region is encoded by a divider glyph
 (`components/catalog-browser.tsx:205`, `:216`, `:227`, `:238`: `<span aria-hidden className="mx-1
 hidden text-border sm:inline">|</span>`). Measured at 1280: within-dimension gap 8px, chip-to-
-divider gap 12px, so across-dimension gap is about 28px. That is the cheapest encoding. It does
-not still work, because four of the five dimension groups straddle a wrap line: the category group
+divider gap 12px, so across-dimension gap is about 28px. That is the cheapest encoding. It works
+only partially, because four of the five dimension groups straddle a wrap line: the category group
 breaks across lines 1 and 2, the check-type group across 2 and 3, the product group across 3 and
 4, the audience group across 4 and 5. Nothing labels any of the five dimensions.
 
 ### Observation and grade
 
-Twenty-four identically weighted pills over five wrap lines, five undeclared dimensions, and four
-`aria-hidden` glyphs marking boundaries that the wrap has already pulled apart. A reader cannot
-tell that "L0" and "hybrid" and "CaseSync" select on different axes, and the glyph that was meant
-to say so marks nothing the eye can use.
+The zero-results state renders the count line "0 of 70 controls" (`:252`) and then nothing, because
+`:271` maps an empty array with no branch for it. There is no next action to lead with. The
+existence of an empty-state heading and subtext is CMP-4's ground and is attributed there; leading
+with the next action is not.
 
-**Anchor (Pairings):** "Deliberate but not fussy | Decoration that encodes neither hierarchy nor
-state".
+**Anchor (By surface, Empty state):** "Inviting, quiet | Lead with the next action; no illustration
+outranking the page's real hierarchy".
 
 **Grade: weak.**
 
-Second, independent miss, in the same criterion: the zero-results state. **By surface, Empty
-state:** "Inviting, quiet | Lead with the next action; no illustration outranking the page's real
-hierarchy." Measured at all three widths, the view renders the count line "0 of 70 controls"
-(`:252`) and then nothing, because `:271` maps an empty array with no branch for it. There is no
-next action to lead with. The existence of an empty-state heading and subtext is CMP-4's ground and
-is attributed there; "lead with the next action" is not, so this row stays as grade evidence.
+The filter region remains a supporting grouping observation: its five dimensions have no labels,
+and four groups wrap. The divider glyphs do still encode boundaries between those groups, so they
+are not evidence for "Decoration that encodes neither hierarchy nor state" and do not decide this
+grade.
 
 ### Anchors satisfied
 
@@ -213,7 +211,7 @@ None. All four steps produced observations.
 
 ---
 
-## originality: acceptable
+## originality: strong
 
 ### Procedure walked
 
@@ -229,26 +227,27 @@ surface it is the correct answer. The grade turns on the divergences, so each is
 | `/` focuses search from anywhere, unless the reader is already typing | `:29` to `:41` | A repeat reader's accelerator. Earns itself. Verified working. |
 | Grouped-by-category view that collapses to a flat list once a category chip or search text is active | `:83` | Two reading modes for two tasks, browse and look up. Earns itself. |
 | Per-control anchor ids with `scroll-mt-20` | `:125` | Every control is deep-linkable as `#A11Y-1`, which is how the catalogue gets cited. Earns itself. |
-| Four `aria-hidden` `\|` divider glyphs | `:205`, `:216`, `:227`, `:238` | Nothing legible, at 1280. See the remove-one pass. |
+| Four `aria-hidden` `\|` divider glyphs | `:205`, `:216`, `:227`, `:238` | A lightweight boundary between filter dimensions. It retains some grouping meaning when a dimension wraps. Earns itself. |
 
 **Unchanged-product test.** An unrelated product could ship this composition, interaction and
 visual language nearly unchanged. Some yes is right here, and nothing on the surface demands to be
 remembered.
 
-**Remove-one pass.** Removing the four divider glyphs costs nothing a reader would notice, because
-the groups they separate already straddle wrap lines. They are decoration, not a decision.
-Originality therefore cannot grade strong.
+**Remove-one pass.** The four divider glyphs are the cheapest candidate to remove. Removing them
+would erase the only visible boundaries between the five filter dimensions at 768 and 1280, so the
+removal carries a cost even though the dimensions wrap. No cost-free element was found.
 
 ### Observation and grade
 
-The surface is not the template answer: it makes four divergences from the obvious build and each
-one earns itself. It is also not strong, because the remove-one pass names an element whose removal
-costs nothing.
+The surface is not the template answer: it makes five divergences from the obvious build, each one
+earns itself, and the remove-one pass finds no element whose removal costs nothing. The faceted
+counts, search accelerator, browse/search mode switch, deep links, and filter boundaries are
+specific decisions that improve the obvious build.
 
 **Anchor (Pairings):** "Familiar but not lazy | The template answer — the default any competent
 build lands on, no divergence examined". The surface sits on the "We are" side of it.
 
-**Grade: acceptable.** Which is the expected result (`quality-bar.md:77`).
+**Grade: strong.**
 
 ### Anchors satisfied
 
@@ -262,9 +261,8 @@ build lands on, no divergence examined". The surface sits on the "We are" side o
 | **By surface, Data entry / Decision / Overview** | Not exercised, see [Surface rows not exercised](#surface-rows-not-exercised) |
 
 **By surface, Scanning / comparison:** "Regular | A break in rhythm must carry meaning, never
-decorate." The divider glyphs are a break that decorates. This row reaches the same observation the
-design-quality grade already rests on, so it is recorded here and not counted twice: the originality
-grade rests on the remove-one result instead.
+decorate." The divider glyphs mark changes between filter dimensions, so the break carries meaning
+even though wrapping weakens it.
 
 ### Procedure steps with nothing to observe
 
@@ -474,7 +472,7 @@ this way rather than claimed as a match.
 
 ## Drift self-check
 
-Zero of four criteria graded strong, so the check did not fire and no re-walk was needed.
+One of four criteria graded strong, so the check did not fire and no re-walk was needed.
 
 Applying it raised a finding about the check itself. Its text at `quality-bar.md:85` reads: "**if
 you have graded three surfaces in a row strong, you are grading the controls, not the ceiling.**"
