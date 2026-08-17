@@ -117,17 +117,23 @@ builds. What is the governance model when there is no design lead to sign a waiv
 
 ## The tension to manage in 2026
 
-Bets 1 and 2 are not sequential, and bet 2 is currently ahead. Designers run the design
-loop today against a catalog where some controls promise a deterministic check that was
-never written. Every one of those is paid for in reviewer minutes, per run, indefinitely.
+Width has already outrun depth in practice. People build with the harness today against a
+catalog where some controls promise a deterministic check that was never written, and every
+one of those is paid for in reviewer minutes, per run, indefinitely. The plan for 2026 is
+depth catching up, not width slowing down. That leaves two pressures worth holding onto.
 
-So the risk this year is width outrunning depth. Two consequences worth holding onto:
+- **Almost everything lands in the same year, and the load-bearing parts are the invisible
+  ones.** Gates that hold, and runs we can actually see, are what 2027 borrows its trust
+  from. They are also the least demonstrable work in the plan, and they will lose to
+  anything with a screenshot unless someone protects them.
+- **For a year, people can build but not ship.** That is the deliberate consequence of
+  putting "anyone can build" in 2026 and "anyone can ship" in 2027. The handover this bet
+  exists to remove survives another year, and someone who can make a change but not land it
+  will either wait for us or route around us. Worth deciding which we are asking for.
 
-- **Bet 1 is not hygiene.** It is what makes bet 2 cheap. Deferring it raises the running
-  cost of every bet 2 win.
-- **A teacher will have no fallback.** We can tolerate a designer working around a missing
-  check, because they can read the catalog themselves. The same gap costs far more the
-  next time the audience widens.
+And one that carries past 2026: **a teacher will have no fallback.** We can tolerate a
+designer working around a missing check, because they can read the catalog themselves. The
+same gap costs far more the next time the audience widens.
 
 ## If a bet does not land
 
