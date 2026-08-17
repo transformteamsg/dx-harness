@@ -33,6 +33,9 @@ standard.* Standards are the only layer the harness can enforce automatically. R
                                 # See Enforcement below. Absent = default.
   script: checks/type-scan.py   # OPTIONAL — only valid when enforced is script
                                 # or partial. String or list of repo-relative paths.
+  gap: "No script: ..."         # OPTIONAL, one line. REQUIRED when a
+                                # deterministic or hybrid control is effectively
+                                # manual. Never on L0. See Enforcement below.
   refs:
     - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ```
@@ -121,6 +124,20 @@ Two OPTIONAL per-control fields (see the schema example above):
 - `script`: repo-relative path(s) (string or list) to the covering script(s),
   e.g. `checks/token-audit.py`. Only valid when `enforced` is `script` or
   `partial`.
+- `gap`: one line saying **why no script exists** (an *accepted gap*).
+  - **Required** when a `deterministic` or `hybrid` control's effective
+    `enforced` is `manual`, the default included. `manual` stays legal, but
+    only with a reason.
+  - **Forbidden on `L0`.** A non-waivable floor nobody checks by machine is a
+    promise, not a floor, so an L0 control's only exit is a script.
+  - Never written for `script`, `partial` or `evaluator`, and never for a
+    `judgment` control: relabelling to `judgment` closes the gap by
+    definition, because the evaluator becomes the enforcement.
+  - A "planned script" note is not a reason. `validate.py` rejects the phrase.
+    Write the real obstacle, so the reason self-closes when the obstacle goes.
+
+The `optional_fields` roster in `schema.json` lists every optional key,
+including `gap`. It documents the format; nothing rejects a key outside it.
 
 Query the live picture with `python3 checks/validate.py --coverage` — a table
 of every control's `enforced` state (defaulted) and `script:` path, plus a
@@ -145,6 +162,12 @@ summary count. This replaces hand-maintained gap lists, which drift.
 5. **One catalog for the whole portfolio.** No per-product control overlays; per-product
    difference is nuance calibration or a standing override declared in that product's
    DESIGN.md (L0 never; L1 needs a named approver; L2 needs a reason) — never separate rules.
+6. **A machine-checked control arrives with a check, a reason, or an honest label.** A new
+   `deterministic` or `hybrid` control lands with a script, a `gap:` reason (an accepted
+   gap), or an honest relabel to `judgment`. `checks/validate.py` enforces the same thing:
+   a `deterministic` or `hybrid` control whose effective `enforced` is `manual` and which
+   carries no `gap:` is an error. A "planned script" note is not a reason, and an `L0`
+   control has no reason available to it at all: only a script.
 
 ## Detail file format (`controls/<id>.md`)
 

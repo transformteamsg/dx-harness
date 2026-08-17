@@ -929,6 +929,7 @@ controls:
       - a surface that animates but declares no motion token set
       - the narrative tier (--motion-story) used on interface or task UI
     enforced: manual
+    gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for
