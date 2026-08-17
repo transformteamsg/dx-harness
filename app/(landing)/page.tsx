@@ -220,9 +220,11 @@ export default function Landing() {
       <HarnessRun />
 
       {/* ── The proof. The comparison is evidence, not the argument — so the claim
-             and the three passes that produce it sit beside it, and the slider
-             takes half the width instead of the whole page. ─────────────────── */}
-      <div className="grid border-b border-border lg:grid-cols-2">
+             and the three passes that produce it sit beside it. A 30/70 split
+             (not the page's usual 50/50) gives the slider enough width for its
+             16:10 frame to bind on its own aspect-ratio rather than the anti-
+             specimen's content-driven height floor. ────────────────────────── */}
+      <div className="grid border-b border-border lg:grid-cols-[3fr_7fr]">
         <div className="flex flex-col justify-center border-border px-6 py-8 max-lg:border-b sm:px-10 sm:py-10 lg:border-r">
           <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight text-balance text-foreground">
             Compare the output.
