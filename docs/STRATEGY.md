@@ -53,9 +53,8 @@ raises the quality of what enters the backlog *and* means a designer is not wait
 engineer to file it. Automated checks are another — bet 1 makes them trustworthy, bet 2 is
 what that trust lets people do.
 
-Bets 1 and 2 run at the same time and pull against each other; see
-[the tension to manage in 2026](#the-tension-to-manage-in-2026). Bet 3 leans on bet 1: how
-much of it has landed is what decides whether 2027 is the right time to start.
+Bets 1 and 2 run at the same time. Bet 3 leans on bet 1: how much of it has landed is what
+decides whether 2027 is the right time to start.
 
 ## Bet 1: AI in the SDLC (2026)
 
@@ -120,39 +119,6 @@ anyway, that is the trade being made, and it should be made out loud.
 **Open questions, parked deliberately.** Is TWLabs a surface inside Teacher Workspace or a
 sandbox beside it. Do teachers build, or do they specify and review while the harness
 builds. What is the governance model when there is no design lead to sign a waiver.
-
-## The tension to manage in 2026
-
-Width has already outrun depth in practice. People build with the harness today against a
-catalog where some controls promise a deterministic check that was never written, and every
-one of those is paid for in reviewer minutes, per run, indefinitely. The plan for 2026 is
-depth catching up, not width slowing down. That leaves two pressures worth holding onto.
-
-- **Almost everything lands in the same year, and the load-bearing parts are the invisible
-  ones.** Gates that hold, and runs we can actually see, are what 2027 borrows its trust
-  from. They are also the least demonstrable work in the plan, and they will lose to
-  anything with a screenshot unless someone protects them.
-- **For a year, people can try things but not land them.** That is the deliberate
-  consequence of putting "ideas can be tried" in 2026 and "reaches production without a
-  rebuild" in 2027. The rework this bet exists to remove survives another year, and someone
-  who can make a change but not land it will either wait for us or route around us. Worth
-  deciding which we are asking for.
-
-And one that carries past 2026: **a teacher will have no fallback.** We can tolerate a
-designer working around a missing check, because they can read the catalog themselves. The
-same gap costs far more the next time the audience widens.
-
-## If a bet does not land
-
-Bet 1 is the one the others lean on. If it has not landed by the end of 2026, the sensible
-answer is to give bet 3 more time rather than a smaller scope: a thinner TWLabs still puts
-the weakest version of the harness in front of the audience least able to work around it.
-Writing that down now is cheaper than arguing it later under delivery pressure.
-
-Bet 2 failing looks different. Nothing depends on it, so it degrades quietly rather than
-blocking anything: the harness stays useful to the people who already know how to use it,
-and the widening simply does not happen. That is the smaller failure and the easier one to
-miss, which is why it is worth naming.
 
 ## What we are not doing
 
