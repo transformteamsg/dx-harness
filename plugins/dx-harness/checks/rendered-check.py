@@ -760,13 +760,13 @@ def run(session=None, url=None, viewports=DEFAULT_VIEWPORTS, themes="auto",
         out.extend(inapplicable_notes(payload, rule_map, controls, cell_id))
         out.extend(passes_note(payload, cell_id))
         out.extend(restore_notes(payload))
-        records.extend(payload_records(payload, rule_map, controls))
+        records.extend(payload_records(payload, rule_map, controls, suppression))
 
     out = errors + out
     return (1 if errors else 0), out, records
 
 
-def payload_records(payload, rule_map, controls=()):
+def payload_records(payload, rule_map, controls=(), suppression=None):
     """The in-memory run record, one row per control decision in a cell. A
     record never says `pass` for a control the cell did not exercise: the
     outcomes are `violation`, `incomplete`, `n/a` and `not-run`, and the last
@@ -775,11 +775,14 @@ def payload_records(payload, rule_map, controls=()):
     cell_id = payload.get("cell")
     aria = set(payload.get("aria_rules") or [])
     hidden = payload.get("hidden_nodes") or []
+    waived = suppression or {}
     rows = []
     for rule in payload.get("violations", []):
         rule_id = rule.get("id")
         control = control_for_rule(rule_id, rule_map, aria)
         for node in rule.get("nodes", []):
+            if control in waived.get(node_key(node), ()):
+                continue
             demoted = demote_hidden(control, node, hidden) \
                 or control in REPORT_ONLY_CONTROLS
             rows.append({"control": control, "cell": cell_id,
@@ -798,7 +801,10 @@ def payload_records(payload, rule_map, controls=()):
         if finding.get("failed"):
             continue
         rule_id = finding.get("rule")
-        rows.append({"control": control_for_rule(rule_id, rule_map, aria),
+        control = control_for_rule(rule_id, rule_map, aria)
+        if control in waived.get(f"eval:{rule_id}:{finding.get('selector')}", ()):
+            continue
+        rows.append({"control": control,
                      "cell": cell_id, "outcome": "violation", "rule": rule_id,
                      "route": route, "selector": finding.get("selector"),
                      "message": finding.get("message") or "", "reason": None})
@@ -1128,6 +1134,16 @@ def run_self_test():
     supp2, _, _ = read_markers(waived_finding, tiers, "1280-light")
     check("the marker's own controls are the ones it suppresses",
           {"SLP-4", "SLP-6"}, supp2[node_key(inside)])
+    waived_record_payload = _axe_payload(
+        violations=[{"id": "target-size", "help": "x", "nodes": [inside]}],
+        waived=[{"selector": ".exhibit", "value": "A11Y-4 reason=fixture",
+                 "contains": [node_key(inside)]}])
+    record_suppression, _, _ = read_markers(waived_record_payload, tiers,
+                                             "1280-light")
+    waived_records = payload_records(waived_record_payload, rule_map, controls,
+                                      record_suppression)
+    check("a waived finding is absent from JSON violation records", [],
+          [r for r in waived_records if r["outcome"] == "violation"])
 
     # ── a nested marker's ids union with the enclosing one's ─────────────────
     nested = _axe_payload(

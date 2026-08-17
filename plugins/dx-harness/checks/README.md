@@ -596,7 +596,7 @@ A11Y-10 all stay or become `enforced: partial` with `checks/rendered-check.py` a
 available and every one keeps a manual remainder. A11Y-5 in particular stays `partial`
 and gains both keys, which it has neither of today.
 
-**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (143
+**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (144
 cases)` — the matrix, the job the driver reads, the finding shape against `detect.py`'s
 real `_FINDING_RE`, the three buckets, the marker grammar and its four error cases, the
 did-not-run paths, and a set of cases that read the driver's source with its comments
