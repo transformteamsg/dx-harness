@@ -631,7 +631,9 @@ NEVER_COPY_ATTRS = {
 NEVER_COPY_CODE_NAMES = {"class", "classname", "classlist", "style"}
 # Props whose string value renders as copy.
 RENDERING_PROPS = {
-    "title", "label", "aria-label", "placeholder", "alt", "description",
+    "title", "label", "aria-label", "aria-braillelabel",
+    "aria-brailleroledescription", "aria-description", "aria-placeholder",
+    "aria-roledescription", "aria-valuetext", "placeholder", "alt", "description",
     "heading", "subtitle", "caption", "summary", "legend", "tooltip",
     "helpertext", "errormessage", "emptymessage", "confirmlabel", "cancellabel",
 }
@@ -662,8 +664,8 @@ def _is_never_copy_attr(name):
     """
     True if this attribute's value is never copy. Colon-separated forms count
     part by part, so Vue's `:class` / `v-bind:class` and Svelte's `class:active`
-    are all class values. `data-*` and `aria-*` are identifiers, except the
-    `aria-label` the rendering allowlist claims.
+    are all class values. `data-*` and most `aria-*` values are identifiers;
+    the human-readable ARIA strings in the rendering allowlist remain copy.
     """
     n = name.lower()
     if n in NEVER_COPY_ATTRS:
@@ -1948,9 +1950,14 @@ def run_self_test():
         ".tsx", ["CNT-13"],
     )
     assert_violations(
-        "SCOPE: an aria-label is linted, unlike every other aria- attribute",
+        "SCOPE: an aria-label is linted",
         '<button aria-label="Organize the class list" />',
         ".tsx", ["CNT-13"],
+    )
+    assert_finding(
+        "SCOPE: human-readable ARIA value text is linted",
+        '<input aria-valuetext="Click here to organize the favorite colors" />',
+        ".tsx", '1 [CNT-5] device-bound verb "Click"',
     )
     assert_violations(
         "SCOPE: a copy table in a .ts file is linted",
