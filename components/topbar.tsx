@@ -23,7 +23,7 @@ export function TopBar() {
             <DxdMark className="size-7 shrink-0 text-(--dxd-lime-deep)" />
             <span className="font-display text-base font-semibold tracking-tight">
               <span className="sm:hidden">dx</span>
-              <span className="hidden sm:inline">dx-harness</span>
+              <span className="hidden sm:inline">dx-design-harness</span>
             </span>
             <span className="hidden rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground sm:inline-flex">
               v0.1 draft

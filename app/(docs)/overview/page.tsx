@@ -44,9 +44,9 @@ export default function Overview() {
         A shared design bar,<br />built into the work.
       </h1>
       <p className="mt-5 text-base text-muted-foreground">
-        dx-harness turns product intent, design decisions, and checkable standards into a
-        workflow every team can use. It helps people and agents ship coherent interfaces,
-        with or without a designer on every task.
+        The DX Design Harness turns product intent, design decisions, and checkable
+        standards into a workflow every team can use. It helps people and agents ship
+        coherent interfaces, with or without a designer on every task.
       </p>
 
       <section className="mt-12">

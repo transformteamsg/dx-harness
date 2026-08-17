@@ -10,9 +10,9 @@ import { HarnessRun } from "@/components/landing/harness-run";
 export const metadata = {
   /* Absolute: the root template is for titled documentation pages; the front page
      carries the product name and its own explainer. */
-  title: { absolute: "DX Harness — design in code with confidence" },
+  title: { absolute: "DX Design Harness — design in code with confidence" },
   description:
-    "DX Harness gives coding agents a shared design language, the right skills for each task, and a review before the work returns to you.",
+    "The DX Design Harness gives coding agents a shared design language, the right skills, and a review before the work returns to you.",
   alternates: { types: { "text/markdown": "/index.md" } },
 };
 
@@ -69,7 +69,7 @@ const COLLABORATORS = [
   },
   {
     artKey: "landing/human-machine",
-    label: "DX Harness",
+    label: "DX Design Harness",
     detail: "The bridge",
     ink: "var(--site-accent-text)",
   },
@@ -147,8 +147,8 @@ export default function Landing() {
             Design in code with confidence.
           </h1>
           <p className="mt-6 max-w-[44ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            A design harness gives your coding agent a shared design language, the right
-            skills for each task, and a review before the work comes back to you.
+            The DX Design Harness gives your coding agent a shared design language, the
+            right skills for each task, and a review before the work comes back to you.
           </p>
           <div className="mt-8">
             <Link
@@ -277,8 +277,9 @@ export default function Landing() {
             A shared language for you and your agent.
           </h2>
           <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            DX Harness bridges human judgment and agent execution. It gives both of you
-            the same design language and the checks to build safely on each other’s work.
+            The DX Design Harness bridges human judgment and agent execution. It gives
+            both of you the same design language and the checks to build safely on each
+            other’s work.
           </p>
           <div className="mt-8">
             <Link
@@ -302,8 +303,8 @@ export default function Landing() {
             </div>
           ))}
           <figcaption className="sr-only">
-            DX Harness bridges your direction and judgment with your agent’s skills and
-            execution.
+            The DX Design Harness bridges your direction and judgment with your agent’s
+            skills and execution.
           </figcaption>
         </figure>
       </section>

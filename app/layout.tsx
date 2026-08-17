@@ -4,9 +4,9 @@ import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "DX Harness", template: "%s — DX Harness" },
+  title: { default: "DX Design Harness", template: "%s — DX Design Harness" },
   description:
-    "DX Harness gives your agent one front door, checkable standards, and an independent reviewer before the work ships.",
+    "The DX Design Harness gives your agent one front door, checkable standards, and an independent reviewer before the work ships.",
 };
 
 /* Root layout carries only what every route group shares: the document, the
