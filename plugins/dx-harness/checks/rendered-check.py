@@ -392,7 +392,12 @@ def run_cell(job, node="node", runner=None):
     except ValueError as exc:
         raise DriverError(f"driver output is not readable JSON — {exc}")
     if not payload.get("ok"):
-        raise DriverError(payload.get("error") or "driver did not attach")
+        message = payload.get("error") or "driver did not attach"
+        if payload.get("restored") is False:
+            message += (f"; browser session was NOT restored after "
+                        f"{payload.get('cell')} ({payload.get('restore_error')}) — "
+                        f"re-open the page before taking another screenshot")
+        raise DriverError(message)
     return payload
 
 
@@ -1302,6 +1307,18 @@ def run_self_test():
     check("an unrestored session is said out loud", True,
           any("NOT restored" in ln for ln in restore_notes(unrestored)))
     check("a restored session says nothing", [], restore_notes(_axe_payload()))
+
+    def failed_and_unrestored(_argv, timeout, stdin_text=None):
+        return 0, json.dumps({"ok": False, "error": "axe failed", "cell": "360-light",
+                              "restored": False, "restore_error": "page closed"}), ""
+
+    try:
+        run_cell({}, runner=failed_and_unrestored)
+        boundary_message = ""
+    except DriverError as exc:
+        boundary_message = str(exc)
+    check("an unrestored failure survives the driver boundary", True,
+          "NOT restored" in boundary_message and "page closed" in boundary_message)
     check("the driver reads the session's state before it changes anything",
           True, driver_code.find("READ_STATE_JS") < driver_code.find("setViewportSize"))
     for restored_thing in ("setViewportSize", "emulateMedia", "restoreThemeJs"):
