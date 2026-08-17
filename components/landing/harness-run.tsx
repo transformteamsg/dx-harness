@@ -21,6 +21,13 @@ import { InkIcon } from "@/components/ink-icon";
 
 const PROMPT = "make the settings page feel calmer";
 
+/* The figure's accessible name at rest, narrating the whole sequence — its
+   wording is review-approved for A11Y-7, so it stays exactly as it is. In
+   focus mode a single stage's `figureLabel` (below) replaces it, because the
+   full narration would describe regions no longer drawn. */
+const RUN_LABEL =
+  "A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the control catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath.";
+
 /* beat: 0 typing · 1 orchestrator picks the passes · 2 layout pass ·
    3 polish pass · 4 plan approved, building · 5 review passed + result */
 const FINAL_BEAT = 5;
@@ -37,6 +44,21 @@ const STAGES = [
         settings page feel calmer.&rdquo;
       </>
     ),
+    figureLabel:
+      "A terminal window with the typed request: make the settings page feel calmer. Below it, a note: dx-design reads it to pick the passes.",
+    /* Only the routing row survives review: the plain-words row restated the
+       body text 350px away in the same viewport with no new information
+       (SLP-9 redundancy) — the one thing the terminal doesn't already show is
+       what happens to the words after you type them. Grounded in the
+       section's own copy (content/sections/landing.mdx: "dx-design reads the
+       request and brings in only the skills it needs"). */
+    annotations: [
+      {
+        icon: "skills/orchestrator",
+        text: "dx-design reads it and brings in only the skills it needs.",
+        ink: "var(--foreground)",
+      },
+    ],
   },
   {
     n: "02",
@@ -49,6 +71,26 @@ const STAGES = [
         plan before anything is built.
       </>
     ),
+    /* Split into two sentences (the plan's single run-on sentence trips CNT-3's
+       25-word cap) without changing what it says. */
+    figureLabel:
+      "A run panel: the dx-design orchestrator picks the layout and polish passes. Each pass reads the control catalog and your DESIGN.md before the plan is approved and the build runs. Below it, two notes name each source: the control catalog and your DESIGN.md.",
+    /* Grounded in the section's own copy (content/sections/landing.mdx: "Shared
+       design guidance agents can use" and "Your product's design language") —
+       these name the two sources the panel's rows only shorthand as
+       "catalog + DESIGN.md". */
+    annotations: [
+      {
+        icon: "standards/catalog",
+        text: "The control catalog: shared design rules every skill reads first.",
+        ink: "var(--foreground)",
+      },
+      {
+        icon: "landing/design-file",
+        text: "Your DESIGN.md: your product's own colours, type, motion, and voice.",
+        ink: "var(--foreground)",
+      },
+    ],
   },
   {
     n: "03",
@@ -60,6 +102,18 @@ const STAGES = [
         sources; the screen comes back only after it passes.
       </>
     ),
+    figureLabel:
+      "A small finished settings screen with a display name field, a reminders field, and a Save button, above a badge reading design review passed.",
+    /* No annotation here: the screen plus the "design review passed" badge
+       already carry the message a review row would only restate (SLP-9
+       redundancy), and a supporting row cannot reuse the badge's
+       skills/review mark at the same accent ink without duplicating it
+       44.5px above itself (CMP-7 — accent is reserved for the row's own
+       subject, and this row's subject already has one). Kept as an empty
+       array, not an omitted property, so every stage shares one shape and
+       the render guard below (`.length > 0`) is the only thing that decides
+       whether anything draws. */
+    annotations: [] as { icon: string; text: string; ink: string }[],
   },
 ];
 
@@ -90,10 +144,21 @@ const focusRing =
 
 export function HarnessRun() {
   const [beat, setBeat] = useState(FINAL_BEAT);
+  /* `beat` drives the run as it assembles; `focused` is the reader asking to see
+     one step by itself. null means "playing or resting on the whole chain", and
+     it is the initial state so the server render and no-JS readers still get the
+     complete composition. */
+  const [focused, setFocused] = useState<number | null>(null);
   const [typedCount, setTypedCount] = useState(PROMPT.length);
   const timers = useRef<number[]>([]);
   const played = useRef(false);
   const playerRef = useRef<HTMLDivElement>(null);
+  const figureRef = useRef<HTMLElement>(null);
+  /* The figure's focus-mode reserve, measured rather than hardcoded — see the
+     effect below for why a constant cannot hold this invariant. null means
+     "not measured yet" (or never entered focus mode), in which case the figure
+     applies no minimum. */
+  const [reserve, setReserve] = useState<number | null>(null);
 
   const clearTimers = () => {
     timers.current.forEach((t) => window.clearTimeout(t));
@@ -148,11 +213,61 @@ export function HarnessRun() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const activeStage = BEAT_STAGE[beat];
+  /* The reserve is measured from the figure's OWN resting height. The figure
+     now holds a single child (the figcaption this used to also cover was cut
+     as redundant decoration — see the chain wrapper's markup below), so
+     measuring the wrapper instead of the figure would land on the same
+     number today; the figure stays the measured element anyway, because
+     that principle — measure the exact box you constrain, not a proxy for
+     it — is what closed two prior rounds where a value describing one box
+     got applied to a different one (a hardcoded constant, then a
+     wrapper-only measurement, both landing short of the figure's true
+     resting height by the gap and caption they didn't account for).
+     Measuring the figure itself makes the reserve self-consistent: it
+     constrains the same box it measures, so max(reserve, focused content)
+     equals resting by construction.
+     No constant could stand in for this measurement either: resting height
+     depends on both viewport width and root font size once the 15rem cap
+     starts to exceed the column's available width (a 320px-wide column at a
+     24px root measured 113.5px taller than at a 16px root, purely from the
+     extra wrap). A ResizeObserver keeps the value current across viewport and
+     text-zoom changes; the `focused === null` guard makes sure only a
+     whole-run measurement is ever stored, never a focused one — so there is
+     no feedback loop from the figure's own min-height back into the
+     measurement, since the two are never active at the same time.
+     Accepted limitation: if the viewport or the root font size changes while
+     a stage is focused, the reserve stays stale until the reader returns to
+     the whole run — the guard means there is no other moment to remeasure it.
+     There is no jump at the moment of change and it self-heals on return, so
+     the window is a stale reserve, never a visible glitch. */
+  useEffect(() => {
+    const el = figureRef.current;
+    if (!el) return;
+    const measure = () => {
+      if (focused !== null) return;
+      setReserve(el.getBoundingClientRect().height);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [focused]);
+
+  /* An explicit pick wins; otherwise the beat says which stage we are in. */
+  const activeStage = focused ?? BEAT_STAGE[beat];
   const lineOn = (lineBeat: number) =>
     beat >= lineBeat ? "opacity-100" : "opacity-0";
   const lineTransition =
     "transition-opacity duration-(--motion-base) ease-(--ease-out) motion-reduce:transition-none";
+  /* In focus mode only the picked step's region is drawn at all — a ghost of a
+     step the reader did not ask for is noise, where mid-run it correctly means
+     "still coming". The connectors belong to the assembled chain, so they go
+     too. `hidden` (display:none), not opacity: an invisible-but-laid-out region
+     would leave the same empty space the reader asked us to remove. */
+  const inFocus = focused !== null;
+  const regionOn = (stageIndex: number) =>
+    !inFocus || focused === stageIndex ? "" : "hidden";
+  const chainOnly = inFocus ? "hidden" : "";
 
   return (
     <div className="grid border-b border-border lg:grid-cols-2">
@@ -161,13 +276,25 @@ export function HarnessRun() {
         className="flex flex-col items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r"
       >
         <figure
-          className="m-0 flex w-full max-w-[15rem] flex-col gap-2"
+          ref={figureRef}
+          /* In focus mode the hidden regions leave the layout, so the column would
+             collapse and everything below it would jump. Reserving the run-mode height
+             on the figure itself and centring the one visible child keeps the column
+             still. The reserve itself is `reserve` state, set by the measurement effect
+             above from the figure's OWN resting height — see that effect for why the
+             reserve must come from this exact element, and why no constant (px or rem)
+             can hold this invariant across viewport widths and root font sizes. When
+             `reserve` is null (not measured yet), no minimum is applied. */
+          className={`m-0 flex w-full max-w-[15rem] flex-col gap-2 ${
+            inFocus ? "justify-center" : ""
+          }`}
+          style={inFocus && reserve !== null ? { minHeight: reserve } : undefined}
           role="img"
-          aria-label="A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the control catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath."
+          aria-label={focused === null ? RUN_LABEL : STAGES[focused].figureLabel}
         >
           <div aria-hidden="true">
             {/* the terminal window */}
-            <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
+            <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-sm ${regionOn(0)}`}>
               <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
                 <span className="size-2 rounded-full bg-border" />
                 <span className="size-2 rounded-full bg-border" />
@@ -186,8 +313,13 @@ export function HarnessRun() {
                     {PROMPT.slice(0, typedCount)}
                     {/* A steady caret, not a blinking one: Tailwind's pulse is a
                         2s animation on its own easing, outside the motion token
-                        scale this site declares as the only one it uses. */}
-                    {beat < FINAL_BEAT ? (
+                        scale this site declares as the only one it uses.
+                        Gated on typedCount, not beat: beat < FINAL_BEAT stayed true
+                        for a resting stage-01 selection (beat 0), so an isolated
+                        terminal at rest showed an orphan caret on its own line —
+                        a wrapping artifact reading as a rendering seam, and a
+                        steady cursor implying typing in a state that is at rest. */}
+                    {typedCount < PROMPT.length ? (
                       <span className="ml-0.5 inline-block h-3 w-1.5 translate-y-0.5 bg-foreground" />
                     ) : null}
                   </span>
@@ -196,14 +328,14 @@ export function HarnessRun() {
             </div>
 
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost} ${chainOnly}`}
             />
 
             {/* the orchestrator at work: dx-design reads the ask, then visibly runs the
                 specialised skills — each with the same ink tool mark the skills section
                 uses. This panel is the "one worked example" for the parts above. */}
             <div
-              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost}`}
+              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost} ${regionOn(1)}`}
             >
               <p className={`${statusLineIcon} ${lineTransition} ${lineOn(1)}`}>
                 <span className={statusIconBox}>
@@ -251,7 +383,7 @@ export function HarnessRun() {
 
             {/* the one lime link in the chain: the reviewed screen coming back */}
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 5 ? "opacity-100" : ghost}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 5 ? "opacity-100" : ghost} ${chainOnly}`}
             />
 
             {/* the screen that comes back — a small but real settings surface,
@@ -265,7 +397,7 @@ export function HarnessRun() {
             <div
               className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,translate] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
                 beat >= 5 ? "opacity-100" : `translate-y-1.5 ${ghost}`
-              }`}
+              } ${regionOn(2)}`}
             >
               <div className={`${lineTransition} ${lineOn(5)}`}>
                 <p className="text-xs font-semibold text-foreground">Settings</p>
@@ -290,22 +422,60 @@ export function HarnessRun() {
                 </div>
               </div>
             </div>
-            <p
-              className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
-            >
-              <span className={statusIconBox}>
-                <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
-              </span>
-              <span>design review passed</span>
-            </p>
+            {/* Wrapped, not gated directly on the <p>: statusLineIcon's own `flex`
+                would sit in the same class string as regionOn's `hidden`, and which
+                one wins would depend on Tailwind's utility emission order rather
+                than anything visible at this call site. A plain wrapper (no
+                display utility of its own) carries the hide/show and leaves the
+                <p>'s own flex layout alone. */}
+            <div className={regionOn(2)}>
+              <p
+                className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
+              >
+                <span className={statusIconBox}>
+                  <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
+                </span>
+                <span>design review passed</span>
+              </p>
+            </div>
+            {/* Focus-mode enrichment: builder direction is that an isolated step
+                should not sit alone in the column when there is real context to
+                add — but only where a row would add something the reader can't
+                already see. Stage 03 draws none: the screen plus the "design
+                review passed" badge above already carry the message, so its
+                `annotations` array is empty and the `.length > 0` guard means
+                nothing renders there at all, not an empty hairline. Where a
+                stage does have rows, they're drawn in the same statusLineIcon
+                idiom as the rest of the figure (fresh idSuffix — these marks
+                already render elsewhere on the page, and a repeated filter id
+                silently strips the texture). Conditionally RENDERED, not just
+                hidden: a no-JS reader can never set `focused`, so this never
+                exists in the initial HTML either way, but rendering makes that
+                guarantee obvious at the call site instead of relying on CSS.
+                Lives inside the same reserve as the isolated region — the
+                height invariant only holds if region + annotations together
+                stay under the measured resting height at every viewport and
+                root font size; re-run the matrix if this copy grows. */}
+            {focused !== null && STAGES[focused].annotations.length > 0 ? (
+              <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-xs text-muted-foreground">
+                {STAGES[focused].annotations.map((a) => (
+                  <p key={a.icon} className={statusLineIcon}>
+                    <span className={statusIconBox}>
+                      <InkIcon name={a.icon} size={18} ink={a.ink} idSuffix="-focus" />
+                    </span>
+                    <span>{a.text}</span>
+                  </p>
+                ))}
+              </div>
+            ) : null}
           </div>
-          <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
-            One ask in plain words; a reviewed screen out.
-          </figcaption>
         </figure>
         <button
           type="button"
-          onClick={play}
+          onClick={() => {
+            setFocused(null);
+            play();
+          }}
           aria-label="Replay the run"
           title="Replay the run"
           /* Icon-only, but never under the floor: size-11 keeps the 44px hit area
@@ -324,7 +494,10 @@ export function HarnessRun() {
           <li key={s.n} className="grid">
             <button
               type="button"
-              onClick={() => jumpTo(s.beat)}
+              onClick={() => {
+                setFocused(index);
+                jumpTo(s.beat);
+              }}
               aria-current={activeStage === index ? "step" : undefined}
               /* Every stage scrubs the player, so every stage carries a resting
                  affordance: the inactive ones keep a hairline left rule and a
