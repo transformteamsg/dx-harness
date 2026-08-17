@@ -170,11 +170,11 @@ against the border, whatever the token said."
 
 Measured on the tier, check, category and status pills (`components/catalog-browser.tsx:135`,
 `:143`, `:148`, `:153`): font-size 12px, so the threshold requires 4px vertical; actual padding is
-2px (`py-0.5`). 216 boxes on the page miss it. But the pill's line box is 16px around a 12px glyph,
-so the measured distance from the glyph box to the border is 3px, not 2px, and the frames show the
-pills do not read airless. The threshold measures the padding box while its stated mechanism is the
-optical distance to the glyphs. Recorded as a finding for #147, and the grade above does not rest
-on it.
+2px (`py-0.5`). 216 boxes on the page miss it. The line-box-to-border distance is exactly that 2px
+padding. But the visible glyph ink sits about 3px from the border, and the frames show the pills do
+not read airless. The threshold measures CSS padding while its stated mechanism is optical; any
+replacement must name glyph ink rather than the line box. Recorded as a finding for #147, and the
+grade above does not rest on it.
 
 ### Attributed to controls, and dropped from the grade sentence
 
@@ -572,10 +572,12 @@ block it sits in. No severity label on any of them, because the quality bar neve
 - **Slug and block:** `design-quality`, Thresholds.
 - **As written:** "Text in a bordered box: vertical padding at least `max(4px, 0.3 × font-size)`,
   horizontal at least `max(8px, 0.5 × font-size)`".
-- **Proposed:** "Text in a bordered box: at least `max(4px, 0.3 × font-size)` between the text's
-  line box and the border vertically, and `max(8px, 0.5 × font-size)` horizontally." A 12px pill
-  with a 16px line box and 2px padding puts 3px between glyph and border and does not read airless,
-  yet fails the padding arithmetic 216 times on this one page.
+- **Proposed:** "Text in a bordered box: at least `max(4px, 0.3 × font-size)` of visible space
+  between the glyph ink and the border vertically, and `max(8px, 0.5 × font-size)` horizontally."
+  A 12px pill with a 16px line box and 2px padding puts about 3px between the visible glyph ink and
+  the border and does not read airless, yet fails the padding arithmetic 216 times on this one
+  page. This is an optical/browser measurement: the distance from the line box to the border is
+  exactly the CSS padding, 2px.
 
 ### 4. A pairing restates SLP-7's fail condition, and the boundary block claims only half of it
 
