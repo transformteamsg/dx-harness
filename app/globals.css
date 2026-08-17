@@ -303,14 +303,9 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
     /* FIG 1 — routes undrawn, no skill picked yet */
     [data-feature-card]:not(:hover):not(:focus-visible) .ff-route { stroke-dashoffset: 110; }
     [data-feature-card]:not(:hover):not(:focus-visible) .ff-pick { fill: var(--surface); }
-    /* FIG 2 — shapes scattered left of the rule, off their lines */
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-seat-sq { transform: translate(-164px, -2px) rotate(18deg); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-seat-ci { transform: translate(-152px, -5px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-seat-tr { transform: translate(-166px, -2px) rotate(-14deg); }
-    /* FIG 3 — primitives back on their palette ghosts */
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-prim-ci { transform: translate(-130px, -4px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-prim-sq { transform: translate(-195px, -50px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-prim-tr { transform: translate(-143px, 12px); }
+    /* FIG 2 — the two readers apart, their lines to the catalog undrawn */
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-share-l { transform: translateX(-16px); }
+    [data-feature-card]:not(:hover):not(:focus-visible) .ff-share-r { transform: translateX(16px); }
     /* FIG 4 — the two source rings apart, the check not yet earned, and the
        arrow home only once the check lands */
     [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-l { transform: translateX(-18px); }

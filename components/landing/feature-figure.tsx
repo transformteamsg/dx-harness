@@ -1,3 +1,5 @@
+import { InkIcon } from "@/components/ink-icon";
+
 export type FeatureFigureKind = "orchestrator" | "catalog" | "design-file" | "review";
 
 /* Each figure is a small geometric argument, and on a hover-capable device it
@@ -14,86 +16,106 @@ const line = {
   strokeLinejoin: "round" as const,
 };
 
-/* One ask in, only the right skills out: the plain-words dot enters the
-   selector ring; three of five skill shapes get a route and fill, two stay
-   faint. The orchestrator selects — it does not broadcast. */
+/* One ask in, only the right skills out: the speech-bubble mark (your plain
+   words) feeds the orchestrator mark in its selector ring; three of five
+   skill marks get a route and an accent disc, two stay faint. The
+   orchestrator selects — it does not broadcast. */
 function OrchestratorFigure() {
   return (
     <>
-      <g className="text-border-strong" {...line} strokeWidth="1.5">
-        <path d="M300 4 L310 15 L300 26 L290 15 Z" opacity=".3" />
-        <path d="M290 198h20v14h-20Z" opacity=".3" />
+      {/* the ask, in your words */}
+      <g transform="translate(28 88)">
+        <InkIcon name="guidelines/voice-tone" size={44} ink="var(--site-accent-text)" idSuffix="-fig1" />
       </g>
-      <g className="text-foreground" {...line} strokeWidth="2">
-        <circle cx="52" cy="110" r="11" fill="var(--site-accent)" stroke="none" />
-        <path d="M63 110h55" />
-        <circle cx="160" cy="110" r="38" fill="var(--surface)" />
-        <circle cx="160" cy="110" r="7" fill="var(--site-accent)" stroke="none" />
+      <path d="M78 110h36" {...line} className="text-foreground" strokeWidth="2" />
+      {/* the selector ring, with the orchestrator mark inside */}
+      <circle cx="160" cy="110" r="38" {...line} className="text-foreground" strokeWidth="2" fill="var(--surface)" />
+      <g transform="translate(138 88)">
+        <InkIcon name="skills/orchestrator" size={44} ink="var(--foreground)" idSuffix="-fig1" />
       </g>
+      {/* routes to the three picked passes */}
       <g className="text-site-accent-text" {...line} strokeWidth="2">
-        <path d="M193 91 L282 46" className="ff-draw ff-route" />
-        <path d="M198 110 L282 110" className="ff-draw ff-route" />
-        <path d="M193 129 L282 174" className="ff-draw ff-route" />
+        <path d="M193 91 L272 52" className="ff-draw ff-route" />
+        <path d="M198 110 L272 110" className="ff-draw ff-route" />
+        <path d="M193 129 L272 168" className="ff-draw ff-route" />
       </g>
-      {/* The picked skills fill with the accent itself, not the 8% wash: on the
-          sheet's near-white ground the wash is indistinguishable from --surface,
-          so the "picked" half of the argument never rendered. */}
-      <g className="text-foreground" {...line} strokeWidth="2">
-        <rect x="286" y="32" width="28" height="28" className="ff-anim ff-pick" fill="var(--site-accent)" />
-        <circle cx="300" cy="110" r="15" className="ff-anim ff-pick" fill="var(--site-accent)" />
-        <path d="M300 160 L316 188 L284 188 Z" className="ff-anim ff-pick" fill="var(--site-accent)" />
+      {/* picked: accent disc fills behind the mark on hover (ff-pick) */}
+      <circle cx="300" cy="44" r="20" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <circle cx="300" cy="110" r="20" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <circle cx="300" cy="176" r="20" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <g transform="translate(286 30)">
+        <InkIcon name="skills/pattern" size={28} ink="var(--foreground)" idSuffix="-fig1" />
+      </g>
+      <g transform="translate(286 96)">
+        <InkIcon name="skills/polish" size={28} ink="var(--foreground)" idSuffix="-fig1" />
+      </g>
+      <g transform="translate(286 162)">
+        <InkIcon name="skills/execute" size={28} ink="var(--foreground)" idSuffix="-fig1" />
+      </g>
+      {/* not picked this run: copy and review wait, faint */}
+      <g transform="translate(334 62)" opacity=".3">
+        <InkIcon name="skills/copy" size={22} ink="var(--foreground)" idSuffix="-fig1" />
+      </g>
+      <g transform="translate(334 136)" opacity=".3">
+        <InkIcon name="skills/review" size={22} ink="var(--foreground)" idSuffix="-fig1" />
       </g>
     </>
   );
 }
 
-/* One set of rules both of you read: shapes scattered left of the lime rule
-   fly across it and sit exactly on the shared lines. Rules turn scatter into
-   alignment. The faint originals stay behind as the "before". */
+/* Shared guidance both of you read: the human mark and the machine mark
+   approach the same drawn catalog sheet — the list-checks mark on it — and
+   their connectors meet it. One catalog, two readers, no drift. */
 function CatalogFigure() {
   return (
     <>
-      <g className="text-border-strong" {...line} strokeWidth="1.5">
-        <path d="M28 64h304M28 110h304M28 156h304" opacity=".5" />
-        <g opacity=".3">
-          <rect x="52" y="38" width="24" height="24" transform="rotate(18 64 50)" />
-          <circle cx="120" cy="92" r="13" />
-          <path d="M78 128 L94 154 L62 154 Z" transform="rotate(-14 78 141)" />
+      {/* the catalog: a drawn sheet carrying the list-checks mark */}
+      <rect x="150" y="55" width="60" height="110" rx="6" {...line} className="text-foreground" strokeWidth="2" fill="var(--surface)" />
+      <g transform="translate(158 88)">
+        <InkIcon name="standards/catalog" size={44} ink="var(--site-accent-text)" idSuffix="-fig2" />
+      </g>
+      {/* the readers: you and your agent, converging on it */}
+      <g className="ff-anim ff-share-l">
+        <g transform="translate(44 88)">
+          <InkIcon name="landing/human" size={44} ink="var(--foreground)" idSuffix="-fig2" />
         </g>
       </g>
-      <path d="M180 26v168" {...line} className="text-site-accent-text" strokeWidth="2.5" />
-      <g className="text-foreground" {...line} strokeWidth="2">
-        <rect x="216" y="40" width="24" height="24" className="ff-anim ff-seat-sq" fill="var(--surface)" />
-        <circle
-          cx="272"
-          cy="97"
-          r="13"
-          className="ff-anim ff-seat-ci text-site-accent-text"
-          fill="var(--site-accent)"
-        />
-        <path d="M244 130 L260 156 L228 156 Z" className="ff-anim ff-seat-tr" fill="var(--surface)" />
+      <g className="ff-anim ff-share-r">
+        <g transform="translate(272 88)">
+          <InkIcon name="landing/machine" size={44} ink="var(--foreground)" idSuffix="-fig2" />
+        </g>
+      </g>
+      <g className="text-site-accent-text" {...line} strokeWidth="2">
+        <path d="M96 110h46" className="ff-draw ff-route" />
+        <path d="M218 110h46" className="ff-draw ff-route" />
       </g>
     </>
   );
 }
 
-/* Your primitives compose your product: the lime circle, square, and triangle
-   leave their palette ghosts and take their places inside the interface —
-   avatar, field, action glyph. Same parts, your arrangement. */
+/* Your foundations compose your product: the colour, type, and token marks —
+   what DESIGN.md holds — route into the drawn interface and take effect as
+   its avatar, its field, its action. Same parts, your arrangement. */
 function DesignFileFigure() {
   return (
     <>
-      <g className="text-border-strong" {...line} strokeWidth="1.5">
-        <g opacity=".3">
-          <circle cx="66" cy="52" r="13" />
-          <rect x="53" y="94" width="26" height="26" />
-          <path d="M66 152 L81 178 L51 178 Z" />
-        </g>
+      {/* the foundations DESIGN.md holds */}
+      <g transform="translate(36 24)">
+        <InkIcon name="foundations/colour" size={36} ink="var(--foreground)" idSuffix="-fig3" />
       </g>
+      <g transform="translate(36 92)">
+        <InkIcon name="foundations/typography" size={36} ink="var(--foreground)" idSuffix="-fig3" />
+      </g>
+      <g transform="translate(36 160)">
+        <InkIcon name="foundations/tokens" size={36} ink="var(--foreground)" idSuffix="-fig3" />
+      </g>
+      {/* three routes funnel into the one interface */}
       <g className="text-site-accent-text" {...line} strokeWidth="2">
-        <path d="M104 110h44" />
-        <path d="m141 103 8 7-8 7" />
+        <path d="M84 42 C120 42 130 90 162 96" className="ff-draw ff-route" />
+        <path d="M84 110 L162 110" className="ff-draw ff-route" />
+        <path d="M84 178 C120 178 130 130 162 124" className="ff-draw ff-route" />
       </g>
+      {/* the product: the same miniature interface language as the run's result */}
       <g className="text-foreground" {...line} strokeWidth="2">
         <rect x="170" y="30" width="160" height="160" rx="10" fill="var(--surface)" />
       </g>
@@ -103,55 +125,31 @@ function DesignFileFigure() {
         <rect x="198" y="98" width="60" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
         <rect x="198" y="110" width="42" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
       </g>
-      <g className="text-foreground" {...line} strokeWidth="1.5">
-        <rect x="186" y="144" width="52" height="26" rx="6" fill="var(--surface)" />
-      </g>
-      <circle cx="196" cy="56" r="9" className="ff-anim ff-prim-ci" fill="var(--site-accent)" />
-      <rect
-        x="252"
-        y="148"
-        width="18"
-        height="18"
-        rx="3"
-        className="ff-anim ff-prim-sq text-foreground"
-        {...line}
-        strokeWidth="2"
-        fill="var(--surface)"
-      />
-      <path d="M206 150 L216 157 L206 164 Z" className="ff-anim ff-prim-tr" fill="var(--site-accent)" />
+      {/* the primitives land as real parts: avatar, field mark, action */}
+      <circle cx="196" cy="56" r="9" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <rect x="186" y="144" width="52" height="26" rx="6" {...line} className="text-foreground" strokeWidth="1.5" fill="var(--surface)" />
+      <path d="M206 150 L216 157 L206 164 Z" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
     </>
   );
 }
 
 /* Passes both sources before it returns: the catalog ring and the DESIGN.md
-   ring close over the work, the check draws where they agree, and only then
-   does the arrow leave for you. */
+   ring close over the work — each carrying its mark — the check draws where
+   they agree, and only then does the arrow leave for you. */
 function ReviewFigure() {
   return (
     <>
       <g className="ff-anim ff-ring-l">
         <circle cx="142" cy="110" r="58" {...line} className="text-foreground" strokeWidth="2" />
-        <path
-          d="M104 92h32M104 104h24M104 116h32M104 128h20"
-          {...line}
-          className="text-border-strong"
-          strokeWidth="1.5"
-          opacity=".6"
-        />
+        <g transform="translate(96 88)" opacity=".6">
+          <InkIcon name="standards/catalog" size={40} ink="var(--foreground)" idSuffix="-fig4" />
+        </g>
       </g>
       <g className="ff-anim ff-ring-r">
         <circle cx="218" cy="110" r="58" {...line} className="text-foreground" strokeWidth="2" />
-        <circle cx="246" cy="94" r="8" {...line} className="text-border-strong" strokeWidth="1.5" opacity=".6" />
-        <rect
-          x="238"
-          y="112"
-          width="16"
-          height="16"
-          {...line}
-          className="text-border-strong"
-          strokeWidth="1.5"
-          opacity=".6"
-        />
+        <g transform="translate(224 88)" opacity=".6">
+          <InkIcon name="landing/design-file" size={40} ink="var(--foreground)" idSuffix="-fig4" />
+        </g>
       </g>
       <g className="text-site-accent-text" {...line}>
         <path d="m165 110 11 12 21-26" className="ff-draw ff-check" strokeWidth="3.5" />
