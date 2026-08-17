@@ -40,7 +40,7 @@ bet 2 did, the claim was wrong and this document should say so.
 | Bet | Year | What it moves |
 |---|---|---|
 | 1. AI in the SDLC | 2026, in flight | **Depth.** Every step of the lifecycle produces reliable work, and the gates inside it hold without a person enforcing them. |
-| 2. AI for builders | 2026, in flight | **Width.** Anyone on a product team can do those steps, whatever their discipline. |
+| 2. AI for builders | 2026–2027, in flight | **Width.** Anyone on a product team can do those steps, whatever their discipline. |
 | 3. AI for teachers (TWLabs) | 2027, not started | **Reach.** Builders outside the product team. |
 
 The line between the first two: bet 1 asks whether each step of the lifecycle produces good

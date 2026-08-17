@@ -44,9 +44,9 @@ run whenever there are people to run it.
 |---|---|---|---|
 | M1 | **The bar enforces itself.** Quality stops depending on someone noticing. What the standard can decide, the machine decides; where it cannot, it says so instead of passing silently. | No control promises a judgement it cannot make. | Now |
 | M2 | **The lifecycle is legible.** We can see what the harness is asked to do, what it costs, and where it fails. | We can quote a median instead of an anecdote. | Now |
-| M3 | **Work arrives shaped.** Intent becomes something buildable before it reaches a backlog, and the ceremonies around it produce the same result whoever ran them. | Someone hands over unshaped intent and gets back work another person can pick up unaided. | Next |
+| M3 | **Work arrives shaped.** Intent becomes something buildable before it reaches a backlog, and the ceremonies around it produce the same result whoever ran them. | Someone hands over unshaped intent and gets back work another person can pick up unaided. | Now |
 | M4 | **Anyone can build.** Discipline stops deciding whether you can get the product, and a change of your own, running. | Someone whose title is not engineer has their own change running, unaided. | Now |
-| M5 | **Anyone can ship.** What a non-engineer built reaches production intact, through the same gates, rather than being handed over and rebuilt. | Something a non-engineer built is in production and was not rebuilt to get there. | Next |
+| M5 | **Anyone can ship.** What a non-engineer built reaches production intact, through the same gates, rather than being handed over and rebuilt. | Something a non-engineer built is in production and was not rebuilt to get there. | 2027 |
 | M6 | **The bar travels outside the team.** Teachers build against the same standard, with no specialist in the room. | A teacher-built surface is in production and passed the same gates as everything else. | 2027 |
 
 **Why this order.** M1 is load-bearing twice over: M5 asks non-engineers to trust the gates,
@@ -54,9 +54,14 @@ and M6 asks teachers to depend on them entirely, with no fallback of reading the
 M2 is what turns any claim in this document into something a person can check. Everything
 else is sequenced by who is available, not by dependency.
 
-**On 2027.** M6 is when we want to start, not a reward for finishing the others. How much of
-M1 and M2 has landed by then decides whether starting is a good idea, and what we would be
-accepting if we start anyway. The strategy sets out that trade.
+**On 2027.** Two milestones land there, M5 and M6, and they are the same problem twice:
+work reaching production without the person who made it handing it to someone else. First
+for a product team, then for a teacher. That makes 2026 the year the harness gets
+trustworthy and usable, and 2027 the year it gets trusted with the last mile.
+
+M6 is when we want to start, not a reward for finishing the others. How much of M1 and M2
+has landed by then decides whether starting is a good idea, and what we would be accepting
+if we start anyway. The strategy sets out that trade.
 
 ## Keeping this current
 
