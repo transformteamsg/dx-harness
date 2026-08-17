@@ -218,10 +218,61 @@ export default function Landing() {
       <SectionHead title="From a request to a reviewed result." />
       <HarnessRun />
 
-      {/* ── The proof ──────────────────────────────────────────────────────── */}
-      <SectionHead title="Compare the output." />
-      <div className="border-b border-border px-6 py-8 sm:px-10 sm:py-10">
-        <SlopCompare />
+      {/* ── The proof. The comparison is evidence, not the argument — so the claim
+             and the three passes that produce it sit beside it, and the slider
+             takes half the width instead of the whole page. ─────────────────── */}
+      <div className="grid border-b border-border lg:grid-cols-2">
+        <div className="flex flex-col justify-center border-border px-6 py-8 max-lg:border-b sm:px-10 sm:py-10 lg:border-r">
+          <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight text-balance text-foreground">
+            Compare the output.
+          </h2>
+          <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-pretty text-(--prose-body)">
+            The same brief, run twice. Drag the handle to see what three passes
+            change when they read the catalog.
+          </p>
+          <ul className="mt-6 flex flex-col gap-3">
+            <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-px shrink-0">
+                <InkIcon name="skills/copy" size={18} ink="var(--foreground)" idSuffix="-cmp" />
+              </span>
+              <span>
+                <span className="font-semibold text-foreground">Copy</span> turns
+                the buzzwords into plain language a teacher would use.
+              </span>
+            </li>
+            <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-px shrink-0">
+                <InkIcon name="skills/pattern" size={18} ink="var(--foreground)" idSuffix="-cmp" />
+              </span>
+              <span>
+                <span className="font-semibold text-foreground">Pattern</span> pulls
+                the nested cards apart and gives the page one hierarchy.
+              </span>
+            </li>
+            <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-px shrink-0">
+                <InkIcon name="skills/polish" size={18} ink="var(--foreground)" idSuffix="-cmp" />
+              </span>
+              <span>
+                <span className="font-semibold text-foreground">Polish</span> drops
+                the gradients and the second primary for your own tokens.
+              </span>
+            </li>
+          </ul>
+          <p className="mt-6 max-w-[46ch] text-sm leading-relaxed text-muted-foreground">
+            Every chip on the left panel is a control ID from the{" "}
+            <Link
+              href="/standards/catalog"
+              className={`text-site-accent-text underline underline-offset-2 ${focusRing}`}
+            >
+              catalog
+            </Link>
+            .
+          </p>
+        </div>
+        <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-10 sm:py-10">
+          <SlopCompare />
+        </div>
       </div>
 
       {/* ── The skills, by the job they do. Tool marks, not mascots: these are

@@ -26,7 +26,6 @@
    contrast is not a check; the waivers here cover SLP and CMP only, and no
    waiver can ever cover A11Y-1. */
 
-import Link from "next/link";
 import { useEffect, useId, useRef, type CSSProperties } from "react";
 import { animate, useInView } from "motion/react";
 import { ChevronsLeftRight, Cloud, Sparkles, Zap } from "lucide-react";
@@ -293,15 +292,7 @@ export function SlopCompare() {
         Drag the handle — or focus it and use arrow keys.
       </p>
       <figcaption className="mt-2 max-w-[48ch] text-xs leading-normal text-muted-foreground">
-        The same screen twice: what defaults produce, and what ships under the
-        standard. Every chip is a control ID from the{" "}
-        <Link
-          href="/standards/catalog"
-          className="text-site-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
-        >
-          catalog
-        </Link>
-        .
+        Default output on the left, the same screen on standard on the right.
       </figcaption>
     </figure>
   );
