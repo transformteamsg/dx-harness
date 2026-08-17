@@ -286,6 +286,7 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
    --motion-story; easing is the standard ease-out, never bounce (SLP-8). ── */
 @layer components {
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    /* dx-waive MOT-1 reason="--motion-story is reserved for narrative surfaces (explanatory diagrams and the landing reveal); these ff-* figures are aria-hidden narrative drawings, not task UI" */
     .ff-anim {
       transition:
         transform var(--motion-story) var(--ease-out),
