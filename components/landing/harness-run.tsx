@@ -45,7 +45,22 @@ const STAGES = [
       </>
     ),
     figureLabel:
-      "A terminal window with the typed request: make the settings page feel calmer.",
+      "A terminal window with the typed request: make the settings page feel calmer. Two notes below it: the ask is plain words, and dx-design reads it to pick the passes.",
+    /* Grounded in the section's own copy (content/sections/landing.mdx: "Start
+       with a plain-language request" and "dx-design reads the request and
+       brings in only the skills it needs"), not invented for this drawing. */
+    annotations: [
+      {
+        icon: "guidelines/voice-tone",
+        text: "Plain words, not skill names or settings to manage.",
+        ink: "var(--foreground)",
+      },
+      {
+        icon: "skills/orchestrator",
+        text: "dx-design reads it and brings in only the skills it needs.",
+        ink: "var(--foreground)",
+      },
+    ],
   },
   {
     n: "02",
@@ -61,7 +76,23 @@ const STAGES = [
     /* Split into two sentences (the plan's single run-on sentence trips CNT-3's
        25-word cap) without changing what it says. */
     figureLabel:
-      "A run panel: the dx-design orchestrator picks the layout and polish passes. Each pass reads the control catalog and your DESIGN.md before the plan is approved and the build runs.",
+      "A run panel: the dx-design orchestrator picks the layout and polish passes. Each pass reads the control catalog and your DESIGN.md before the plan is approved and the build runs. Below it, two notes name each source: the control catalog and your DESIGN.md.",
+    /* Grounded in the section's own copy (content/sections/landing.mdx: "Shared
+       design guidance agents can use" and "Your product's design language") —
+       these name the two sources the panel's rows only shorthand as
+       "catalog + DESIGN.md". */
+    annotations: [
+      {
+        icon: "standards/catalog",
+        text: "The control catalog: shared design rules every skill reads first.",
+        ink: "var(--foreground)",
+      },
+      {
+        icon: "landing/design-file",
+        text: "Your DESIGN.md: your product's own colours, type, motion, and voice.",
+        ink: "var(--foreground)",
+      },
+    ],
   },
   {
     n: "03",
@@ -74,7 +105,16 @@ const STAGES = [
       </>
     ),
     figureLabel:
-      "A small finished settings screen with a display name field, a reminders field, and a Save button, above a badge reading design review passed.",
+      "A small finished settings screen with a display name field, a reminders field, and a Save button, above a badge reading design review passed. Below that, a note: graded against both sources before it returns.",
+    /* Grounded in content/sections/landing.mdx: "A separate reviewer grades the
+       built result against both sources before it returns." */
+    annotations: [
+      {
+        icon: "skills/review",
+        text: "Graded against both sources before it returns to you.",
+        ink: "var(--site-accent-text)",
+      },
+    ],
   },
 ];
 
@@ -398,6 +438,31 @@ export function HarnessRun() {
                 <span>design review passed</span>
               </p>
             </div>
+            {/* Focus-mode enrichment: builder direction is that an isolated step
+                should not sit alone in the column when there is real context to
+                add, so each stage gets a couple of rows drawn in the same
+                statusLineIcon idiom as the rest of the figure (fresh idSuffix —
+                these marks already render elsewhere on the page, and a repeated
+                filter id silently strips the texture). Conditionally RENDERED,
+                not just hidden: a no-JS reader can never set `focused`, so this
+                never exists in the initial HTML either way, but rendering makes
+                that guarantee obvious at the call site instead of relying on
+                CSS. Lives inside the same reserve as the isolated region — the
+                height invariant only holds if region + annotations together
+                stay under the measured resting height at every viewport and
+                root font size; re-run the twelve-cell matrix if this copy grows. */}
+            {focused !== null ? (
+              <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-xs text-muted-foreground">
+                {STAGES[focused].annotations.map((a) => (
+                  <p key={a.icon} className={statusLineIcon}>
+                    <span className={statusIconBox}>
+                      <InkIcon name={a.icon} size={18} ink={a.ink} idSuffix="-focus" />
+                    </span>
+                    <span>{a.text}</span>
+                  </p>
+                ))}
+              </div>
+            ) : null}
           </div>
           <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
             One ask in plain words; a reviewed screen out.
