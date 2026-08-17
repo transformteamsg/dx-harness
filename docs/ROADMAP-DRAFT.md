@@ -42,7 +42,7 @@ run whenever there are people to run it.
 
 | # | Capability | Landed when | Horizon |
 |---|---|---|---|
-| M1 | **Quality holds without a reviewer.** It stops depending on someone noticing. What the standard can decide, the machine decides; where it cannot, it says so instead of passing silently. | No control promises a judgement it cannot make. | Now |
+| M1 | **Quality holds without a reviewer.** What a reviewer would look for is written down, across every axis of the work rather than design alone, and what can be decided by machine is. Where it cannot be, the machine says so instead of passing silently. The standard is expected to grow and be revised as we learn; what matters is that it never claims more than it can do. | A reviewer's checklist exists as controls rather than as habit, and none of them promises a judgement it cannot make. | Now |
 | M2 | **We can see what is happening.** What the harness is asked to do, what it costs, and where it fails. | We can quote a median instead of an anecdote. | Now |
 | M3 | **Work arrives ready to build.** Intent becomes something buildable before it reaches a backlog, and the ceremonies around it produce the same result whoever ran them. | Someone hands over unshaped intent and gets back work another person can pick up unaided. | Now |
 | M4 | **Anyone on the team can build.** Discipline stops deciding whether you can get the product, and a change of your own, running. | Someone whose title is not engineer has their own change running, unaided. | Now |
@@ -51,6 +51,8 @@ run whenever there are people to run it.
 
 **Why this order.** M1 is load-bearing twice over: M5 asks non-engineers to trust the gates,
 and M6 asks teachers to depend on them entirely, with no fallback of reading the catalog.
+M5 needs the wider half of M1 in particular — someone shipping without an engineer's review
+needs what that engineer would have checked to exist as a control, not as their judgement.
 M2 is what turns any claim in this document into something a person can check. Everything
 else is sequenced by who is available, not by dependency.
 

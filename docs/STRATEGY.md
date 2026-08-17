@@ -18,8 +18,10 @@ standing over their shoulder.
 Four parts. Every bet below either strengthens one of them or points them at new people.
 
 1. **Encoded standards.** What a specialist held in their head becomes a machine-readable
-   control. Seventy of them today in `standards/catalog.yaml`, with tiers and a waiver
-   path, so a rule can be overridden on the record instead of quietly ignored.
+   control, with tiers and a waiver path, so a rule can be overridden on the record instead
+   of quietly ignored. Seventy of them today, all design. The set is meant to widen across
+   the other axes of the work, and to be revised as we get better at saying what good
+   means — a standard that never changes is one nobody is learning from.
 2. **Deterministic checks.** Anything a script can decide, a script decides. Human
    judgment is spent only where judgment is genuinely needed.
 3. **A gated loop.** Intent, diverge, plan (human gate), implement, verify — with a
