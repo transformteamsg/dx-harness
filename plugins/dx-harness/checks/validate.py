@@ -10,9 +10,9 @@ Validates standards/catalog.yaml for internal consistency:
      controls must carry one. meta.categories covers every ID prefix.
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in
-     catalog — swept over skills/**, agents/**, procedures/**, and
-     docs/catalog-changes/, plus the named files in CROSS_REF_FILES (the
-     standards/ documents the tree walk does not reach).
+     catalog — swept over skills/**, agents/**, procedures/**,
+     standards/controls/**, and docs/catalog-changes/, plus the named files in
+     CROSS_REF_FILES (the standards/ documents the tree walk does not reach).
   8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md, docs/index.html or standards/quality-bar.md — the
      plugin's or the consuming site's — must equal the catalog's actual control
@@ -1190,8 +1190,8 @@ def collect_errors(repo_root, _return_count=False):
 
     cross_ref_files = [os.path.join(repo_root, *rel.split("/"))
                        for rel in CROSS_REF_FILES]
-    # Walk skills/**/*.md, agents/**/*.md, procedures/**/*.md, and glob
-    # docs/catalog-changes/*.md at runtime
+    # Walk skills/**/*.md, agents/**/*.md, procedures/**/*.md,
+    # standards/controls/**/*.md, and docs/catalog-changes/*.md at runtime.
     skills_dir = os.path.join(repo_root, "skills")
     agents_dir = os.path.join(repo_root, "agents")
     procedures_dir = os.path.join(repo_root, "procedures")
@@ -1380,11 +1380,11 @@ def collect_errors(repo_root, _return_count=False):
                     f"(catalog detail: {cat_entry.get('detail')!r}, expected: {expected_detail!r})")
 
     # ── Step 7: Cross-reference sweep ────────────────────────────────────────
-    # Every .md under skills/, agents/, and procedures/ (recursive — skills
-    # nest one level per group, and skill dirs carry sibling docs such as
-    # verify.md beside SKILL.md), plus catalog-change records.
+    # Every .md under skills/, agents/, procedures/, and standards/controls/
+    # (recursive — skill dirs carry sibling docs such as verify.md beside
+    # SKILL.md), plus catalog-change records.
     swept_files = walk_md_files(skills_dir, agents_dir, procedures_dir,
-                                catalog_changes_dir)
+                                controls_dir, catalog_changes_dir)
 
     all_xref_files = cross_ref_files + swept_files
 
