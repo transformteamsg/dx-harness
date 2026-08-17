@@ -397,14 +397,20 @@ someone. Recorded here rather than dropped; it needs its own plan.
 
 ## Open decisions for the builder
 
-1. **Whether 19% ink in the focused view is acceptable**, particularly at 360
-   where the isolated graphic sits off-screen above the stage button the reader
-   has chosen. The two options the review surfaced are to accept the spacious
-   reading, or to change the composition so the focused region and its stage row
-   sit nearer each other. Scaling the region up is **not** among them — see
-   "Rejected options".
-2. **Carried from `landing-run-example.md`, unchanged:** SLP-5 on the six skill
-   tiles, and the sparkles mark for Polish, now at four sites.
+Both resolved 2026-08-18 (builder-delegated rulings):
+
+1. **The focused view's ink density — accepted as built.** The quiet column is
+   the residue of the reviewed reduce-elements cuts, and re-inflating ink to
+   improve a ratio would reverse that decision. The stronger option, moving
+   the graphic nearer its stage row at 360, would put the annotation after the
+   control and disturb the reading order the 36-cell height-invariant matrix
+   verified — a real cost against a nuisance-grade gain. The 360 off-screen
+   positioning stays a known, named tradeoff of the reserved-column design; if
+   evidence arrives that readers tap a stage and miss the change, that
+   evidence reopens this as its own plan, not as a fix round here.
+2. **The carried pair is closed in `landing-feature-grid.md`:** SLP-5 waived
+   in the inline rationale form at the tile; the sparkles mark kept. See that
+   record's "Open decisions" for the reasons.
 
 ## Ratchet
 

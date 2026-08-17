@@ -271,12 +271,14 @@ VERDICT: pass
 
 ## Open decisions for the builder
 
-Carried forward from `landing-graphics.md`, unchanged, still unresolved:
+Carried forward from `landing-graphics.md`; both resolved 2026-08-18
+(builder-delegated rulings, recorded in full in `landing-feature-grid.md`):
 
-1. **SLP-5 on the six skill tiles** (L2, open) — waive with a recorded
-   rationale or drop the 64px tile.
-2. **The sparkles mark for Polish** — now at two sites (skill tile + run-panel
-   row); both resolve from `scripts/generate-ink-icons.mjs`, one line.
+1. **SLP-5 on the six skill tiles** — waived in the inline recorded-rationale
+   form (correct for L2) at the tile in `app/(landing)/page.tsx`.
+2. **The sparkles mark for Polish** — kept: it names the Polish skill
+   literally and nothing on the surface uses sparkles decoratively; all sites
+   resolve from the one generator line.
 
 ## Ratchet
 

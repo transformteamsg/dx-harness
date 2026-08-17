@@ -666,29 +666,50 @@ Three rules earned here, each costing a round:
 
 ## Open decisions for the builder
 
-1. **FIG 3's figure/copy mismatch** (new, from this run's review) — the card
-   says DESIGN.md holds "your colours, type, motion, and voice"; the figure
-   draws colour, typography, and tokens. Either adjust the card's wording or
-   generate a motion mark for the figure. Do **not** reuse
-   `guidelines/voice-tone` for "voice": it already means "your plain-words
-   ask" in FIG 1. Round 2 confirmed the fixes left this untouched either way.
-2. **FIG 4 is the only card whose subject has no mark** (new, surfaced by round
-   2 precisely because the ink rule is now written down). `skills/review`
-   exists in the family and already renders in FIG 1 as an unpicked candidate
-   and in the run panel's "design review passed" badge, but FIG 4 draws only
-   the two sources it consults, so no mark in it can carry the accent and the
-   ink rule is vacuous there. The gap has the same shape as the round-1 one
-   that was closed for FIG 3. Deliberately **not** taken in a fix round:
-   seating the review mark in the lens would change the choreography (a
-   multi-path mark cannot stroke-draw the way the bare check does), and the
-   loop had already produced one round where a fix caused two regressions.
-   Being a composition decision, it is the builder's.
-3. **SLP-5 on the six skill tiles** (L2, carried from `landing-graphics.md`,
-   still open) — waive with a recorded rationale or drop the 64px tile.
-4. **The sparkles mark for Polish** — carried, now at three sites (skill tile,
-   run-panel row, FIG 1). All three resolve from one line in
-   `scripts/generate-ink-icons.mjs`, so the decision has not become more
-   expensive, but it is no longer a two-site question.
+All four resolved 2026-08-18. The builder delegated the calls to their agent;
+the rulings and their reasons:
+
+1. **FIG 3's figure/copy mismatch — resolved by generating the motion mark.**
+   The card's claim ("your colours, type, motion, and voice") is the accurate
+   product claim, so the figure moved rather than the copy: the third mark is
+   now `foundations/motion` (Lucide `spline` through the Ink preset — an
+   easing curve, the drawable face of a motion signature), replacing
+   `foundations/tokens`, which the copy never named. The marks are static in
+   FIG 3's choreography (only the routes draw), so the swap carries no motion
+   cost. The residual gap is deliberate and now recorded in the figure's
+   comment: **voice stays undrawn** — it is the one non-visual foundation, and
+   per this record's own constraint `guidelines/voice-tone` was not reused.
+2. **FIG 4's subject mark — resolved by ruling, not composition.** The ink
+   rule's intent is "the card's subject carries the accent", and in FIG 4 the
+   accent is already carried by the check drawn where the two source rings
+   agree — a depiction of the review act itself that a static `skills/review`
+   glyph could not perform (it cannot stroke-draw). The rule's wording in
+   `feature-figure.tsx` now says a subject may be carried by a drawn gesture,
+   so the rule is no longer vacuous there and future figures inherit the
+   clarification. The choreography risk that kept this out of a fix round is
+   thereby avoided entirely.
+3. **SLP-5 on the six skill tiles — waived in the recorded-rationale form**
+   (correct for L2): inline `dx-waive` at the tile in
+   `app/(landing)/page.tsx`. Rationale: the tile is the content, not a
+   template — each mark is the skill's actual tool in the site's ink
+   vocabulary, and the grid is one band of a varied page, not its default
+   layout.
+4. **The sparkles mark for Polish — kept.** It names the Polish skill
+   literally (surface refinement), renders through the same Ink preset as
+   every other tool mark, and nothing on the surface uses sparkles
+   decoratively or as an AI badge, which is the cliché the hesitation was
+   about. All sites resolve from the one generator line, so a future reversal
+   stays one-line cheap.
+
+Also closed the same day, from the round-4 summary's list: **FIG 2's sheet
+proportion — reshaped, not accepted.** The sheet is now 80×116 (1:1.45, y
+52–168), paper proportions instead of the 1:2.075 phone band; the rule-line
+pairs moved with it (y 64/76 above the mark, 139/151 below, mirrored about the
+mark's centre at y=110). The constraint the reviewer named — box-height fill
+carried entirely by the sheet — was traded away deliberately: the readers and
+their connectors already carry the horizontal axis, and a sheet that reads as
+paper is worth more than a filled column. Connector geometry, mark position,
+and the `ff-share-*` choreography (x-translations only) are untouched.
 
 ## Ratchet
 

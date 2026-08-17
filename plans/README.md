@@ -10,11 +10,11 @@ conditions, and update your row when done.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 001  | Reframe the landing run as one worked example on realistic interfaces | P1 | M | — | DONE (commit `01dde60` on `plan-001-exec`; reviewer verdict APPROVE, criteria re-run independently) |
-| 002  | Redraw the four feature-grid figures with the icon-generator ink marks | P1 | M | — | DONE, unmerged (`plan-002-exec` at `2ee80d9`, six commits; three review rounds plus a round-4 sign-off, all pass-with-findings, every reviewer finding closed and independently re-measured, all four quality grades strong; three builder decisions open — see the decision record) |
-| 003  | Show only the selected step's graphic in the landing run | P1 | S | — | DONE, unmerged (`plan-003-exec` at `3f64f90`, three commits; two review rounds ending in a clean **pass**, height invariant verified at 0.00px across all 12 width×root-size cells; one builder decision open) |
-| 004  | Name the product "DX Design Harness" across the site | P1 | M | — | DONE, unmerged (`75ce249` + fixes `349ef40`: nav brand now prose "DX Design Harness" per builder ruling on the review's CNT-10 block; collaborator baselines re-aligned; install identifiers untouched throughout) |
-| 005  | Give the comparison a left-hand explanation and a right-hand slider | P1 | M | 004 | DONE, unmerged (`plan-004-exec` at `54ce312`, five commits; fail → pass-with-findings across two fix rounds, then the builder's 40/60 ruling: frame 623×391 ratio 1.593 full-bleed, 33ch one-line-heading column, chips 4/6, mobile byte-identical. Known minor: the trimmed Pattern line no longer names SLP-6) |
-| 006  | Annotate the focused run step with stage-specific detail | P1 | S | 003 | DONE, unmerged (`plan-003-exec` at `0969973`; round-3 pass-with-findings, then the reduce-elements cuts — stage 01 one note, stage 02 two source rows, stage 03 bare, figcaption gone; 36-cell matrix at exactly 0px through a resting-height change, proving the measured reserve) |
+| 002  | Redraw the four feature-grid figures with the icon-generator ink marks | P1 | M | — | DONE, merged (`plan-002-exec` at `2ee80d9`, merged as `1d0e306`; three review rounds plus a round-4 sign-off, all pass-with-findings, every reviewer finding closed and independently re-measured, all four quality grades strong; three builder decisions open — see the decision record) |
+| 003  | Show only the selected step's graphic in the landing run | P1 | S | — | DONE, merged (`plan-003-exec`, merged as `82bd060`; two review rounds ending in a clean **pass**, height invariant verified at 0.00px across all 12 width×root-size cells; one builder decision open) |
+| 004  | Name the product "DX Design Harness" across the site | P1 | M | — | DONE, merged (`75ce249` + fixes `349ef40`, merged as `3bc557b`: nav brand now prose "DX Design Harness" per builder ruling on the review's CNT-10 block; collaborator baselines re-aligned; install identifiers untouched throughout) |
+| 005  | Give the comparison a left-hand explanation and a right-hand slider | P1 | M | 004 | DONE, merged (`plan-004-exec` at `54ce312`, merged as `3bc557b`; fail → pass-with-findings across two fix rounds, then the builder's 40/60 ruling: frame 623×391 ratio 1.593 full-bleed, 33ch one-line-heading column, chips 4/6, mobile byte-identical. Known minor: the trimmed Pattern line no longer names SLP-6) |
+| 006  | Annotate the focused run step with stage-specific detail | P1 | S | 003 | DONE, merged (`plan-003-exec` at `0969973`, merged as `82bd060`; round-3 pass-with-findings, then the reduce-elements cuts — stage 01 one note, stage 02 two source rows, stage 03 bare, figcaption gone; 36-cell matrix at exactly 0px through a resting-height change, proving the measured reserve) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -29,11 +29,10 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 
 ## Branches in flight
 
-| Branch | Base | Head | Carries |
-|---|---|---|---|
-| `plan-002-exec` | `bd48006` | `2ee80d9` | the feature grid, six commits |
-| `plan-003-exec` | `03fecc6` | `0969973` | run-step isolation + focused-stage annotations, six commits |
-| `plan-004-exec` | `bd48006` | `54ce312` | naming sweep, compare two-column, three fix rounds |
+None. All three exec branches merged into `landing-page` on 2026-08-17
+(`1d0e306`, `82bd060`, `3bc557b`), followed by the builder's note
+(`32fd4d6`). The branch heads remain for reference: `plan-002-exec` at
+`2ee80d9`, `plan-003-exec` at `0969973`, `plan-004-exec` at `54ce312`.
 
 ## Outstanding, not yet planned
 
@@ -63,23 +62,14 @@ decision records, not here — keeping them in two places is how records drift.
 | The feature grid in the ink-mark vocabulary | `docs/decisions/landing-feature-grid.md` |
 | Isolating one step in the run | `docs/decisions/landing-run-focus.md` |
 
-Open builder decisions across all of them, in one list:
-
-1. **FIG 3's figure and card copy name different sets** — the card says
-   DESIGN.md holds "colours, type, motion, and voice"; the figure draws colour,
-   typography and tokens. Reword the card or generate a motion mark. Do not
-   reuse `guidelines/voice-tone`: it already means "your plain-words ask" in
-   FIG 1.
-2. **FIG 2's catalog sheet is 1:2.075**, still phone-like. The reviewer would
-   not hold ship for it and confirmed it as the builder's to close.
-3. **FIG 4 carries no mark for its own subject**, which the written ink rule
-   makes visible. A composition change with a choreography cost.
-4. **The focused run step is 25% ink** in its reserved column, most expensive at
-   360 where the graphic sits off-screen above the stage button the reader chose.
-5. **The anti-specimen's SLP-1, SLP-2 and SLP-4 waivers need the `documented`
-   form** — they are L1 controls carrying only inline markers (the L2 form), so
-   `waiver-reconcile.py` fails. Pre-existing debt surfaced as blocking by plan
-   005's review; needs a named approver row in `docs/decisions/landing.md`,
-   which is the builder's act.
-6. Carried, unchanged: **SLP-5 on the six skill tiles**, and **the sparkles mark
-   for Polish**, now at four sites.
+Open builder decisions across all of them: **none — all closed 2026-08-18.**
+The L1 waivers were approved by rezailmi (named-approver rows in
+`docs/decisions/landing.md`; `waiver-reconcile.py` exits 0). The rest were
+builder-delegated rulings, recorded where each decision lives: FIG 3 got the
+motion mark, FIG 2's sheet was reshaped to 1:1.45, FIG 4's ink rule now admits
+a drawn gesture as the subject's mark, SLP-5 is waived inline at the tile, the
+sparkles mark stays, and the focused step's ink density is accepted as built
+(all in `docs/decisions/landing-feature-grid.md` and `landing-run-focus.md`).
+One known minor stands accepted: the compare Pattern line no longer names
+SLP-6 after the 2-line trim — the closing line routes every chip to the
+catalog, so the prose lines stay examples, not an exhaustive map.
