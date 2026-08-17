@@ -75,8 +75,16 @@ function OrchestratorFigure() {
 function CatalogFigure() {
   return (
     <>
-      {/* the catalog: a drawn sheet carrying the list-checks mark */}
-      <rect x="150" y="27" width="60" height="166" rx="6" {...line} className="text-foreground" strokeWidth="2" fill="var(--surface)" />
+      {/* the catalog: a drawn sheet carrying the list-checks mark, with rule
+          lines above and below it so it reads as a page of guidance, not a
+          blank card */}
+      <rect x="140" y="27" width="80" height="166" rx="6" {...line} className="text-foreground" strokeWidth="2" fill="var(--surface)" />
+      <g className="text-border-strong" {...line} strokeWidth="1.5">
+        <rect x="152" y="42" width="56" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="56" width="40" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="146" width="56" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="160" width="40" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+      </g>
       <g transform="translate(156 86)">
         <InkIcon name="standards/catalog" size={48} ink="var(--site-accent-text)" idSuffix="-fig2" />
       </g>
@@ -92,8 +100,8 @@ function CatalogFigure() {
         </g>
       </g>
       <g className="text-site-accent-text" {...line} strokeWidth="2">
-        <path d="M112 110h34" className="ff-draw ff-route" />
-        <path d="M214 110h30" className="ff-draw ff-route" />
+        <path d="M112 110h24" className="ff-draw ff-route" />
+        <path d="M224 110h20" className="ff-draw ff-route" />
       </g>
     </>
   );
@@ -117,37 +125,37 @@ function DesignFileFigure() {
       <g transform="translate(36 160)">
         <InkIcon name="foundations/tokens" size={36} ink="var(--foreground)" idSuffix="-fig3" />
       </g>
-      {/* three routes funnel into DESIGN.md itself */}
+      {/* three routes funnel in and land on DESIGN.md itself */}
       <g className="text-site-accent-text" {...line} strokeWidth="2">
-        <path d="M72 42 C95 42 100 85 93 100" className="ff-draw ff-route" />
-        <path d="M72 110 L93 110" className="ff-draw ff-route" />
-        <path d="M72 178 C95 178 100 135 93 120" className="ff-draw ff-route" />
+        <path d="M72 42 C95 42 102 85 105 100" className="ff-draw ff-route" />
+        <path d="M72 110 L105 110" className="ff-draw ff-route" />
+        <path d="M72 178 C95 178 102 135 105 120" className="ff-draw ff-route" />
       </g>
-      {/* DESIGN.md: the one file your foundations become */}
-      <g transform="translate(101 90)">
-        <InkIcon name="landing/design-file" size={40} ink="var(--site-accent-text)" idSuffix="-fig3" />
+      {/* DESIGN.md: the one file your foundations become, sized to its own weight */}
+      <g transform="translate(101 86)">
+        <InkIcon name="landing/design-file" size={48} ink="var(--site-accent-text)" idSuffix="-fig3" />
       </g>
-      {/* and DESIGN.md composes the product: one route out */}
+      {/* and DESIGN.md composes the product: a route with room to travel */}
       <path
-        d="M149 110 L162 110"
+        d="M149 110 L178 110"
         {...line}
         className="text-site-accent-text ff-draw ff-route"
         strokeWidth="2"
       />
       {/* the product: the same miniature interface language as the run's result */}
       <g className="text-foreground" {...line} strokeWidth="2">
-        <rect x="170" y="30" width="160" height="160" rx="10" fill="var(--surface)" />
+        <rect x="186" y="30" width="144" height="160" rx="10" fill="var(--surface)" />
       </g>
       <g className="text-border-strong" {...line} strokeWidth="1.5">
-        <rect x="216" y="52" width="76" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="186" y="86" width="128" height="42" rx="6" fill="var(--site-accent-wash)" />
-        <rect x="198" y="98" width="60" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="198" y="110" width="42" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="224" y="52" width="76" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="194" y="86" width="128" height="42" rx="6" fill="var(--site-accent-wash)" />
+        <rect x="206" y="98" width="60" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="206" y="110" width="42" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
       </g>
       {/* the primitives land as real parts: avatar, field mark, action */}
-      <circle cx="196" cy="56" r="9" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
-      <rect x="186" y="144" width="52" height="26" rx="6" {...line} className="text-foreground" strokeWidth="1.5" fill="var(--surface)" />
-      <path d="M206 150 L216 157 L206 164 Z" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <circle cx="204" cy="56" r="9" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
+      <rect x="194" y="144" width="52" height="26" rx="6" {...line} className="text-foreground" strokeWidth="1.5" fill="var(--surface)" />
+      <path d="M214 150 L224 157 L214 164 Z" className="ff-anim ff-pick" fill="var(--site-accent)" stroke="none" />
     </>
   );
 }
