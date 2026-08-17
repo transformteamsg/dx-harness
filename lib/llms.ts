@@ -55,6 +55,7 @@ export function llmsIndex(): string {
   lines.push("- [Overview](/overview.md)");
   lines.push("- [How to read this standard](/how-to-read.md)");
   lines.push("- [For agents](/for-agents.md)");
+  lines.push("- [A note from the builders](/note.md)");
   lines.push("");
 
   const item = (label: string, href: string, desc?: string) =>

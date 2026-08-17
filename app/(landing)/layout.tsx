@@ -62,6 +62,9 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
               <Link href="/overview" className={navLink}>
                 Docs
               </Link>
+              <Link href="/note" className={navLink}>
+                Builder&apos;s note
+              </Link>
               <a href="https://github.com/transformteamsg/dx-harness" className={navLink}>
                 GitHub
               </a>
