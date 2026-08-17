@@ -314,14 +314,16 @@ traces back to its row in `a11y-rule-map.json`.
 - Anything a rendered DOM is needed for: that is the rendered check's half.
 
 **A layer that did not run does not silently pass.** When eslint or the plugin cannot
-be resolved, when there is nothing to lint, or when the TypeScript parser is missing
-and `.ts`/`.tsx` files were in scope (the run then covers `.js`/`.jsx` only), the check
-says so and names A11Y-2, A11Y-3, A11Y-6 and A11Y-8 as going to manual verification,
-adding that A11Y-2 and A11Y-3 are L0 and block until verified by some path. Those are
-`NOTE` lines: exit 0, never a gate, and never a claim of a clean pass. A rule that fires
-with no row in the map, an unreadable map, an eslint crash and a timeout are operational
-`ERROR`s (exit 1) carrying no `<file>:<line> [<CTL>]` shape, so `detect.py` keeps them as
-control-less findings.
+be resolved, when the TypeScript parser is missing and `.ts`/`.tsx` files were in
+scope (the run then covers `.js`/`.jsx` only), or when eslint cannot parse a file, the
+check says so and names A11Y-2, A11Y-3, A11Y-6 and A11Y-8 as going to manual
+verification, adding that A11Y-2 and A11Y-3 are L0 and block until verified by some
+path. The coverage gap is an operational `ERROR` (exit 1), followed by explanatory
+`NOTE`s where applicable, so `detect.py` cannot grade an incomplete run clean. A rule
+that fires with no row in the map, an unreadable map, an eslint crash and a timeout are
+operational `ERROR`s too. These lines carry no `<file>:<line> [<CTL>]` shape, so the
+detector keeps them as control-less findings. When the given paths contain no lintable
+source at all, the layer prints a NOTE and exits 0 because it had nothing in scope.
 
 **Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (41 cases)`
 (includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`

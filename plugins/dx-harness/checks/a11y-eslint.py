@@ -68,9 +68,10 @@ Output
 ERROR <file>:<line> [<CTL>][jsx-a11y/<rule>] <message> — suggest: <...>
 NOTE  a11y-eslint: <...>
 Exit 0 and print nothing (or NOTEs only, or SELF-TEST OK) on success.
-Exit 1 with ERROR lines on any violation, and on an operational failure
-(unreadable rule map, unmapped rule id, eslint crash) whose ERROR carries no
-<file>:<line> [<CTL>] shape, so detect.py keeps it as a control-less finding.
+Exit 1 with ERROR lines on any violation, operational failure, or unverified
+coverage gap. Operational and coverage ERRORs carry no <file>:<line> [<CTL>]
+shape, so detect.py keeps them as control-less findings rather than grading an
+incomplete run clean.
 """
 
 import importlib.util
@@ -267,7 +268,7 @@ def manual_verification_notes(reason, controls, tiers=None):
     covers, and say that an L0 control still blocks. A control is never
     reported as passing by a layer that did not check it.
     """
-    lines = [f"NOTE  a11y-eslint: did not run — {reason}",
+    lines = [f"ERROR a11y-eslint: did not run — {reason}",
              f"NOTE  a11y-eslint: {', '.join(controls)} go to manual verification "
              f"(not reported as passing)"]
     l0 = checklib.l0_subset(controls, tiers)
@@ -281,7 +282,7 @@ def parser_gap_notes(controls, tiers=None):
     """The .tsx half of the run is missing: say so and name the controls whose
     coverage of those files goes to manual verification."""
     lines = [
-        "NOTE  a11y-eslint: no TypeScript-capable parser in the target's "
+        "ERROR a11y-eslint: no TypeScript-capable parser in the target's "
         "node_modules — linting .js/.jsx only",
         f"NOTE  a11y-eslint: {', '.join(controls)} go to manual verification for the "
         f"unparsed .ts/.tsx files (not reported as passing)",
@@ -316,8 +317,8 @@ def translate_report(payload, target_root, rule_map):
             lineno = msg.get("line") or 1
             text = " ".join((msg.get("message") or "").split())
             if msg.get("fatal") or rule is None:
-                notes.append(f"NOTE  a11y-eslint: {rel}:{lineno} was not parsed "
-                             f"({text}) — verify this file by hand")
+                errors.append(f"ERROR a11y-eslint: {rel}:{lineno} was not parsed "
+                              f"({text}) — verify this file by hand")
                 continue
             ctl = rules.get(rule)
             if ctl is None:
@@ -351,18 +352,20 @@ def run(paths, target_root=None, node="node"):
     toolchain, reason = resolve_toolchain(root, node=node)
     if toolchain is None:
         out.extend(manual_verification_notes(reason, controls, tiers))
-        return (1 if missing else 0), out
+        return 1, out
 
     extensions = LINT_EXTENSIONS
+    coverage_gap = False
     if toolchain["parser"] is None:
         extensions = LINT_EXTENSIONS - TS_EXTENSIONS
         if has_ts_targets(paths):
+            coverage_gap = True
             out.extend(parser_gap_notes(controls, tiers))
     lint_paths, _, _ = partition_targets(paths, extensions)
     if not lint_paths:
         out.append("NOTE  a11y-eslint: nothing to lint in the given paths "
                    f"({', '.join(sorted(extensions))})")
-        return (1 if missing else 0), out
+        return (1 if (missing or coverage_gap) else 0), out
 
     argv = build_argv(toolchain, lint_paths)
     try:
@@ -390,7 +393,7 @@ def run(paths, target_root=None, node="node"):
     errors, notes = translate_report(payload, root, rule_map)
     out.extend(errors)
     out.extend(notes)
-    return (1 if (errors or missing) else 0), out
+    return (1 if (errors or missing or coverage_gap) else 0), out
 
 
 # ── Self-test ──────────────────────────────────────────────────────────────────
@@ -469,21 +472,22 @@ def run_self_test():
     check("the unmapped ERROR guesses no control id", None,
           detect._FINDING_RE.match(unmapped[0]))
 
-    # ── a file eslint could not parse is a NOTE, never a silent pass ───────────
+    # ── a file eslint could not parse blocks as an operational ERROR ──────────
     fatal_errors, fatal_notes = translate_report(
         [{"filePath": "/repo/broken.tsx",
           "messages": [{"ruleId": None, "fatal": True, "line": 1, "severity": 2,
                         "message": "Parsing error: Unexpected token"}]}],
         "/repo", rule_map)
-    check("an unparsed file raises no ERROR", [], fatal_errors)
-    check("an unparsed file is a NOTE naming the file", True,
-          len(fatal_notes) == 1 and "broken.tsx" in fatal_notes[0])
+    check("an unparsed file raises one ERROR naming the file", True,
+          len(fatal_errors) == 1 and "broken.tsx" in fatal_errors[0])
+    check("an unparsed file adds no NOTE", [], fatal_notes)
 
     # ── a layer that did not run does not silently pass ────────────────────────
     tiers = checklib.catalog_tiers()
     check("the catalogue tiers are readable", "L0", tiers.get("A11Y-2"))
     skip = manual_verification_notes("no eslint in /repo's node_modules", controls, tiers)
-    check("the skip report is NOTEs only", True, all(n.startswith("NOTE") for n in skip))
+    check("the skip report starts with an operational ERROR", True,
+          skip[0].startswith("ERROR"))
     check("the skip report names every control the layer covers", True,
           all(any(c in n for n in skip) for c in ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"]))
     check("the skip report sends them to manual verification", True,
@@ -492,7 +496,7 @@ def run_self_test():
           any("A11Y-2, A11Y-3" in n and "block until" in n for n in skip))
     gap = parser_gap_notes(controls, tiers)
     check("the parser gap names the .tsx files as unverified", True,
-          any(".ts/.tsx" in n for n in gap) and all(n.startswith("NOTE") for n in gap))
+          any(".ts/.tsx" in n for n in gap) and gap[0].startswith("ERROR"))
 
     # ── an unresolvable toolchain is a skip with a reason, not a pass ──────────
     with tempfile.TemporaryDirectory() as td:
@@ -500,9 +504,9 @@ def run_self_test():
         check("an empty target root resolves no toolchain", None, toolchain)
         check("the skip carries a reason", True, bool(reason))
         rc, lines = run([td], target_root=td)
-        check("a skipped layer exits 0 (a NOTE is never a gate)", 0, rc)
-        check("a skipped layer prints no ERROR", [],
-              [ln for ln in lines if ln.startswith("ERROR")])
+        check("a skipped layer exits 1 so detect cannot grade it clean", 1, rc)
+        check("a skipped layer prints one operational ERROR", 1,
+              len([ln for ln in lines if ln.startswith("ERROR")]))
         check("a skipped layer names its controls", True,
               any("A11Y-2, A11Y-3, A11Y-6, A11Y-8" in ln for ln in lines))
 
@@ -548,7 +552,7 @@ def run_self_test():
         rc, lines = run([fpath], target_root=harness_root)
         errs = [ln for ln in lines if ln.startswith("ERROR")]
         if live is None:
-            check(f"fixture {fname}: skipped honestly", (0, []), (rc, errs))
+            check(f"fixture {fname}: skipped honestly", (1, 1), (rc, len(errs)))
         elif "fail" in fname:
             check(f"fixture {fname}: reports at least one finding", True,
                   rc == 1 and len(errs) >= 1)
