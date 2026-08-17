@@ -23,13 +23,15 @@ Four parts. Every bet below either strengthens one of them or points them at new
 3. **A gated loop.** Intent, diverge, plan (human gate), implement, verify — with a
    generator/evaluator split, so the agent that produced the work is not the one that
    grades it.
-4. **Evidence.** Evals before a skill change ships, run records after. A skill is a
-   prompt that runs many times, so a change to it is a behaviour change and needs proof.
+4. **Evidence.** A skill is a prompt that runs many times, so a change to it is a
+   behaviour change and needs proof. Evals cover that where we have written them. The other
+   half — a record of what real runs actually did — is bet 1 work and does not exist yet.
 
-**The claim this strategy rests on:** that machine is audience-neutral. Pointing it at a
-new group of people should cost a catalog and a vocabulary, not a rebuild. Bet 3 is the
-test. If it costs as much as bet 2 did, the claim was wrong and this document should say
-so.
+**The claim this strategy rests on:** the machine is audience-neutral. Pointing it at a new
+group of people should cost a catalog, a vocabulary, and an approval model — not a rebuild
+of the loop. The third is the one we have never had to build, because every audience so far
+arrived with someone already paid to own quality. Bet 3 is the test. If it costs as much as
+bet 2 did, the claim was wrong and this document should say so.
 
 ## The three bets
 
@@ -40,10 +42,12 @@ so.
 | 3. AI for teachers (TWLabs) | 2027, not started | **Reach.** Builders outside the product team. |
 
 The line between the first two: bet 1 asks whether each step of the lifecycle produces good
-work; bet 2 asks whether anyone can do that step. Some work serves both. The issue taxonomy
-is the clearest case, since deciding what shape a piece of work is raises the quality of
-what enters the backlog *and* means a designer can file it without asking an engineer
-first.
+work; bet 2 asks whether anyone can do that step. These are lenses, not buckets. Much of
+what gets built serves both, and the bet says why we are doing something rather than who
+owns it. The issue taxonomy is the clearest case: deciding what shape a piece of work is
+raises the quality of what enters the backlog *and* means a designer can file it without
+asking an engineer first. Automated review is another — bet 1 builds the gate, bet 2 is
+what the gate makes possible.
 
 Bets 1 and 2 run at the same time and pull against each other; see
 [the tension to manage in 2026](#the-tension-to-manage-in-2026). Bet 3 is hard-gated on
@@ -60,19 +64,19 @@ through the whole lifecycle so they do not.
 Issue authoring is the exception: it now decides the shape of the work rather than handing
 you a template, so what lands in the backlog is consistent. Everything around it —
 briefing, epic shaping, grooming, planning — is still carried by experience. On the
-enforcement side, engineering rigour is real and in daily use: lint and formatting setup,
-pre-commit and pre-push gates, automated code review, dependency auditing with a release
-cooldown. Design rigour is the same idea in another discipline: a control catalog,
-deterministic scripts, and an evaluator that grades what the generator produced.
+enforcement side, engineering rigour is built and in use on our own repositories: lint and
+formatting setup, pre-commit and pre-push gates, automated code review, dependency auditing
+with a release cooldown. Design rigour is the same idea in another discipline: a control
+catalog, deterministic scripts, and an evaluator that grades what the generator produced.
 
 **Where it breaks.** Upstream, work enters already shaped, which means the shaping was done
 by whoever happened to know how, and nothing catches it when they got it wrong. Downstream,
-the gates leak: some controls declare a deterministic check with no script behind them, so
-the loop passes work a machine should have stopped. Eight checks are unwritten and two of
-the existing ones answer wrongly. The cost is measured, not guessed: roughly 24 minutes of
-human review per design run, paid every run, because the check that should have answered it
-was never written. And the harness has no instrumentation, so "is this working" is
-currently anecdote.
+the gates leak: a large minority of controls declare a deterministic check with no script
+behind them, and some of the scripts that do exist answer wrongly, so the loop passes work
+a machine should have stopped. A design run has been reported to cost around 24 minutes of
+human attention, paid every run, because the checks that should have answered it were never
+written. The harness has no instrumentation, so "is this working" is currently anecdote —
+including that number, which is one report rather than a measurement.
 
 **What we build — the ceremonies.** Examples, not a backlog. Each of these already happens;
 the work is making it produce reliable output instead of depending on who ran it.
@@ -166,15 +170,21 @@ catalog it would need already exists.
 inside one team. Product team to teacher changes everything else: no shared vocabulary, no
 L1 approver standing over the work, and no professional stake in the catalog.
 
-**Entry gate — all four true before this starts:**
+**Entry gate — all four true before this starts, and signed open by this document's owner:**
 
-1. **Bet 1 has landed.** A designer who hits a bad check can fall back on reading the
-   catalog. A teacher cannot.
-2. **The harness is instrumented.** Extending to a non-technical audience on anecdote is a
+1. **Every control that claims a deterministic check has one**, and the set has been run
+   against a deliberately bad surface without a person correcting the result. A designer
+   who hits a bad check can fall back on reading the catalog; a teacher cannot.
+2. **The harness is instrumented**, with enough recorded runs to state a median cost rather
+   than repeat a single report. Extending to a non-technical audience on anecdote is a
    guess, not a decision.
-3. **Cost per run is low.** A teacher will not spend 24 minutes.
-4. **Someone has answered:** what does a teacher build, what is the blast radius when it
-   is wrong, and who approves it.
+3. **A design run costs under five minutes of human attention**, taken from that
+   instrumentation rather than estimated.
+4. **The three open questions below have written answers** that someone outside the team
+   can read and disagree with.
+
+Each condition is checkable by a person who did not build the thing, which is the point. A
+gate whose conditions are prose gets waived under delivery pressure and nobody notices.
 
 **What we would build.** Illustrative only, and the shape depends on answers we do not
 have yet:
@@ -193,8 +203,9 @@ builds. What is the governance model when there is no design lead to sign a waiv
 
 Bets 1 and 2 are not sequential, and bet 2 is currently ahead. Designers run the design
 loop today against a catalog where some controls promise a deterministic check that was
-never written. The 24 minutes above is the invoice: every missing check is paid for in
-reviewer minutes, per run, indefinitely.
+never written. The 24 minutes above is the invoice, and even as a single report it points
+the right way: every missing check is paid for in reviewer minutes, per run, indefinitely.
+Instrumentation is what turns that from an anecdote into a number worth arguing about.
 
 So the risk this year is width outrunning depth. Two consequences worth holding onto:
 
@@ -202,6 +213,19 @@ So the risk this year is width outrunning depth. Two consequences worth holding 
   cost of every bet 2 win.
 - **The gate is soft in 2026 and hard at the 2027 boundary.** We can tolerate a designer
   working around a missing check. We cannot hand that to a teacher.
+
+## If a bet does not land
+
+Bet 1 is the one with a dependent. If it has not landed by the end of 2026, bet 3 slips
+rather than shrinks. Starting TWLabs on leaky gates would put the weakest version of the
+harness in front of the audience least able to work around it. Slipping is the designed
+response, and writing it down now is what stops it being renegotiated later under delivery
+pressure.
+
+Bet 2 failing looks different. Nothing depends on it, so it degrades quietly rather than
+blocking anything: the harness stays useful to the people who already know how to use it,
+and the widening simply does not happen. That is the smaller failure and the easier one to
+miss, which is why it is worth naming.
 
 ## What we are not doing
 
@@ -212,6 +236,9 @@ So the risk this year is width outrunning depth. Two consequences worth holding 
 - **Not committing to the open architecture questions.** Moving toward Agent Plugins, and
   adopting STE100 as a ubiquitous spec language, stay open questions until something
   forces the decision.
+- **Not costing the bets here.** Resourcing and spend get decided per quarter against the
+  delivery roadmap, not in a document that changes a few times a year. The absence is
+  deliberate, not an oversight.
 
 ## Keeping this current
 
