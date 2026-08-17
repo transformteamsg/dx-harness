@@ -75,9 +75,16 @@ function Cmd({ children }: { children: React.ReactNode }) {
 
 const statusLine = "flex items-baseline gap-2 text-xs leading-relaxed";
 /* The terminal's text-only lines want a baseline bake; a line carrying an
-   ink icon wants the icon vertically centred against the text instead, so
-   this is a separate variant rather than an override tacked onto statusLine. */
-const statusLineIcon = "flex items-center gap-2 text-xs leading-relaxed";
+   ink icon wants the mark aligned to the FIRST line of its text, so a row
+   that wraps doesn't drag the icon to the middle of a two-line block. The
+   1px nudge on the icon span optically centres the 18px mark against the
+   ~19.5px first line box. */
+const statusLineIcon = "flex items-start gap-2 text-xs leading-relaxed";
+const statusIconBox = "mt-px shrink-0";
+/* While a drawn region waits for its beat it keeps a faint ghost presence
+   instead of a void: the reserved space reads as "incoming", not "missing" —
+   both mid-autoplay and when a reader scrubs back to stage 01. */
+const ghost = "opacity-40";
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
@@ -170,7 +177,10 @@ export function HarnessRun() {
                 </span>
               </div>
               <div className="flex flex-col gap-1.5 px-3 py-3">
-                <p className={statusLine}>
+                {/* min-h-[2lh]: the prompt wraps to a second line while the caret
+                    is typing; without the reserve the terminal jumps 19px twice
+                    per run and shoves everything below it. */}
+                <p className={`${statusLine} min-h-[2lh]`}>
                   <span className="font-semibold text-site-accent-text">❯</span>
                   <span className="text-foreground">
                     {PROMPT.slice(0, typedCount)}
@@ -186,17 +196,17 @@ export function HarnessRun() {
             </div>
 
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${lineOn(1)}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost}`}
             />
 
             {/* the orchestrator at work: dx-design reads the ask, then visibly runs the
                 specialised skills — each with the same ink tool mark the skills section
                 uses. This panel is the "one worked example" for the parts above. */}
             <div
-              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${lineOn(1)}`}
+              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost}`}
             >
-              <p className={statusLineIcon}>
-                <span className="shrink-0">
+              <p className={`${statusLineIcon} ${lineTransition} ${lineOn(1)}`}>
+                <span className={statusIconBox}>
                   <InkIcon
                     name="skills/orchestrator"
                     size={18}
@@ -211,7 +221,7 @@ export function HarnessRun() {
                 <p
                   className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(2)}`}
                 >
-                  <span className="shrink-0">
+                  <span className={statusIconBox}>
                     <InkIcon name="skills/pattern" size={18} ink="var(--foreground)" idSuffix="-run" />
                   </span>
                   <span>layout pass · reads catalog + DESIGN.md</span>
@@ -219,7 +229,7 @@ export function HarnessRun() {
                 <p
                   className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(3)}`}
                 >
-                  <span className="shrink-0">
+                  <span className={statusIconBox}>
                     <InkIcon name="skills/polish" size={18} ink="var(--foreground)" idSuffix="-run" />
                   </span>
                   <span>polish pass · reads catalog + DESIGN.md</span>
@@ -227,7 +237,7 @@ export function HarnessRun() {
                 <p
                   className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(4)}`}
                 >
-                  <span className="shrink-0">
+                  <span className={statusIconBox}>
                     <InkIcon name="skills/execute" size={18} ink="var(--foreground)" idSuffix="-run" />
                   </span>
                   <span>plan approved · building</span>
@@ -237,36 +247,44 @@ export function HarnessRun() {
 
             {/* the one lime link in the chain: the reviewed screen coming back */}
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${lineOn(5)}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 5 ? "opacity-100" : ghost}`}
             />
 
             {/* the screen that comes back — a small but real settings surface,
                 not abstract bars, so the worked example lands as a product,
-                not a diagram */}
+                not a diagram. The frame ghosts before its beat; the contents
+                land with it. */}
             <div
               className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,transform] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
-                beat >= 5 ? "opacity-100" : "translate-y-1.5 opacity-0"
+                beat >= 5 ? "opacity-100" : `translate-y-1.5 ${ghost}`
               }`}
             >
-              <p className="text-xs font-semibold text-foreground">Settings</p>
-              <div className="mt-2.5 flex flex-col gap-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">Display name</p>
-                  <div className="mt-1 h-6 rounded-md border border-border bg-background" />
+              <div className={`${lineTransition} ${lineOn(5)}`}>
+                <p className="text-xs font-semibold text-foreground">Settings</p>
+                <div className="mt-2.5 flex flex-col gap-2">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Display name</p>
+                    <div className="mt-1 h-6 rounded-md border border-border bg-background" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Reminders</p>
+                    <div className="mt-1 h-6 rounded-md border border-border bg-background" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Reminders</p>
-                  <div className="mt-1 h-6 rounded-md border border-border bg-background" />
+                <div className="mt-3 flex justify-end">
+                  {/* The depicted primary carries its label: an unlabeled filled
+                      block beside real field labels reads as a Save button with
+                      its label missing. Foreground on lime measures 13.6:1. */}
+                  <div className="grid h-6 w-16 place-items-center rounded-md bg-site-accent text-xs font-semibold text-foreground">
+                    Save
+                  </div>
                 </div>
-              </div>
-              <div className="mt-3 flex justify-end">
-                <div className="h-6 w-16 rounded-md bg-site-accent" />
               </div>
             </div>
             <p
               className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
             >
-              <span className="shrink-0">
+              <span className={statusIconBox}>
                 <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
               </span>
               <span>design review passed</span>
@@ -280,10 +298,14 @@ export function HarnessRun() {
           type="button"
           onClick={play}
           aria-label="Replay the run"
+          title="Replay the run"
           /* Icon-only, but never under the floor: size-11 keeps the 44px hit area
              (A11Y-4) and the aria-label keeps the accessible name (A11Y-3) that an
-             icon-only control otherwise loses. */
-          className={`mt-4 inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-(--motion-fast) hover:bg-accent hover:text-foreground ${focusRing}`}
+             icon-only control otherwise loses. The resting border keeps it
+             legible as a control (CMP-7) — icon-only is a size decision, not a
+             licence to be affordance-free — and the title carries the label the
+             icon replaced. */
+          className={`mt-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors duration-(--motion-fast) hover:border-border-strong hover:text-foreground ${focusRing}`}
         >
           <InkIcon name="harness/loop" size={20} ink="currentColor" idSuffix="-replay" />
         </button>
