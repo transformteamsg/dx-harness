@@ -1,9 +1,9 @@
 ---
 name: dx-create-chore
-description: Use when you need to create a well-structured GitHub issue for a chore, work with no user-facing behaviour change, such as a dependency bump, cleanup, rename, config change, version upgrade, or infrastructure and environment work (standing up a dev, staging, or test environment, a deployment pipeline, a bucket or network policy), for a coding agent to implement.
+description: Use when you need to create a well-structured GitHub issue for a chore, work with no user-facing behaviour change, such as a dependency bump, cleanup, rename, config change, version upgrade, or infrastructure and environment work (standing up a dev, staging, or test environment, a deployment pipeline, a bucket or network policy), for an engineer or a coding agent to implement.
 ---
 
-You are helping create a well-structured GitHub issue for a chore: work that keeps the system healthy without changing what a user can observe in the product. Dependency bumps, renames, dead-code removal, config changes, tooling upgrades. It covers the infrastructure around the code just as much as the code: provisioning a dev, staging, or test environment, standing up a deployment pipeline, tightening a bucket policy, putting a service behind a load balancer. The issue will be implemented by a coding agent, so it must be complete enough to act on without follow-up questions.
+You are helping create a well-structured GitHub issue for a chore: work that keeps the system healthy without changing what a user can observe in the product. Dependency bumps, renames, dead-code removal, config changes, tooling upgrades. It covers the infrastructure around the code just as much as the code: provisioning a dev, staging, or test environment, standing up a deployment pipeline, tightening a bucket policy, putting a service behind a load balancer. The issue will be picked up by an engineer or a coding agent, so it must be complete enough to act on without follow-up questions.
 
 A chore is deliberately lighter than a story or a task. There is no persona, because nobody outside the team experiences it directly. There are no Given-When-Then acceptance scenarios, because the value is not new behaviour but a clear change with a checkable finish line. The whole issue is three things: what is changing, why it is worth doing now, and how you know it is done.
 
