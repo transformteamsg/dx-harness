@@ -74,7 +74,7 @@ const STAGES = [
       </>
     ),
     figureLabel:
-      "A small finished settings screen with a display name field, a reminders field, and a Save button, under a badge reading design review passed.",
+      "A small finished settings screen with a display name field, a reminders field, and a Save button, above a badge reading design review passed.",
   },
 ];
 
@@ -114,6 +114,12 @@ export function HarnessRun() {
   const timers = useRef<number[]>([]);
   const played = useRef(false);
   const playerRef = useRef<HTMLDivElement>(null);
+  const figureRef = useRef<HTMLElement>(null);
+  /* The figure's focus-mode reserve, measured rather than hardcoded — see the
+     effect below for why a constant cannot hold this invariant. null means
+     "not measured yet" (or never entered focus mode), in which case the figure
+     applies no minimum. */
+  const [reserve, setReserve] = useState<number | null>(null);
 
   const clearTimers = () => {
     timers.current.forEach((t) => window.clearTimeout(t));
@@ -168,6 +174,39 @@ export function HarnessRun() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* The reserve is measured from the figure's OWN resting height, not the
+     chain wrapper's: resting height is the wrapper plus gap-2 plus the
+     figcaption, so reserving anything smaller (the wrapper alone) leaves the
+     focused figure short by exactly the gap and caption — which is what a
+     hardcoded 31.53rem and an earlier wrapper-only measurement both did,
+     independently of each other, for the same reason. Measuring the figure
+     itself makes the reserve self-consistent: it constrains the same box it
+     measures, so max(reserve, focused content) equals resting by construction.
+     No constant could stand in for this measurement either: resting height
+     depends on both viewport width and root font size once the 15rem cap
+     starts to exceed the column's available width (a 320px-wide column at a
+     24px root measured 113.5px taller than at a 16px root, purely from the
+     extra wrap). A ResizeObserver keeps the value current across viewport and
+     text-zoom changes; the `focused === null` guard makes sure only a
+     whole-run measurement is ever stored, never a focused one — so there is
+     no feedback loop from the figure's own min-height back into the
+     measurement, since the two are never active at the same time.
+     Accepted limitation: if the root font size changes WHILE a stage is
+     focused, the reserve stays stale until the reader returns to the whole
+     run — the guard means there is no other moment to remeasure it. */
+  useEffect(() => {
+    const el = figureRef.current;
+    if (!el) return;
+    const measure = () => {
+      if (focused !== null) return;
+      setReserve(el.getBoundingClientRect().height);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [focused]);
+
   /* An explicit pick wins; otherwise the beat says which stage we are in. */
   const activeStage = focused ?? BEAT_STAGE[beat];
   const lineOn = (lineBeat: number) =>
@@ -191,21 +230,27 @@ export function HarnessRun() {
         className="flex flex-col items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r"
       >
         <figure
-          className="m-0 flex w-full max-w-[15rem] flex-col gap-2"
+          ref={figureRef}
+          /* In focus mode the hidden regions leave the layout, so the column would
+             collapse and everything below it would jump. Reserving the run-mode height
+             on the figure itself — not just the chain wrapper — and centring keeps the
+             visible region AND its figcaption together as one group; centring the
+             wrapper alone left the caption stranded at the bottom of the reserve, far
+             from the graphic it captions. The reserve itself is `reserve` state, set
+             by the measurement effect above from the figure's OWN resting height — see
+             that effect for why the reserve must come from this exact element (measuring
+             the wrapper instead leaves the focused figure short by the caption and gap)
+             and why no constant (px or rem) can hold this invariant across viewport
+             widths and root font sizes. When `reserve` is null (not measured yet), no
+             minimum is applied. */
+          className={`m-0 flex w-full max-w-[15rem] flex-col gap-2 ${
+            inFocus ? "justify-center" : ""
+          }`}
+          style={inFocus && reserve !== null ? { minHeight: reserve } : undefined}
           role="img"
           aria-label={focused === null ? RUN_LABEL : STAGES[focused].figureLabel}
         >
-          <div
-            aria-hidden="true"
-            /* In focus mode the hidden regions leave the layout, so the wrapper would
-               collapse and everything below it would jump. Reserving the run-mode height
-               and centring keeps the column still (the chain wrapper measured a constant
-               504.5px in run mode across 320/360/768/1280 — the figure itself measures
-               544.5px, which adds the gap-2 and figcaption; the figure is width-capped at
-               max-w-[15rem], so its text wraps identically at every viewport). Re-measure
-               this if the composition changes. */
-            className={inFocus ? "flex min-h-[504.5px] flex-col justify-center" : undefined}
-          >
+          <div aria-hidden="true">
             {/* the terminal window */}
             <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-sm ${regionOn(0)}`}>
               <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
@@ -226,8 +271,13 @@ export function HarnessRun() {
                     {PROMPT.slice(0, typedCount)}
                     {/* A steady caret, not a blinking one: Tailwind's pulse is a
                         2s animation on its own easing, outside the motion token
-                        scale this site declares as the only one it uses. */}
-                    {beat < FINAL_BEAT ? (
+                        scale this site declares as the only one it uses.
+                        Gated on typedCount, not beat: beat < FINAL_BEAT stayed true
+                        for a resting stage-01 selection (beat 0), so an isolated
+                        terminal at rest showed an orphan caret on its own line —
+                        a wrapping artifact reading as a rendering seam, and a
+                        steady cursor implying typing in a state that is at rest. */}
+                    {typedCount < PROMPT.length ? (
                       <span className="ml-0.5 inline-block h-3 w-1.5 translate-y-0.5 bg-foreground" />
                     ) : null}
                   </span>
@@ -330,14 +380,22 @@ export function HarnessRun() {
                 </div>
               </div>
             </div>
-            <p
-              className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)} ${regionOn(2)}`}
-            >
-              <span className={statusIconBox}>
-                <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
-              </span>
-              <span>design review passed</span>
-            </p>
+            {/* Wrapped, not gated directly on the <p>: statusLineIcon's own `flex`
+                would sit in the same class string as regionOn's `hidden`, and which
+                one wins would depend on Tailwind's utility emission order rather
+                than anything visible at this call site. A plain wrapper (no
+                display utility of its own) carries the hide/show and leaves the
+                <p>'s own flex layout alone. */}
+            <div className={regionOn(2)}>
+              <p
+                className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
+              >
+                <span className={statusIconBox}>
+                  <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
+                </span>
+                <span>design review passed</span>
+              </p>
+            </div>
           </div>
           <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
             One ask in plain words; a reviewed screen out.

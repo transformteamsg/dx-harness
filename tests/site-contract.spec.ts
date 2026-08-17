@@ -165,28 +165,38 @@ test("the harness run scrubs by stage and respects reduced motion", async ({ pag
 
 test("selecting a run stage shows only that stage's graphic", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await open(page, "/");
 
   const heightOf = () =>
     page.locator('figure[role="img"]').evaluate((el) => el.getBoundingClientRect().height);
 
-  const resting = await heightOf();
+  const assertIsolatesWithoutReflow = async () => {
+    const resting = await heightOf();
 
-  // Stage 01: the terminal alone — no panel rows, no result badge.
-  await page.getByRole("button", { name: /Your prompt/ }).click();
-  await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeHidden();
-  await expect(page.getByText("design review passed")).toBeHidden();
+    // Stage 01: the terminal alone — no panel rows, no result badge.
+    await page.getByRole("button", { name: /Your prompt/ }).click();
+    await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeHidden();
+    await expect(page.getByText("design review passed")).toBeHidden();
 
-  // Stage 03: the result alone — the panel rows are gone.
-  await page.getByRole("button", { name: /A reviewed result/ }).click();
-  await expect(page.getByText("design review passed")).toBeVisible();
-  await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeHidden();
+    // Stage 03: the result alone — the panel rows are gone.
+    await page.getByRole("button", { name: /A reviewed result/ }).click();
+    await expect(page.getByText("design review passed")).toBeVisible();
+    await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeHidden();
 
-  // Exactly one stage is ever current.
-  await expect(page.locator('[aria-current="step"]')).toHaveCount(1);
+    // Exactly one stage is ever current.
+    await expect(page.locator('[aria-current="step"]')).toHaveCount(1);
 
-  // Isolating a step must not reflow the column.
-  await expect(await heightOf()).toBe(resting);
+    // Isolating a step must not reflow the column.
+    await expect(await heightOf()).toBe(resting);
+  };
+
+  // 1280: the default desktop viewport.
+  await open(page, "/");
+  await assertIsolatesWithoutReflow();
+
+  // 360: the invariant must hold at mobile widths too, not only desktop.
+  await page.setViewportSize({ width: 360, height: 800 });
+  await open(page, "/");
+  await assertIsolatesWithoutReflow();
 });
 
 test("uses the lime site accent without a hero product label", async ({ page }) => {
