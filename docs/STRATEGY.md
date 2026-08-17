@@ -118,10 +118,7 @@ builds. What is the governance model when there is no design lead to sign a waiv
 
 Bets 1 and 2 are not sequential, and bet 2 is currently ahead. Designers run the design
 loop today against a catalog where some controls promise a deterministic check that was
-never written. The roughly 24 minutes of human review a design run has been reported to cost
-is the invoice, and even as a single report it points the right way: every missing check is
-paid for in reviewer minutes, per run, indefinitely. Instrumentation is what turns that from
-an anecdote into a number worth arguing about.
+never written. Every one of those is paid for in reviewer minutes, per run, indefinitely.
 
 So the risk this year is width outrunning depth. Two consequences worth holding onto:
 
@@ -145,19 +142,14 @@ miss, which is why it is worth naming.
 
 ## What we are not doing
 
-- **No dates finer than a year.** Dated plans in this repo have gone stale within a day of
-  being written. The delivery roadmap carries week to week; this carries direction.
 - **Not building a general-purpose agent platform.** The harness is opinionated on
   purpose: it encodes one portfolio's standards, and that is where its value comes from.
-- **Not committing to the open architecture questions.** Moving toward Agent Plugins, and
-  adopting STE100 as a ubiquitous spec language, stay open questions until something
-  forces the decision.
 - **Not costing the bets here.** Resourcing and spend get decided per quarter against the
   delivery roadmap, not in a document that changes a few times a year. The absence is
   deliberate, not an oversight.
 
 ## Keeping this current
 
-Review at each bet boundary, and whenever a bet's "landed looks like" changes. Resist
-adding issue links: they close faster than this document gets edited, and the delivery
-roadmap already carries them.
+Review at each bet boundary, and whenever a bet's thesis stops being the reason we are
+doing the work. Resist adding issue links: they close faster than this document gets
+edited, and the delivery roadmap already carries them.
