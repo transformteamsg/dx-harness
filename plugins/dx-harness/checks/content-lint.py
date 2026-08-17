@@ -639,6 +639,14 @@ RENDERING_PROPS = {
 }
 # Calls whose arguments are class fragments or module paths, masked whole.
 MASKED_CALLS = {"cn", "clsx", "classnames", "twmerge", "cva", "require", "import"}
+# Tagged templates whose contents are code rather than copy. Unknown tags stay
+# lintable: localisation and rendering libraries commonly use `t` or `html`
+# tags for text that reaches the interface.
+NON_COPY_TEMPLATE_TAGS = {
+    "css", "gql", "graphql", "sql", "keyframes", "createglobalstyle",
+    "injectglobal",
+}
+NON_COPY_TEMPLATE_ROOTS = {"styled"}
 # Keywords after which a string literal is a module path, not copy.
 MODULE_PATH_KEYWORDS = {"from", "import"}
 # Operators and keywords whose string operand is a value being tested, never
@@ -740,14 +748,21 @@ def _is_comparison_operand(line, start, end):
     return line[end:].lstrip().startswith(COMPARISON_OPERATORS)
 
 
-def _is_tagged_template(line, i):
+def _is_non_copy_tagged_template(line, i):
     """
-    True if the backtick at `i` opens a TAGGED template literal (css`…`,
-    styled.div`…`, gql`…`). Its content is a stylesheet or a query, not copy.
+    True if the backtick at `i` follows a known stylesheet or query tag
+    (`css`, `styled.div`, `gql`, ...). An unknown tag may render copy, so it
+    stays on the ordinary template extraction path.
     """
-    if i == 0:
+    prefix = line[:i].rstrip()
+    if not prefix:
         return False
-    return line[i - 1].isalnum() or line[i - 1] in "_$)]."
+    match = re.search(r"([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)$", prefix)
+    if match:
+        tag = match.group(1).lower()
+        return tag in NON_COPY_TEMPLATE_TAGS or tag.split(".", 1)[0] in NON_COPY_TEMPLATE_ROOTS
+    call = re.search(r"([A-Za-z_$][\w$]*)\s*\([^)]*\)$", prefix)
+    return bool(call and call.group(1).lower() in NON_COPY_TEMPLATE_ROOTS)
 
 
 def _is_tag_start(line, i):
@@ -926,7 +941,7 @@ class UserFacingScanner:
                 self._add(out, line[i + 1:end - 1], lineno, i + 2, origin)
             return end
         if ch == "`":
-            if _is_tagged_template(line, i):
+            if _is_non_copy_tagged_template(line, i):
                 self._enter_mask("template", i)
                 return i + 1
             self.stack.append((_CODE, self.braces))
@@ -1967,6 +1982,11 @@ def run_self_test():
     assert_finding(
         "SCOPE: a template literal is linted per static segment",
         "const msg = `Saved ${n} marks. Click here to organise the list.`;",
+        ".tsx", '1 [CNT-5] device-bound verb "Click"',
+    )
+    assert_finding(
+        "SCOPE: a localisation-tagged template is still user-facing copy",
+        "const msg = t`Click here to organize the class list`;",
         ".tsx", '1 [CNT-5] device-bound verb "Click"',
     )
     assert_clean(
