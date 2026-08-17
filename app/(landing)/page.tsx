@@ -220,11 +220,16 @@ export default function Landing() {
       <HarnessRun />
 
       {/* ── The proof. The comparison is evidence, not the argument — so the claim
-             and the three passes that produce it sit beside it. A 30/70 split
-             (not the page's usual 50/50) gives the slider enough width for its
-             16:10 frame to bind on its own aspect-ratio rather than the anti-
-             specimen's content-driven height floor. ────────────────────────── */}
-      <div className="grid border-b border-border lg:grid-cols-[3fr_7fr]">
+             and the three passes that produce it sit beside it. A 40/60 split
+             (not the page's usual 50/50) is the builder's chosen trade: the claim
+             column holds 33ch instead of 30/70's 23ch. That only leaves the slider
+             enough width for its 16:10 frame to bind on its own aspect-ratio
+             (rather than the anti-specimen's content-driven height floor) if the
+             right cell also gives up its horizontal padding at `lg` — so the
+             evidence runs full-bleed in its cell (flush to the column seam on the
+             left, the container edge on the right) while the claim column keeps
+             its measure. A deliberate LAY-6/CMP-7 deviation, not an accident. ─── */}
+      <div className="grid border-b border-border lg:grid-cols-[2fr_3fr]">
         <div className="flex flex-col justify-center border-border px-6 py-8 max-lg:border-b sm:px-10 sm:py-10 lg:border-r">
           <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight text-balance text-foreground">
             Compare the output.
@@ -249,8 +254,7 @@ export default function Landing() {
               </span>
               <span>
                 <span className="font-semibold text-foreground">Pattern</span> pulls
-                the nested cards apart, drops the icon tiles, and gives the page one
-                hierarchy.
+                the nested cards apart and drops the icon tiles.
               </span>
             </li>
             <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
@@ -274,7 +278,7 @@ export default function Landing() {
             .
           </p>
         </div>
-        <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-10 sm:py-10">
+        <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-10 sm:py-10 lg:px-0">
           <SlopCompare />
         </div>
       </div>

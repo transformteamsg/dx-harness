@@ -287,11 +287,12 @@ export function SlopCompare() {
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>
       </div>
-      <p className="mt-2 max-w-[48ch] text-xs text-muted-foreground">
-        Drag the handle — or focus it and use arrow keys.
-      </p>
+      {/* One line, not two: the left column and the drawing itself already say
+          what the panels show, so the caption's only remaining job is the
+          interaction hint — an affordance that has to live beside the control
+          it describes. */}
       <figcaption className="mt-2 max-w-[48ch] text-xs leading-normal text-muted-foreground">
-        Default output on the left, the same screen on standard on the right.
+        Drag the handle — or focus it and use arrow keys.
       </figcaption>
     </figure>
   );
