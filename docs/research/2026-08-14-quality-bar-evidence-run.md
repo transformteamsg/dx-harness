@@ -460,11 +460,10 @@ anchor text that would have decided it. No grade in this run rests on any of the
 |---|---|---|---|
 | `originality` | Thresholds: "No kicker or eyebrow label above a heading", reason "Imported marketing furniture. The source that names it calls it a ban, not a default — no brief on this register earns it back." | The surface has a pill above its h1 (`app/standards/catalog/page.tsx:18` to `:20`) reading "⚑ Proposed seed — v0.1". By shape it is an eyebrow label. By content it is a status badge: it names the document's state and its version, which the heading does not, and CLAUDE.md makes the settled/proposed distinction load-bearing across the site. The anchor's stated mechanism (imported marketing furniture) does not reach it, and the anchor's wording does not exclude it. It cannot separate this badge from the thing it bans. | "No kicker or eyebrow label above a heading. A badge that names the document's own state or version (`proposed`, `draft`, `v0.1`) is not a kicker: it carries information the heading does not, and there is nowhere else for the reader to learn it. A label that restates the section, the audience, or the value proposition is." |
 | `craft` | Thresholds: "Hit areas at least 40×40 in dense desktop UI, and two hit areas never overlap", reason "Tightens **A11Y-4**'s 24×24 floor **for this register**, as grade evidence only. At marks-grid density a mis-tap is a data error." (and identically, "Most transitions 150–250ms on a tool surface; exits faster than entrances", reason "Tightens **MOT-1**'s 100–300ms band **for this register** ...") | The reason says "for this register" and names no register. The artifact's Registers section at `:112` to `:114` requires register variation to be "written inline as `[standards-site: …]`", and states that "An anchor with no note applies everywhere". Neither row carries a note, so by the file's own rule both are global and both decide here. But decision 10 at `:455` to `:458` calls these "the two most register-specific craft rows", and both reasons argue from the `product` register ("At marks-grid density", "The teacher is in flow"). The artifact contradicts itself about the scope of its own two most consequential craft rows. | Either an inline note, `[product: hit areas at least 40×40 in dense desktop UI, and two hit areas never overlap]`, or the reason rewritten to name the register out loud: "Tightens **A11Y-4**'s 24×24 floor on the `product` register, as grade evidence only." The same edit applies to the 150–250ms row. |
-| `design-quality` | By surface, Reading: "Calm, measured \| Measure at most 80 characters, targeting ~66 (**LAY-4**); more space between sections than inside them" | Measured at 1280, a control statement in a card runs 87ch and its "Fails when:" line runs 101ch. The Reading row names LAY-4, so the observation is already attributed to the floor. But this is not a reading block: it is one full sentence inside a scanning row, and the Scanning row says nothing at all about prose measure. Neither row reaches a scanning row that contains prose, so the ceiling cannot say whether 87ch is acceptable there or not. | Add to the Scanning / comparison Direction: "where a row carries a full sentence rather than a field, the sentence is held to the reading measure; a row of fields is not." |
 
 **No criterion was left ungraded.** Every criterion had at least one anchor that did decide, so the
 whole-criterion case that acceptance criterion 2 describes ("no grade is invented for that
-criterion") did not arise: no grade was invented, and none was withheld. Three individual anchors
+criterion") did not arise: no grade was invented, and none was withheld. Two individual anchors
 could not decide, and each is recorded above with the text that would have decided it. Recorded
 this way rather than claimed as a match.
 
@@ -543,8 +542,9 @@ of the grade sentences by hand.
 
 ## Findings for #147
 
-Each finding is the anchor as written, the proposed replacement text, and the criterion slug and
-block it sits in. No severity label on any of them, because the quality bar never blocks.
+Ten findings give the anchor as written, the proposed replacement text, and the criterion slug and
+block it sits in. Finding 5 is instead a boundary correction: the observation belongs to the floor,
+not a new ceiling anchor. No severity label on any of them, because the quality bar never blocks.
 `quality-bar.md` is left byte-identical by this issue.
 
 ### 1. The kicker threshold cannot see a status badge
@@ -591,14 +591,17 @@ block it sits in. No severity label on any of them, because the quality bar neve
   everywhere", which the pairing currently restates almost verbatim, so the artifact invites the
   double-flag it forbids two paragraphs later.
 
-### 5. No anchor reaches prose inside a scanning row
+### 5. The scanning-row measure question belongs to LAY-4, not the ceiling
 
-- **Slug and block:** `design-quality`, By surface, Scanning / comparison.
-- **As written:** "Dense, even | One row shape, digits right-aligned (**TYP-5**); rhythm regular
-  enough that a break in it means something".
-- **Proposed:** add "Where a row carries a full sentence rather than a field, the sentence is held
-  to the reading measure; a row of fields is not." Measured: 87ch statements and 101ch fail-condition
-  lines at 1280, with the Reading row's 80ch pointing only at LAY-4 and the Scanning row silent.
+- **Boundary correction:** the earlier analysis treated full-sentence scanning rows as a gap in
+  `design-quality` because its Scanning / comparison row does not set a prose measure. That crosses
+  the quality bar's own floor/ceiling boundary. LAY-4 already fails when prose measure exceeds
+  80ch; whether its prose rule applies to a full sentence inside a scanning row is a control
+  applicability question.
+- **Proposed action:** do not add a scanning-row measure anchor to `quality-bar.md`. Clarify LAY-4's
+  applicability to full-sentence scanning rows, or record the evaluator interpretation; if LAY-4
+  applies, cite the control and move on. The adoption work in #147 must remove the sentence this
+  report previously proposed.
 
 ### 6. The edge count cannot be counted without saying what an edge is
 
