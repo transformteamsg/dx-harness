@@ -191,9 +191,11 @@ export function HarnessRun() {
      whole-run measurement is ever stored, never a focused one — so there is
      no feedback loop from the figure's own min-height back into the
      measurement, since the two are never active at the same time.
-     Accepted limitation: if the root font size changes WHILE a stage is
-     focused, the reserve stays stale until the reader returns to the whole
-     run — the guard means there is no other moment to remeasure it. */
+     Accepted limitation: if the viewport or the root font size changes while
+     a stage is focused, the reserve stays stale until the reader returns to
+     the whole run — the guard means there is no other moment to remeasure it.
+     There is no jump at the moment of change and it self-heals on return, so
+     the window is a stale reserve, never a visible glitch. */
   useEffect(() => {
     const el = figureRef.current;
     if (!el) return;
