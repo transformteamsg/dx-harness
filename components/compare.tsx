@@ -28,7 +28,7 @@
 
 import { useEffect, useId, useRef, type CSSProperties } from "react";
 import { animate, useInView } from "motion/react";
-import { ChevronsLeftRight, Cloud, Sparkles, Zap } from "lucide-react";
+import { ChevronsLeftRight, Sparkles, Zap } from "lucide-react";
 import { DUR, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 
 const SLOP_GRADIENT =
@@ -37,7 +37,6 @@ const SLOP_GRADIENT =
 const SLOP_TILES = [
   { icon: Sparkles, label: "AI-powered" },
   { icon: Zap, label: "All-in-one" },
-  { icon: Cloud, label: "Cloud-based" },
 ] as const;
 
 /* Violation chip — plain text, non-interactive. It lives in the before layer,
@@ -66,7 +65,7 @@ function BeforePanel() {
         <span className="text-sm text-surface">Communication Hub</span>
         <Violation>SLP-1 gradient palette</Violation>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-2">
         {/* dx-waive SLP-2 reason="quarantined anti-specimen: the before panel of the standards demo" */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span
@@ -93,7 +92,7 @@ function BeforePanel() {
           </div>
         </div>
         {/* dx-waive SLP-5 reason="quarantined anti-specimen: the before panel demonstrates the icon-tile feature-card template" */}
-        <div className="grid shrink-0 grid-cols-3 gap-2">
+        <div className="grid shrink-0 grid-cols-2 gap-2">
           {SLOP_TILES.map((tile) => (
             <div
               key={tile.label}
@@ -109,7 +108,7 @@ function BeforePanel() {
             </div>
           ))}
         </div>
-        <div className="mt-auto flex flex-col gap-3">
+        <div className="mt-auto flex flex-col gap-1.5">
           {/* dx-waive CMP-5 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-surface shadow-[0_2px_10px_var(--demo-slop-glow)]">

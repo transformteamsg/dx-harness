@@ -147,8 +147,9 @@ export default function Landing() {
             Design in code with confidence.
           </h1>
           <p className="mt-6 max-w-[44ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            The DX Design Harness gives your coding agent a shared design language, the
-            right skills for each task, and a review before the work comes back to you.
+            The DX Design Harness gives your coding agent a shared design language and
+            the right skills for each task. It reviews the work before it comes back to
+            you.
           </p>
           <div className="mt-8">
             <Link
@@ -246,7 +247,8 @@ export default function Landing() {
               </span>
               <span>
                 <span className="font-semibold text-foreground">Pattern</span> pulls
-                the nested cards apart and gives the page one hierarchy.
+                the nested cards apart, drops the icon tiles, and gives the page one
+                hierarchy.
               </span>
             </li>
             <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
@@ -341,18 +343,34 @@ export default function Landing() {
             </Link>
           </div>
         </div>
-        <figure className="grid grid-cols-3 border-t border-border lg:border-t-0">
-          {COLLABORATORS.map((item) => (
+        {/* Icon, label, and detail each pin to their own grid row (row-start-*),
+            shared across all three columns — so the middle label's wrap to two
+            lines (the product name is longer than "You"/"Your agent") grows only
+            the label row, and every column's detail line still lands on the same
+            baseline (LAY-6). The per-item DOM order (icon, label, detail) is kept
+            for the accessible reading order; only the visual placement is a grid. */}
+        <figure className="grid grid-cols-3 grid-rows-3 items-start border-t border-border lg:border-t-0">
+          {COLLABORATORS.flatMap((item) => [
             <div
-              key={item.artKey}
-              className="flex min-w-0 flex-col items-center justify-center px-3 py-8 text-center"
+              key={`${item.artKey}-icon`}
+              className="row-start-1 flex min-w-0 justify-center px-3 pt-8"
               style={{ "--ink": item.ink } as CSSProperties}
             >
               <InkIcon name={item.artKey} size={48} />
-              <p className="mt-4 text-sm font-semibold text-foreground">{item.label}</p>
-              <p className="mt-1 text-xs leading-normal text-muted-foreground">{item.detail}</p>
-            </div>
-          ))}
+            </div>,
+            <p
+              key={`${item.artKey}-label`}
+              className="row-start-2 mt-4 min-w-0 px-3 text-center text-sm font-semibold text-foreground"
+            >
+              {item.label}
+            </p>,
+            <p
+              key={`${item.artKey}-detail`}
+              className="row-start-3 mt-1 min-w-0 px-3 pb-8 text-center text-xs leading-normal text-muted-foreground"
+            >
+              {item.detail}
+            </p>,
+          ])}
           <figcaption className="sr-only">
             The DX Design Harness bridges your direction and judgment with your agent’s
             skills and execution.
