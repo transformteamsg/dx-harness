@@ -53,7 +53,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
               className="inline-flex min-h-11 items-center gap-2.5 text-sm font-semibold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
             >
               <DxdMark />
-              dx-harness
+              DX Design Harness
             </Link>
             <div className="flex flex-wrap items-center gap-x-5 sm:gap-x-6">
               <Link href="/harness/install" className={navLink}>

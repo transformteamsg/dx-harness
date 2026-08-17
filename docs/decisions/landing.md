@@ -295,6 +295,13 @@ button measures 13.14:1 for text and its lime 11 border remains visible against 
 lime 9 fill. This amendment supersedes the earlier blue-specific implementation
 notes while leaving the original review evidence intact as historical evidence.
 
+### Superseded naming note — 2026-08-17
+
+The paragraph above naming **DX Harness** is now stale: the product is named
+**DX Design Harness** in user-facing copy site-wide (commit `75ce249`), leaving
+`dx-harness` as the plugin identifier and install command only. The record above
+is left as historical evidence and not rewritten.
+
 ### Accepted inherited deviations and residual finding
 
 The comparison demo predates this build. Moving it onto the front page brought its

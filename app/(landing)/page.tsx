@@ -10,9 +10,9 @@ import { HarnessRun } from "@/components/landing/harness-run";
 export const metadata = {
   /* Absolute: the root template is for titled documentation pages; the front page
      carries the product name and its own explainer. */
-  title: { absolute: "DX Harness — design in code with confidence" },
+  title: { absolute: "DX Design Harness — design in code with confidence" },
   description:
-    "DX Harness gives coding agents a shared design language, the right skills for each task, and a review before the work returns to you.",
+    "The DX Design Harness gives coding agents a shared design language, the right skills, and a review before the work returns to you.",
   alternates: { types: { "text/markdown": "/index.md" } },
 };
 
@@ -69,7 +69,7 @@ const COLLABORATORS = [
   },
   {
     artKey: "landing/human-machine",
-    label: "DX Harness",
+    label: "DX Design Harness",
     detail: "The bridge",
     ink: "var(--site-accent-text)",
   },
@@ -147,8 +147,9 @@ export default function Landing() {
             Design in code with confidence.
           </h1>
           <p className="mt-6 max-w-[44ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            A design harness gives your coding agent a shared design language, the right
-            skills for each task, and a review before the work comes back to you.
+            The DX Design Harness gives your coding agent a shared design language and
+            the right skills for each task. It reviews the work before it comes back to
+            you.
           </p>
           <div className="mt-8">
             <Link
@@ -218,10 +219,68 @@ export default function Landing() {
       <SectionHead title="From a request to a reviewed result." />
       <HarnessRun />
 
-      {/* ── The proof ──────────────────────────────────────────────────────── */}
-      <SectionHead title="Compare the output." />
-      <div className="border-b border-border px-6 py-8 sm:px-10 sm:py-10">
-        <SlopCompare />
+      {/* ── The proof. The comparison is evidence, not the argument — so the claim
+             and the three passes that produce it sit beside it. A 40/60 split
+             (not the page's usual 50/50) is the builder's chosen trade: the claim
+             column holds 33ch instead of 30/70's 23ch. That only leaves the slider
+             enough width for its 16:10 frame to bind on its own aspect-ratio
+             (rather than the anti-specimen's content-driven height floor) if the
+             right cell also gives up its horizontal padding at `lg` — so the
+             evidence runs full-bleed in its cell (flush to the column seam on the
+             left, the container edge on the right) while the claim column keeps
+             its measure. A deliberate LAY-6/CMP-7 deviation, not an accident. ─── */}
+      <div className="grid border-b border-border lg:grid-cols-[2fr_3fr]">
+        <div className="flex flex-col justify-center border-border px-6 py-8 max-lg:border-b sm:px-10 sm:py-10 lg:border-r">
+          <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight text-balance text-foreground">
+            Compare the output.
+          </h2>
+          <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-pretty text-(--prose-body)">
+            The same brief, run twice. Drag the handle to see what three passes
+            change when they read the catalog.
+          </p>
+          <ul className="mt-6 flex flex-col gap-3">
+            <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-px shrink-0">
+                <InkIcon name="skills/copy" size={18} ink="var(--foreground)" idSuffix="-cmp" />
+              </span>
+              <span>
+                <span className="font-semibold text-foreground">Copy</span> turns
+                the buzzwords into plain language a teacher would use.
+              </span>
+            </li>
+            <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-px shrink-0">
+                <InkIcon name="skills/pattern" size={18} ink="var(--foreground)" idSuffix="-cmp" />
+              </span>
+              <span>
+                <span className="font-semibold text-foreground">Pattern</span> pulls
+                the nested cards apart and drops the icon tiles.
+              </span>
+            </li>
+            <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+              <span className="mt-px shrink-0">
+                <InkIcon name="skills/polish" size={18} ink="var(--foreground)" idSuffix="-cmp" />
+              </span>
+              <span>
+                <span className="font-semibold text-foreground">Polish</span> drops
+                the gradients and the second primary for your own tokens.
+              </span>
+            </li>
+          </ul>
+          <p className="mt-6 max-w-[46ch] text-sm leading-relaxed text-muted-foreground">
+            Every chip on the left panel is a control ID from the{" "}
+            <Link
+              href="/standards/catalog"
+              className={`text-site-accent-text underline underline-offset-2 ${focusRing}`}
+            >
+              catalog
+            </Link>
+            .
+          </p>
+        </div>
+        <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-10 sm:py-10 lg:px-0">
+          <SlopCompare />
+        </div>
       </div>
 
       {/* ── The skills, by the job they do. Tool marks, not mascots: these are
@@ -277,8 +336,9 @@ export default function Landing() {
             A shared language for you and your agent.
           </h2>
           <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            DX Harness bridges human judgment and agent execution. It gives both of you
-            the same design language and the checks to build safely on each other’s work.
+            The DX Design Harness bridges human judgment and agent execution. It gives
+            both of you the same design language and the checks to build safely on each
+            other’s work.
           </p>
           <div className="mt-8">
             <Link
@@ -289,21 +349,37 @@ export default function Landing() {
             </Link>
           </div>
         </div>
-        <figure className="grid grid-cols-3 border-t border-border lg:border-t-0">
-          {COLLABORATORS.map((item) => (
+        {/* Icon, label, and detail each pin to their own grid row (row-start-*),
+            shared across all three columns — so the middle label's wrap to two
+            lines (the product name is longer than "You"/"Your agent") grows only
+            the label row, and every column's detail line still lands on the same
+            baseline (LAY-6). The per-item DOM order (icon, label, detail) is kept
+            for the accessible reading order; only the visual placement is a grid. */}
+        <figure className="grid grid-cols-3 grid-rows-3 items-start border-t border-border lg:border-t-0">
+          {COLLABORATORS.flatMap((item) => [
             <div
-              key={item.artKey}
-              className="flex min-w-0 flex-col items-center justify-center px-3 py-8 text-center"
+              key={`${item.artKey}-icon`}
+              className="row-start-1 flex min-w-0 justify-center px-3 pt-8"
               style={{ "--ink": item.ink } as CSSProperties}
             >
               <InkIcon name={item.artKey} size={48} />
-              <p className="mt-4 text-sm font-semibold text-foreground">{item.label}</p>
-              <p className="mt-1 text-xs leading-normal text-muted-foreground">{item.detail}</p>
-            </div>
-          ))}
+            </div>,
+            <p
+              key={`${item.artKey}-label`}
+              className="row-start-2 mt-4 min-w-0 px-3 text-center text-sm font-semibold text-foreground"
+            >
+              {item.label}
+            </p>,
+            <p
+              key={`${item.artKey}-detail`}
+              className="row-start-3 mt-1 min-w-0 px-3 pb-8 text-center text-xs leading-normal text-muted-foreground"
+            >
+              {item.detail}
+            </p>,
+          ])}
           <figcaption className="sr-only">
-            DX Harness bridges your direction and judgment with your agent’s skills and
-            execution.
+            The DX Design Harness bridges your direction and judgment with your agent’s
+            skills and execution.
           </figcaption>
         </figure>
       </section>

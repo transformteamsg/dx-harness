@@ -64,16 +64,16 @@ test.describe("rendered route contract", () => {
   }
 });
 
-test("publishes current DX Harness metadata", async ({ page }) => {
+test("publishes current DX Design Harness metadata", async ({ page }) => {
   await open(page, "/");
-  await expect(page).toHaveTitle("DX Harness — design in code with confidence");
+  await expect(page).toHaveTitle("DX Design Harness — design in code with confidence");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "DX Harness gives coding agents a shared design language, the right skills for each task, and a review before the work returns to you."
+    "The DX Design Harness gives coding agents a shared design language, the right skills, and a review before the work returns to you."
   );
 
   await open(page, "/overview");
-  await expect(page).toHaveTitle(/ — DX Harness$/);
+  await expect(page).toHaveTitle(/ — DX Design Harness$/);
 });
 
 test("publishes the Granola landing-page messaging baseline", async ({ page }) => {
