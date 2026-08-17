@@ -346,6 +346,88 @@ def _terminated(text):
     return text
 
 
+def _mask_template_interpolations(text):
+    """Replace `${...}` spans with same-width CSS-safe text.
+
+    A tagged template is valid JavaScript even when its interpolation makes the
+    extracted fragment invalid CSS. Masking the interpolation lets tree-sitter
+    keep parsing declarations after it without moving their host coordinates.
+    Newlines are preserved and the first non-newline character becomes `0`, a
+    valid CSS value token; every other character becomes a space.
+    """
+    chars = list(text)
+    i = 0
+    while i < len(chars) - 1:
+        if chars[i] != "$" or chars[i + 1] != "{":
+            i += 1
+            continue
+        start = i
+        depth = 1
+        quote = None
+        escaped = False
+        i += 2
+        while i < len(chars) and depth:
+            char = chars[i]
+            if quote is not None:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = None
+            elif char in ("'", '"', "`"):
+                quote = char
+            elif char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+            i += 1
+        if depth:
+            break
+        wrote_value = False
+        for j in range(start, i):
+            if chars[j] in ("\n", "\r"):
+                continue
+            chars[j] = "0" if not wrote_value else " "
+            wrote_value = True
+    return "".join(chars)
+
+
+def _position_after(line, column, text):
+    """Advance a 1-based source position across `text`."""
+    for char in text:
+        if char == "\n":
+            line, column = line + 1, 1
+        else:
+            column += 1
+    return line, column
+
+
+def _template_body_region(region):
+    """Narrow a tagged-template candidate to the text between its backticks."""
+    if region["metadata"].get("kind") != "template_string":
+        return region
+    text = region["text"]
+    first, last = text.find("`"), text.rfind("`")
+    if first < 0 or last <= first:
+        return region
+    prefix = text[:first + 1]
+    body = text[first + 1:last]
+    start_line, start_column = _position_after(
+        region["line"], region["column"], prefix
+    )
+    end_line, end_column = _position_after(start_line, start_column, body)
+    narrowed = dict(region)
+    narrowed.update({
+        "line": start_line,
+        "column": start_column,
+        "end_line": end_line,
+        "end_column": end_column,
+        "text": body,
+    })
+    return narrowed
+
+
 def _scan_embedded_css(binary, check_name, regions):
     """
     Re-scan embedded CSS regions (a <style> block or a style="…" attribute in
@@ -361,7 +443,8 @@ def _scan_embedded_css(binary, check_name, regions):
     out = []
     with tempfile.TemporaryDirectory(prefix="dx-astgrep-") as tmp:
         region_by_temp = {}
-        for i, region in enumerate(regions):
+        for i, raw_region in enumerate(regions):
+            region = _template_body_region(raw_region)
             host = region["file"]
             if host not in sources:
                 try:
@@ -375,7 +458,8 @@ def _scan_embedded_css(binary, check_name, regions):
             prefix = _blanked_prefix(source, region["line"], region["column"])
             temp_path = os.path.join(tmp, f"region-{i}.css")
             with open(temp_path, "w", encoding="utf-8") as fh:
-                fh.write(prefix + _terminated(region["text"]))
+                css = _mask_template_interpolations(region["text"])
+                fh.write(prefix + _terminated(css))
             region_by_temp[os.path.realpath(temp_path)] = region
         if not region_by_temp:
             return []
@@ -900,6 +984,17 @@ def _self_test():
     check_eq("bucket: .js aliases to tsx", "tsx", astgrep_language_for("a.js"))
     check_eq("bucket: .vue reaches html", "html", astgrep_language_for("a.vue"))
     check_eq("bucket: an unknown extension has none", None, astgrep_language_for("a.md"))
+
+    # Embedded template interpolations are masked without moving any host
+    # coordinate, including nested and multi-line expressions.
+    check_eq("template mask keeps width", len("x${c}y"),
+             len(_mask_template_interpolations("x${c}y")))
+    check_eq("template mask preserves newlines", 2,
+             _mask_template_interpolations("${{\n  color: c\n}}").count("\n"))
+    quoted_brace = '${() => "}"}'
+    masked_quoted_brace = _mask_template_interpolations(quoted_brace)
+    check_eq("template mask ignores braces inside strings", (len(quoted_brace), False),
+             (len(masked_quoted_brace), "${" in masked_quoted_brace))
 
     # ── surface_lines: the seam ───────────────────────────────────────────────
     src = ['.a { color: #fff } /* say #000 */']

@@ -10,15 +10,11 @@ message: style region
 metadata:
   check: shared
   surface: style-region
-  kind: string_fragment
+  kind: template_string
 rule:
-  kind: string_fragment
-  inside:
-    kind: template_string
-    inside:
-      any:
-        - pattern: styled.$TAG`$$$BODY`
-        - pattern: styled($COMPONENT)`$$$BODY`
-        - pattern: css`$$$BODY`
-        - pattern: createGlobalStyle`$$$BODY`
-        - pattern: injectGlobal`$$$BODY`
+  any:
+    - pattern: styled.$TAG`$$$BODY`
+    - pattern: styled($COMPONENT)`$$$BODY`
+    - pattern: css`$$$BODY`
+    - pattern: createGlobalStyle`$$$BODY`
+    - pattern: injectGlobal`$$$BODY`

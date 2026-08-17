@@ -19,7 +19,7 @@ package, so each script imports it by path with the same importlib snippet
 their own formatting where they genuinely differ (`token-audit.py`'s
 `[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
 tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (39 cases)`.
+`SELF-TEST OK (42 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -200,7 +200,7 @@ machinery and the L1 waiver downgrade are unchanged Python. A style context is a
 syntax-tree position now, not a regex tracker, so a multi-line `style="…"`
 attribute is covered and comment text is never read as code.
 
-**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (56 cases)` (includes the `fixtures/token-audit/` pass/fail files, the `fixtures/parity/` corpus, and the ast-grep provisioning contract).
+**Self-test:** `python3 checks/token-audit.py --self-test` → `SELF-TEST OK (57 cases)` (includes the `fixtures/token-audit/` pass/fail files, the `fixtures/parity/` corpus, and the ast-grep provisioning contract).
 
 ## Audit record (built)
 
@@ -356,7 +356,7 @@ band and per-rule selection are unchanged Python. TYP-2's band stays body-scoped
 but ancestry answers "am I inside an `h1` to `h6` rule" now, which retired the
 hand-rolled CSS brace state machine and the heading-tag line regex.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (72 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
 ## Component manifest (built)
 
