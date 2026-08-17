@@ -191,19 +191,27 @@ _TOKEN_TRIM = ":.,;—–-"
 _ANCHOR_CACHE = {}
 
 
-def quality_anchor_text(text):
-    """Only the artifact blocks that define quotable anchors.
+def quality_anchor_texts(text, criteria):
+    """The quotable anchor blocks, partitioned by criterion slug.
 
     Introductory prose, procedures, boundaries, and the decision log explain the
     ceiling but are not anchors a grade can cite. Restricting the corpus keeps a
-    generic phrase from those sections from satisfying assertion 11 by accident.
+    generic phrase from those sections—or an anchor from another criterion—from
+    satisfying assertion 11 by accident.
     """
-    blocks = re.findall(
-        r"^## (?:Pairings|By surface|Thresholds)\s*$\n(.*?)(?=^#{1,2}\s|\Z)",
-        text,
-        re.DOTALL | re.MULTILINE,
-    )
-    return "\n".join(blocks)
+    result = {slug: "" for slug in criteria}
+    for heading, body in re.findall(r"^# (.+?)\s*$\n(.*?)(?=^#\s|\Z)", text,
+                                    re.DOTALL | re.MULTILINE):
+        slug = re.sub(r"\s+", "-", heading.strip().casefold())
+        if slug not in result:
+            continue
+        blocks = re.findall(
+            r"^## (?:Pairings|By surface|Thresholds)\s*$\n(.*?)(?=^##\s|\Z)",
+            body,
+            re.DOTALL | re.MULTILINE,
+        )
+        result[slug] = "\n".join(blocks)
+    return result
 
 
 def normalise_anchor_text(text):
@@ -255,12 +263,14 @@ def _read_quality_bar():
     criteria, grades = front.get("criteria"), front.get("grades")
     if not isinstance(criteria, list) or not isinstance(grades, list):
         return None
-    normalised = normalise_anchor_text(quality_anchor_text(text))
-    spans = {normalised[i:i + MIN_ANCHOR_SPAN]
-             for i in range(len(normalised) - MIN_ANCHOR_SPAN + 1)}
-    return ([str(c) for c in criteria],
-            {str(g).casefold() for g in grades},
-            spans)
+    criterion_slugs = [str(c) for c in criteria]
+    anchor_texts = quality_anchor_texts(text, criterion_slugs)
+    spans = {}
+    for slug, anchor_text in anchor_texts.items():
+        normalised = normalise_anchor_text(anchor_text)
+        spans[slug] = {normalised[i:i + MIN_ANCHOR_SPAN]
+                       for i in range(len(normalised) - MIN_ANCHOR_SPAN + 1)}
+    return (criterion_slugs, {str(g).casefold() for g in grades}, spans)
 
 
 def quality_bar_anchors():
@@ -532,7 +542,7 @@ def audit_record(text, name, repo_root):
                 f"— fix the harness install rather than trusting the block"
             )
         else:
-            criteria, grades, spans = anchors
+            criteria, grades, spans_by_criterion = anchors
             header, entries, unexpected = find_quality_grades_block(
                 verdict_section, criteria, grades
             )
@@ -573,7 +583,8 @@ def audit_record(text, name, repo_root):
                     )
 
             for slug, line in entries:
-                if not quotes_an_anchor(grade_sentence(line), spans):
+                if not quotes_an_anchor(grade_sentence(line),
+                                        spans_by_criterion.get(slug, set())):
                     messages.append(
                         f"QUALITY GRADES line '{slug}' quotes no anchor — every "
                         f"grade must quote the pairing or threshold that decided "
@@ -1091,6 +1102,18 @@ def run_self_test():
             'The roster proves "Nothing here blocks" at the 12-row default.',
         ),
         "line 'design-quality' quotes no anchor",
+    )
+
+    # Case 37 (assertion 11): an anchor belongs to the criterion that declares
+    # it. Quoting Design quality cannot ground Craft merely because both live in
+    # the same artifact.
+    assert_fails(
+        "an anchor from another criterion does not satisfy a grade",
+        PASSING_RECORD.replace(
+            'Row hover is a 120ms background change, inside "150-250ms on a tool surface".',
+            'The row treatment reads "Dense but not cramped" at its default.',
+        ),
+        "line 'craft' quotes no anchor",
     )
 
     checklib.report_self_test(failures, case_count)
