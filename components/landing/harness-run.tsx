@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { InkIcon } from "@/components/ink-icon";
 
 /* One request played end to end: the terminal types the ask, the run's status
    lines land one by one, and the reviewed screen comes back underneath — while
@@ -20,9 +21,10 @@ import { useEffect, useRef, useState } from "react";
 
 const PROMPT = "make the settings page feel calmer";
 
-/* beat: 0 typing · 1 passes line · 2 plan approved line · 3 review line · 4 result */
-const FINAL_BEAT = 4;
-const BEAT_STAGE = [0, 1, 1, 2, 2] as const;
+/* beat: 0 typing · 1 orchestrator picks the passes · 2 layout pass ·
+   3 polish pass · 4 plan approved, building · 5 review passed + result */
+const FINAL_BEAT = 5;
+const BEAT_STAGE = [0, 1, 1, 1, 1, 2] as const;
 
 const STAGES = [
   {
@@ -39,7 +41,7 @@ const STAGES = [
   {
     n: "02",
     heading: "The harness at work",
-    beat: 2,
+    beat: 4,
     body: (
       <>
         <Cmd>dx-design</Cmd> picks the passes this ask needs: layout and polish. Each
@@ -51,7 +53,7 @@ const STAGES = [
   {
     n: "03",
     heading: "A reviewed result",
-    beat: 4,
+    beat: 5,
     body: (
       <>
         Execute makes the approved change. A separate review grades it against both
@@ -72,6 +74,10 @@ function Cmd({ children }: { children: React.ReactNode }) {
 }
 
 const statusLine = "flex items-baseline gap-2 text-xs leading-relaxed";
+/* The terminal's text-only lines want a baseline bake; a line carrying an
+   ink icon wants the icon vertically centred against the text instead, so
+   this is a separate variant rather than an override tacked onto statusLine. */
+const statusLineIcon = "flex items-center gap-2 text-xs leading-relaxed";
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
@@ -99,10 +105,11 @@ export function HarnessRun() {
       timers.current.push(window.setTimeout(() => setTypedCount(i), 250 + i * 26));
     }
     const t0 = 250 + PROMPT.length * 26;
-    timers.current.push(window.setTimeout(() => setBeat(1), t0 + 450));
-    timers.current.push(window.setTimeout(() => setBeat(2), t0 + 1150));
-    timers.current.push(window.setTimeout(() => setBeat(3), t0 + 1850));
-    timers.current.push(window.setTimeout(() => setBeat(4), t0 + 2300));
+    timers.current.push(window.setTimeout(() => setBeat(1), t0 + 400));
+    timers.current.push(window.setTimeout(() => setBeat(2), t0 + 850));
+    timers.current.push(window.setTimeout(() => setBeat(3), t0 + 1300));
+    timers.current.push(window.setTimeout(() => setBeat(4), t0 + 1750));
+    timers.current.push(window.setTimeout(() => setBeat(5), t0 + 2250));
   };
 
   /* Jump straight to a stage's end beat; a reader's pick always beats the timer. */
@@ -147,9 +154,9 @@ export function HarnessRun() {
         className="flex flex-col items-center justify-center border-border px-6 py-8 max-lg:border-b sm:py-10 lg:border-r"
       >
         <figure
-          className="m-0 flex w-full max-w-[13rem] flex-col gap-2"
+          className="m-0 flex w-full max-w-[15rem] flex-col gap-2"
           role="img"
-          aria-label="A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. dx-design plans layout and polish passes, the plan is approved, the build runs, the design review passes, and a small finished screen comes back underneath."
+          aria-label="A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the control catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath."
         >
           <div aria-hidden="true">
             {/* the terminal window */}
@@ -162,7 +169,7 @@ export function HarnessRun() {
                   ~/your-app
                 </span>
               </div>
-              <div className="flex min-h-[104px] flex-col gap-1.5 px-3 py-3">
+              <div className="flex flex-col gap-1.5 px-3 py-3">
                 <p className={statusLine}>
                   <span className="font-semibold text-site-accent-text">❯</span>
                   <span className="text-foreground">
@@ -175,43 +182,95 @@ export function HarnessRun() {
                     ) : null}
                   </span>
                 </p>
-                <p className={`${statusLine} text-muted-foreground ${lineTransition} ${lineOn(1)}`}>
-                  <span className="text-site-accent-text">●</span>
-                  <span>dx-design · layout + polish passes</span>
+              </div>
+            </div>
+
+            <div
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${lineOn(1)}`}
+            />
+
+            {/* the orchestrator at work: dx-design reads the ask, then visibly runs the
+                specialised skills — each with the same ink tool mark the skills section
+                uses. This panel is the "one worked example" for the parts above. */}
+            <div
+              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${lineOn(1)}`}
+            >
+              <p className={statusLineIcon}>
+                <span className="shrink-0">
+                  <InkIcon
+                    name="skills/orchestrator"
+                    size={18}
+                    ink="var(--site-accent-text)"
+                    idSuffix="-run"
+                  />
+                </span>
+                <span className="font-semibold text-foreground">dx-design</span>
+                <span className="text-muted-foreground">picks the passes</span>
+              </p>
+              <div className="mt-2 flex flex-col gap-1.5 border-l border-border pl-3">
+                <p
+                  className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(2)}`}
+                >
+                  <span className="shrink-0">
+                    <InkIcon name="skills/pattern" size={18} ink="var(--foreground)" idSuffix="-run" />
+                  </span>
+                  <span>layout pass · reads catalog + DESIGN.md</span>
                 </p>
-                <p className={`${statusLine} text-muted-foreground ${lineTransition} ${lineOn(2)}`}>
-                  <span className="text-site-accent-text">✓</span>
+                <p
+                  className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(3)}`}
+                >
+                  <span className="shrink-0">
+                    <InkIcon name="skills/polish" size={18} ink="var(--foreground)" idSuffix="-run" />
+                  </span>
+                  <span>polish pass · reads catalog + DESIGN.md</span>
+                </p>
+                <p
+                  className={`${statusLineIcon} text-muted-foreground ${lineTransition} ${lineOn(4)}`}
+                >
+                  <span className="shrink-0">
+                    <InkIcon name="skills/execute" size={18} ink="var(--foreground)" idSuffix="-run" />
+                  </span>
                   <span>plan approved · building</span>
-                </p>
-                <p className={`${statusLine} text-muted-foreground ${lineTransition} ${lineOn(3)}`}>
-                  <span className="text-site-accent-text">✓</span>
-                  <span>design review passed</span>
                 </p>
               </div>
             </div>
 
             {/* the one lime link in the chain: the reviewed screen coming back */}
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${lineOn(4)}`}
+              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${lineOn(5)}`}
             />
 
-            {/* the screen that comes back — abstract on purpose: grey bars for
-                the words, one lime primary, so it reads as "a calm settings
-                page" without pretending to be a real product */}
+            {/* the screen that comes back — a small but real settings surface,
+                not abstract bars, so the worked example lands as a product,
+                not a diagram */}
             <div
               className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,transform] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
-                beat >= 4 ? "opacity-100" : "translate-y-1.5 opacity-0"
+                beat >= 5 ? "opacity-100" : "translate-y-1.5 opacity-0"
               }`}
             >
-              <div className="h-2 w-20 rounded-full bg-border-strong" />
-              <div className="mt-3 flex flex-col gap-2">
-                <div className="h-6 rounded-md border border-border bg-background" />
-                <div className="h-6 rounded-md border border-border bg-background" />
+              <p className="text-xs font-semibold text-foreground">Settings</p>
+              <div className="mt-2.5 flex flex-col gap-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">Display name</p>
+                  <div className="mt-1 h-6 rounded-md border border-border bg-background" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Reminders</p>
+                  <div className="mt-1 h-6 rounded-md border border-border bg-background" />
+                </div>
               </div>
               <div className="mt-3 flex justify-end">
                 <div className="h-6 w-16 rounded-md bg-site-accent" />
               </div>
             </div>
+            <p
+              className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
+            >
+              <span className="shrink-0">
+                <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
+              </span>
+              <span>design review passed</span>
+            </p>
           </div>
           <figcaption aria-hidden="true" className="text-xs text-muted-foreground">
             One ask in plain words; a reviewed screen out.
@@ -220,12 +279,13 @@ export function HarnessRun() {
         <button
           type="button"
           onClick={play}
-          /* min-h-11: 44px is this page's mobile target floor (A11Y-4), and every
-             other action on it already meets that — an outline button is no
-             reason to sit under the floor. */
-          className={`mt-6 inline-flex min-h-11 items-center rounded-lg border border-border bg-surface px-4 text-sm font-medium text-(--prose-body) transition-colors duration-(--motion-fast) hover:border-border-strong ${focusRing}`}
+          aria-label="Replay the run"
+          /* Icon-only, but never under the floor: size-11 keeps the 44px hit area
+             (A11Y-4) and the aria-label keeps the accessible name (A11Y-3) that an
+             icon-only control otherwise loses. */
+          className={`mt-4 inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-(--motion-fast) hover:bg-accent hover:text-foreground ${focusRing}`}
         >
-          Replay the run
+          <InkIcon name="harness/loop" size={20} ink="currentColor" idSuffix="-replay" />
         </button>
       </div>
       <ol className="grid grid-rows-3">

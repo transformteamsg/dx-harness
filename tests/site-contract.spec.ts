@@ -157,6 +157,10 @@ test("the harness run scrubs by stage and respects reduced motion", async ({ pag
   await stage2.click();
   await expect(stage2).toHaveAttribute("aria-current", "step");
   await expect(page.getByRole("button", { name: "Replay the run" })).toBeVisible();
+
+  // The orchestrator visibly runs the specialised skills.
+  await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeVisible();
+  await expect(page.getByText("polish pass · reads catalog + DESIGN.md")).toBeVisible();
 });
 
 test("uses the lime site accent without a hero product label", async ({ page }) => {
