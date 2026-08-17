@@ -19,8 +19,16 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 
 ## Findings considered and rejected
 
-- Option 1 from the builder's brief (replace the abstract feature-grid
-  figures with icon-based compositions, e.g. voice icon → orchestrator icon →
-  skills): rejected by the builder's own recommendation — the abstract
-  geometry stays for "What the harness gives your agent", and the
-  icon/interface treatment lands in the run section instead.
+- Nothing rejected yet.
+
+## Outstanding
+
+- **The feature grid ("What the harness gives your agent.") still needs its
+  ink-icon rework** — plan 002, not yet written. Plan 001 wrongly recorded
+  this as rejected: "keep the current abstract graphic oriented comm" was
+  read as "leave the section unchanged", but the builder meant keep that
+  *communication style* (abstract graphic + icons) and redraw each card with
+  the icon-generator ink icons spelling out its message — e.g. FIG 1 as
+  voice/prompt icon → orchestrator icon → the specialised skill icons, and
+  the same treatment for the other three cards. The current figures are
+  bespoke geometry with no ink icons in them.

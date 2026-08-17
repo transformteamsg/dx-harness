@@ -67,10 +67,16 @@ animates); the panel's indent rule arrives with its first row.
 
 ## Rejected options
 
-- **Option 1 — icon compositions in the feature grid** (voice mark → orchestrator
-  mark → skill marks): rejected by the builder's own recommendation; the
-  abstract geometry stays for "What the harness gives your agent". Recorded in
-  `plans/README.md` so it isn't re-proposed.
+- **Nothing was rejected from the builder's brief.** An earlier version of this
+  record claimed Option 1 (icon compositions in the feature grid) was rejected.
+  That was a misreading: "keep the current abstract graphic oriented comm for
+  the What harness gives your agent" meant keep that *communication style*, not
+  leave the section unchanged. The feature grid's ink-icon rework — each card
+  drawn with the icon-generator marks spelling out its message (FIG 1: voice /
+  prompt mark → orchestrator mark → the specialised skill marks, and the same
+  treatment for the other three) — remains **outstanding**, tracked in
+  `plans/README.md` and on the design ticket. This run's scope was the run
+  section and the replay control only.
 - **Keeping the labeled replay button**: rejected by the builder ("almost just
   with the refresh icon only"). The review then required the icon-only control
   to keep a resting border and title — icon-only is a size decision, not a
