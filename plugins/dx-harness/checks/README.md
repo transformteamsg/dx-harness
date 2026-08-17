@@ -28,7 +28,7 @@ reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
 `l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
 `waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
 bodies. checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (48 cases)`.
+`SELF-TEST OK (51 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -339,11 +339,12 @@ instead, so the case count never depends on the environment.
 
 - **FOCUS (A11Y-2, L0):** A class string or CSS rule containing an outline-removal token (`outline-none`, `outline-0`, `focus:outline-none`, or CSS `outline: none/0`) with no focus-visible replacement (`focus-visible:outline`, `focus-visible:ring`, `focus-visible:border`, `focus-visible:shadow`, or CSS `:focus-visible { … outline|box-shadow|border … }`) on the same line.
 
-**Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted**: jsx-a11y decides both on a real AST with maintained ARIA exception tables, which a line-local regex cannot match — see the a11y lint above. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
+**Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted** because their line-local regexes could not make reliable ARIA judgments. jsx-a11y's maintained preset replaces KBD and checks label association, but deliberately leaves `control-has-associated-label` disabled; icon-only accessible-name judgment therefore stays rendered/manual. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
 
 **Static-subset caveat — what this script does NOT verify:**
 
-- Keyboard reachability and accessible names (A11Y-2's reachability half, A11Y-3) — `a11y-eslint`'s `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus` and `label-has-associated-control`.
+- Keyboard reachability (A11Y-2's reachability half) — `a11y-eslint`'s `click-events-have-key-events`, `no-static-element-interactions` and `interactive-supports-focus`.
+- Label association (part of A11Y-3) — `a11y-eslint`'s `label-has-associated-control`. Icon-only accessible names remain rendered/manual because the preset leaves `control-has-associated-label` disabled.
 - Computed contrast ratios (A11Y-1) — `contrast.py` answers the declared token pairs; computed colours need rendered ones.
 - Interactive hit-area size (A11Y-4) — needs computed layout.
 - Focus traversal order and completeness (A11Y-2 traversal half) — needs a live DOM.

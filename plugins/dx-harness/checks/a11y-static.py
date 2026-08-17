@@ -33,9 +33,11 @@ What this script does NOT verify
   interactive role that cannot take focus (A11Y-2's reachability half) —
   jsx-a11y's click-events-have-key-events, no-static-element-interactions and
   interactive-supports-focus decide these on a real AST (checks/a11y-eslint.py).
-- Accessible names: an icon-only button, a label with no associated control
-  (A11Y-3) — jsx-a11y's label-has-associated-control and aria rules
-  (checks/a11y-eslint.py).
+- Accessible names (A11Y-3): jsx-a11y's `label-has-associated-control` checks
+  label association, but its recommended preset deliberately leaves
+  `control-has-associated-label` disabled. Whether an icon-only control has an
+  accessible name therefore stays with rendered/manual verification; this
+  source check claims neither case.
 - Computed contrast ratios (A11Y-1) — checks/contrast.py answers the declared
   token pairs; computed colours need rendered ones.
 - Interactive hit-area size (A11Y-4) — needs computed layout.
@@ -292,9 +294,9 @@ def run_self_test():
 
     # ── The deleted rules leave no coverage claim behind ──────────────────────
 
-    # Case 8: a click handler on a non-focusable element and an icon-only
-    # button are jsx-a11y's now (checks/a11y-eslint.py) — this check reports
-    # nothing about either, rather than reporting a weaker version of them.
+    # Case 8: a click handler on a non-focusable element is jsx-a11y's now;
+    # an icon-only button stays rendered/manual because the recommended preset
+    # leaves control-has-associated-label disabled. This check claims neither.
     assert_clean(
         "narrowed: keyboard reachability and accessible names are not this check's",
         '<div onClick={handleClick} className="item">Label</div>\n'
