@@ -13,9 +13,9 @@ Where the pairs come from
 product's DESIGN.md, projected into `.dx/design.json` as `colour.pairs` (a list
 of two-element [foreground, background] lists) by
 scripts/generate-design-json.py. Nothing declares pairs today, so this check
-ships HONEST-INERT: with no pairs it grades N/A, says so in a NOTE, exits 0, and
-A11Y-1 goes to manual verification. It never reports A11Y-1 as passing on the
-strength of a check that had nothing to measure.
+ships HONEST-INERT: with no pairs it grades N/A, says so, exits 1 with an
+operational ERROR, and A11Y-1 goes to manual verification. It never reports
+A11Y-1 as passing on the strength of a check that had nothing to measure.
 
 How colours resolve
 ────────────────────
@@ -28,7 +28,7 @@ in `.dx/design.json` (product-specific; for this repo's own site,
     (https://bottosson.github.io/posts/oklab/),
   - @theme inline aliases (--color-foo: var(--bar)) so a Tailwind text-foo /
     bg-foo utility name resolves through to --bar's colour.
-An unresolved token stays None and is reported via the NOTE channel — never
+An unresolved token stays None and is reported as an operational ERROR — never
 guessed, never silently passed. The resolver, its OKLab maths and the --tokens
 flag are reused verbatim by other checks; they are a shared surface, not private
 to this file.
@@ -67,7 +67,7 @@ ERROR <tokens-css>:<line> [A11Y-1] declared pair <fg> (<hex>) on <bg> (<hex>) =
       <ratio>:1 (<band>) — suggest: <…>
 NOTE  contrast: <…> — verify manually
 Exit 0 and print nothing (or NOTEs only, or SELF-TEST OK) on success.
-Exit 1 with ERROR lines on any sub-AA declared pair.
+Exit 1 with ERROR lines on any sub-AA pair or unverified L0 coverage gap.
 """
 
 import importlib.util
@@ -412,9 +412,8 @@ def resolve_token(resolver, name):
 
 def check_pairs(pairs, resolver, tokens_rel):
     """
-    Grade every declared pair. Returns a list of ERROR/NOTE strings: an ERROR
-    for a pair that fails AA, a NOTE for a token that does not resolve (never a
-    guess, and never a silent pass).
+    Grade every declared pair. Returns ERROR strings for a pair that fails AA
+    or a token that does not resolve (never a guess, and never a silent pass).
     """
     out = []
     for fg_name, bg_name in pairs:
@@ -423,7 +422,7 @@ def check_pairs(pairs, resolver, tokens_rel):
         unresolved = [n for n, rgb in ((fg_name, fg_rgb), (bg_name, bg_rgb))
                       if rgb is None]
         if unresolved:
-            out.append(f"NOTE  contrast: declared pair [{fg_name}, {bg_name}] could "
+            out.append(f"ERROR contrast: declared pair [{fg_name}, {bg_name}] could "
                        f"not resolve {', '.join(unresolved)} in {tokens_rel or 'any token file'} "
                        f"— that pair goes to manual verification")
             continue
@@ -440,7 +439,7 @@ def inert_notes(reason, controls):
     and says which controls go to manual verification instead of passing."""
     verb = "goes" if len(controls) == 1 else "go"
     lines = [
-        f"NOTE  contrast: no declared foreground/background token pairs — {reason}",
+        f"ERROR contrast: no declared foreground/background token pairs — {reason}",
         "NOTE  contrast: grade A11Y-1 N/A for this check and verify it by hand "
         "(declare `- pairs: [[\"--fg\", \"--bg\"], …]` under `## Colour` in DESIGN.md "
         "to switch it on)",
@@ -480,14 +479,14 @@ def run(repo_root, tokens_file=None):
 
     design, reason = load_design_projection(repo_root)
     if design is None:
-        return 0, inert_notes(reason, controls)
+        return 1, inert_notes(reason, controls)
 
     pairs, malformed = declared_pairs(design)
-    out = [f"NOTE  contrast: ignoring a malformed colour.pairs entry {entry!r} "
+    out = [f"ERROR contrast: malformed colour.pairs entry {entry!r} "
            f"— each entry is a [foreground, background] pair of token names"
            for entry in malformed]
     if not pairs:
-        return 0, out + inert_notes("colour.pairs is absent or empty in "
+        return 1, out + inert_notes("colour.pairs is absent or empty in "
                                     ".dx/design.json", controls)
 
     tokens_file = tokens_file or tokens_source(design, repo_root)
@@ -664,23 +663,22 @@ def run_self_test():
         rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
         check("a source file with a bad pairing is not scanned", (0, []), (rc, lines))
 
-    # ── an unresolvable declared token is a NOTE, never a guess ────────────────
+    # ── an unresolvable declared token blocks, never a guess ──────────────────
     with tempfile.TemporaryDirectory() as td:
         write_repo(td, pairs=[["--mystery-ink", "--surface"]])
         rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
-        check("an unresolvable token exits 0", 0, rc)
-        check("an unresolvable token raises no ERROR", [],
-              [ln for ln in lines if ln.startswith("ERROR")])
-        check("the NOTE names the token that did not resolve", True,
-              any(ln.startswith("NOTE") and "--mystery-ink" in ln for ln in lines))
+        check("an unresolvable token exits 1", 1, rc)
+        check("the ERROR names the token that did not resolve", True,
+              any(ln.startswith("ERROR") and "--mystery-ink" in ln for ln in lines))
 
     # ── a malformed pairs entry is reported, not dropped ───────────────────────
     with tempfile.TemporaryDirectory() as td:
         write_repo(td, pairs=[["--foreground"], ["--foreground", "--surface"]])
         rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
-        check("a malformed entry does not fail the run", 0, rc)
-        check("a malformed entry is named in a NOTE", True,
-              any("malformed colour.pairs entry" in ln for ln in lines))
+        check("a malformed entry fails the run", 1, rc)
+        check("a malformed entry is named in an ERROR", True,
+              any(ln.startswith("ERROR") and "malformed colour.pairs entry" in ln
+                  for ln in lines))
 
     # ── honest-inert: nothing declared means N/A, never a pass ─────────────────
     check("the layer's controls come from the rule map", ["A11Y-1"],
@@ -688,9 +686,12 @@ def run_self_test():
     with tempfile.TemporaryDirectory() as td:
         write_repo(td)  # token file, no .dx/design.json
         rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
-        check("no design.json exits 0", 0, rc)
-        check("no design.json prints only NOTEs", True,
-              bool(lines) and all(ln.startswith("NOTE") for ln in lines))
+        check("no design.json exits 1", 1, rc)
+        check("no design.json starts with an operational ERROR", True,
+              bool(lines) and lines[0].startswith("ERROR"))
+        kind, error_lines = detect.classify_run(rc, "\n".join(lines), "")
+        check("detect keeps the inert run as a blocking finding", ("findings", 1),
+              (kind, len(error_lines)))
         check("the inert report grades A11Y-1 N/A", True,
               any("A11Y-1 N/A" in ln for ln in lines))
         check("the inert report sends A11Y-1 to manual verification", True,
@@ -700,7 +701,7 @@ def run_self_test():
     with tempfile.TemporaryDirectory() as td:
         write_repo(td, pairs=[])
         rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
-        check("an empty colour.pairs is honest-inert too", (0, True),
+        check("an empty colour.pairs is honest-inert too", (1, True),
               (rc, any("A11Y-1 N/A" in ln for ln in lines)))
 
     # ── the token CSS file: --tokens wins, Tokens.source is the fallback ───────

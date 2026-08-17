@@ -372,9 +372,10 @@ alias).
 
 **Honest-inert until pairs are declared.** Nothing declares pairs today, so with no
 `colour.pairs` (or no `.dx/design.json` at all) the check grades A11Y-1 **N/A**, prints a
-`NOTE` saying so, exits 0, and names A11Y-1 as going to manual verification — adding that
-A11Y-1 is L0 and blocks until verified by some path. It never reports A11Y-1 as passing
-on the strength of a check that had nothing to measure. Same shape as CMP-1 with
+control-less operational `ERROR`, exits 1, and names A11Y-1 as going to manual
+verification — adding that A11Y-1 is L0 and blocks until verified by some path. The
+error keeps `detect.py` from grading the incomplete run clean. It never reports A11Y-1
+as passing on the strength of a check that had nothing to measure. Same shape as CMP-1 with
 `coverage: "complete"` and IDN-1/IDN-2 with the approved-asset registry.
 
 **Token resolution (`--tokens <file>`, else `Tokens.source` in `.dx/design.json`):** the
@@ -382,8 +383,9 @@ colour map is built from a product's CSS token file (for this repo's own site,
 `../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains
 (transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per
 the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`). An unresolved
-token stays unresolved — never guessed: the pair becomes a `NOTE` naming the token and
-goes to manual verification. `detect.py`'s auto-discovery of `app/globals.css` still
+token stays unresolved — never guessed: the pair becomes an operational `ERROR` naming
+the token and goes to manual verification. A malformed declared pair is an operational
+ERROR for the same reason. `detect.py`'s auto-discovery of `app/globals.css` still
 supplies `--tokens` when it runs the check.
 
 **Thresholds (unchanged):** ratio `< 3.0` → ERROR (fails even large text);
@@ -571,8 +573,10 @@ harness rule "never wire a failing check into the build," `content-lint` surface
 pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/` and is
 not wired until that content is fixed or waived. `contrast` is exempt for a different
 reason since it became a token-pair check: it is **honest-inert** until a product
-declares `colour.pairs` in DESIGN.md, and this repo declares none, so wiring it would
-gate on a check that can only print a `NOTE`. `component-manifest` targets a product's
+declares `colour.pairs` in DESIGN.md, and this repo declares none, so it emits an
+operational ERROR that blocks for manual A11Y-1 verification. Build wiring is deferred
+to the catalogue recount; the design verification path runs it through `detect.py` now.
+`component-manifest` targets a product's
 `.dx/component-manifest.json`, which this repo (the harness/site itself) does not
 have — wiring it here would have nothing to check.
 
