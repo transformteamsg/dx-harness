@@ -879,6 +879,8 @@ def gap_rule_errors(control, schema_bits):
     if not isinstance(gap, str) or not gap.strip():
         err(f"'gap' must be a non-empty string, got {gap!r}")
         return errors
+    if "\n" in gap or "\r" in gap:
+        err("'gap' must be one line")
 
     if not gap_required(control):
         err(f"'gap' is present but enforced is {enforced_label}; a gap records "
@@ -1675,6 +1677,11 @@ def run_self_test():
     assert_error("gap key with no value",
                  gap_rule_errors(dict(gap_base, gap=None), schema_bits),
                  "'gap' must be a non-empty string, got None")
+    assert_error("gap must be one line",
+                 gap_rule_errors(dict(gap_base, gap="No script: ownership is "
+                                      "unresolved.\nThe scanner will be assigned later."),
+                                 schema_bits),
+                 "'gap' must be one line")
     # A planned script is not an accepted gap.
     assert_error("gap claims a planned script",
                  gap_rule_errors(dict(gap_base, gap="No script: a planned script "
