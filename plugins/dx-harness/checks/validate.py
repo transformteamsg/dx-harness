@@ -1817,16 +1817,17 @@ def run_self_test():
     # it as a deterministic precedent invented one; and slop-layout's row planned
     # for three controls that no longer need it.
     #
-    # Scoped to the catalog, the triaged detail files, and the planned-check
-    # table, because two classes of "planned" note are deliberately left alone:
-    # the A11Y controls (excluded by this issue's Out of scope) and eight notes
-    # describing checks that already ship, which are a separate error class.
+    # Scoped to the catalog, the triaged detail files, five stale notes whose
+    # exact checks already ship, and the planned-check table. A11Y controls are
+    # excluded by this issue; CNT-9 and CNT-12 keep honest planned-extension
+    # notes because content-lint does not implement those two heuristics yet.
     triaged = ["cmp-2", "cmp-3", "cmp-5", "cmp-6", "cmp-7", "cmp-8", "cmp-9",
                "lay-1", "lay-4", "typ-5", "typ-6"]
+    shipped_notes = ["cmp-1", "cnt-1", "cnt-3", "tok-1", "typ-2"]
     scoped = {"standards/catalog.yaml": os.path.join(REPO_ROOT, "standards",
                                                      "catalog.yaml"),
               "checks/README.md": os.path.join(REPO_ROOT, "checks", "README.md")}
-    for slug in triaged:
+    for slug in triaged + shipped_notes:
         scoped[f"standards/controls/{slug}.md"] = os.path.join(
             REPO_ROOT, "standards", "controls", f"{slug}.md")
 
