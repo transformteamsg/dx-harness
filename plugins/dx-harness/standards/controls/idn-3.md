@@ -65,6 +65,6 @@ carrying an inline `dx-waive IDN-3 reason="…"` (L2).
 *tone* register — orthogonal (a surface can pass one and fail the other). CNT-2/CNT-3 are
 portfolio-wide voice mechanics this control depends on, not restates. The CaseSync row
 here is the calm parent register; the harder prohibition on gamified/celebratory
-*elements* (not just copy) is a guardrail in CaseSync's DESIGN.md (moved from control
-IDN-4, 2026-08-14) — this control covers the words, the guardrail covers the interface
-treatment.
+*elements* (not just copy) is a guardrail in CaseSync's DESIGN.md (moved out of the
+catalogue on 2026-08-14) — this control covers the words, the guardrail covers the
+interface treatment.
