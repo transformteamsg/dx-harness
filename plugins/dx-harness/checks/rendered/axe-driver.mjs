@@ -286,6 +286,7 @@ async function main() {
   let browser = null;
   let page = null;
   let prior = null;
+  let priorUrl = null;
   let payload = null;
   let restored = true;
   let restoreError = null;
@@ -298,6 +299,7 @@ async function main() {
     if (!pages.length) throw new Error("the attached context has no open page");
     page = pages[0];
 
+    priorUrl = page.url();
     prior = await evaluateSafely(page, READ_STATE_JS);
 
     // The capture step navigates; this driver only follows it to the page it
@@ -436,6 +438,9 @@ async function main() {
     // Hand the session back as it was found, including on the failure path.
     if (page && prior) {
       try {
+        if (priorUrl && page.url() !== priorUrl) {
+          await page.goto(priorUrl, { waitUntil: "load" });
+        }
         await page.setViewportSize({ width: prior.innerWidth, height: prior.innerHeight });
         await page.emulateMedia({ colorScheme: null, reducedMotion: null });
         const now = await page.evaluate(

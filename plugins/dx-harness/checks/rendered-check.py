@@ -918,6 +918,9 @@ def run_self_test():
     check("the driver attaches over CDP", True, "connectOverCDP" in driver_code)
     check("the driver restores the session in a finally", True,
           "finally {" in driver_code and "setViewportSize" in driver_code)
+    check("the driver restores the original URL after a standalone navigation", True,
+          "priorUrl = page.url()" in driver_code
+          and "page.goto(priorUrl" in driver_code)
     check("the driver never clicks or hovers", False,
           ".click(" in driver_code or ".hover(" in driver_code)
 
