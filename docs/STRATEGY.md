@@ -3,7 +3,9 @@
 **Last reviewed:** 2026-08-17 · **Owner:** Nicholas Lim
 
 Where dx-harness is going and why. Written for the team building the harness, and for
-TFX teams deciding whether to adopt it.
+TFX teams deciding whether to adopt it. This document carries the argument; what gets
+built, in what order, and how we will know it landed is in the
+[roadmap](./ROADMAP-DRAFT.md).
 
 ## North star
 
@@ -60,52 +62,8 @@ is framed, split and specified — and then defended afterwards by whether the g
 Both halves currently depend on the right person being in the room. Put the harness
 through the whole lifecycle so they do not.
 
-**Where we are.** The ceremonies happen, but their output varies with whoever ran them.
-Issue authoring is the exception: it now decides the shape of the work rather than handing
-you a template, so what lands in the backlog is consistent. Everything around it —
-briefing, epic shaping, grooming, planning — is still carried by experience. On the
-enforcement side, engineering rigour is built and in use on our own repositories: lint and
-formatting setup, pre-commit and pre-push gates, automated code review, dependency auditing
-with a release cooldown. Design rigour is the same idea in another discipline: a control
-catalog, deterministic scripts, and an evaluator that grades what the generator produced.
-
-**Where it breaks.** Upstream, work enters already shaped, which means the shaping was done
-by whoever happened to know how, and nothing catches it when they got it wrong. Downstream,
-the gates leak: a large minority of controls declare a deterministic check with no script
-behind them, and some of the scripts that do exist answer wrongly, so the loop passes work
-a machine should have stopped. A design run has been reported to cost around 24 minutes of
-human attention, paid every run, because the checks that should have answered it were never
-written. The harness has no instrumentation, so "is this working" is currently anecdote —
-including that number, which is one report rather than a measurement.
-
-**What we build — the ceremonies.** Examples, not a backlog. Each of these already happens;
-the work is making it produce reliable output instead of depending on who ran it.
-
-- **Briefing.** A draft requirement meets the people who have to build it and comes out
-  revised, with the changes recorded rather than remembered.
-- **Epic and story shaping.** Interrogate product-level intent the way issue authoring
-  already interrogates a story, so what enters the backlog is decidable.
-- **Grooming and splitting.** Turn a large issue into genuinely atomic pieces, with
-  dependencies and design scope made explicit rather than discovered at implementation.
-- **Planning and sizing.** Sequencing and estimates a team can argue with, grounded in
-  what the tracker shows rather than in recall.
-- **Definition of done.** Enforced at the gate, not remembered in a meeting.
-
-**What we build — the gates inside them.** The engineering rigour that makes each ceremony
-more than a conversation:
-
-- A check runner that grades a rendered page in a browser, so accessibility and visual
-  rules are tested on the thing a person actually sees rather than on source.
-- Scanners for the anti-patterns the catalog names but cannot yet detect: the default AI
-  aesthetic, component misuse, motion and identity violations.
-- Repairs to the checks that currently answer wrongly, and a rule that no control may
-  claim a deterministic check without a script behind it.
-- Instrumentation: which skills get used, where runs fail, and full run transcripts rather
-  than a final message.
-
-**Landed looks like.** Each step of the lifecycle hands the next one something it can use
-without rework. No control claims a check it does not have. A review costs minutes, not
-tens of minutes. And we can see from data which parts of this earn their keep.
+Where this stands, what gets built and in what order: see the
+[roadmap](./ROADMAP-DRAFT.md).
 
 ## Bet 2: AI for builders (2026)
 
@@ -117,42 +75,8 @@ This is already the plugin's naming thesis: `dx` is deliberately open-ended, so 
 Developer Experience to an engineer and Designer Experience to a designer. The task skill
 follows it, covering a slice that is engineering *or* design without making you choose.
 
-**Where we are.** Issue authoring has been rebuilt so that the shape of the work is
-decided for you: story, task, chore or bug. It encodes a real taxonomy rather than a
-template. A task's parent is a story or a chore. Chore versus task turns on whether
-something bigger already tracks the work, never on the technology. Acceptance criteria are
-Given-When-Then plus an optional invariants checklist. Downstream, an issue can be carried
-to a pull request without a person translating it first. On the design side there is a
-full loop with focused single-dimension passes, a critique path, a per-product design
-language file, and a git companion that exists because designers now commit code.
-
-**Where it breaks.** The handover is still there. A designer can produce a convincing
-prototype and a product manager can specify precisely, and both then hand the work to an
-engineer who builds it again. Everything so far has shortened that handover; none of it has
-removed it. Until the person who had the idea can carry it to production themselves, they
-are contributing to a build rather than doing one.
-
-**What we build.** Examples, not a backlog:
-
-- **Idea to a running thing.** A designer or a product manager gets a real, working version
-  of a change inside the actual product, not a mock that someone else has to rebuild.
-- **Prototype to production without a rebuild.** What you made is what ships, carrying the
-  same gates, instead of being handed over and redone.
-- **Orientation for people who do not read code fluently.** Where does this surface live,
-  what does it touch, and what breaks if I change it.
-- **Self-review for low-risk work.** The harness reviews the change, so merging does not
-  depend on finding an engineer with time to approve it.
-- **A running product without an engineer's help.** Environment and data in one step,
-  because "I could not get it running" is where most non-engineers stop.
-- **Every remaining engineering prerequisite, removed as it surfaces.** Version control was
-  the first one worth solving. It will not be the last.
-
-**Landed looks like.** Someone whose title is not engineer ships to production, through the
-same gates as everyone else, without a specialist reviewing on their behalf.
-
-**Adopting it.** Everyone gets the same harness, so there is no per-discipline entry point
-to describe here. Type `/dx` and the whole set surfaces; the plugin README lists what each
-skill does.
+Where this stands, what gets built and in what order: see the
+[roadmap](./ROADMAP-DRAFT.md).
 
 ## Bet 3: AI for teachers — TWLabs (2027)
 
@@ -186,15 +110,6 @@ L1 approver standing over the work, and no professional stake in the catalog.
 Each condition is checkable by a person who did not build the thing, which is the point. A
 gate whose conditions are prose gets waived under delivery pressure and nobody notices.
 
-**What we would build.** Illustrative only, and the shape depends on answers we do not
-have yet:
-
-- A teacher-facing vocabulary over the existing catalog, so the bar is enforced without
-  anyone having to read a control.
-- An approval model that works when nobody in the room is paid to own design quality.
-- A blast-radius boundary: what a teacher-built thing is allowed to touch, and what it
-  never is.
-
 **Open questions, parked deliberately.** Is TWLabs a surface inside Teacher Workspace or a
 sandbox beside it. Do teachers build, or do they specify and review while the harness
 builds. What is the governance model when there is no design lead to sign a waiver.
@@ -203,9 +118,10 @@ builds. What is the governance model when there is no design lead to sign a waiv
 
 Bets 1 and 2 are not sequential, and bet 2 is currently ahead. Designers run the design
 loop today against a catalog where some controls promise a deterministic check that was
-never written. The 24 minutes above is the invoice, and even as a single report it points
-the right way: every missing check is paid for in reviewer minutes, per run, indefinitely.
-Instrumentation is what turns that from an anecdote into a number worth arguing about.
+never written. The roughly 24 minutes of human review a design run has been reported to cost
+is the invoice, and even as a single report it points the right way: every missing check is
+paid for in reviewer minutes, per run, indefinitely. Instrumentation is what turns that from
+an anecdote into a number worth arguing about.
 
 So the risk this year is width outrunning depth. Two consequences worth holding onto:
 
