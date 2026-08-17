@@ -1865,27 +1865,38 @@ def run_self_test():
     # page could not satisfy both controls at once. The tightest pair is the
     # invariant — if TYP-3's scale gains a closer step, or SLP-6's threshold
     # rises, this fails and the contradiction is caught before it ships.
+    def type_ramp_invariant(slp6, typ3):
+        threshold = re.search(r">=\s*([\d.]+)", str(slp6.get("verify", "")))
+        size_set = re.search(r"\{([^}]*)\}", str(typ3.get("verify", "")))
+        sizes = sorted((int(n) for n in re.findall(r"\d+", size_set.group(1))),
+                       reverse=True) if size_set else []
+        ratios = [sizes[i] / sizes[i + 1] for i in range(len(sizes) - 1)]
+        title_figure = re.search(r"([\d.]+)x", str(slp6.get("title", "")))
+        result = (size_set is not None and len(sizes) >= 2,
+                  threshold is not None,
+                  title_figure is not None,
+                  # title and verify quote one threshold, not two
+                  threshold is not None and title_figure is not None
+                  and float(threshold.group(1)) == float(title_figure.group(1)),
+                  # every adjacent pair TYP-3 mandates clears it
+                  threshold is not None and bool(ratios)
+                  and min(ratios) >= float(threshold.group(1)))
+        return result, (f"{min(ratios):.4f}" if ratios else "unavailable")
+
     case_count += 1
-    slp6 = live_by_id.get("SLP-6", {})
-    typ3 = live_by_id.get("TYP-3", {})
-    threshold = re.search(r">=\s*([\d.]+)", str(slp6.get("verify", "")))
-    sizes = sorted((int(n) for n in re.findall(
-        r"\d+", re.search(r"\{([^}]*)\}", str(typ3.get("verify", ""))).group(1))),
-        reverse=True)
-    ratios = [sizes[i] / sizes[i + 1] for i in range(len(sizes) - 1)]
-    title_figure = re.search(r"([\d.]+)x", str(slp6.get("title", "")))
-    want = (True, True, True, True)
-    got = (threshold is not None,
-           title_figure is not None,
-           # the title and the verify: string quote one threshold, not two
-           threshold is not None and title_figure is not None
-           and float(threshold.group(1)) == float(title_figure.group(1)),
-           # and every adjacent pair TYP-3 mandates clears it
-           threshold is not None and min(ratios) >= float(threshold.group(1)))
+    want = (True, True, True, True, True)
+    got, tightest = type_ramp_invariant(live_by_id.get("SLP-6", {}),
+                                        live_by_id.get("TYP-3", {}))
     if want != got:
         failures.append(f"FAIL SLP-6's threshold clears TYP-3's whole scale: "
                         f"want: {want!r}; got: {got!r} "
-                        f"(tightest adjacent pair {min(ratios):.4f})")
+                        f"(tightest adjacent pair {tightest})")
+
+    case_count += 1
+    malformed, _ = type_ramp_invariant({"title": "no ratio", "verify": "no ratio"},
+                                       {"verify": "no size set"})
+    if any(malformed):
+        failures.append("FAIL malformed SLP-6/TYP-3 text reports an invariant failure")
 
     # The polish skill restates SLP-6's threshold, and no sync check compares a
     # figure. Read it against the catalog so the two cannot drift apart.
@@ -1894,10 +1905,12 @@ def run_self_test():
                           "SKILL.md")
     with open(polish) as fh:
         polish_figure = re.search(r"SLP-6 \(type hierarchy [^\d]*([\d.]+)x\)", fh.read())
+    live_threshold = re.search(r">=\s*([\d.]+)",
+                               str(live_by_id.get("SLP-6", {}).get("verify", "")))
     want = (True, True)
     got = (polish_figure is not None,
-           polish_figure is not None and threshold is not None
-           and float(polish_figure.group(1)) == float(threshold.group(1)))
+           polish_figure is not None and live_threshold is not None
+           and float(polish_figure.group(1)) == float(live_threshold.group(1)))
     if want != got:
         failures.append(f"FAIL the polish skill quotes SLP-6's live threshold: "
                         f"want: {want!r}; got: {got!r}")
