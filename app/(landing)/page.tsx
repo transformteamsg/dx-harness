@@ -308,6 +308,7 @@ export default function Landing() {
             data-skill-tool
             className="-mr-px -mb-px border-r border-b border-border px-6 py-8 sm:px-10 sm:py-10"
           >
+            {/* dx-waive SLP-5 reason="the tile is the content, not a template: each mark is the skill's actual tool in the site's ink vocabulary, and this grid is one band of a varied page, not its default layout" */}
             <div className="grid size-16 place-items-center rounded-xl border border-border bg-site-accent-wash">
               <InkIcon name={skill.icon} size={36} ink="var(--foreground)" />
             </div>

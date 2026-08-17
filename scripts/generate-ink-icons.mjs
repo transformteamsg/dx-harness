@@ -28,6 +28,9 @@ const TOPIC_ICONS = {
   "foundations/spacing-radius": "ruler",
   "foundations/iconography": "shapes",
   "foundations/tokens": "braces",
+  /* Landing FIG 3 only — no docs page; the mark is an easing spline, the
+     drawable face of a motion signature. */
+  "foundations/motion": "spline",
   "research/research-brief": "notebook-pen",
   /* Products keep the family signature: ink squircle frame + script letter
      (letter is drawn by the component, not generated here). */

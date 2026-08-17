@@ -12,7 +12,10 @@ export type FeatureFigureKind = "orchestrator" | "catalog" | "design-file" | "re
    Ink rule: the mark that names its own card's subject renders
    `ink="var(--site-accent-text)"`; every other mark in that figure renders
    `ink="var(--foreground)"`. Check a mark against its card before changing
-   its colour. */
+   its colour. The subject's mark may be a drawn gesture rather than a catalog
+   mark: FIG 4's subject (the review) is carried by the accent check drawn
+   where the two source rings agree — a static `skills/review` glyph could not
+   perform that argument. */
 
 const line = {
   fill: "none",
@@ -77,13 +80,14 @@ function CatalogFigure() {
     <>
       {/* the catalog: a drawn sheet carrying the list-checks mark, with rule
           lines above and below it so it reads as a page of guidance, not a
-          blank card */}
-      <rect x="140" y="27" width="80" height="166" rx="6" {...line} className="text-foreground" strokeWidth="2" fill="var(--surface)" />
+          blank card. 80x116 is 1:1.45 — paper proportions, deliberately far
+          from the 1:2+ band where the sheet starts reading as a phone. */}
+      <rect x="140" y="52" width="80" height="116" rx="6" {...line} className="text-foreground" strokeWidth="2" fill="var(--surface)" />
       <g className="text-border-strong" {...line} strokeWidth="1.5">
-        <rect x="152" y="42" width="56" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="152" y="56" width="40" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="152" y="146" width="56" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
-        <rect x="152" y="160" width="40" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="64" width="56" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="76" width="40" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="139" width="56" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
+        <rect x="152" y="151" width="40" height="5" rx="2.5" fill="var(--border-strong)" stroke="none" />
       </g>
       <g transform="translate(156 86)">
         <InkIcon name="standards/catalog" size={48} ink="var(--site-accent-text)" idSuffix="-fig2" />
@@ -107,11 +111,13 @@ function CatalogFigure() {
   );
 }
 
-/* Your foundations compose your product: the colour, type, and token marks
+/* Your foundations compose your product: the colour, type, and motion marks
    route into the DESIGN.md mark — the card's own subject, so it carries the
    accent ink — which then routes into the drawn interface and takes effect as
    its avatar, its field, its action. Foundations collect into one file; that
-   file composes the product. */
+   file composes the product. The card's fourth noun, voice, stays undrawn:
+   it is the one non-visual foundation, and its glyph (guidelines/voice-tone)
+   already means "your plain-words ask" in FIG 1. */
 function DesignFileFigure() {
   return (
     <>
@@ -123,7 +129,7 @@ function DesignFileFigure() {
         <InkIcon name="foundations/typography" size={36} ink="var(--foreground)" idSuffix="-fig3" />
       </g>
       <g transform="translate(36 160)">
-        <InkIcon name="foundations/tokens" size={36} ink="var(--foreground)" idSuffix="-fig3" />
+        <InkIcon name="foundations/motion" size={36} ink="var(--foreground)" idSuffix="-fig3" />
       </g>
       {/* three routes funnel in and land on DESIGN.md itself */}
       <g className="text-site-accent-text" {...line} strokeWidth="2">
