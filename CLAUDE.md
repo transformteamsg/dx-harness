@@ -15,7 +15,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - Content lives in `content/`, not in components. Page chrome lives in `components/`. Don't hardcode standard content into TSX.
 - Copy: second person, active voice, sentence case, plain language. Error messages say what happened and what to do next.
 - When editing prose in `content/`, apply SLP-9 (AI-writing tells) — canonical lists and calibration in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-design-copy skill.
-- Status frontmatter matters: `settled` vs `proposed` renders different badges. Don't mark proposed things settled.
+- Published docs intentionally have no `settled`/`proposed` status axis. Keep unresolved proposals in decision records or issues and label them there; don't add status frontmatter or badges to published pages.
 
 ## Verify
 
@@ -34,3 +34,7 @@ Default label vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `read
 ### Domain docs
 
 Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Deploy
+
+The website deploys as a container to Airbase (staging only so far). See `docs/agents/deploy.md`.

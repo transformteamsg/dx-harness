@@ -5,14 +5,33 @@
    OS colour-scheme preference — this site is light-only (no .dark layer). */
 @custom-variant dark (&:is(.dark *));
 
-/* ── TFX Design Standard — neutral shadcn-style tokens, visual direction TBD ── */
+/* ── DX Harness — neutral shadcn-style tokens with a Radix lime accent ── */
 :root {
   --background: #fafafa;
   --surface: #ffffff;
   --foreground: #18181b;
   --muted-foreground: #67676f; /* darkened from zinc-500 #71717a to clear WCAG AA 4.5:1 on the --muted #f4f4f5 fill, not just the page bg (A11Y-1, L0) */
   --border: #e4e4e7;
-  --ring: #0064ff;
+
+  /* DX Harness accent — Radix lime. Step 9 is the solid fill, step 10 the
+     hover fill, and step 11 the text/border/focus colour. Lime solids take a
+     dark foreground: --foreground on lime-9 clears AA at 13.14:1. */
+  --site-accent: #bdee63;       /* Radix lime-9 */
+  --site-accent-hover: #b0e64c; /* Radix lime-10 */
+  /* Darkened from Radix lime-11 so accent text clears WCAG AA 4.5:1 on every
+     ground it actually lands on, not just the page bg (A11Y-1, L0) — the same
+     correction --muted-foreground carries above, for the same reason.
+
+     "Every ground" is the whole point, and it took two passes to get right. Plain
+     lime-11 measures 4.479:1 on the --sheet-band, which the "See all skills" link
+     crossed the moment it moved into a heading band. The first correction fixed
+     the band and left the --muted fill at 4.489:1 — still short, because a docs
+     link wrapping an inline-code chip sits on --muted, not on the page. This step
+     measures 4.624:1 on --muted, 4.747:1 on --sheet-band, 4.869:1 on --background
+     and 5.082:1 on --surface. */
+  --site-accent-text: #587828;  /* Radix lime-11 #5c7c2f, darkened */
+  --site-accent-wash: color-mix(in oklab, var(--site-accent) 8%, var(--surface));
+  --ring: var(--site-accent-text);
 
   /* Product primaries — ⚑ proposed mapping (Radix-based for CaseSync/Glow) */
   --tw-blue: #0064ff;        /* Teacher Workspace — brand anchor */
@@ -29,6 +48,17 @@
   --accent: #fafafa;         /* zinc-50 — hover fill */
   --border-strong: #a1a1aa;  /* zinc-400 — hover border */
 
+  /* ── Landing sheet — the front page is drawn as a measured sheet: hairline
+     flanks, a whisper-tinted heading band, and lime reserved for the drawing's
+     own instrumentation. The sheet reuses --background and --border rather than
+     minting near-identical greys; only these three are genuinely new. ── */
+  --sheet-band: #f7f7f8;     /* between --accent and --muted: reads as a band, never as a fill */
+  /* The construction lines, dimension marks, and registration crosses on the
+     landing blueprint use the readable text step of the site accent — including
+     the hero drawing, which is inked on the --sheet-band rather than on a plate
+     of its own, so the whole sheet is one paper. */
+  --blueprint-ink: var(--site-accent-text);
+
   /* Prose body ink — a touch softer than --foreground */
   --prose-body: #3f3f46;     /* zinc-700 */
 
@@ -40,6 +70,11 @@
   --success: #2a7e3b;        /* Radix grass-11 — text */
   --warning: #8a5300;        /* Radix amber-11 (#ab6400) darkened → 6.1:1 on --warning-subtle. The darken is needed because amber-11 itself caps ~4.6:1 even on white (amber is intrinsically low-contrast) and fails AA on a tinted bg. */
   --danger:  #ce2c31;        /* Radix red-11 — text */
+  /* Radix red-12 — small text on a danger tint. COL-2 asks for the step-12 of the
+     scale here: red-11 on a 10% danger fill measures 4.29:1, which is why the
+     destructive button variant needed its own label token rather than --danger.
+     On that same fill this measures 10.23:1. */
+  --danger-strong: #641723;
   /* Subtle (badge bg) kept at 8% so step-11 text clears the 4.5:1 floor with margin (A11Y-1, L0). */
   --success-subtle: color-mix(in oklab, var(--success-9) 8%, var(--surface));
   --warning-subtle: color-mix(in oklab, var(--warning-9) 8%, var(--surface));
@@ -54,7 +89,7 @@
   --sec-standards: #46a758;    /* Radix grass-9 — checkable, pass/fail */
   --sec-guidelines: #ab6400;   /* Radix amber-11 — advisory, judgement applies */
   --sec-foundations: #12a594;  /* Radix teal-9 — shared material */
-  --sec-research: #5c7c2f;     /* Radix lime-11 — evidence, distinct from the green/teal/cyan already in use */
+  --sec-research: #5c7c2f;     /* Radix lime-11 — research aligns with the site accent */
   --sec-products: #00a2c7;     /* Radix cyan-9 — the three identities */
   --sec-harness: #ad7f58;      /* Radix brown-9 — the working strap */
   --sec-getting-started: #5b5bd6; /* Radix iris-9 — the hands-on on-ramp */
@@ -82,21 +117,21 @@
   --card-foreground: var(--foreground);
   --popover: var(--surface);
   --popover-foreground: var(--foreground);
-  --primary: var(--tw-blue);
-  --primary-foreground: var(--surface);
+  --primary: var(--site-accent);
+  --primary-foreground: var(--foreground);
   --secondary: var(--muted);
   --secondary-foreground: var(--foreground);
   --accent-foreground: var(--foreground);
   --destructive: var(--danger);
   --input: var(--border);
-  /* --ring is already defined above as the TW-blue focus ring (#0064ff). */
+  /* --ring is already defined above as Radix lime-11. */
 
   /* Sidebar surface — same fill as the page, so the desktop column reads as it
      does today (separated by its right border), not as a distinct panel. */
   --sidebar: var(--background);
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: var(--tw-blue);
-  --sidebar-primary-foreground: var(--surface);
+  --sidebar-primary: var(--site-accent);
+  --sidebar-primary-foreground: var(--foreground);
   --sidebar-accent: var(--muted);
   --sidebar-accent-foreground: var(--foreground);
   --sidebar-border: var(--border);
@@ -121,6 +156,10 @@
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-site-accent: var(--site-accent);
+  --color-site-accent-hover: var(--site-accent-hover);
+  --color-site-accent-text: var(--site-accent-text);
+  --color-site-accent-wash: var(--site-accent-wash);
   --color-tw-blue: var(--tw-blue);
   --color-tw-blue-hover: var(--tw-blue-hover);
   --color-casesync: var(--casesync);
@@ -128,6 +167,8 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-border-strong: var(--border-strong);
+  --color-sheet-band: var(--sheet-band);
+  --color-blueprint-ink: var(--blueprint-ink);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
   --color-success-muted: var(--success-muted);
@@ -135,6 +176,7 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-warning-muted: var(--warning-muted);
   --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
   --color-danger-subtle: var(--danger-subtle);
   --color-danger-muted: var(--danger-muted);
 
@@ -219,8 +261,8 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
   .prose code { font-size: 0.9em; background: var(--muted); padding: 2px 6px; border-radius: 4px; overflow-wrap: anywhere; word-break: break-word; }
   .prose pre { background: transparent; color: inherit; padding: 0; margin: 0; border-radius: 0; overflow-x: auto; }
   .prose pre code { background: transparent; padding: 0; overflow-wrap: normal; word-break: normal; white-space: inherit; }
-  .prose blockquote { border-left: 3px solid var(--tw-blue); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
-  .prose a { color: var(--tw-blue); text-decoration: underline; text-underline-offset: 2px; }
+  .prose blockquote { border-left: 3px solid var(--site-accent-text); padding-left: 16px; color: var(--muted-foreground); margin: 0 0 14px; }
+  .prose a { color: var(--site-accent-text); text-decoration: underline; text-underline-offset: 2px; }
   .prose strong { color: var(--foreground); font-weight: 600; }
   /* Preflight gives hr 0 margin, so a `---` inherits its neighbours' asymmetric
      gaps (e.g. 20px above from a table, 0 below from a paragraph). Give it its

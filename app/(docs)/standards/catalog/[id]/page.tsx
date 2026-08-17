@@ -65,11 +65,6 @@ export default async function ControlDetailPage({
         section={{ label: "Control catalog", href: "/standards/catalog" }}
         current={detail.id}
       />
-      {detail.status === "proposed" && (
-        <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning">
-          ⚑ Proposed — react, don&apos;t obey
-        </span>
-      )}
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-md border border-border bg-accent px-2 py-0.5 text-xs font-semibold">
           {detail.id}
@@ -130,13 +125,13 @@ export default async function ControlDetailPage({
       <p className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">
         Also available as{" "}
         <a
-          className="text-tw-blue underline underline-offset-2"
+          className="text-site-accent-text underline underline-offset-2"
           href={`/standards/catalog/${detail.slug}.md`}
         >
           Markdown
         </a>{" "}
         ·{" "}
-        <a className="text-tw-blue underline underline-offset-2" href="/standards/catalog.yaml">
+        <a className="text-site-accent-text underline underline-offset-2" href="/standards/catalog.yaml">
           catalog.yaml
         </a>
       </p>

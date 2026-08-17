@@ -1,44 +1,66 @@
 ---
-title: Design that gives teachers their time back.
-description: The TFX Design Standard is how TransformX builds the Teacher & School portfolio (Teacher Workspace, CaseSync, and Glow). It turns our design quality bar into something every builder can reach, with or without a designer in the room.
-illustration: a busy Singapore school staff room transformed into calm, teachers chatting over coffee while their marking sits finished beside them, morning light --ar 21:9
-cta: See the TFX Design Standard
-readersHeading: One standard, three readers
-readersLead: Most design systems are written for designers. This one is written so a person, a person working with an agent, and an agent on its own all reach the same bar.
-readers:
-  - key: human
-    kicker: Human
-    title: Read it, use judgement
-    text: Designers and PMs read the principles and guidelines like any standard, then decide. Priority-ordered principles settle trade-offs; status badges show what's settled and what's still proposed.
-    href: /how-to-read
-    link: How to read this standard
-  - key: human-machine
-    kicker: Human + machine
-    title: Hand the skills to your agent
-    text: Skills carry the guidelines into your agent's context. You stay on the decisions and the taste; the harness keeps the output on standard while you steer.
-    href: /harness
-    link: See the harness
-  - key: machine
-    kicker: Machine
-    title: The machine checks itself
-    text: Agents read llms.txt and the control catalog directly. Each control is one tiered statement with explicit fail conditions that a separate evaluator grades the built screen against.
-    href: /for-agents
-    link: Start at for-agents
-why:
-  - title: Arguments get settled once
-    text: Most design debates repeat. Principles are priority-ordered beliefs that resolve trade-offs the same way every time, so teams spend their energy on the hard, novel decisions instead.
-  - title: The bar is checkable
-    text: Every standard is one verifiable statement with a tier and explicit failure conditions. A machine can read the catalog and tell you whether a screen passes before review even starts.
-  - title: Builders ship without waiting
-    text: Engineers and AI agents carry the standard with them through skills and the harness. Quality stops depending on whether a designer was free that sprint.
-team:
-  - name: Add designer name
-    role: Principal Product Designer
-    focus: Owns the standard · Teacher Workspace
-  - name: Add designer name
-    role: Product Designer
-    focus: CaseSync
-  - name: Add designer name
-    role: Product Designer
-    focus: Glow
+title: DX Harness — design in code with confidence
+description: DX Harness gives coding agents a shared design language, the right skills for each task, and a review before the work returns to you.
 ---
+
+Design in code with confidence.
+
+A design harness gives your coding agent a shared design language, the right skills
+for each task, and a review before the work comes back to you.
+
+## What the harness gives your agent
+
+Four parts keep every design request grounded in the same language and standards.
+
+**Start with a plain-language request.** `dx-design` understands what you want and
+brings in the right skills. Call it directly, or let it step in when a request needs
+design work.
+
+**Shared design guidance agents can use.** The control catalog turns good interface
+design into clear context that every skill can read and check.
+
+**Your product's design language.** Keep the decisions that make your product
+distinct in its repository. Every agent works from the same `DESIGN.md` context as
+the product grows.
+
+**A review grounded in both.** A separate reviewer checks the work against the
+control catalog and `DESIGN.md`, then returns specific findings before the work
+ships.
+
+## From a request to a reviewed result
+
+Speak your intent, collaborate on the same standard, and get better design outcomes.
+
+1. **Your prompt**, in Claude Code: “Make this lesson planner easier to scan and keep
+   it consistent with our product.”
+2. **The harness at work**, running automatically: `dx-design` brings in the skills
+   this request needs. Each one reads the control catalog and your `DESIGN.md`.
+3. **A reviewed result**, back in your product: Execute makes the approved change. A
+   separate review checks the result before it comes back to you.
+
+## Compare the output
+
+See the same brief with and without the harness.
+
+## Meet your new collaborators
+
+Six roles cover the path from an open request to a reviewed interface. DX Design
+calls the right ones for you.
+
+| Role | What it does | Command |
+| --- | --- | --- |
+| Orchestrator | Understands the request and brings in the skills it needs. | `/dx-harness:dx-design` |
+| Copy | Makes interface language clear, useful, and consistent. | `/dx-harness:dx-design-copy` |
+| Pattern | Sets the structure, hierarchy, and density of the page. | `/dx-harness:dx-design-pattern` |
+| Polish | Refines spacing, type, colour, and the small details. | `/dx-harness:dx-design-polish` |
+| Execute | Turns the approved direction into working product code. | `/dx-harness:dx-design-execute` |
+| Review | Checks the result against the control catalog and `DESIGN.md`. | Runs automatically after execute |
+
+See [all the skills](/harness/skills).
+
+## A shared language for you and your agent
+
+DX Harness bridges human judgment and agent execution. It gives both of you the
+same design language and the checks to build safely on each other's work.
+
+[Quick start](/harness/install)

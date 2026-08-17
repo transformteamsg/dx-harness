@@ -11,17 +11,15 @@ import { allTwins } from "@/lib/markdown-twin";
 export function llmsIndex(): string {
   const { version, waiver_syntax } = getCatalogMeta();
   const lines: string[] = [];
-  lines.push("# TFX Design Standard");
+  lines.push("# dx-harness");
   lines.push("");
   lines.push(
-    "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
+    "> Make the quality bar independent of staffing. Shared product intent, checkable",
   );
   lines.push(
-    "> useful first, kind at the surface. The one test: does this help teachers work",
+    "> standards, and a repeatable workflow help people and agents ship coherent interfaces.",
   );
-  lines.push(
-    "> faster with less stress? Every page below is also available as Markdown by",
-  );
+  lines.push("> Every page below is also available as Markdown by");
   lines.push("> appending `.md` to its path.");
   lines.push("");
 
@@ -29,7 +27,7 @@ export function llmsIndex(): string {
   lines.push("## About");
   lines.push("");
   lines.push(
-    `- TransformX, Teacher & School portfolio, GovTech Singapore (v${version} draft).`,
+    `- The dx-harness design standard (v${version} draft).`,
   );
   lines.push(
     "- Litmus for standards: if you can't check it, it's a principle or guideline, not a standard.",
@@ -39,7 +37,7 @@ export function llmsIndex(): string {
   );
   lines.push(`- Waiver syntax: \`${waiver_syntax}\`.`);
   lines.push(
-    "- Stack: Base UI components + Radix Colors + shadcn/ui default tokens. Fonts: Plus Jakarta Sans (display), Inter (body).",
+    "- Product context: implemented stack and standing deviations belong in the product repo's DESIGN.md. Current catalog defaults use Base UI, Radix Colors, shadcn/ui tokens, Plus Jakarta Sans, and Inter.",
   );
   lines.push("");
 
@@ -53,7 +51,7 @@ export function llmsIndex(): string {
   // Start here: the singleton entry points.
   lines.push("## Start here");
   lines.push("");
-  lines.push("- [TFX Design Standard home](/index.md)");
+  lines.push("- [dx-harness home](/index.md)");
   lines.push("- [Overview](/overview.md)");
   lines.push("- [How to read this standard](/how-to-read.md)");
   lines.push("- [For agents](/for-agents.md)");
@@ -66,9 +64,7 @@ export function llmsIndex(): string {
     if (key === "standards") {
       lines.push("## Standards");
       lines.push("");
-      const std = getDoc("sections", "standards");
-      if (std) lines.push(item("Standards overview", "/standards.md", std.description));
-      lines.push(item("Control catalog", "/standards/catalog.md", "readable controls + embedded YAML"));
+      lines.push(item("Standards and control catalog", "/standards/catalog.md", "overview, readable controls + embedded YAML"));
       lines.push(item("Control catalog (YAML)", "/standards/catalog.yaml", "machine source"));
       lines.push("");
       continue;
@@ -107,7 +103,7 @@ export function llmsIndex(): string {
    catalog projection. */
 export function llmsFull(): string {
   const lines = [
-    "# TFX Design Standard — full Markdown corpus",
+    "# dx-harness — full Markdown corpus",
     "",
     "> Complete corpus generated from the site's Markdown twins. Each source is delimited by its canonical Markdown path.",
     "",

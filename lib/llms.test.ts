@@ -6,12 +6,19 @@ import { llmsFull, llmsIndex } from "./llms";
 import { allTwins } from "./markdown-twin";
 
 describe("llmsIndex", () => {
-  it("publishes the TFX identity and the catalog waiver syntax", () => {
+  it("publishes the dx-harness identity and the catalog waiver syntax", () => {
     const index = llmsIndex();
     const meta = getCatalogMeta();
-    expect(index.startsWith("# TFX Design Standard")).toBe(true);
+    expect(index.startsWith("# dx-harness")).toBe(true);
     expect(index).toContain(`(v${meta.version} draft)`);
     expect(index).toContain(meta.waiver_syntax);
+  });
+
+  it("publishes a product-agnostic harness promise", () => {
+    const mission = llmsIndex().split("\n\n## About")[0].replaceAll("\n> ", " ");
+    expect(mission).toContain("help people and agents ship coherent interfaces");
+    expect(mission).not.toContain("Kind Utility");
+    expect(mission).not.toContain("The one test");
   });
 
   it("links the full corpus and every page twin", () => {

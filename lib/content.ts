@@ -9,7 +9,6 @@ export type Doc = {
   section: string;
   title: string;
   description?: string;
-  status?: string; // "settled" | "proposed"
   answers?: string; // ladder position, e.g. "why", "must"
   illustration?: string; // Midjourney subject prompt (SREF appended by <Illo>)
   data: Record<string, unknown>; // full frontmatter, for structured fields
@@ -25,7 +24,6 @@ export function getDoc(section: string, slug: string): Doc | null {
     section,
     title: data.title ?? slug,
     description: data.description,
-    status: data.status,
     answers: data.answers,
     illustration: data.illustration,
     data,

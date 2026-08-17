@@ -16,11 +16,11 @@ export function ToolCard({ tool }: { tool: Tool }) {
     <aside
       className="mt-6 rounded-lg border p-5"
       style={{
-        borderColor: "color-mix(in oklab, var(--tw-blue) 25%, var(--border))",
-        background: "color-mix(in oklab, var(--tw-blue) 5%, var(--surface))",
+        borderColor: "color-mix(in oklab, var(--site-accent-text) 25%, var(--border))",
+        background: "var(--site-accent-wash)",
       }}
     >
-      <p className="text-xs font-semibold text-tw-blue">
+      <p className="text-xs font-semibold text-site-accent-text">
         Internal tool
       </p>
       <p className="mt-1.5 font-display text-lg font-semibold">{tool.name}</p>
@@ -34,7 +34,7 @@ export function ToolCard({ tool }: { tool: Tool }) {
           href={tool.href}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-tw-blue px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-tw-blue-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-site-accent-text bg-site-accent px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-site-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
         >
           Open {tool.name}
           <ArrowUpRight size={15} aria-hidden="true" />

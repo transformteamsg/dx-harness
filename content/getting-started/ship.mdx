@@ -1,7 +1,6 @@
 ---
 title: "Step 4: Ship"
 description: Commit, open a merge request, get it reviewed, and merge.
-status: proposed
 ---
 
 A merge request is how your change gets reviewed and added into the shared code. Your AI can do the mechanics; here's what's happening, so you can follow along.
@@ -27,5 +26,3 @@ Your reviewer may ask for changes; make them and push again. Once approved, it's
 While you work, others merge into `main`, so your branch can fall behind. Before merging, update it by pulling in the latest `main`. Two techniques do this: *rebase* and *merge* (not the same "merge" as your MR being merged in). Teams have a preference, so ask which yours uses and let your AI run the command. If two people changed the same lines, you'll get a **merge conflict**. Don't guess; ask your AI to help, then re-run the checks.
 
 > **A habit worth building:** as you build, jot down the decisions: what the change is for, what states it covers, and anything the backend will need. That's the checklist your reviewer verifies against, and it's how your intent reaches the engineer instead of getting lost.
-
-Next: [Help & prompts](/getting-started/help).

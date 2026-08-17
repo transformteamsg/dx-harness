@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* Dev runs with NEXT_DIST_DIR=.next-dev so `next build` (default .next) never
-     clobbers a running dev server's chunks. Unset elsewhere (incl. Vercel), so
-     production builds keep the default .next. */
+     clobbers a running dev server's chunks. Unset elsewhere (CI, host builds),
+     so production builds keep the default .next. */
   distDir: process.env.NEXT_DIST_DIR || ".next",
   /* The llms routes and catalog route read content/ and plugins/dx-harness/standards/
      with fs at build time; include them in file tracing for deploys. */
