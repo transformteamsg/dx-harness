@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "gen:icons": "node scripts/generate-ink-icons.mjs"
+    "gen:icons": "node scripts/generate-ink-icons.mjs",
+    "gen:notices": "node scripts/generate-notices.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

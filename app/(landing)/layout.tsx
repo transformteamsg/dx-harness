@@ -93,8 +93,14 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
               href="https://github.com/transformteamsg/dx-harness/blob/main/LICENSE"
               className={footLink}
             >
-              MIT License
+              GPL-3.0 License
             </a>
+            {/* The permissive licenses this site is built on grant redistribution
+                only while their notices travel with the copies served. This link
+                is how they travel. */}
+            <Link href="/legal" className={footLink}>
+              Third-party notices
+            </Link>
           </div>
         </footer>
       </div>
