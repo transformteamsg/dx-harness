@@ -13,6 +13,11 @@ export type NoticeGroup = {
        the licence condition; this is so a reader can check it at source. Empty
        when a package declares neither a repository nor a homepage. */
     source: string;
+    /* True for a native binary that installs only on some hosts (it declares
+       `os`/`cpu`, or its name carries a platform triple). The list is a
+       superset across the hosts that have generated it, so an entry marked here
+       may not be installable on yours. */
+    hostDependent: boolean;
   }[];
 };
 
@@ -31,229 +36,267 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "decode-named-character-reference",
         "version": "1.3.0",
         "homepage": "https://github.com/wooorm/decode-named-character-reference#readme",
-        "source": "https://github.com/wooorm/decode-named-character-reference"
+        "source": "https://github.com/wooorm/decode-named-character-reference",
+        "hostDependent": false
       },
       {
         "name": "hast-util-to-estree",
         "version": "3.1.3",
         "homepage": "https://github.com/syntax-tree/hast-util-to-estree#readme",
-        "source": "https://github.com/syntax-tree/hast-util-to-estree"
+        "source": "https://github.com/syntax-tree/hast-util-to-estree",
+        "hostDependent": false
       },
       {
         "name": "hast-util-to-jsx-runtime",
         "version": "2.3.6",
         "homepage": "https://github.com/syntax-tree/hast-util-to-jsx-runtime#readme",
-        "source": "https://github.com/syntax-tree/hast-util-to-jsx-runtime"
+        "source": "https://github.com/syntax-tree/hast-util-to-jsx-runtime",
+        "hostDependent": false
       },
       {
         "name": "markdown-table",
         "version": "3.0.4",
         "homepage": "https://github.com/wooorm/markdown-table#readme",
-        "source": "https://github.com/wooorm/markdown-table"
+        "source": "https://github.com/wooorm/markdown-table",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-find-and-replace",
         "version": "3.0.2",
         "homepage": "https://github.com/syntax-tree/mdast-util-find-and-replace#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-find-and-replace"
+        "source": "https://github.com/syntax-tree/mdast-util-find-and-replace",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-from-markdown",
         "version": "2.0.3",
         "homepage": "https://github.com/syntax-tree/mdast-util-from-markdown#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-from-markdown"
+        "source": "https://github.com/syntax-tree/mdast-util-from-markdown",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-gfm",
         "version": "3.1.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-gfm"
+        "source": "https://github.com/syntax-tree/mdast-util-gfm",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-gfm-footnote",
         "version": "2.1.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm-footnote#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-gfm-footnote"
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-footnote",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-to-markdown",
         "version": "2.1.2",
         "homepage": "https://github.com/syntax-tree/mdast-util-to-markdown#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-to-markdown"
+        "source": "https://github.com/syntax-tree/mdast-util-to-markdown",
+        "hostDependent": false
       },
       {
         "name": "micromark",
         "version": "4.0.2",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark",
+        "hostDependent": false
       },
       {
         "name": "micromark-core-commonmark",
         "version": "2.0.3",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm-table",
         "version": "2.1.1",
         "homepage": "https://github.com/micromark/micromark-extension-gfm-table#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm-table"
+        "source": "https://github.com/micromark/micromark-extension-gfm-table",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-mdx-expression",
         "version": "3.0.1",
         "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-extension-mdx-expression"
+        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-extension-mdx-expression",
+        "hostDependent": false
       },
       {
         "name": "micromark-factory-destination",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-destination"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-destination",
+        "hostDependent": false
       },
       {
         "name": "micromark-factory-label",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-label"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-label",
+        "hostDependent": false
       },
       {
         "name": "micromark-factory-mdx-expression",
         "version": "2.0.3",
         "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-factory-mdx-expression"
+        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-factory-mdx-expression",
+        "hostDependent": false
       },
       {
         "name": "micromark-factory-space",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-space"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-space",
+        "hostDependent": false
       },
       {
         "name": "micromark-factory-title",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-title"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-title",
+        "hostDependent": false
       },
       {
         "name": "micromark-factory-whitespace",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-whitespace"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-whitespace",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-character",
         "version": "2.1.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-character"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-character",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-chunked",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-chunked"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-chunked",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-classify-character",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-classify-character"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-classify-character",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-combine-extensions",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-combine-extensions"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-combine-extensions",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-decode-numeric-character-reference",
         "version": "2.0.2",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-numeric-character-reference"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-numeric-character-reference",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-decode-string",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-string"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-string",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-encode",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-encode"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-encode",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-events-to-acorn",
         "version": "2.0.3",
         "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-util-events-to-acorn"
+        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-util-events-to-acorn",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-html-tag-name",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-html-tag-name"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-html-tag-name",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-normalize-identifier",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-normalize-identifier"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-normalize-identifier",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-resolve-all",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-resolve-all"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-resolve-all",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-sanitize-uri",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-subtokenize",
         "version": "2.1.0",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-symbol",
         "version": "2.0.1",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-symbol"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-symbol",
+        "hostDependent": false
       },
       {
         "name": "micromark-util-types",
         "version": "2.0.2",
         "homepage": "https://github.com/micromark/micromark/tree/main#readme",
-        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-types"
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-types",
+        "hostDependent": false
       },
       {
         "name": "remark-gfm",
         "version": "4.0.1",
         "homepage": "https://github.com/remarkjs/remark-gfm#readme",
-        "source": "https://github.com/remarkjs/remark-gfm"
+        "source": "https://github.com/remarkjs/remark-gfm",
+        "hostDependent": false
       },
       {
         "name": "remark-rehype",
         "version": "11.1.2",
         "homepage": "https://github.com/remarkjs/remark-rehype#readme",
-        "source": "https://github.com/remarkjs/remark-rehype"
+        "source": "https://github.com/remarkjs/remark-rehype",
+        "hostDependent": false
       },
       {
         "name": "vfile-matter",
         "version": "5.0.1",
         "homepage": "https://github.com/vfile/vfile-matter#readme",
-        "source": "https://github.com/vfile/vfile-matter"
+        "source": "https://github.com/vfile/vfile-matter",
+        "hostDependent": false
       },
       {
         "name": "vfile-message",
         "version": "4.0.3",
         "homepage": "https://github.com/vfile/vfile-message#readme",
-        "source": "https://github.com/vfile/vfile-message"
+        "source": "https://github.com/vfile/vfile-message",
+        "hostDependent": false
       }
     ]
   },
@@ -265,127 +308,148 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "estree-util-attach-comments",
         "version": "3.0.0",
         "homepage": "https://github.com/syntax-tree/estree-util-attach-comments#readme",
-        "source": "https://github.com/syntax-tree/estree-util-attach-comments"
+        "source": "https://github.com/syntax-tree/estree-util-attach-comments",
+        "hostDependent": false
       },
       {
         "name": "estree-util-build-jsx",
         "version": "3.0.1",
         "homepage": "https://github.com/syntax-tree/estree-util-build-jsx#readme",
-        "source": "https://github.com/syntax-tree/estree-util-build-jsx"
+        "source": "https://github.com/syntax-tree/estree-util-build-jsx",
+        "hostDependent": false
       },
       {
         "name": "estree-util-is-identifier-name",
         "version": "3.0.0",
         "homepage": "https://github.com/syntax-tree/estree-util-is-identifier-name#readme",
-        "source": "https://github.com/syntax-tree/estree-util-is-identifier-name"
+        "source": "https://github.com/syntax-tree/estree-util-is-identifier-name",
+        "hostDependent": false
       },
       {
         "name": "estree-util-scope",
         "version": "1.0.0",
         "homepage": "https://github.com/syntax-tree/estree-util-scope#readme",
-        "source": "https://github.com/syntax-tree/estree-util-scope"
+        "source": "https://github.com/syntax-tree/estree-util-scope",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-gfm-autolink-literal",
         "version": "2.0.1",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal"
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-gfm-strikethrough",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough"
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-gfm-table",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm-table#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-gfm-table"
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-table",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-gfm-task-list-item",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item"
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-mdx",
         "version": "3.0.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-mdx#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-mdx"
+        "source": "https://github.com/syntax-tree/mdast-util-mdx",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-mdx-expression",
         "version": "2.0.1",
         "homepage": "https://github.com/syntax-tree/mdast-util-mdx-expression#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-mdx-expression"
+        "source": "https://github.com/syntax-tree/mdast-util-mdx-expression",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-mdx-jsx",
         "version": "3.2.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-mdx-jsx#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-mdx-jsx"
+        "source": "https://github.com/syntax-tree/mdast-util-mdx-jsx",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-mdxjs-esm",
         "version": "2.0.1",
         "homepage": "https://github.com/syntax-tree/mdast-util-mdxjs-esm#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-mdxjs-esm"
+        "source": "https://github.com/syntax-tree/mdast-util-mdxjs-esm",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm",
         "version": "3.0.0",
         "homepage": "https://github.com/micromark/micromark-extension-gfm#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm"
+        "source": "https://github.com/micromark/micromark-extension-gfm",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm-autolink-literal",
         "version": "2.1.0",
         "homepage": "https://github.com/micromark/micromark-extension-gfm-autolink-literal#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm-autolink-literal"
+        "source": "https://github.com/micromark/micromark-extension-gfm-autolink-literal",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm-strikethrough",
         "version": "2.1.0",
         "homepage": "https://github.com/micromark/micromark-extension-gfm-strikethrough#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm-strikethrough"
+        "source": "https://github.com/micromark/micromark-extension-gfm-strikethrough",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm-tagfilter",
         "version": "2.0.0",
         "homepage": "https://github.com/micromark/micromark-extension-gfm-tagfilter#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm-tagfilter"
+        "source": "https://github.com/micromark/micromark-extension-gfm-tagfilter",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm-task-list-item",
         "version": "2.1.0",
         "homepage": "https://github.com/micromark/micromark-extension-gfm-task-list-item#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm-task-list-item"
+        "source": "https://github.com/micromark/micromark-extension-gfm-task-list-item",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-mdx-jsx",
         "version": "3.0.2",
         "homepage": "https://github.com/micromark/micromark-extension-mdx-jsx#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdx-jsx"
+        "source": "https://github.com/micromark/micromark-extension-mdx-jsx",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-mdx-md",
         "version": "2.0.0",
         "homepage": "https://github.com/micromark/micromark-extension-mdx-md#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdx-md"
+        "source": "https://github.com/micromark/micromark-extension-mdx-md",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-mdxjs",
         "version": "3.0.0",
         "homepage": "https://github.com/micromark/micromark-extension-mdxjs#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdxjs"
+        "source": "https://github.com/micromark/micromark-extension-mdxjs",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-mdxjs-esm",
         "version": "3.0.0",
         "homepage": "https://github.com/micromark/micromark-extension-mdxjs-esm#readme",
-        "source": "https://github.com/micromark/micromark-extension-mdxjs-esm"
+        "source": "https://github.com/micromark/micromark-extension-mdxjs-esm",
+        "hostDependent": false
       }
     ]
   },
@@ -397,67 +461,78 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "comma-separated-tokens",
         "version": "2.0.3",
         "homepage": "https://github.com/wooorm/comma-separated-tokens#readme",
-        "source": "https://github.com/wooorm/comma-separated-tokens"
+        "source": "https://github.com/wooorm/comma-separated-tokens",
+        "hostDependent": false
       },
       {
         "name": "hast-util-whitespace",
         "version": "3.0.0",
         "homepage": "https://github.com/syntax-tree/hast-util-whitespace#readme",
-        "source": "https://github.com/syntax-tree/hast-util-whitespace"
+        "source": "https://github.com/syntax-tree/hast-util-whitespace",
+        "hostDependent": false
       },
       {
         "name": "is-alphabetical",
         "version": "2.0.1",
         "homepage": "https://github.com/wooorm/is-alphabetical#readme",
-        "source": "https://github.com/wooorm/is-alphabetical"
+        "source": "https://github.com/wooorm/is-alphabetical",
+        "hostDependent": false
       },
       {
         "name": "is-alphanumerical",
         "version": "2.0.1",
         "homepage": "https://github.com/wooorm/is-alphanumerical#readme",
-        "source": "https://github.com/wooorm/is-alphanumerical"
+        "source": "https://github.com/wooorm/is-alphanumerical",
+        "hostDependent": false
       },
       {
         "name": "is-decimal",
         "version": "2.0.1",
         "homepage": "https://github.com/wooorm/is-decimal#readme",
-        "source": "https://github.com/wooorm/is-decimal"
+        "source": "https://github.com/wooorm/is-decimal",
+        "hostDependent": false
       },
       {
         "name": "is-hexadecimal",
         "version": "2.0.1",
         "homepage": "https://github.com/wooorm/is-hexadecimal#readme",
-        "source": "https://github.com/wooorm/is-hexadecimal"
+        "source": "https://github.com/wooorm/is-hexadecimal",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-to-hast",
         "version": "13.2.1",
         "homepage": "https://github.com/syntax-tree/mdast-util-to-hast#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-to-hast"
+        "source": "https://github.com/syntax-tree/mdast-util-to-hast",
+        "hostDependent": false
       },
       {
         "name": "space-separated-tokens",
         "version": "2.0.2",
         "homepage": "https://github.com/wooorm/space-separated-tokens#readme",
-        "source": "https://github.com/wooorm/space-separated-tokens"
+        "source": "https://github.com/wooorm/space-separated-tokens",
+        "hostDependent": false
       },
       {
         "name": "unist-util-stringify-position",
         "version": "4.0.0",
         "homepage": "https://github.com/syntax-tree/unist-util-stringify-position#readme",
-        "source": "https://github.com/syntax-tree/unist-util-stringify-position"
+        "source": "https://github.com/syntax-tree/unist-util-stringify-position",
+        "hostDependent": false
       },
       {
         "name": "unist-util-visit-parents",
         "version": "6.0.2",
         "homepage": "https://github.com/syntax-tree/unist-util-visit-parents#readme",
-        "source": "https://github.com/syntax-tree/unist-util-visit-parents"
+        "source": "https://github.com/syntax-tree/unist-util-visit-parents",
+        "hostDependent": false
       },
       {
         "name": "zwitch",
         "version": "2.0.4",
         "homepage": "https://github.com/wooorm/zwitch#readme",
-        "source": "https://github.com/wooorm/zwitch"
+        "source": "https://github.com/wooorm/zwitch",
+        "hostDependent": false
       }
     ]
   },
@@ -469,61 +544,71 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "bail",
         "version": "2.0.2",
         "homepage": "https://github.com/wooorm/bail#readme",
-        "source": "https://github.com/wooorm/bail"
+        "source": "https://github.com/wooorm/bail",
+        "hostDependent": false
       },
       {
         "name": "ccount",
         "version": "2.0.1",
         "homepage": "https://github.com/wooorm/ccount#readme",
-        "source": "https://github.com/wooorm/ccount"
+        "source": "https://github.com/wooorm/ccount",
+        "hostDependent": false
       },
       {
         "name": "character-entities",
         "version": "2.0.2",
         "homepage": "https://github.com/wooorm/character-entities#readme",
-        "source": "https://github.com/wooorm/character-entities"
+        "source": "https://github.com/wooorm/character-entities",
+        "hostDependent": false
       },
       {
         "name": "character-entities-html4",
         "version": "2.1.0",
         "homepage": "https://github.com/wooorm/character-entities-html4#readme",
-        "source": "https://github.com/wooorm/character-entities-html4"
+        "source": "https://github.com/wooorm/character-entities-html4",
+        "hostDependent": false
       },
       {
         "name": "character-entities-legacy",
         "version": "3.0.0",
         "homepage": "https://github.com/wooorm/character-entities-legacy#readme",
-        "source": "https://github.com/wooorm/character-entities-legacy"
+        "source": "https://github.com/wooorm/character-entities-legacy",
+        "hostDependent": false
       },
       {
         "name": "character-reference-invalid",
         "version": "2.0.1",
         "homepage": "https://github.com/wooorm/character-reference-invalid#readme",
-        "source": "https://github.com/wooorm/character-reference-invalid"
+        "source": "https://github.com/wooorm/character-reference-invalid",
+        "hostDependent": false
       },
       {
         "name": "collapse-white-space",
         "version": "2.1.0",
         "homepage": "https://github.com/wooorm/collapse-white-space#readme",
-        "source": "https://github.com/wooorm/collapse-white-space"
+        "source": "https://github.com/wooorm/collapse-white-space",
+        "hostDependent": false
       },
       {
         "name": "mdast-util-to-string",
         "version": "4.0.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-to-string#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-to-string"
+        "source": "https://github.com/syntax-tree/mdast-util-to-string",
+        "hostDependent": false
       },
       {
         "name": "unist-util-position",
         "version": "5.0.0",
         "homepage": "https://github.com/syntax-tree/unist-util-position#readme",
-        "source": "https://github.com/syntax-tree/unist-util-position"
+        "source": "https://github.com/syntax-tree/unist-util-position",
+        "hostDependent": false
       },
       {
         "name": "unist-util-visit",
         "version": "5.1.0",
         "homepage": "https://github.com/syntax-tree/unist-util-visit#readme",
-        "source": "https://github.com/syntax-tree/unist-util-visit"
+        "source": "https://github.com/syntax-tree/unist-util-visit",
+        "hostDependent": false
       }
     ]
   },
@@ -535,55 +620,64 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@types/debug",
         "version": "4.1.13",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/debug",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/estree",
         "version": "1.0.9",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/estree-jsx",
         "version": "1.0.5",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree-jsx",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/hast",
         "version": "3.0.4",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/hast",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/mdast",
         "version": "4.0.4",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdast",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/mdx",
         "version": "2.0.14",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdx",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/ms",
         "version": "2.1.0",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/ms",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/react",
         "version": "19.2.17",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       },
       {
         "name": "@types/unist",
         "version": "2.0.11, 3.0.3",
         "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/unist",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
       }
     ]
   },
@@ -595,31 +689,36 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "recma-build-jsx",
         "version": "1.0.0",
         "homepage": "https://github.com/mdx-js/recma",
-        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-build-jsx"
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-build-jsx",
+        "hostDependent": false
       },
       {
         "name": "recma-jsx",
         "version": "1.0.1",
         "homepage": "https://github.com/mdx-js/recma",
-        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-jsx"
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-jsx",
+        "hostDependent": false
       },
       {
         "name": "recma-parse",
         "version": "1.0.0",
         "homepage": "https://github.com/mdx-js/recma",
-        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-parse"
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-parse",
+        "hostDependent": false
       },
       {
         "name": "recma-stringify",
         "version": "1.0.0",
         "homepage": "https://github.com/mdx-js/recma",
-        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-stringify"
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-stringify",
+        "hostDependent": false
       },
       {
         "name": "rehype-recma",
         "version": "1.0.0",
         "homepage": "https://github.com/mdx-js/recma",
-        "source": "https://github.com/mdx-js/recma/tree/main/packages/rehype-recma"
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/rehype-recma",
+        "hostDependent": false
       }
     ]
   },
@@ -631,25 +730,29 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@floating-ui/core",
         "version": "1.7.5",
         "homepage": "https://floating-ui.com",
-        "source": "https://github.com/floating-ui/floating-ui"
+        "source": "https://github.com/floating-ui/floating-ui",
+        "hostDependent": false
       },
       {
         "name": "@floating-ui/dom",
         "version": "1.7.6",
         "homepage": "https://floating-ui.com",
-        "source": "https://github.com/floating-ui/floating-ui"
+        "source": "https://github.com/floating-ui/floating-ui",
+        "hostDependent": false
       },
       {
         "name": "@floating-ui/react-dom",
         "version": "2.1.8",
         "homepage": "https://floating-ui.com/docs/react-dom",
-        "source": "https://github.com/floating-ui/floating-ui"
+        "source": "https://github.com/floating-ui/floating-ui",
+        "hostDependent": false
       },
       {
         "name": "@floating-ui/utils",
         "version": "0.2.11",
         "homepage": "https://floating-ui.com",
-        "source": "https://github.com/floating-ui/floating-ui"
+        "source": "https://github.com/floating-ui/floating-ui",
+        "hostDependent": false
       }
     ]
   },
@@ -661,25 +764,29 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "esast-util-from-estree",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/esast-util-from-estree#readme",
-        "source": "https://github.com/syntax-tree/esast-util-from-estree"
+        "source": "https://github.com/syntax-tree/esast-util-from-estree",
+        "hostDependent": false
       },
       {
         "name": "estree-util-visit",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/estree-util-visit#readme",
-        "source": "https://github.com/syntax-tree/estree-util-visit"
+        "source": "https://github.com/syntax-tree/estree-util-visit",
+        "hostDependent": false
       },
       {
         "name": "micromark-extension-gfm-footnote",
         "version": "2.1.0",
         "homepage": "https://github.com/micromark/micromark-extension-gfm-footnote#readme",
-        "source": "https://github.com/micromark/micromark-extension-gfm-footnote"
+        "source": "https://github.com/micromark/micromark-extension-gfm-footnote",
+        "hostDependent": false
       },
       {
         "name": "unist-util-position-from-estree",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/unist-util-position-from-estree#readme",
-        "source": "https://github.com/syntax-tree/unist-util-position-from-estree"
+        "source": "https://github.com/syntax-tree/unist-util-position-from-estree",
+        "hostDependent": false
       }
     ]
   },
@@ -691,25 +798,29 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "react",
         "version": "19.2.7",
         "homepage": "https://react.dev/",
-        "source": "https://github.com/facebook/react"
+        "source": "https://github.com/facebook/react",
+        "hostDependent": false
       },
       {
         "name": "react-dom",
         "version": "19.2.7",
         "homepage": "https://react.dev/",
-        "source": "https://github.com/facebook/react"
+        "source": "https://github.com/facebook/react",
+        "hostDependent": false
       },
       {
         "name": "scheduler",
         "version": "0.27.0",
         "homepage": "https://react.dev/",
-        "source": "https://github.com/facebook/react"
+        "source": "https://github.com/facebook/react",
+        "hostDependent": false
       },
       {
         "name": "use-sync-external-store",
         "version": "1.6.0",
         "homepage": "https://github.com/facebook/react#readme",
-        "source": "https://github.com/facebook/react"
+        "source": "https://github.com/facebook/react",
+        "hostDependent": false
       }
     ]
   },
@@ -721,19 +832,22 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@babel/code-frame",
         "version": "7.29.7",
         "homepage": "https://babel.dev/docs/en/next/babel-code-frame",
-        "source": "https://github.com/babel/babel"
+        "source": "https://github.com/babel/babel",
+        "hostDependent": false
       },
       {
         "name": "@babel/helper-validator-identifier",
         "version": "7.29.7",
         "homepage": "https://github.com/babel/babel#readme",
-        "source": "https://github.com/babel/babel"
+        "source": "https://github.com/babel/babel",
+        "hostDependent": false
       },
       {
         "name": "@babel/runtime",
         "version": "7.29.7",
         "homepage": "https://babel.dev/docs/en/next/babel-runtime",
-        "source": "https://github.com/babel/babel"
+        "source": "https://github.com/babel/babel",
+        "hostDependent": false
       }
     ]
   },
@@ -745,19 +859,22 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@next/env",
         "version": "15.5.19",
         "homepage": "https://github.com/vercel/next.js#readme",
-        "source": "https://github.com/vercel/next.js"
+        "source": "https://github.com/vercel/next.js",
+        "hostDependent": false
       },
       {
         "name": "@next/swc-{platform}",
         "version": "15.5.19",
         "homepage": "https://github.com/vercel/next.js#readme",
-        "source": "https://github.com/vercel/next.js"
+        "source": "https://github.com/vercel/next.js",
+        "hostDependent": true
       },
       {
         "name": "client-only",
         "version": "0.0.1",
         "homepage": "https://reactjs.org/",
-        "source": "https://reactjs.org/"
+        "source": "https://reactjs.org/",
+        "hostDependent": false
       }
     ]
   },
@@ -769,19 +886,22 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "escape-string-regexp",
         "version": "5.0.0",
         "homepage": "https://github.com/sindresorhus/escape-string-regexp#readme",
-        "source": "https://github.com/sindresorhus/escape-string-regexp"
+        "source": "https://github.com/sindresorhus/escape-string-regexp",
+        "hostDependent": false
       },
       {
         "name": "is-plain-obj",
         "version": "4.1.0",
         "homepage": "https://github.com/sindresorhus/is-plain-obj#readme",
-        "source": "https://github.com/sindresorhus/is-plain-obj"
+        "source": "https://github.com/sindresorhus/is-plain-obj",
+        "hostDependent": false
       },
       {
         "name": "markdown-extensions",
         "version": "2.0.0",
         "homepage": "https://github.com/sindresorhus/markdown-extensions#readme",
-        "source": "https://github.com/sindresorhus/markdown-extensions"
+        "source": "https://github.com/sindresorhus/markdown-extensions",
+        "hostDependent": false
       }
     ]
   },
@@ -793,19 +913,22 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "longest-streak",
         "version": "3.1.0",
         "homepage": "https://github.com/wooorm/longest-streak#readme",
-        "source": "https://github.com/wooorm/longest-streak"
+        "source": "https://github.com/wooorm/longest-streak",
+        "hostDependent": false
       },
       {
         "name": "stringify-entities",
         "version": "4.0.4",
         "homepage": "https://github.com/wooorm/stringify-entities#readme",
-        "source": "https://github.com/wooorm/stringify-entities"
+        "source": "https://github.com/wooorm/stringify-entities",
+        "hostDependent": false
       },
       {
         "name": "trim-lines",
         "version": "3.0.1",
         "homepage": "https://github.com/wooorm/trim-lines#readme",
-        "source": "https://github.com/wooorm/trim-lines"
+        "source": "https://github.com/wooorm/trim-lines",
+        "hostDependent": false
       }
     ]
   },
@@ -817,19 +940,22 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "motion",
         "version": "12.40.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
-        "source": "https://github.com/motiondivision/motion"
+        "source": "https://github.com/motiondivision/motion",
+        "hostDependent": false
       },
       {
         "name": "motion-dom",
         "version": "12.40.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
-        "source": "https://github.com/motiondivision/motion"
+        "source": "https://github.com/motiondivision/motion",
+        "hostDependent": false
       },
       {
         "name": "motion-utils",
         "version": "12.39.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
-        "source": "https://github.com/motiondivision/motion"
+        "source": "https://github.com/motiondivision/motion",
+        "hostDependent": false
       }
     ]
   },
@@ -841,13 +967,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@img/sharp-{platform}",
         "version": "0.34.5",
         "homepage": "https://sharp.pixelplumbing.com",
-        "source": "https://github.com/lovell/sharp"
+        "source": "https://github.com/lovell/sharp",
+        "hostDependent": true
       },
       {
         "name": "sharp",
         "version": "0.34.5",
         "homepage": "https://sharp.pixelplumbing.com",
-        "source": "https://github.com/lovell/sharp"
+        "source": "https://github.com/lovell/sharp",
+        "hostDependent": false
       }
     ]
   },
@@ -859,13 +987,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "source-map",
         "version": "0.7.6",
         "homepage": "https://github.com/mozilla/source-map",
-        "source": "http://github.com/mozilla/source-map"
+        "source": "http://github.com/mozilla/source-map",
+        "hostDependent": false
       },
       {
         "name": "source-map-js",
         "version": "1.2.1",
         "homepage": "https://github.com/7rulnik/source-map-js",
-        "source": "https://github.com/7rulnik/source-map-js"
+        "source": "https://github.com/7rulnik/source-map-js",
+        "hostDependent": false
       }
     ]
   },
@@ -877,13 +1007,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@base-ui/react",
         "version": "1.6.0",
         "homepage": "https://base-ui.com",
-        "source": "https://github.com/mui/base-ui"
+        "source": "https://github.com/mui/base-ui",
+        "hostDependent": false
       },
       {
         "name": "@base-ui/utils",
         "version": "0.3.1",
         "homepage": "https://github.com/mui/base-ui#readme",
-        "source": "https://github.com/mui/base-ui"
+        "source": "https://github.com/mui/base-ui",
+        "hostDependent": false
       }
     ]
   },
@@ -895,13 +1027,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "esast-util-from-js",
         "version": "2.0.1",
         "homepage": "https://github.com/syntax-tree/esast-util-from-js#readme",
-        "source": "https://github.com/syntax-tree/esast-util-from-js"
+        "source": "https://github.com/syntax-tree/esast-util-from-js",
+        "hostDependent": false
       },
       {
         "name": "estree-util-to-js",
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/estree-util-to-js#readme",
-        "source": "https://github.com/syntax-tree/estree-util-to-js"
+        "source": "https://github.com/syntax-tree/estree-util-to-js",
+        "hostDependent": false
       }
     ]
   },
@@ -913,13 +1047,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "parse-entities",
         "version": "4.0.2",
         "homepage": "https://github.com/wooorm/parse-entities#readme",
-        "source": "https://github.com/wooorm/parse-entities"
+        "source": "https://github.com/wooorm/parse-entities",
+        "hostDependent": false
       },
       {
         "name": "property-information",
         "version": "7.2.0",
         "homepage": "https://github.com/wooorm/property-information#readme",
-        "source": "https://github.com/wooorm/property-information"
+        "source": "https://github.com/wooorm/property-information",
+        "hostDependent": false
       }
     ]
   },
@@ -931,13 +1067,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "remark-parse",
         "version": "11.0.0",
         "homepage": "https://remark.js.org",
-        "source": "https://github.com/remarkjs/remark/tree/main/packages/remark-parse"
+        "source": "https://github.com/remarkjs/remark/tree/main/packages/remark-parse",
+        "hostDependent": false
       },
       {
         "name": "remark-stringify",
         "version": "11.0.0",
         "homepage": "https://remark.js.org",
-        "source": "https://github.com/remarkjs/remark/tree/main/packages/remark-stringify"
+        "source": "https://github.com/remarkjs/remark/tree/main/packages/remark-stringify",
+        "hostDependent": false
       }
     ]
   },
@@ -949,13 +1087,15 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "unified",
         "version": "11.0.5",
         "homepage": "https://unifiedjs.com",
-        "source": "https://github.com/unifiedjs/unified"
+        "source": "https://github.com/unifiedjs/unified",
+        "hostDependent": false
       },
       {
         "name": "vfile",
         "version": "6.0.3",
         "homepage": "https://github.com/vfile/vfile#readme",
-        "source": "https://github.com/vfile/vfile"
+        "source": "https://github.com/vfile/vfile",
+        "hostDependent": false
       }
     ]
   },
@@ -967,7 +1107,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "tslib",
         "version": "2.8.1",
         "homepage": "https://www.typescriptlang.org/",
-        "source": "https://github.com/Microsoft/tslib"
+        "source": "https://github.com/Microsoft/tslib",
+        "hostDependent": false
       }
     ]
   },
@@ -979,7 +1120,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@swc/helpers",
         "version": "0.5.15",
         "homepage": "https://swc.rs",
-        "source": "https://github.com/swc-project/swc"
+        "source": "https://github.com/swc-project/swc",
+        "hostDependent": false
       }
     ]
   },
@@ -991,7 +1133,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "class-variance-authority",
         "version": "0.7.1",
         "homepage": "https://github.com/joe-bell/cva#readme",
-        "source": "https://github.com/joe-bell/cva"
+        "source": "https://github.com/joe-bell/cva",
+        "hostDependent": false
       }
     ]
   },
@@ -1003,7 +1146,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "detect-libc",
         "version": "2.1.2",
         "homepage": "https://github.com/lovell/detect-libc#readme",
-        "source": "https://github.com/lovell/detect-libc"
+        "source": "https://github.com/lovell/detect-libc",
+        "hostDependent": false
       }
     ]
   },
@@ -1015,7 +1159,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "esprima",
         "version": "4.0.1",
         "homepage": "http://esprima.org",
-        "source": "https://github.com/jquery/esprima"
+        "source": "https://github.com/jquery/esprima",
+        "hostDependent": false
       }
     ]
   },
@@ -1027,7 +1172,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "sprintf-js",
         "version": "1.0.3",
         "homepage": "https://github.com/alexei/sprintf.js#readme",
-        "source": "https://github.com/alexei/sprintf.js"
+        "source": "https://github.com/alexei/sprintf.js",
+        "hostDependent": false
       }
     ]
   },
@@ -1039,7 +1185,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "caniuse-lite",
         "version": "1.0.30001797",
         "homepage": "https://github.com/browserslist/caniuse-lite#readme",
-        "source": "https://github.com/browserslist/caniuse-lite"
+        "source": "https://github.com/browserslist/caniuse-lite",
+        "hostDependent": false
       }
     ]
   },
@@ -1051,7 +1198,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@ungap/structured-clone",
         "version": "1.3.1",
         "homepage": "https://github.com/ungap/structured-clone#readme",
-        "source": "https://github.com/ungap/structured-clone"
+        "source": "https://github.com/ungap/structured-clone",
+        "hostDependent": false
       }
     ]
   },
@@ -1063,7 +1211,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "lucide-react",
         "version": "0.460.0",
         "homepage": "https://lucide.dev",
-        "source": "https://github.com/lucide-icons/lucide"
+        "source": "https://github.com/lucide-icons/lucide",
+        "hostDependent": false
       }
     ]
   },
@@ -1075,7 +1224,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "picocolors",
         "version": "1.1.1",
         "homepage": "https://github.com/alexeyraspopov/picocolors#readme",
-        "source": "https://github.com/alexeyraspopov/picocolors"
+        "source": "https://github.com/alexeyraspopov/picocolors",
+        "hostDependent": false
       }
     ]
   },
@@ -1087,7 +1237,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "semver",
         "version": "7.8.4",
         "homepage": "https://github.com/npm/node-semver#readme",
-        "source": "https://github.com/npm/node-semver"
+        "source": "https://github.com/npm/node-semver",
+        "hostDependent": false
       }
     ]
   },
@@ -1099,7 +1250,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "yaml",
         "version": "2.9.0",
         "homepage": "https://eemeli.org/yaml/",
-        "source": "https://github.com/eemeli/yaml"
+        "source": "https://github.com/eemeli/yaml",
+        "hostDependent": false
       }
     ]
   },
@@ -1111,7 +1263,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@img/sharp-libvips-{platform}",
         "version": "1.2.4",
         "homepage": "https://sharp.pixelplumbing.com",
-        "source": "https://github.com/lovell/sharp-libvips"
+        "source": "https://github.com/lovell/sharp-libvips",
+        "hostDependent": true
       }
     ]
   },
@@ -1123,7 +1276,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@img/colour",
         "version": "1.1.0",
         "homepage": "https://github.com/lovell/colour#readme",
-        "source": "https://github.com/lovell/colour"
+        "source": "https://github.com/lovell/colour",
+        "hostDependent": false
       }
     ]
   },
@@ -1135,7 +1289,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@mdx-js/mdx",
         "version": "3.1.1",
         "homepage": "https://mdxjs.com",
-        "source": "https://github.com/mdx-js/mdx"
+        "source": "https://github.com/mdx-js/mdx",
+        "hostDependent": false
       }
     ]
   },
@@ -1147,7 +1302,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@mdx-js/react",
         "version": "3.1.1",
         "homepage": "https://mdxjs.com",
-        "source": "https://github.com/mdx-js/mdx"
+        "source": "https://github.com/mdx-js/mdx",
+        "hostDependent": false
       }
     ]
   },
@@ -1159,7 +1315,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@radix-ui/colors",
         "version": "3.0.0",
         "homepage": "",
-        "source": ""
+        "source": "",
+        "hostDependent": false
       }
     ]
   },
@@ -1171,7 +1328,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "acorn",
         "version": "8.16.0",
         "homepage": "https://github.com/acornjs/acorn",
-        "source": "https://github.com/acornjs/acorn"
+        "source": "https://github.com/acornjs/acorn",
+        "hostDependent": false
       }
     ]
   },
@@ -1183,7 +1341,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "acorn-jsx",
         "version": "5.3.2",
         "homepage": "https://github.com/acornjs/acorn-jsx",
-        "source": "https://github.com/acornjs/acorn-jsx"
+        "source": "https://github.com/acornjs/acorn-jsx",
+        "hostDependent": false
       }
     ]
   },
@@ -1195,7 +1354,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "argparse",
         "version": "1.0.10",
         "homepage": "https://github.com/nodeca/argparse#readme",
-        "source": "https://github.com/nodeca/argparse"
+        "source": "https://github.com/nodeca/argparse",
+        "hostDependent": false
       }
     ]
   },
@@ -1207,7 +1367,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "astring",
         "version": "1.9.0",
         "homepage": "https://github.com/davidbonnet/astring#readme",
-        "source": "https://github.com/davidbonnet/astring"
+        "source": "https://github.com/davidbonnet/astring",
+        "hostDependent": false
       }
     ]
   },
@@ -1219,7 +1380,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "clsx",
         "version": "2.1.1",
         "homepage": "https://github.com/lukeed/clsx#readme",
-        "source": "https://github.com/lukeed/clsx"
+        "source": "https://github.com/lukeed/clsx",
+        "hostDependent": false
       }
     ]
   },
@@ -1231,7 +1393,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "csstype",
         "version": "3.2.3",
         "homepage": "https://github.com/frenic/csstype#readme",
-        "source": "https://github.com/frenic/csstype"
+        "source": "https://github.com/frenic/csstype",
+        "hostDependent": false
       }
     ]
   },
@@ -1243,7 +1406,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "debug",
         "version": "4.4.3",
         "homepage": "https://github.com/debug-js/debug#readme",
-        "source": "https://github.com/debug-js/debug"
+        "source": "https://github.com/debug-js/debug",
+        "hostDependent": false
       }
     ]
   },
@@ -1255,7 +1419,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "dequal",
         "version": "2.0.3",
         "homepage": "https://github.com/lukeed/dequal#readme",
-        "source": "https://github.com/lukeed/dequal"
+        "source": "https://github.com/lukeed/dequal",
+        "hostDependent": false
       }
     ]
   },
@@ -1267,7 +1432,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "devlop",
         "version": "1.1.0",
         "homepage": "https://github.com/wooorm/devlop#readme",
-        "source": "https://github.com/wooorm/devlop"
+        "source": "https://github.com/wooorm/devlop",
+        "hostDependent": false
       }
     ]
   },
@@ -1279,7 +1445,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "estree-walker",
         "version": "3.0.3",
         "homepage": "https://github.com/Rich-Harris/estree-walker#readme",
-        "source": "https://github.com/Rich-Harris/estree-walker"
+        "source": "https://github.com/Rich-Harris/estree-walker",
+        "hostDependent": false
       }
     ]
   },
@@ -1291,7 +1458,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "extend",
         "version": "3.0.2",
         "homepage": "https://github.com/justmoon/node-extend#readme",
-        "source": "https://github.com/justmoon/node-extend"
+        "source": "https://github.com/justmoon/node-extend",
+        "hostDependent": false
       }
     ]
   },
@@ -1303,7 +1471,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "extend-shallow",
         "version": "2.0.1",
         "homepage": "https://github.com/jonschlinkert/extend-shallow",
-        "source": "https://github.com/jonschlinkert/extend-shallow"
+        "source": "https://github.com/jonschlinkert/extend-shallow",
+        "hostDependent": false
       }
     ]
   },
@@ -1315,7 +1484,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "framer-motion",
         "version": "12.40.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
-        "source": "https://github.com/motiondivision/motion/"
+        "source": "https://github.com/motiondivision/motion/",
+        "hostDependent": false
       }
     ]
   },
@@ -1327,7 +1497,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "fsevents",
         "version": "2.3.2",
         "homepage": "https://github.com/fsevents/fsevents",
-        "source": "https://github.com/fsevents/fsevents"
+        "source": "https://github.com/fsevents/fsevents",
+        "hostDependent": true
       }
     ]
   },
@@ -1339,7 +1510,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "gray-matter",
         "version": "4.0.3",
         "homepage": "https://github.com/jonschlinkert/gray-matter",
-        "source": "https://github.com/jonschlinkert/gray-matter"
+        "source": "https://github.com/jonschlinkert/gray-matter",
+        "hostDependent": false
       }
     ]
   },
@@ -1351,7 +1523,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "inline-style-parser",
         "version": "0.2.7",
         "homepage": "https://github.com/remarkablemark/inline-style-parser#readme",
-        "source": "https://github.com/remarkablemark/inline-style-parser"
+        "source": "https://github.com/remarkablemark/inline-style-parser",
+        "hostDependent": false
       }
     ]
   },
@@ -1363,7 +1536,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "is-extendable",
         "version": "0.1.1",
         "homepage": "https://github.com/jonschlinkert/is-extendable",
-        "source": "https://github.com/jonschlinkert/is-extendable"
+        "source": "https://github.com/jonschlinkert/is-extendable",
+        "hostDependent": false
       }
     ]
   },
@@ -1375,7 +1549,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "js-tokens",
         "version": "4.0.0",
         "homepage": "https://github.com/lydell/js-tokens#readme",
-        "source": "https://github.com/lydell/js-tokens"
+        "source": "https://github.com/lydell/js-tokens",
+        "hostDependent": false
       }
     ]
   },
@@ -1387,7 +1562,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "js-yaml",
         "version": "3.14.2",
         "homepage": "https://github.com/nodeca/js-yaml",
-        "source": "https://github.com/nodeca/js-yaml"
+        "source": "https://github.com/nodeca/js-yaml",
+        "hostDependent": false
       }
     ]
   },
@@ -1399,7 +1575,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "kind-of",
         "version": "6.0.3",
         "homepage": "https://github.com/jonschlinkert/kind-of",
-        "source": "https://github.com/jonschlinkert/kind-of"
+        "source": "https://github.com/jonschlinkert/kind-of",
+        "hostDependent": false
       }
     ]
   },
@@ -1411,7 +1588,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "mdast-util-phrasing",
         "version": "4.1.0",
         "homepage": "https://github.com/syntax-tree/mdast-util-phrasing#readme",
-        "source": "https://github.com/syntax-tree/mdast-util-phrasing"
+        "source": "https://github.com/syntax-tree/mdast-util-phrasing",
+        "hostDependent": false
       }
     ]
   },
@@ -1423,7 +1601,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "ms",
         "version": "2.1.3",
         "homepage": "https://github.com/vercel/ms#readme",
-        "source": "https://github.com/vercel/ms"
+        "source": "https://github.com/vercel/ms",
+        "hostDependent": false
       }
     ]
   },
@@ -1435,7 +1614,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "nanoid",
         "version": "3.3.12",
         "homepage": "https://github.com/ai/nanoid#readme",
-        "source": "https://github.com/ai/nanoid"
+        "source": "https://github.com/ai/nanoid",
+        "hostDependent": false
       }
     ]
   },
@@ -1447,7 +1627,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "next",
         "version": "15.5.19",
         "homepage": "https://nextjs.org",
-        "source": "https://github.com/vercel/next.js"
+        "source": "https://github.com/vercel/next.js",
+        "hostDependent": false
       }
     ]
   },
@@ -1459,7 +1640,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "postcss",
         "version": "8.4.31",
         "homepage": "https://postcss.org/",
-        "source": "https://github.com/postcss/postcss"
+        "source": "https://github.com/postcss/postcss",
+        "hostDependent": false
       }
     ]
   },
@@ -1471,7 +1653,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "remark-mdx",
         "version": "3.1.1",
         "homepage": "https://mdxjs.com",
-        "source": "https://github.com/mdx-js/mdx"
+        "source": "https://github.com/mdx-js/mdx",
+        "hostDependent": false
       }
     ]
   },
@@ -1483,7 +1666,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "reselect",
         "version": "5.2.0",
         "homepage": "https://github.com/reduxjs/reselect#readme",
-        "source": "https://github.com/reduxjs/reselect"
+        "source": "https://github.com/reduxjs/reselect",
+        "hostDependent": false
       }
     ]
   },
@@ -1495,7 +1679,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "section-matter",
         "version": "1.0.0",
         "homepage": "https://github.com/jonschlinkert/section-matter",
-        "source": "https://github.com/jonschlinkert/section-matter"
+        "source": "https://github.com/jonschlinkert/section-matter",
+        "hostDependent": false
       }
     ]
   },
@@ -1507,7 +1692,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "strip-bom-string",
         "version": "1.0.0",
         "homepage": "https://github.com/jonschlinkert/strip-bom-string",
-        "source": "https://github.com/jonschlinkert/strip-bom-string"
+        "source": "https://github.com/jonschlinkert/strip-bom-string",
+        "hostDependent": false
       }
     ]
   },
@@ -1519,7 +1705,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "style-to-js",
         "version": "1.1.21",
         "homepage": "https://github.com/remarkablemark/style-to-js#readme",
-        "source": "https://github.com/remarkablemark/style-to-js"
+        "source": "https://github.com/remarkablemark/style-to-js",
+        "hostDependent": false
       }
     ]
   },
@@ -1531,7 +1718,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "style-to-object",
         "version": "1.0.14",
         "homepage": "https://github.com/remarkablemark/style-to-object#readme",
-        "source": "https://github.com/remarkablemark/style-to-object"
+        "source": "https://github.com/remarkablemark/style-to-object",
+        "hostDependent": false
       }
     ]
   },
@@ -1543,7 +1731,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "styled-jsx",
         "version": "5.1.6",
         "homepage": "https://github.com/vercel/styled-jsx#readme",
-        "source": "https://github.com/vercel/styled-jsx"
+        "source": "https://github.com/vercel/styled-jsx",
+        "hostDependent": false
       }
     ]
   },
@@ -1555,7 +1744,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "tailwind-merge",
         "version": "3.6.0",
         "homepage": "https://github.com/dcastil/tailwind-merge",
-        "source": "https://github.com/dcastil/tailwind-merge"
+        "source": "https://github.com/dcastil/tailwind-merge",
+        "hostDependent": false
       }
     ]
   },
@@ -1567,7 +1757,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "trough",
         "version": "2.2.0",
         "homepage": "https://github.com/wooorm/trough#readme",
-        "source": "https://github.com/wooorm/trough"
+        "source": "https://github.com/wooorm/trough",
+        "hostDependent": false
       }
     ]
   },
@@ -1579,7 +1770,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "tw-animate-css",
         "version": "1.4.0",
         "homepage": "https://github.com/Wombosvideo/tw-animate-css#readme",
-        "source": "https://github.com/Wombosvideo/tw-animate-css"
+        "source": "https://github.com/Wombosvideo/tw-animate-css",
+        "hostDependent": false
       }
     ]
   },
@@ -1591,7 +1783,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "unist-util-is",
         "version": "6.0.1",
         "homepage": "https://github.com/syntax-tree/unist-util-is#readme",
-        "source": "https://github.com/syntax-tree/unist-util-is"
+        "source": "https://github.com/syntax-tree/unist-util-is",
+        "hostDependent": false
       }
     ]
   },
@@ -1603,7 +1796,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "unist-util-remove",
         "version": "4.0.0",
         "homepage": "https://github.com/syntax-tree/unist-util-remove#readme",
-        "source": "https://github.com/syntax-tree/unist-util-remove"
+        "source": "https://github.com/syntax-tree/unist-util-remove",
+        "hostDependent": false
       }
     ]
   },
@@ -1615,7 +1809,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "next-mdx-remote",
         "version": "6.0.0",
         "homepage": "https://github.com/hashicorp/next-mdx-remote#readme",
-        "source": "https://github.com/hashicorp/next-mdx-remote"
+        "source": "https://github.com/hashicorp/next-mdx-remote",
+        "hostDependent": false
       }
     ]
   },
@@ -1627,7 +1822,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@fontsource-variable/inter",
         "version": "5.2.8",
         "homepage": "https://fontsource.org/fonts/inter",
-        "source": "https://github.com/fontsource/font-files"
+        "source": "https://github.com/fontsource/font-files",
+        "hostDependent": false
       }
     ]
   },
@@ -1639,7 +1835,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "name": "@fontsource-variable/plus-jakarta-sans",
         "version": "5.2.8",
         "homepage": "https://fontsource.org/fonts/plus-jakarta-sans",
-        "source": "https://github.com/fontsource/font-files"
+        "source": "https://github.com/fontsource/font-files",
+        "hostDependent": false
       }
     ]
   }

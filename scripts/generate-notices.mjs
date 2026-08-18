@@ -43,6 +43,23 @@ const PLATFORM_SUFFIX =
   /-(darwin|linux|win32|freebsd|android)-(arm64|x64|arm|ia32|s390x|ppc64)(-(gnu|musl|msvc))?$/;
 const canonicalName = (name) => name.replace(PLATFORM_SUFFIX, "-{platform}");
 
+/* Whether a package installs only on some hosts. `os`/`cpu` in its own manifest
+   is the exact signal — it is how npm decides whether to install an optional
+   native dependency at all — and it matters because canonicalising names is not
+   enough to make this list host-independent: fsevents (`os: ["darwin"]`) has no
+   Linux counterpart, so this machine sees 192 packages where the Linux CI runner
+   sees 191. A byte-for-byte comparison of the generated files therefore cannot
+   hold across hosts, which is what --check has to work around below. */
+function isHostDependent(pkgPath, name) {
+  if (PLATFORM_SUFFIX.test(name)) return true;
+  try {
+    const m = JSON.parse(fs.readFileSync(path.join(pkgPath, "package.json"), "utf8"));
+    return Boolean(m.os || m.cpu);
+  } catch {
+    return false;
+  }
+}
+
 /* The repository a package declares, normalised to something a reader can open.
    npm allows "git+https://host/x/y.git", "git://…", "host/x/y" shorthand, and an
    object form; homepage is the fallback, and an entry with neither simply gets no
@@ -126,6 +143,7 @@ for (const [license, pkgs] of Object.entries(byLicense)) {
       version: (pkg.versions ?? []).join(", "),
       homepage: pkg.homepage ?? "",
       source: sourceUrlFor(pkgPath, pkg.homepage ?? ""),
+      hostDependent: isHostDependent(pkgPath, pkg.name),
     });
   }
 }
@@ -161,6 +179,11 @@ export type NoticeGroup = {
        the licence condition; this is so a reader can check it at source. Empty
        when a package declares neither a repository nor a homepage. */
     source: string;
+    /* True for a native binary that installs only on some hosts (it declares
+       \`os\`/\`cpu\`, or its name carries a platform triple). The list is a
+       superset across the hosts that have generated it, so an entry marked here
+       may not be installable on yours. */
+    hostDependent: boolean;
   }[];
 };
 
@@ -221,43 +244,109 @@ const md = [
 ].join("\n");
 
 /* ── Write, or verify ──
-   --check regenerates both files in memory and compares. It exists because
-   `pnpm gen:notices` is a step a human has to remember, and the notice we owe is
-   exactly the kind of thing that goes quietly wrong: someone adds a dependency,
-   forgets the script, and the published notices under-report what ships. Wired
-   into prebuild, so the build fails instead. */
+   --check exists because `pnpm gen:notices` is a step a human has to remember,
+   and an unregenerated notice file is exactly the kind of thing that goes quietly
+   wrong: someone adds a dependency and the published notices under-report what
+   ships. Wired into prebuild, so the build fails instead.
 
-const outputs = [
-  { path: TS_PATH, content: ts },
-  { path: MD_PATH, content: md },
-];
+   It compares COVERAGE, not bytes. A byte comparison was the first attempt and it
+   failed on CI for a reason that was not drift: the installed set is
+   host-dependent (this machine 192 packages, the Linux runner 191 — fsevents is
+   darwin-only), so the generated files legitimately differ by host. What is
+   host-independent is the obligation: every package this host can see must appear
+   in the committed notices, with the same licence, and — for portable packages —
+   the same notice text byte for byte.
+
+   Two deliberate asymmetries, both to avoid false failures:
+   — An entry in the file that this host cannot see is an error only when the
+     package is portable (a removed dependency leaving a stale notice). A
+     host-dependent entry is reported as a note, because the file is a superset
+     across the hosts that have generated it.
+   — For host-dependent packages only the licence id is compared, not the text: a
+     platform family's variants each ship their own copy, and a byte difference
+     between the darwin and linux copies would fail the check without any
+     obligation having changed. */
+
+function committedGroups() {
+  const src = fs.readFileSync(TS_PATH, "utf8");
+  const marker = "export const thirdPartyNotices: NoticeGroup[] = ";
+  const start = src.indexOf(marker);
+  if (start === -1) throw new Error(`${TS_PATH} has no thirdPartyNotices export`);
+  const json = src.slice(start + marker.length).replace(/;\s*$/, "");
+  return JSON.parse(json);
+}
 
 if (CHECK_ONLY) {
-  const stale = outputs.filter(({ path: p, content }) => {
-    let onDisk;
-    try {
-      onDisk = fs.readFileSync(p, "utf8");
-    } catch {
-      return true;
-    }
-    return onDisk !== content;
-  });
-  if (stale.length) {
+  let committed;
+  try {
+    committed = committedGroups();
+  } catch (err) {
     console.error(
-      `ERROR notices: ${stale.map((s) => s.path).join(" and ")} ` +
-        `${stale.length === 1 ? "does" : "do"} not match the installed dependency ` +
-        `tree (${packageCount} packages, ${ordered.length} distinct notice texts).\n` +
-        `       A dependency changed without the notices being regenerated, which ` +
-        `would publish an under-reported notice.\n` +
+      `ERROR notices: cannot read the committed notices (${err.message}).\n` +
         `       Fix: pnpm gen:notices, then commit the result.`,
     );
     process.exit(1);
   }
+
+  const flatten = (groups) =>
+    new Map(
+      groups.flatMap((g) =>
+        g.packages.map((p) => [p.name, { license: g.license, text: g.text, ...p }]),
+      ),
+    );
+  const onDisk = flatten(committed);
+  const installed = flatten(ordered);
+  const md_ = fs.existsSync(MD_PATH) ? fs.readFileSync(MD_PATH, "utf8") : "";
+
+  const problems = [];
+  const notes = [];
+
+  for (const [name, pkg] of installed) {
+    const found = onDisk.get(name);
+    if (!found) {
+      /* A native variant this host installs that the recording host did not is a
+         warning, not a failure: sharp alone ships linux, linuxmusl and wasm32
+         builds, and a new variant of a family already recorded here carries no
+         obligation the family's notice does not already discharge. A portable
+         package with no notice is a real gap and fails below. */
+      (pkg.hostDependent ? notes : problems).push(
+        pkg.hostDependent
+          ? `${name} is installed here but not recorded (native variant — regenerate to add it)`
+          : `${name} is installed but carries no notice`,
+      );
+      continue;
+    }
+    if (found.license !== pkg.license) {
+      problems.push(`${name} is ${pkg.license} now, recorded as ${found.license}`);
+    }
+    if (!pkg.hostDependent && found.text !== pkg.text) {
+      problems.push(`${name}'s notice text differs from the installed copy`);
+    }
+    if (!md_.includes(name)) problems.push(`${name} is missing from ${MD_PATH}`);
+  }
+
+  for (const [name, pkg] of onDisk) {
+    if (installed.has(name)) continue;
+    if (pkg.hostDependent) notes.push(`${name} (not installable on this host)`);
+    else problems.push(`${name} carries a notice but is no longer a dependency`);
+  }
+
+  if (problems.length) {
+    console.error(
+      `ERROR notices: the committed notices do not cover the installed tree ` +
+        `(${packageCount} packages here).\n` +
+        problems.map((p) => `       - ${p}`).join("\n") +
+        `\n       Fix: pnpm gen:notices, then commit the result.`,
+    );
+    process.exit(1);
+  }
   console.log(
-    `notices: current — ${packageCount} packages, ${licenseIds.length} licenses, ${ordered.length} distinct texts`,
+    `notices: covered — ${installed.size} packages checked against ${onDisk.size} recorded`,
   );
+  for (const note of notes) console.log(`       note: ${note}`);
 } else {
-  for (const { path: p, content } of outputs) fs.writeFileSync(p, content);
+  fs.writeFileSync(TS_PATH, ts);
+  fs.writeFileSync(MD_PATH, md);
   console.log(
     `notices: ${packageCount} packages, ${licenseIds.length} licenses, ${ordered.length} distinct texts`,
   );
