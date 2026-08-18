@@ -645,9 +645,10 @@ def scan_paths(paths, rules=None):
     all_lines, all_candidates, files = [], [], []
     for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
         if kind == "missing":
-            line = f"ERROR cmp-scan: path not found: {val}"
-            print(line)
-            all_lines.append(line)
+            # Collected, not printed here: main() prints every line once. The
+            # sibling checks print it eagerly AND return it, so the line lands
+            # twice on stdout and detect.py counts one finding as two.
+            all_lines.append(f"ERROR cmp-scan: path not found: {val}")
         else:
             files.append(val)
     by_file = checklib.group_candidates(checklib.astgrep_scan(files, CHECK_NAME))
@@ -1257,6 +1258,16 @@ def run_self_test():
     )
     check_eq("usage: no arguments prints the usage line and exits 1",
              (1, True), (proc.returncode, proc.stdout.startswith("Usage:")))
+
+    proc = subprocess.run(
+        [sys.executable, os.path.join(_CHECKS_DIR, "cmp-scan.py"),
+         os.path.join("no", "such", "path.tsx")],
+        capture_output=True, text=True, cwd=_CHECKS_DIR,
+    )
+    check_eq("path not found: one line, printed once, exit 1",
+             (1, 1),
+             (proc.returncode,
+              len([ln for ln in proc.stdout.splitlines() if "path not found" in ln])))
 
     # ── The provisioning contract ─────────────────────────────────────────────
     checklib.astgrep_provisioning_cases(

@@ -558,7 +558,7 @@ The candidate key carries no line number on purpose: a line number churns on eve
 
 **Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan` (see "The ast-grep front end" above), in three language buckets: `tsx`, `ts`, and `html` for `.vue` / `.svelte`. The verb stems, the denylist, the companion tokens, the error-path set, the sanitiser allowlist and the ledger reconcile are all Python. A multi-line `fetch(url, { method: "DELETE" })` is the case that needs the parser: the callee and the method option are almost never on the same line.
 
-**Self-test:** `python3 checks/cmp-scan.py --self-test` → `SELF-TEST OK (90 cases)` (includes the `fixtures/cmp-scan/` pass/fail/list files, the ledger-reconcile fixtures, the exit-code contract asserted through a real run, and the ast-grep provisioning contract).
+**Self-test:** `python3 checks/cmp-scan.py --self-test` → `SELF-TEST OK (91 cases)` (includes the `fixtures/cmp-scan/` pass/fail/list files, the ledger-reconcile fixtures, the exit-code contract asserted through a real run, and the ast-grep provisioning contract).
 
 ## Component manifest (built)
 
