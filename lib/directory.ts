@@ -1,7 +1,7 @@
 import { getDoc } from "@/lib/content";
 import { contentMap } from "@/lib/content-map";
 import { sectionInk, type Topic } from "@/components/thumbnails";
-import { isVisibleNavHref } from "@/lib/nav";
+import { isNestedNavHref, isVisibleNavHref } from "@/lib/nav";
 
 /* Directory structure is chrome (like the sidebar); doc registration comes
    from content/map.json via lib/content-map, titles and descriptions from
@@ -43,7 +43,7 @@ export function sectionTopics(key: string): Topic[] {
   );
   const fromSlugs = (section.slugs ?? []).flatMap((slug) => {
     const href = `/${key}/${slug}`;
-    if (!isVisibleNavHref(href)) return [];
+    if (!isVisibleNavHref(href) || isNestedNavHref(href)) return [];
     const doc = getDoc(key, slug);
     if (!doc) return [];
     return [

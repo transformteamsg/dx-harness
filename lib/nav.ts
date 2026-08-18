@@ -100,6 +100,20 @@ export const visibleNav: NavGroup[] = nav
   .filter((group) => !group.hidden)
   .map((group) => ({ ...group, items: visibleItems(group.items) }));
 
+/* True for a page that hangs under a nav sub-group — Writing's Voice & tone,
+   Grammar & mechanics and the rest. Directory grids list the parent topic
+   only, so a section's thumbnails read as its topics rather than as every
+   page in it. A sub-group's first leaf is its own overview (the page the
+   group is named for), so that one is not nested by this rule. */
+export function isNestedNavHref(href: string): boolean {
+  return visibleNav.some((group) =>
+    group.items.some(
+      (item) =>
+        isSubGroup(item) && item.items.slice(1).some((leaf) => leaf.href === href),
+    ),
+  );
+}
+
 export function isVisibleNavHref(href: string): boolean {
   return visibleNav.some(
     (group) =>
