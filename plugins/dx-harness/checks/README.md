@@ -18,8 +18,17 @@ package, so each script imports it by path with the same importlib snippet
 `waiver-reconcile.py` already used for `audit-record.py`. A few pieces keep
 their own formatting where they genuinely differ (`token-audit.py`'s
 `[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
-tails). checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (42 cases)`.
+tails). `emit_error` also takes an optional `extra=` that fills the second bracket
+(`[A11Y-2][jsx-a11y/interactive-supports-focus]`) — the slot `_FINDING_RE` already
+tolerates and discards, so a finding can name the rule that fired without changing
+the line shape. checklib also loads the a11y rule map (`load_rule_map`,
+`layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
+below) so the three a11y layers read one file rather than three copies of it, and
+reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
+`l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
+`waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
+bodies. checklib has its own gate: `python3 checks/checklib.py --self-test` →
+`SELF-TEST OK (51 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -67,6 +76,36 @@ them is where the floor silently stops being enforced.
   recorded pre-swap output per fixture and check. See
   [`fixtures/parity/README.md`](fixtures/parity/README.md).
 
+## A11y rule map: `a11y-rule-map.json` + `checks/eslint/`
+
+One file maps every accessibility rule the harness runs to exactly one control id:
+`checks/a11y-rule-map.json` (JSON, not YAML — the check scripts are stdlib-only).
+
+- `rules` — `"jsx-a11y/<rule>": "<CTL>"`, one control id per rule, never a list. All
+  31 rules in jsx-a11y's `recommended` preset have a row, so a rule that fires can
+  never be silently dropped; a rule with no row is reported as a misconfiguration,
+  not attributed to a guessed control.
+- `layers` — the control ids each layer covers (`eslint-jsx-a11y`,
+  `a11y-static-focus`, `contrast-token-pairs`). A layer that could not run reads its
+  own row to name the controls going to manual verification, so a control is never
+  reported as passing by a layer that did not check it. The rendered check's axe rows
+  are a later addition to the same file.
+
+Four rows attribute a finding to a control the eslint layer claims **no** coverage
+for: `heading-has-content` and `scope` (A11Y-7, whose static half is the separate
+`structure` check), `html-has-lang` (A11Y-9) and `no-distracting-elements` (A11Y-5).
+They exist so a fired rule is reported honestly; only the `layers` row states
+coverage.
+
+`checks/eslint/jsx-a11y.config.mjs` is the harness-side eslint flat config the lint
+layer runs. It sits in its own subdirectory because a `.mjs` file there is invisible
+to `checklib.TARGET_EXTENSIONS` and to `validate.py`'s `live_checks_count` (which
+counts `checks/*.py`), so it can neither become a scan target nor move a count.
+
+The map's integrity — every mapped control id exists in `standards/catalog.yaml`, all
+31 preset rules present, one control id per rule — is asserted by
+`python3 checks/a11y-eslint.py --self-test`, not by `validate.py`.
+
 ## Detector — one entry over the checks (built)
 
 `python3 checks/detect.py [<path>...]` is the **unified entry point**: a façade that
@@ -77,7 +116,7 @@ wire to (plan 060) — "fast signal without asking an AI".
 
 **Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
 Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
-contrast, a11y-static, TYP-1) on an edited UI file and reminds the agent on new
+contrast, a11y-static, a11y-eslint, TYP-1) on an edited UI file and reminds the agent on new
 findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
 a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
 
@@ -99,8 +138,8 @@ no parseable `ERROR` line is treated as a crash — detect fails loud rather tha
 silently.
 
 **Profiles.** The default is the **curated, low-false-positive subset**:
-`token-audit`, `contrast`, `a11y-static`, and `type-scan`'s **TYP-1 rule only** (via
-`type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
+`token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, and `type-scan`'s **TYP-1 rule
+only** (via `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
 recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
 full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
 only when a `.dx/component-manifest.json` exists; otherwise it is reported skipped).
@@ -149,7 +188,7 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (43 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (69 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
@@ -226,47 +265,167 @@ hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
-## A11y static scan (built — static subset)
+## A11y lint — jsx-a11y `recommended` (built — static subset)
 
-`python3 checks/a11y-static.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for three high-confidence a11y violations that are detectable from source text alone, without a rendered DOM. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+`python3 checks/a11y-eslint.py [--repo-root <dir>] <path>...` — runs
+eslint-plugin-jsx-a11y's maintained `recommended` preset (31 of its 39 rules) over a
+target repo's `.js`/`.jsx`/`.mjs`/`.cjs`/`.ts`/`.tsx` source and prints every finding
+under the control id its rule maps to. Exit 0 silent (or NOTEs only) on pass; exit 1
+with `ERROR` lines on any violation.
 
-**Rules:**
+**Nothing is installed or configured in the target repo.** The preset is switched on
+from `checks/eslint/jsx-a11y.config.mjs` with `--no-config-lookup` and the target root
+as CWD, so the target's own eslint config never loads and never changes the result: no
+config file, no plugin entry, no dependency, no lockfile change. eslint, the plugin and
+a TypeScript-capable parser are resolved from the **target's** `node_modules` —
+directly, or through a package that declares them, because pnpm keeps a transitive
+dependency out of the target root. `eslint-config-next` already carries all three.
+
+**Coverage:** A11Y-2 (`click-events-have-key-events`, `no-static-element-interactions`,
+`interactive-supports-focus`, `no-noninteractive-element-interactions`,
+`mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`,
+`anchor-is-valid`, `no-autofocus`, `no-access-key`), A11Y-3
+(`label-has-associated-control`, `autocomplete-valid`), A11Y-6 (`alt-text`,
+`img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`),
+A11Y-8 (the aria suite). Every one of those controls keeps a manual remainder, so none
+of them reaches `enforced: script`.
+
+**Why the preset, not all 39.** The maintainers' preset encodes real ARIA exceptions.
+Measured on this repo: 1 finding under `recommended` against 8 under all 39, and all 7
+extras are deliberately suppressed — 6 by rules the preset disables
+(`prefer-tag-over-role` ×2, `control-has-associated-label` ×3, `label-has-for` ×1) and
+1 by a rule the preset keeps but calibrates with its own options
+(`no-noninteractive-tabindex`, exempted for `role="tabpanel"`). The preset's severities
+and per-rule options are used verbatim; no rule outside it is enabled.
+
+**Findings name the rule:** `ERROR <file>:<line> [<CTL>][jsx-a11y/<rule>] <message> —
+suggest: fix per jsx-a11y/<rule>`, formatted by `checklib.emit_error`, so a finding
+traces back to its row in `a11y-rule-map.json`.
+
+**Static-subset caveat — what this layer does NOT verify:**
+
+- Contrast (A11Y-1) — `contrast.py` answers declared token pairs; computed colours need
+  a rendered page.
+- A visible focus indicator (A11Y-2's focus half) — no eslint or axe rule exists, which
+  is why `a11y-static.py`'s FOCUS rule stays bespoke.
+- Focus traversal order (A11Y-2), cross-file `htmlFor`/`id` association (A11Y-3),
+  informative-versus-decorative judgment (A11Y-6), closed overlays and ARIA state
+  changes (A11Y-8).
+- Anything a rendered DOM is needed for: that is the rendered check's half.
+
+**A layer that did not run does not silently pass.** When eslint or the plugin cannot
+be resolved, when the TypeScript parser is missing and `.ts`/`.tsx` files were in
+scope (the run then covers `.js`/`.jsx` only), or when eslint cannot parse a file, the
+check says so and names A11Y-2, A11Y-3, A11Y-6 and A11Y-8 as going to manual
+verification, adding that A11Y-2 and A11Y-3 are L0 and block until verified by some
+path. The coverage gap is an operational `ERROR` (exit 1), followed by explanatory
+`NOTE`s where applicable, so `detect.py` cannot grade an incomplete run clean. A rule
+that fires with no row in the map, an unreadable map, an eslint crash and a timeout are
+operational `ERROR`s too. These lines carry no `<file>:<line> [<CTL>]` shape, so the
+detector keeps them as control-less findings. When the given paths contain no lintable
+source at all, the layer prints a NOTE and exits 0 because it had nothing in scope.
+
+**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (41 cases)`
+(includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`
+which proves the three rules the maintainers switch off stay off). The fixture cases
+need the target toolchain; where it cannot be resolved they assert the honest skip path
+instead, so the case count never depends on the environment.
+
+## A11y focus scan (built — one bespoke rule)
+
+`python3 checks/a11y-static.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the one accessibility rule no maintained tool provides: a focus outline removed with no visible replacement. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+
+**Rule:**
 
 - **FOCUS (A11Y-2, L0):** A class string or CSS rule containing an outline-removal token (`outline-none`, `outline-0`, `focus:outline-none`, or CSS `outline: none/0`) with no focus-visible replacement (`focus-visible:outline`, `focus-visible:ring`, `focus-visible:border`, `focus-visible:shadow`, or CSS `:focus-visible { … outline|box-shadow|border … }`) on the same line.
-- **KBD (A11Y-2, L0):** A `<div`, `<span`, `<li`, or `<p` opening tag carrying a click handler (`onClick`, `onMouseDown`, `onclick`, `(click)`, `@click`) with no `role=` and no `tabIndex`/`tabindex` on the same tag.
-- **NAME (A11Y-3, L0):** A `<button` or `role="button"` tag with no `aria-label`, `aria-labelledby`, or `title`, that is self-closing or whose same-line content is only an icon (`<svg`, a `*Icon` component, or an `aria-hidden` child) with no visible text. Only flags the same-line / self-closing case.
+
+**Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted** because their line-local regexes could not make reliable ARIA judgments. jsx-a11y's maintained preset replaces KBD and checks label association, but deliberately leaves `control-has-associated-label` disabled; icon-only accessible-name judgment therefore stays rendered/manual. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
 
 **Static-subset caveat — what this script does NOT verify:**
 
-- Computed contrast ratios (A11Y-1) — needs rendered colours.
+- Keyboard reachability (A11Y-2's reachability half) — `a11y-eslint`'s `click-events-have-key-events`, `no-static-element-interactions` and `interactive-supports-focus`.
+- Label association (part of A11Y-3) — `a11y-eslint`'s `label-has-associated-control`. Icon-only accessible names remain rendered/manual because the preset leaves `control-has-associated-label` disabled.
+- Computed contrast ratios (A11Y-1) — `contrast.py` answers the declared token pairs; computed colours need rendered ones.
 - Interactive hit-area size (A11Y-4) — needs computed layout.
 - Focus traversal order and completeness (A11Y-2 traversal half) — needs a live DOM.
 - ARIA state tracking — `aria-expanded`/`aria-pressed`/`aria-checked` updating to match visual state (A11Y-8 state half) — cannot be detected statically without cross-file variable mutation tracking. Deferred; manual pass required.
-- Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core.
+- Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core, and this false-positive class is **accepted** rather than answered with a new dependency (`stylelint-a11y` was declined). Confirm the rendered element with a keyboard before treating a flag as a bug.
 
-**Waiver suppression:** A11Y-2 and A11Y-3 are L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
+**Waiver suppression:** A11Y-2 is L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
 
-**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (18 cases)` (includes the `fixtures/a11y-static/` pass/fail files).
+**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)` (includes the `fixtures/a11y-static/` pass/fail files, a case proving the deleted rules leave no coverage claim behind, and two that hold the docstring's load-bearing paragraphs in place).
 
-## Contrast scan (built — static subset)
+## Contrast on declared token pairs (built — honest-inert)
 
-`python3 checks/contrast.py --tokens <globals.css> <path>...` — computes WCAG 2.1 text-contrast ratios (A11Y-1) for the subset that is statically resolvable: a foreground and a background colour set together on the **same line** (class string or CSS rule) where both resolve to known token colours. This is the static half of A11Y-1 that needs no rendered DOM — the complement to `a11y-static.py`, whose docstring lists contrast as out of scope. Scans the same extensions as `a11y-static.py`. Exit 0 on pass or NOTEs-only; exit 1 with `ERROR` lines on any sub-AA pair.
+`python3 checks/contrast.py [--tokens <globals.css>] [--repo-root <dir>]` — answers the
+one part of A11Y-1 no rendered page can: do the design system's **declared** foreground
+and background token combinations clear WCAG AA? A declared pair is a design-system
+statement, measurable before anything renders; a rendered scan only ever sees the pairings
+a page happens to use. Exit 0 on pass or NOTEs-only; exit 1 with `ERROR` lines on any
+sub-AA declared pair.
 
-**Token resolution (`--tokens <file>`):** the colour map is built from a product's CSS token file (for this repo's own site, `../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains (transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`) so a Tailwind `text-foo`/`bg-foo` utility resolves through. An unresolved token stays unresolved — never guessed.
+**Where the pairs come from:** `- pairs: [["--foreground", "--background"], …]` under
+`## Colour` in the product's DESIGN.md, projected into `.dx/design.json` as
+`colour.pairs` by `scripts/generate-design-json.py` (its existing `- key: [json array]`
+parse already handles it — the generator needed no change). Each name resolves as a
+custom property (`--foo`) or as a Tailwind utility name (`foo`, through the `@theme`
+alias).
 
-**What counts as a candidate (line-local):** a `text-<colour>` **and** a `bg-<colour>` on the same Tailwind class string (bare names that resolve to a token colour, or arbitrary `text-[#hex]`/`bg-[var(--t)]`), or a CSS rule / `style="…"` with both `color:` and `background[-color]:`.
+**Honest-inert until pairs are declared.** Nothing declares pairs today, so with no
+`colour.pairs` (or no `.dx/design.json` at all) the check grades A11Y-1 **N/A**, prints a
+control-less operational `ERROR`, exits 1, and names A11Y-1 as going to manual
+verification — adding that A11Y-1 is L0 and blocks until verified by some path. The
+error keeps `detect.py` from grading the incomplete run clean. It never reports A11Y-1
+as passing on the strength of a check that had nothing to measure. Same shape as CMP-1 with
+`coverage: "complete"` and IDN-1/IDN-2 with the approved-asset registry.
 
-**Thresholds:** ratio `< 3.0` → ERROR (fails even large text); `3.0 ≤ ratio < 4.5` → ERROR noting it passes only as large text (≥24px / 18.66px bold — confirm the size); `≥ 4.5` → clean.
+**Token resolution (`--tokens <file>`, else `Tokens.source` in `.dx/design.json`):** the
+colour map is built from a product's CSS token file (for this repo's own site,
+`../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains
+(transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per
+the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`). An unresolved
+token stays unresolved — never guessed: the pair becomes an operational `ERROR` naming
+the token and goes to manual verification. A malformed declared pair is an operational
+ERROR for the same reason. `detect.py`'s auto-discovery of `app/globals.css` still
+supplies `--tokens` when it runs the check.
 
-**Unresolvable, never silent:** when a candidate pair is detected but a colour can't be resolved (unknown token, dynamic/`clsx` arbitrary value), the check emits a `NOTE … — verify manually` and exits 0 — it never passes silently and never raises a false ERROR.
+**Thresholds (unchanged):** ratio `< 3.0` → ERROR (fails even large text);
+`3.0 ≤ ratio < 4.5` → ERROR noting it passes only as large text (≥24px / 18.66px bold —
+confirm the size); `≥ 4.5` → clean. A finding points at the line in the token CSS where
+the foreground token is declared, so it is navigable:
+`ERROR app/globals.css:42 [A11Y-1] declared pair --foreground (#18181b) on --tw-blue
+(#0064ff) = 3.60:1 (below 4.5:1) — suggest: …`.
 
-**Static-subset caveat — what this script does NOT verify:**
+**What replaced the line-local source scan, and why.** The old ERROR path paired a text
+colour and a background colour found on the same line of source. Its colour maths was
+sound — the Tailwind opacity compositing added for #122 works, and its last finding on
+this repo was a real composited pair at 4.29:1, not a colour compared with itself. Two
+limits ended it anyway: a line-local scan **cannot see an inherited or computed
+background** (a rule setting only a text colour was never a candidate, which this file's
+own docstring called the largest false-negative surface), and axe's `color-contrast` on a
+rendered page answers that question on computed colours and is strictly better at it. Two
+layers disagreeing about one L0 control is worse than one layer that is right. Deleted
+with it: the Tailwind and CSS pairing regexes, `_classify_tw_value`, `_looks_like_colour`,
+`_check_line`, `check_file` and `scan_paths`. **Kept:** `TokenResolver` (with `resolve`,
+`_resolve_value`, `resolve_utility`, `resolve_colour_expr`, `page_base`), the OKLab
+`color-mix` maths, `_parse_tw_alpha`, `_composite`, `_band`, `_verdict_line` and the
+`--tokens` flag — the resolver surface another build reuses verbatim.
 
-- **Inherited / computed backgrounds.** A rule or class that sets only a text colour (background inherited from a parent) is **not** a candidate — there is no background to compare against, so it is skipped, not flagged. This is the largest false-negative surface and remains the manual / axe pass's job.
-- **Font-size-dependent large-text classification.** The 3.0–4.5 band is flagged conservatively with a "confirm the text size" note; the check does not infer font size line-locally.
-- **Non-text (UI component) contrast**, `color-mix` in spaces other than `oklab`, multi-line CSS rules, and dynamic class names beyond an arbitrary value it can read.
+**What this check does NOT verify:**
 
-**Self-test:** `python3 checks/contrast.py --self-test` → `SELF-TEST OK (15 cases)` (path-independent; uses inline temp fixtures).
+- **Any rendered element**, and any pairing a product uses but never declared. That is the
+  rendered check's half of A11Y-1.
+- **Font-size-dependent large-text classification.** The 3.0–4.5 band is flagged
+  conservatively with a "confirm the text size" note.
+- **Non-text (UI component) contrast**, and `color-mix` in spaces other than `oklab`.
+
+Path arguments are no longer scanned. A path on the command line only locates the repo
+root (and says so in a `NOTE`); `detect.py` passes `--repo-root` instead of targets.
+
+**Self-test:** `python3 checks/contrast.py --self-test` → `SELF-TEST OK (45 cases)`
+(path-independent; builds throwaway product repos in a tempdir). It includes a case
+asserting the resolver surface survives, and one proving a source file holding a
+deliberately bad pairing is not scanned.
 
 ## Waiver reconcile (built)
 
@@ -373,13 +532,13 @@ Planned for V1 (remaining):
 | Check | Controls | Approach |
 |---|---|---|
 | `contrast` | A11Y-1 | axe-core contrast scan: 4.5:1 body, 3:1 large text + UI components |
-| ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal) + KBD (click on non-focusable element); traversal order and hit-area still need a rendered DOM |
-| ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-static` covers NAME (icon-only button without aria-label); placeholder-only label and multi-line label association still need a rendered DOM |
+| ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal), `a11y-eslint` covers keyboard reachability (`click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`); traversal order and hit-area still need a rendered DOM |
+| ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-eslint` covers `label-has-associated-control` and `autocomplete-valid`; placeholder-only label and cross-file `htmlFor`/`id` association still need a rendered DOM |
 | `targets` | A11Y-4 | Computed hit area of interactive elements ≥ 24×24 CSS px |
 | `reduced-motion` | A11Y-5 | With prefers-reduced-motion set, non-essential animation does not run |
-| `alt-scan` | A11Y-6 | Every img/svg/icon has a text alternative or is marked decorative |
+| ~~`alt-scan`~~ | ~~A11Y-6~~ | ✅ built (static subset) — `a11y-eslint` covers `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`; the informative-versus-decorative judgment and every non-JSX image stay manual |
 | `structure` | A11Y-7 (deterministic half) | Heading-hierarchy walk; lists/tables/groups are semantic elements |
-| ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-static` covers KBD (non-focusable click handler without role/name); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
+| ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-eslint` covers the aria suite (`aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, the role-conversion rules); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
 | `title-lang` | A11Y-9 | Descriptive document title present; html lang attribute set |
 | `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
@@ -410,13 +569,29 @@ scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged).
 
 `content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
-on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason: per the
+on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the
 harness rule "never wire a failing check into the build," `content-lint` surfaces
-pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/`, and
-`contrast` surfaces a pre-existing sub-AA pair in `components/ui/button.tsx` (A11Y-1);
-neither is wired until that content is fixed or waived. `component-manifest` targets a
-product's `.dx/component-manifest.json`, which this repo (the harness/site itself)
-does not have — wiring it here would have nothing to check.
+pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/` and is
+not wired until that content is fixed or waived. `contrast` is exempt for a different
+reason since it became a token-pair check: it is **honest-inert** until a product
+declares `colour.pairs` in DESIGN.md, and this repo declares none, so it emits an
+operational ERROR that blocks for manual A11Y-1 verification. Build wiring is deferred
+to the catalogue recount; the design verification path runs it through `detect.py` now.
+`component-manifest` targets a product's
+`.dx/component-manifest.json`, which this repo (the harness/site itself) does not
+have — wiring it here would have nothing to check.
+
+`a11y-eslint.py` is **not wired** either, and it is deliberately **not** on
+`WIRING_EXEMPT`: no control names it in a `script:` field yet (the A11Y recount is a
+separate change), and `[WIRING-SYNC]` reads an exemption for a script no control claims
+as a dead exemption, which is an error. `[WIRING-SYNC]` therefore has nothing to ask of
+it. It stays unwired on its own merit too: on this tree the layer reports one finding,
+`jsx-a11y/interactive-supports-focus` at `components/diagrams/orbit-loop.tsx:319`
+("Elements with the 'tablist' interactive role must be focusable"), on a tablist whose
+tabs carry the roving `tabIndex` and whose arrow keys are handled on the container. That
+belongs to the manual A11Y-2 pass, and per the harness rule a failing check is never
+wired into the build. Run it from the design skills' verify step
+(`skills/design/dx-design-execute/verify.md`) and through `detect.py`'s curated profile.
 
 The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control claiming
 `enforced: script|partial` via a `script:` field must run in prebuild or CI, or be on

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "rules": {
+    "jsx-a11y/alt-text": "A11Y-6",
+    "jsx-a11y/anchor-has-content": "A11Y-6",
+    "jsx-a11y/anchor-is-valid": "A11Y-2",
+    "jsx-a11y/aria-activedescendant-has-tabindex": "A11Y-8",
+    "jsx-a11y/aria-props": "A11Y-8",
+    "jsx-a11y/aria-proptypes": "A11Y-8",
+    "jsx-a11y/aria-role": "A11Y-8",
+    "jsx-a11y/aria-unsupported-elements": "A11Y-8",
+    "jsx-a11y/autocomplete-valid": "A11Y-3",
+    "jsx-a11y/click-events-have-key-events": "A11Y-2",
+    "jsx-a11y/heading-has-content": "A11Y-7",
+    "jsx-a11y/html-has-lang": "A11Y-9",
+    "jsx-a11y/iframe-has-title": "A11Y-6",
+    "jsx-a11y/img-redundant-alt": "A11Y-6",
+    "jsx-a11y/interactive-supports-focus": "A11Y-2",
+    "jsx-a11y/label-has-associated-control": "A11Y-3",
+    "jsx-a11y/media-has-caption": "A11Y-6",
+    "jsx-a11y/mouse-events-have-key-events": "A11Y-2",
+    "jsx-a11y/no-access-key": "A11Y-2",
+    "jsx-a11y/no-autofocus": "A11Y-2",
+    "jsx-a11y/no-distracting-elements": "A11Y-5",
+    "jsx-a11y/no-interactive-element-to-noninteractive-role": "A11Y-8",
+    "jsx-a11y/no-noninteractive-element-interactions": "A11Y-2",
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": "A11Y-8",
+    "jsx-a11y/no-noninteractive-tabindex": "A11Y-2",
+    "jsx-a11y/no-redundant-roles": "A11Y-8",
+    "jsx-a11y/no-static-element-interactions": "A11Y-2",
+    "jsx-a11y/role-has-required-aria-props": "A11Y-8",
+    "jsx-a11y/role-supports-aria-props": "A11Y-8",
+    "jsx-a11y/scope": "A11Y-7",
+    "jsx-a11y/tabindex-no-positive": "A11Y-2"
+  },
+  "layers": {
+    "eslint-jsx-a11y": ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"],
+    "a11y-static-focus": ["A11Y-2"],
+    "contrast-token-pairs": ["A11Y-1"]
+  }
+}

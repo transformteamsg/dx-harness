@@ -1,67 +1,77 @@
 #!/usr/bin/env python3
 """
-Static contrast scan — checks/contrast.py
-Computes WCAG 2.1 text-contrast ratios (A11Y-1) for the subset that IS
-statically resolvable: a foreground and a background colour set together on the
-same class string or CSS rule, where both resolve to known token colours. A
-sub-AA pair is flagged before render.
+Token-pair contrast check — checks/contrast.py
+Answers the one part of A11Y-1 that no rendered page can: do the design system's
+DECLARED foreground/background token combinations clear WCAG AA? A declared pair
+is a design-system statement, so it can be measured before anything renders, and
+a rendered scan never sees the pairs a product intends — only the ones a page
+happens to use.
 
-This is a STATIC SUBSET of A11Y-1, exactly as a11y-static.py is a subset of
-A11Y-2/3/8. It does not replace the manual contrast pass or a real axe/headless
-run — it closes the part of the gap that needs no rendered DOM.
+Where the pairs come from
+──────────────────────────
+`- pairs: [["--foreground", "--background"], …]` under `## Colour` in the
+product's DESIGN.md, projected into `.dx/design.json` as `colour.pairs` (a list
+of two-element [foreground, background] lists) by
+scripts/generate-design-json.py. Nothing declares pairs today, so this check
+ships HONEST-INERT: with no pairs it grades N/A, says so, exits 1 with an
+operational ERROR, and A11Y-1 goes to manual verification. It never reports
+A11Y-1 as passing on the strength of a check that had nothing to measure.
 
 How colours resolve
 ────────────────────
-A token map is built from a CSS file given by --tokens <file> (product-specific;
-for this repo's own site, ../app/globals.css from harness/). It resolves:
+A token map is built from a CSS file given by --tokens <file>, else `Tokens.source`
+in `.dx/design.json` (product-specific; for this repo's own site,
+../app/globals.css from harness/). It resolves:
   - direct hex (#rgb / #rrggbb) and the keywords white / black,
   - var(--other) chains (transitively, with cycle protection),
   - color-mix(in oklab, var(--a) <p>%, <b>) — mixed in OKLab per the CSS spec
     (https://bottosson.github.io/posts/oklab/),
   - @theme inline aliases (--color-foo: var(--bar)) so a Tailwind text-foo /
-    bg-foo utility resolves through to --bar's colour.
-An unresolved token stays None and is reported via the NOTE channel — never
-guessed, never silently passed.
+    bg-foo utility name resolves through to --bar's colour.
+An unresolved token stays None and is reported as an operational ERROR — never
+guessed, never silently passed. The resolver, its OKLab maths and the --tokens
+flag are reused verbatim by other checks; they are a shared surface, not private
+to this file.
 
-What counts as a contrast candidate
-────────────────────────────────────
-Line-local only (same philosophy as a11y-static): a candidate needs BOTH a
-foreground and a background colour on the same line —
-  - Tailwind: a class string with a text-<colour> AND a bg-<colour> (bare names
-    that resolve to a token colour, or arbitrary values text-[#hex] / bg-[#hex] /
-    text-[var(--t)] / bg-[var(--t)]). Opacity modifiers (bg-destructive/10,
-    text-foreground/[0.06]) are composited before measuring: a translucent bg
-    over the page ground (--background, else --surface), a translucent text
-    colour over its effective bg. An unresolvable page ground → NOTE,
-  - CSS / inline style: a rule or style="…" with both color: and
-    background[-color]: (hex or var(--token)).
 Both resolve → ratio computed: <3.0 ERROR (fails even large text); 3.0–4.5 ERROR
-noting it passes only as large text; ≥4.5 clean. One/both unresolved → NOTE
-("could not resolve … — verify manually"), never an ERROR or a silent pass.
+noting it passes only as large text; ≥4.5 clean. A finding points at the line in
+the token CSS where the foreground token is declared, so it is navigable.
 
-What this script does NOT verify
-─────────────────────────────────
-- Inherited or computed backgrounds. A rule/class that sets only a text colour
-  (background inherited from a parent) is NOT a candidate — the check sees no
-  background to compare against, so it is skipped, not flagged. This is the
-  largest false-negative surface and it is the manual / axe pass's job.
+Why the line-local source scan was deleted
+───────────────────────────────────────────
+This check used to pair a text colour and a background colour found on the same
+line of source. The colour maths was sound (the Tailwind opacity compositing
+added for #122 works, and its finding on this repo was a real composited pair at
+4.29:1, not a self-comparison). Two limits ended it anyway, neither of them a
+maths bug:
+  - A line-local scan cannot see an inherited or computed background. A rule that
+    set only a text colour was never a candidate, so most real pairs on a page
+    were never measured — this file's own docstring called that the largest
+    false-negative surface.
+  - axe's `color-contrast`, run against a rendered page, answers exactly that
+    question on computed colours and is strictly better at it. Two layers
+    disagreeing about one L0 control is worse than one layer that is right.
+
+What this check does NOT verify
+───────────────────────────────
+- Any rendered element, and any colour pairing a product uses but never
+  declared. That is the rendered check's half of A11Y-1.
 - Font-size-dependent large-text classification. The 3.0–4.5 band is flagged
-  conservatively with a "confirm the text size" note; the check does not infer
-  font size line-locally.
-- Non-text (UI component) contrast.
-- Dynamic / computed class names (clsx, template literals) beyond an arbitrary
-  value it can read — reported as NOTE, never passed.
-- color-mix in any space other than oklab, and multi-line CSS rules.
+  conservatively with a "confirm the text size" note.
+- Non-text (UI component) contrast, and colour-blindness simulation.
+- color-mix in any space other than oklab.
 
 Output
 ──────
-ERROR <file>:<line> [A11Y-1] text <fg> on <bg> = <ratio>:1 (<band>) — suggest: <…>
-NOTE  contrast: could not resolve <…> at <file>:<line> — verify manually
-Exit 0 and print nothing (or SELF-TEST OK) on success or notes-only.
-Exit 1 with ERROR lines on any real contrast violation.
+ERROR <tokens-css>:<line> [A11Y-1] declared pair <fg> (<hex>) on <bg> (<hex>) =
+      <ratio>:1 (<band>) — suggest: <…>
+NOTE  contrast: <…> — verify manually
+Exit 0 and print nothing (or NOTEs only, or SELF-TEST OK) on success.
+Exit 1 with ERROR lines on any sub-AA pair or unverified L0 coverage gap.
 """
 
 import importlib.util
+import json
 import os
 import re
 import sys
@@ -79,8 +89,9 @@ def _load_checklib():
 
 checklib = _load_checklib()
 
-# ── Target extensions ──────────────────────────────────────────────────────────
-TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
+# This check's row in checks/a11y-rule-map.json: the controls it covers, named
+# when it has nothing to measure so none of them passes silently.
+LAYER = "contrast-token-pairs"
 
 # CSS colour keywords this check resolves (kept tiny on purpose).
 CSS_KEYWORDS = {"white": "#ffffff", "black": "#000000", "transparent": None}
@@ -170,6 +181,8 @@ def _mix_oklab(rgb_a, rgb_b, weight_a):
 # ── Token resolver ───────────────────────────────────────────────────────────────
 
 _DECL_RE = re.compile(r"(--[\w-]+)\s*:\s*([^;]+);")
+# Where a declaration starts, so a finding can point at the token's own line.
+_DECL_START_RE = re.compile(r"(--[\w-]+)\s*:")
 _VAR_RE = re.compile(r"var\(\s*(--[\w-]+)\s*\)")
 _COLORMIX_RE = re.compile(
     r"color-mix\(\s*in\s+oklab\s*,\s*(.+?)\s+([\d.]+)%\s*,\s*(.+)\)",
@@ -181,11 +194,17 @@ class TokenResolver:
     """Resolves --token / Tailwind-utility names to (r,g,b) from a CSS file."""
 
     def __init__(self, css_text=""):
-        self.raw = {}        # --name -> raw value string
-        self._cache = {}     # --name -> rgb or None
+        self.raw = {}         # --name -> raw value string
+        self._cache = {}      # --name -> rgb or None
+        self.decl_lines = {}  # --name -> 1-based line it is declared on
         if css_text:
+            # Parsed over the whole text, so a declaration wrapped across lines
+            # still resolves; the line index is a separate, per-line pass.
             for name, value in _DECL_RE.findall(css_text):
                 self.raw[name] = value.strip()
+            for lineno, line in enumerate(css_text.splitlines(), start=1):
+                for m in _DECL_START_RE.finditer(line):
+                    self.decl_lines.setdefault(m.group(1), lineno)
 
     def resolve(self, name, _seen=None):
         """--name → (r,g,b) or None. Cycle-safe."""
@@ -246,6 +265,10 @@ class TokenResolver:
             return _hex_to_rgb(kw) if kw else None
         return _hex_to_rgb(expr)
 
+    def decl_line(self, name):
+        """The 1-based line `--name` is declared on, or None."""
+        return self.decl_lines.get(name)
+
     def page_base(self):
         """The page ground a translucent background composites over:
         --background, else --surface (this repo's tokens), else their @theme
@@ -258,62 +281,10 @@ class TokenResolver:
         return None
 
 
-# ── Pairing detection ─────────────────────────────────────────────────────────────
-
-# Tailwind utilities. Arbitrary values keep the brackets so we can tell
-# "clearly a colour but unresolved" (→ NOTE) from "not a colour utility" (skip).
-# Group 2 captures the optional /<alpha> opacity modifier (bg-destructive/10,
-# text-foreground/[0.06]) — dropping it would measure a token against itself
-# and false-fail A11Y-1 on ordinary tinted backgrounds (#122).
-_TW_TEXT_RE = re.compile(r"\btext-(\[[^\]]+\]|[\w-]+)(?:/(\d{1,3}(?:\.\d+)?|\[[^\]]+\]))?")
-_TW_BG_RE = re.compile(r"\bbg-(\[[^\]]+\]|[\w-]+)(?:/(\d{1,3}(?:\.\d+)?|\[[^\]]+\]))?")
-# CSS / inline declarations
-_CSS_COLOR_RE = re.compile(r"(?<!-)\bcolor\s*:\s*([^;}{]+)")
-_CSS_BG_RE = re.compile(r"\bbackground(?:-color)?\s*:\s*([^;}{]+)")
-
-_NON_COLOUR_TEXT = {  # common text-* utilities that are not colours
-    "xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl",
-    "8xl", "9xl", "left", "center", "right", "justify", "start", "end", "wrap",
-    "nowrap", "balance", "pretty", "ellipsis", "clip", "transparent", "current",
-}
-# Keywords that are not a concrete colour — no contrast comparison is possible,
-# so a pair involving one is skipped silently (not a NOTE, not an ERROR).
-_NON_CONCRETE = {"inherit", "none", "transparent", "currentcolor", "unset",
-                 "initial", "revert", "auto"}
-_COLOUR_FUNC_RE = re.compile(r"^(?:rgba?|hsla?|hwb|oklch|oklab|lab|lch|color)\s*\(",
-                             re.IGNORECASE)
-
-
-def _looks_like_colour(expr):
-    """A best-effort 'is this CSS value a concrete colour?' for arbitrary values.
-    Lengths (14px, 1.5rem) and other non-colour utilities return False so they
-    are not mistaken for unresolved colours."""
-    s = expr.strip()
-    if not s or s.lower() in _NON_CONCRETE:
-        return False
-    if s.startswith("#") or "var(" in s or _COLOUR_FUNC_RE.match(s):
-        return True
-    return s.lower() in CSS_KEYWORDS
-
-
-def _classify_tw_value(raw, resolver):
-    """raw is the captured group after text-/bg-. Returns
-    ('colour', rgb) | ('unresolved', label) | None (not a colour utility)."""
-    if raw.startswith("["):
-        inner = raw[1:-1]
-        if not _looks_like_colour(inner):
-            return None  # arbitrary length / position / image — not a colour
-        rgb = resolver.resolve_colour_expr(inner)
-        if rgb is not None:
-            return ("colour", rgb)
-        return ("unresolved", f"arbitrary value {raw}")
-    if raw in _NON_COLOUR_TEXT:
-        return None
-    rgb = resolver.resolve_utility(raw)
-    if rgb is not None:
-        return ("colour", rgb)
-    return None  # bare name that is not a known colour token — not a candidate
-
+# ── Alpha and compositing primitives ─────────────────────────────────────────────
+# Kept with the resolver as shared colour maths (spec section 10 build target 1
+# reuses this surface verbatim), not as a private helper of a pairing scan: a
+# translucent token still has to be composited before it can be measured.
 
 def _parse_tw_alpha(raw):
     """A Tailwind opacity modifier (the part after '/') → alpha in [0,1], or
@@ -358,129 +329,191 @@ def _band(ratio):
     return False, "clears 4.5:1"
 
 
-def _verdict_line(rel, lineno, fg_rgb, bg_rgb):
-    """Returns an ERROR string if the pair fails AA, else None."""
+def _verdict_line(rel, lineno, fg_name, fg_rgb, bg_name, bg_rgb):
+    """Returns an ERROR string if the declared pair fails AA, else None. The
+    file and line point at the token CSS where the foreground token is
+    declared, so the finding is navigable."""
     ratio = contrast_ratio(fg_rgb, bg_rgb)
     is_error, band = _band(ratio)
     if not is_error:
         return None
     return checklib.emit_error(
         rel, lineno, "A11Y-1",
-        f"text {_fmt_hex(fg_rgb)} on {_fmt_hex(bg_rgb)} = {ratio:.2f}:1 ({band})",
-        "use a higher-contrast token (e.g. Radix step-12 for small text)")
+        f"declared pair {fg_name} ({_fmt_hex(fg_rgb)}) on {bg_name} "
+        f"({_fmt_hex(bg_rgb)}) = {ratio:.2f}:1 ({band})",
+        "use a higher-contrast token (e.g. Radix step-12 for small text), or "
+        "correct the declared pair in DESIGN.md")
 
 
-def _check_line(scan_line, rel, lineno, resolver):
-    """Returns a list of ERROR/NOTE strings for one line."""
-    out = []
+# ── Declared token pairs ──────────────────────────────────────────────────────
 
-    # ── Tailwind class-string pairing ─────────────────────────────────────────
-    tm = _TW_TEXT_RE.search(scan_line)
-    bm = _TW_BG_RE.search(scan_line)
-    if tm and bm:
-        fg = _classify_tw_value(tm.group(1), resolver)
-        bg = _classify_tw_value(bm.group(1), resolver)
-        if fg and bg:
-            if fg[0] == "colour" and bg[0] == "colour":
-                # Opacity modifiers: a translucent bg composites over the page
-                # ground first, then a translucent fg composites over that
-                # effective bg — measuring the raw token pair would compare a
-                # tint against its own full-strength colour (1:1) and
-                # false-fail A11Y-1 on idioms like bg-destructive/10.
-                fg_alpha = _parse_tw_alpha(tm.group(2))
-                bg_alpha = _parse_tw_alpha(bm.group(2))
-                if fg_alpha is None or bg_alpha is None:
-                    bad = [f"{p}-{m.group(1)}/{m.group(2)}"
-                           for p, m, a in (("text", tm, fg_alpha), ("bg", bm, bg_alpha))
-                           if a is None]
-                    out.append(f"NOTE  contrast: could not parse opacity modifier "
-                               f"on {', '.join(bad)} at {rel}:{lineno} — verify manually")
-                    return out
-                fg_rgb, bg_rgb = fg[1], bg[1]
-                if bg_alpha < 1.0:
-                    base = resolver.page_base()
-                    if base is None:
-                        out.append(f"NOTE  contrast: could not resolve the page "
-                                   f"background to composite bg-{bm.group(1)}/"
-                                   f"{bm.group(2)} at {rel}:{lineno} — verify manually")
-                        return out
-                    bg_rgb = _composite(bg_rgb, bg_alpha, base)
-                if fg_alpha < 1.0:
-                    fg_rgb = _composite(fg_rgb, fg_alpha, bg_rgb)
-                err = _verdict_line(rel, lineno, fg_rgb, bg_rgb)
-                if err:
-                    out.append(err)
-            elif "unresolved" in (fg[0], bg[0]):
-                bad = [x[1] for x in (fg, bg) if x[0] == "unresolved"]
-                out.append(f"NOTE  contrast: could not resolve {', '.join(bad)} "
-                           f"at {rel}:{lineno} — verify manually")
-
-    # ── CSS / inline-style pairing ────────────────────────────────────────────
-    cm = _CSS_COLOR_RE.search(scan_line)
-    bgm = _CSS_BG_RE.search(scan_line)
-    if cm and bgm:
-        fg_expr, bg_expr = cm.group(1).strip(), bgm.group(1).strip()
-        # A non-concrete keyword (inherit/none/…) means no colour is set here →
-        # not a contrast candidate, skip silently.
-        if fg_expr.lower() in _NON_CONCRETE or bg_expr.lower() in _NON_CONCRETE:
-            return out
-        fg_rgb = resolver.resolve_colour_expr(fg_expr)
-        bg_rgb = resolver.resolve_colour_expr(bg_expr)
-        if fg_rgb is not None and bg_rgb is not None:
-            err = _verdict_line(rel, lineno, fg_rgb, bg_rgb)
-            if err:
-                out.append(err)
-        else:
-            unresolved = []
-            if fg_rgb is None:
-                unresolved.append(f"color: {cm.group(1).strip()}")
-            if bg_rgb is None:
-                unresolved.append(f"background: {bgm.group(1).strip()}")
-            out.append(f"NOTE  contrast: could not resolve {', '.join(unresolved)} "
-                       f"at {rel}:{lineno} — verify manually")
-    return out
-
-
-def check_file(filepath, resolver):
-    """Scan a single file; return a list of ERROR/NOTE strings."""
-    out = []
-    ext = os.path.splitext(filepath)[1].lower()
-    if ext not in TARGET_EXTENSIONS:
-        return out
+def load_design_projection(repo_root):
+    """
+    `<repo_root>/.dx/design.json` as a dict, or (None, reason). The projection
+    is generated from DESIGN.md; a missing one is not a failure, it is a product
+    that has not declared a design language yet.
+    """
+    path = os.path.join(repo_root, ".dx", "design.json")
+    if not os.path.isfile(path):
+        return None, f"no {os.path.join('.dx', 'design.json')} under {repo_root}"
     try:
-        with open(filepath, encoding="utf-8", errors="replace") as fh:
-            lines = fh.readlines()
-    except OSError as exc:
-        return [f"ERROR {filepath}: cannot read file — {exc}"]
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        return None, f"could not read .dx/design.json ({exc})"
+    if not isinstance(data, dict):
+        return None, ".dx/design.json is not a JSON object"
+    return data, None
 
-    rel = os.path.relpath(filepath)
-    in_block_comment = False
-    for lineno, raw_line in enumerate(lines, start=1):
-        line = raw_line.rstrip("\n")
-        scan_line = checklib.strip_block_comments(line, in_block_comment)
-        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
-        scan_line = re.sub(r"<!--.*?-->", "", scan_line)
-        if ext in (".js", ".ts", ".jsx", ".tsx"):
-            scan_line = re.sub(r"//.*$", "", scan_line)
-        out.extend(_check_line(scan_line, rel, lineno, resolver))
+
+def declared_pairs(design):
+    """
+    The declared foreground/background pairs from the projection's
+    `colour.pairs`. Returns (pairs, malformed): pairs is a list of (fg, bg)
+    token-name tuples, malformed holds every entry that was not a two-name
+    list, so a typo is reported rather than dropped.
+    """
+    colour = design.get("colour") if isinstance(design, dict) else None
+    raw = colour.get("pairs") if isinstance(colour, dict) else None
+    if not isinstance(raw, list):
+        return [], []
+    pairs, malformed = [], []
+    for entry in raw:
+        if isinstance(entry, list) and len(entry) == 2 \
+                and all(isinstance(x, str) and x.strip() for x in entry):
+            pairs.append((entry[0].strip(), entry[1].strip()))
+        else:
+            malformed.append(entry)
+    return pairs, malformed
+
+
+def tokens_source(design, repo_root):
+    """`Tokens.source` from the projection, resolved against the repo root, or
+    None. The --tokens flag wins over it; detect.py's auto-discovery is the
+    third path."""
+    tokens = design.get("tokens") if isinstance(design, dict) else None
+    src = tokens.get("source") if isinstance(tokens, dict) else None
+    if not isinstance(src, str) or not src.strip():
+        return None
+    cand = src.strip()
+    if not os.path.isabs(cand):
+        cand = os.path.join(repo_root, cand)
+    return cand if os.path.isfile(cand) else None
+
+
+def resolve_token(resolver, name):
+    """A declared token name → (r,g,b) or None. `--foo` resolves as a custom
+    property; a bare `foo` resolves as a Tailwind utility name (the @theme
+    alias), so both spellings a product might declare are accepted."""
+    if name.startswith("--"):
+        return resolver.resolve(name)
+    return resolver.resolve_utility(name)
+
+
+def check_pairs(pairs, resolver, tokens_rel):
+    """
+    Grade every declared pair. Returns ERROR strings for a pair that fails AA
+    or a token that does not resolve (never a guess, and never a silent pass).
+    """
+    out = []
+    for fg_name, bg_name in pairs:
+        fg_rgb = resolve_token(resolver, fg_name)
+        bg_rgb = resolve_token(resolver, bg_name)
+        unresolved = [n for n, rgb in ((fg_name, fg_rgb), (bg_name, bg_rgb))
+                      if rgb is None]
+        if unresolved:
+            out.append(f"ERROR contrast: declared pair [{fg_name}, {bg_name}] could "
+                       f"not resolve {', '.join(unresolved)} in {tokens_rel or 'any token file'} "
+                       f"— that pair goes to manual verification")
+            continue
+        lineno = (resolver.decl_line(fg_name) or resolver.decl_line(bg_name) or 1)
+        err = _verdict_line(tokens_rel or "(tokens)", lineno,
+                            fg_name, fg_rgb, bg_name, bg_rgb)
+        if err:
+            out.append(err)
     return out
 
 
-def scan_paths(paths, resolver):
-    all_out = []
-    for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
-        if kind == "missing":
-            all_out.append(f"ERROR contrast: path not found: {val}")
-        else:
-            all_out.extend(check_file(val, resolver))
-    return all_out
+def inert_notes(reason, controls):
+    """The honest-inert report: nothing was declared, so the check grades N/A
+    and says which controls go to manual verification instead of passing."""
+    verb = "goes" if len(controls) == 1 else "go"
+    lines = [
+        f"ERROR contrast: no declared foreground/background token pairs — {reason}",
+        "NOTE  contrast: grade A11Y-1 N/A for this check and verify it by hand "
+        "(declare `- pairs: [[\"--fg\", \"--bg\"], …]` under `## Colour` in DESIGN.md "
+        "to switch it on)",
+        f"NOTE  contrast: {', '.join(controls)} {verb} to manual verification "
+        f"(not reported as passing)",
+    ]
+    l0 = checklib.l0_subset(controls)
+    if l0:
+        lines.append(f"NOTE  contrast: {', '.join(l0)} is L0 and blocks until verified "
+                     f"by some path")
+    return lines
+
+
+def find_design_root(start):
+    """The nearest ancestor of `start` holding a `.dx` directory (where the
+    projection lives), else `start` itself. detect.py always passes
+    --repo-root; this is the fallback for a bare command line."""
+    cur = os.path.abspath(start)
+    if os.path.isfile(cur):
+        cur = os.path.dirname(cur)
+    probe = cur
+    while True:
+        if os.path.isdir(os.path.join(probe, ".dx")):
+            return probe
+        parent = os.path.dirname(probe)
+        if parent == probe:
+            return cur
+        probe = parent
+
+
+def run(repo_root, tokens_file=None):
+    """Run the token-pair check. Returns (exit_code, output_lines)."""
+    try:
+        controls = checklib.layer_controls(LAYER)
+    except checklib.RuleMapError as exc:
+        return 1, [f"ERROR contrast: {exc}"]
+
+    design, reason = load_design_projection(repo_root)
+    if design is None:
+        return 1, inert_notes(reason, controls)
+
+    pairs, malformed = declared_pairs(design)
+    out = [f"ERROR contrast: malformed colour.pairs entry {entry!r} "
+           f"— each entry is a [foreground, background] pair of token names"
+           for entry in malformed]
+    if not pairs:
+        return 1, out + inert_notes("colour.pairs is absent or empty in "
+                                    ".dx/design.json", controls)
+
+    tokens_file = tokens_file or tokens_source(design, repo_root)
+    css_text = ""
+    if tokens_file:
+        try:
+            with open(tokens_file, encoding="utf-8", errors="replace") as fh:
+                css_text = fh.read()
+        except OSError as exc:
+            return 1, out + [f"ERROR contrast: cannot read the token file "
+                             f"{tokens_file} — {exc}"]
+    else:
+        out.append("NOTE  contrast: no token CSS file given or declared "
+                   "(--tokens <css>, or Tokens.source in DESIGN.md); only literal "
+                   "colours will resolve")
+
+    resolver = TokenResolver(css_text)
+    tokens_rel = os.path.relpath(tokens_file) if tokens_file else None
+    out.extend(check_pairs(pairs, resolver, tokens_rel))
+    errors = [o for o in out if o.startswith("ERROR")]
+    return (1 if errors else 0), out
 
 
 # ── Self-test ──────────────────────────────────────────────────────────────────
 
 # A small token set mirroring app/globals.css (the real fixture source).
-_SELF_TEST_TOKENS = """
-:root {
+_SELF_TEST_TOKENS = """:root {
   --surface: #ffffff;
   --foreground: #18181b;
   --tw-blue: #0064ff;
@@ -489,6 +522,7 @@ _SELF_TEST_TOKENS = """
   --success: #2a7e3b;
   --success-subtle: color-mix(in oklab, var(--success-9) 8%, var(--surface));
   --destructive: #b91c1c;
+  --muted-foreground: #7b7b7b;
 }
 @theme inline {
   --color-surface: var(--surface);
@@ -501,190 +535,187 @@ _SELF_TEST_TOKENS = """
 """
 
 
+def _load_detect():
+    """detect.py, loaded by path so the self-test can assert findings against
+    the real `_FINDING_RE` that reverse-parses them."""
+    path = os.path.join(_CHECKS_DIR, "detect.py")
+    spec = importlib.util.spec_from_file_location("_dx_detect", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def run_self_test():
     import tempfile
 
     failures = []
     case_count = 0
     resolver = TokenResolver(_SELF_TEST_TOKENS)
+    detect = _load_detect()
 
-    def _run(content, ext):
-        with tempfile.NamedTemporaryFile(suffix=ext, mode="w", delete=False,
-                                         encoding="utf-8") as tf:
-            tf.write(content)
-            tf.flush()
-            name = tf.name
-        try:
-            return check_file(name, resolver)
-        finally:
-            os.unlink(name)
-
-    def _split(out):
-        return ([o for o in out if o.startswith("ERROR")],
-                [o for o in out if o.startswith("NOTE")])
-
-    def assert_violations(name, content, ext, expected_ctl_ids):
+    def check(name, want, got):
         nonlocal case_count
         case_count += 1
-        errs, _ = _split(_run(content, ext))
-        found = []
-        for e in errs:
-            m = re.search(r"\[([A-Z0-9-]+)\]", e)
-            if m:
-                found.append(m.group(1))
-        for ctl in expected_ctl_ids:
-            if ctl not in found:
-                failures.append(f"FAIL {name}: expected [{ctl}] — got: {errs}")
-
-    def assert_clean(name, content, ext):
-        nonlocal case_count
-        case_count += 1
-        errs, notes = _split(_run(content, ext))
-        if errs or notes:
-            failures.append(f"FAIL {name}: expected clean — got: {errs + notes}")
-
-    def assert_note(name, content, ext):
-        nonlocal case_count
-        case_count += 1
-        errs, notes = _split(_run(content, ext))
-        if errs:
-            failures.append(f"FAIL {name}: expected NOTE not ERROR — got: {errs}")
-        if not notes:
-            failures.append(f"FAIL {name}: expected a NOTE — got none")
+        if want != got:
+            failures.append(f"FAIL {name}: want: {want!r}; got: {got!r}")
 
     def assert_ratio(name, fg_hex, bg_hex, expected, tol=0.1):
         nonlocal case_count
         case_count += 1
         got = contrast_ratio(_hex_to_rgb(fg_hex), _hex_to_rgb(bg_hex))
         if abs(got - expected) > tol:
-            failures.append(f"FAIL {name}: ratio {got:.3f} vs expected {expected} "
-                            f"(tol {tol})")
+            failures.append(f"FAIL {name}: want: {expected!r} (tol {tol}); "
+                            f"got: {round(got, 3)!r}")
 
     def assert_resolves(name, token, expected_hex, tol=4):
         nonlocal case_count
         case_count += 1
         rgb = resolver.resolve(token)
         if rgb is None:
-            failures.append(f"FAIL {name}: {token} did not resolve")
+            failures.append(f"FAIL {name}: want: ~{expected_hex!r}; got: unresolved")
             return
         exp = _hex_to_rgb(expected_hex)
         if any(abs(a - b) > tol for a, b in zip(rgb, exp)):
-            failures.append(f"FAIL {name}: {token} → {_fmt_hex(rgb)} "
-                            f"vs ~{expected_hex}")
+            failures.append(f"FAIL {name}: want: ~{expected_hex!r}; "
+                            f"got: {_fmt_hex(rgb)!r}")
 
-    # ── ratio maths ────────────────────────────────────────────────────────────
+    def write_repo(td, pairs=None, tokens=_SELF_TEST_TOKENS, extra_design=None,
+                   source_file=None):
+        """A throwaway product repo: a token CSS file, an optional
+        .dx/design.json declaring pairs, and an optional source file the check
+        must not scan."""
+        if tokens is not None:
+            with open(os.path.join(td, "tokens.css"), "w", encoding="utf-8") as fh:
+                fh.write(tokens)
+        if pairs is not None or extra_design is not None:
+            os.makedirs(os.path.join(td, ".dx"), exist_ok=True)
+            design = {"colour": {"primary": "--tw-blue"}}
+            if pairs is not None:
+                design["colour"]["pairs"] = pairs
+            if extra_design:
+                design.update(extra_design)
+            with open(os.path.join(td, ".dx", "design.json"), "w", encoding="utf-8") as fh:
+                json.dump(design, fh)
+        if source_file:
+            with open(os.path.join(td, "bad.tsx"), "w", encoding="utf-8") as fh:
+                fh.write(source_file)
+
+    # ── ratio maths (unchanged oracles) ────────────────────────────────────────
     assert_ratio("avatar fail #18181b on #0064ff", "#18181b", "#0064ff", 3.60)
     assert_ratio("known-good #ffffff on #18181b", "#ffffff", "#18181b", 17.7, tol=0.2)
+    assert_ratio("the ≈4.23 oracle", "#7b7b7b", "#ffffff", 4.23, tol=0.05)
 
-    # ── token resolution (incl. color-mix in oklab) ─────────────────────────────
+    # ── the resolver survives the deletion, and #156 reuses this surface ───────
+    for attr in ("resolve", "_resolve_value", "resolve_utility",
+                 "resolve_colour_expr", "page_base"):
+        check(f"TokenResolver keeps {attr}", True,
+              callable(getattr(resolver, attr, None)))
     assert_resolves("surface keyword", "--surface", "#ffffff")
     assert_resolves("tw-blue direct", "--tw-blue", "#0064ff")
     # success-subtle = 8% grass-9 on white → a very light green tint
-    assert_resolves("success-subtle color-mix", "--success-subtle", "#f1f7f1", tol=6)
+    assert_resolves("success-subtle color-mix in oklab", "--success-subtle",
+                    "#f1f7f1", tol=6)
+    check("resolve_utility reads the @theme alias", (0, 100, 255),
+          resolver.resolve_utility("tw-blue"))
+    check("resolve_colour_expr reads var()", (255, 255, 255),
+          resolver.resolve_colour_expr("var(--surface)"))
+    check("resolve_colour_expr reads a hex", (0, 100, 255),
+          resolver.resolve_colour_expr("#0064ff"))
+    check("page_base falls back to --surface", (255, 255, 255), resolver.page_base())
+    check("an unknown token stays unresolved, never guessed", None,
+          resolver.resolve("--no-such-token"))
+    check("a declaration carries its line number", 3, resolver.decl_line("--foreground"))
+    check("_parse_tw_alpha reads a bare percentage", 0.1, _parse_tw_alpha("10"))
+    check("_parse_tw_alpha reads an arbitrary value", 0.06, _parse_tw_alpha("[0.06]"))
+    check("_composite blends source-over in sRGB", (128, 128, 128),
+          _composite((0, 0, 0), 0.5, (255, 255, 255)))
 
-    # ── Tailwind pairings ───────────────────────────────────────────────────────
-    # The avatar fail (triggering bug): text-foreground on bg-tw-blue → ≈3.60
-    assert_violations(
-        "avatar: text-foreground on bg-tw-blue",
-        '<AvatarFallback className="bg-tw-blue text-foreground">JS</AvatarFallback>',
-        ".tsx", ["A11Y-1"],
-    )
-    # Unambiguous known-good: white on near-black surface inverse → clean
-    assert_clean(
-        "clean: text-surface on bg-foreground",
-        '<div className="bg-foreground text-surface px-2">Tag</div>',
-        ".tsx",
-    )
-    # text-sm is a size utility, not a colour → not a candidate even with bg
-    assert_clean(
-        "text-sm with bg is not a contrast candidate",
-        '<p className="text-sm bg-surface">copy</p>',
-        ".tsx",
-    )
+    # ── a declared pair that fails AA is reported ──────────────────────────────
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[["--foreground", "--tw-blue"]])
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        errs = [ln for ln in lines if ln.startswith("ERROR")]
+        check("a sub-AA declared pair exits 1", 1, rc)
+        check("it is one ERROR", 1, len(errs))
+        parsed = detect._FINDING_RE.match(errs[0]) if errs else None
+        check("the finding matches detect's finding shape", True, parsed is not None)
+        check("the finding carries A11Y-1", "A11Y-1",
+              parsed.group("control") if parsed else None)
+        check("the finding names both declared tokens", True,
+              bool(errs) and "--foreground" in errs[0] and "--tw-blue" in errs[0])
+        check("the finding carries the computed ratio", True,
+              bool(errs) and "3.60:1" in errs[0])
+        check("the finding points at the token file", True,
+              bool(parsed) and parsed.group("file").endswith("tokens.css"))
 
-    # ── CSS / color-mix pairing ─────────────────────────────────────────────────
-    # success step-11 text on success-subtle tint → ≥4.5 → clean (globals comment)
-    assert_clean(
-        "css: success on success-subtle clears AA",
-        ".badge { color: var(--success); background-color: var(--success-subtle); }",
-        ".css",
-    )
+    # ── a declared pair that clears AA is silent ───────────────────────────────
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[["--foreground", "--surface"]])
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        check("a passing declared pair exits 0", 0, rc)
+        check("a passing declared pair prints nothing", [], lines)
 
-    # ── genuine sub-AA functional pair (HF-9 evidence band ≈4.25) ────────────────
-    # explicit hexes: a mid-grey text on white computes to ≈4.23 → ERROR + note
-    assert_violations(
-        "sub-AA functional pair ≈4.23 (large-text band)",
-        ".chip { color: #7b7b7b; background-color: #ffffff; }",
-        ".css", ["A11Y-1"],
-    )
-    assert_ratio("the ≈4.23 oracle", "#7b7b7b", "#ffffff", 4.23, tol=0.05)
+    # ── nothing is reported about a rendered element or a source file ──────────
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[["--foreground", "--surface"]],
+                   source_file='<div className="bg-tw-blue text-foreground">x</div>\n'
+                               ".chip { color: #ce2c31; background: #f6e5e6; }\n")
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        check("a source file with a bad pairing is not scanned", (0, []), (rc, lines))
 
-    # ── Tailwind opacity modifiers (compositing, #122) ───────────────────────────
-    # The common tinted-chip idiom: 10% destructive over the surface is a light
-    # tint; full-strength destructive text on it clears AA. Without compositing
-    # this measured destructive-on-destructive (1:1) and false-failed A11Y-1.
-    assert_clean(
-        "bg-destructive/10 keeps its alpha (composites over surface)",
-        '<span className="bg-destructive/10 text-destructive">Overdue</span>',
-        ".tsx",
-    )
-    # The alpha fix is not a blanket exemption: a genuinely low-contrast pair
-    # with a modifier still fails (white text on a 10% foreground tint ≈1.2:1).
-    assert_violations(
-        "genuine low contrast with alpha still fails",
-        '<div className="bg-foreground/10 text-surface">ghost</div>',
-        ".tsx", ["A11Y-1"],
-    )
-    # A translucent foreground composites over its (opaque) background:
-    # 40% near-black on white lands ≈2.5:1 → ERROR.
-    assert_violations(
-        "text alpha composites over the background",
-        '<p className="bg-surface text-foreground/40">hint</p>',
-        ".tsx", ["A11Y-1"],
-    )
-    # Arbitrary-value modifier parses too ([0.06] ≈ /6).
-    assert_violations(
-        "arbitrary alpha modifier",
-        '<div className="bg-foreground/[0.06] text-surface">ghost</div>',
-        ".tsx", ["A11Y-1"],
-    )
-    # No resolvable page ground → NOTE, never a guess. Drive _check_line with a
-    # resolver whose token map lacks --background/--surface.
-    case_count += 1
-    bare = TokenResolver(":root { --ink: #b91c1c; } "
-                         "@theme inline { --color-ink: var(--ink); }")
-    bare_out = _check_line('<i className="bg-ink/10 text-ink">x</i>',
-                           "scratch.tsx", 1, bare)
-    if not any(o.startswith("NOTE") and "page background" in o for o in bare_out) \
-            or any(o.startswith("ERROR") for o in bare_out):
-        failures.append(f"FAIL alpha without page ground: expected a NOTE, no ERROR "
-                        f"— got: {bare_out}")
+    # ── an unresolvable declared token blocks, never a guess ──────────────────
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[["--mystery-ink", "--surface"]])
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        check("an unresolvable token exits 1", 1, rc)
+        check("the ERROR names the token that did not resolve", True,
+              any(ln.startswith("ERROR") and "--mystery-ink" in ln for ln in lines))
 
-    # ── unresolvable → NOTE, never silent pass, never false ERROR ────────────────
-    assert_note(
-        "unresolvable: arbitrary unknown var fg with known bg",
-        '<div className={clsx("text-[var(--unknownToken)]", "bg-surface")}>x</div>',
-        ".tsx",
-    )
-    assert_note(
-        "unresolvable: css var not in token map (both present)",
-        ".x { color: var(--mystery-ink); background: #ffffff; }",
-        ".css",
-    )
+    # ── a malformed pairs entry is reported, not dropped ───────────────────────
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[["--foreground"], ["--foreground", "--surface"]])
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        check("a malformed entry fails the run", 1, rc)
+        check("a malformed entry is named in an ERROR", True,
+              any(ln.startswith("ERROR") and "malformed colour.pairs entry" in ln
+                  for ln in lines))
 
-    # ── only one colour present → not a candidate, skipped silently ──────────────
-    assert_clean(
-        "single colour (bg only) is not a candidate",
-        ".prose code { background: var(--muted); padding: 1px 4px; }",
-        ".css",
-    )
+    # ── honest-inert: nothing declared means N/A, never a pass ─────────────────
+    check("the layer's controls come from the rule map", ["A11Y-1"],
+          checklib.layer_controls(LAYER))
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td)  # token file, no .dx/design.json
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        check("no design.json exits 1", 1, rc)
+        check("no design.json starts with an operational ERROR", True,
+              bool(lines) and lines[0].startswith("ERROR"))
+        kind, error_lines = detect.classify_run(rc, "\n".join(lines), "")
+        check("detect keeps the inert run as a blocking finding", ("findings", 1),
+              (kind, len(error_lines)))
+        check("the inert report grades A11Y-1 N/A", True,
+              any("A11Y-1 N/A" in ln for ln in lines))
+        check("the inert report sends A11Y-1 to manual verification", True,
+              any("manual verification" in ln and "A11Y-1" in ln for ln in lines))
+        check("the inert report says A11Y-1 is L0 and blocks", True,
+              any("L0 and blocks" in ln for ln in lines))
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[])
+        rc, lines = run(td, tokens_file=os.path.join(td, "tokens.css"))
+        check("an empty colour.pairs is honest-inert too", (1, True),
+              (rc, any("A11Y-1 N/A" in ln for ln in lines)))
 
-    # ── comment stripping ────────────────────────────────────────────────────────
-    assert_clean(
-        "commented-out bad pair is not flagged",
-        "/* .bad { color: #18181b; background: #0064ff; } */",
-        ".css",
-    )
+    # ── the token CSS file: --tokens wins, Tokens.source is the fallback ───────
+    with tempfile.TemporaryDirectory() as td:
+        write_repo(td, pairs=[["--foreground", "--tw-blue"]],
+                   extra_design={"tokens": {"source": "tokens.css"}})
+        rc, lines = run(td)  # no --tokens: Tokens.source supplies the file
+        check("Tokens.source supplies the token file", 1, rc)
+        check("the pair resolved through Tokens.source", True,
+              any("3.60:1" in ln for ln in lines))
+        with open(os.path.join(td, "other.css"), "w", encoding="utf-8") as fh:
+            fh.write(":root { --foreground: #ffffff; --tw-blue: #000000; }\n")
+        rc2, lines2 = run(td, tokens_file=os.path.join(td, "other.css"))
+        check("--tokens wins over Tokens.source", (0, []), (rc2, lines2))
 
     checklib.report_self_test(failures, case_count)
 
@@ -707,30 +738,33 @@ def main():
             sys.exit(1)
         args = args[:i] + args[i + 2:]
 
-    if not args:
-        print("Usage: python3 checks/contrast.py --tokens <globals.css> <path>... "
-              "| --self-test")
-        sys.exit(1)
-
-    css_text = ""
-    if tokens_file:
+    repo_root = None
+    if "--repo-root" in args:
+        i = args.index("--repo-root")
         try:
-            with open(tokens_file, encoding="utf-8", errors="replace") as fh:
-                css_text = fh.read()
-        except OSError as exc:
-            print(f"ERROR contrast: cannot read --tokens {tokens_file} — {exc}")
+            repo_root = args[i + 1]
+        except IndexError:
+            print("ERROR contrast: --repo-root needs a directory argument")
             sys.exit(1)
-    else:
-        print("NOTE  contrast: no --tokens file given; only #hex / arbitrary-value "
-              "pairs will resolve. Pass --tokens <globals.css> to resolve named tokens.")
-    resolver = TokenResolver(css_text)
+        args = args[:i] + args[i + 2:]
 
-    out = scan_paths(args, resolver)
-    errors = [o for o in out if o.startswith("ERROR")]
-    notes = [o for o in out if o.startswith("NOTE")]
-    for line in out:
+    notes = []
+    if args:
+        # The check no longer scans source files, so a path argument cannot
+        # change the result. Say so rather than appearing to have scanned it.
+        notes.append("NOTE  contrast: path arguments are not scanned — this check "
+                     "grades the token pairs declared in DESIGN.md; the first path "
+                     "only locates the repo root")
+        if repo_root is None:
+            repo_root = find_design_root(args[0])
+
+    if repo_root is None:
+        repo_root = os.getcwd()
+
+    code, lines = run(repo_root, tokens_file=tokens_file)
+    for line in notes + lines:
         print(line)
-    sys.exit(1 if errors else 0)
+    sys.exit(code)
 
 
 if __name__ == "__main__":
