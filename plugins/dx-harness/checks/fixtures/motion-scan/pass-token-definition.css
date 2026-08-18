@@ -1,0 +1,19 @@
+/* The token-definition block, which the exemption gate skips before any rule
+   runs. --motion-story is deliberately outside the band: the narrative tier is
+   for narrative surfaces, never task UI, and where it may be used is a judgment
+   this check does not make. Both beziers are in range anyway. */
+:root {
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-story: 600ms;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* The same exemption through the explicit region marker. */
+/* dx-tokens */
+.legacy {
+  --legacy-reveal: 900ms;
+}
+/* /dx-tokens */

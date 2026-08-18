@@ -1,0 +1,17 @@
+/* The CSS forms: longhand, shorthand, and an animation. None of these sits in a
+   token-definition block, so none of them is exempt. */
+.fade {
+  transition-duration: 500ms;
+}
+
+.slide {
+  transition: transform 0.45s ease-out;
+}
+
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+.blink {
+  animation-duration: 80ms;
+}

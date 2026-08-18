@@ -288,6 +288,13 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     specs.append({"name": "a11y-static", "args": ["a11y-static.py"], "mode": "targets"})
     specs.append({"name": "a11y-eslint", "args": ["a11y-eslint.py"], "mode": "targets"})
 
+    # motion-scan runs in both profiles: MOT-1's calibration on this repo is zero
+    # findings once detector.ignoreFiles drops the vendored files, and SLP-8 emits
+    # only NOTE lines, which cannot fail a run. The registration is not optional
+    # decoration: detect.py is the only code that reads ignoreFiles, so an
+    # unregistered check can never be filtered by it.
+    specs.append({"name": "motion-scan", "args": ["motion-scan.py"], "mode": "targets"})
+
     if all_profile:
         # Full rule set — TYP-2 (and the rest) run.
         specs.append({"name": "type-scan", "args": ["type-scan.py"], "mode": "targets"})
@@ -674,6 +681,11 @@ def run_self_test():
           "content-lint" in names_a and "component-manifest" in names_a)
     ts_a = next(s for s in allp if s["name"] == "type-scan")
     check("--all type-scan is unrestricted (TYP-2 runs)", "--rules" not in ts_a["args"])
+
+    # 3b. motion-scan is in both profiles, and only this path reads ignoreFiles,
+    # so leaving it out of one would leave the vendored files unfilterable there.
+    check("motion-scan runs in both profiles",
+          "motion-scan" in names_c and "motion-scan" in names_a)
 
     # 4. ignoreValues feeds token-audit --allow.
     with_allow = build_check_specs(False, allow_values=["amber-11", "sky-9"])

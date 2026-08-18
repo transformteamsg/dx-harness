@@ -1,0 +1,18 @@
+# A spring transition config: an object literal carrying type: "spring", or a
+# stiffness or mass key. This one is a whole node rather than a line, because
+# "does this config declare bounce or damping" is a question about the object,
+# and a config written across four lines would answer it wrongly one line at a
+# time. Python reads the node text and decides; the physics is never computed,
+# so the finding is a NOTE.
+id: motion-scan-slp-8-spring-tsx
+language: tsx
+severity: warning
+message: candidate slp 8 spring config
+metadata:
+  control: SLP-8
+  check: motion-scan
+  surface: spring-config
+rule:
+  kind: object
+  regex: >-
+    (?i)(type\s*:\s*["']spring["']|[{,\s]stiffness\s*:|[{,\s]mass\s*:)

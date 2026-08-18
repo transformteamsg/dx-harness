@@ -1,0 +1,16 @@
+# A motion duration or a transition-all utility, in CSS. One locator serves both
+# of MOT-1's firing conditions. It is a locator, not a judgment: the 100-300ms
+# band, the ms/s normalisation, and the rule that a var() reference is never
+# band-judged all stay in Python. This rule also reaches a style="…" attribute
+# and a tagged style template, because checklib re-scans both with the css rules.
+id: motion-scan-mot-1-duration-css
+language: css
+severity: warning
+message: candidate mot 1 duration
+metadata:
+  control: MOT-1
+  check: motion-scan
+  surface: code
+rule:
+  matches: css-code-node
+  regex: '(?i)(transition-all|duration|(transition|animation)\s*:)'

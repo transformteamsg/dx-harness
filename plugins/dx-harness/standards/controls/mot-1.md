@@ -8,6 +8,8 @@ phase: [implement, verify]
 applies_to: [page, component]
 verify: "Animation durations in 100-300ms with standard easing; none on critical paths beyond functional feedback"
 waiver: rationale
+enforced: partial
+script: checks/motion-scan.py
 fails_when:
   - animations over 300ms on task flows
   - transition-all

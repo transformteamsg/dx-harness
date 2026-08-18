@@ -1,0 +1,21 @@
+# A motion duration or a transition-all utility, in .ts. Same locator as the tsx
+# rule, minus the JSX node kinds. .ts gets its own rule rather than aliasing to
+# tsx, for the reason sgconfig.yml records: a tsx parse of a .ts file can lose
+# every match at exit 0.
+#
+# `pair` is here on top of the shared code-node set because a transition config
+# is as often a module constant as a JSX attribute, and an object property whose
+# value is a bare number is neither a string nor a template.
+id: motion-scan-mot-1-duration-ts
+language: ts
+severity: warning
+message: candidate mot 1 duration
+metadata:
+  control: MOT-1
+  check: motion-scan
+  surface: code
+rule:
+  any:
+    - matches: ts-code-node
+    - kind: pair
+  regex: '(?i)(transition-all|duration|(transition|animation)\s*:)'

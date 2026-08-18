@@ -586,6 +586,7 @@ WIRING_EXEMPT = {
     "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
     "checks/contrast.py": "blocks for manual A11Y-1 verification until a product declares colour.pairs; build wiring is deferred to the catalogue recount",
     "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
+    "checks/motion-scan.py": "prebuild and CI invoke checks directly, which bypasses detector.ignoreFiles and would fail on the two vendored transition-all lines; it runs through detect.py, where the ignore applies",
 }
 
 
@@ -782,9 +783,9 @@ GAP_GRANDFATHERED = {
     "SLP-1": "script pending in #156",
     "SLP-2": "script pending in #156",
     "SLP-3": "script pending in #156",
-    # #157, checks/motion-scan.py.
-    "MOT-1": "script pending in #157",
-    "SLP-8": "script pending in #157",
+    # #157 is done: checks/motion-scan.py ships, and MOT-1 and SLP-8 now claim
+    # it, so both entries are gone. MOT-2 never had one: it is status proposed
+    # and carries a written gap: reason instead.
     # #158, checks/cmp-scan.py. CMP-2 is L0, so a gap: reason can never
     # legalise it: its only exit is the script, which is why the candidate
     # lister has to be built.
@@ -1796,19 +1797,21 @@ def run_self_test():
         failures.append(f"FAIL the three accepted gaps carry their reasons: "
                         f"want: {want!r}; got: {got!r}")
 
-    # The allowance list shrank by exactly the seven entries #150 resolves, and
-    # by nothing else. The six controls this issue leaves hybrid-and-manual stay
-    # on it until their build issues ship their scripts: an entry leaves only in
-    # the commit that ships what it was waiting for.
+    # The allowance list shrinks only in the commit that ships what an entry was
+    # waiting for. #150 resolved seven; #157 then took MOT-1 and SLP-8 with
+    # checks/motion-scan.py. The four controls left from #150's hybrid-and-manual
+    # set stay until their own build issues land.
     case_count += 1
-    want = (set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"})
+    want = (set(), set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4"})
     resolved_by_150 = {"CMP-4", "CMP-8", "SLP-5", "SLP-7", "CMP-5", "LAY-1", "TYP-5"}
-    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"}
+    resolved_by_157 = {"MOT-1", "SLP-8"}
+    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4"}
     got = (resolved_by_150 & set(GAP_GRANDFATHERED),
+           resolved_by_157 & set(GAP_GRANDFATHERED),
            still_pending & set(GAP_GRANDFATHERED))
     if want != got:
-        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven "
-                        f"entries: want: {want!r}; got: {got!r}")
+        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven and "
+                        f"#157's two entries: want: {want!r}; got: {got!r}")
 
     # No file cites a check that does not exist (#150). A "planned script" note
     # is the drift class this closes: nothing verified those notes and nothing

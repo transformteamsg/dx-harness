@@ -1,0 +1,14 @@
+/* Stylesheet durations inside the band, plus the values token-audit's
+   parse_passes already lets through: a var() reference, and 0. */
+.fade {
+  transition: opacity 200ms var(--ease-out);
+}
+
+.slide {
+  transition-duration: var(--motion-slow);
+  animation-duration: 0s;
+}
+
+.tick {
+  animation: tick 0.3s var(--ease-in-out) infinite;
+}

@@ -1,0 +1,17 @@
+# An easing curve or a named overshoot utility. Whether a cubic-bezier actually
+# overshoots is arithmetic on its y values, so it stays in Python; this rule only
+# says where a curve is written. The named set (ease-back, ease-elastic,
+# ease-bounce, animate-bounce) is spelled out rather than matched on the bare
+# word "bounce", because prose and test data mention bounce without easing
+# anything.
+id: motion-scan-slp-8-easing-tsx
+language: tsx
+severity: warning
+message: candidate slp 8 easing
+metadata:
+  control: SLP-8
+  check: motion-scan
+  surface: code
+rule:
+  matches: tsx-code-node
+  regex: '(?i)(cubic-bezier|ease-(back|elastic|bounce)|animate-bounce)'

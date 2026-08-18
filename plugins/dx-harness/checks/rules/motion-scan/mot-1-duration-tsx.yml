@@ -1,0 +1,22 @@
+# A motion duration or a transition-all utility. One locator serves both of
+# MOT-1's firing conditions, because both live in the same places: a className
+# string, a style object, a tagged style template, a motion/react transition
+# object. The 100-300ms band, which form a unitless number belongs to, and the
+# rule that a token reference is never band-judged all stay in Python.
+#
+# `pair` is here on top of the shared code-node set because a transition config
+# is as often a module constant as a JSX attribute, and an object property whose
+# value is a bare number is neither a string nor a JSX node.
+id: motion-scan-mot-1-duration-tsx
+language: tsx
+severity: warning
+message: candidate mot 1 duration
+metadata:
+  control: MOT-1
+  check: motion-scan
+  surface: code
+rule:
+  any:
+    - matches: tsx-code-node
+    - kind: pair
+  regex: '(?i)(transition-all|duration|(transition|animation)\s*:)'

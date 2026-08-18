@@ -116,7 +116,7 @@ wire to (plan 060) — "fast signal without asking an AI".
 
 **Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
 Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
-contrast, a11y-static, a11y-eslint, TYP-1) on an edited UI file and reminds the agent on new
+contrast, a11y-static, a11y-eslint, motion-scan, TYP-1) on an edited UI file and reminds the agent on new
 findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
 a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
 
@@ -138,8 +138,10 @@ no parseable `ERROR` line is treated as a crash — detect fails loud rather tha
 silently.
 
 **Profiles.** The default is the **curated, low-false-positive subset**:
-`token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, and `type-scan`'s **TYP-1 rule
-only** (via `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
+`token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, `motion-scan`, and
+`type-scan`'s **TYP-1 rule only** (via `type-scan --rules TYP-1`). `motion-scan` is in both profiles because MOT-1's
+calibration on this repo is zero findings once `ignoreFiles` drops the vendored files, and
+SLP-8 emits only `NOTE` lines, which cannot fail a run. The noisier rules — TYP-2 size floor and the rest — stay
 recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
 full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
 only when a `.dx/component-manifest.json` exists; otherwise it is reported skipped).
@@ -188,7 +190,7 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (69 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (70 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
@@ -527,6 +529,41 @@ hand-rolled CSS brace state machine and the heading-tag line regex.
 
 **Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
+## Motion scan (built — static subset)
+
+`python3 checks/motion-scan.py [--rules MOT-1,SLP-8] <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the duration-and-easing half of MOT-1 and for SLP-8. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on any MOT-1 violation (`NOTE` lines never fail a run).
+
+One script for all the motion rules, not one per control: one walk, one file set, one exemption path. Splitting them would duplicate `token-audit.py`'s exemption machinery twice.
+
+**Rules:**
+
+- **MOT-1 duration (L2):** a literal animation duration outside the **100–300ms** band. Both ends fire: below 100ms a transition reads as a jump, and above 300ms it reads as a wait. Zero never fires: zero means no motion, which is the reduced-motion idiom.
+- **MOT-1 transition-all (L2):** the `transition-all` utility. It animates whatever happens to change, including layout properties, so the animated set cannot be reasoned about.
+- **SLP-8 easing (L1), `NOTE` only:** a `cubic-bezier` whose y control point falls outside 0–1, a spring config with no explicit `bounce` or `damping`, a spring whose `bounce` is above 0, and the named overshoot utilities (`ease-back`, `ease-elastic`, `ease-bounce`, `animate-bounce`). **SLP-8 emits no `ERROR` line under any input**, because whether a curve reads as bounce on a real surface is a judgment and a check never blocks on a guess. Each `NOTE` goes into the reviewer's verification ledger and is dispositioned by name; no blanket "verified manually" covers it.
+
+**The band is applied per form,** because a unitless number means different things in different places. `duration-200` counts in milliseconds; `duration-[0.5s]` is read for its unit; `duration-(--motion-fast)` is a token reference and is never band-judged; `transition-duration:` / `animation-duration:` and the `transition:` / `animation:` shorthands are parsed as CSS; `style={{ transitionDuration: … }}` is parsed like the longhand; and a `duration:` key in a `motion/react` transition object counts in **seconds**, so its band is 0.1–0.3. Reading that last one as milliseconds would flag every correct value in a repo that uses the library.
+
+**Anchoring matters more than the parsing.** Every form above is anchored to a duration property, a duration utility or a `duration:` key, so a bare `600ms` literal is never a hit on its own. Without the anchor, a component that renders the motion token table as display copy reports a violation for every row it prints, and no vendored-file filter would cover that file.
+
+**Token-definition exemption:** the machinery is `token-audit.py`'s, imported by path rather than copied (`TokenDefTracker`, `parse_passes`, `style_region_lines`). That is what keeps MOT-1 quiet about `--motion-story: 600ms`, which is deliberately outside the band: whether a token's own value is in band is decided at its definition, and the definition sits in the exempt block.
+
+**Vendored files are the file layer's job, not the rule's.** The rule body carries no `components/ui` string, no shadcn allowlist and no per-file branch. Suppression comes from `detector.ignoreFiles` in the scanned repo's `.dx/config.json`, which `detect.py` applies before the script is invoked; this repo lists `components/ui/*` there for exactly that. Invoke the script directly on a vendored file and it reports the finding, which is how you can tell the rule body carries no special case.
+
+**MOT-2 is not here, and no flag turns it on.** MOT-2 (motion values come from the declared token set) is `status: proposed`, and the harness does not enforce a rule a design lead has not ratified. No MOT-2 matcher ships in any form: not behind a flag, not commented out, not registered and disabled. `VALID_RULES` holds `MOT-1` and `SLP-8` only, so `--rules MOT-2` is a usage error. MOT-2's coverage rests on the written `gap:` reason it carries in the catalogue. The module docstring records which of its `fails_when` clauses are matchable and which needs the surface class, so ratification is an additive change rather than a restructure.
+
+**Static-subset caveat — what this script does NOT verify:**
+
+- MOT-1's judgment half: whether motion is decorative, and whether it sits on a critical path. Neither is marked in source; the evaluator carries both, by design and not as a gap.
+- Whether a `stiffness`/`damping` pair actually overshoots, which is physics on values the source may not fully give. That is why SLP-8 reports and never blocks.
+- A spring config inside a `.vue` or `.svelte` `<script>` block, which reaches ast-grep as html raw text rather than as JavaScript.
+- Reduced-motion behaviour, which the rendered runner covers for A11Y-5.
+
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan` (see "The ast-grep front end" above). SLP-8's spring rule matches the whole object node rather than a line, because "does this config declare `bounce` or `damping`" is a question about the object and a config written across four lines would answer it wrongly one line at a time.
+
+**Calibration on this repo:** all eleven bare `duration-N` uses sit inside the band (three `duration-150`, eight `duration-200`), every other duration goes through the `duration-(--motion-fast)` token shorthand or a `DUR.*` reference, and `transition-all` appears exactly twice, both in vendored shadcn files (`components/ui/button.tsx:7`, `components/ui/sidebar.tsx:292`). `detect.py` reports neither; running the script directly over `app components lib` reports both, which is the proof the suppression is the file layer and not the rule.
+
+**Self-test:** `python3 checks/motion-scan.py --self-test` → `SELF-TEST OK (76 cases)` (includes the `fixtures/motion-scan/` pass/fail/note files and the ast-grep provisioning contract).
+
 ## Component manifest (built)
 
 `python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.dx/component-manifest.json` against the DX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
@@ -556,7 +593,7 @@ Planned for V1 (remaining):
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
-| `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
+| ~~`motion-scan`~~ | ~~MOT-1, SLP-8~~ | ✅ built (static subset) — `motion-scan` covers MOT-1's duration-and-easing half (the 100–300ms band on literal durations, and `transition-all`) and SLP-8 as `NOTE` lines (overshooting `cubic-bezier`, unclear or bouncing spring configs, named overshoot utilities); MOT-1's decorative-motion and critical-path halves stay with the evaluator. **MOT-2 is deliberately not covered**: it is `status: proposed`, and the harness does not enforce a rule a design lead has not ratified, so it carries a written `gap:` reason instead |
 | `identity` | IDN-1, IDN-2 | Logo/lockup files resolve to the approved asset library and product icons to the approved icon family; no inline redraws |
 | `slop-scan` | SLP-1..3 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards |
 | `slop-rendered` | SLP-4, SLP-6 | Rendered checks, because both need a real page: nested cards in the rendered tree, and the adjacent type-scale ratio actually used |
@@ -577,8 +614,9 @@ gate rather than leaving them to a dev machine.
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged).
 
-`content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
-on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the
+`content-lint.py`, `contrast.py`, `component-manifest.py`, and `motion-scan.py` stay
+**manual** — each is on the `WIRING_EXEMPT` list in `checks/validate.py`, with a
+one-line reason. Per the
 harness rule "never wire a failing check into the build," `content-lint` surfaces
 pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/` and is
 not wired until that content is fixed or waived. `contrast` is exempt for a different
@@ -589,6 +627,14 @@ to the catalogue recount; the design verification path runs it through `detect.p
 `component-manifest` targets a product's
 `.dx/component-manifest.json`, which this repo (the harness/site itself) does not
 have — wiring it here would have nothing to check.
+`motion-scan` is exempt for a fourth reason, and it is the one the exemption
+mechanism exists for: prebuild and CI invoke the check scripts directly, and the
+direct path never reads `detector.ignoreFiles`, so a direct run reports the two
+vendored `transition-all` lines and would fail the build on files nobody here
+wrote. It is registered in `detect.py`'s curated and `--all` profiles instead,
+where `expand_targets` drops the vendored files before the script is invoked.
+Wire it into the build when those two lines are fixed, waived, or the vendored
+set leaves the tree, not by adding a vendored-path branch to the rule.
 
 `a11y-eslint.py` is **not wired** either, and it is deliberately **not** on
 `WIRING_EXEMPT`: no control names it in a `script:` field yet (the A11Y recount is a

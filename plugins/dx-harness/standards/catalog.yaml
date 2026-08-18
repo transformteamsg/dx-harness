@@ -910,6 +910,8 @@ controls:
     fails_when:
       - animations over 300ms on task flows
       - transition-all
+    enforced: partial
+    script: checks/motion-scan.py
     detail: controls/mot-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
@@ -1134,6 +1136,8 @@ controls:
     waiver: documented
     fails_when:
       - dialogs that spring in with overshoot
+    enforced: partial
+    script: checks/motion-scan.py
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-9

@@ -1,0 +1,15 @@
+# A motion duration or a transition-all utility, in html. Reaches a class
+# attribute and element text; a style="…" attribute is re-scanned with the css
+# rules, so the css locator covers it. .vue and .svelte arrive here through
+# languageGlobs. The band and the normalisation stay in Python.
+id: motion-scan-mot-1-duration-html
+language: html
+severity: warning
+message: candidate mot 1 duration
+metadata:
+  control: MOT-1
+  check: motion-scan
+  surface: code
+rule:
+  matches: html-code-node
+  regex: '(?i)(transition-all|duration|(transition|animation)\s*:)'

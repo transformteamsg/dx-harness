@@ -1,1 +1,1 @@
-{"detector": {"ignoreFiles": ["components/compare.tsx"]}}
+{"detector": {"ignoreFiles": ["components/compare.tsx", "components/ui/*"]}}
