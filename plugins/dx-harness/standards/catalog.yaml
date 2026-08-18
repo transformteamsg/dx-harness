@@ -381,6 +381,8 @@ controls:
       - a paragraph that spans the full viewport width with no measure cap
       - body copy running well past ~75ch per line
     detail: controls/typ-6.md
+    enforced: partial
+    script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Colour ────────────────────────────────────────────────────────────
@@ -1290,6 +1292,8 @@ controls:
       - body-text column has no max-width and spans the full viewport at 1280
       - measure exceeds 80ch
     detail: controls/lay-4.md
+    enforced: partial
+    script: checks/type-scan.py
     refs: [https://www.w3.org/TR/WCAG21/#visual-presentation]
 
   # LAY-3 / LAY-5 / LAY-6: ratchet additions 2026-06-17 — activated from the layout

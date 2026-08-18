@@ -1,0 +1,28 @@
+# A line-measure cap. One locator serves two controls: LAY-4's 80ch ceiling and
+# TYP-6's 75ch ceiling. Both ceilings, the 45ch floor that keeps headings and
+# labels out, the same-file `var()` resolution and the rule that a missing cap is
+# never a finding all stay in Python.
+#
+# The custom-property alternative is here so a cap written as
+# `max-width: var(--measure)` can be resolved against its own file: without it
+# the rule set that defines `--measure` is never offered and the use site would
+# be unjudgeable. A definition on its own is a token, not a cap, so Python never
+# reports one.
+#
+# This surface is `measure`, not `code`, on purpose. The four typography rules
+# read the `code` surface, and widening that surface would change what they see.
+# Keeping the measure candidates in their own surface leaves TYP-1 to TYP-4
+# deciding exactly what they decided before, which is what the parity corpus
+# holds them to.
+id: type-scan-lay-4-measure-tsx
+language: tsx
+severity: warning
+message: candidate lay 4 measure
+metadata:
+  control: LAY-4
+  check: type-scan
+  surface: measure
+  controls: LAY-4 TYP-6
+rule:
+  matches: tsx-code-node
+  regex: '(?i)(max-?width\s*:|\bmax-w-\[|--[a-z0-9-]+\s*:[^;{}]*[0-9]\s*ch\b)'
