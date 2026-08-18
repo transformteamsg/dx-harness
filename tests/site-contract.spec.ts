@@ -180,26 +180,51 @@ test("looping feature illustrations never play under reduced motion", async ({ p
   await expect(page.locator("[data-feature-illo] button")).toHaveCount(0);
 });
 
-test("the builders' quote hands over the setup prompt", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+test("the builders' band is a signed statement with no quotation to verify", async ({ page }) => {
   await open(page, "/");
 
   await expect(
-    page.getByText("We spent this build on what the harness feels like to use", {
-      exact: false,
-    })
+    page.getByText("The harness is our product too", { exact: false })
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "From the builders’ note" })).toHaveAttribute(
+  await expect(page.getByText("The TransformX product design team")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Read the builders' note" })).toHaveAttribute(
     "href",
     "/note"
   );
 
-  const copy = page.getByRole("button", { name: "Copy the prompt" });
-  await copy.click();
-  await expect(page.getByRole("button", { name: "Copied" })).toBeVisible();
-  const clipboard = await page.evaluate(() => navigator.clipboard.readText());
-  expect(clipboard).toContain("/plugin marketplace add transformteamsg/dx-harness");
-  expect(clipboard).toContain("/plugin install dx-harness@dx-harness");
+  // Nothing here claims to quote the note: a blockquote citing /note used to
+  // carry words the note never says. The statement is signed instead.
+  await expect(page.locator('blockquote[cite="/note"]')).toHaveCount(0);
+
+  // The prompt and its copy button are gone. Install is one hop away at
+  // /harness/install, which is what the band's one action points at.
+  const band = page.locator("section", {
+    has: page.getByText("The harness is our product too", { exact: false }),
+  });
+  await expect(band.getByRole("button")).toHaveCount(0);
+  await expect(band.getByRole("link", { name: "Quick start" })).toHaveAttribute(
+    "href",
+    "/harness/install"
+  );
+});
+
+test("the builders' band and the close paint one ground", async ({ page }) => {
+  await open(page, "/");
+
+  const grounds = await page.evaluate(() => {
+    const sections = Array.from(document.querySelectorAll("section"));
+    const band = sections.find((s) =>
+      s.textContent?.includes("The harness is our product too")
+    );
+    const close = sections.find((s) =>
+      s.querySelector("h2")?.textContent?.includes("A shared language")
+    );
+    const paint = (el: Element | undefined) => (el ? getComputedStyle(el).backgroundColor : null);
+    return { band: paint(band), close: paint(close) };
+  });
+
+  expect(grounds.band).not.toBeNull();
+  expect(grounds.band).toBe(grounds.close);
 });
 
 test("the harness run scrubs by stage and respects reduced motion", async ({ page }) => {
@@ -307,13 +332,13 @@ for (const width of mobileWidths) {
   test(`mobile chrome targets are at least 44px at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await open(page, "/harness/loop");
-    const primaryNavigation = page.getByRole("navigation", { name: "Primary" });
 
     await expectMinimumTarget(page.getByRole("button", { name: "Open navigation" }), 44);
-    await expectMinimumTarget(
-      primaryNavigation.getByRole("link", { name: "For agents", exact: true }),
-      44
-    );
+    // The topbar's one remaining link is the wordmark home. The "For agents"
+    // link that used to sit opposite it was removed; nothing replaced it, and
+    // the empty nav landmark went with it.
+    await expectMinimumTarget(page.getByRole("link", { name: /DX Design Harness|^dx$/ }), 44);
+    await expect(page.getByRole("navigation", { name: "Primary" })).toHaveCount(0);
   });
 
   test(`mobile catalog targets are at least 44px at ${width}px`, async ({ page }) => {
@@ -333,12 +358,8 @@ for (const width of mobileWidths) {
 test("desktop audited targets are at least 24px", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await open(page, "/standards/catalog");
-  const primaryNavigation = page.getByRole("navigation", { name: "Primary" });
 
-  await expectMinimumTarget(
-    primaryNavigation.getByRole("link", { name: "For agents", exact: true }),
-    24
-  );
+  await expectMinimumTarget(page.getByRole("link", { name: /DX Design Harness/ }), 24);
   await expectMinimumTarget(page.getByRole("button", { name: /^L0\b/ }), 24);
   await expectMinimumTarget(
     page.getByRole("button", { name: /^deterministic\b/ }),

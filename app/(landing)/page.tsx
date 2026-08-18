@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { SlopCompare } from "@/components/compare";
-import { CopyPrompt } from "@/components/landing/copy-prompt";
 import { InkIcon } from "@/components/ink-icon";
 import { FEATURED_SKILLS } from "@/components/landing/data";
 import { DxdConstructionPreview } from "@/components/landing/dxd-construction-preview";
@@ -180,32 +179,38 @@ export default function Landing() {
       <HarnessRun />
 
       {/* ── The builders' word, between the proof of how it runs and the proof of
-             what it changes. One outlined action + the prompt (CMP-5: the hero
-             keeps the page's only filled primary). The blockquote cites /note,
-             where the builders say this at length. */}
-      <section className="border-b border-border px-6 py-14 sm:px-10 sm:py-16">
-        <blockquote cite="/note">
-          <p className="max-w-[36ch] text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-            We spent this build on what the harness feels like to use. Worry less:
-            take the quick start, or hand one prompt to your coding agent.
-          </p>
-        </blockquote>
-        <p className="mt-4 text-sm text-muted-foreground">
+             what it changes. One outlined action (CMP-5: the hero keeps the
+             page's only filled primary).
+
+             This is a signed statement, not a blockquote. It was a
+             `blockquote cite="/note"` carrying words that appear nowhere in the
+             note — an attribution the note could not support. The builders speak
+             here in their own voice, signed the way the note is signed, and the
+             note is offered as the longer version rather than quoted. The band
+             holds the closing section's wash, so the builders' voice and the
+             close read as one ground rather than two. ───────────────────────── */}
+      <section className="border-b border-border bg-site-accent-wash px-6 py-14 sm:px-10 sm:py-16">
+        <p className="max-w-[36ch] text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+          The harness is our product too, and we spent this build on how it feels
+          to use. Start with one request in your own words, even if you do not
+          write code every day.
+        </p>
+        <p className="mt-5 text-sm text-muted-foreground">
+          The TransformX product design team.{" "}
           <Link
             href="/note"
             className={`inline-flex min-h-11 items-center underline underline-offset-2 hover:text-foreground ${focusRing}`}
           >
-            From the builders’ note
+            Read the builders&apos; note
           </Link>
         </p>
-        <div className="mt-6 flex flex-wrap items-start gap-3">
+        <div className="mt-6">
           <Link
             href="/harness/install"
             className={`inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-surface px-5 text-sm font-semibold text-foreground transition-colors duration-(--motion-fast) hover:border-foreground hover:bg-accent ${focusRing}`}
           >
             Quick start
           </Link>
-          <CopyPrompt />
         </div>
       </section>
 
@@ -338,7 +343,7 @@ export default function Landing() {
           <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-pretty text-(--prose-body)">
             You bring the judgment. Your agent brings the execution. The harness gives
             you both the same design language, and the checks to build safely on each
-            other’s work.
+            other&apos;s work.
           </p>
           <div className="mt-8">
             <Link

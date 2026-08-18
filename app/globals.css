@@ -58,6 +58,16 @@
      the hero drawing, which is inked on the --sheet-band rather than on a plate
      of its own, so the whole sheet is one paper. */
   --blueprint-ink: var(--site-accent-text);
+  /* The finished mark inks a step brighter than the construction it is drawn
+     from: the guides stay on --blueprint-ink (the readable text step), and the
+     traced mark is Radix lime-10 — the brand's figure step, the same value
+     --site-accent-hover carries, aliased here so the mark's colour has a name of
+     its own and does not read as a hover state at the call site. The two must
+     differ, or the finished mark disappears into its own scaffolding.
+     Contrast: lime-10 measures ~1.4:1 on the --sheet-band, so this is a
+     logotype call, not a UI-component one — see the note in
+     components/landing/dxd-construction-preview.tsx. */
+  --mark-ink: var(--site-accent-hover);
 
   /* The page ground's drafting scale. The hero blueprint measures on a 50-unit
      construction grid; in the hero cell at 1040px sheet width that renders at
@@ -193,6 +203,7 @@
   --color-border-strong: var(--border-strong);
   --color-sheet-band: var(--sheet-band);
   --color-blueprint-ink: var(--blueprint-ink);
+  --color-mark-ink: var(--mark-ink);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
   --color-success-muted: var(--success-muted);

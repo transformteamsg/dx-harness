@@ -24,11 +24,15 @@ import { useEffect, useRef } from "react";
 export function IlloVideo({
   src,
   poster,
-  className = "max-w-sm",
+  className = "max-w-80",
 }: {
   src: string;
   poster: string;
-  /* Width cap for the square clip — the closing section runs it smaller. */
+  /* Width cap for the square clip — the closing section runs it smaller.
+     The feature rows cap at 320px: the builder asked for 85% of the previous
+     384px (`max-w-sm`), and 320px is the nearest width on the spacing scale
+     (326px exact would be an off-scale arbitrary value) — the same call the
+     closing clip's `max-w-64` records. */
   className?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
