@@ -77,6 +77,7 @@ incomplete run clean.
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -100,6 +101,14 @@ CONFIG_PATH = os.path.join(_CHECKS_DIR, "eslint", "jsx-a11y.config.mjs")
 
 # The rule map's layer name for this check.
 LAYER = "eslint-jsx-a11y"
+
+# eslint's wording for an eslint-disable directive naming a rule this config
+# does not define. Matched on the message text because eslint attaches no
+# messageId to it and sets ruleId to the unknown rule, which is
+# indistinguishable from a real finding by shape alone. Pinned by a self-test
+# case, so an eslint release that rewords it fails loudly here rather than
+# silently reporting every disable directive in the target as a finding.
+UNKNOWN_RULE_RE = re.compile(r"^Definition for rule '.+' was not found\.?$")
 
 # Extensions eslint is asked to lint. .ts/.tsx need a TypeScript-capable
 # parser; without one they are dropped and named, never silently passed.
@@ -306,6 +315,16 @@ def translate_report(payload, target_root, rule_map):
     a misconfiguration, not a dropped finding: an operational ERROR names it
     and no control id is guessed. A file eslint could not parse is a NOTE — it
     was not checked, so it is not passed either.
+
+    One message class is skipped outright: eslint reports "Definition for rule
+    'x' was not found." when a source file carries an eslint-disable directive
+    for a rule THIS config does not define. That is the expected consequence of
+    running a deliberately narrow config with --no-config-lookup over a repo
+    whose own config is broader — a Next.js app that disables
+    react-hooks/exhaustive-deps or @next/next/no-img-element anywhere would
+    otherwise report those as rules that "fired", demanding a mapping row for a
+    rule with no accessibility meaning. Measured on a five-line file with one
+    such directive and no accessibility issue: one ERROR, no finding.
     """
     rules = rule_map["rules"]
     errors, notes = [], []
@@ -316,6 +335,8 @@ def translate_report(payload, target_root, rule_map):
             rule = msg.get("ruleId")
             lineno = msg.get("line") or 1
             text = " ".join((msg.get("message") or "").split())
+            if UNKNOWN_RULE_RE.match(text):
+                continue
             if msg.get("fatal") or rule is None:
                 errors.append(f"ERROR a11y-eslint: {rel}:{lineno} was not parsed "
                               f"({text}) — verify this file by hand")
@@ -471,6 +492,29 @@ def run_self_test():
           "jsx-a11y/prefer-tag-over-role" in unmapped[0])
     check("the unmapped ERROR guesses no control id", None,
           detect._FINDING_RE.match(unmapped[0]))
+
+    # ── a disable directive for a rule this config omits is not a finding ─────
+    # The target's own eslint config is broader than this one by design
+    # (--no-config-lookup), so any `eslint-disable-next-line
+    # react-hooks/exhaustive-deps` in the target makes eslint report an unknown
+    # rule with that rule as its id. Before this case, one such comment in a
+    # five-line file with no accessibility issue produced an ERROR demanding a
+    # mapping row for a rule that has no accessibility meaning — which is why
+    # this layer could not be wired into a gate.
+    directive, directive_notes = translate_report(
+        [{"filePath": "/repo/hook.tsx",
+          "messages": [{"ruleId": "react-hooks/exhaustive-deps", "line": 2,
+                        "severity": 2,
+                        "message": "Definition for rule "
+                                   "'react-hooks/exhaustive-deps' was not found."}]}],
+        "/repo", rule_map)
+    check("an unknown-rule directive yields no error", [], directive)
+    check("an unknown-rule directive yields no note", [], directive_notes)
+    check("the unknown-rule pattern still matches without the full stop", True,
+          bool(UNKNOWN_RULE_RE.match("Definition for rule 'x/y' was not found")))
+    check("a real finding is not mistaken for an unknown-rule message", False,
+          bool(UNKNOWN_RULE_RE.match("Elements with the 'tablist' interactive "
+                                     "role must be focusable.")))
 
     # ── a file eslint could not parse blocks as an operational ERROR ──────────
     fatal_errors, fatal_notes = translate_report(

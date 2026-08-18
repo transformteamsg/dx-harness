@@ -8,7 +8,7 @@
     "build": "next build",
     "postbuild": "node scripts/externalize-next-inline-scripts.mjs",
     "check:standards": "node scripts/check-standards.mjs",
-    "check:python": "python3 plugins/dx-harness/checks/validate.py --self-test && python3 plugins/dx-harness/checks/validate.py && python3 plugins/dx-harness/checks/checklib.py --self-test && python3 plugins/dx-harness/checks/token-audit.py --self-test && python3 plugins/dx-harness/checks/type-scan.py --self-test && python3 plugins/dx-harness/checks/token-audit.py app components lib && python3 plugins/dx-harness/checks/a11y-static.py app components && python3 plugins/dx-harness/checks/type-scan.py app components",
+    "check:python": "python3 plugins/dx-harness/checks/validate.py --self-test && python3 plugins/dx-harness/checks/validate.py && python3 plugins/dx-harness/checks/checklib.py --self-test && python3 plugins/dx-harness/checks/token-audit.py --self-test && python3 plugins/dx-harness/checks/type-scan.py --self-test && python3 plugins/dx-harness/checks/token-audit.py app components lib && python3 plugins/dx-harness/checks/a11y-eslint.py --self-test && python3 plugins/dx-harness/checks/a11y-static.py app components && python3 plugins/dx-harness/checks/a11y-eslint.py app components lib && python3 plugins/dx-harness/checks/type-scan.py app components",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
