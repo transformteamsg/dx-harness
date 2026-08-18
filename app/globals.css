@@ -113,7 +113,6 @@
 
   /* Section inks — colour-code the doc directory. Radix scales (COL-2 spirit);
      avoids product hues (indigo/orange), purple (SLP-1) and red (COL-2). */
-  --sec-principles: #0064ff;   /* TW blue — the brand compass */
   --sec-standards: #46a758;    /* Radix grass-9 — checkable, pass/fail */
   --sec-guidelines: #ab6400;   /* Radix amber-11 — advisory, judgement applies */
   --sec-foundations: #12a594;  /* Radix teal-9 — shared material */

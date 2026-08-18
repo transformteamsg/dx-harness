@@ -1,5 +1,6 @@
 import { getDoc } from "@/lib/content";
 import { contentMap } from "@/lib/content-map";
+import { movedPages } from "@/lib/redirects";
 import { getCatalog, getPublicCatalogYaml } from "@/lib/catalog";
 import { getControlDetail, listControlIds } from "@/lib/control-detail";
 
@@ -322,8 +323,17 @@ export function allTwins(): Twin[] {
 }
 
 /* Keep previously published machine-reader URLs working without advertising
-   duplicate documents in /llms.txt, /llms-full.txt, or the sitemap. */
+   duplicate documents in /llms.txt, /llms-full.txt, or the sitemap. The IA
+   restructure's moved pages (lib/redirects.ts) each alias their old `.md`
+   path to the twin now living at the new path. */
 function compatibilityTwins(): Twin[] {
+  const byHtmlPath = new Map(allTwins().map((t) => [t.htmlPath, t]));
+  const moved: Twin[] = [];
+  for (const [oldPath, newPath] of Object.entries(movedPages)) {
+    const target = byHtmlPath.get(newPath);
+    if (!target) continue;
+    moved.push({ ...target, mdPath: `${oldPath}.md` });
+  }
   return [
     {
       mdPath: "/standards.md",
@@ -332,6 +342,7 @@ function compatibilityTwins(): Twin[] {
       description: "Compatibility alias for the combined Standards page.",
       render: () => renderCatalogMarkdown(),
     },
+    ...moved,
   ];
 }
 

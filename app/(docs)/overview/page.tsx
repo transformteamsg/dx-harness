@@ -9,7 +9,6 @@ export const metadata = { title: "Overview", ...mdAlternate("/overview") };
 /* Section tiles: index pages, Apple-HIG style. Art keys pick one
    representative glyph per section. */
 const tiles = [
-  { key: "principles", href: "/principles", art: "principles/brand-principles" },
   { key: "standards", href: "/standards/catalog", art: "standards/catalog" },
   { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
   { key: "foundations", href: "/foundations", art: "foundations/colour" },

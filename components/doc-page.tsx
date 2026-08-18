@@ -8,12 +8,10 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
 import { mdxComponents } from "@/components/mdx";
-import { BrandPrincipleTabs } from "@/components/brand-principle-tabs";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
    the section root. Single-doc sections (governance) and start pages don't. */
 const sectionCrumbs: Record<string, { label: string; href: string }> = {
-  principles: { label: "Principles", href: "/principles" },
   standards: { label: "Standards", href: "/standards/catalog" },
   guidelines: { label: "Guidelines", href: "/guidelines" },
   foundations: { label: "Foundations", href: "/foundations" },
@@ -26,11 +24,9 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
 export async function DocPage({
   doc,
   children,
-  brandPrincipleTabs = false,
 }: {
   doc: Doc;
   children?: ReactNode;
-  brandPrincipleTabs?: boolean;
 }) {
   const crumb = sectionCrumbs[doc.section];
   const headings = extractHeadings(doc.content);
@@ -89,16 +85,12 @@ export async function DocPage({
               {doc.content}
             </pre>
           </div>
-        ) : brandPrincipleTabs ? (
-          <BrandPrincipleTabs>
-            <article className="prose">{rendered}</article>
-          </BrandPrincipleTabs>
         ) : (
           <article className="prose mt-8">{rendered}</article>
         )}
         {children}
       </div>
-      {!rawFallback && !brandPrincipleTabs && headings.length >= 2 && <Toc headings={headings} />}
+      {!rawFallback && headings.length >= 2 && <Toc headings={headings} />}
     </div>
   );
 }

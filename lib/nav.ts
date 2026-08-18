@@ -36,14 +36,6 @@ export const nav: NavGroup[] = [
   {
     label: "Design reference",
     items: [
-      {
-        label: "Principles",
-        items: [
-          { href: "/principles", title: "Overview" },
-          { href: "/principles/brand-principles", title: "Brand principles" },
-          { href: "/principles/product-design-principles", title: "Product design principles" },
-        ],
-      },
       { href: "/standards/catalog", title: "Control catalog" },
       {
         label: "Guidelines",

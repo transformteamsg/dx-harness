@@ -13,8 +13,6 @@ import rough from "roughjs/bundled/rough.esm.js";
 
 /* Topic → Lucide icon id. Keys match topicArt keys in components/thumbnails.tsx. */
 const TOPIC_ICONS = {
-  "principles/brand-principles": "compass",
-  "principles/product-design-principles": "pencil-ruler",
   "standards/catalog": "list-checks",
   "guidelines/voice-tone": "message-circle",
   "guidelines/naming": "tag",

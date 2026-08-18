@@ -9,7 +9,6 @@ import { inkIcons, inkFilter, inkStroke } from "./ink-icons.generated";
    Colours via tokens (TOK-1). */
 
 export const sectionInk: Record<string, string> = {
-  principles: "var(--sec-principles)",
   standards: "var(--sec-standards)",
   guidelines: "var(--sec-guidelines)",
   foundations: "var(--sec-foundations)",
