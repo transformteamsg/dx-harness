@@ -1,0 +1,24 @@
+<!--
+  pass.html: a slop-scan fixture holding the html narrowings, as regression cases.
+-->
+<div class="page">
+  <!-- The calibration pair: 226.04 and exactly 240.00 degrees, both below the
+       band that opens at 255. -->
+  <div style="background: linear-gradient(90deg, var(--casesync), var(--sec-getting-started));">
+    Section ink ramp
+  </div>
+
+  <!-- bg-clip-padding is never gradient text: the clip value is matched, not
+       the bg-clip- prefix. -->
+  <button class="rounded-lg border border-transparent bg-clip-padding text-sm">
+    Save draft
+  </button>
+
+  <!-- The hairline ring: blur 0, so a border rather than a glow. -->
+  <div style="box-shadow: 0 0 0 1px var(--sidebar-border);">Outline</div>
+
+  <!-- One side at the 3px floor with no radius: the pair requirement clears it. -->
+  <blockquote style="border-left: 3px solid var(--tw-blue); padding-left: 16px;">
+    A pull quote
+  </blockquote>
+</div>

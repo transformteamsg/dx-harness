@@ -1,0 +1,16 @@
+# A CSS rule that sets a border on one side. The whole rule_set is the match
+# because SLP-3 is element-local, and for CSS "element-local" means rule-local:
+# the thick side, the three quiet sides and the radius all have to be read from
+# one rule before the pair requirement can be applied.
+id: slop-scan-slp-3-side-border-css
+language: css
+severity: warning
+message: candidate slp 3 side-tab border
+metadata:
+  control: SLP-3
+  check: slop-scan
+  surface: style
+  context: side-border
+rule:
+  kind: rule_set
+  regex: '(?i)border-(left|right|top|bottom|inline-start|inline-end|block-start|block-end)\s*(-width\s*)?:'

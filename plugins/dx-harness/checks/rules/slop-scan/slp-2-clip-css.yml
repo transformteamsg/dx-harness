@@ -1,0 +1,17 @@
+# A CSS rule that clips a background to its text. The whole rule_set is the
+# match because SLP-2 needs three things on ONE element: the clip, a
+# transparent fill and a background source. `bg-clip-padding` has no CSS
+# spelling, so the css arm cannot hit it; the tsx/html/ts arms guard the
+# utility form.
+id: slop-scan-slp-2-clip-css
+language: css
+severity: warning
+message: candidate slp 2 gradient text
+metadata:
+  control: SLP-2
+  check: slop-scan
+  surface: style
+  context: clip
+rule:
+  kind: rule_set
+  regex: '(?i)background-clip\s*:'

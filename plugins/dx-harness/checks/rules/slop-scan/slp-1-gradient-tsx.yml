@@ -1,0 +1,16 @@
+# A gradient written in tsx: a CSS gradient function inside any string or
+# template, or the Tailwind gradient-direction utility that licenses a
+# from-/via-/to- stop triple. The direction utility is part of the locator on
+# purpose: without it, prose such as "from-scratch" reads as a colour stop.
+id: slop-scan-slp-1-gradient-tsx
+language: tsx
+severity: warning
+message: candidate slp 1 gradient palette
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: text
+  context: gradient
+rule:
+  matches: tsx-code-node
+  regex: '(?i)((repeating-)?(linear|radial|conic)-gradient\s*\(|\bbg-(gradient-to-|linear-|radial|conic))'

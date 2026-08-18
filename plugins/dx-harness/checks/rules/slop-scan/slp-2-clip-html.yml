@@ -1,0 +1,17 @@
+# The html counterpart of slp-2-clip-tsx.yml. The start tag is the element
+# scope, so a class attribute and a style attribute written on different lines
+# are still read together.
+id: slop-scan-slp-2-clip-html
+language: html
+severity: warning
+message: candidate slp 2 gradient text
+metadata:
+  control: SLP-2
+  check: slop-scan
+  surface: text
+  context: clip
+rule:
+  any:
+    - kind: start_tag
+    - kind: self_closing_tag
+  regex: '(?i)(bg-clip-|background-clip)'

@@ -1,0 +1,18 @@
+# The whole JSX opening tag, for the same reason slp-2-clip-tsx.yml uses it:
+# SLP-3's pair requirement needs the side widths and the radius read off one
+# element, and they are routinely written on different lines. Reading the
+# opening tag rather than the element keeps a child's radius out of the parent.
+id: slop-scan-slp-3-side-border-tsx
+language: tsx
+severity: warning
+message: candidate slp 3 side-tab border
+metadata:
+  control: SLP-3
+  check: slop-scan
+  surface: text
+  context: side-border
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  regex: '(?i)(\bborder-(l|r|t|b|s|e|x|y)-|border(Left|Right|Top|Bottom|Inline|Block)|border-(left|right|top|bottom|inline-start|inline-end))'

@@ -1,0 +1,15 @@
+# A Tailwind arbitrary shadow, shadow-[…]. The named utilities (shadow-sm,
+# shadow-md) carry no lengths to read, so they are not candidates; a glow is
+# always spelled out.
+id: slop-scan-slp-1-glow-tsx
+language: tsx
+severity: warning
+message: candidate slp 1 glow accent
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: text
+  context: shadow
+rule:
+  matches: tsx-code-node
+  regex: '(?i)\bshadow-\['

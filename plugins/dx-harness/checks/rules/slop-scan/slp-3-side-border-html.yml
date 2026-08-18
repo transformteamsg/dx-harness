@@ -1,0 +1,15 @@
+# The html counterpart of slp-3-side-border-tsx.yml.
+id: slop-scan-slp-3-side-border-html
+language: html
+severity: warning
+message: candidate slp 3 side-tab border
+metadata:
+  control: SLP-3
+  check: slop-scan
+  surface: text
+  context: side-border
+rule:
+  any:
+    - kind: start_tag
+    - kind: self_closing_tag
+  regex: '(?i)(\bborder-(l|r|t|b|s|e|x|y)-|border-(left|right|top|bottom|inline-start|inline-end))'

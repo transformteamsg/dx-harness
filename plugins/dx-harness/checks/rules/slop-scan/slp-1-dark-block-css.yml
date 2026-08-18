@@ -1,0 +1,18 @@
+# A dark token block: a .dark / [data-theme="dark"] rule, or a
+# prefers-color-scheme: dark media statement. The whole block is the match,
+# because the cyan-on-dark clause fires only when ONE block sets both the cyan
+# ink and the dark ground, and only the block node carries both declarations.
+id: slop-scan-slp-1-dark-block-css
+language: css
+severity: warning
+message: candidate slp 1 dark token block
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: style
+  context: dark-block
+rule:
+  any:
+    - kind: rule_set
+    - kind: media_statement
+  regex: '(?i)(\.dark\b|data-theme\s*[=~|^$*]?=?\s*.{0,2}dark|prefers-color-scheme\s*:\s*dark)'

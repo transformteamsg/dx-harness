@@ -1,0 +1,24 @@
+<!--
+  fail.html: a slop-scan fixture reaching the same three rules through html,
+  which also covers .vue and .svelte (sgconfig.yml maps both to html).
+
+  Expected violations:
+    SLP-1  gradient palette in an inline style
+    SLP-2  gradient text, class attribute and style attribute on different lines
+    SLP-3  side-tab accent in an inline style
+-->
+<div class="page">
+  <div style="background: linear-gradient(135deg, var(--demo-slop-grad-a), var(--demo-slop-grad-b));">
+    Communication Hub
+  </div>
+
+  <span
+    class="bg-clip-text text-transparent"
+    style="background-image: linear-gradient(90deg, var(--demo-slop-grad-a), var(--demo-slop-grad-b));">
+    Term 3 broadcast
+  </span>
+
+  <div style="border-left: 4px solid var(--casesync); border-radius: 8px;">
+    A side tab on a rounded card
+  </div>
+</div>

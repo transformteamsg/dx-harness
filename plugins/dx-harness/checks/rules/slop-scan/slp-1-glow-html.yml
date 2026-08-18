@@ -1,0 +1,15 @@
+# The html counterpart of slp-1-glow-tsx.yml. An inline style="box-shadow: …"
+# reaches the css rule instead, because checklib.astgrep_scan() re-scans a
+# style attribute as CSS.
+id: slop-scan-slp-1-glow-html
+language: html
+severity: warning
+message: candidate slp 1 glow accent
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: text
+  context: shadow
+rule:
+  matches: html-code-node
+  regex: '(?i)\bshadow-\['

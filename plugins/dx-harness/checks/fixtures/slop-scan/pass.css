@@ -1,0 +1,66 @@
+/*
+ * pass.css: a slop-scan fixture holding every narrowing the CSS rules carry,
+ * as a regression case. A naive detector fires on each of these, and each one
+ * is real code from this repo or one line away from it.
+ */
+
+/* The calibration pair. Both sit below 255 degrees (226.04 and exactly
+   240.00), so the site's own section ink never reads as an AI gradient. A band
+   opening at 240 would flag this rule; an OKLCH reading of the same band would
+   flag it too, because OKLCH puts these two at 267.0 and 278.3. */
+.section-ink-ramp {
+  background: linear-gradient(90deg, var(--casesync), var(--sec-getting-started));
+}
+
+/* One stop in band, one out. The rule needs at least 2 stops both in band, so
+   a single accent stop never reads as an AI gradient palette. */
+.single-accent-stop {
+  background: linear-gradient(135deg, var(--demo-slop-grad-a), var(--tw-blue));
+}
+
+/* The hairline ring: offsets 0, blur 0, spread 1px. A blur-free shadow is a
+   border drawn with a shadow, which is why the blur floor exists. */
+.outline-ring {
+  box-shadow: 0 0 0 1px var(--sidebar-border);
+}
+
+/* One pixel below the blur floor. */
+.almost-a-glow {
+  box-shadow: 0 2px 5px var(--demo-slop-grad-a);
+}
+
+/* One pixel above the offset ceiling: an elevation shadow, not a glow. */
+.elevation {
+  box-shadow: 0 3px 10px var(--demo-slop-grad-a);
+}
+
+/* The real blockquote rule: one side at exactly the 3px floor, the other three
+   absent, and NO border-radius. The pair requirement is what clears it. */
+.prose blockquote {
+  border-left: 3px solid var(--tw-blue);
+  padding-left: 16px;
+  color: var(--foreground);
+}
+
+/* A rounded card with a hairline on every side and a thicker left edge. The
+   remaining sides are 1px rather than 0, so this is not a side tab. */
+.bordered-card {
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 8px;
+}
+
+/* background-clip with any value other than `text` is never gradient text.
+   This is the CSS spelling of the bg-clip-padding case. */
+.padding-clip {
+  background-clip: padding-box;
+  background: var(--surface);
+  color: transparent;
+}
+
+/* A dark block that sets only the dark ground. The cyan-on-dark clause needs
+   both halves in one block. */
+.dark-neutral {
+  --foreground: #ffffff;
+  --background: var(--near-black);
+}

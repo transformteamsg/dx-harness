@@ -1,0 +1,41 @@
+/*
+ * pass-tokens.css: the token map every slop-scan fixture resolves against,
+ * and a fixture in its own right: a bare token block trips no rule.
+ *
+ * The two calibration tokens are here because the 255-degree band was chosen
+ * around them: --casesync sits at 226.04 degrees and --sec-getting-started at
+ * exactly 240.00, so a band opening at 240 would flag the site's own section
+ * ink, which globals.css documents as deliberately purple-avoiding.
+ *
+ * --demo-slop-glow is deliberately unresolvable: `transparent` maps to None,
+ * so the whole color-mix does, which is the live case for the NOTE channel.
+ */
+
+:root {
+  --background: #fafafa;
+  --surface: #ffffff;
+  --foreground: #18181b;
+  --border: #e4e4e7;
+  --radius: 0.5rem;
+
+  --tw-blue: #0064ff;
+  --casesync: #3e63dd;            /* Radix indigo-9, HSL hue 226.04 */
+  --sec-getting-started: #5b5bd6; /* Radix iris-9, HSL hue exactly 240.00 */
+  --sidebar-border: #e4e4e7;
+
+  --demo-slop-grad-a: #7c3aed;    /* violet-600, HSL hue 262.12 */
+  --demo-slop-grad-b: #a21caf;    /* fuchsia-700, HSL hue 294.69 */
+  --demo-slop-border: color-mix(in oklab, var(--demo-slop-grad-a) 25%, var(--surface));
+  --demo-slop-glow: color-mix(in oklab, var(--demo-slop-grad-a) 35%, transparent);
+
+  --violet-500: #8b5cf6;
+  --purple-500: #a855f7;
+  --cyan-ink: #22d3ee;
+  --near-black: #0b0f14;
+}
+
+@theme inline {
+  --color-violet-500: var(--violet-500);
+  --color-purple-500: var(--purple-500);
+  --color-casesync: var(--casesync);
+}

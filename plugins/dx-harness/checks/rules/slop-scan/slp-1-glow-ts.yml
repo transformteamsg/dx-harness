@@ -1,0 +1,13 @@
+# The ts counterpart of slp-1-glow-tsx.yml.
+id: slop-scan-slp-1-glow-ts
+language: ts
+severity: warning
+message: candidate slp 1 glow accent
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: text
+  context: shadow
+rule:
+  matches: ts-code-node
+  regex: '(?i)\bshadow-\['

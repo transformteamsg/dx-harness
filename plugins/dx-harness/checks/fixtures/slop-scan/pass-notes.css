@@ -1,0 +1,32 @@
+/*
+ * pass-notes.css: a slop-scan fixture for the NOTE channel. Every candidate here
+ * is real, and none of their colours can be reached, so each one is named and
+ * none is guessed. A NOTE never changes the exit code, so this file passes.
+ *
+ * This is the rule that matters most for a check that gates a build: an
+ * unresolvable colour is never an ERROR (that would be a guess) and never
+ * silent (that would be a false pass).
+ */
+
+/* --demo-slop-glow is color-mix(… , transparent), and `transparent` maps to
+   None, so the whole mix does. This repo's own glow colour cannot resolve. */
+.unresolvable-glow {
+  box-shadow: 0 2px 10px var(--demo-slop-glow);
+}
+
+/* The resolver does not parse oklch(), which is the Tailwind v4 shadcn default
+   palette format, so this is the live risk for any target repo on it. */
+.oklch-stops {
+  background: linear-gradient(90deg, oklch(0.6 0.2 300), oklch(0.5 0.2 310));
+}
+
+/* 8-digit hex is not parsed, so alpha written into the literal arrives
+   unresolvable rather than as a colour plus an alpha. */
+.hex-alpha-stops {
+  background: linear-gradient(90deg, #a855f766, #7c3aed66);
+}
+
+/* A box-shadow whose lengths are behind a variable cannot be measured. */
+.variable-shadow {
+  box-shadow: var(--shadow-md);
+}

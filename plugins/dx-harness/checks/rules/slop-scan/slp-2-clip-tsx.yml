@@ -1,0 +1,22 @@
+# The whole JSX opening tag, not one line and not one attribute. SLP-2 needs
+# the clip, the transparent fill and the background source on ONE element, and
+# a real component puts className on one line and its gradient style on the
+# next; only the element node carries both. The opening tag is the scope
+# rather than the element, so a child's classes are never read as the parent's.
+#
+# The regex is a locator for `bg-clip-…` in any form; Python is what refuses
+# `bg-clip-padding`, so the value is matched rather than the prefix.
+id: slop-scan-slp-2-clip-tsx
+language: tsx
+severity: warning
+message: candidate slp 2 gradient text
+metadata:
+  control: SLP-2
+  check: slop-scan
+  surface: text
+  context: clip
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  regex: '(?i)(bg-clip-|background-clip|backgroundClip|WebkitBackgroundClip)'

@@ -1,0 +1,15 @@
+# The html counterpart of slp-1-gradient-tsx.yml, reaching a class attribute
+# and any other attribute that carries a gradient. It also covers .vue and
+# .svelte, which sgconfig.yml maps to html.
+id: slop-scan-slp-1-gradient-html
+language: html
+severity: warning
+message: candidate slp 1 gradient palette
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: text
+  context: gradient
+rule:
+  matches: html-code-node
+  regex: '(?i)((repeating-)?(linear|radial|conic)-gradient\s*\(|\bbg-(gradient-to-|linear-|radial|conic))'

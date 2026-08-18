@@ -1,0 +1,17 @@
+# A box-shadow. The rule finds the declaration; Python reads the offsets, the
+# blur and the colour, and only a shadow that clears all three glow clauses at
+# once is a finding. The blur floor is the clause that keeps a hairline ring
+# out of the result.
+id: slop-scan-slp-1-glow-css
+language: css
+severity: warning
+message: candidate slp 1 glow accent
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: style
+  context: shadow
+  kind: declaration
+rule:
+  matches: css-declaration
+  regex: '(?i)box-shadow\s*:'

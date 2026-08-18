@@ -1,0 +1,42 @@
+/*
+ * fail.css: a slop-scan fixture with one violation per CSS detection rule.
+ *
+ * Expected violations:
+ *   SLP-1  gradient palette, two stops both at or above 255 degrees
+ *   SLP-1  glow accent, at both boundaries (blur 6px, offset 2px)
+ *   SLP-1  cyan-on-dark, one dark block setting both halves
+ *   SLP-2  gradient text: clip to text, transparent fill, gradient source
+ *   SLP-3  side-tab accent: one side at the 3px floor, plus a radius
+ */
+
+/* Two stops both in band. */
+.violation-slp1-gradient {
+  background: linear-gradient(135deg, var(--demo-slop-grad-a), var(--demo-slop-grad-b));
+}
+
+/* Blur at the 6px floor, larger offset at the 2px ceiling, saturated colour.
+   Both boundaries are inclusive, so this is the tightest case that fires. */
+.violation-slp1-glow {
+  box-shadow: 0 2px 6px var(--demo-slop-grad-a);
+}
+
+/* One dark token block setting both the cyan ink and the dark ground. */
+.dark {
+  --foreground: var(--cyan-ink);
+  --background: var(--near-black);
+}
+
+/* All three SLP-2 clauses on one rule. */
+.violation-slp2-gradient-text {
+  background-image: linear-gradient(90deg, var(--demo-slop-grad-a), var(--demo-slop-grad-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* One side at the floor, the other three absent, and a radius. */
+.violation-slp3-side-tab {
+  border-left: 3px solid var(--casesync);
+  border-radius: 8px;
+  padding-left: 16px;
+}

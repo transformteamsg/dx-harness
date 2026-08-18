@@ -1,0 +1,18 @@
+# A gradient function, or a value that could hold one. The rule finds the
+# declaration; Python parses the stops, resolves each one and applies the
+# 255-degree band. Only .css rules exist for the style surface: every other
+# style context is re-scanned as CSS by checklib.astgrep_scan(), so one rule
+# reaches all four.
+id: slop-scan-slp-1-gradient-css
+language: css
+severity: warning
+message: candidate slp 1 gradient palette
+metadata:
+  control: SLP-1
+  check: slop-scan
+  surface: style
+  context: gradient
+  kind: declaration
+rule:
+  matches: css-declaration
+  regex: '(?i)(repeating-)?(linear|radial|conic)-gradient\s*\('
