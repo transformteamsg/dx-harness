@@ -52,6 +52,11 @@ Then run `/dx-harness:dx-design-setup` once (the design checks need Python 3 +
 PyYAML), and type what you want to build. On Claude Desktop and the web app, add the
 marketplace and install from the plugin directory — no command line needed.
 
+**Who made it.** Designers and engineers, together. The design harness stands on an
+engineering one: the same plugin ships eight engineering skills, and every check is
+code with self-tests. Builders and system thinkers, craft and user experience at
+speed and at scale.
+
 Today is a big start, and the harness grows by use: waive a rule that doesn't fit,
 and the recurring waivers become rule proposals. Tell us what breaks and what you
 build. 🙌

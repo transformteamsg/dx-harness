@@ -8,6 +8,7 @@ Both are drafts. Nothing here is published.
 | `blog.html` | The launch blog post, standalone HTML using the site tokens from `app/globals.css` |
 | `slack-post.md` | The `#dx-harness` announcement, with a pre-post checklist |
 | `assets/harness-architecture.png` | Architecture sketch, embedded in the blog as image 2 |
+| `assets/builders.png` | Builders illustration (from the Desktop illo set, downscaled to 1024px), closes the blog |
 
 ## Where the copy came from
 

@@ -169,6 +169,8 @@
     border-radius: 999px;
   }
   .ph .note { font-size: 14px; color: var(--muted); max-width: 44ch; }
+  figure.illo { max-width: 440px; margin-left: auto; margin-right: auto; }
+  figure.illo img { border: none; background: none; border-radius: 0; }
 
   /* Code */
   pre {
@@ -377,6 +379,15 @@
     you two or three directions, and you choose. The catalog is the floor.
     What you and your agent build above it is still design.
   </p>
+  <p>
+    That spectrum is why the catalog reads like designers wrote it, because
+    they did. Each of the 70 controls carries a tier (four are non-negotiable,
+    the rest bend with a written reason), a fails-when you can point at, and a
+    way to verify it. None of it was scraped from a generic checklist. Every
+    control was argued, decided, and recorded, and the records live in the
+    repo. The catalog respects "it depends" without letting it mean anything
+    goes.
+  </p>
 
   <h2>The harness has eyes</h2>
 
@@ -384,8 +395,10 @@
     Most agent tooling reads code and stops there. This one looks at screens.
     The review captures the rendered page and grades what it sees, state by
     state, under one evidence rule: a state nobody saw is a state nobody
-    verified. You look at the same captures it grades, so feedback arrives the
-    way designers already work: see it, then fix it.
+    verified. And what those eyes look for comes from the catalog's abstract
+    end: judgment rules written for looking, not for grep. You look at the
+    same captures it grades, so feedback arrives the way designers already
+    work: see it, then fix it.
   </p>
   <p>
     That matters more than it sounds. Designers are the people who make things
@@ -405,9 +418,11 @@
 
   <p>
     Designers built this harness, through a designer's lens, knowing where the
-    pain is because it is ours. So there is nothing to memorise. Two commands
-    install it. One skill sets up your repo. After that you type what you want
-    in plain language and the orchestrator takes it from there.
+    pain is because it is ours. We treated it like any other product we
+    design: its user is a designer mid-task, and its own UX carries the same
+    bar it enforces. So there is nothing to memorise. Two commands install it.
+    One skill sets up your repo. After that you type what you want in plain
+    language and the orchestrator takes it from there.
   </p>
   <p>
     We tested the whole path with one of our least technical designers, and
@@ -452,6 +467,29 @@
     that skipped moved files, a contrast check that failed correct code. We
     fixed the checks and kept the findings as decision records. The standard
     gets stricter the same way code does: by review.
+  </p>
+
+  <h2>Designers and engineers, one harness</h2>
+
+  <figure class="illo">
+    <img src="./assets/builders.png" alt="Hand-drawn illustration of four builders leaning over one sheet of work together, on the brand lime ground.">
+    <figcaption>One team around one sheet. The way it was built is the way
+    it's meant to be used.</figcaption>
+  </figure>
+
+  <p>
+    This story started with design, and designers are the loudest users. Under
+    the hood, the foundations are engineering. The same plugin ships eight
+    engineering skills for issues, reviews, and git discipline. Every check is
+    code with self-tests. The catalog is validated in CI like anything else we
+    ship. The design harness stands on an engineering harness, and the
+    thinking that built one built the other.
+  </p>
+  <p>
+    So "designers" undersells who made this. We are builders: designers who
+    ship, and engineers who care where the pixels land. System thinkers who
+    love craft and user experience, at speed and at scale. The harness is that
+    sentence, written as tooling.
   </p>
 
   <figure>
