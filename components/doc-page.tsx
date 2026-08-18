@@ -7,6 +7,8 @@ import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
+import { SkillCard, type SkillRef } from "@/components/skill-card";
+import { ControlList } from "@/components/control-list";
 import { mdxComponents } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
@@ -28,6 +30,8 @@ export async function DocPage({
   const crumb = sectionCrumbs[doc.section];
   const headings = extractHeadings(doc.content);
   const tools = (doc.data.tools ?? []) as Tool[];
+  const skills = (doc.data.skills ?? []) as SkillRef[];
+  const controls = (doc.data.controls ?? []) as string[];
 
   /* Doc bodies are plain Markdown, but a stray angle token outside a code
      span (e.g. "<date>" in prose) makes MDX read it as an unclosed JSX tag.
@@ -72,6 +76,10 @@ export async function DocPage({
         {tools.map((tool) => (
           <ToolCard key={tool.href} tool={tool} />
         ))}
+        {skills.map((skill) => (
+          <SkillCard key={skill.name} skill={skill} />
+        ))}
+        <ControlList ids={controls} />
         {rawFallback ? (
           <div className="mt-8">
             <p className="text-sm text-muted-foreground">
