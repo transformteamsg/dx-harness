@@ -455,7 +455,7 @@ def run_self_test():
     check("the finding matches detect's finding shape", True, parsed is not None)
     check("the finding carries its control id", "A11Y-2", parsed.group("control"))
     check("the finding path is repo-relative", "components/row.tsx", parsed.group("file"))
-    check("the finding keeps eslint's line number", 12, int(parsed.group("line")))
+    check("the finding keeps eslint's line number", 12, int(parsed.group("pos")))
     check("the rule that fired is named in the second bracket", True,
           "[jsx-a11y/click-events-have-key-events]" in errors[0])
     check("a clean run of the translator adds no notes", [], notes)
@@ -530,7 +530,12 @@ def run_self_test():
     # ── the rule map covers the whole preset and only real controls ────────────
     jsx_rules = [r for r in rule_map["rules"] if r.startswith("jsx-a11y/")]
     check("every rule in jsx-a11y's recommended preset has a row", 31, len(jsx_rules))
-    check("the map has no rows outside the preset", len(jsx_rules), len(rule_map["rules"]))
+    check("the map has no jsx-a11y rows outside the preset", 31, len(jsx_rules))
+    # The map is shared with the rendered check, whose rows carry their own
+    # prefix. This layer reads none of them and must not be broken by them.
+    check("every row this layer reads is a jsx-a11y row", set(),
+          {r for r in rule_map["rules"] if not r.startswith("jsx-a11y/")}
+          & set(jsx_rules))
     catalog_ids = set(checklib.catalog_tiers())
     check("every mapped control id is in the catalogue", set(),
           set(rule_map["rules"].values()) - catalog_ids)

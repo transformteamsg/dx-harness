@@ -67,6 +67,18 @@ INLINE_WAIVE_RE = re.compile(
     r'dx-waive\s+([A-Z0-9]+-\d+)(?:\s+reason="([^"]*)")?'
 )
 
+# The rendered check's DOM analogue, authored in source as a JSX/HTML attribute:
+#   data-dx-waive="<CTL-ID>[ <CTL-ID>...] reason=<free text>"
+# INLINE_WAIVE_RE cannot see it — it needs whitespace after `dx-waive` and the
+# attribute supplies `="` — so it is matched as a second pattern here rather
+# than reimplemented in the runner. A DOM waiver then needs its
+# "## Waivers granted" row exactly as an inline one does, which is what
+# standards/schema.json's `tier_waiver` requires of an L1 control, and it
+# inherits the unknown-id and L0 errors for free.
+DOM_WAIVE_RE = re.compile(
+    r'data-dx-waive\s*=\s*"([A-Z0-9]+-\d+(?:\s+[A-Z0-9]+-\d+)*)\s+reason=([^"]*)"'
+)
+
 
 # ── Reuse audit-record's table parser (do not rewrite it) ─────────────────────
 def _load_audit_record():
@@ -112,10 +124,15 @@ def _iter_source_files(src_paths):
 
 
 def find_inline_waivers(src_paths):
-    """Return [(file, line, ctl_id, reason)] for every inline `dx-waive`.
+    """Return [(file, line, ctl_id, reason)] for every waiver authored in
+    source: the inline `dx-waive` comment, and the rendered check's
+    `data-dx-waive` DOM attribute.
 
     Inline waivers ARE comments, so comment text is NOT stripped — the marker
-    is matched directly wherever it appears.
+    is matched directly wherever it appears. The DOM attribute is not a comment
+    and is matched the same way, so both reconcile against the same
+    "## Waivers granted" table and neither can waive an L1 control without the
+    recorded row its tier requires.
     """
     found = []
     for path in _iter_source_files(src_paths):
@@ -129,6 +146,9 @@ def find_inline_waivers(src_paths):
                 ctl_id = m.group(1)
                 reason = m.group(2) if m.group(2) is not None else ""
                 found.append((path, lineno, ctl_id, reason))
+            for m in DOM_WAIVE_RE.finditer(raw):
+                for ctl_id in dict.fromkeys(m.group(1).split()):
+                    found.append((path, lineno, ctl_id, m.group(2)))
     return found
 
 
@@ -411,6 +431,42 @@ def run_self_test():
         "/* dx-waive TOK-1 */",
         [],
         expect_errors=["[TOK-1] inline waiver has no recorded waiver row"],
+        expect_notes=[],
+    )
+
+    # Case 8: the rendered check's DOM marker on an L1 control with no record
+    # row is an orphan, exactly as an inline dx-waive with no row is — an L1
+    # waiver must be documented (standards/schema.json's tier_waiver).
+    run_case(
+        "DOM marker orphan (no record row)",
+        '<div data-dx-waive="SLP-4 reason=quarantined anti-specimen">x</div>',
+        [],
+        expect_errors=["[SLP-4] inline waiver has no recorded waiver row"],
+        expect_notes=[],
+    )
+
+    # Case 9: the same marker WITH its row reconciles clean.
+    assert_clean(
+        "DOM marker with a matching record row",
+        '<div data-dx-waive="SLP-4 reason=quarantined anti-specimen">x</div>',
+        ["| SLP-4 | L1 | reason | Reza Ilmi (user) | this record |"],
+    )
+
+    # Case 10: several ids ride one attribute, and each reconciles on its own.
+    run_case(
+        "DOM marker naming two controls",
+        '<div data-dx-waive="SLP-4 SLP-6 reason=quarantined anti-specimen">x</div>',
+        ["| SLP-4 | L1 | reason | Reza Ilmi (user) | this record |"],
+        expect_errors=["[SLP-6] inline waiver has no recorded waiver row"],
+        expect_notes=[],
+    )
+
+    # Case 11: an L0 control in a DOM marker is refused, same as inline.
+    run_case(
+        "DOM marker on an L0 control",
+        '<div data-dx-waive="A11Y-1 reason=looks fine to me">x</div>',
+        [],
+        expect_errors=["[A11Y-1] inline dx-waive on an L0 control"],
         expect_notes=[],
     )
 

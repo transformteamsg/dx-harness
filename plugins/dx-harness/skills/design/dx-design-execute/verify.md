@@ -80,11 +80,29 @@ Run in this order; do not present output to the user while a step is failing:
      init-script that sets `.dark` / the theme attribute *before* load, or the
      app's own toggle); a token-resolution argument alone is not evidence that
      the mode renders.
-3. **Evaluator review** — run the reviewer dispatch in
+3. **Rendered check** — while the capture session from step 2 is still open, run
+   `python3 checks/rendered-check.py --session <the session you captured with>`
+   (add `--url <url>` when the session is on another page). It attaches to that
+   open session over CDP, runs axe at 360 and 1280 in each supported theme plus
+   one reduced-motion cell, and hands the session back as it found it. It boots
+   nothing: if the app is not already serving, there is no rendered check.
+   - A finding reads `ERROR <route>:<cell> [<CTL>] …`, where the cell names the
+     viewport and theme that produced it.
+   - `NOTE` lines carry the third bucket: what axe could not decide, what it
+     found on markup nobody can currently reach, and A11Y-10, which is
+     report-only. Each is an item for the manual accessibility pass in step 1,
+     not a gate.
+   - When it prints `did not run` — no session, or the driver is not
+     provisioned — the controls it names go to manual verification, never a
+     pass, and A11Y-1 and A11Y-3 still block until verified by some path.
+   - It covers no part of A11Y-2 (no axe rule checks a visible focus indicator)
+     and no part of A11Y-11 (that needs interaction, and this check interacts
+     with nothing). Both stay with the inventory checkoff above.
+4. **Evaluator review** — run the reviewer dispatch in
    `../../../procedures/design-review.md`: it holds who spawns the `dx-design-review`
    subagent, the inputs to pass (contract, approved plan, screenshots, component
    inventory, in-scope judgment/hybrid controls, and the absolute `standards/` path),
    the cannot-spawn rule, the verbatim-verdict rule, and the verdict re-check from
    new screenshots. You never write the verdict yourself, and never present
    unverified work as verified while waiting.
-4. Address findings; re-run from step 1 after changes.
+5. Address findings; re-run from step 1 after changes.

@@ -21,7 +21,22 @@ their own formatting where they genuinely differ (`token-audit.py`'s
 tails). `emit_error` also takes an optional `extra=` that fills the second bracket
 (`[A11Y-2][jsx-a11y/interactive-supports-focus]`) — the slot `_FINDING_RE` already
 tolerates and discards, so a finding can name the rule that fired without changing
-the line shape. checklib also loads the a11y rule map (`load_rule_map`,
+the line shape.
+
+**The position slot takes a cell as well as a line.** A rendered finding has a URL
+and a DOM node where a static one has a file and a line, so `emit_rendered_error`
+writes `ERROR <route>:<cell> [<CTL>] …` — the served path with its leading slash
+(`/standards/slp-4`) and the run-matrix cell that produced it (`1280-dark`). A
+leading slash is what tells the two apart, because `emit_error` is always given a
+repo-relative path and never starts with one. `_FINDING_RE`'s position group is
+`[^\s\[]+` rather than `\d+` so both parse; `parse_findings` reports `position` as
+the raw token and `line` as an integer only where the token is digits, so a
+rendered finding asserts no source line it cannot see. Writing a synthetic `1` or a
+selector hash into the line slot was rejected: it asserts a location the check
+cannot see, which is the failure this layer exists to remove. `emit_error` and
+`_FINDING_RE` are one contract in two files — change them together.
+
+checklib also loads the a11y rule map (`load_rule_map`,
 `layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
 below) so the three a11y layers read one file rather than three copies of it, and
 reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
@@ -81,15 +96,25 @@ them is where the floor silently stops being enforced.
 One file maps every accessibility rule the harness runs to exactly one control id:
 `checks/a11y-rule-map.json` (JSON, not YAML — the check scripts are stdlib-only).
 
-- `rules` — `"jsx-a11y/<rule>": "<CTL>"`, one control id per rule, never a list. All
-  31 rules in jsx-a11y's `recommended` preset have a row, so a rule that fires can
-  never be silently dropped; a rule with no row is reported as a misconfiguration,
-  not attributed to a guessed control.
+- `rules` — `"<prefix>/<rule>": "<CTL>"`, one control id per rule, never a list. The
+  prefix names the tool the rule belongs to: `jsx-a11y/` for the static lint layer,
+  `axe/` for the rendered check, `dx/` for the rendered check's own bespoke page
+  evaluations. All 31 rules in jsx-a11y's `recommended` preset have a row, so a rule
+  that fires can never be silently dropped; a rule with no row is reported as a
+  misconfiguration, not attributed to a guessed control.
+- `aria_prefix_control` — the control every axe rule id beginning `aria-` maps to
+  (A11Y-8). It is one key rather than two dozen rows because the aria suite is
+  resolved from the installed axe's `getRules()` at run time: a hardcoded list drifts
+  on the next axe minor, and a rule the harness has never seen would otherwise be
+  dropped.
 - `layers` — the control ids each layer covers (`eslint-jsx-a11y`,
-  `a11y-static-focus`, `contrast-token-pairs`). A layer that could not run reads its
-  own row to name the controls going to manual verification, so a control is never
-  reported as passing by a layer that did not check it. The rendered check's axe rows
-  are a later addition to the same file.
+  `a11y-static-focus`, `contrast-token-pairs`, `axe-rendered`). A layer that could not
+  run reads its own row to name the controls going to manual verification, so a
+  control is never reported as passing by a layer that did not check it.
+
+Per-rule run behaviour stays out of the map: `target-size` being force-enabled,
+`bypass` being report-only and the A11Y-8 visibility demotion all live in the runner,
+so the map keeps one job — rule to control — and one reader per layer.
 
 Four rows attribute a finding to a control the eslint layer claims **no** coverage
 for: `heading-has-content` and `scope` (A11Y-7, whose static half is the separate
@@ -188,9 +213,11 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (69 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (79 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
-each ignore type, invalid-config → exit 1, `ERROR`-line parsing, and the JSON shape. The
+each ignore type, invalid-config → exit 1, `ERROR`-line parsing (both the static
+`<file>:<line>` and the rendered `<route>:<cell>` shape, at both of `_FINDING_RE`'s call
+sites), and the JSON shape. The
 wrapped scripts are not invoked in the self-test (it exercises detect's own pure logic);
 their behaviour is proven by their own `--self-test`s and a real-corpus run over
 `docs/loop-run/`.
@@ -325,7 +352,7 @@ operational `ERROR`s too. These lines carry no `<file>:<line> [<CTL>]` shape, so
 detector keeps them as control-less findings. When the given paths contain no lintable
 source at all, the layer prints a NOTE and exits 0 because it had nothing in scope.
 
-**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (41 cases)`
+**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (42 cases)`
 (includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`
 which proves the three rules the maintainers switch off stay off). The fixture cases
 need the target toolchain; where it cannot be resolved they assert the honest skip path
@@ -427,9 +454,158 @@ root (and says so in a `NOTE`); `detect.py` passes `--repo-root` instead of targ
 asserting the resolver surface survives, and one proving a source file holding a
 deliberately bad pairing is not scanned.
 
+## Rendered check — axe on the open page (built — rendered subset)
+
+`python3 checks/rendered-check.py [--session <name>] [--url <url>] [--viewports 360,1280]
+[--themes auto|light|dark|both] [--json]` — runs axe against a page that is **already
+open**, plus the harness's own page evaluations for the rules no maintained tool
+provides. This is the rendered half of the accessibility stack; the static half is
+`a11y-eslint` and `a11y-static` above. Exit 0 on a clean run or NOTEs only; exit 1 with
+`ERROR` lines on any violation or malformed waiver marker.
+
+**The harness never boots the target app.** No dev server, no static export, no jsdom,
+in any code path. `playwright.config.ts`'s `webServer` block at the site root is the
+site's own end-to-end config; this check neither reuses nor imitates it. It launches no
+browser either: the design loop's capture step already opens one (`skills/design/
+dx-design-execute/verify.md` step 2), so the check attaches to that session over CDP,
+drives it, and hands it back. A standalone run — `dx-design-critique`, or a re-audit
+walked from `reaudit-scope.py` — asks the person for a URL of a surface that is already
+serving, and drives the same open session to it.
+
+The runner asks the capture CLI for its **live session list first**, and only then for
+that session's CDP endpoint. Measured on agent-browser 0.29.1, asking for the endpoint
+of a session that does not exist creates it, browser and all — the list is what keeps
+"attaches to an open page" true rather than aspirational.
+
+**The run matrix, fixed.** 360 and 1280 x each supported theme, plus exactly one
+reduced-motion cell at 1280 in the default theme:
+
+| Cell | Viewport | Theme | Media | What it decides |
+|---|---|---|---|---|
+| `360-light` | 360 | light | default | `target-size`, `color-contrast`, all mapped rules |
+| `1280-light` | 1280 | light | default | all mapped rules |
+| `360-dark` | 360 | dark | default | `color-contrast` in dark, all mapped rules |
+| `1280-dark` | 1280 | dark | default | `color-contrast` in dark, all mapped rules |
+| `1280-reduced-motion` | 1280 | default | `reduced-motion` | A11Y-5 only |
+
+Each cell scrolls to the document end in viewport-height steps and back to the top
+before axe runs, because axe skips what is outside the viewport. `target-size` is
+enabled **by name** — axe ships it off, Lighthouse re-enables it, and A11Y-4 has no other
+coverage — and the run names its rules rather than taking a `runOnly` tag shortcut,
+which would silently drop mapped ones. The aria suite comes from the installed axe's
+`getRules()` at run time, so a rule the harness has never seen is still reported under
+A11Y-8 with no harness edit. Where a product has no dark mode (no theme toggle, no
+`.dark` or `[data-theme="dark"]` layer), the dark cells record `N/A, product has no dark
+mode` — the same truthful outcome verify records, never a pass.
+
+**Coverage.** A11Y-1 (`color-contrast`, both themes), A11Y-3 (`label`), A11Y-4
+(`target-size`), A11Y-5 (the reduced-motion evaluation), A11Y-6 (`image-alt`,
+`svg-img-alt`), A11Y-7 (`list`, `listitem`, `heading-order`), A11Y-8 (the aria suite),
+A11Y-9 (`document-title`, `html-has-lang`), A11Y-10 (`bypass`, report-only). Every one
+of them keeps a manual remainder **and** depends on a URL being available, so none of
+them reaches `enforced: script`.
+
+**Three buckets, not two.** Violations become `ERROR` lines and exit 1. Passes are
+counted once per cell and never printed per node, because a per-node pass list invites
+reading "axe found nothing" as "this control is met". `incomplete` is the third bucket:
+it rides the `NOTE` channel, naming the control, the rule and the DOM node as an item
+for the manual accessibility pass. It gates nothing and is dropped by nothing. Two more
+things land there. An A11Y-8 finding on markup a person cannot currently reach —
+`hidden`, `aria-hidden="true"`, `display: none` or `visibility: hidden` on the node or an
+ancestor — is demoted rather than gated on, which is what "visible components only"
+means for a runner that clicks nothing. And `bypass` is report-only, so A11Y-10 never
+contributes to a non-zero exit; skip-link-first confirmation stays with the manual pass.
+Where every rule mapped to a control came back `inapplicable`, that control records N/A
+with the reason.
+
+**The finding line names a page and a cell.** `ERROR <route>:<cell> [<CTL>][<rule>] …` —
+see the position-slot paragraph under `checklib.py` above.
+
+**The `data-dx-waive` DOM marker.** The rendered analogue of the inline `dx-waive`
+comment, for a layer whose findings have no source file to carry one:
+
+```html
+<div data-dx-waive="SLP-4 SLP-6 reason=quarantined anti-specimen">
+```
+
+The runner skips that element's subtree for the named controls only. It is element
+scoped permanently — a per-URL ignore list would exempt a whole page and hide real
+regressions elsewhere on it, a register-scoped exemption would make a permanent blind
+spot, and it never becomes a `detector.ignoreRules`, `ignoreFiles` or `ignoreValues`
+entry. Grammar: one or more uppercase `[A-Z0-9]+-\d+` ids, then the literal `reason=`,
+then free text to the end of the value. No quotes around the reason (the inline form's
+`reason="…"` cannot survive inside a JSX attribute that is itself double quoted), and the
+reason is **required** where it is optional inline, because a rendered waiver has no
+surrounding comment to explain itself. A nested marker's ids union with the enclosing
+one's for that inner subtree; they never replace them.
+
+Two deliberate divergences, said out loud so the conventions do not drift silently:
+
+- **It suppresses where the inline marker downgrades.** `token-audit`'s inline waiver on
+  an L1 control prints `[CTL][waiver-claimed]` and still exits 1. A downgrade here would
+  still fail this repo on its own teaching exhibit, which is the problem the marker
+  exists to solve.
+- **An L0 id in a marker is an ERROR and suppresses nothing.** The inline path already
+  refuses an L0 waiver, and the DOM form must not become the way around it. An unknown
+  id, a missing reason and an unparseable value are each their own ERROR too, and a
+  broken marker suppresses nothing rather than guessing which way to fail. Every
+  honoured marker prints a `NOTE` naming the element, the ids and the reason.
+
+It ships **wired**, not merely defined: `waiver-reconcile.py` reads the attribute as a
+second authored form, so a DOM waiver on an L1 control needs its "## Waivers granted"
+row exactly as an inline one does — which is what `standards/schema.json`'s tier-to-waiver
+pairing requires of an L1 control.
+
+**A layer that did not run does not silently pass.** No session, no such session, an
+unprovisioned driver, a refused CDP connection or an axe that threw are all the same
+class: `NOTE` lines naming the failure and every control going to manual verification,
+then **exit 0**. That shape is forced by `detect.py`, which reads exit 1 with no `ERROR`
+line as a crash — reporting an uncovered layer as harness breakage would be worse than
+useless. A11Y-1 and A11Y-3 are L0 and still block until verified by some path.
+
+**Static-subset caveat — what this check does NOT verify:**
+
+- **A visible focus indicator (A11Y-2).** 0 of axe's 105 rules check for one, which is
+  why `a11y-static.py`'s FOCUS rule stays bespoke. This check claims no part of A11Y-2.
+- **A11Y-11**, which needs interaction. It stays fully evaluator and manual.
+- **Anything behind an interaction.** The runner clicks nothing, hovers nothing and
+  opens nothing, so closed overlays, state changes and traversal order stay with the
+  evaluator by construction.
+- **Whether an animation is *essential*** (A11Y-5's judgment half), whether an image is
+  informative or decorative (A11Y-6), whether a heading is descriptive (A11Y-7), and
+  whether an SPA updates its title per view (A11Y-9).
+
+**The harness-side Node dependency.** `@axe-core/playwright` (which brings its own
+`axe-core`) and `playwright-core` are declared in `plugins/dx-harness/package.json` and
+installed into the plugin's own `node_modules` with `npm install --prefix <plugin dir>`.
+**Nothing is installed into the repo being checked** — the site's `package.json` and
+lockfile are untouched, and the generated lockfile is gitignored, exactly like the global
+ast-grep install. A missing driver dependency is the layer-did-not-run case above, not a
+crash.
+
+**Not wired into prebuild or CI, and not exempted either.** It needs an open page, and
+neither `package.json` nor `ci.yml` has one, so `[WIRING-SYNC]` cannot be satisfied by it
+— but the check also claims no control's `script:` field yet, so there is nothing for
+`[WIRING-SYNC]` to ask about and a `WIRING_EXEMPT` entry today would be a **dead
+exemption**, which is itself an ERROR (`validate.py`: an exempted script no longer
+claimed by any control). The `script:` fields and the `enforced:` labels are #162's, and
+the exemptions land in the same commit as the claims. The decided values this check hands
+to that recount: A11Y-1, A11Y-3, A11Y-4, A11Y-5, A11Y-6, A11Y-7, A11Y-8, A11Y-9 and
+A11Y-10 all stay or become `enforced: partial` with `checks/rendered-check.py` added to
+`script:`; **none reaches `script`**, because every one of them depends on a URL being
+available and every one keeps a manual remainder. A11Y-5 in particular stays `partial`
+and gains both keys, which it has neither of today.
+
+**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (144
+cases)` — the matrix, the job the driver reads, the finding shape against `detect.py`'s
+real `_FINDING_RE`, the three buckets, the marker grammar and its four error cases, the
+did-not-run paths, and a set of cases that read the driver's source with its comments
+stripped and fail if a browser launch, a `newPage`, a `newContext`, a `webServer` or a
+click ever appears in the code. It spawns no browser and needs none.
+
 ## Waiver reconcile (built)
 
-`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the two places a waiver can live so neither drifts from the other: inline `dx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
+`python3 checks/waiver-reconcile.py --src <path>... --records <dir>` — reconciles the places a waiver can live so none drifts from the others: inline `dx-waive <CTL-ID> reason="..."` comments in source/CSS (the syntax `token-audit` defines, here generalised to **all** control prefixes), the rendered check's `data-dx-waive="<CTL-ID>... reason=<text>"` DOM attribute as authored in source, the "## Waivers granted" table rows in decision records (`docs/decisions/*.md`, skipping `TEMPLATE.md`), and the control's catalog tier. It reuses `audit-record.py`'s `parse_table_rows` / `column_index` / `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` (records default to `<repo-root>/docs/decisions`) for consumer repos; the catalog tiers always come from the harness. Exit 0 on a clean reconcile (or NOTEs only); exit 1 on any ERROR.
 
 **ERROR (exit 1) vs NOTE (exit 0):**
 
@@ -444,7 +620,10 @@ A row counts as a recorded waiver only when column 0 holds a control id (`^[A-Z0
 
 This closes the loop `token-audit.py` leaves open ("a human closes the decision-record loop") — but only for the scanned paths.
 
-**Self-test:** `python3 checks/waiver-reconcile.py --self-test` → `SELF-TEST OK (7 cases)`.
+**Self-test:** `python3 checks/waiver-reconcile.py --self-test` → `SELF-TEST OK (11 cases)`
+(the last four cover the rendered check's `data-dx-waive` attribute: an orphan with no
+record row, the same marker with its row, two ids on one attribute reconciling
+separately, and an L0 id refused).
 
 ## Reaudit scope (built)
 
@@ -541,17 +720,14 @@ Planned for V1 (remaining):
 
 | Check | Controls | Approach |
 |---|---|---|
-| `contrast` | A11Y-1 | axe-core contrast scan: 4.5:1 body, 3:1 large text + UI components |
+| ~~`contrast`~~ | ~~A11Y-1~~ | ✅ built — `contrast` grades the declared token pairs before anything renders; `rendered-check` runs axe `color-contrast` on the open page in both themes. axe's `incomplete` items (a background image, a gradient) stay manual |
 | ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal), `a11y-eslint` covers keyboard reachability (`click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`); traversal order and hit-area still need a rendered DOM |
 | ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-eslint` covers `label-has-associated-control` and `autocomplete-valid`; placeholder-only label and cross-file `htmlFor`/`id` association still need a rendered DOM |
-| `targets` | A11Y-4 | Computed hit area of interactive elements ≥ 24×24 CSS px |
-| `reduced-motion` | A11Y-5 | With prefers-reduced-motion set, non-essential animation does not run |
+| ~~`targets`~~ | ~~A11Y-4~~ | ✅ built (rendered) — `rendered-check` runs axe `target-size`, force-enabled, at 360 and 1280 |
+| ~~`reduced-motion`~~ | ~~A11Y-5~~ | ✅ built (rendered) — `rendered-check`'s one reduced-motion cell reports what still moves under the emulation; whether an animation is *essential* stays with the evaluator |
 | ~~`alt-scan`~~ | ~~A11Y-6~~ | ✅ built (static subset) — `a11y-eslint` covers `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`; the informative-versus-decorative judgment and every non-JSX image stay manual |
 | `structure` | A11Y-7 (deterministic half) | Heading-hierarchy walk; lists/tables/groups are semantic elements |
 | ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-eslint` covers the aria suite (`aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, the role-conversion rules); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
-| `title-lang` | A11Y-9 | Descriptive document title present; html lang attribute set |
-| `skip-link` | A11Y-10 | Skip-to-main first focusable, or main/nav landmarks present |
-| `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
 | `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
@@ -590,11 +766,18 @@ to the catalogue recount; the design verification path runs it through `detect.p
 `.dx/component-manifest.json`, which this repo (the harness/site itself) does not
 have — wiring it here would have nothing to check.
 
-`a11y-eslint.py` is **not wired** either, and it is deliberately **not** on
-`WIRING_EXEMPT`: no control names it in a `script:` field yet (the A11Y recount is a
-separate change), and `[WIRING-SYNC]` reads an exemption for a script no control claims
-as a dead exemption, which is an error. `[WIRING-SYNC]` therefore has nothing to ask of
-it. It stays unwired on its own merit too: on this tree the layer reports one finding,
+`rendered-check.py` is **not wired**, and it is deliberately **not** on `WIRING_EXEMPT`
+either, for both of the reasons that can make an exemption wrong. It cannot run in
+prebuild or CI at all, because it needs a page that is already open and neither has one —
+`[WIRING-SYNC]` can never be satisfied by a rendered check. And no control names it in a
+`script:` field yet (the A11Y recount is a separate change), so an exemption today would
+be a **dead exemption**, which is itself an error. The exemption and the `script:` claim
+have to land in the same commit. Run it from verify's step 3, with the capture session
+still open, or from `dx-design-critique` against a URL the person supplies.
+
+`a11y-eslint.py` is **not wired** either, for the second of those two reasons: no control
+names it in a `script:` field yet, so `[WIRING-SYNC]` has nothing to ask of it. It stays
+unwired on its own merit too: on this tree the layer reports one finding,
 `jsx-a11y/interactive-supports-focus` at `components/diagrams/orbit-loop.tsx:319`
 ("Elements with the 'tablist' interactive role must be focusable"), on a tablist whose
 tabs carry the roving `tabIndex` and whose arrow keys are handled on the container. That
@@ -609,6 +792,10 @@ The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control cla
 or adding an exemption now fails validation; that friction is the point.
 
 Waiver handling: checks must respect inline `dx-waive <CTL-ID> reason="..."`
-comments for L2 controls only — a waiver on an L0/L1 control is itself reported as a
+comments for L2 controls only — and the rendered check's element-scoped
+`data-dx-waive="<CTL-ID>... reason=<text>"` DOM attribute on the same terms, except that
+it suppresses its subtree outright where the inline form downgrades, and refuses an L0 id
+outright rather than reporting it as claimed (see "Rendered check" above) — a waiver on
+an L0/L1 control is itself reported as a
 violation unless it appears in the decision record with a named approver (L1; L0 is
 never waivable).
