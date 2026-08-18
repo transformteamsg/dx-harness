@@ -31,7 +31,7 @@ This applies wherever copy appears — headings, labels, buttons, helper text, e
 messages, empty states, and running prose. It grades **orthography only**: whether each
 word is spelled correctly and in the house dialect, whatever the sentence is doing.
 
-See also: this control makes `ui-text.mdx` §10 ("Check for grammar and spelling")
+See also: this control makes `writing.mdx` §10 ("Check for grammar and spelling")
 enforceable — it had no owning control before. The *grammar* half of §10 is already owned
 elsewhere: CNT-3 (voice, length), CNT-8 (nominalisations), CNT-9 (clarity mechanics), and
 CNT-12 (sentence case). CNT-13 does not re-grade any of those; it only checks spelling.
