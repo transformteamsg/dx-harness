@@ -1,7 +1,9 @@
 ---
 title: A note from the builders
-description: Where we think this harness stands today, why DESIGN.md lives in your repo, and what we expect to change.
+description: What we believe about this harness today, the catalog it stands on, who is building it, and what we expect to change.
 date: August 2026
+illo: /illos/builders-note.png
+illoAlt: An ink drawing of four builders leaning over one sheet of paper together.
 ---
 
 Most of this site tells you what the harness does. This page tells you what we
@@ -19,6 +21,26 @@ model brings on its own. Some of the scaffolding we built this year will be
 unnecessary next year. We would rather write that down now than let this site
 imply we found the answer. We found an answer that works now, and we keep
 checking whether it still does.
+
+## A catalog that gives your agent eyes
+
+The part of this harness we defend hardest is the control catalog. The easy
+version would have been a linter: measurable rules, pass or fail, done. Design
+does not work that way, and a harness that pretends it does will enforce
+whatever a script can count and lose the rest.
+
+So the catalog ranges the way design judgment ranges, from deterministic to
+abstract. At one end sit rules a script can measure: contrast floors, target
+sizes, steps on the type scale. At the other sit calls that need judgment:
+whether a page reads as generated, whether motion tells the truth about what
+changed. Every control declares which kind it is, how it gets checked, and what
+waiving it costs. That range is what gives your agent eyes: a way of looking at
+a screen that holds the measurable and the judged at once.
+
+We also built it to be read. Every control is a page a designer can open and
+argue with, and the same file the checks run against is the file this site
+renders, so the two cannot drift apart. A standard only the tooling can read is a standard the team will leave
+behind, and the team would be right to.
 
 ## Why DESIGN.md lives in your repo
 
@@ -41,6 +63,20 @@ belongs to your team.
 
 That is the trade we are trying to make: consistent where inconsistency would
 hurt users, flexible where your product knows better than we do.
+
+## Where this came from
+
+The front of this site says design, and design is what the harness ships. It
+did not start there. Before the design harness we built an engineering one:
+the review loops, issue skills, and repo conventions we needed to learn how
+agents actually behave inside a codebase. The design harness stands on that
+work, and the grain shows it: everything is a file in a repo, checkable and
+versioned.
+
+We are designers and engineers building together, and neither word alone
+covers the team. The closest description is system thinkers who love craft. We
+care how a control reads and how it runs, and we want the experience of using
+our products to hold up at the speed and scale that agents make possible.
 
 ## Not set in stone
 
