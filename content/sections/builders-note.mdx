@@ -1,6 +1,6 @@
 ---
 title: A note from the builders
-description: What we believe about this harness today, the catalog it stands on, who is building it, and what we expect to change.
+description: What we believe about the harness today, why the control catalog works the way it does, and what we expect to change.
 date: August 2026
 illo: /illos/builders-note.png
 illoAlt: An ink drawing of four builders leaning over one sheet of paper together.
@@ -9,89 +9,90 @@ illoAlt: An ink drawing of four builders leaning over one sheet of paper togethe
 Most of this site tells you what the harness does. This page tells you what we
 were thinking when we built it, and what we still argue about.
 
-## Where we think this stands
+## Where we think the harness stands
 
 Before we settled on this shape, we studied the harnesses we respect and
-measured ours against them. With today's models, we think what we built holds
-up. We are proud of that.
+measured ours against them. With the models available today, we think ours
+compares well. We are proud of that.
 
-We are also careful with the word "today". Models improve every few months, and
-each improvement moves the line between what a harness must supply and what a
+We are also careful with the word "today". Models improve every few months.
+Each improvement moves the line between what a harness must supply and what a
 model brings on its own. Some of the scaffolding we built this year will be
-unnecessary next year. We would rather write that down now than let this site
-imply we found the answer. We found an answer that works now, and we keep
-checking whether it still does.
+unnecessary next year. We would rather write that down than let this site imply
+we found the answer. We found an answer that works today, and we keep checking
+whether it still does.
 
 ## A catalog that gives your agent eyes
 
-The part of this harness we defend hardest is the control catalog. The easy
-version would have been a linter: measurable rules, pass or fail, done. Design
-does not work that way, and a harness that pretends it does will enforce
-whatever a script can count and lose the rest.
+The part of this harness we defend hardest is the
+[control catalog](/standards/catalog). The obvious version would have been a
+linter: measurable rules, pass or fail, done. Design does not work that way. A
+harness that pretends otherwise enforces whatever a script can count and loses
+the rest.
 
 So the catalog ranges the way design judgment ranges, from deterministic to
-abstract. At one end sit rules a script can measure: contrast floors, target
-sizes, steps on the type scale. At the other sit calls that need judgment:
-whether a page reads as generated, whether motion tells the truth about what
-changed. Every control declares which kind it is, how it gets checked, and what
-waiving it costs. That range is what gives your agent eyes: a way of looking at
-a screen that holds the measurable and the judged at once.
+abstract. One end holds rules a script can measure: contrast floors, target
+sizes, and steps on the type scale. The other end holds calls that need
+judgment: whether a page reads as generated, or whether motion tells the truth
+about what changed. Every control declares which kind it is, how it gets
+checked, and what waiving it costs. That range is what gives your agent eyes: a
+way of reading a screen that holds the measurable and the judged at once.
 
-We also built it to be read. Every control is a page a designer can open and
-argue with, and the same file the checks run against is the file this site
-renders, so the two cannot drift apart. A standard only the tooling can read is a standard the team will leave
-behind, and the team would be right to.
+We also built the catalog to be read. Every control is a page a designer can
+open and argue with. The file the checks run against is the file this site
+renders, so the two cannot drift apart. A standard that only tooling can read is
+one your team will ignore, and your team would be right to.
 
 ## Why DESIGN.md lives in your repo
 
 We could have kept every product's design language in one central place. We
-chose the opposite: a skill that interviews you, reads your code, and writes a
-`DESIGN.md` that stays in your product's repo.
+chose the opposite: the
+[design language skill](/harness/skills#the-design-language) interviews you,
+reads your code, and writes a `DESIGN.md` that stays in your product's repo.
 
 We chose it because your context is not our context. Every team ships under
-different constraints: a different audience, a different codebase, a different
-history of decisions that made sense at the time. A central file would flatten
-those differences or go stale trying to track them. A file in your repo evolves
-the way the rest of your product does — through pull requests, by the people
-closest to the work.
+different constraints: a different audience, a different codebase, and a
+different history of decisions that made sense at the time. A central file would
+flatten those differences or go stale trying to track them. A file in your repo
+evolves the way the rest of your product does, through pull requests, by the
+people closest to the work.
 
 It also keeps the choice of design system yours. If your team already has one,
 `DESIGN.md` points at it. If you want a different one, adopt it without asking
 us. The control catalog still holds the floors that protect users: contrast,
-target sizes, copy that says what happens. Everything above those floors
+target sizes, and copy that says what happens. Everything above those floors
 belongs to your team.
 
 That is the trade we are trying to make: consistent where inconsistency would
 hurt users, flexible where your product knows better than we do.
 
-## Where this came from
+## Where the harness came from
 
-The front of this site says design, and design is what the harness ships. It
-did not start there. Before the design harness we built an engineering one:
-the review loops, issue skills, and repo conventions we needed to learn how
-agents actually behave inside a codebase. The design harness stands on that
-work, and the grain shows it: everything is a file in a repo, checkable and
-versioned.
+This site is about design, and design is what the harness ships. It did not
+start there. Before the design harness we built an engineering one. Its review
+loops, issue skills, and repo conventions taught us how agents behave inside a
+codebase. The design harness inherits that shape: everything is a file in a
+repo, checkable and versioned.
 
-We are designers and engineers building together, and neither word alone
-covers the team. The closest description is system thinkers who love craft. We
-care how a control reads and how it runs, and we want the experience of using
-our products to hold up at the speed and scale that agents make possible.
+We are designers and engineers building together, and neither word alone covers
+the team. The closest description is system thinkers who love craft. We care how
+a control reads and how it runs. We want our products to stay worth using at the
+speed and scale that agents make possible.
 
-## Not set in stone
+## What we expect to change
 
 We built the structure to hold more than it holds today. The catalog can carry
 another design system's rules. The skills are a set we curate, and we expect to
 add some and retire others. If a better way of working with agents appears, the
-harness should be able to absorb it — and if it can't, we will discard the
-harness before we discard the better way.
+harness should be able to absorb it. If it cannot, we will discard the harness
+before we discard the better way.
 
-That sentence is easy to write and hard to mean, so here is what it costs us:
-re-reading our own decisions when a new model ships, retiring work we were fond
-of, and telling you when something here is out of date instead of quietly
-leaving it up. What stays constant is the job underneath: adjusting how we
-support teams working with AI, and keeping that support within reach of people
-who do not write code every day.
+Writing that sentence is cheap, so here is what meaning it costs us: re-reading
+our own decisions when a new model ships, retiring work we were fond of, and
+telling you when something here is out of date instead of quietly leaving it up.
+What stays constant is the job underneath. We adjust how we support teams
+working with AI, and we keep that support within reach of people who do not
+write code every day.
 
 If this page stops being true, the fix is to change the harness, not the page.
 
