@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [component, page]
-verify: "Script asserts table/th semantics and right-aligned tabular numeric columns; evaluator judges header persistence, density, and that empty/loading states are designed (CMP-3)"
+verify: "Script asserts table/th and role=table/columnheader semantics (checks/structure-scan.py); evaluator judges numeric alignment and tabular figures, header persistence, density, and that empty/loading states are designed (CMP-3)"
 waiver: rationale
 fails_when:
   - numeric columns centre- or left-aligned, or in proportional figures, so values do not line up (TYP-5)
@@ -73,15 +73,19 @@ still so the teacher's attention can move.
 
 ## How to verify
 
-**Deterministic half** — the static structure check, built in #160: assert `<table>`/`<th>`
-semantics on tabular data; flag numeric columns (cells matching a number pattern) that are
-not right-aligned or lack `tabular-nums`. Until it ships, verify against the rendered table
-by hand and label it "verified manually".
+**Static half:** `checks/structure-scan.py` (the `structure` check) flags a `<table>` or a
+`role="table"` element whose subtree holds no `<th>` and no `role="columnheader"`. It is
+the same walk A11Y-7 uses, and it reports the finding under both ids.
 
-**Judgment half:** the evaluator confirms the header stays visible while scrolling, the
-density fits the task (LAY-5), and the empty/loading states exist and read clearly
-(CMP-3). The evaluator also judges pattern fit — is a table the right pattern, or
-should this be cards/a list (SLP-11)?
+Alignment and tabular figures are never decided by script. A source scan cannot see which
+figures line up in a rendered column, and this control's own evaluator guidance exempts a
+deliberately left-aligned identifier column, a distinction no source scan can make. Check
+alignment against the rendered table and label it "verified manually".
+
+**Judgment half:** the evaluator confirms numeric columns are right-aligned in tabular
+figures, the header stays visible while scrolling, the density fits the task (LAY-5), and
+the empty/loading states exist and read clearly (CMP-3). The evaluator also judges pattern
+fit: is a table the right pattern, or should this be cards/a list (SLP-11)?
 
 ## Evaluator guidance
 

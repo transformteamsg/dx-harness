@@ -1,0 +1,37 @@
+# A JSX <table> element whose whole subtree holds no <th>.
+#
+# The narrowing is the sure case, and nothing wider: a real table missing its
+# header cells. Deciding that a grid of styled divs *should have been* a table is
+# pattern-fit judgment (standards/controls/cmp-6.md), so no rule here looks for
+# one. Alignment and tabular figures are never matched either: a source scan
+# cannot see which figures line up in a rendered column.
+#
+# `stopBy: end` is what makes the `not` honest. Without it the search stops at
+# the first named node and a <th> nested under <thead><tr> goes unseen, which
+# would flag every well-formed table.
+id: structure-table-headers-tsx
+language: tsx
+severity: warning
+message: candidate table with no header cell
+metadata:
+  control: A11Y-7
+  check: structure
+  surface: structure
+  rule: TABLE-HEADERS
+  pattern: table-element
+  kind: jsx_element
+rule:
+  kind: jsx_element
+  all:
+    - has:
+        kind: jsx_opening_element
+        has:
+          field: name
+          regex: '^table$'
+    - not:
+        has:
+          stopBy: end
+          kind: jsx_opening_element
+          has:
+            field: name
+            regex: '^th$'
