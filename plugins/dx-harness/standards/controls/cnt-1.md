@@ -43,7 +43,7 @@ whether this tool is on their side.
 
 ## How to verify
 
-Deterministic half — `checks/content-lint` (planned): find error-state strings, flag
+Deterministic half — `checks/content-lint.py`: find error-state strings, flag
 raw codes appearing as primary copy. The lint half flags a raw code only where it can
 tell a code from a name: a bare string literal, or a Markdown prose line. It does not
 flag one in rendered text, a prop value, or a template segment, where an all-caps

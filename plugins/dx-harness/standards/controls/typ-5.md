@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan tabular-nums subcheck (planned)"
+verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update, and confirms the markup carries the class; no script, per this control's accepted gap"
 waiver: rationale
 fails_when:
   - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
@@ -52,12 +52,17 @@ and Craft at the surface (HIG: Craft).
 
 ## How to verify
 
-**Hybrid.** A static scan (`checks/type-scan`, planned) can narrow the surface —
-flag `<table>`/grid numeric cells and elements bound to a changing numeric value that
-lack `tabular-nums`. Until the script exists, verify manually against the rendered
-output and label it "verified manually". The evaluator judges the remainder: which
-figures on the page actually align in a column or update in place, and therefore need
-tabular figures, versus standalone numbers in prose that do not.
+**No script — this control accepts its gap.** Its mechanical half is presence-requiring:
+it can only ask "does this element carry `tabular-nums`?" once something has decided the
+element needs them, and that decision is the judgment half. A static scan would either
+flag every `<td>` or prove nothing. Which figures align in a column or update in place is
+a property of the rendered content, not of the source: this repository's own `.prose td`
+sets no tabular figures, so numeric tables across sixteen MDX files render proportional —
+visible on the page and invisible to a scan of `.tsx`.
+
+Verify against the rendered output. The evaluator judges which figures on the page
+actually align in a column or update in place, and therefore need tabular figures, versus
+standalone numbers in prose that do not.
 
 ## Evaluator guidance
 

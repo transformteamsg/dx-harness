@@ -772,15 +772,9 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
 # build; an entry that is not a catalog id at all is an ERROR. The list is
 # temporary: #162 removes the last entries and deletes it.
 GAP_GRANDFATHERED = {
-    # #150, the relabels: four controls relabel to judgment, which closes the
-    # gap by definition, and three take a written reason.
-    "CMP-4": "relabels to judgment in #150",
-    "CMP-8": "relabels to judgment in #150",
-    "SLP-5": "relabels to judgment in #150",
-    "SLP-7": "relabels to judgment in #150",
-    "CMP-5": "accepted gap; its reason lands with the relabels in #150",
-    "LAY-1": "accepted gap; its reason lands with the relabels in #150",
-    "TYP-5": "accepted gap; its reason lands with the relabels in #150",
+    # #150 is done: its four judgment relabels closed their gaps by derivation,
+    # and CMP-5, LAY-1 and TYP-5 now carry written reasons, so all seven of its
+    # entries are gone.
     # #155, the rendered runner's anti-slop rules.
     "SLP-4": "rendered nested-card rule pending in #155",
     "SLP-6": "rendered type-ramp rule pending in #155",
@@ -1734,6 +1728,279 @@ def run_self_test():
     if want != got:
         failures.append(f"FAIL MOT-2 carries a reason and no script: want: {want!r}; "
                         f"got: {got!r}")
+
+    # ── The 11 relabels (#150) ───────────────────────────────────────────
+    # The triage found 11 controls whose label promised a check no script can
+    # deliver. Asserted against the live catalog, with the detail file each
+    # relabel forces, because both requirements have to hold in the same run:
+    # a judgment or hybrid control with no detail file fails validate.py AND
+    # check-standards.mjs, and the .mjs gate runs first in prebuild. Reverting
+    # one half of the pair fails here rather than in a red build.
+    relabelled = {
+        "SLP-1": "hybrid", "SLP-6": "hybrid", "IDN-1": "hybrid",
+        "IDN-2": "hybrid", "LAY-4": "hybrid", "MOT-1": "hybrid",
+        "MOT-2": "hybrid",
+        "SLP-5": "judgment", "SLP-7": "judgment", "CMP-4": "judgment",
+        "CMP-8": "judgment",
+    }
+    live_by_id = {c.get("id"): c for c in live_controls}
+    case_count += 1
+    want = (7, 4, [])
+    off_label, missing_detail = [], []
+    for cid, expected in sorted(relabelled.items()):
+        control = live_by_id.get(cid, {})
+        if control.get("check") != expected:
+            off_label.append(f"{cid}={control.get('check')!r} want {expected!r}")
+        detail = control.get("detail")
+        if not detail or not os.path.isfile(
+                os.path.join(REPO_ROOT, "standards", detail)):
+            missing_detail.append(f"{cid} detail={detail!r}")
+    got = (sum(1 for v in relabelled.values() if v == "hybrid"),
+           sum(1 for v in relabelled.values() if v == "judgment"),
+           off_label + missing_detail)
+    if want != got:
+        failures.append(f"FAIL the 11 relabels carry their label and a detail "
+                        f"file: want: {want!r}; got: {got!r}")
+
+    # The four judgment relabels close their gap by derivation: with no
+    # enforced: written, effective_enforcement resolves judgment to evaluator,
+    # so gap_required is False and no reason is owed. Asserting the derivation
+    # rather than the absence catches an 'enforced: evaluator' written back
+    # into the catalog, which standards/README.md forbids.
+    case_count += 1
+    want = [(cid, "evaluator", True, False) for cid in
+            ("CMP-4", "CMP-8", "SLP-5", "SLP-7")]
+    got = []
+    for cid in ("CMP-4", "CMP-8", "SLP-5", "SLP-7"):
+        control = live_by_id.get(cid, {})
+        enforced, defaulted = effective_enforcement(control)
+        got.append((cid, enforced, defaulted, gap_required(control)))
+    if want != got:
+        failures.append(f"FAIL the judgment relabels derive evaluator and owe no "
+                        f"gap: want: {want!r}; got: {got!r}")
+
+    # The three accepted gaps (#150). Each is hybrid and effectively manual, so
+    # each owes a reason, and the reason is what makes the label legal. Asserted
+    # against the live catalog so deleting one fails here rather than being
+    # caught only by the allowance list it no longer sits on.
+    case_count += 1
+    accepted_gaps = ("CMP-5", "LAY-1", "TYP-5")
+    want = [(cid, True, True, []) for cid in accepted_gaps]
+    got = []
+    for cid in accepted_gaps:
+        control = live_by_id.get(cid, {})
+        got.append((cid, gap_required(control),
+                    bool(str(control.get("gap", "")).strip()),
+                    gap_rule_errors(control, schema_bits)))
+    if want != got:
+        failures.append(f"FAIL the three accepted gaps carry their reasons: "
+                        f"want: {want!r}; got: {got!r}")
+
+    # The allowance list shrank by exactly the seven entries #150 resolves, and
+    # by nothing else. The six controls this issue leaves hybrid-and-manual stay
+    # on it until their build issues ship their scripts: an entry leaves only in
+    # the commit that ships what it was waiting for.
+    case_count += 1
+    want = (set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"})
+    resolved_by_150 = {"CMP-4", "CMP-8", "SLP-5", "SLP-7", "CMP-5", "LAY-1", "TYP-5"}
+    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"}
+    got = (resolved_by_150 & set(GAP_GRANDFATHERED),
+           still_pending & set(GAP_GRANDFATHERED))
+    if want != got:
+        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven "
+                        f"entries: want: {want!r}; got: {got!r}")
+
+    # No file cites a check that does not exist (#150). A "planned script" note
+    # is the drift class this closes: nothing verified those notes and nothing
+    # expired them, so they outlived the plans they described. checks/layout-scan
+    # never existed on any branch; CMP-7 is judgment and has no script, so citing
+    # it as a deterministic precedent invented one; and slop-layout's row planned
+    # for three controls that no longer need it.
+    #
+    # Scoped to the catalog, the triaged detail files, five stale notes whose
+    # exact checks already ship, and the planned-check table. A11Y controls are
+    # excluded by this issue; CNT-9 and CNT-12 keep honest planned-extension
+    # notes because content-lint does not implement those two heuristics yet.
+    triaged = ["cmp-2", "cmp-3", "cmp-5", "cmp-6", "cmp-7", "cmp-8", "cmp-9",
+               "lay-1", "lay-4", "typ-5", "typ-6"]
+    shipped_notes = ["cmp-1", "cnt-1", "cnt-3", "tok-1", "typ-2"]
+    scoped = {"standards/catalog.yaml": os.path.join(REPO_ROOT, "standards",
+                                                     "catalog.yaml"),
+              "checks/README.md": os.path.join(REPO_ROOT, "checks", "README.md")}
+    for slug in triaged + shipped_notes:
+        scoped[f"standards/controls/{slug}.md"] = os.path.join(
+            REPO_ROOT, "standards", "controls", f"{slug}.md")
+
+    case_count += 1
+    want = []
+    got = []
+    for rel, path in sorted(scoped.items()):
+        with open(path) as fh:
+            text = fh.read()
+        for needle in ("layout-scan", "precedent CMP-7", "CMP-4/CMP-7"):
+            if needle in text:
+                got.append(f"{rel} cites {needle!r}")
+        # The 'planned' sweep runs over the triaged detail files only. The
+        # catalog still carries CNT-12's note (content-lint.py ships, so it is
+        # the shipped-script error class, filed separately) and README.md's own
+        # "Planned for V1" heading, which names a table of real build targets.
+        if rel.startswith("standards/controls/") and re.search(r"planned", text,
+                                                               re.IGNORECASE):
+            got.append(f"{rel} still carries a 'planned' note")
+    if "slop-layout" in open(os.path.join(REPO_ROOT, "checks", "README.md")).read():
+        got.append("checks/README.md still has a slop-layout row")
+    # The triaged controls' own verify: strings, read as data rather than text,
+    # so a promise reintroduced through the catalog is caught too.
+    for slug in triaged:
+        control = live_by_id.get(slug.upper(), {})
+        verify = str(control.get("verify", ""))
+        if re.search(r"planned|until a script exists", verify, re.IGNORECASE):
+            got.append(f"{slug.upper()} verify: still promises a script")
+    if want != got:
+        failures.append(f"FAIL no file cites a check that does not exist: "
+                        f"want: {want!r}; got: {got!r}")
+
+    # SLP-6 and TYP-3 can both pass on the same page (#150). Read both controls
+    # from the live catalog and measure, rather than restating the numbers: the
+    # old 1.25x threshold failed seven of TYP-3's twelve adjacent pairs, so a
+    # page could not satisfy both controls at once. The tightest pair is the
+    # invariant — if TYP-3's scale gains a closer step, or SLP-6's threshold
+    # rises, this fails and the contradiction is caught before it ships.
+    def type_ramp_invariant(slp6, typ3):
+        threshold = re.search(r">=\s*([\d.]+)", str(slp6.get("verify", "")))
+        size_set = re.search(r"\{([^}]*)\}", str(typ3.get("verify", "")))
+        sizes = sorted((int(n) for n in re.findall(r"\d+", size_set.group(1))),
+                       reverse=True) if size_set else []
+        ratios = [sizes[i] / sizes[i + 1] for i in range(len(sizes) - 1)]
+        title_figure = re.search(r"([\d.]+)x", str(slp6.get("title", "")))
+        result = (size_set is not None and len(sizes) >= 2,
+                  threshold is not None,
+                  title_figure is not None,
+                  # title and verify quote one threshold, not two
+                  threshold is not None and title_figure is not None
+                  and float(threshold.group(1)) == float(title_figure.group(1)),
+                  # every adjacent pair TYP-3 mandates clears it
+                  threshold is not None and bool(ratios)
+                  and min(ratios) >= float(threshold.group(1)))
+        return result, (f"{min(ratios):.4f}" if ratios else "unavailable")
+
+    case_count += 1
+    want = (True, True, True, True, True)
+    got, tightest = type_ramp_invariant(live_by_id.get("SLP-6", {}),
+                                        live_by_id.get("TYP-3", {}))
+    if want != got:
+        failures.append(f"FAIL SLP-6's threshold clears TYP-3's whole scale: "
+                        f"want: {want!r}; got: {got!r} "
+                        f"(tightest adjacent pair {tightest})")
+
+    case_count += 1
+    malformed, _ = type_ramp_invariant({"title": "no ratio", "verify": "no ratio"},
+                                       {"verify": "no size set"})
+    if any(malformed):
+        failures.append("FAIL malformed SLP-6/TYP-3 text reports an invariant failure")
+
+    # The polish skill restates SLP-6's threshold, and no sync check compares a
+    # figure. Read it against the catalog so the two cannot drift apart.
+    case_count += 1
+    polish = os.path.join(REPO_ROOT, "skills", "design", "dx-design-polish",
+                          "SKILL.md")
+    with open(polish) as fh:
+        polish_figure = re.search(r"SLP-6 \(type hierarchy [^\d]*([\d.]+)x\)", fh.read())
+    live_threshold = re.search(r">=\s*([\d.]+)",
+                               str(live_by_id.get("SLP-6", {}).get("verify", "")))
+    want = (True, True)
+    got = (polish_figure is not None,
+           polish_figure is not None and live_threshold is not None
+           and float(polish_figure.group(1)) == float(live_threshold.group(1)))
+    if want != got:
+        failures.append(f"FAIL the polish skill quotes SLP-6's live threshold: "
+                        f"want: {want!r}; got: {got!r}")
+
+    # The reviewer agent states each control's label inline, and [SKILL-SYNC]
+    # compares ids rather than labels, so a relabel drifts here silently. Every
+    # "(<ID>, L<n>, <label>" the agent writes must match the catalog.
+    case_count += 1
+    agent_path = os.path.join(REPO_ROOT, "agents", "dx-design-review.md")
+    with open(agent_path) as fh:
+        agent_text = fh.read()
+    want = []
+    got = []
+    for match in re.finditer(
+            r"\((?P<id>[A-Z0-9]+-\d+), L\d+, (?P<label>deterministic|judgment|hybrid)\b",
+            agent_text):
+        cid, stated = match.group("id"), match.group("label")
+        actual = live_by_id.get(cid, {}).get("check")
+        if stated != actual:
+            got.append(f"agents/dx-design-review.md calls {cid} {stated!r}, "
+                       f"catalog says {actual!r}")
+    if want != got:
+        failures.append(f"FAIL the reviewer agent's stated labels match the "
+                        f"catalog: want: {want!r}; got: {got!r}")
+
+    # LAY-4's measure is restated inside three dx-sync:lay-controls fences, and
+    # [LAY-SYNC] compares only the LAY id set, so a one-sided edit passes it.
+    # The fences differ in prose by design; the measure figure must not.
+    case_count += 1
+    fence_files = [
+        os.path.join(REPO_ROOT, "agents", "dx-design-review.md"),
+        os.path.join(REPO_ROOT, "skills", "design", "dx-design-pattern", "SKILL.md"),
+        os.path.join(REPO_ROOT, "skills", "design", "dx-design-execute", "SKILL.md"),
+    ]
+    measures = []
+    for path in fence_files:
+        with open(path) as fh:
+            span = re.search(r"<!-- dx-sync:lay-controls -->(.*?)"
+                             r"<!-- /dx-sync:lay-controls -->", fh.read(), re.DOTALL)
+        found = re.search(r"measure ≤ (\d+)ch", span.group(1)) if span else None
+        measures.append(found.group(1) if found else None)
+    want = (True, True)
+    got = (all(m is not None for m in measures), len(set(measures)) == 1)
+    if want != got:
+        failures.append(f"FAIL the three lay-controls fences agree on LAY-4's "
+                        f"measure: want: {want!r}; got: {got!r} ({measures!r})")
+
+    # The teaching exhibit is suppressed at the static-check layer only (#150).
+    # components/compare.tsx is a deliberate anti-specimen carrying six inline
+    # dx-waive markers, so .dx/config.json drops it from the scanned file list.
+    # The rendered layer stays exposed on purpose: the DOM waiver marker
+    # (data-dx-waive) belongs to #154 and #155, so its absence is the assertion,
+    # not an oversight.
+    site_root = find_site_root(REPO_ROOT)
+    if site_root is not None:
+        case_count += 1
+        cfg_path = os.path.join(site_root, ".dx", "config.json")
+        ignore_files = []
+        if os.path.isfile(cfg_path):
+            with open(cfg_path) as fh:
+                ignore_files = json.load(fh).get("detector", {}).get("ignoreFiles", [])
+        exhibit = os.path.join(site_root, "components", "compare.tsx")
+        rendered_marker = False
+        if os.path.isfile(exhibit):
+            with open(exhibit) as fh:
+                rendered_marker = "data-dx-waive" in fh.read()
+        want = (True, False)
+        got = ("components/compare.tsx" in ignore_files, rendered_marker)
+        if want != got:
+            failures.append(f"FAIL the exhibit is suppressed statically and left "
+                            f"exposed to the rendered layer: want: {want!r}; "
+                            f"got: {got!r}")
+
+        # The .mjs gate runs before the Python one in prebuild, so it is the
+        # first thing to fail on a missing detail file. Guarding the order
+        # because the two gates enforce overlapping rules and only this one
+        # decides which error a contributor sees first.
+        case_count += 1
+        pkg_path = os.path.join(site_root, "package.json")
+        prebuild = ""
+        if os.path.isfile(pkg_path):
+            with open(pkg_path) as fh:
+                prebuild = json.load(fh).get("scripts", {}).get("prebuild", "")
+        mjs, py = prebuild.find("check-standards.mjs"), prebuild.find("check:python")
+        want = (True, True, True)
+        got = (mjs != -1, py != -1, mjs != -1 and py != -1 and mjs < py)
+        if want != got:
+            failures.append(f"FAIL prebuild runs check-standards.mjs before the "
+                            f"Python gate: want: {want!r}; got: {got!r}")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

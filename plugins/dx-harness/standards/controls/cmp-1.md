@@ -50,7 +50,7 @@ a stack component exists is a finding, not a feature.
 
 ## How to verify
 
-Deterministic half — `checks/component-manifest` (planned): diff component usage in
+Deterministic half — `checks/component-manifest.py`: diff component usage in
 changed files against the product's declared component manifest; surface any element
 that resolves outside the stack. Judgment half — the evaluator grades the "exists for
 the need" edge cases described below.

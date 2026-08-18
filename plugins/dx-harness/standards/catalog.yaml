@@ -350,11 +350,12 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update; checks/type-scan tabular-nums subcheck (planned)"
+    verify: "Numeric columns/tables and dynamically-updating numbers carry font-variant-numeric: tabular-nums (Tailwind `tabular-nums`); evaluator judges which figures align or update, and confirms the markup carries the class; no script, per this control's accepted gap"
     waiver: rationale
     fails_when:
       - a column of figures (grades, counts, marks) in proportional numerals that fail to align vertically
       - a live counter, timer, or total that reflows horizontally as its digits change
+    gap: "No script: which figures align in a column or update in place is a rendered-content property; a source scan can only flag every table cell, which cries wolf."
     detail: controls/typ-5.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
@@ -362,8 +363,8 @@ controls:
   # "Check readability" step of the writing guide. Fills the measure gap in the TYP
   # family: TYP covers typeface, size floors, scale, all-caps, and tabular figures —
   # nothing holds running prose to a comfortable characters-per-line. Hybrid: a static
-  # scan can flag full-viewport prose blocks with no max-width cap (planned type-scan
-  # subcheck); the evaluator judges which blocks are running prose versus headings,
+  # check can flag full-viewport prose blocks with no max-width cap (the type-scan
+  # measure rule, built in #161); the evaluator judges which blocks are running prose versus headings,
   # tables, and data grids, which are out of scope.
   - id: TYP-6
     source: DX-DS
@@ -372,7 +373,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure subcheck (planned)"
+    verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure rule (built in #161)"
     waiver: rationale
     fails_when:
       - a paragraph that spans the full viewport width with no measure cap
@@ -478,10 +479,10 @@ controls:
     source: DX-DS
     title: Every empty-state view unambiguously signals "no content exists" — distinct from loading, error, or permissions failure — through a heading, explanatory subtext, and the absence of loading chrome such as skeleton rows or spinners
     tier: L1
-    check: hybrid
+    check: judgment
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Deterministic: confirm the rendered DOM contains neither a skeleton-row element nor a loading spinner when the empty-state heading is visible (manual until a script exists). Judgment: evaluator reads the heading + subtext pair and answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
+    verify: "Evaluator reads the empty-state view: no skeleton-row element and no loading spinner render alongside the empty-state heading, and the heading + subtext pair answers 'could a first-time user mistake this for a loading state or a permissions error?' — pass = no plausible confusion"
     waiver: documented
     fails_when:
       - a skeleton row, shimmer, or loading spinner is visible in the DOM alongside the empty-state heading
@@ -501,12 +502,13 @@ controls:
     check: hybrid
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Script counts filled/primary-variant buttons per view; evaluator judges view/region boundaries and any deliberately co-equal actions"
+    verify: "Evaluator judges the view/region boundaries, counts filled/primary-variant buttons inside each, and allows any deliberately co-equal actions; no script, per this control's accepted gap"
     waiver: rationale
     fails_when:
       - two or more filled/primary buttons competing in one view with no deliberate co-equal reason
       - a destructive action styled as the primary instead of a distinct destructive variant (CMP-2)
       - every button rendered at the same weight, so nothing reads as the main action
+    gap: "No script: the primary-button count depends on view/region boundaries that source does not mark, and the boundary call is the evaluator's half of this control."
     detail: controls/cmp-5.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
@@ -536,7 +538,7 @@ controls:
     check: judgment
     phase: [plan, implement, verify]
     applies_to: [page, component]
-    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+    verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance"
     waiver: rationale
     fails_when:
       - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
@@ -552,10 +554,10 @@ controls:
     source: DX-DS
     title: A multi-step or data-entry task offers a non-destructive exit at every step, and in-progress work is preserved or explicitly discarded on interruption — never silently lost
     tier: L1
-    check: hybrid
+    check: judgment
     phase: [plan, implement, verify]
     applies_to: [flow]
-    verify: "Deterministic: every step in a mapped flow has a reachable cancel/back affordance (planned, manual until a script exists). Judgment: evaluator walks the flow map, interrupts it, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
+    verify: "Evaluator walks the flow map, confirms every step has a reachable cancel/back affordance, interrupts the flow, and confirms in-progress work survives the interruption or is explicitly, confirmably discarded — never silently lost"
     waiver: documented
     fails_when:
       - a wizard/dialog with no cancel/back at some step
@@ -575,7 +577,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [component, flow]
-    verify: "Deterministic: grep detector (planned) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
+    verify: "Deterministic: checks/cmp-scan.py (built in #158) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
     waiver: documented
     fails_when:
       - dangerouslySetInnerHTML/v-html renders another user's authored content with no sanitiser in the render path
@@ -900,7 +902,7 @@ controls:
     source: DX-DS
     title: Interface motion is 100-300ms with standard easing; no decorative motion on critical paths
     tier: L2
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Animation durations in 100-300ms with standard easing; none on critical paths beyond functional feedback"
@@ -908,6 +910,7 @@ controls:
     fails_when:
       - animations over 300ms on task flows
       - transition-all
+    detail: controls/mot-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # MOT-2: ratchet PROPOSAL 2026-07-12 — motion tokens, from the site's own
@@ -919,7 +922,7 @@ controls:
     title: Motion values come from the declared motion token set — durations and easings are never hardcoded in component code
     tier: L2
     status: proposed
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [component, page]
     verify: "Grep transition/animation values in component code: every duration and easing resolves to a motion token (--motion-*/--ease-* or their declared code mirror); no raw ms or cubic-bezier literals outside the token definitions"
@@ -930,6 +933,7 @@ controls:
       - the narrative tier (--motion-story) used on interface or task UI
     enforced: manual
     gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
+    detail: controls/mot-2.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for
@@ -958,13 +962,14 @@ controls:
     source: DX-DS
     title: Product lockups and logos render only from approved assets; no recreations
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page]
     verify: "Logo/lockup files resolve to the approved asset library; no inline redraws"
     waiver: documented
     fails_when:
       - rebuilt or distorted logo marks
+    detail: controls/idn-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # IDN-2..4: branding controls activated via the ratchet 2026-07-06 (plan 057),
@@ -975,7 +980,7 @@ controls:
     source: DX-DS
     title: Product icons render only from the approved product-icon family; no ad-hoc, redrawn, or regenerated icons
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Icon files resolve to the approved product-icon set (the guideline's icon family); no inline-drawn or regenerated marks; new marks are pre-verified via the Icon Generator before entering the set"
@@ -984,6 +989,7 @@ controls:
       - a redrawn, distorted, or regenerated product-icon mark
       - a per-product background colour or gradient applied to the icon container
       - wordmarks, photos, shadows, or gloss inside the icon
+    detail: controls/idn-2.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: IDN-3
@@ -1026,13 +1032,14 @@ controls:
     source: DX-DS
     title: No purple/violet gradient palettes, cyan-on-dark theming, or glow accents
     tier: L1
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Stylesheet scan: no purple/violet gradient palettes, no cyan-on-dark theming, no glow box-shadow accents"
     waiver: documented
     fails_when:
       - the default AI aesthetic anywhere in product UI
+    detail: controls/slp-1.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-2
@@ -1078,39 +1085,42 @@ controls:
     source: DX-DS
     title: No icon-tile-above-heading feature-card template; no identical card grids as default layout
     tier: L2
-    check: deterministic
+    check: judgment
     phase: [plan, implement, verify]
     applies_to: [page]
     verify: "Layout scan: no icon-tile-above-heading card template; no grid of identical cards as the default page layout"
     waiver: rationale
     fails_when:
       - the universal AI feature-card shape repeated in a grid
+    detail: controls/slp-5.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-6
     source: DX-DS
-    title: Adjacent type-scale steps differ by at least 1.25x; no flat hierarchy
+    title: Adjacent type-scale steps differ by at least 1.10x; no flat hierarchy
     tier: L2
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page]
-    verify: "Adjacent steps used on the page differ by ratio >= 1.25; flag flat heading/subheading/body hierarchies"
+    verify: "Adjacent steps used on the page differ by ratio >= 1.10; flag flat heading/subheading/body hierarchies"
     waiver: rationale
     fails_when:
       - heading/subheading/body at nearly the same size
+    detail: controls/slp-6.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-7
     source: DX-DS
     title: Spacing has rhythm — related items grouped tighter than unrelated ones
     tier: L2
-    check: deterministic
+    check: judgment
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Spacing scan: related items grouped tighter than unrelated; flag a single spacing value used uniformly"
     waiver: rationale
     fails_when:
       - one spacing value used everywhere
+    detail: controls/slp-7.md
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   - id: SLP-8
@@ -1189,11 +1199,12 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
+    verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared; no script, per this control's accepted gap"
     waiver: rationale
     fails_when:
       - a declared grid exists and the layout uses an ad-hoc column count not drawn from it
       - a declared grid exists and gutters/margins don't match the spacing scale (TOK-2) with no deliberate reason
+    gap: "No script: no product has yet declared a .dx/design.json layout_system, so the check would grade N/A everywhere it ran."
     detail: controls/lay-1.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
@@ -1216,10 +1227,10 @@ controls:
     source: DX-DS
     title: "Body-text columns cap at a comfortable measure — target ~66ch, never above 80ch (WCAG 1.4.8); full-bleed running text is a finding"
     tier: L2
-    check: deterministic
+    check: hybrid
     phase: [implement, verify]
     applies_to: [page, component]
-    verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/layout-scan (planned)"
+    verify: "Prose/body containers carry a max-width and the measure is <= 80ch (target ~66ch); checks/type-scan measure rule (built in #161) judges ch caps already present, and the evaluator judges the rendered measure"
     waiver: rationale
     fails_when:
       - body-text column has no max-width and spans the full viewport at 1280

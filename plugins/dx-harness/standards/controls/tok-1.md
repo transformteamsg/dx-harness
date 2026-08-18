@@ -45,8 +45,7 @@ vocabulary agents already know.
 
 ## How to verify
 
-`checks/token-audit` (planned): scan changed files for raw colour patterns; exit 1
-with file/line and the nearest token suggestion. Until then, grep changed files
-manually and label the result "verified manually". Waiver: `documented` — named
-approver in the decision record (e.g. a marketing surface intentionally outside the
-product token set).
+`checks/token-audit.py`: scan changed files for raw colour patterns; exit 1 with
+file/line and the nearest token suggestion. Waiver: `documented` — named approver in
+the decision record (e.g. a marketing surface intentionally outside the product token
+set).
