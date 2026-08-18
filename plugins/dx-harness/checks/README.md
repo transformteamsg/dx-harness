@@ -141,8 +141,9 @@ silently.
 `token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, and `type-scan`'s **TYP-1 rule
 only** (via `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
 recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
-full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
-only when a `.dx/component-manifest.json` exists; otherwise it is reported skipped).
+full rule set (so TYP-2 runs), plus `content-lint`, `slop-scan` (which takes the same
+`--tokens` map `contrast` does), and `component-manifest` (the last only when a
+`.dx/component-manifest.json` exists; otherwise it is reported skipped).
 
 **Output.** Text mode groups each script's findings under a `── <check> ──` header and
 passes through its `ERROR`/`NOTE` lines. `--json` emits
@@ -527,6 +528,36 @@ hand-rolled CSS brace state machine and the heading-tag line regex.
 
 **Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
+## Slop scan (built — static subset)
+
+`python3 checks/slop-scan.py [--tokens <globals.css>] <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the statically-resolvable subset of SLP-1, SLP-2, and SLP-3: the three anti-slop rules answerable from source text, without a rendered page. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure (`NOTE` lines for unresolvable colours and lengths do not, on their own, fail the run).
+
+**Rules:**
+
+- **SLP-1 gradient palette (L1):** a gradient (`linear-gradient` / `radial-gradient` / `conic-gradient`, or the Tailwind gradient-direction utility plus its `from-` / `via-` / `to-` stops) with **at least 2 stops** whose resolved hue is **at or above 255 degrees**. One stop in band and one out never fires.
+- **SLP-1 glow (L1):** a `box-shadow` (or a `shadow-[…]` arbitrary value) whose blur is **at or above 6px** AND whose larger offset is **at or below 2px** AND whose colour is saturated. All three clauses, not any.
+- **SLP-1 cyan-on-dark (L1):** a dark token block (`.dark`, `[data-theme="dark"]`, or a `prefers-color-scheme: dark` media statement) that sets **both** a cyan ink and a dark ground.
+- **SLP-2 gradient text (L1):** one element carrying a background clipped to its text, a transparent text fill **and** a background source. The clip **value** is matched, never the `bg-clip-` prefix, so `bg-clip-padding` can never fire.
+- **SLP-3 side-tab border (L1, partial):** one element with a single side **at or above 3px**, a radius **greater than 0**, and the remaining sides 0 or absent, judged element-local.
+
+**Why the numbers are what they are.** Each threshold is a ruling, and each one exists because a wider detector was tested against this repo's real code and found to misfire. The hue band opens at 255 because `--casesync` #3e63dd sits at 226.04 degrees and `--sec-getting-started` iris-9 #5b5bd6 at exactly 240.00, so a band opening at 240 would flag the site's own section ink, which `app/globals.css` documents as deliberately purple-avoiding; 260 would have let Tailwind `violet-500` (258.31) through. The hue is the **sRGB HSL hue**, not the OKLCH hue: OKLCH puts those same two tokens at 267.0 and 278.3, both in band, so an OKLCH reading inverts the whole calibration. Saturation is **OKLCH chroma at or above 0.04**, because HSL saturation says nothing about how washed out a colour is. The blur floor exists because `components/ui/sidebar.tsx`'s `shadow-[0_0_0_1px_var(--sidebar-border)]` is a hairline ring, not a glow. The full block lives in the script docstring, where a reader tempted to simplify a rule will meet it.
+
+**Token resolution (`--tokens <file>`):** the colour map is built from a product's CSS token file. Without the flag, the same discovery `detect.py` uses applies (`app/globals.css`, then `globals.css`, walking up from the first target). The resolver is `contrast.py`'s `TokenResolver`, imported rather than copied, so one OKLab mixer and one `var()` / `color-mix` arm serve both checks.
+
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan` (see "The ast-grep front end" above). SLP-2 and SLP-3 are scoped to the **whole opening tag** (or, in CSS, the whole rule), which is what a line regex cannot do: `components/compare.tsx` puts `className` on one line and its gradient `style` on the next, and only the element node carries both.
+
+**Static-subset caveat — what this script does NOT verify:**
+
+- SLP-4 (nested cards) and SLP-6 (type ramp): both ask about computed values, so both belong to the rendered runner. SLP-5 and SLP-7 are judgment; SLP-8 ships in the motion check.
+- A side tab assembled **across the cascade** (thick side on the element, radius from a parent rule), from a **pseudo-element** bar rather than a border, or from a **conditional class** the rule cannot evaluate. This is why SLP-3 is `enforced: partial`.
+- A colour the resolver cannot reach: `oklch()` / `oklab()` / `rgb()` / `hsl()` function values, 4-digit and 8-digit hex, and any Tailwind palette name the product's own token file does not declare. Every one is a `NOTE` naming the location: never a guess, never a silent pass.
+- The cyan-on-dark clause ships with **no calibration evidence from this repo**, which is light-only with no `.dark` layer. It is built conservatively and needs calibrating against a dark-mode product.
+- Anything in a file it is not handed. It reads no config: `detect.py` applies `detector.ignoreFiles` before invoking it, and this script scans the paths it is given and nothing else.
+
+**L1 waiver behaviour:** all three controls are L1, so an inline `dx-waive SLP-…` comment does NOT suppress the violation. It downgrades the output line to `ERROR …:[line] [CTL-ID][waiver-claimed] … — verify approver in decision record` and still exits 1, exactly as `token-audit` does.
+
+**Self-test:** `python3 checks/slop-scan.py --self-test` → `SELF-TEST OK (64 cases)` (includes the `fixtures/slop-scan/` pass/fail files and the ast-grep provisioning contract).
+
 ## Component manifest (built)
 
 `python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.dx/component-manifest.json` against the DX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
@@ -558,7 +589,7 @@ Planned for V1 (remaining):
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
 | `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1, IDN-2 | Logo/lockup files resolve to the approved asset library and product icons to the approved icon family; no inline redraws |
-| `slop-scan` | SLP-1..3 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards |
+| ~~`slop-scan`~~ | ~~SLP-1..3~~ | ✅ built (static subset) — `slop-scan` covers SLP-1 (the 255-degree gradient band, the glow shape, cyan-on-dark), SLP-2 (clip to text plus a transparent fill plus a background source), and SLP-3 (one thick side, a radius, and no other border); a side tab assembled across the cascade or from a pseudo-element still needs the rendered runner |
 | `slop-rendered` | SLP-4, SLP-6 | Rendered checks, because both need a real page: nested cards in the rendered tree, and the adjacent type-scale ratio actually used |
 
 Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
@@ -577,7 +608,8 @@ gate rather than leaving them to a dev machine.
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged).
 
-`content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
+`content-lint.py`, `contrast.py`, `component-manifest.py`, and `slop-scan.py` stay
+**manual** — each is
 on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the
 harness rule "never wire a failing check into the build," `content-lint` surfaces
 pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/` and is
@@ -588,7 +620,14 @@ operational ERROR that blocks for manual A11Y-1 verification. Build wiring is de
 to the catalogue recount; the design verification path runs it through `detect.py` now.
 `component-manifest` targets a product's
 `.dx/component-manifest.json`, which this repo (the harness/site itself) does not
-have — wiring it here would have nothing to check.
+have — wiring it here would have nothing to check. `slop-scan` is exempt for the
+harness rule's plainest reason: it reports two real findings on this tree, SLP-1
+and SLP-2 in `components/compare.tsx`, and that file is the teaching exhibit whose
+whole job is to exhibit them. Both carry an inline `dx-waive`, and an L1 waiver
+downgrades the line but still exits 1, so wiring the script into prebuild would
+fail this repo on its own anti-specimen. `detect.py` runs it under
+`detector.ignoreFiles`, which is where the exhibit is excluded; build wiring waits
+on the rendered runner's `data-dx-waive` mechanism.
 
 `a11y-eslint.py` is **not wired** either, and it is deliberately **not** on
 `WIRING_EXEMPT`: no control names it in a `script:` field yet (the A11Y recount is a

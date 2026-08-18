@@ -292,6 +292,13 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
         # Full rule set — TYP-2 (and the rest) run.
         specs.append({"name": "type-scan", "args": ["type-scan.py"], "mode": "targets"})
         specs.append({"name": "content-lint", "args": ["content-lint.py"], "mode": "targets"})
+        # slop-scan takes the same token map contrast does, because both resolve
+        # var() colours; it runs over targets, so expand_targets() has already
+        # dropped every detector.ignoreFiles match before the script sees argv.
+        ss = ["slop-scan.py"]
+        if tokens_file:
+            ss += ["--tokens", tokens_file]
+        specs.append({"name": "slop-scan", "args": ss, "mode": "targets"})
         specs.append({"name": "component-manifest",
                       "args": ["component-manifest.py"], "mode": "manifest"})
     else:
