@@ -160,7 +160,17 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
     tabRefs.current[i]?.focus();
   }
 
-  function onTablistKeyDown(e: React.KeyboardEvent) {
+  /* Arrow/Home/End handling lives on each tab, not on the tablist. The
+     behaviour is identical either way (a keydown on the focused tab bubbles to
+     the container), and it is where the ARIA tabs pattern puts it: focus in a
+     composite widget belongs to the tabs, and the tablist itself is
+     deliberately not focusable. It also clears a real finding —
+     jsx-a11y/interactive-supports-focus flags an interactive role that carries
+     a keyboard handler without being focusable, which described the container
+     exactly. Reading `selected` rather than an index argument keeps this
+     index-free: roving tabindex means the focused tab is always the selected
+     one. */
+  function onTabKeyDown(e: React.KeyboardEvent) {
     const next: number | undefined = {
       ArrowRight: (selected + 1) % count,
       ArrowDown: (selected + 1) % count,
@@ -308,7 +318,6 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
         role="tablist"
         aria-label="Design loop phases"
         className="pointer-events-none absolute inset-0"
-        onKeyDown={onTablistKeyDown}
         onFocus={() => setFocusWithin(true)}
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocusWithin(false);
@@ -328,6 +337,7 @@ export function OrbitLoop({ variant = "full" }: { variant?: "full" | "inline" })
               aria-selected={isSelected}
               aria-controls={panelId}
               tabIndex={isSelected ? 0 : -1}
+              onKeyDown={onTabKeyDown}
               onClick={() => setSelected(i)}
               onFocus={() => setSelected(i)}
               onPointerDown={() => setPointerDown(true)}
