@@ -1205,8 +1205,10 @@ def run_self_test():
         fail(f"FAIL shape: a NOTE carries its control bracket too; got {bad_notes!r}")
 
     # ── Fixtures ──────────────────────────────────────────────────────────────
-    # A filename containing `fail` must yield at least one ERROR; one containing
-    # `pass` must yield none. `list` fixtures are CMP-2's, which never errors.
+    # A `-fail` fixture must yield at least one ERROR and a `-pass` one none, as
+    # every other check's fixtures do. `-list` is this check's third bucket, for
+    # CMP-2: candidates but never an ERROR. The stem is matched by SUFFIX rather
+    # than by substring, or `denylist-pass` would read as a `list` fixture.
     fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "cmp-scan")
     fixture_files = [
         os.path.join(fixtures_dir, n)
