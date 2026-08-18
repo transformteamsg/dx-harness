@@ -299,6 +299,11 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     if all_profile:
         # Full rule set — TYP-2 (and the rest) run.
         specs.append({"name": "type-scan", "args": ["type-scan.py"], "mode": "targets"})
+        # `structure` stays out of the curated profile: its rule has a known
+        # false-positive class (a header composed at runtime, which it downgrades
+        # to a NOTE) and one repo's worth of calibration behind it, and the
+        # curated profile is the low-false-positive subset.
+        specs.append({"name": "structure", "args": ["structure-scan.py"], "mode": "targets"})
         specs.append({"name": "content-lint", "args": ["content-lint.py"], "mode": "targets"})
         specs.append({"name": "component-manifest",
                       "args": ["component-manifest.py"], "mode": "manifest"})
