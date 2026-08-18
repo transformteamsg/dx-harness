@@ -10,7 +10,7 @@ Run in this order; do not present output to the user while a step is failing:
    `<this-skill-dir>/../../../checks/` (the same path works in the harness dev repo
    and when installed as the `dx-harness` plugin; do not expect a `checks/`
    directory in the project cwd). The commands below are written repo-relative for
-   brevity; prefix each with that resolved path. The four that catch the most:
+   brevity; prefix each with that resolved path. The five that catch the most:
    - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
    - `python3 checks/a11y-eslint.py <path>...` — jsx-a11y's `recommended` preset over the
      product's JSX: static halves of A11Y-2, A11Y-3, A11Y-6, A11Y-8. Needs no setup in
@@ -20,6 +20,11 @@ Run in this order; do not present output to the user while a step is failing:
      outline removed with no focus-visible replacement on the same line. No tool
      covers it, and focus styling in a stylesheet it cannot see flags as a false
      positive: confirm the rendered element with a keyboard before treating it as a bug.
+   - `python3 checks/structure-scan.py <path>...` runs the static structure walk: a
+     `<table>` or `role="table"` with no `<th>` and no `role="columnheader"`, reported
+     under A11Y-7 and CMP-6 both. A header composed at runtime downgrades to a NOTE:
+     check that table's headers by hand. Heading order and list semantics belong to
+     the rendered runner, and alignment and tabular figures are never guessed.
    - `python3 checks/contrast.py --tokens <globals.css> --repo-root <product root>` — the
      foreground/background token pairs declared under `## Colour` in DESIGN.md, measured
      against AA (A11Y-1). With no pairs declared it grades A11Y-1 N/A and says so: that

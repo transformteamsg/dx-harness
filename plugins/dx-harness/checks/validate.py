@@ -794,9 +794,9 @@ GAP_GRANDFATHERED = {
     # #159, checks/identity-scan.py.
     "IDN-1": "script pending in #159",
     "IDN-2": "script pending in #159",
-    # #160, the static structure check.
-    "A11Y-7": "structure check pending in #160",
-    "CMP-6": "structure check pending in #160",
+    # #160 is done: checks/structure-scan.py ships the table-headers rule under
+    # both A11Y-7 and CMP-6, so both now carry enforced: partial and need no
+    # allowance.
     # #161, the type-scan.py measure rules.
     "LAY-4": "type-scan rule pending in #161",
     "TYP-6": "type-scan rule pending in #161",
