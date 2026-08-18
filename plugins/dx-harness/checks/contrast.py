@@ -181,6 +181,21 @@ def _mix_oklab(rgb_a, rgb_b, weight_a):
 # ── Token resolver ───────────────────────────────────────────────────────────────
 
 _DECL_RE = re.compile(r"(--[\w-]+)\s*:\s*([^;]+);")
+
+# CSS comments, stripped before declarations are read. A token name written
+# inside a comment followed by a colon otherwise hijacks that token: measured on
+# this repo, `/* between --accent and --muted: reads as a band … */` bound
+# `--muted` to the comment's prose, so every declared pair using --muted became
+# unresolvable and fell to manual verification. Replaced with a newline rather
+# than an empty string so the per-line index below still reports the line a
+# declaration is actually on.
+_CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+
+
+def _strip_css_comments(css_text):
+    return _CSS_COMMENT_RE.sub(
+        lambda m: "\n" * m.group(0).count("\n"), css_text
+    )
 # Where a declaration starts, so a finding can point at the token's own line.
 _DECL_START_RE = re.compile(r"(--[\w-]+)\s*:")
 _VAR_RE = re.compile(r"var\(\s*(--[\w-]+)\s*\)")
@@ -198,6 +213,10 @@ class TokenResolver:
         self._cache = {}      # --name -> rgb or None
         self.decl_lines = {}  # --name -> 1-based line it is declared on
         if css_text:
+            # Comments come out first: a token name mentioned inside one, with a
+            # colon after it, reads as a declaration otherwise (see
+            # _strip_css_comments).
+            css_text = _strip_css_comments(css_text)
             # Parsed over the whole text, so a declaration wrapped across lines
             # still resolves; the line index is a separate, per-line pass.
             for name, value in _DECL_RE.findall(css_text):
@@ -553,11 +572,32 @@ def run_self_test():
     resolver = TokenResolver(_SELF_TEST_TOKENS)
     detect = _load_detect()
 
+    # A token named inside a CSS comment, with a colon after it, is not a
+    # declaration. Before comments were stripped this bound --muted to the
+    # comment's prose on this repo's own globals.css, so every declared pair
+    # using --muted fell to manual verification while the check still exited 1.
+    commented = TokenResolver(
+        ":root {\n"
+        "  --muted: #f4f4f5;\n"
+        "  --sheet-band: #f7f7f8; /* between --accent and --muted: a band */\n"
+        "  --after: #010203;\n"
+        "}\n"
+    )
+
     def check(name, want, got):
         nonlocal case_count
         case_count += 1
         if want != got:
             failures.append(f"FAIL {name}: want: {want!r}; got: {got!r}")
+
+    check("a token named inside a comment keeps its real value",
+          (244, 244, 245), commented.resolve("--muted"))
+    check("a declaration after a comment still resolves",
+          (1, 2, 3), commented.resolve("--after"))
+    check("the token declared before the comment is unaffected",
+          (247, 247, 248), commented.resolve("--sheet-band"))
+    check("stripping a comment preserves the declared line number",
+          4, commented.decl_lines.get("--after"))
 
     def assert_ratio(name, fg_hex, bg_hex, expected, tol=0.1):
         nonlocal case_count
