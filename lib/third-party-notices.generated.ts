@@ -5,7 +5,15 @@
 export type NoticeGroup = {
   license: string;
   text: string;
-  packages: { name: string; version: string; homepage: string }[];
+  packages: {
+    name: string;
+    version: string;
+    homepage: string;
+    /* Upstream repository, for provenance. The notice above is what discharges
+       the licence condition; this is so a reader can check it at source. Empty
+       when a package declares neither a repository nor a homepage. */
+    source: string;
+  }[];
 };
 
 export const noticeSummary = {
@@ -22,192 +30,230 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "decode-named-character-reference",
         "version": "1.3.0",
-        "homepage": "https://github.com/wooorm/decode-named-character-reference#readme"
+        "homepage": "https://github.com/wooorm/decode-named-character-reference#readme",
+        "source": "https://github.com/wooorm/decode-named-character-reference"
       },
       {
         "name": "hast-util-to-estree",
         "version": "3.1.3",
-        "homepage": "https://github.com/syntax-tree/hast-util-to-estree#readme"
+        "homepage": "https://github.com/syntax-tree/hast-util-to-estree#readme",
+        "source": "https://github.com/syntax-tree/hast-util-to-estree"
       },
       {
         "name": "hast-util-to-jsx-runtime",
         "version": "2.3.6",
-        "homepage": "https://github.com/syntax-tree/hast-util-to-jsx-runtime#readme"
+        "homepage": "https://github.com/syntax-tree/hast-util-to-jsx-runtime#readme",
+        "source": "https://github.com/syntax-tree/hast-util-to-jsx-runtime"
       },
       {
         "name": "markdown-table",
         "version": "3.0.4",
-        "homepage": "https://github.com/wooorm/markdown-table#readme"
+        "homepage": "https://github.com/wooorm/markdown-table#readme",
+        "source": "https://github.com/wooorm/markdown-table"
       },
       {
         "name": "mdast-util-find-and-replace",
         "version": "3.0.2",
-        "homepage": "https://github.com/syntax-tree/mdast-util-find-and-replace#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-find-and-replace#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-find-and-replace"
       },
       {
         "name": "mdast-util-from-markdown",
         "version": "2.0.3",
-        "homepage": "https://github.com/syntax-tree/mdast-util-from-markdown#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-from-markdown#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-from-markdown"
       },
       {
         "name": "mdast-util-gfm",
         "version": "3.1.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-gfm#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-gfm#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-gfm"
       },
       {
         "name": "mdast-util-gfm-footnote",
         "version": "2.1.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-footnote#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-footnote#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-footnote"
       },
       {
         "name": "mdast-util-to-markdown",
         "version": "2.1.2",
-        "homepage": "https://github.com/syntax-tree/mdast-util-to-markdown#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-to-markdown#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-to-markdown"
       },
       {
         "name": "micromark",
         "version": "4.0.2",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark"
       },
       {
         "name": "micromark-core-commonmark",
         "version": "2.0.3",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark"
       },
       {
         "name": "micromark-extension-gfm-table",
         "version": "2.1.1",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm-table#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm-table#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm-table"
       },
       {
         "name": "micromark-extension-mdx-expression",
         "version": "3.0.1",
-        "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-extension-mdx-expression"
       },
       {
         "name": "micromark-factory-destination",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-destination"
       },
       {
         "name": "micromark-factory-label",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-label"
       },
       {
         "name": "micromark-factory-mdx-expression",
         "version": "2.0.3",
-        "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-factory-mdx-expression"
       },
       {
         "name": "micromark-factory-space",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-space"
       },
       {
         "name": "micromark-factory-title",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-title"
       },
       {
         "name": "micromark-factory-whitespace",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-factory-whitespace"
       },
       {
         "name": "micromark-util-character",
         "version": "2.1.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-character"
       },
       {
         "name": "micromark-util-chunked",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-chunked"
       },
       {
         "name": "micromark-util-classify-character",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-classify-character"
       },
       {
         "name": "micromark-util-combine-extensions",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-combine-extensions"
       },
       {
         "name": "micromark-util-decode-numeric-character-reference",
         "version": "2.0.2",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-numeric-character-reference"
       },
       {
         "name": "micromark-util-decode-string",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-string"
       },
       {
         "name": "micromark-util-encode",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-encode"
       },
       {
         "name": "micromark-util-events-to-acorn",
         "version": "2.0.3",
-        "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-util-events-to-acorn"
       },
       {
         "name": "micromark-util-html-tag-name",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-html-tag-name"
       },
       {
         "name": "micromark-util-normalize-identifier",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-normalize-identifier"
       },
       {
         "name": "micromark-util-resolve-all",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-resolve-all"
       },
       {
         "name": "micromark-util-sanitize-uri",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri"
       },
       {
         "name": "micromark-util-subtokenize",
         "version": "2.1.0",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize"
       },
       {
         "name": "micromark-util-symbol",
         "version": "2.0.1",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-symbol"
       },
       {
         "name": "micromark-util-types",
         "version": "2.0.2",
-        "homepage": "https://github.com/micromark/micromark/tree/main#readme"
+        "homepage": "https://github.com/micromark/micromark/tree/main#readme",
+        "source": "https://github.com/micromark/micromark/tree/main/packages/micromark-util-types"
       },
       {
         "name": "remark-gfm",
         "version": "4.0.1",
-        "homepage": "https://github.com/remarkjs/remark-gfm#readme"
+        "homepage": "https://github.com/remarkjs/remark-gfm#readme",
+        "source": "https://github.com/remarkjs/remark-gfm"
       },
       {
         "name": "remark-rehype",
         "version": "11.1.2",
-        "homepage": "https://github.com/remarkjs/remark-rehype#readme"
+        "homepage": "https://github.com/remarkjs/remark-rehype#readme",
+        "source": "https://github.com/remarkjs/remark-rehype"
       },
       {
         "name": "vfile-matter",
         "version": "5.0.1",
-        "homepage": "https://github.com/vfile/vfile-matter#readme"
+        "homepage": "https://github.com/vfile/vfile-matter#readme",
+        "source": "https://github.com/vfile/vfile-matter"
       },
       {
         "name": "vfile-message",
         "version": "4.0.3",
-        "homepage": "https://github.com/vfile/vfile-message#readme"
+        "homepage": "https://github.com/vfile/vfile-message#readme",
+        "source": "https://github.com/vfile/vfile-message"
       }
     ]
   },
@@ -218,107 +264,128 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "estree-util-attach-comments",
         "version": "3.0.0",
-        "homepage": "https://github.com/syntax-tree/estree-util-attach-comments#readme"
+        "homepage": "https://github.com/syntax-tree/estree-util-attach-comments#readme",
+        "source": "https://github.com/syntax-tree/estree-util-attach-comments"
       },
       {
         "name": "estree-util-build-jsx",
         "version": "3.0.1",
-        "homepage": "https://github.com/syntax-tree/estree-util-build-jsx#readme"
+        "homepage": "https://github.com/syntax-tree/estree-util-build-jsx#readme",
+        "source": "https://github.com/syntax-tree/estree-util-build-jsx"
       },
       {
         "name": "estree-util-is-identifier-name",
         "version": "3.0.0",
-        "homepage": "https://github.com/syntax-tree/estree-util-is-identifier-name#readme"
+        "homepage": "https://github.com/syntax-tree/estree-util-is-identifier-name#readme",
+        "source": "https://github.com/syntax-tree/estree-util-is-identifier-name"
       },
       {
         "name": "estree-util-scope",
         "version": "1.0.0",
-        "homepage": "https://github.com/syntax-tree/estree-util-scope#readme"
+        "homepage": "https://github.com/syntax-tree/estree-util-scope#readme",
+        "source": "https://github.com/syntax-tree/estree-util-scope"
       },
       {
         "name": "mdast-util-gfm-autolink-literal",
         "version": "2.0.1",
-        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal"
       },
       {
         "name": "mdast-util-gfm-strikethrough",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-strikethrough"
       },
       {
         "name": "mdast-util-gfm-table",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-table#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-table#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-table"
       },
       {
         "name": "mdast-util-gfm-task-list-item",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-gfm-task-list-item"
       },
       {
         "name": "mdast-util-mdx",
         "version": "3.0.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-mdx#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-mdx#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-mdx"
       },
       {
         "name": "mdast-util-mdx-expression",
         "version": "2.0.1",
-        "homepage": "https://github.com/syntax-tree/mdast-util-mdx-expression#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-mdx-expression#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-mdx-expression"
       },
       {
         "name": "mdast-util-mdx-jsx",
         "version": "3.2.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-mdx-jsx#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-mdx-jsx#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-mdx-jsx"
       },
       {
         "name": "mdast-util-mdxjs-esm",
         "version": "2.0.1",
-        "homepage": "https://github.com/syntax-tree/mdast-util-mdxjs-esm#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-mdxjs-esm#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-mdxjs-esm"
       },
       {
         "name": "micromark-extension-gfm",
         "version": "3.0.0",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm"
       },
       {
         "name": "micromark-extension-gfm-autolink-literal",
         "version": "2.1.0",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm-autolink-literal#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm-autolink-literal#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm-autolink-literal"
       },
       {
         "name": "micromark-extension-gfm-strikethrough",
         "version": "2.1.0",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm-strikethrough#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm-strikethrough#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm-strikethrough"
       },
       {
         "name": "micromark-extension-gfm-tagfilter",
         "version": "2.0.0",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm-tagfilter#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm-tagfilter#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm-tagfilter"
       },
       {
         "name": "micromark-extension-gfm-task-list-item",
         "version": "2.1.0",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm-task-list-item#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm-task-list-item#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm-task-list-item"
       },
       {
         "name": "micromark-extension-mdx-jsx",
         "version": "3.0.2",
-        "homepage": "https://github.com/micromark/micromark-extension-mdx-jsx#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdx-jsx#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdx-jsx"
       },
       {
         "name": "micromark-extension-mdx-md",
         "version": "2.0.0",
-        "homepage": "https://github.com/micromark/micromark-extension-mdx-md#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdx-md#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdx-md"
       },
       {
         "name": "micromark-extension-mdxjs",
         "version": "3.0.0",
-        "homepage": "https://github.com/micromark/micromark-extension-mdxjs#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdxjs#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdxjs"
       },
       {
         "name": "micromark-extension-mdxjs-esm",
         "version": "3.0.0",
-        "homepage": "https://github.com/micromark/micromark-extension-mdxjs-esm#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-mdxjs-esm#readme",
+        "source": "https://github.com/micromark/micromark-extension-mdxjs-esm"
       }
     ]
   },
@@ -329,57 +396,68 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "comma-separated-tokens",
         "version": "2.0.3",
-        "homepage": "https://github.com/wooorm/comma-separated-tokens#readme"
+        "homepage": "https://github.com/wooorm/comma-separated-tokens#readme",
+        "source": "https://github.com/wooorm/comma-separated-tokens"
       },
       {
         "name": "hast-util-whitespace",
         "version": "3.0.0",
-        "homepage": "https://github.com/syntax-tree/hast-util-whitespace#readme"
+        "homepage": "https://github.com/syntax-tree/hast-util-whitespace#readme",
+        "source": "https://github.com/syntax-tree/hast-util-whitespace"
       },
       {
         "name": "is-alphabetical",
         "version": "2.0.1",
-        "homepage": "https://github.com/wooorm/is-alphabetical#readme"
+        "homepage": "https://github.com/wooorm/is-alphabetical#readme",
+        "source": "https://github.com/wooorm/is-alphabetical"
       },
       {
         "name": "is-alphanumerical",
         "version": "2.0.1",
-        "homepage": "https://github.com/wooorm/is-alphanumerical#readme"
+        "homepage": "https://github.com/wooorm/is-alphanumerical#readme",
+        "source": "https://github.com/wooorm/is-alphanumerical"
       },
       {
         "name": "is-decimal",
         "version": "2.0.1",
-        "homepage": "https://github.com/wooorm/is-decimal#readme"
+        "homepage": "https://github.com/wooorm/is-decimal#readme",
+        "source": "https://github.com/wooorm/is-decimal"
       },
       {
         "name": "is-hexadecimal",
         "version": "2.0.1",
-        "homepage": "https://github.com/wooorm/is-hexadecimal#readme"
+        "homepage": "https://github.com/wooorm/is-hexadecimal#readme",
+        "source": "https://github.com/wooorm/is-hexadecimal"
       },
       {
         "name": "mdast-util-to-hast",
         "version": "13.2.1",
-        "homepage": "https://github.com/syntax-tree/mdast-util-to-hast#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-to-hast#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-to-hast"
       },
       {
         "name": "space-separated-tokens",
         "version": "2.0.2",
-        "homepage": "https://github.com/wooorm/space-separated-tokens#readme"
+        "homepage": "https://github.com/wooorm/space-separated-tokens#readme",
+        "source": "https://github.com/wooorm/space-separated-tokens"
       },
       {
         "name": "unist-util-stringify-position",
         "version": "4.0.0",
-        "homepage": "https://github.com/syntax-tree/unist-util-stringify-position#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-stringify-position#readme",
+        "source": "https://github.com/syntax-tree/unist-util-stringify-position"
       },
       {
         "name": "unist-util-visit-parents",
         "version": "6.0.2",
-        "homepage": "https://github.com/syntax-tree/unist-util-visit-parents#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-visit-parents#readme",
+        "source": "https://github.com/syntax-tree/unist-util-visit-parents"
       },
       {
         "name": "zwitch",
         "version": "2.0.4",
-        "homepage": "https://github.com/wooorm/zwitch#readme"
+        "homepage": "https://github.com/wooorm/zwitch#readme",
+        "source": "https://github.com/wooorm/zwitch"
       }
     ]
   },
@@ -390,52 +468,62 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "bail",
         "version": "2.0.2",
-        "homepage": "https://github.com/wooorm/bail#readme"
+        "homepage": "https://github.com/wooorm/bail#readme",
+        "source": "https://github.com/wooorm/bail"
       },
       {
         "name": "ccount",
         "version": "2.0.1",
-        "homepage": "https://github.com/wooorm/ccount#readme"
+        "homepage": "https://github.com/wooorm/ccount#readme",
+        "source": "https://github.com/wooorm/ccount"
       },
       {
         "name": "character-entities",
         "version": "2.0.2",
-        "homepage": "https://github.com/wooorm/character-entities#readme"
+        "homepage": "https://github.com/wooorm/character-entities#readme",
+        "source": "https://github.com/wooorm/character-entities"
       },
       {
         "name": "character-entities-html4",
         "version": "2.1.0",
-        "homepage": "https://github.com/wooorm/character-entities-html4#readme"
+        "homepage": "https://github.com/wooorm/character-entities-html4#readme",
+        "source": "https://github.com/wooorm/character-entities-html4"
       },
       {
         "name": "character-entities-legacy",
         "version": "3.0.0",
-        "homepage": "https://github.com/wooorm/character-entities-legacy#readme"
+        "homepage": "https://github.com/wooorm/character-entities-legacy#readme",
+        "source": "https://github.com/wooorm/character-entities-legacy"
       },
       {
         "name": "character-reference-invalid",
         "version": "2.0.1",
-        "homepage": "https://github.com/wooorm/character-reference-invalid#readme"
+        "homepage": "https://github.com/wooorm/character-reference-invalid#readme",
+        "source": "https://github.com/wooorm/character-reference-invalid"
       },
       {
         "name": "collapse-white-space",
         "version": "2.1.0",
-        "homepage": "https://github.com/wooorm/collapse-white-space#readme"
+        "homepage": "https://github.com/wooorm/collapse-white-space#readme",
+        "source": "https://github.com/wooorm/collapse-white-space"
       },
       {
         "name": "mdast-util-to-string",
         "version": "4.0.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-to-string#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-to-string#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-to-string"
       },
       {
         "name": "unist-util-position",
         "version": "5.0.0",
-        "homepage": "https://github.com/syntax-tree/unist-util-position#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-position#readme",
+        "source": "https://github.com/syntax-tree/unist-util-position"
       },
       {
         "name": "unist-util-visit",
         "version": "5.1.0",
-        "homepage": "https://github.com/syntax-tree/unist-util-visit#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-visit#readme",
+        "source": "https://github.com/syntax-tree/unist-util-visit"
       }
     ]
   },
@@ -446,47 +534,56 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@types/debug",
         "version": "4.1.13",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/debug"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/debug",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/estree",
         "version": "1.0.9",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/estree-jsx",
         "version": "1.0.5",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree-jsx"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree-jsx",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/hast",
         "version": "3.0.4",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/hast"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/hast",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/mdast",
         "version": "4.0.4",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdast"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdast",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/mdx",
         "version": "2.0.14",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdx"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdx",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/ms",
         "version": "2.1.0",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/ms"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/ms",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/react",
         "version": "19.2.17",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       },
       {
         "name": "@types/unist",
         "version": "2.0.11, 3.0.3",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/unist"
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/unist",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped"
       }
     ]
   },
@@ -497,27 +594,32 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "recma-build-jsx",
         "version": "1.0.0",
-        "homepage": "https://github.com/mdx-js/recma"
+        "homepage": "https://github.com/mdx-js/recma",
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-build-jsx"
       },
       {
         "name": "recma-jsx",
         "version": "1.0.1",
-        "homepage": "https://github.com/mdx-js/recma"
+        "homepage": "https://github.com/mdx-js/recma",
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-jsx"
       },
       {
         "name": "recma-parse",
         "version": "1.0.0",
-        "homepage": "https://github.com/mdx-js/recma"
+        "homepage": "https://github.com/mdx-js/recma",
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-parse"
       },
       {
         "name": "recma-stringify",
         "version": "1.0.0",
-        "homepage": "https://github.com/mdx-js/recma"
+        "homepage": "https://github.com/mdx-js/recma",
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/recma-stringify"
       },
       {
         "name": "rehype-recma",
         "version": "1.0.0",
-        "homepage": "https://github.com/mdx-js/recma"
+        "homepage": "https://github.com/mdx-js/recma",
+        "source": "https://github.com/mdx-js/recma/tree/main/packages/rehype-recma"
       }
     ]
   },
@@ -528,22 +630,26 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@floating-ui/core",
         "version": "1.7.5",
-        "homepage": "https://floating-ui.com"
+        "homepage": "https://floating-ui.com",
+        "source": "https://github.com/floating-ui/floating-ui"
       },
       {
         "name": "@floating-ui/dom",
         "version": "1.7.6",
-        "homepage": "https://floating-ui.com"
+        "homepage": "https://floating-ui.com",
+        "source": "https://github.com/floating-ui/floating-ui"
       },
       {
         "name": "@floating-ui/react-dom",
         "version": "2.1.8",
-        "homepage": "https://floating-ui.com/docs/react-dom"
+        "homepage": "https://floating-ui.com/docs/react-dom",
+        "source": "https://github.com/floating-ui/floating-ui"
       },
       {
         "name": "@floating-ui/utils",
         "version": "0.2.11",
-        "homepage": "https://floating-ui.com"
+        "homepage": "https://floating-ui.com",
+        "source": "https://github.com/floating-ui/floating-ui"
       }
     ]
   },
@@ -554,22 +660,26 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "esast-util-from-estree",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/esast-util-from-estree#readme"
+        "homepage": "https://github.com/syntax-tree/esast-util-from-estree#readme",
+        "source": "https://github.com/syntax-tree/esast-util-from-estree"
       },
       {
         "name": "estree-util-visit",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/estree-util-visit#readme"
+        "homepage": "https://github.com/syntax-tree/estree-util-visit#readme",
+        "source": "https://github.com/syntax-tree/estree-util-visit"
       },
       {
         "name": "micromark-extension-gfm-footnote",
         "version": "2.1.0",
-        "homepage": "https://github.com/micromark/micromark-extension-gfm-footnote#readme"
+        "homepage": "https://github.com/micromark/micromark-extension-gfm-footnote#readme",
+        "source": "https://github.com/micromark/micromark-extension-gfm-footnote"
       },
       {
         "name": "unist-util-position-from-estree",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/unist-util-position-from-estree#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-position-from-estree#readme",
+        "source": "https://github.com/syntax-tree/unist-util-position-from-estree"
       }
     ]
   },
@@ -580,22 +690,26 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "react",
         "version": "19.2.7",
-        "homepage": "https://react.dev/"
+        "homepage": "https://react.dev/",
+        "source": "https://github.com/facebook/react"
       },
       {
         "name": "react-dom",
         "version": "19.2.7",
-        "homepage": "https://react.dev/"
+        "homepage": "https://react.dev/",
+        "source": "https://github.com/facebook/react"
       },
       {
         "name": "scheduler",
         "version": "0.27.0",
-        "homepage": "https://react.dev/"
+        "homepage": "https://react.dev/",
+        "source": "https://github.com/facebook/react"
       },
       {
         "name": "use-sync-external-store",
         "version": "1.6.0",
-        "homepage": "https://github.com/facebook/react#readme"
+        "homepage": "https://github.com/facebook/react#readme",
+        "source": "https://github.com/facebook/react"
       }
     ]
   },
@@ -606,17 +720,20 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@babel/code-frame",
         "version": "7.29.7",
-        "homepage": "https://babel.dev/docs/en/next/babel-code-frame"
+        "homepage": "https://babel.dev/docs/en/next/babel-code-frame",
+        "source": "https://github.com/babel/babel"
       },
       {
         "name": "@babel/helper-validator-identifier",
         "version": "7.29.7",
-        "homepage": "https://github.com/babel/babel#readme"
+        "homepage": "https://github.com/babel/babel#readme",
+        "source": "https://github.com/babel/babel"
       },
       {
         "name": "@babel/runtime",
         "version": "7.29.7",
-        "homepage": "https://babel.dev/docs/en/next/babel-runtime"
+        "homepage": "https://babel.dev/docs/en/next/babel-runtime",
+        "source": "https://github.com/babel/babel"
       }
     ]
   },
@@ -627,17 +744,20 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@next/env",
         "version": "15.5.19",
-        "homepage": "https://github.com/vercel/next.js#readme"
+        "homepage": "https://github.com/vercel/next.js#readme",
+        "source": "https://github.com/vercel/next.js"
       },
       {
-        "name": "@next/swc-darwin-arm64",
+        "name": "@next/swc-{platform}",
         "version": "15.5.19",
-        "homepage": "https://github.com/vercel/next.js#readme"
+        "homepage": "https://github.com/vercel/next.js#readme",
+        "source": "https://github.com/vercel/next.js"
       },
       {
         "name": "client-only",
         "version": "0.0.1",
-        "homepage": "https://reactjs.org/"
+        "homepage": "https://reactjs.org/",
+        "source": "https://reactjs.org/"
       }
     ]
   },
@@ -648,17 +768,20 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "escape-string-regexp",
         "version": "5.0.0",
-        "homepage": "https://github.com/sindresorhus/escape-string-regexp#readme"
+        "homepage": "https://github.com/sindresorhus/escape-string-regexp#readme",
+        "source": "https://github.com/sindresorhus/escape-string-regexp"
       },
       {
         "name": "is-plain-obj",
         "version": "4.1.0",
-        "homepage": "https://github.com/sindresorhus/is-plain-obj#readme"
+        "homepage": "https://github.com/sindresorhus/is-plain-obj#readme",
+        "source": "https://github.com/sindresorhus/is-plain-obj"
       },
       {
         "name": "markdown-extensions",
         "version": "2.0.0",
-        "homepage": "https://github.com/sindresorhus/markdown-extensions#readme"
+        "homepage": "https://github.com/sindresorhus/markdown-extensions#readme",
+        "source": "https://github.com/sindresorhus/markdown-extensions"
       }
     ]
   },
@@ -669,17 +792,20 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "longest-streak",
         "version": "3.1.0",
-        "homepage": "https://github.com/wooorm/longest-streak#readme"
+        "homepage": "https://github.com/wooorm/longest-streak#readme",
+        "source": "https://github.com/wooorm/longest-streak"
       },
       {
         "name": "stringify-entities",
         "version": "4.0.4",
-        "homepage": "https://github.com/wooorm/stringify-entities#readme"
+        "homepage": "https://github.com/wooorm/stringify-entities#readme",
+        "source": "https://github.com/wooorm/stringify-entities"
       },
       {
         "name": "trim-lines",
         "version": "3.0.1",
-        "homepage": "https://github.com/wooorm/trim-lines#readme"
+        "homepage": "https://github.com/wooorm/trim-lines#readme",
+        "source": "https://github.com/wooorm/trim-lines"
       }
     ]
   },
@@ -690,17 +816,20 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "motion",
         "version": "12.40.0",
-        "homepage": "https://github.com/motiondivision/motion#readme"
+        "homepage": "https://github.com/motiondivision/motion#readme",
+        "source": "https://github.com/motiondivision/motion"
       },
       {
         "name": "motion-dom",
         "version": "12.40.0",
-        "homepage": "https://github.com/motiondivision/motion#readme"
+        "homepage": "https://github.com/motiondivision/motion#readme",
+        "source": "https://github.com/motiondivision/motion"
       },
       {
         "name": "motion-utils",
         "version": "12.39.0",
-        "homepage": "https://github.com/motiondivision/motion#readme"
+        "homepage": "https://github.com/motiondivision/motion#readme",
+        "source": "https://github.com/motiondivision/motion"
       }
     ]
   },
@@ -709,14 +838,16 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "text": "Apache License\nVersion 2.0, January 2004\nhttp://www.apache.org/licenses/\n\nTERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n1. Definitions.\n\n\"License\" shall mean the terms and conditions for use, reproduction, and\ndistribution as defined by Sections 1 through 9 of this document.\n\n\"Licensor\" shall mean the copyright owner or entity authorized by the copyright\nowner that is granting the License.\n\n\"Legal Entity\" shall mean the union of the acting entity and all other entities\nthat control, are controlled by, or are under common control with that entity.\nFor the purposes of this definition, \"control\" means (i) the power, direct or\nindirect, to cause the direction or management of such entity, whether by\ncontract or otherwise, or (ii) ownership of fifty percent (50%) or more of the\noutstanding shares, or (iii) beneficial ownership of such entity.\n\n\"You\" (or \"Your\") shall mean an individual or Legal Entity exercising\npermissions granted by this License.\n\n\"Source\" form shall mean the preferred form for making modifications, including\nbut not limited to software source code, documentation source, and configuration\nfiles.\n\n\"Object\" form shall mean any form resulting from mechanical transformation or\ntranslation of a Source form, including but not limited to compiled object code,\ngenerated documentation, and conversions to other media types.\n\n\"Work\" shall mean the work of authorship, whether in Source or Object form, made\navailable under the License, as indicated by a copyright notice that is included\nin or attached to the work (an example is provided in the Appendix below).\n\n\"Derivative Works\" shall mean any work, whether in Source or Object form, that\nis based on (or derived from) the Work and for which the editorial revisions,\nannotations, elaborations, or other modifications represent, as a whole, an\noriginal work of authorship. For the purposes of this License, Derivative Works\nshall not include works that remain separable from, or merely link (or bind by\nname) to the interfaces of, the Work and Derivative Works thereof.\n\n\"Contribution\" shall mean any work of authorship, including the original version\nof the Work and any modifications or additions to that Work or Derivative Works\nthereof, that is intentionally submitted to Licensor for inclusion in the Work\nby the copyright owner or by an individual or Legal Entity authorized to submit\non behalf of the copyright owner. For the purposes of this definition,\n\"submitted\" means any form of electronic, verbal, or written communication sent\nto the Licensor or its representatives, including but not limited to\ncommunication on electronic mailing lists, source code control systems, and\nissue tracking systems that are managed by, or on behalf of, the Licensor for\nthe purpose of discussing and improving the Work, but excluding communication\nthat is conspicuously marked or otherwise designated in writing by the copyright\nowner as \"Not a Contribution.\"\n\n\"Contributor\" shall mean Licensor and any individual or Legal Entity on behalf\nof whom a Contribution has been received by Licensor and subsequently\nincorporated within the Work.\n\n2. Grant of Copyright License.\n\nSubject to the terms and conditions of this License, each Contributor hereby\ngrants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free,\nirrevocable copyright license to reproduce, prepare Derivative Works of,\npublicly display, publicly perform, sublicense, and distribute the Work and such\nDerivative Works in Source or Object form.\n\n3. Grant of Patent License.\n\nSubject to the terms and conditions of this License, each Contributor hereby\ngrants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free,\nirrevocable (except as stated in this section) patent license to make, have\nmade, use, offer to sell, sell, import, and otherwise transfer the Work, where\nsuch license applies only to those patent claims licensable by such Contributor\nthat are necessarily infringed by their Contribution(s) alone or by combination\nof their Contribution(s) with the Work to which such Contribution(s) was\nsubmitted. If You institute patent litigation against any entity (including a\ncross-claim or counterclaim in a lawsuit) alleging that the Work or a\nContribution incorporated within the Work constitutes direct or contributory\npatent infringement, then any patent licenses granted to You under this License\nfor that Work shall terminate as of the date such litigation is filed.\n\n4. Redistribution.\n\nYou may reproduce and distribute copies of the Work or Derivative Works thereof\nin any medium, with or without modifications, and in Source or Object form,\nprovided that You meet the following conditions:\n\nYou must give any other recipients of the Work or Derivative Works a copy of\nthis License; and\nYou must cause any modified files to carry prominent notices stating that You\nchanged the files; and\nYou must retain, in the Source form of any Derivative Works that You distribute,\nall copyright, patent, trademark, and attribution notices from the Source form\nof the Work, excluding those notices that do not pertain to any part of the\nDerivative Works; and\nIf the Work includes a \"NOTICE\" text file as part of its distribution, then any\nDerivative Works that You distribute must include a readable copy of the\nattribution notices contained within such NOTICE file, excluding those notices\nthat do not pertain to any part of the Derivative Works, in at least one of the\nfollowing places: within a NOTICE text file distributed as part of the\nDerivative Works; within the Source form or documentation, if provided along\nwith the Derivative Works; or, within a display generated by the Derivative\nWorks, if and wherever such third-party notices normally appear. The contents of\nthe NOTICE file are for informational purposes only and do not modify the\nLicense. You may add Your own attribution notices within Derivative Works that\nYou distribute, alongside or as an addendum to the NOTICE text from the Work,\nprovided that such additional attribution notices cannot be construed as\nmodifying the License.\nYou may add Your own copyright statement to Your modifications and may provide\nadditional or different license terms and conditions for use, reproduction, or\ndistribution of Your modifications, or for any such Derivative Works as a whole,\nprovided Your use, reproduction, and distribution of the Work otherwise complies\nwith the conditions stated in this License.\n\n5. Submission of Contributions.\n\nUnless You explicitly state otherwise, any Contribution intentionally submitted\nfor inclusion in the Work by You to the Licensor shall be under the terms and\nconditions of this License, without any additional terms or conditions.\nNotwithstanding the above, nothing herein shall supersede or modify the terms of\nany separate license agreement you may have executed with Licensor regarding\nsuch Contributions.\n\n6. Trademarks.\n\nThis License does not grant permission to use the trade names, trademarks,\nservice marks, or product names of the Licensor, except as required for\nreasonable and customary use in describing the origin of the Work and\nreproducing the content of the NOTICE file.\n\n7. Disclaimer of Warranty.\n\nUnless required by applicable law or agreed to in writing, Licensor provides the\nWork (and each Contributor provides its Contributions) on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,\nincluding, without limitation, any warranties or conditions of TITLE,\nNON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are\nsolely responsible for determining the appropriateness of using or\nredistributing the Work and assume any risks associated with Your exercise of\npermissions under this License.\n\n8. Limitation of Liability.\n\nIn no event and under no legal theory, whether in tort (including negligence),\ncontract, or otherwise, unless required by applicable law (such as deliberate\nand grossly negligent acts) or agreed to in writing, shall any Contributor be\nliable to You for damages, including any direct, indirect, special, incidental,\nor consequential damages of any character arising as a result of this License or\nout of the use or inability to use the Work (including but not limited to\ndamages for loss of goodwill, work stoppage, computer failure or malfunction, or\nany and all other commercial damages or losses), even if such Contributor has\nbeen advised of the possibility of such damages.\n\n9. Accepting Warranty or Additional Liability.\n\nWhile redistributing the Work or Derivative Works thereof, You may choose to\noffer, and charge a fee for, acceptance of support, warranty, indemnity, or\nother liability obligations and/or rights consistent with this License. However,\nin accepting such obligations, You may act only on Your own behalf and on Your\nsole responsibility, not on behalf of any other Contributor, and only if You\nagree to indemnify, defend, and hold each Contributor harmless for any liability\nincurred by, or claims asserted against, such Contributor by reason of your\naccepting any such warranty or additional liability.\n\nEND OF TERMS AND CONDITIONS\n\nAPPENDIX: How to apply the Apache License to your work\n\nTo apply the Apache License to your work, attach the following boilerplate\nnotice, with the fields enclosed by brackets \"[]\" replaced with your own\nidentifying information. (Don't include the brackets!) The text should be\nenclosed in the appropriate comment syntax for the file format. We also\nrecommend that a file or class name and description of purpose be included on\nthe same \"printed page\" as the copyright notice for easier identification within\nthird-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n     http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.",
     "packages": [
       {
-        "name": "@img/sharp-darwin-arm64",
+        "name": "@img/sharp-{platform}",
         "version": "0.34.5",
-        "homepage": "https://sharp.pixelplumbing.com"
+        "homepage": "https://sharp.pixelplumbing.com",
+        "source": "https://github.com/lovell/sharp"
       },
       {
         "name": "sharp",
         "version": "0.34.5",
-        "homepage": "https://sharp.pixelplumbing.com"
+        "homepage": "https://sharp.pixelplumbing.com",
+        "source": "https://github.com/lovell/sharp"
       }
     ]
   },
@@ -727,12 +858,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "source-map",
         "version": "0.7.6",
-        "homepage": "https://github.com/mozilla/source-map"
+        "homepage": "https://github.com/mozilla/source-map",
+        "source": "http://github.com/mozilla/source-map"
       },
       {
         "name": "source-map-js",
         "version": "1.2.1",
-        "homepage": "https://github.com/7rulnik/source-map-js"
+        "homepage": "https://github.com/7rulnik/source-map-js",
+        "source": "https://github.com/7rulnik/source-map-js"
       }
     ]
   },
@@ -743,12 +876,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@base-ui/react",
         "version": "1.6.0",
-        "homepage": "https://base-ui.com"
+        "homepage": "https://base-ui.com",
+        "source": "https://github.com/mui/base-ui"
       },
       {
         "name": "@base-ui/utils",
         "version": "0.3.1",
-        "homepage": "https://github.com/mui/base-ui#readme"
+        "homepage": "https://github.com/mui/base-ui#readme",
+        "source": "https://github.com/mui/base-ui"
       }
     ]
   },
@@ -759,12 +894,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "esast-util-from-js",
         "version": "2.0.1",
-        "homepage": "https://github.com/syntax-tree/esast-util-from-js#readme"
+        "homepage": "https://github.com/syntax-tree/esast-util-from-js#readme",
+        "source": "https://github.com/syntax-tree/esast-util-from-js"
       },
       {
         "name": "estree-util-to-js",
         "version": "2.0.0",
-        "homepage": "https://github.com/syntax-tree/estree-util-to-js#readme"
+        "homepage": "https://github.com/syntax-tree/estree-util-to-js#readme",
+        "source": "https://github.com/syntax-tree/estree-util-to-js"
       }
     ]
   },
@@ -775,12 +912,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "parse-entities",
         "version": "4.0.2",
-        "homepage": "https://github.com/wooorm/parse-entities#readme"
+        "homepage": "https://github.com/wooorm/parse-entities#readme",
+        "source": "https://github.com/wooorm/parse-entities"
       },
       {
         "name": "property-information",
         "version": "7.2.0",
-        "homepage": "https://github.com/wooorm/property-information#readme"
+        "homepage": "https://github.com/wooorm/property-information#readme",
+        "source": "https://github.com/wooorm/property-information"
       }
     ]
   },
@@ -791,12 +930,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "remark-parse",
         "version": "11.0.0",
-        "homepage": "https://remark.js.org"
+        "homepage": "https://remark.js.org",
+        "source": "https://github.com/remarkjs/remark/tree/main/packages/remark-parse"
       },
       {
         "name": "remark-stringify",
         "version": "11.0.0",
-        "homepage": "https://remark.js.org"
+        "homepage": "https://remark.js.org",
+        "source": "https://github.com/remarkjs/remark/tree/main/packages/remark-stringify"
       }
     ]
   },
@@ -807,12 +948,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "unified",
         "version": "11.0.5",
-        "homepage": "https://unifiedjs.com"
+        "homepage": "https://unifiedjs.com",
+        "source": "https://github.com/unifiedjs/unified"
       },
       {
         "name": "vfile",
         "version": "6.0.3",
-        "homepage": "https://github.com/vfile/vfile#readme"
+        "homepage": "https://github.com/vfile/vfile#readme",
+        "source": "https://github.com/vfile/vfile"
       }
     ]
   },
@@ -823,7 +966,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "tslib",
         "version": "2.8.1",
-        "homepage": "https://www.typescriptlang.org/"
+        "homepage": "https://www.typescriptlang.org/",
+        "source": "https://github.com/Microsoft/tslib"
       }
     ]
   },
@@ -834,7 +978,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@swc/helpers",
         "version": "0.5.15",
-        "homepage": "https://swc.rs"
+        "homepage": "https://swc.rs",
+        "source": "https://github.com/swc-project/swc"
       }
     ]
   },
@@ -845,7 +990,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "class-variance-authority",
         "version": "0.7.1",
-        "homepage": "https://github.com/joe-bell/cva#readme"
+        "homepage": "https://github.com/joe-bell/cva#readme",
+        "source": "https://github.com/joe-bell/cva"
       }
     ]
   },
@@ -856,7 +1002,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "detect-libc",
         "version": "2.1.2",
-        "homepage": "https://github.com/lovell/detect-libc#readme"
+        "homepage": "https://github.com/lovell/detect-libc#readme",
+        "source": "https://github.com/lovell/detect-libc"
       }
     ]
   },
@@ -867,7 +1014,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "esprima",
         "version": "4.0.1",
-        "homepage": "http://esprima.org"
+        "homepage": "http://esprima.org",
+        "source": "https://github.com/jquery/esprima"
       }
     ]
   },
@@ -878,7 +1026,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "sprintf-js",
         "version": "1.0.3",
-        "homepage": "https://github.com/alexei/sprintf.js#readme"
+        "homepage": "https://github.com/alexei/sprintf.js#readme",
+        "source": "https://github.com/alexei/sprintf.js"
       }
     ]
   },
@@ -889,7 +1038,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "caniuse-lite",
         "version": "1.0.30001797",
-        "homepage": "https://github.com/browserslist/caniuse-lite#readme"
+        "homepage": "https://github.com/browserslist/caniuse-lite#readme",
+        "source": "https://github.com/browserslist/caniuse-lite"
       }
     ]
   },
@@ -900,7 +1050,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@ungap/structured-clone",
         "version": "1.3.1",
-        "homepage": "https://github.com/ungap/structured-clone#readme"
+        "homepage": "https://github.com/ungap/structured-clone#readme",
+        "source": "https://github.com/ungap/structured-clone"
       }
     ]
   },
@@ -911,7 +1062,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "lucide-react",
         "version": "0.460.0",
-        "homepage": "https://lucide.dev"
+        "homepage": "https://lucide.dev",
+        "source": "https://github.com/lucide-icons/lucide"
       }
     ]
   },
@@ -922,7 +1074,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "picocolors",
         "version": "1.1.1",
-        "homepage": "https://github.com/alexeyraspopov/picocolors#readme"
+        "homepage": "https://github.com/alexeyraspopov/picocolors#readme",
+        "source": "https://github.com/alexeyraspopov/picocolors"
       }
     ]
   },
@@ -933,7 +1086,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "semver",
         "version": "7.8.4",
-        "homepage": "https://github.com/npm/node-semver#readme"
+        "homepage": "https://github.com/npm/node-semver#readme",
+        "source": "https://github.com/npm/node-semver"
       }
     ]
   },
@@ -944,7 +1098,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "yaml",
         "version": "2.9.0",
-        "homepage": "https://eemeli.org/yaml/"
+        "homepage": "https://eemeli.org/yaml/",
+        "source": "https://github.com/eemeli/yaml"
       }
     ]
   },
@@ -953,9 +1108,10 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "text": "",
     "packages": [
       {
-        "name": "@img/sharp-libvips-darwin-arm64",
+        "name": "@img/sharp-libvips-{platform}",
         "version": "1.2.4",
-        "homepage": "https://sharp.pixelplumbing.com"
+        "homepage": "https://sharp.pixelplumbing.com",
+        "source": "https://github.com/lovell/sharp-libvips"
       }
     ]
   },
@@ -966,7 +1122,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@img/colour",
         "version": "1.1.0",
-        "homepage": "https://github.com/lovell/colour#readme"
+        "homepage": "https://github.com/lovell/colour#readme",
+        "source": "https://github.com/lovell/colour"
       }
     ]
   },
@@ -977,7 +1134,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@mdx-js/mdx",
         "version": "3.1.1",
-        "homepage": "https://mdxjs.com"
+        "homepage": "https://mdxjs.com",
+        "source": "https://github.com/mdx-js/mdx"
       }
     ]
   },
@@ -988,7 +1146,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@mdx-js/react",
         "version": "3.1.1",
-        "homepage": "https://mdxjs.com"
+        "homepage": "https://mdxjs.com",
+        "source": "https://github.com/mdx-js/mdx"
       }
     ]
   },
@@ -999,7 +1158,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@radix-ui/colors",
         "version": "3.0.0",
-        "homepage": ""
+        "homepage": "",
+        "source": ""
       }
     ]
   },
@@ -1010,7 +1170,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "acorn",
         "version": "8.16.0",
-        "homepage": "https://github.com/acornjs/acorn"
+        "homepage": "https://github.com/acornjs/acorn",
+        "source": "https://github.com/acornjs/acorn"
       }
     ]
   },
@@ -1021,7 +1182,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "acorn-jsx",
         "version": "5.3.2",
-        "homepage": "https://github.com/acornjs/acorn-jsx"
+        "homepage": "https://github.com/acornjs/acorn-jsx",
+        "source": "https://github.com/acornjs/acorn-jsx"
       }
     ]
   },
@@ -1032,7 +1194,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "argparse",
         "version": "1.0.10",
-        "homepage": "https://github.com/nodeca/argparse#readme"
+        "homepage": "https://github.com/nodeca/argparse#readme",
+        "source": "https://github.com/nodeca/argparse"
       }
     ]
   },
@@ -1043,7 +1206,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "astring",
         "version": "1.9.0",
-        "homepage": "https://github.com/davidbonnet/astring#readme"
+        "homepage": "https://github.com/davidbonnet/astring#readme",
+        "source": "https://github.com/davidbonnet/astring"
       }
     ]
   },
@@ -1054,7 +1218,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "clsx",
         "version": "2.1.1",
-        "homepage": "https://github.com/lukeed/clsx#readme"
+        "homepage": "https://github.com/lukeed/clsx#readme",
+        "source": "https://github.com/lukeed/clsx"
       }
     ]
   },
@@ -1065,7 +1230,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "csstype",
         "version": "3.2.3",
-        "homepage": "https://github.com/frenic/csstype#readme"
+        "homepage": "https://github.com/frenic/csstype#readme",
+        "source": "https://github.com/frenic/csstype"
       }
     ]
   },
@@ -1076,7 +1242,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "debug",
         "version": "4.4.3",
-        "homepage": "https://github.com/debug-js/debug#readme"
+        "homepage": "https://github.com/debug-js/debug#readme",
+        "source": "https://github.com/debug-js/debug"
       }
     ]
   },
@@ -1087,7 +1254,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "dequal",
         "version": "2.0.3",
-        "homepage": "https://github.com/lukeed/dequal#readme"
+        "homepage": "https://github.com/lukeed/dequal#readme",
+        "source": "https://github.com/lukeed/dequal"
       }
     ]
   },
@@ -1098,7 +1266,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "devlop",
         "version": "1.1.0",
-        "homepage": "https://github.com/wooorm/devlop#readme"
+        "homepage": "https://github.com/wooorm/devlop#readme",
+        "source": "https://github.com/wooorm/devlop"
       }
     ]
   },
@@ -1109,7 +1278,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "estree-walker",
         "version": "3.0.3",
-        "homepage": "https://github.com/Rich-Harris/estree-walker#readme"
+        "homepage": "https://github.com/Rich-Harris/estree-walker#readme",
+        "source": "https://github.com/Rich-Harris/estree-walker"
       }
     ]
   },
@@ -1120,7 +1290,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "extend",
         "version": "3.0.2",
-        "homepage": "https://github.com/justmoon/node-extend#readme"
+        "homepage": "https://github.com/justmoon/node-extend#readme",
+        "source": "https://github.com/justmoon/node-extend"
       }
     ]
   },
@@ -1131,7 +1302,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "extend-shallow",
         "version": "2.0.1",
-        "homepage": "https://github.com/jonschlinkert/extend-shallow"
+        "homepage": "https://github.com/jonschlinkert/extend-shallow",
+        "source": "https://github.com/jonschlinkert/extend-shallow"
       }
     ]
   },
@@ -1142,7 +1314,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "framer-motion",
         "version": "12.40.0",
-        "homepage": "https://github.com/motiondivision/motion#readme"
+        "homepage": "https://github.com/motiondivision/motion#readme",
+        "source": "https://github.com/motiondivision/motion/"
       }
     ]
   },
@@ -1153,7 +1326,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "fsevents",
         "version": "2.3.2",
-        "homepage": "https://github.com/fsevents/fsevents"
+        "homepage": "https://github.com/fsevents/fsevents",
+        "source": "https://github.com/fsevents/fsevents"
       }
     ]
   },
@@ -1164,7 +1338,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "gray-matter",
         "version": "4.0.3",
-        "homepage": "https://github.com/jonschlinkert/gray-matter"
+        "homepage": "https://github.com/jonschlinkert/gray-matter",
+        "source": "https://github.com/jonschlinkert/gray-matter"
       }
     ]
   },
@@ -1175,7 +1350,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "inline-style-parser",
         "version": "0.2.7",
-        "homepage": "https://github.com/remarkablemark/inline-style-parser#readme"
+        "homepage": "https://github.com/remarkablemark/inline-style-parser#readme",
+        "source": "https://github.com/remarkablemark/inline-style-parser"
       }
     ]
   },
@@ -1186,7 +1362,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "is-extendable",
         "version": "0.1.1",
-        "homepage": "https://github.com/jonschlinkert/is-extendable"
+        "homepage": "https://github.com/jonschlinkert/is-extendable",
+        "source": "https://github.com/jonschlinkert/is-extendable"
       }
     ]
   },
@@ -1197,7 +1374,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "js-tokens",
         "version": "4.0.0",
-        "homepage": "https://github.com/lydell/js-tokens#readme"
+        "homepage": "https://github.com/lydell/js-tokens#readme",
+        "source": "https://github.com/lydell/js-tokens"
       }
     ]
   },
@@ -1208,7 +1386,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "js-yaml",
         "version": "3.14.2",
-        "homepage": "https://github.com/nodeca/js-yaml"
+        "homepage": "https://github.com/nodeca/js-yaml",
+        "source": "https://github.com/nodeca/js-yaml"
       }
     ]
   },
@@ -1219,7 +1398,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "kind-of",
         "version": "6.0.3",
-        "homepage": "https://github.com/jonschlinkert/kind-of"
+        "homepage": "https://github.com/jonschlinkert/kind-of",
+        "source": "https://github.com/jonschlinkert/kind-of"
       }
     ]
   },
@@ -1230,7 +1410,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "mdast-util-phrasing",
         "version": "4.1.0",
-        "homepage": "https://github.com/syntax-tree/mdast-util-phrasing#readme"
+        "homepage": "https://github.com/syntax-tree/mdast-util-phrasing#readme",
+        "source": "https://github.com/syntax-tree/mdast-util-phrasing"
       }
     ]
   },
@@ -1241,7 +1422,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "ms",
         "version": "2.1.3",
-        "homepage": "https://github.com/vercel/ms#readme"
+        "homepage": "https://github.com/vercel/ms#readme",
+        "source": "https://github.com/vercel/ms"
       }
     ]
   },
@@ -1252,7 +1434,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "nanoid",
         "version": "3.3.12",
-        "homepage": "https://github.com/ai/nanoid#readme"
+        "homepage": "https://github.com/ai/nanoid#readme",
+        "source": "https://github.com/ai/nanoid"
       }
     ]
   },
@@ -1263,7 +1446,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "next",
         "version": "15.5.19",
-        "homepage": "https://nextjs.org"
+        "homepage": "https://nextjs.org",
+        "source": "https://github.com/vercel/next.js"
       }
     ]
   },
@@ -1274,7 +1458,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "postcss",
         "version": "8.4.31",
-        "homepage": "https://postcss.org/"
+        "homepage": "https://postcss.org/",
+        "source": "https://github.com/postcss/postcss"
       }
     ]
   },
@@ -1285,7 +1470,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "remark-mdx",
         "version": "3.1.1",
-        "homepage": "https://mdxjs.com"
+        "homepage": "https://mdxjs.com",
+        "source": "https://github.com/mdx-js/mdx"
       }
     ]
   },
@@ -1296,7 +1482,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "reselect",
         "version": "5.2.0",
-        "homepage": "https://github.com/reduxjs/reselect#readme"
+        "homepage": "https://github.com/reduxjs/reselect#readme",
+        "source": "https://github.com/reduxjs/reselect"
       }
     ]
   },
@@ -1307,7 +1494,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "section-matter",
         "version": "1.0.0",
-        "homepage": "https://github.com/jonschlinkert/section-matter"
+        "homepage": "https://github.com/jonschlinkert/section-matter",
+        "source": "https://github.com/jonschlinkert/section-matter"
       }
     ]
   },
@@ -1318,7 +1506,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "strip-bom-string",
         "version": "1.0.0",
-        "homepage": "https://github.com/jonschlinkert/strip-bom-string"
+        "homepage": "https://github.com/jonschlinkert/strip-bom-string",
+        "source": "https://github.com/jonschlinkert/strip-bom-string"
       }
     ]
   },
@@ -1329,7 +1518,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "style-to-js",
         "version": "1.1.21",
-        "homepage": "https://github.com/remarkablemark/style-to-js#readme"
+        "homepage": "https://github.com/remarkablemark/style-to-js#readme",
+        "source": "https://github.com/remarkablemark/style-to-js"
       }
     ]
   },
@@ -1340,7 +1530,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "style-to-object",
         "version": "1.0.14",
-        "homepage": "https://github.com/remarkablemark/style-to-object#readme"
+        "homepage": "https://github.com/remarkablemark/style-to-object#readme",
+        "source": "https://github.com/remarkablemark/style-to-object"
       }
     ]
   },
@@ -1351,7 +1542,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "styled-jsx",
         "version": "5.1.6",
-        "homepage": "https://github.com/vercel/styled-jsx#readme"
+        "homepage": "https://github.com/vercel/styled-jsx#readme",
+        "source": "https://github.com/vercel/styled-jsx"
       }
     ]
   },
@@ -1362,7 +1554,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "tailwind-merge",
         "version": "3.6.0",
-        "homepage": "https://github.com/dcastil/tailwind-merge"
+        "homepage": "https://github.com/dcastil/tailwind-merge",
+        "source": "https://github.com/dcastil/tailwind-merge"
       }
     ]
   },
@@ -1373,7 +1566,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "trough",
         "version": "2.2.0",
-        "homepage": "https://github.com/wooorm/trough#readme"
+        "homepage": "https://github.com/wooorm/trough#readme",
+        "source": "https://github.com/wooorm/trough"
       }
     ]
   },
@@ -1384,7 +1578,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "tw-animate-css",
         "version": "1.4.0",
-        "homepage": "https://github.com/Wombosvideo/tw-animate-css#readme"
+        "homepage": "https://github.com/Wombosvideo/tw-animate-css#readme",
+        "source": "https://github.com/Wombosvideo/tw-animate-css"
       }
     ]
   },
@@ -1395,7 +1590,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "unist-util-is",
         "version": "6.0.1",
-        "homepage": "https://github.com/syntax-tree/unist-util-is#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-is#readme",
+        "source": "https://github.com/syntax-tree/unist-util-is"
       }
     ]
   },
@@ -1406,7 +1602,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "unist-util-remove",
         "version": "4.0.0",
-        "homepage": "https://github.com/syntax-tree/unist-util-remove#readme"
+        "homepage": "https://github.com/syntax-tree/unist-util-remove#readme",
+        "source": "https://github.com/syntax-tree/unist-util-remove"
       }
     ]
   },
@@ -1417,7 +1614,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "next-mdx-remote",
         "version": "6.0.0",
-        "homepage": "https://github.com/hashicorp/next-mdx-remote#readme"
+        "homepage": "https://github.com/hashicorp/next-mdx-remote#readme",
+        "source": "https://github.com/hashicorp/next-mdx-remote"
       }
     ]
   },
@@ -1428,7 +1626,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@fontsource-variable/inter",
         "version": "5.2.8",
-        "homepage": "https://fontsource.org/fonts/inter"
+        "homepage": "https://fontsource.org/fonts/inter",
+        "source": "https://github.com/fontsource/font-files"
       }
     ]
   },
@@ -1439,7 +1638,8 @@ export const thirdPartyNotices: NoticeGroup[] = [
       {
         "name": "@fontsource-variable/plus-jakarta-sans",
         "version": "5.2.8",
-        "homepage": "https://fontsource.org/fonts/plus-jakarta-sans"
+        "homepage": "https://fontsource.org/fonts/plus-jakarta-sans",
+        "source": "https://github.com/fontsource/font-files"
       }
     ]
   }

@@ -11,6 +11,15 @@ import {
    tree, never hand-kept, because a list maintained by hand goes stale silently
    and a stale notice file is worse than an honest short one.
 
+   Each package also links to its upstream repository. That link is provenance,
+   not discharge: it lets a reader compare a notice against its source, while the
+   text above it is what actually satisfies the condition. Worth being precise
+   about why the two are not interchangeable — the notice owed is the one shipped
+   by the version pinned in the lockfile, and that text does not change when
+   upstream relicenses later work, so serving it here is both the compliant and
+   the stable answer. `pnpm check:notices` runs in prebuild and fails the build if
+   these files drift from the installed tree.
+
    A server component on purpose: the notice data is ~200KB and belongs in the
    prerendered HTML, not in a client bundle a reader has to download to see a
    page of static text. */
@@ -82,11 +91,26 @@ export default function LegalPage() {
               <h3 className="font-display text-base font-semibold tracking-tight">
                 {group.license}
               </h3>
+              {/* The package name links to its upstream source where one is
+                  declared, and renders as plain text where none is — rather than
+                  a link to a guessed URL. */}
               <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                 {group.packages.map((pkg) => (
                   <li key={pkg.name}>
-                    {pkg.name}
-                    {pkg.version ? ` ${pkg.version}` : ""}
+                    {pkg.source ? (
+                      <a
+                        href={pkg.source}
+                        className="underline underline-offset-2 hover:text-foreground"
+                      >
+                        {pkg.name}
+                        {pkg.version ? ` ${pkg.version}` : ""}
+                      </a>
+                    ) : (
+                      <>
+                        {pkg.name}
+                        {pkg.version ? ` ${pkg.version}` : ""}
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev",
-    "prebuild": "node scripts/check-standards.mjs && pnpm run check:python",
+    "prebuild": "node scripts/check-standards.mjs && pnpm run check:python && pnpm run check:notices",
     "build": "next build",
     "postbuild": "node scripts/externalize-next-inline-scripts.mjs",
     "check:standards": "node scripts/check-standards.mjs",
@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "gen:icons": "node scripts/generate-ink-icons.mjs",
-    "gen:notices": "node scripts/generate-notices.mjs"
+    "gen:notices": "node scripts/generate-notices.mjs",
+    "check:notices": "node scripts/generate-notices.mjs --check"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

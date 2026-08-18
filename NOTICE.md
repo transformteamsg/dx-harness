@@ -7,6 +7,17 @@ redistributes, and builds derivative works from, the open-source packages
 listed below. Their licenses grant that right on the condition that these
 notices travel with every copy, so they are reproduced here in full.
 
+Each package links to its upstream repository. The link is provenance, not
+discharge: a licence that asks for its notice in every copy is not satisfied
+by a pointer into someone else's repository, which is why the texts are here
+rather than referenced. Follow a link to compare a notice against its current
+upstream — though the notice you are owed is the one shipped by the version
+pinned in the lockfile, which does not change when upstream relicenses later
+work.
+
+A platform binary is written as `-{platform}`: one variant installs per build
+host, and naming this machine's would misdescribe what the container ships.
+
 ## Lucide icon artwork
 
 `components/ink-icons.generated.ts` contains icon geometry derived from
@@ -18,44 +29,44 @@ original; the Lucide license is reproduced with the ISC packages below.
 
 ### MIT
 
-- decode-named-character-reference 1.3.0
-- hast-util-to-estree 3.1.3
-- hast-util-to-jsx-runtime 2.3.6
-- markdown-table 3.0.4
-- mdast-util-find-and-replace 3.0.2
-- mdast-util-from-markdown 2.0.3
-- mdast-util-gfm 3.1.0
-- mdast-util-gfm-footnote 2.1.0
-- mdast-util-to-markdown 2.1.2
-- micromark 4.0.2
-- micromark-core-commonmark 2.0.3
-- micromark-extension-gfm-table 2.1.1
-- micromark-extension-mdx-expression 3.0.1
-- micromark-factory-destination 2.0.1
-- micromark-factory-label 2.0.1
-- micromark-factory-mdx-expression 2.0.3
-- micromark-factory-space 2.0.1
-- micromark-factory-title 2.0.1
-- micromark-factory-whitespace 2.0.1
-- micromark-util-character 2.1.1
-- micromark-util-chunked 2.0.1
-- micromark-util-classify-character 2.0.1
-- micromark-util-combine-extensions 2.0.1
-- micromark-util-decode-numeric-character-reference 2.0.2
-- micromark-util-decode-string 2.0.1
-- micromark-util-encode 2.0.1
-- micromark-util-events-to-acorn 2.0.3
-- micromark-util-html-tag-name 2.0.1
-- micromark-util-normalize-identifier 2.0.1
-- micromark-util-resolve-all 2.0.1
-- micromark-util-sanitize-uri 2.0.1
-- micromark-util-subtokenize 2.1.0
-- micromark-util-symbol 2.0.1
-- micromark-util-types 2.0.2
-- remark-gfm 4.0.1
-- remark-rehype 11.1.2
-- vfile-matter 5.0.1
-- vfile-message 4.0.3
+- [decode-named-character-reference 1.3.0](https://github.com/wooorm/decode-named-character-reference)
+- [hast-util-to-estree 3.1.3](https://github.com/syntax-tree/hast-util-to-estree)
+- [hast-util-to-jsx-runtime 2.3.6](https://github.com/syntax-tree/hast-util-to-jsx-runtime)
+- [markdown-table 3.0.4](https://github.com/wooorm/markdown-table)
+- [mdast-util-find-and-replace 3.0.2](https://github.com/syntax-tree/mdast-util-find-and-replace)
+- [mdast-util-from-markdown 2.0.3](https://github.com/syntax-tree/mdast-util-from-markdown)
+- [mdast-util-gfm 3.1.0](https://github.com/syntax-tree/mdast-util-gfm)
+- [mdast-util-gfm-footnote 2.1.0](https://github.com/syntax-tree/mdast-util-gfm-footnote)
+- [mdast-util-to-markdown 2.1.2](https://github.com/syntax-tree/mdast-util-to-markdown)
+- [micromark 4.0.2](https://github.com/micromark/micromark/tree/main/packages/micromark)
+- [micromark-core-commonmark 2.0.3](https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark)
+- [micromark-extension-gfm-table 2.1.1](https://github.com/micromark/micromark-extension-gfm-table)
+- [micromark-extension-mdx-expression 3.0.1](https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-extension-mdx-expression)
+- [micromark-factory-destination 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-factory-destination)
+- [micromark-factory-label 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-factory-label)
+- [micromark-factory-mdx-expression 2.0.3](https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-factory-mdx-expression)
+- [micromark-factory-space 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-factory-space)
+- [micromark-factory-title 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-factory-title)
+- [micromark-factory-whitespace 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-factory-whitespace)
+- [micromark-util-character 2.1.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-character)
+- [micromark-util-chunked 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-chunked)
+- [micromark-util-classify-character 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-classify-character)
+- [micromark-util-combine-extensions 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-combine-extensions)
+- [micromark-util-decode-numeric-character-reference 2.0.2](https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-numeric-character-reference)
+- [micromark-util-decode-string 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-decode-string)
+- [micromark-util-encode 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-encode)
+- [micromark-util-events-to-acorn 2.0.3](https://github.com/micromark/micromark-extension-mdx-expression/tree/main/packages/micromark-util-events-to-acorn)
+- [micromark-util-html-tag-name 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-html-tag-name)
+- [micromark-util-normalize-identifier 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-normalize-identifier)
+- [micromark-util-resolve-all 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-resolve-all)
+- [micromark-util-sanitize-uri 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-sanitize-uri)
+- [micromark-util-subtokenize 2.1.0](https://github.com/micromark/micromark/tree/main/packages/micromark-util-subtokenize)
+- [micromark-util-symbol 2.0.1](https://github.com/micromark/micromark/tree/main/packages/micromark-util-symbol)
+- [micromark-util-types 2.0.2](https://github.com/micromark/micromark/tree/main/packages/micromark-util-types)
+- [remark-gfm 4.0.1](https://github.com/remarkjs/remark-gfm)
+- [remark-rehype 11.1.2](https://github.com/remarkjs/remark-rehype)
+- [vfile-matter 5.0.1](https://github.com/vfile/vfile-matter)
+- [vfile-message 4.0.3](https://github.com/vfile/vfile-message)
 
 ```
 (The MIT License)
@@ -84,27 +95,27 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- estree-util-attach-comments 3.0.0
-- estree-util-build-jsx 3.0.1
-- estree-util-is-identifier-name 3.0.0
-- estree-util-scope 1.0.0
-- mdast-util-gfm-autolink-literal 2.0.1
-- mdast-util-gfm-strikethrough 2.0.0
-- mdast-util-gfm-table 2.0.0
-- mdast-util-gfm-task-list-item 2.0.0
-- mdast-util-mdx 3.0.0
-- mdast-util-mdx-expression 2.0.1
-- mdast-util-mdx-jsx 3.2.0
-- mdast-util-mdxjs-esm 2.0.1
-- micromark-extension-gfm 3.0.0
-- micromark-extension-gfm-autolink-literal 2.1.0
-- micromark-extension-gfm-strikethrough 2.1.0
-- micromark-extension-gfm-tagfilter 2.0.0
-- micromark-extension-gfm-task-list-item 2.1.0
-- micromark-extension-mdx-jsx 3.0.2
-- micromark-extension-mdx-md 2.0.0
-- micromark-extension-mdxjs 3.0.0
-- micromark-extension-mdxjs-esm 3.0.0
+- [estree-util-attach-comments 3.0.0](https://github.com/syntax-tree/estree-util-attach-comments)
+- [estree-util-build-jsx 3.0.1](https://github.com/syntax-tree/estree-util-build-jsx)
+- [estree-util-is-identifier-name 3.0.0](https://github.com/syntax-tree/estree-util-is-identifier-name)
+- [estree-util-scope 1.0.0](https://github.com/syntax-tree/estree-util-scope)
+- [mdast-util-gfm-autolink-literal 2.0.1](https://github.com/syntax-tree/mdast-util-gfm-autolink-literal)
+- [mdast-util-gfm-strikethrough 2.0.0](https://github.com/syntax-tree/mdast-util-gfm-strikethrough)
+- [mdast-util-gfm-table 2.0.0](https://github.com/syntax-tree/mdast-util-gfm-table)
+- [mdast-util-gfm-task-list-item 2.0.0](https://github.com/syntax-tree/mdast-util-gfm-task-list-item)
+- [mdast-util-mdx 3.0.0](https://github.com/syntax-tree/mdast-util-mdx)
+- [mdast-util-mdx-expression 2.0.1](https://github.com/syntax-tree/mdast-util-mdx-expression)
+- [mdast-util-mdx-jsx 3.2.0](https://github.com/syntax-tree/mdast-util-mdx-jsx)
+- [mdast-util-mdxjs-esm 2.0.1](https://github.com/syntax-tree/mdast-util-mdxjs-esm)
+- [micromark-extension-gfm 3.0.0](https://github.com/micromark/micromark-extension-gfm)
+- [micromark-extension-gfm-autolink-literal 2.1.0](https://github.com/micromark/micromark-extension-gfm-autolink-literal)
+- [micromark-extension-gfm-strikethrough 2.1.0](https://github.com/micromark/micromark-extension-gfm-strikethrough)
+- [micromark-extension-gfm-tagfilter 2.0.0](https://github.com/micromark/micromark-extension-gfm-tagfilter)
+- [micromark-extension-gfm-task-list-item 2.1.0](https://github.com/micromark/micromark-extension-gfm-task-list-item)
+- [micromark-extension-mdx-jsx 3.0.2](https://github.com/micromark/micromark-extension-mdx-jsx)
+- [micromark-extension-mdx-md 2.0.0](https://github.com/micromark/micromark-extension-mdx-md)
+- [micromark-extension-mdxjs 3.0.0](https://github.com/micromark/micromark-extension-mdxjs)
+- [micromark-extension-mdxjs-esm 3.0.0](https://github.com/micromark/micromark-extension-mdxjs-esm)
 
 ```
 (The MIT License)
@@ -133,17 +144,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- comma-separated-tokens 2.0.3
-- hast-util-whitespace 3.0.0
-- is-alphabetical 2.0.1
-- is-alphanumerical 2.0.1
-- is-decimal 2.0.1
-- is-hexadecimal 2.0.1
-- mdast-util-to-hast 13.2.1
-- space-separated-tokens 2.0.2
-- unist-util-stringify-position 4.0.0
-- unist-util-visit-parents 6.0.2
-- zwitch 2.0.4
+- [comma-separated-tokens 2.0.3](https://github.com/wooorm/comma-separated-tokens)
+- [hast-util-whitespace 3.0.0](https://github.com/syntax-tree/hast-util-whitespace)
+- [is-alphabetical 2.0.1](https://github.com/wooorm/is-alphabetical)
+- [is-alphanumerical 2.0.1](https://github.com/wooorm/is-alphanumerical)
+- [is-decimal 2.0.1](https://github.com/wooorm/is-decimal)
+- [is-hexadecimal 2.0.1](https://github.com/wooorm/is-hexadecimal)
+- [mdast-util-to-hast 13.2.1](https://github.com/syntax-tree/mdast-util-to-hast)
+- [space-separated-tokens 2.0.2](https://github.com/wooorm/space-separated-tokens)
+- [unist-util-stringify-position 4.0.0](https://github.com/syntax-tree/unist-util-stringify-position)
+- [unist-util-visit-parents 6.0.2](https://github.com/syntax-tree/unist-util-visit-parents)
+- [zwitch 2.0.4](https://github.com/wooorm/zwitch)
 
 ```
 (The MIT License)
@@ -172,16 +183,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- bail 2.0.2
-- ccount 2.0.1
-- character-entities 2.0.2
-- character-entities-html4 2.1.0
-- character-entities-legacy 3.0.0
-- character-reference-invalid 2.0.1
-- collapse-white-space 2.1.0
-- mdast-util-to-string 4.0.0
-- unist-util-position 5.0.0
-- unist-util-visit 5.1.0
+- [bail 2.0.2](https://github.com/wooorm/bail)
+- [ccount 2.0.1](https://github.com/wooorm/ccount)
+- [character-entities 2.0.2](https://github.com/wooorm/character-entities)
+- [character-entities-html4 2.1.0](https://github.com/wooorm/character-entities-html4)
+- [character-entities-legacy 3.0.0](https://github.com/wooorm/character-entities-legacy)
+- [character-reference-invalid 2.0.1](https://github.com/wooorm/character-reference-invalid)
+- [collapse-white-space 2.1.0](https://github.com/wooorm/collapse-white-space)
+- [mdast-util-to-string 4.0.0](https://github.com/syntax-tree/mdast-util-to-string)
+- [unist-util-position 5.0.0](https://github.com/syntax-tree/unist-util-position)
+- [unist-util-visit 5.1.0](https://github.com/syntax-tree/unist-util-visit)
 
 ```
 (The MIT License)
@@ -210,15 +221,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- @types/debug 4.1.13
-- @types/estree 1.0.9
-- @types/estree-jsx 1.0.5
-- @types/hast 3.0.4
-- @types/mdast 4.0.4
-- @types/mdx 2.0.14
-- @types/ms 2.1.0
-- @types/react 19.2.17
-- @types/unist 2.0.11, 3.0.3
+- [@types/debug 4.1.13](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/estree 1.0.9](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/estree-jsx 1.0.5](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/hast 3.0.4](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/mdast 4.0.4](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/mdx 2.0.14](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/ms 2.1.0](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/react 19.2.17](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/unist 2.0.11, 3.0.3](https://github.com/DefinitelyTyped/DefinitelyTyped)
 
 ```
 MIT License
@@ -246,11 +257,11 @@ MIT License
 
 ### MIT
 
-- recma-build-jsx 1.0.0
-- recma-jsx 1.0.1
-- recma-parse 1.0.0
-- recma-stringify 1.0.0
-- rehype-recma 1.0.0
+- [recma-build-jsx 1.0.0](https://github.com/mdx-js/recma/tree/main/packages/recma-build-jsx)
+- [recma-jsx 1.0.1](https://github.com/mdx-js/recma/tree/main/packages/recma-jsx)
+- [recma-parse 1.0.0](https://github.com/mdx-js/recma/tree/main/packages/recma-parse)
+- [recma-stringify 1.0.0](https://github.com/mdx-js/recma/tree/main/packages/recma-stringify)
+- [rehype-recma 1.0.0](https://github.com/mdx-js/recma/tree/main/packages/rehype-recma)
 
 ```
 (The MIT License)
@@ -278,10 +289,10 @@ THE SOFTWARE.
 
 ### MIT
 
-- @floating-ui/core 1.7.5
-- @floating-ui/dom 1.7.6
-- @floating-ui/react-dom 2.1.8
-- @floating-ui/utils 0.2.11
+- [@floating-ui/core 1.7.5](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/dom 1.7.6](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/react-dom 2.1.8](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/utils 0.2.11](https://github.com/floating-ui/floating-ui)
 
 ```
 MIT License
@@ -308,10 +319,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- esast-util-from-estree 2.0.0
-- estree-util-visit 2.0.0
-- micromark-extension-gfm-footnote 2.1.0
-- unist-util-position-from-estree 2.0.0
+- [esast-util-from-estree 2.0.0](https://github.com/syntax-tree/esast-util-from-estree)
+- [estree-util-visit 2.0.0](https://github.com/syntax-tree/estree-util-visit)
+- [micromark-extension-gfm-footnote 2.1.0](https://github.com/micromark/micromark-extension-gfm-footnote)
+- [unist-util-position-from-estree 2.0.0](https://github.com/syntax-tree/unist-util-position-from-estree)
 
 ```
 (The MIT License)
@@ -340,10 +351,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- react 19.2.7
-- react-dom 19.2.7
-- scheduler 0.27.0
-- use-sync-external-store 1.6.0
+- [react 19.2.7](https://github.com/facebook/react)
+- [react-dom 19.2.7](https://github.com/facebook/react)
+- [scheduler 0.27.0](https://github.com/facebook/react)
+- [use-sync-external-store 1.6.0](https://github.com/facebook/react)
 
 ```
 MIT License
@@ -371,9 +382,9 @@ SOFTWARE.
 
 ### MIT
 
-- @babel/code-frame 7.29.7
-- @babel/helper-validator-identifier 7.29.7
-- @babel/runtime 7.29.7
+- [@babel/code-frame 7.29.7](https://github.com/babel/babel)
+- [@babel/helper-validator-identifier 7.29.7](https://github.com/babel/babel)
+- [@babel/runtime 7.29.7](https://github.com/babel/babel)
 
 ```
 MIT License
@@ -402,17 +413,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- @next/env 15.5.19
-- @next/swc-darwin-arm64 15.5.19
-- client-only 0.0.1
+- [@next/env 15.5.19](https://github.com/vercel/next.js)
+- [@next/swc-{platform} 15.5.19](https://github.com/vercel/next.js)
+- [client-only 0.0.1](https://reactjs.org/)
 
 _No license file ships with this package._
 
 ### MIT
 
-- escape-string-regexp 5.0.0
-- is-plain-obj 4.1.0
-- markdown-extensions 2.0.0
+- [escape-string-regexp 5.0.0](https://github.com/sindresorhus/escape-string-regexp)
+- [is-plain-obj 4.1.0](https://github.com/sindresorhus/is-plain-obj)
+- [markdown-extensions 2.0.0](https://github.com/sindresorhus/markdown-extensions)
 
 ```
 MIT License
@@ -428,9 +439,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### MIT
 
-- longest-streak 3.1.0
-- stringify-entities 4.0.4
-- trim-lines 3.0.1
+- [longest-streak 3.1.0](https://github.com/wooorm/longest-streak)
+- [stringify-entities 4.0.4](https://github.com/wooorm/stringify-entities)
+- [trim-lines 3.0.1](https://github.com/wooorm/trim-lines)
 
 ```
 (The MIT License)
@@ -459,9 +470,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- motion 12.40.0
-- motion-dom 12.40.0
-- motion-utils 12.39.0
+- [motion 12.40.0](https://github.com/motiondivision/motion)
+- [motion-dom 12.40.0](https://github.com/motiondivision/motion)
+- [motion-utils 12.39.0](https://github.com/motiondivision/motion)
 
 ```
 The MIT License (MIT)
@@ -489,8 +500,8 @@ SOFTWARE.
 
 ### Apache-2.0
 
-- @img/sharp-darwin-arm64 0.34.5
-- sharp 0.34.5
+- [@img/sharp-{platform} 0.34.5](https://github.com/lovell/sharp)
+- [sharp 0.34.5](https://github.com/lovell/sharp)
 
 ```
 Apache License
@@ -688,8 +699,8 @@ third-party archives.
 
 ### BSD-3-Clause
 
-- source-map 0.7.6
-- source-map-js 1.2.1
+- [source-map 0.7.6](http://github.com/mozilla/source-map)
+- [source-map-js 1.2.1](https://github.com/7rulnik/source-map-js)
 
 ```
 Copyright (c) 2009-2011, Mozilla Foundation and contributors
@@ -723,8 +734,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### MIT
 
-- @base-ui/react 1.6.0
-- @base-ui/utils 0.3.1
+- [@base-ui/react 1.6.0](https://github.com/mui/base-ui)
+- [@base-ui/utils 0.3.1](https://github.com/mui/base-ui)
 
 ```
 MIT License
@@ -752,8 +763,8 @@ SOFTWARE.
 
 ### MIT
 
-- esast-util-from-js 2.0.1
-- estree-util-to-js 2.0.0
+- [esast-util-from-js 2.0.1](https://github.com/syntax-tree/esast-util-from-js)
+- [estree-util-to-js 2.0.0](https://github.com/syntax-tree/estree-util-to-js)
 
 ```
 (The MIT License)
@@ -782,8 +793,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- parse-entities 4.0.2
-- property-information 7.2.0
+- [parse-entities 4.0.2](https://github.com/wooorm/parse-entities)
+- [property-information 7.2.0](https://github.com/wooorm/property-information)
 
 ```
 (The MIT License)
@@ -812,8 +823,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- remark-parse 11.0.0
-- remark-stringify 11.0.0
+- [remark-parse 11.0.0](https://github.com/remarkjs/remark/tree/main/packages/remark-parse)
+- [remark-stringify 11.0.0](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify)
 
 ```
 (The MIT License)
@@ -841,8 +852,8 @@ THE SOFTWARE.
 
 ### MIT
 
-- unified 11.0.5
-- vfile 6.0.3
+- [unified 11.0.5](https://github.com/unifiedjs/unified)
+- [vfile 6.0.3](https://github.com/vfile/vfile)
 
 ```
 (The MIT License)
@@ -870,7 +881,7 @@ THE SOFTWARE.
 
 ### 0BSD
 
-- tslib 2.8.1
+- [tslib 2.8.1](https://github.com/Microsoft/tslib)
 
 ```
 Copyright (c) Microsoft Corporation.
@@ -889,7 +900,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 ### Apache-2.0
 
-- @swc/helpers 0.5.15
+- [@swc/helpers 0.5.15](https://github.com/swc-project/swc)
 
 ```
 Apache License
@@ -1097,7 +1108,7 @@ limitations under the License.
 
 ### Apache-2.0
 
-- class-variance-authority 0.7.1
+- [class-variance-authority 0.7.1](https://github.com/joe-bell/cva)
 
 ```
 Apache License
@@ -1294,7 +1305,7 @@ Apache License
 
 ### Apache-2.0
 
-- detect-libc 2.1.2
+- [detect-libc 2.1.2](https://github.com/lovell/detect-libc)
 
 ```
 Apache License
@@ -1502,7 +1513,7 @@ Apache License
 
 ### BSD-2-Clause
 
-- esprima 4.0.1
+- [esprima 4.0.1](https://github.com/jquery/esprima)
 
 ```
 Copyright JS Foundation and other contributors, https://js.foundation/
@@ -1530,7 +1541,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### BSD-3-Clause
 
-- sprintf-js 1.0.3
+- [sprintf-js 1.0.3](https://github.com/alexei/sprintf.js)
 
 ```
 Copyright (c) 2007-2014, Alexandru Marasteanu <hello [at) alexei (dot] ro>
@@ -1561,7 +1572,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### CC-BY-4.0
 
-- caniuse-lite 1.0.30001797
+- [caniuse-lite 1.0.30001797](https://github.com/browserslist/caniuse-lite)
 
 ```
 Attribution 4.0 International
@@ -1963,7 +1974,7 @@ Creative Commons may be contacted at creativecommons.org.
 
 ### ISC
 
-- @ungap/structured-clone 1.3.1
+- [@ungap/structured-clone 1.3.1](https://github.com/ungap/structured-clone)
 
 ```
 ISC License
@@ -1985,7 +1996,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 ### ISC
 
-- lucide-react 0.460.0
+- [lucide-react 0.460.0](https://github.com/lucide-icons/lucide)
 
 ```
 ISC License
@@ -2007,7 +2018,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### ISC
 
-- picocolors 1.1.1
+- [picocolors 1.1.1](https://github.com/alexeyraspopov/picocolors)
 
 ```
 ISC License
@@ -2029,7 +2040,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### ISC
 
-- semver 7.8.4
+- [semver 7.8.4](https://github.com/npm/node-semver)
 
 ```
 The ISC License
@@ -2051,7 +2062,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### ISC
 
-- yaml 2.9.0
+- [yaml 2.9.0](https://github.com/eemeli/yaml)
 
 ```
 Copyright Eemeli Aro <eemeli@gmail.com>
@@ -2071,13 +2082,13 @@ THIS SOFTWARE.
 
 ### LGPL-3.0-or-later
 
-- @img/sharp-libvips-darwin-arm64 1.2.4
+- [@img/sharp-libvips-{platform} 1.2.4](https://github.com/lovell/sharp-libvips)
 
 _No license file ships with this package._
 
 ### MIT
 
-- @img/colour 1.1.0
+- [@img/colour 1.1.0](https://github.com/lovell/colour)
 
 ```
 # Licensing
@@ -2166,7 +2177,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### MIT
 
-- @mdx-js/mdx 3.1.1
+- [@mdx-js/mdx 3.1.1](https://github.com/mdx-js/mdx)
 
 ```
 The MIT License (MIT)
@@ -2194,7 +2205,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- @mdx-js/react 3.1.1
+- [@mdx-js/react 3.1.1](https://github.com/mdx-js/mdx)
 
 ```
 The MIT License (MIT)
@@ -2250,7 +2261,7 @@ SOFTWARE.
 
 ### MIT
 
-- acorn 8.16.0
+- [acorn 8.16.0](https://github.com/acornjs/acorn)
 
 ```
 MIT License
@@ -2278,7 +2289,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- acorn-jsx 5.3.2
+- [acorn-jsx 5.3.2](https://github.com/acornjs/acorn-jsx)
 
 ```
 Copyright (C) 2012-2017 by Ingvar Stepanyan
@@ -2304,7 +2315,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- argparse 1.0.10
+- [argparse 1.0.10](https://github.com/nodeca/argparse)
 
 ```
 (The MIT License)
@@ -2332,7 +2343,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- astring 1.9.0
+- [astring 1.9.0](https://github.com/davidbonnet/astring)
 
 ```
 Copyright (c) 2015, David Bonnet <david@bonnet.cc>
@@ -2358,7 +2369,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- clsx 2.1.1
+- [clsx 2.1.1](https://github.com/lukeed/clsx)
 
 ```
 MIT License
@@ -2374,7 +2385,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### MIT
 
-- csstype 3.2.3
+- [csstype 3.2.3](https://github.com/frenic/csstype)
 
 ```
 Copyright (c) 2017-2018 Fredrik Nicol
@@ -2400,7 +2411,7 @@ SOFTWARE.
 
 ### MIT
 
-- debug 4.4.3
+- [debug 4.4.3](https://github.com/debug-js/debug)
 
 ```
 (The MIT License)
@@ -2426,7 +2437,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- dequal 2.0.3
+- [dequal 2.0.3](https://github.com/lukeed/dequal)
 
 ```
 The MIT License (MIT)
@@ -2454,7 +2465,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- devlop 1.1.0
+- [devlop 1.1.0](https://github.com/wooorm/devlop)
 
 ```
 (The MIT License)
@@ -2483,7 +2494,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- estree-walker 3.0.3
+- [estree-walker 3.0.3](https://github.com/Rich-Harris/estree-walker)
 
 ```
 Copyright (c) 2015-20 [these people](https://github.com/Rich-Harris/estree-walker/graphs/contributors)
@@ -2497,7 +2508,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### MIT
 
-- extend 3.0.2
+- [extend 3.0.2](https://github.com/justmoon/node-extend)
 
 ```
 The MIT License (MIT)
@@ -2526,7 +2537,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- extend-shallow 2.0.1
+- [extend-shallow 2.0.1](https://github.com/jonschlinkert/extend-shallow)
 
 ```
 The MIT License (MIT)
@@ -2554,7 +2565,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- framer-motion 12.40.0
+- [framer-motion 12.40.0](https://github.com/motiondivision/motion/)
 
 ```
 The MIT License (MIT)
@@ -2582,7 +2593,7 @@ SOFTWARE.
 
 ### MIT
 
-- fsevents 2.3.2
+- [fsevents 2.3.2](https://github.com/fsevents/fsevents)
 
 ```
 MIT License
@@ -2611,7 +2622,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- gray-matter 4.0.3
+- [gray-matter 4.0.3](https://github.com/jonschlinkert/gray-matter)
 
 ```
 The MIT License (MIT)
@@ -2639,7 +2650,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- inline-style-parser 0.2.7
+- [inline-style-parser 0.2.7](https://github.com/remarkablemark/inline-style-parser)
 
 ```
 (The MIT License)
@@ -2655,7 +2666,7 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### MIT
 
-- is-extendable 0.1.1
+- [is-extendable 0.1.1](https://github.com/jonschlinkert/is-extendable)
 
 ```
 The MIT License (MIT)
@@ -2683,7 +2694,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- js-tokens 4.0.0
+- [js-tokens 4.0.0](https://github.com/lydell/js-tokens)
 
 ```
 The MIT License (MIT)
@@ -2711,7 +2722,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- js-yaml 3.14.2
+- [js-yaml 3.14.2](https://github.com/nodeca/js-yaml)
 
 ```
 (The MIT License)
@@ -2739,7 +2750,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- kind-of 6.0.3
+- [kind-of 6.0.3](https://github.com/jonschlinkert/kind-of)
 
 ```
 The MIT License (MIT)
@@ -2767,7 +2778,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- mdast-util-phrasing 4.1.0
+- [mdast-util-phrasing 4.1.0](https://github.com/syntax-tree/mdast-util-phrasing)
 
 ```
 (The MIT License)
@@ -2797,7 +2808,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- ms 2.1.3
+- [ms 2.1.3](https://github.com/vercel/ms)
 
 ```
 The MIT License (MIT)
@@ -2825,7 +2836,7 @@ SOFTWARE.
 
 ### MIT
 
-- nanoid 3.3.12
+- [nanoid 3.3.12](https://github.com/ai/nanoid)
 
 ```
 The MIT License (MIT)
@@ -2852,7 +2863,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- next 15.5.19
+- [next 15.5.19](https://github.com/vercel/next.js)
 
 ```
 The MIT License (MIT)
@@ -2880,7 +2891,7 @@ SOFTWARE.
 
 ### MIT
 
-- postcss 8.4.31
+- [postcss 8.4.31](https://github.com/postcss/postcss)
 
 ```
 The MIT License (MIT)
@@ -2907,7 +2918,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- remark-mdx 3.1.1
+- [remark-mdx 3.1.1](https://github.com/mdx-js/mdx)
 
 ```
 (The MIT License)
@@ -2935,7 +2946,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- reselect 5.2.0
+- [reselect 5.2.0](https://github.com/reduxjs/reselect)
 
 ```
 The MIT License (MIT)
@@ -2963,7 +2974,7 @@ SOFTWARE.
 
 ### MIT
 
-- section-matter 1.0.0
+- [section-matter 1.0.0](https://github.com/jonschlinkert/section-matter)
 
 ```
 The MIT License (MIT)
@@ -2991,7 +3002,7 @@ SOFTWARE.
 
 ### MIT
 
-- strip-bom-string 1.0.0
+- [strip-bom-string 1.0.0](https://github.com/jonschlinkert/strip-bom-string)
 
 ```
 The MIT License (MIT)
@@ -3019,7 +3030,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- style-to-js 1.1.21
+- [style-to-js 1.1.21](https://github.com/remarkablemark/style-to-js)
 
 ```
 The MIT License (MIT)
@@ -3048,7 +3059,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- style-to-object 1.0.14
+- [style-to-object 1.0.14](https://github.com/remarkablemark/style-to-object)
 
 ```
 The MIT License (MIT)
@@ -3077,7 +3088,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- styled-jsx 5.1.6
+- [styled-jsx 5.1.6](https://github.com/vercel/styled-jsx)
 
 ```
 MIT License
@@ -3105,7 +3116,7 @@ SOFTWARE.
 
 ### MIT
 
-- tailwind-merge 3.6.0
+- [tailwind-merge 3.6.0](https://github.com/dcastil/tailwind-merge)
 
 ```
 MIT License
@@ -3133,7 +3144,7 @@ SOFTWARE.
 
 ### MIT
 
-- trough 2.2.0
+- [trough 2.2.0](https://github.com/wooorm/trough)
 
 ```
 (The MIT License)
@@ -3161,7 +3172,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- tw-animate-css 1.4.0
+- [tw-animate-css 1.4.0](https://github.com/Wombosvideo/tw-animate-css)
 
 ```
 MIT License
@@ -3189,7 +3200,7 @@ SOFTWARE.
 
 ### MIT
 
-- unist-util-is 6.0.1
+- [unist-util-is 6.0.1](https://github.com/syntax-tree/unist-util-is)
 
 ```
 (The MIT license)
@@ -3218,7 +3229,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- unist-util-remove 4.0.0
+- [unist-util-remove 4.0.0](https://github.com/syntax-tree/unist-util-remove)
 
 ```
 The MIT License (MIT)
@@ -3246,7 +3257,7 @@ SOFTWARE.
 
 ### MPL-2.0
 
-- next-mdx-remote 6.0.0
+- [next-mdx-remote 6.0.0](https://github.com/hashicorp/next-mdx-remote)
 
 ```
 Copyright (c) 2020 HashiCorp, Inc.
@@ -3628,7 +3639,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 ### OFL-1.1
 
-- @fontsource-variable/inter 5.2.8
+- [@fontsource-variable/inter 5.2.8](https://github.com/fontsource/font-files)
 
 ```
 Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) Inter-Italic[opsz,wght].ttf: Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
@@ -3728,7 +3739,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 ### OFL-1.1
 
-- @fontsource-variable/plus-jakarta-sans 5.2.8
+- [@fontsource-variable/plus-jakarta-sans 5.2.8](https://github.com/fontsource/font-files)
 
 ```
 Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans) PlusJakartaSans-Italic[wght].ttf: Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans)

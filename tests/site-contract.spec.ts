@@ -212,6 +212,30 @@ test("the builders' band states the page's own words, with nothing to attribute"
   );
 });
 
+test("the notices page serves the licence texts it owes, and links their sources", async ({
+  page,
+}) => {
+  await open(page, "/legal");
+
+  /* The texts have to be SERVED, not referenced: MIT, ISC and BSD grant
+     redistribution on the condition that their notices appear in the copies you
+     ship, so a page of links would not discharge it. `pnpm check:notices` keeps
+     the data current; this keeps it rendered. */
+  const notices = page.locator("main pre");
+  expect(await notices.count(), "verbatim notice texts").toBeGreaterThan(50);
+  await expect(notices.first()).toContainText("Permission is hereby granted");
+
+  // Every package links to its upstream source, for provenance rather than
+  // discharge — one entry per package, whether or not it declares a repository.
+  const entries = page.locator("main li");
+  const sourceLinks = page.locator("main li a[href^='https://']");
+  expect(await entries.count()).toBeGreaterThan(150);
+  expect(await sourceLinks.count()).toBeGreaterThan(150);
+
+  // The GPL-3.0 label is the one the footer used to get wrong.
+  await expect(page.getByText("GPL-3.0", { exact: false }).first()).toBeVisible();
+});
+
 test("the builders' band and the close paint one ground", async ({ page }) => {
   await open(page, "/");
 
