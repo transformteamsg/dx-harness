@@ -7,6 +7,27 @@ import { InkIcon } from "@/components/ink-icon";
    lines land one by one, and the reviewed screen comes back underneath — while
    the stage that corresponds to each beat highlights on the right.
 
+   The three cards arrive ONE AT A TIME (builder ruling, 2026-08-18). Before the
+   sequence starts the figure is empty — no outlined placeholders waiting to be
+   filled. Card 01 fades in centred, types its request, and only then does the
+   pair rise so card 02 can take the centre; card 03 lands the same way and the
+   whole chain rests assembled. This reverses the ghost treatment an earlier
+   review round asked for (unrevealed regions held a 40% wash so their space read
+   as "incoming"): the builder's objection is that a wash still draws three empty
+   cards before anything happens. The void that ghosting existed to answer is
+   answered differently now — the figure reserves its final height and the
+   revealed cards are centred inside it, so leftover space is distributed above
+   and below the story rather than pooling under it.
+
+   How the rise works: every card keeps its space in the layout at all times and
+   reveals with opacity, so the stack's geometry never reflows. What moves is the
+   stack itself, translated by half the difference between the reserved height
+   and the revealed cards' height — which puts the revealed group on the box's
+   centre line and lands at exactly 0 when the third card joins. Only `opacity`
+   and `translate` animate, so nothing touches layout or paint; the entering card
+   eases out (it is arriving) and the stack eases in-out (it is on-screen content
+   moving), each on --motion-story, the token reserved for this narrative.
+
    The player auto-plays once when it scrolls into view; the three stages are
    real buttons, so a reader can jump to any beat (and keyboard users get the
    same scrubbing hover users get). Reduced motion sees the finished run and
@@ -32,6 +53,37 @@ const RUN_LABEL =
    3 polish pass · 4 plan approved, building · 5 review passed + result */
 const FINAL_BEAT = 5;
 const BEAT_STAGE = [0, 1, 1, 1, 1, 2] as const;
+
+/* Before the first beat. The server and no-JS readers never see this state —
+   they get FINAL_BEAT, the whole assembled chain — and neither does a
+   reduced-motion reader. It exists only for the moment between hydration and the
+   card 01 fade, so a reader scrolling in does not meet the finished chain and
+   then watch it reset to empty. */
+const PRE_ROLL = -1;
+
+/* The beat each card joins on. Card 02 arrives once the request is typed; card
+   03 once the run reports its result. The gap between them is what makes the
+   sequence read as three steps rather than one assembly. */
+const CARD_BEAT = [0, 1, 5] as const;
+
+/* The schedule, in one place instead of inline arithmetic. Every number is a
+   *delay* — scheduling, not a CSS duration, so it is not a MOT-2 token — but the
+   two rules it follows are worth stating: each card's own animation finishes
+   before the next card's beat (that is the builder's "one by one"), and the
+   whole sequence settles inside five seconds, past which an auto-starting
+   animation owes the reader a visible stop control (WCAG 2.2.2). Sum with the
+   600ms settle: 2600 + 600 = 3200ms. */
+const SCHEDULE = {
+  typeStart: 250,
+  typeStep: 22,
+  /* +150ms after the last character, so the caret's disappearance and the rise
+     do not start on the same frame. */
+  card2: 1150,
+  layoutPass: 1500,
+  polishPass: 1850,
+  building: 2200,
+  card3: 2600,
+} as const;
 
 const STAGES = [
   {
@@ -135,10 +187,14 @@ const statusLine = "flex items-baseline gap-2 text-xs leading-relaxed";
    ~19.5px first line box. */
 const statusLineIcon = "flex items-start gap-2 text-xs leading-relaxed";
 const statusIconBox = "mt-px shrink-0";
-/* While a drawn region waits for its beat it keeps a faint ghost presence
-   instead of a void: the reserved space reads as "incoming", not "missing" —
-   both mid-autoplay and when a reader scrubs back to stage 01. */
-const ghost = "opacity-40";
+/* A card that has not arrived yet is fully absent to the eye — opacity 0, not a
+   wash — while keeping its space in the layout so the stack never reflows. It
+   sits 6px low so its arrival has somewhere to travel from; `translate`, not
+   `transform`, because Tailwind v4 compiles translate-y-* to the `translate`
+   property and a transform transition would never animate it. */
+const cardEnter =
+  "transition-[opacity,translate] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none";
+const cardWaiting = "translate-y-1.5 opacity-0";
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)";
 
@@ -154,6 +210,13 @@ export function HarnessRun() {
   const played = useRef(false);
   const playerRef = useRef<HTMLDivElement>(null);
   const figureRef = useRef<HTMLElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  /* Each card's bottom edge, measured from the stack's top in the assembled
+     layout. These are what turn "centre the revealed group" into a number.
+     Layout offsets, not `getBoundingClientRect`: the stack carries a translate
+     while it plays, and a rect would fold that translate back into the
+     measurement it is derived from. */
+  const [cardBottoms, setCardBottoms] = useState<number[] | null>(null);
   /* The figure's focus-mode reserve, measured rather than hardcoded — see the
      effect below for why a constant cannot hold this invariant. null means
      "not measured yet" (or never entered focus mode), in which case the figure
@@ -165,23 +228,27 @@ export function HarnessRun() {
     timers.current = [];
   };
 
-  /* The whole run, including the result's 600ms settle, finishes inside five
-     seconds. Past five seconds an auto-starting animation owes the reader a
-     visible pause/stop control (WCAG 2.2.2); staying under the boundary is the
-     honest fix, not a stop button nobody would find. */
+  /* One card at a time, each finishing before the next begins — see SCHEDULE for
+     the two rules the numbers answer to. */
   const play = () => {
     clearTimers();
     setBeat(0);
     setTypedCount(0);
     for (let i = 1; i <= PROMPT.length; i++) {
-      timers.current.push(window.setTimeout(() => setTypedCount(i), 250 + i * 26));
+      timers.current.push(
+        window.setTimeout(
+          () => setTypedCount(i),
+          SCHEDULE.typeStart + i * SCHEDULE.typeStep,
+        ),
+      );
     }
-    const t0 = 250 + PROMPT.length * 26;
-    timers.current.push(window.setTimeout(() => setBeat(1), t0 + 400));
-    timers.current.push(window.setTimeout(() => setBeat(2), t0 + 850));
-    timers.current.push(window.setTimeout(() => setBeat(3), t0 + 1300));
-    timers.current.push(window.setTimeout(() => setBeat(4), t0 + 1750));
-    timers.current.push(window.setTimeout(() => setBeat(5), t0 + 2250));
+    const at = (delay: number, next: number) =>
+      timers.current.push(window.setTimeout(() => setBeat(next), delay));
+    at(SCHEDULE.card2, 1);
+    at(SCHEDULE.layoutPass, 2);
+    at(SCHEDULE.polishPass, 3);
+    at(SCHEDULE.building, 4);
+    at(SCHEDULE.card3, 5);
   };
 
   /* Jump straight to a stage's end beat; a reader's pick always beats the timer. */
@@ -196,6 +263,14 @@ export function HarnessRun() {
     const player = playerRef.current;
     if (!player) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    /* Empty the figure before the reader gets here, but only for a reader who
+       will actually see the sequence; under reduced motion the assembled chain
+       simply stays. This does not race the geometry effect below: an unrevealed
+       card keeps its space and only drops its opacity, so the layout the
+       measurement reads is the assembled one at every beat. The one state that
+       does collapse the layout is focus mode, which that effect guards against
+       explicitly. */
+    if (!reducedMotion.matches && !played.current) setBeat(PRE_ROLL);
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries[0].isIntersecting || played.current) return;
@@ -245,7 +320,33 @@ export function HarnessRun() {
     if (!el) return;
     const measure = () => {
       if (focused !== null) return;
+      /* Fractional, not `offsetHeight`. This number becomes the figure's
+         min-height in focus mode, and the invariant it holds is "focused is
+         exactly as tall as resting" — `offsetHeight` rounds, so a 504.5px column
+         came back as a 505px reserve and isolating a step grew it half a pixel.
+         A contract test measures the same fractional rect, and it caught this. */
       setReserve(el.getBoundingClientRect().height);
+      const cards = cardRefs.current;
+      if (cards.length === CARD_BEAT.length && cards.every(Boolean)) {
+        /* Each card's bottom edge from the first card's top, in LAYOUT offsets.
+           Two things this avoids, both measured rather than assumed:
+           — Rects are fractional but fold in every translate in play, and a card
+             waiting its turn is held 6px low. Measured that way, card 01 settled
+             3.5px above the centre line: half of the 6px, exactly as the
+             arithmetic predicts. `offsetTop` ignores translate.
+           — Offsets need one shared basis. Subtracting the STACK's offsetTop
+             looked right and was wrong by 2189px, because the stack's own
+             translate makes it a containing block, so its children's offsets are
+             already measured against it while its own are measured against the
+             sheet. Card 01 is the reliable origin: all three are siblings under
+             one offsetParent, whatever that turns out to be, so this subtraction
+             cannot pick up a different basis.
+           The half-pixel rounding costs here lands on the centring, which is
+           invisible; the fractional measurement is kept where it is load-bearing,
+           on the reserve above. */
+        const origin = cards[0]!.offsetTop;
+        setCardBottoms(cards.map((c) => c!.offsetTop + c!.offsetHeight - origin));
+      }
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -269,6 +370,31 @@ export function HarnessRun() {
     !inFocus || focused === stageIndex ? "" : "hidden";
   const chainOnly = inFocus ? "hidden" : "";
 
+  /* A card is on screen once its beat has landed. In focus mode the reader's own
+     pick is the only card drawn, and `jumpTo` always sets a beat at or past that
+     card's own, so this needs no special case for it. */
+  const cardOn = (card: number) => beat >= CARD_BEAT[card];
+  /* Motion is armed only once the sequence is running. Without this the pre-roll
+     itself animates: the assembled chain the server rendered would ease out over
+     600ms and the stack would glide down into position before anything had
+     started. Clearing the figure is not a beat of the story, so it happens in one
+     frame; measured before this guard existed, the three cards sat at 0.92 and
+     falling on hydration. */
+  const armed = beat > PRE_ROLL;
+  /* The last card to have arrived — the one the stack centres on. At PRE_ROLL
+     nothing has arrived yet and the stack still sits where card 01 will land, so
+     card 01 fades in already centred instead of sliding down into place. */
+  const anchor = cardOn(2) ? 2 : cardOn(1) ? 1 : 0;
+  /* Half the unused height, which puts the revealed cards on the box's centre
+     line. Once the third card lands its bottom IS the reserved height, so this
+     resolves to 0 and the chain rests exactly where the server rendered it —
+     which is why the settled state needs no separate case. Focus mode centres
+     with `justify-center` instead, so the stack stays put. */
+  const shift =
+    inFocus || reserve === null || cardBottoms === null
+      ? 0
+      : Math.max(0, (reserve - cardBottoms[anchor]) / 2);
+
   return (
     <div className="grid border-b border-border lg:grid-cols-2">
       <div
@@ -285,16 +411,32 @@ export function HarnessRun() {
              reserve must come from this exact element, and why no constant (px or rem)
              can hold this invariant across viewport widths and root font sizes. When
              `reserve` is null (not measured yet), no minimum is applied. */
-          className={`m-0 flex w-full max-w-[15rem] flex-col gap-2 ${
+          /* overflow-hidden: while the stack is translated down, the cards that
+             have not arrived hang past the figure's bottom edge. They are
+             transparent, so nothing shows either way — but they would still take
+             pointer events over the section below, so the box clips them. */
+          className={`m-0 flex w-full max-w-[15rem] flex-col gap-2 overflow-hidden ${
             inFocus ? "justify-center" : ""
           }`}
           style={inFocus && reserve !== null ? { minHeight: reserve } : undefined}
           role="img"
           aria-label={focused === null ? RUN_LABEL : STAGES[focused].figureLabel}
         >
-          <div aria-hidden="true">
-            {/* the terminal window */}
-            <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-sm ${regionOn(0)}`}>
+          {/* The stack: one element carrying the rise for all three cards, so a
+              card's arrival and the group's movement stay independent. */}
+          <div
+            aria-hidden="true"
+            className={`${armed ? "transition-[translate] duration-(--motion-story) ease-(--ease-in-out) motion-reduce:transition-none" : ""}`}
+            style={{ translate: `0 ${shift}px` }}
+          >
+            {/* card 01 — the terminal window */}
+            <div
+              ref={(el) => {
+                cardRefs.current[0] = el;
+              }}
+              className={`${armed ? cardEnter : ""} ${cardOn(0) ? "" : cardWaiting} ${regionOn(0)}`}
+            >
+            <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
               <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
                 <span className="size-2 rounded-full bg-border" />
                 <span className="size-2 rounded-full bg-border" />
@@ -326,17 +468,22 @@ export function HarnessRun() {
                 </p>
               </div>
             </div>
+            </div>
 
+            {/* card 02 — the connector travels with the card it leads into, so
+                revealing the card draws the link that attaches it. */}
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost} ${chainOnly}`}
-            />
+              ref={(el) => {
+                cardRefs.current[1] = el;
+              }}
+              className={`${armed ? cardEnter : ""} ${cardOn(1) ? "" : cardWaiting} ${regionOn(1)}`}
+            >
+            <div className={`mx-auto h-4 w-px bg-blueprint-ink ${chainOnly}`} />
 
             {/* the orchestrator at work: dx-design reads the ask, then visibly runs the
                 specialised skills — each with the same ink tool mark the skills section
                 uses. This panel is the "one worked example" for the parts above. */}
-            <div
-              className={`rounded-lg border border-border bg-surface p-3 shadow-sm ${lineTransition} ${beat >= 1 ? "opacity-100" : ghost} ${regionOn(1)}`}
-            >
+            <div className="rounded-lg border border-border bg-surface p-3 shadow-sm">
               <p className={`${statusLineIcon} ${lineTransition} ${lineOn(1)}`}>
                 <span className={statusIconBox}>
                   <InkIcon
@@ -350,7 +497,8 @@ export function HarnessRun() {
                 <span className="text-muted-foreground">picks the passes</span>
               </p>
               {/* The indent rule arrives with its first row; drawn earlier it
-                  hangs as an orphan hairline inside the ghost. */}
+                  hangs as an orphan hairline under the header row, which is what
+                  card 02 looks like for the 350ms before its first pass lands. */}
               <div
                 className={`mt-2 flex flex-col gap-1.5 border-l border-border pl-3 ${lineTransition} ${lineOn(2)}`}
               >
@@ -380,26 +528,25 @@ export function HarnessRun() {
                 </p>
               </div>
             </div>
+            </div>
 
-            {/* the one lime link in the chain: the reviewed screen coming back */}
+            {/* card 03 — the lime link and the reviewed screen arrive together as
+                the run's answer. No inner beat gating: the whole card is the
+                third step, so its contents ride its own arrival rather than
+                fading a second time inside it. */}
             <div
-              className={`mx-auto h-4 w-px bg-blueprint-ink ${lineTransition} ${beat >= 5 ? "opacity-100" : ghost} ${chainOnly}`}
-            />
+              ref={(el) => {
+                cardRefs.current[2] = el;
+              }}
+              className={`${armed ? cardEnter : ""} ${cardOn(2) ? "" : cardWaiting} ${regionOn(2)}`}
+            >
+            <div className={`mx-auto h-4 w-px bg-blueprint-ink ${chainOnly}`} />
 
             {/* the screen that comes back — a small but real settings surface,
                 not abstract bars, so the worked example lands as a product,
-                not a diagram. The frame ghosts before its beat; the contents
-                land with it. */}
-            {/* transition-[opacity,translate], not transform: Tailwind v4's
-                translate-y-* utilities set the `translate` property, so a
-                `transform` transition never animates them — the visible ghost
-                would snap its 6px rise instead of easing it. */}
-            <div
-              className={`rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm transition-[opacity,translate] duration-(--motion-story) ease-(--ease-out) motion-reduce:transition-none ${
-                beat >= 5 ? "opacity-100" : `translate-y-1.5 ${ghost}`
-              } ${regionOn(2)}`}
-            >
-              <div className={`${lineTransition} ${lineOn(5)}`}>
+                not a diagram. */}
+            <div className="rounded-lg border border-blueprint-ink bg-surface p-3 shadow-sm">
+              <div>
                 <p className="text-xs font-semibold text-foreground">Settings</p>
                 <div className="mt-2.5 flex flex-col gap-2">
                   <div>
@@ -422,21 +569,14 @@ export function HarnessRun() {
                 </div>
               </div>
             </div>
-            {/* Wrapped, not gated directly on the <p>: statusLineIcon's own `flex`
-                would sit in the same class string as regionOn's `hidden`, and which
-                one wins would depend on Tailwind's utility emission order rather
-                than anything visible at this call site. A plain wrapper (no
-                display utility of its own) carries the hide/show and leaves the
-                <p>'s own flex layout alone. */}
-            <div className={regionOn(2)}>
-              <p
-                className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text ${lineTransition} ${lineOn(5)}`}
-              >
-                <span className={statusIconBox}>
-                  <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
-                </span>
-                <span>design review passed</span>
-              </p>
+            <p
+              className={`mt-2 ${statusLineIcon} font-semibold text-site-accent-text`}
+            >
+              <span className={statusIconBox}>
+                <InkIcon name="skills/review" size={18} ink="var(--site-accent-text)" idSuffix="-run" />
+              </span>
+              <span>design review passed</span>
+            </p>
             </div>
             {/* Focus-mode enrichment: builder direction is that an isolated step
                 should not sit alone in the column when there is real context to

@@ -227,6 +227,71 @@ test("the builders' band and the close paint one ground", async ({ page }) => {
   expect(grounds.band).toBe(grounds.close);
 });
 
+test("the run reveals its three cards one at a time, from an empty figure", async ({ page }) => {
+  await open(page, "/");
+
+  const figure = page.locator('figure[role="img"]');
+  const cardOpacities = () =>
+    figure.evaluate((fig) =>
+      Array.from(fig.firstElementChild!.children)
+        .slice(0, 3)
+        .map((c) => Number(getComputedStyle(c).opacity))
+    );
+
+  // Before the section is reached: the figure holds its height, and not one
+  // card is drawn. This is the builder's ask — no placeholders waiting to fill.
+  await expect
+    .poll(async () => (await figure.boundingBox())!.height > 0)
+    .toBe(true);
+  expect(await cardOpacities()).toEqual([0, 0, 0]);
+
+  /* Sample in the page rather than from the test: each card's arrival is
+     recorded the frame its opacity first settles, so the assertion is about
+     ORDER — which is the actual contract — instead of catching one card mid-fade
+     at a wall-clock guess. */
+  await figure.evaluate((fig) => {
+    const cards = Array.from(fig.firstElementChild!.children).slice(0, 3);
+    const w = window as unknown as { __arrivals: (number | null)[] };
+    w.__arrivals = [null, null, null];
+    const t0 = performance.now();
+    const tick = () => {
+      let pending = false;
+      cards.forEach((c, i) => {
+        if (w.__arrivals[i] !== null) return;
+        if (Number(getComputedStyle(c).opacity) > 0.99) w.__arrivals[i] = performance.now() - t0;
+        else pending = true;
+      });
+      if (pending) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+
+  await figure.scrollIntoViewIfNeeded();
+  await expect
+    .poll(
+      () => page.evaluate(() => (window as unknown as { __arrivals: (number | null)[] }).__arrivals.filter((a) => a !== null).length),
+      { timeout: 15_000 }
+    )
+    .toBe(3);
+
+  const arrivals = (await page.evaluate(
+    () => (window as unknown as { __arrivals: number[] }).__arrivals
+  )) as number[];
+  expect(arrivals[0], "card 01 lands before card 02").toBeLessThan(arrivals[1]);
+  expect(arrivals[1], "card 02 lands before card 03").toBeLessThan(arrivals[2]);
+
+  // The whole sequence stays inside WCAG 2.2.2's five-second boundary, past
+  // which an auto-starting animation owes the reader a visible stop control.
+  expect(arrivals[2], "the run settles inside five seconds").toBeLessThan(5000);
+
+  // Settled: the stack is back at its natural offset, which is the state the
+  // server renders and a no-JS reader gets.
+  await expect
+    .poll(() => figure.evaluate((fig) => getComputedStyle(fig.firstElementChild!).translate))
+    .toBe("0px");
+  expect(await cardOpacities()).toEqual([1, 1, 1]);
+});
+
 test("the harness run scrubs by stage and respects reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page, "/");
