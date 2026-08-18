@@ -22,6 +22,11 @@ and both get NOTED and routed.
   misleads). **LAY-7** — one primary focal region; reading order matches task
   priority (squint test).
 <!-- /dx-sync:lay-controls -->
+- **Measure** covers **TYP-6** alongside LAY-4: running prose sits in roughly 45–75
+  characters per line (target 40–60), capped with a `max-width` in `ch`. Judge the two
+  together, since they cap the same thing at different numbers, and hold headings,
+  table cells, data grids, and short labels out of both. A cap under 45ch is display
+  type, not prose.
 - **Structural anti-slop** — SLP-4 (no nested cards; flatten with space/type/dividers),
   SLP-5 (no identical-card grids as default), SLP-11 (a card is only for an interactive
   unit; group static content with space and dividers).
