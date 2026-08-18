@@ -94,11 +94,19 @@ L0_CONTROL_IDS = frozenset({"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"})
 # ERROR-line convention (checks/README.md):
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
+#   ERROR <route>:<cell> [<CTL>] <message>                  (rendered-check)
 # contrast's `ERROR <file>:<line> [A11Y-1] text …` line matches too. Operational
 # ERRORs (path-not-found, unreadable file, --tokens usage) have no <file>:<line>[CTL]
 # shape and are kept as control-less findings — never dropped, never a silent pass.
+#
+# The position group is wide rather than digits-only because a rendered finding
+# has no source line: checklib.emit_rendered_error puts the run-matrix cell
+# (`1280-dark`) there instead. A digits-only position still matches and still
+# parses back to an integer `line`, so every static check's output reads
+# unchanged. This regex and checklib.emit_error are one contract — change them
+# together (checklib.py's emit_error docstring says so too).
 _FINDING_RE = re.compile(
-    r"^ERROR\s+(?P<file>.+?):(?P<line>\d+)\s+"
+    r"^ERROR\s+(?P<file>.+?):(?P<pos>[^\s\[]+)\s+"
     r"\[(?P<control>[A-Z0-9-]+)\](?:\[[^\]]*\])?\s+(?P<message>.*)$"
 )
 
@@ -328,16 +336,23 @@ def classify_run(returncode, stdout, stderr):
 def parse_findings(check_name, error_lines):
     """Parse ERROR lines into structured findings. A line matching the
     `<file>:<line> [CTL]` convention yields a control finding; any other ERROR line
-    (operational) is kept as a control-less finding — never dropped."""
+    (operational) is kept as a control-less finding — never dropped.
+
+    `position` carries the raw token from the position slot, so a rendered
+    finding keeps the run-matrix cell that produced it (`1280-dark`). `line` is
+    that token as an integer where it is digits, and None where it is not — a
+    rendered finding asserts no source line it cannot see."""
     out = []
     for ln in error_lines:
         m = _FINDING_RE.match(ln)
         if m:
+            pos = m.group("pos")
             out.append({
                 "check": check_name,
                 "control": m.group("control"),
                 "file": m.group("file"),
-                "line": int(m.group("line")),
+                "line": int(pos) if pos.isdigit() else None,
+                "position": pos,
                 "message": m.group("message").strip(),
             })
         else:
@@ -347,6 +362,7 @@ def parse_findings(check_name, error_lines):
                 "control": None,
                 "file": None,
                 "line": None,
+                "position": None,
                 "message": msg,
             })
     return out
@@ -454,7 +470,7 @@ def run_generator_check(repo_root, findings, results, crashed):
     if kind == "findings":
         f = {"check": "design-json", "control": None,
              "file": os.path.relpath(design_json, repo_root), "line": None,
-             "message": msg}
+             "position": None, "message": msg}
         findings.append(f)
         results.append({"name": "design-json", "kind": "findings",
                         "error_lines": [f"ERROR {msg}"], "note_lines": [], "findings": [f]})
@@ -708,6 +724,62 @@ def run_self_test():
     p4 = parse_findings("token-audit", ["ERROR token-audit: path not found: nope/"])
     check("parse operational ERROR (control-less, kept)",
           p4[0]["control"] is None and "path not found" in p4[0]["message"])
+    check("a static finding keeps its integer line and its raw position",
+          p3[0]["line"] == 9 and p3[0]["position"] == "9")
+
+    # 7b. The rendered shape — a route and a run-matrix cell where a static
+    # finding carries a file and a line. Both of _FINDING_RE's call sites have
+    # to read it: parse_findings here, print_text_report at the filter/annotate
+    # site below.
+    rendered_line = "ERROR /standards/slop:1280-dark [A11Y-1] color-contrast at .card > p"
+    p5 = parse_findings("rendered-check", [rendered_line])
+    check("parse rendered finding: control",
+          p5[0]["control"] == "A11Y-1")
+    check("parse rendered finding: route in the file slot",
+          p5[0]["file"] == "/standards/slop")
+    check("parse rendered finding: cell in the position slot",
+          p5[0]["position"] == "1280-dark")
+    check("parse rendered finding: no source line is asserted",
+          p5[0]["line"] is None)
+    p6 = parse_findings("rendered-check", [
+        "ERROR /standards:1280-light [A11Y-4] target-size at .chip — suggest: widen to 24px"])
+    check("a rendered finding is not control-less",
+          p6[0]["control"] == "A11Y-4" and p6[0]["position"] == "1280-light")
+
+    # 7c. The widened position group changes no existing shape: every ERROR
+    # line the wrapped checks emit today still parses the same way.
+    unchanged = parse_findings("mixed", [
+        "ERROR app/x.tsx:12 [TOK-1] raw hex '#fff' — suggest: use a token",
+        "ERROR a.css:4 [TOK-1][waiver-claimed] raw hex — verify approver",
+        "ERROR b.html:9 [A11Y-1] text #777 on #fff = 3.9:1 (large only) — suggest: darken",
+        "ERROR components/row.tsx:12 [A11Y-2][jsx-a11y/click-events-have-key-events] x — suggest: y",
+    ])
+    check("every static shape still yields an integer line",
+          [f["line"] for f in unchanged] == [12, 4, 9, 12])
+    still_operational = parse_findings("mixed", [
+        "ERROR token-audit: path not found: nope/",
+        "ERROR a11y-eslint: rule 'jsx-a11y/x' fired in a.tsx at line 3 but has no row",
+        "ERROR components/x.tsx:3: import diff (CMP-1 finding)",
+    ])
+    check("every operational shape stays control-less",
+          all(f["control"] is None for f in still_operational))
+
+    rendered_results = [{
+        "name": "rendered-check", "kind": "findings",
+        "error_lines": [rendered_line,
+                        "ERROR /standards/slop:1280-dark [TYP-2] text size too small"],
+        "note_lines": [], "findings": p5,
+    }]
+    rendered_out = io.StringIO()
+    with contextlib.redirect_stdout(rendered_out):
+        print_text_report(p5, rendered_results, [], ["TYP-2"],
+                          overrides=[{"control": "A11Y-1", "tier": "L2",
+                                      "rule": "x", "reason": "y", "approver": None}])
+    rendered_text = rendered_out.getvalue()
+    check("the print path filters a rendered finding by ignoreRules",
+          "[TYP-2]" not in rendered_text)
+    check("the print path annotates a rendered finding with its override",
+          "[A11Y-1]" in rendered_text and "[override:L2]" in rendered_text)
 
     # 8. NOTE is not an ERROR/finding (classify keeps exit clean, not findings).
     check("NOTE-only stdout on exit 0 is clean",
@@ -822,14 +894,15 @@ def run_self_test():
 
     # 12. JSON report shape — findings keys + counts.
     findings = [{"check": "a11y-static", "control": "A11Y-2", "file": "x.html",
-                 "line": 3, "message": "focus removed"}]
+                 "line": 3, "position": "3", "message": "focus removed"}]
     results = [{"name": "a11y-static", "kind": "findings"},
                {"name": "component-manifest", "kind": "skipped"}]
     report = build_json_report(findings, results, [], "curated", EXIT_FINDINGS)
     parsed = json.loads(json.dumps(report))  # must be JSON-serialisable
     check("json has findings + counts", "findings" in parsed and "counts" in parsed)
-    check("json finding has the 5 keys",
-          set(parsed["findings"][0]) == {"check", "control", "file", "line", "message"})
+    check("json finding has the 6 keys",
+          set(parsed["findings"][0]) == {"check", "control", "file", "line",
+                                         "position", "message"})
     check("json counts total", parsed["counts"]["total"] == 1)
     check("json counts by_control", parsed["counts"]["by_control"].get("A11Y-2") == 1)
     check("json records skipped check", "component-manifest" in parsed["counts"]["checks_skipped"])

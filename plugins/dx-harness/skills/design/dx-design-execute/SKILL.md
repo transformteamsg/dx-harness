@@ -385,19 +385,20 @@ Skill-specific notes while building:
 
 ## Phase 5: Design review
 
-In standalone mode, run the four steps in `verify.md` (beside this skill) IN
+In standalone mode, run the five steps in `verify.md` (beside this skill) IN
 ORDER: read it now, before verifying anything, and do not present output to the
-user while a step is failing. It carries the deterministic checks and the evidence
-sets, then hands off to the shared procedure
+user while a step is failing. It carries the deterministic checks, the evidence
+sets and the rendered check, then hands off to the shared procedure
 `../../../procedures/design-review.md` for reviewer dispatch, the verbatim-verdict
 rule, and the verdict re-check from new screenshots. The verdict is written by the
 `dx-design-review` agent, never by you.
 
-In return-to-caller mode, run only steps 1 and 2 of `verify.md`: the deterministic
-checks and the evidence capture. Never run step 3 yourself; reviewer dispatch
-belongs to whoever started the run, exactly once. Return the review bundle from
-"Two ways in" to the caller, who dispatches the reviewer and routes the verdict
-back; when findings come back, address them and re-run from step 1 (step 4).
+In return-to-caller mode, run only steps 1 to 3 of `verify.md`: the deterministic
+checks, the evidence capture and the rendered check. Never run step 4 yourself;
+reviewer dispatch belongs to whoever started the run, exactly once. Return the
+review bundle from "Two ways in" to the caller, who dispatches the reviewer and
+routes the verdict back; when findings come back, address them and re-run from
+step 1 (step 5).
 
 ## Phase 6: Rule proposal
 
