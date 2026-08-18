@@ -224,9 +224,9 @@ function catalogTwin(): Twin {
   return {
     mdPath: "/standards/catalog.md",
     htmlPath,
-    title: "Standards and control catalog",
+    title: "Standards catalog",
     description:
-      "How the standard works, followed by every control and its verifiable fail conditions.",
+      "How the standard works, followed by every standard and its verifiable fail conditions.",
     render: () => renderCatalogMarkdown(),
   };
 }
@@ -259,14 +259,14 @@ function renderCatalogMarkdown(): string {
 
   const yamlBlock =
     "\n\n## Machine source\n\n" +
-    "The control catalog is also published as data at [/standards/catalog.yaml](/standards/catalog.yaml). The same content, inline:\n\n" +
+    "The catalog is also published as data at [/standards/catalog.yaml](/standards/catalog.yaml). The same content, inline:\n\n" +
     "```yaml\n" +
     getPublicCatalogYaml().trimEnd() +
     "\n```\n";
 
   const header = standards
-    ? `${toMarkdown(standards.title, standards.description, standards.content).trimEnd()}\n\n## Control catalog`
-    : "# Standards\n\n## Control catalog";
+    ? `${toMarkdown(standards.title, standards.description, standards.content).trimEnd()}\n\n## All standards`
+    : "# Standards\n\n## All standards";
 
   return `${header}\n\n${table}${failsBlock}${yamlBlock}`;
 }
@@ -274,7 +274,7 @@ function renderCatalogMarkdown(): string {
 /* Honest note shown when a control has no extended detail file. Exported so
    the HTML detail page renders the identical text — one note, two surfaces. */
 export const NO_EXTENDED_DETAIL =
-  "No extended detail — this control is defined by its catalog entry above. Full rationale and examples are added when a control needs them.";
+  "No extended detail — this standard is defined by its catalog entry above. Full rationale and examples are added when a standard needs them.";
 
 /* Per-control twins (/standards/catalog/<id>.md): one reader (getControlDetail),
    the same body the HTML page shows. Header + a tier · check · category line,
@@ -338,7 +338,7 @@ function compatibilityTwins(): Twin[] {
     {
       mdPath: "/standards.md",
       htmlPath: "/standards/catalog",
-      title: "Standards and control catalog",
+      title: "Standards catalog",
       description: "Compatibility alias for the combined Standards page.",
       render: () => renderCatalogMarkdown(),
     },

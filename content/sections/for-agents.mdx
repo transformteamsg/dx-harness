@@ -6,11 +6,11 @@ illustration: a small friendly robot assistant in a school staff room, carefully
 
 Everything on this site exists in three forms, for three readers.
 
-**Humans read the site.** The standards pages are written for people making judgement calls. Browse, decide, deviate with a reason.
+**Humans read the site.** The guidance pages are written for people making judgement calls. Browse, decide, deviate with a reason.
 
 **Humans hand skills to machines.** Skills in the [harness](/harness) are markdown instructions: human-readable guidelines packaged so an agent can execute them. You read a skill to trust it; the agent reads it to apply it. Skills don't define the bar, they carry it.
 
-**Machines read the contract.** The control catalog is the one layer precise enough to enforce automatically, so it is published twice: rendered for review at [/standards/catalog](/standards/catalog), and as data at [/standards/catalog.yaml](/standards/catalog.yaml).
+**Machines read the contract.** The catalog is the one layer precise enough to enforce automatically, so it is published twice: rendered for review at [/standards/catalog](/standards/catalog), and as data at [/standards/catalog.yaml](/standards/catalog.yaml).
 
 Every page on this site is also available as Markdown: append `.md` to its path. So [/standards/voice-tone](/standards/voice-tone) has a clean Markdown twin at `/standards/voice-tone.md` — the page content, no site chrome. Fetch one page when you need one page.
 
@@ -19,7 +19,7 @@ Every page on this site is also available as Markdown: append `.md` to its path.
 Two machine surfaces, depending on how much you need:
 
 - [/llms.txt](/llms.txt) is the curated index — it lists every page and links each `.md` twin. Start here. Any page is also available as Markdown: append `.md` to its path (e.g. `/standards/catalog.md`).
-- [/standards/catalog.yaml](/standards/catalog.yaml) is the control source. Point your tool at it when you only need the controls.
+- [/standards/catalog.yaml](/standards/catalog.yaml) is the machine source. Point your tool at it when you only need the standards.
 
 Tiers are binding: L0 cannot be waived, L1 needs `dx-waive <ID> reason="..."` in code, L2 deviations need an inline rationale.
 
@@ -31,11 +31,11 @@ Two layers, depending on how deep you integrate:
 
 - **Consume the contract.** Point your tooling at
   [/standards/catalog.yaml](/standards/catalog.yaml) and grade what you build
-  against each control's `verify` and `fails_when`.
+  against each standard's `verify` and `fails_when`.
 - **Run the checks.** The harness repo carries the deterministic checkers the
   catalog references (schema validation, token audit, static accessibility)
   and this site's own CI runs them on every push — install the plugin from the
   [harness](/harness) page and your repo gets the same checks
-  in the design loop. Not every control has a script; the catalog's `enforced`
+  in the design loop. Not every standard has a script; the catalog's `enforced`
   field says which are machine-checked today, and nothing unscripted is ever
   reported as "passed".

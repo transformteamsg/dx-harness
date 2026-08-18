@@ -17,10 +17,10 @@ still need generalising are tracked separately.
 
 The standard now speaks across product teams instead of presenting one product
 principle as universal. The Settled and Proposed display axis has also been removed
-from pages and controls. Older entries below preserve the decisions as they were
+from pages and standards. Older entries below preserve the decisions as they were
 recorded at the time.
 
-## 22 July 2026 — content ratified: voice & tone, controls, and guidelines settled
+## 22 July 2026 — content ratified: voice & tone, standards, and guidelines settled
 
 The design lead approved the outstanding content proposals, so they are now the
 standard. Record: `docs/catalog-changes/cnt-14-voice-tone.md`.
@@ -29,7 +29,7 @@ standard. Record: `docs/catalog-changes/cnt-14-voice-tone.md`.
   guideline adopts Kind Utility and the three voice attributes — Clear,
   Thoughtful, Approachable — with the "we are / we are not" and tone-by-context
   tables. The parallel `voice-tone-proposed` page is retired.
-- **CNT-14 reads from the settled page.** The control's `verify` now points at
+- **CNT-14 reads from the settled page.** The standard's `verify` now points at
   `voice-tone.mdx`, so the enforced voice matches the published one.
 - **CNT-5, CNT-6, and CNT-7 are settled.** Device-agnostic action verbs,
   low-informational-value words, and lead-with-purpose lose their Proposed stamp
@@ -37,7 +37,7 @@ standard. Record: `docs/catalog-changes/cnt-14-voice-tone.md`.
 - **The content guidelines are settled.** [Writing](/standards/writing),
   [Grammar & mechanics](/standards/grammar-mechanics), and [Components & text
   patterns](/standards/text-patterns) move from Proposed to settled.
-- **The copy skill applies the content controls.** CNT-8 through CNT-13 are
+- **The copy skill applies the content standards.** CNT-8 through CNT-13 are
   wired into the copy skill's copy-improvement pass (now `dx-design-copy`),
   and its inline voice table matches the settled guideline.
 
@@ -49,10 +49,10 @@ decided; the record is `docs/decisions/dxd-harvest.md`. Work from that
 programme that strengthens the TFX harness was kept and re-expressed here:
 
 - **Checker and validator hardening.** Target expansion prunes vendor
-  directories, ignore rules can no longer silence L0 controls, content lints
+  directories, ignore rules can no longer silence L0 standards, content lints
   see through list markers, the design hook fires on `.ts`/`.js` edits, and
   the eval runner validates commands by parsed path instead of a prefix list.
-- **A `status: proposed` pipeline.** A control can now ship as a visible
+- **A `status: proposed` pipeline.** A standard can now ship as a visible
   proposal: the schema, validator, build guard, and public projection carry
   the field, and catalog pages render a Proposed badge. CNT-5, CNT-6 and
   CNT-7 carry the stamp, pending the design lead's decision.
@@ -67,11 +67,11 @@ programme that strengthens the TFX harness was kept and re-expressed here:
   catalog browser.
 
 The catalog count did not change in the harvest, apart from the two motion
-controls proposed below.
+standards proposed below.
 
 ## 12 July 2026 — motion tokens; MOT-2 and MOT-3 proposed
 
-The site's own motion layer drifted with no control to catch it: two surfaces,
+The site's own motion layer drifted with no standard to catch it: two surfaces,
 two easings, three durations, none declared anywhere. Record:
 `docs/catalog-changes/mot-2-mot-3-motion-tokens.md`.
 
@@ -82,12 +82,12 @@ two easings, three durations, none declared anywhere. Record:
   and easings are never hardcoded in component code.
 - **MOT-3** (L2): motion may emphasise meaning but never carry it alone — an
   animated surface communicates the same information with animations off.
-- Catalog 68 → 70. Both controls are `status: proposed` and wear the Proposed
+- Catalog 68 → 70. Both standards are `status: proposed` and wear the Proposed
   badge until the design lead decides.
 
-## 10 July 2026 — content controls and line length
+## 10 July 2026 — content standards and line length
 
-Eight controls extend the catalog's content coverage (merged as PR #29), with
+Eight standards extend the catalog's content coverage (merged as PR #29), with
 backing detail docs and a wider `content-lint`:
 
 - **CNT-8 through CNT-14.** Plain action verbs over nominalisations; one idea
@@ -101,12 +101,12 @@ backing detail docs and a wider `content-lint`:
 
 ## 8 July 2026 — tfx 0.7.0: enforcement as data
 
-- **Catalog 53 → 57 controls.** CMP-4 (empty states signal "no content
+- **Catalog 53 → 57 standards.** CMP-4 (empty states signal "no content
   exists"), CMP-8 (non-destructive exits, draft safety), CMP-9 (render-time
   sanitisation of cross-user content), and CNT-4 (content modelling
   real-world artifacts is faithful or labelled illustrative).
 - **Enforcement as data.** New `enforced`/`script` fields in the catalog
-  schema plus a coverage check, so how a control is checked lives in the
+  schema plus a coverage check, so how a standard is checked lives in the
   catalog itself.
 - **Async-state evidence rule.** When loading, success, and error states are
   in scope, the verify evidence must capture all of them — adopted as a
@@ -117,10 +117,10 @@ backing detail docs and a wider `content-lint`:
 ## 1 July 2026 — Glow pilot: catalog maintenance
 
 The whole-app Glow conformance audit surfaced four amendments, approved by the
-design lead. No new control ids and no tier changes. Record:
+design lead. No new standard ids and no tier changes. Record:
 `docs/catalog-changes/glow-pilot-col1-typ1-tok3.md`.
 
-- **COL-1 re-tagged hybrid.** The control was tagged deterministic while its
+- **COL-1 re-tagged hybrid.** The standard was tagged deterministic while its
   detail already described a judgment half — a tokenised neutral sitting
   where the brand primary belongs passes the mechanical check.
 - **Glow primary settled at `#F76B15`,** with a foreground-pairing rule: a

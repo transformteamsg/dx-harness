@@ -113,13 +113,13 @@ describe("mdAlternate", () => {
 });
 
 describe("combined standards catalog twin", () => {
-  it("includes the standards overview before the controls", () => {
+  it("includes the standards overview before the list", () => {
     const twin = resolveTwin(["standards", "catalog.md"]);
     const markdown = twin?.render() ?? "";
     expect(markdown).toContain("# Standards");
-    expect(markdown).toContain("## Control catalog");
+    expect(markdown).toContain("## All standards");
     expect(markdown.indexOf("# Standards")).toBeLessThan(
-      markdown.indexOf("## Control catalog"),
+      markdown.indexOf("## All standards"),
     );
   });
 

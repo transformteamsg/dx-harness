@@ -59,7 +59,7 @@ export function ControlList({ ids }: { ids: string[] }) {
 
   if (controls.length <= COLLAPSE_PAST) {
     return (
-      <section className="mt-6" aria-label="Controls in the catalog">
+      <section className="mt-6" aria-label="Standards in the catalog">
         <p className="text-xs font-semibold text-muted-foreground">
           In the catalog
         </p>
@@ -69,10 +69,10 @@ export function ControlList({ ids }: { ids: string[] }) {
   }
 
   return (
-    <section className="mt-6" aria-label="Controls in the catalog">
+    <section className="mt-6" aria-label="Standards in the catalog">
       <details className="group">
         <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) [&::-webkit-details-marker]:hidden">
-          In the catalog · {controls.length} controls
+          In the catalog · {controls.length} standards
           <span aria-hidden="true" className="group-open:hidden">
             — show them
           </span>

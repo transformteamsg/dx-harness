@@ -41,7 +41,7 @@ export const LOOP_PHASES: LoopPhase[] = [
     gate: "plan",
     gateLabel: "human approval",
     detail:
-      "The orchestrator combines the chosen direction, accepted specialist findings, components, states, in-scope controls, and any requested waivers into one plan. Nothing changes until you approve it.",
+      "The orchestrator combines the chosen direction, accepted specialist findings, components, states, in-scope standards, and any requested waivers into one plan. Nothing changes until you approve it.",
     you: "Approve the plan, or send it back.",
   },
   {
@@ -59,7 +59,7 @@ export const LOOP_PHASES: LoopPhase[] = [
     label: "Design review",
     note: "fresh eyes, new evidence",
     detail:
-      "A separate dx-design-review agent checks the build against the contract, approved plan, DESIGN.md, relevant controls, and screenshots. Findings return to the builder, and the same reviewer re-checks each fix from new evidence.",
+      "A separate dx-design-review agent checks the build against the contract, approved plan, DESIGN.md, relevant standards, and screenshots. Findings return to the builder, and the same reviewer re-checks each fix from new evidence.",
     you: "Decide only if an unresolved finding may remain open.",
   },
   {

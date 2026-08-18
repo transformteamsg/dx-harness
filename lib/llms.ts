@@ -67,8 +67,8 @@ export function llmsIndex(): string {
       // the dimension pages follow it as ordinary slug twins.
       lines.push("## Standards");
       lines.push("");
-      lines.push(item("Standards and control catalog", "/standards/catalog.md", "overview, readable controls + embedded YAML"));
-      lines.push(item("Control catalog (YAML)", "/standards/catalog.yaml", "machine source"));
+      lines.push(item("Standards catalog", "/standards/catalog.md", "overview, readable standards + embedded YAML"));
+      lines.push(item("Standards catalog (YAML)", "/standards/catalog.yaml", "machine source"));
       for (const slug of def.slugs) {
         const doc = getDoc(key, slug);
         if (doc) lines.push(item(doc.title, `/${key}/${slug}.md`, doc.description));

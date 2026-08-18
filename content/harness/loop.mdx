@@ -10,8 +10,8 @@ silently changes the brief.
 
 ## What grounds the run
 
-Two sources guide every decision. The [control catalog](/standards/catalog) is the
-portfolio rulebook: the orchestrator filters it to the controls that apply to this
+Two sources guide every decision. The [catalog](/standards/catalog) is the
+portfolio rulebook: the orchestrator filters it to the standards that apply to this
 product, audience, surface, and phase. [`DESIGN.md`](/harness/skills#the-design-language)
 holds the decisions that make this product itself, including its essence, colour,
 type, motion, voice, guardrails, and standing overrides.
@@ -25,7 +25,7 @@ components and tokens.
 For a broad improvement, `dx-design` captures the surface and brings in only the
 specialists the request needs. Copy, pattern, polish, motion, and flow can run as
 propose-only subagents. Each receives the same intent, `DESIGN.md` context, and
-in-scope controls, then returns focused, ranked findings to the orchestrator. None
+in-scope standards, then returns focused, ranked findings to the orchestrator. None
 of them edits the product.
 
 The orchestrator combines those findings into one plan, asks for approval once,
@@ -46,7 +46,7 @@ product code.
 
 Whoever started the run launches `dx-design-review` after implementation. This is a
 separate, fresh-context agent. It receives the original intent, approved plan,
-screenshots, component inventory, relevant catalog controls, and any standing
+screenshots, component inventory, the relevant standards, and any standing
 overrides from `DESIGN.md`.
 
 The reviewer reports findings but never edits the product. The builder addresses
@@ -56,7 +56,7 @@ partial, or unresolved. The builder's explanation is not evidence.
 ## Where you decide
 
 The run stops once before implementation for plan approval. You see the proposed
-structure, content, states, controls, and any requested waivers before code changes.
+structure, content, states, standards, and any requested waivers before code changes.
 An explicit request to build a specific plan or chosen direction already counts as
 approval.
 

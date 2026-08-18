@@ -17,9 +17,9 @@ const chromePages: Record<string, Omit<Topic, "ink">[]> = {
   standards: [
     {
       href: "/standards/catalog",
-      title: "Control catalog",
+      title: "All standards",
       description:
-        "Every control with its tier, fail conditions and check type. Filter, copy IDs, cite them in review.",
+        "Every standard with its tier, fail conditions and check type. Filter, copy IDs, cite them in review.",
       artKey: "standards/catalog",
     },
   ],

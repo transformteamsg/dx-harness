@@ -4,7 +4,7 @@ import { SectionIndex } from "@/components/section-index";
 import { mdAlternate } from "@/lib/markdown-twin";
 
 export const metadata = {
-  title: "Standards and control catalog",
+  title: "Standards catalog",
   ...mdAlternate("/standards/catalog"),
 };
 
@@ -16,10 +16,10 @@ export default function CatalogPage() {
       <SectionIndex sectionKey="standards" omitHref="/standards/catalog" />
       <section className="mt-14 max-w-[720px] border-t border-border pt-10">
         <h2 className="font-display text-2xl font-semibold tracking-tight">
-          Control catalog
+          All standards
         </h2>
         <p className="mt-3 text-base text-muted-foreground">
-          Every control in the standard — one verifiable statement each, with its tier, fail
+          Every standard in one list — one verifiable statement each, with its tier, fail
           conditions, and how it&apos;s checked. Cite IDs in review; agents read the same list.
         </p>
         <p className="mt-3 text-base text-muted-foreground">
