@@ -29,7 +29,7 @@ const TOPIC_ICONS = {
   /* Landing FIG 3 only — no docs page; the mark is an easing spline, the
      drawable face of a motion signature. */
   "standards/motion": "spline",
-  "research/research-brief": "notebook-pen",
+  "harness/research-brief": "notebook-pen",
   /* Products keep the family signature: ink squircle frame + script letter
      (letter is drawn by the component, not generated here). */
   "products/teacher-workspace": "squircle",

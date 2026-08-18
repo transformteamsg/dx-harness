@@ -20,12 +20,6 @@
    "product-icons"
   ]
  },
- "research": {
-  "label": "Research",
-  "slugs": [
-   "research-brief"
-  ]
- },
  "products": {
   "label": "Products",
   "slugs": [
@@ -53,7 +47,8 @@
    "loop",
    "skills",
    "on-ramp",
-   "tools"
+   "tools",
+   "research-brief"
   ]
  },
  "governance": {

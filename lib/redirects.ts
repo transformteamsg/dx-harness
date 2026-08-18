@@ -26,4 +26,6 @@ export const movedPages: Record<string, string> = {
   "/foundations/motion": "/standards/motion",
   "/foundations/tokens": "/standards/tokens",
   "/foundations": "/standards/catalog",
+  "/research": "/harness/research-brief",
+  "/research/research-brief": "/harness/research-brief",
 };

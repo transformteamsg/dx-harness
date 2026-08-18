@@ -12,7 +12,6 @@ const tiles = [
   { key: "standards", href: "/standards/catalog", art: "standards/catalog" },
   { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
   { key: "foundations", href: "/foundations", art: "foundations/colour" },
-  { key: "research", href: "/research", art: "research/research-brief" },
 ];
 
 const harnessStart = [

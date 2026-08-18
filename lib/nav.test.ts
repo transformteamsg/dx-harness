@@ -22,6 +22,7 @@ describe("docs navigation", () => {
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/tools", title: "Tools" },
+      { href: "/harness/research-brief", title: "Research brief" },
     ]);
   });
 

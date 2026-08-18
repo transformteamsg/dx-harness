@@ -13,7 +13,6 @@ import { mdxComponents } from "@/components/mdx";
    the section root. Single-doc sections (governance) and start pages don't. */
 const sectionCrumbs: Record<string, { label: string; href: string }> = {
   standards: { label: "Standards", href: "/standards/catalog" },
-  research: { label: "Research", href: "/research" },
   products: { label: "Products", href: "/products" },
   harness: { label: "Harness", href: "/overview" },
   "getting-started": { label: "Design in Code", href: "/getting-started" },
