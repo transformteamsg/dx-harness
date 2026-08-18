@@ -31,11 +31,28 @@
     "jsx-a11y/role-has-required-aria-props": "A11Y-8",
     "jsx-a11y/role-supports-aria-props": "A11Y-8",
     "jsx-a11y/scope": "A11Y-7",
-    "jsx-a11y/tabindex-no-positive": "A11Y-2"
+    "jsx-a11y/tabindex-no-positive": "A11Y-2",
+
+    "axe/color-contrast": "A11Y-1",
+    "axe/label": "A11Y-3",
+    "axe/target-size": "A11Y-4",
+    "axe/image-alt": "A11Y-6",
+    "axe/svg-img-alt": "A11Y-6",
+    "axe/list": "A11Y-7",
+    "axe/listitem": "A11Y-7",
+    "axe/heading-order": "A11Y-7",
+    "axe/document-title": "A11Y-9",
+    "axe/html-has-lang": "A11Y-9",
+    "axe/bypass": "A11Y-10",
+
+    "dx/reduced-motion": "A11Y-5"
   },
+  "aria_prefix_control": "A11Y-8",
   "layers": {
     "eslint-jsx-a11y": ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"],
     "a11y-static-focus": ["A11Y-2"],
-    "contrast-token-pairs": ["A11Y-1"]
+    "contrast-token-pairs": ["A11Y-1"],
+    "axe-rendered": ["A11Y-1", "A11Y-3", "A11Y-4", "A11Y-5", "A11Y-6",
+                     "A11Y-7", "A11Y-8", "A11Y-9", "A11Y-10"]
   }
 }

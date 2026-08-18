@@ -1,0 +1,10 @@
+{
+  "name": "dx-harness-checks",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Harness-side Node dependencies for the checks layer. Nothing declared here is ever installed into a repo the harness checks; see checks/README.md 'Rendered check'.",
+  "dependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "playwright-core": "^1.61.1"
+  }
+}
