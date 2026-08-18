@@ -1,0 +1,29 @@
+# The html twin of structure-table-headers-tsx. One rule body cannot serve
+# both grammars: in tsx the kinds are jsx_element / jsx_opening_element and the
+# tag name is a `name` field, in html they are element / start_tag / tag_name.
+id: structure-table-headers-html
+language: html
+severity: warning
+message: candidate table with no header cell
+metadata:
+  control: A11Y-7
+  check: structure
+  surface: structure
+  rule: TABLE-HEADERS
+  pattern: table-element
+  kind: element
+rule:
+  kind: element
+  all:
+    - has:
+        kind: start_tag
+        has:
+          kind: tag_name
+          regex: '^[tT][aA][bB][lL][eE]$'
+    - not:
+        has:
+          stopBy: end
+          kind: start_tag
+          has:
+            kind: tag_name
+            regex: '^[tT][hH]$'
