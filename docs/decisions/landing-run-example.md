@@ -280,6 +280,81 @@ Carried forward from `landing-graphics.md`; both resolved 2026-08-18
    literally and nothing on the surface uses sparkles decoratively; all sites
    resolve from the one generator line.
 
+## Later change — the run reveals one card at a time (2026-08-18, builder ruling)
+
+Verbatim ask: "can you show the animation one by one? … When the user reaches to
+this section, the first card animation appear in the middle. Then when the second
+one following after the first one is over, the first one slowly goes up and 2nd
+one appear and start animation and third one with similar. SO i don't want any
+empty 1 to 3 cards already even before animation starts."
+
+**What changed.** The player used to draw all three regions at once and gate their
+*contents* on beats, with unarrived regions held at 40% opacity. Now each card
+arrives on its own: the figure is empty before the sequence starts, card 01 fades
+in on the box's centre line and types the request, the pair rises so card 02 can
+take the centre, and card 03 lands the same way. The chain rests assembled —
+identical to the state the server renders.
+
+**This reverses a reviewer-directed fix, deliberately.** Round 3 of the review on
+this surface asked for the ghost treatment, against "a 340px void when scrubbing
+back to stage 01, and 3.3s of blank mid-run"; the reason is recorded above and it
+was sound. The builder's objection is that a 40% wash still draws three empty
+cards before anything happens. The void that ghosting answered is answered
+differently now: the figure reserves its final height and the revealed cards are
+centred inside it, so the unused space is split above and below the story instead
+of pooling under it. If a later reviewer flags the reversal, the resolution is to
+argue the centring, not to reinstate the wash.
+
+**How the rise is built.** Every card keeps its space in the layout at all times
+and reveals with opacity alone, so the stack never reflows. What moves is the
+stack, translated by half the difference between the reserved height and the
+revealed cards' height — which centres the revealed group and resolves to exactly
+0 when the third card joins, so the settled state needs no special case. Only
+`opacity` and `translate` animate. The entering card eases out (it is arriving);
+the stack eases in-out (it is on-screen content moving); both run on
+`--motion-story`, the token this catalog reserves for narrative surfaces.
+
+**Three defects found by measuring rather than by looking:**
+
+- **The pre-roll animated.** Clearing the server-rendered chain used the same
+  600ms transition as the story, so on hydration the assembled chain eased out
+  before anything began — measured at 0.92 opacity and falling. Card and stack
+  transitions are now armed only once the sequence is running, so the clear takes
+  one frame. Clearing the figure is not a beat of the story.
+- **The focus-mode reserve regressed by half a pixel.** The reserve was switched
+  to `offsetHeight`, which rounds: a 504.5px column produced a 505px reserve, so
+  isolating a stage grew the column 0.5px. The existing contract test measures the
+  fractional rect and caught it. The reserve is fractional again.
+- **Card offsets measured against the wrong basis, twice.** Rects fold in every
+  translate in play, and a waiting card sits 6px low, so card 01 settled 3.5px
+  above the centre line — half of 6px, exactly as the arithmetic predicts.
+  Switching to layout offsets and subtracting the *stack's* `offsetTop` was wrong
+  by 2189px, because the stack's own translate makes it a containing block: its
+  children's offsets are already measured against it while its own are measured
+  against the sheet. Card 01 is the reliable origin — all three cards are siblings
+  under one offsetParent, whatever that is. Card 01 now settles at 252 against a
+  252.5 centre line.
+
+**WCAG 2.2.2 holds.** The sequence settles at 3.2s by schedule and 3.4s measured,
+inside the five-second boundary past which an auto-starting animation owes the
+reader a visible stop control. The schedule's two rules are stated at
+`SCHEDULE` in the component: each card's own animation finishes before the next
+card's beat, and the total stays under five seconds.
+
+**Verification** (production build on an isolated dist dir, no dev markers):
+contract suite **48/48**, run three times with no flake; 92 unit tests; typecheck,
+ESLint, and `check:python` clean. A new contract test pins the behaviour by
+*order* rather than by a wall-clock snapshot: it samples each card's opacity in
+the page and asserts card 01 lands before 02 before 03, that all three sit at
+opacity 0 before the section is reached, that the stack settles back to
+`translate: 0px`, and that the last card lands inside five seconds. Timeline
+measured at 1280: pre-roll `0.00 / 0.00 / 0.00`; t=900 card 01 alone at centre
+252; t=2000 the pair centred with card 01 risen to 163; t=3600 all three at
+opacity 1 with `translate: 0px`. Under emulated `prefers-reduced-motion: reduce`
+the chain is assembled immediately, nothing animates, and both the typed request
+and the review badge are present. Frames: `seq-900.png`, `seq-2000.png`,
+`seq-3600.png`, `seq-focus-01.png`.
+
 ## Ratchet
 
 Carried and strengthened from the previous record, plus one new
