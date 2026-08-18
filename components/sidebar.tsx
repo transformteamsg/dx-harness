@@ -91,7 +91,7 @@ export function AppSidebar() {
                     <Link
                       href={group.href}
                       className={clsx(
-                        "flex-1 rounded-md text-foreground/80 hover:text-foreground",
+                        "flex-1 rounded-md text-foreground/80 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)",
                         groupLabel,
                         pathname === group.href && "text-foreground"
                       )}
@@ -122,7 +122,9 @@ export function AppSidebar() {
                 </div>
                 <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
                   <SidebarGroupContent className="pt-0.5">
-                    <SidebarMenu className="ml-2 gap-0.5 border-l border-sidebar-border pl-2">
+                    {/* w-auto: SidebarMenu defaults to w-full, so the indent
+                        margin would push rows past the drawer edge at 320. */}
+                    <SidebarMenu className="ml-2 w-auto gap-0.5 border-l border-sidebar-border pl-2">
                       {group.items.map((item) => {
                         if (!isSubGroup(item)) return renderLeaf(item);
 
@@ -152,7 +154,7 @@ export function AppSidebar() {
                                 />
                               </CollapsibleTrigger>
                               <CollapsibleContent className="h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-starting-style:h-0 data-ending-style:h-0">
-                                <SidebarMenu className="ml-3 gap-0.5 border-l border-sidebar-border pl-2 pt-0.5">
+                                <SidebarMenu className="ml-3 w-auto gap-0.5 border-l border-sidebar-border pl-2 pt-0.5">
                                   {item.items.map(renderLeaf)}
                                 </SidebarMenu>
                               </CollapsibleContent>

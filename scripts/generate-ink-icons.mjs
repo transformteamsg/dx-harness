@@ -14,6 +14,7 @@ import rough from "roughjs/bundled/rough.esm.js";
 /* Topic → Lucide icon id. Keys match topicArt keys in components/thumbnails.tsx. */
 const TOPIC_ICONS = {
   "standards/catalog": "list-checks",
+  "standards/writing": "pen-line",
   "standards/voice-tone": "message-circle",
   "standards/naming": "tag",
   "standards/interaction": "mouse-pointer-click",
@@ -26,8 +27,6 @@ const TOPIC_ICONS = {
   "standards/spacing-radius": "ruler",
   "standards/iconography": "shapes",
   "standards/tokens": "braces",
-  /* Landing FIG 3 only — no docs page; the mark is an easing spline, the
-     drawable face of a motion signature. */
   "standards/motion": "spline",
   "harness/research-brief": "notebook-pen",
   /* Products keep the family signature: ink squircle frame + script letter
