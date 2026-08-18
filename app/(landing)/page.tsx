@@ -182,27 +182,20 @@ export default function Landing() {
              what it changes. One outlined action (CMP-5: the hero keeps the
              page's only filled primary).
 
-             This is a signed statement, not a blockquote. It was a
-             `blockquote cite="/note"` carrying words that appear nowhere in the
-             note — an attribution the note could not support. The builders speak
-             here in their own voice, signed the way the note is signed, and the
-             note is offered as the longer version rather than quoted. The band
-             holds the closing section's wash, so the builders' voice and the
-             close read as one ground rather than two. ───────────────────────── */}
+             The band is the page's own statement — no blockquote, no signature,
+             no attribution line. It began as a `blockquote cite="/note"` carrying
+             words that appear nowhere in the note, which is an attribution the
+             note could not support; the signature and the note link that replaced
+             it were cut on the builder's ruling of 2026-08-18, leaving the words
+             to stand on their own. `/note` is still one click away in the nav on
+             this layout, so nothing is orphaned. The band holds the closing
+             section's wash, so this voice and the close read as one ground rather
+             than two. ─────────────────────────────────────────────────────────── */}
       <section className="border-b border-border bg-site-accent-wash px-6 py-14 sm:px-10 sm:py-16">
         <p className="max-w-[36ch] text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
           The harness is our product too, and we spent this build on how it feels
           to use. Start with one request in your own words, even if you do not
           write code every day.
-        </p>
-        <p className="mt-5 text-sm text-muted-foreground">
-          The TransformX product design team.{" "}
-          <Link
-            href="/note"
-            className={`inline-flex min-h-11 items-center underline underline-offset-2 hover:text-foreground ${focusRing}`}
-          >
-            Read the builders&apos; note
-          </Link>
         </p>
         <div className="mt-6">
           <Link

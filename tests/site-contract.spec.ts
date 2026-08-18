@@ -180,21 +180,25 @@ test("looping feature illustrations never play under reduced motion", async ({ p
   await expect(page.locator("[data-feature-illo] button")).toHaveCount(0);
 });
 
-test("the builders' band is a signed statement with no quotation to verify", async ({ page }) => {
+test("the builders' band states the page's own words, with nothing to attribute", async ({
+  page,
+}) => {
   await open(page, "/");
 
   await expect(
     page.getByText("The harness is our product too", { exact: false })
   ).toBeVisible();
-  await expect(page.getByText("The TransformX product design team")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Read the builders' note" })).toHaveAttribute(
-    "href",
-    "/note"
-  );
 
-  // Nothing here claims to quote the note: a blockquote citing /note used to
-  // carry words the note never says. The statement is signed instead.
+  // Nothing here claims to quote or sign: the band began as a blockquote citing
+  // /note with words the note never says, and the signature that replaced it was
+  // cut too. The words stand alone.
   await expect(page.locator('blockquote[cite="/note"]')).toHaveCount(0);
+  await expect(page.getByText("The TransformX product design team")).toHaveCount(0);
+
+  // /note is not orphaned by the cut — the nav on this layout still reaches it.
+  await expect(
+    page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: /note/i })
+  ).toHaveAttribute("href", "/note");
 
   // The prompt and its copy button are gone. Install is one hop away at
   // /harness/install, which is what the band's one action points at.

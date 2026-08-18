@@ -504,6 +504,17 @@ it cost:
   half) exits 0 on both the TSX and the twin. A contract test now asserts that no
   `blockquote[cite="/note"]` exists, so the false-attribution pattern cannot
   return unnoticed.
+- **The signature and the note link were cut (2026-08-18, a second ruling on the
+  same band).** The statement had carried "The TransformX product design team.
+  Read the builders' note" beneath it; the builder asked for that line removed, so
+  the words now stand with no attribution and no outbound link. Two consequences,
+  both checked rather than assumed: `/note` is **not** orphaned — the nav on this
+  layout links it on every landing route, and a contract test now asserts that,
+  so the cut cannot quietly become a dead end; and the band's own reasoning
+  changes, since "signed the way the note is signed" was the argument for
+  dropping the blockquote. The argument that survives is narrower and still
+  sufficient: the page does not attribute words to a source that never said them.
+  It is the page's own statement on the page's own site.
 - **The band carries the closing section's ground.** Both are
   `bg-site-accent-wash`. Measured in the production DOM: both compute
   `oklab(0.990988 -0.00818826 0.0113152)` = `#fafef4`, an exact match, pinned by a
