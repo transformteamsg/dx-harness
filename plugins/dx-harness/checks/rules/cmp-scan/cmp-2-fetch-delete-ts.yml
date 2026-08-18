@@ -1,0 +1,17 @@
+# The .ts counterpart of cmp-2-fetch-delete-tsx.yml.
+id: cmp-scan-cmp-2-fetch-delete-ts
+language: ts
+severity: warning
+message: candidate cmp 2 fetch delete
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-fetch-delete
+  context: fetch-delete
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '(?:^|\.)(?:fetch|axios)$'
+    - regex: '(?s)method\s*:\s*["''`]\s*DELETE\b'

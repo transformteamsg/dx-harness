@@ -1,0 +1,13 @@
+# The html counterpart of source-tsx.yml. `.vue` and `.svelte` reach it through
+# sgconfig.yml's languageGlobs, which is how CMP-9's `v-html` and `{@html …}`
+# sinks get a same-file sanitiser scan at all.
+id: cmp-scan-source-html
+language: html
+severity: warning
+message: source
+metadata:
+  check: cmp-scan
+  surface: source
+  kind: document
+rule:
+  kind: document

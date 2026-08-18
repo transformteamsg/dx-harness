@@ -1,0 +1,17 @@
+# CMP-2, handler position 2: a JSX prop whose name matches `on[A-Z]`. The whole
+# attribute is offered, name and value together, because the destructive verb can
+# sit in either half. `onDelete={run}` names it, `onClick={handleDelete}` passes
+# it. Python reads both and applies the denylist to the value, which is what stops
+# `onPointerLeave={() => el.removeEventListener(…)}` becoming an action.
+id: cmp-scan-cmp-2-jsx-prop-tsx
+language: tsx
+severity: warning
+message: candidate cmp 2 jsx prop
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-jsx-prop
+  context: jsx-prop
+rule:
+  kind: jsx_attribute
+  regex: '^on[A-Z]'

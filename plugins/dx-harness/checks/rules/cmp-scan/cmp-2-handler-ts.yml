@@ -1,0 +1,36 @@
+# The .ts counterpart of cmp-2-handler-tsx.yml. See that file for why the
+# variable-declarator arm requires a function-shaped value.
+id: cmp-scan-cmp-2-handler-ts
+language: ts
+severity: warning
+message: candidate cmp 2 handler
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-handler
+  context: handler
+rule:
+  any:
+    - kind: function_declaration
+      has:
+        field: name
+        regex: '^(?:on|handle)[A-Z_]'
+    - kind: generator_function_declaration
+      has:
+        field: name
+        regex: '^(?:on|handle)[A-Z_]'
+    - kind: method_definition
+      has:
+        field: name
+        regex: '^(?:on|handle)[A-Z_]'
+    - all:
+        - kind: variable_declarator
+        - has:
+            field: name
+            regex: '^(?:on|handle)[A-Z_]'
+        - has:
+            field: value
+            any:
+              - kind: arrow_function
+              - kind: function_expression
+              - kind: call_expression

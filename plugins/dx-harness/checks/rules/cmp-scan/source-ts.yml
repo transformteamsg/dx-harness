@@ -1,0 +1,13 @@
+# The .ts counterpart of source-tsx.yml. `.ts` gets its own rule rather than
+# aliasing to tsx, for the reason sgconfig.yml records: a tsx parse of a .ts file
+# can lose the whole file's matches at exit 0.
+id: cmp-scan-source-ts
+language: ts
+severity: warning
+message: source
+metadata:
+  check: cmp-scan
+  surface: source
+  kind: program
+rule:
+  kind: program

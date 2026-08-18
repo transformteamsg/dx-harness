@@ -1,0 +1,12 @@
+# The .ts counterpart of cmp-3-async-tsx.yml.
+id: cmp-scan-cmp-3-async-ts
+language: ts
+severity: warning
+message: candidate cmp 3 async
+metadata:
+  control: CMP-3
+  check: cmp-scan
+  surface: cmp3-async
+  context: await
+rule:
+  kind: await_expression

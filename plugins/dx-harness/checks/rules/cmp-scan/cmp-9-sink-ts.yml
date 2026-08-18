@@ -1,0 +1,27 @@
+# The .ts counterpart of cmp-9-sink-tsx.yml, minus the JSX arms a .ts file cannot
+# hold. The `pair` arm stays: a remark/rehype options object is ordinary .ts.
+id: cmp-scan-cmp-9-sink-ts
+language: ts
+severity: warning
+message: candidate cmp 9 sink
+metadata:
+  control: CMP-9
+  check: cmp-scan
+  surface: cmp9-sink
+  context: render-sink
+rule:
+  any:
+    - kind: assignment_expression
+      regex: '(?s)\.\s*(?:innerHTML|outerHTML)\s*='
+    - kind: call_expression
+      has:
+        field: function
+        regex: '(?:^|\.)insertAdjacentHTML$'
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^document\s*\.\s*(?:write|writeln)$'
+    - kind: pair
+      regex: '^(?:allowDangerousHtml|skipHtml)\s*:'
+    - kind: import_statement
+      regex: 'rehype-raw'

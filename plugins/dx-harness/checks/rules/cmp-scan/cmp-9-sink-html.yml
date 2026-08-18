@@ -1,0 +1,20 @@
+# CMP-9 in an html/vue/svelte file: Vue's `v-html` attribute and Svelte's
+# `{@html …}` block. Neither is an ast-grep language at 0.44.1, so both reach the
+# html grammar through sgconfig.yml's languageGlobs, where `v-html` parses as an
+# attribute, and `{@html …}` is plain text to the html parser, which is why the
+# second arm matches a text node rather than a node kind of its own.
+id: cmp-scan-cmp-9-sink-html
+language: html
+severity: warning
+message: candidate cmp 9 sink
+metadata:
+  control: CMP-9
+  check: cmp-scan
+  surface: cmp9-sink
+  context: render-sink
+rule:
+  any:
+    - kind: attribute
+      regex: '(?i)^v-html\b'
+    - kind: text
+      regex: '\{@html\b'

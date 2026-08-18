@@ -26,6 +26,16 @@ other user's screen — not only at author time. An editor's output being
 constraint can drift, be bypassed, or simply not cover every field that later gets
 rendered raw.
 
+The sanitiser allowlist `checks/cmp-scan.py` reads lives here, so growing the list
+grows the check and the two can never diverge. It is harness-held rather than
+per-product: which libraries sanitise HTML is portfolio-wide knowledge, and the
+static check configures nothing in the repo it is checking. Add a library by
+adding its identifier or package name to the span.
+
+<!-- dx-sync:cmp9-sanitisers source -->
+DOMPurify, dompurify, createDOMPurify, sanitizeHtml, sanitize-html, xss, sanitize, purify
+<!-- /dx-sync:cmp9-sanitisers -->
+
 ## Rationale
 
 No control covered untrusted-HTML rendering across a trust boundary before this one.

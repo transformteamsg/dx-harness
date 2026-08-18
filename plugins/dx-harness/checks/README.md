@@ -341,7 +341,7 @@ instead, so the case count never depends on the environment.
 
 **Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted** because their line-local regexes could not make reliable ARIA judgments. jsx-a11y's maintained preset replaces KBD and checks label association, but deliberately leaves `control-has-associated-label` disabled; icon-only accessible-name judgment therefore stays rendered/manual. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
 
-**Static-subset caveat — what this script does NOT verify:**
+**Static-subset caveat, what this script does NOT verify:**
 
 - Keyboard reachability (A11Y-2's reachability half) — `a11y-eslint`'s `click-events-have-key-events`, `no-static-element-interactions` and `interactive-supports-focus`.
 - Label association (part of A11Y-3) — `a11y-eslint`'s `label-has-associated-control`. Icon-only accessible names remain rendered/manual because the preset leaves `control-has-associated-label` disabled.
@@ -483,7 +483,7 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 - **CNT-6 (L2):** a sentence-*initial* empty opener ("There is", "There are", "It is", "This is") or a safe-subset filler word (just, really, very, please) in a multi-word user-facing string or MDX prose line. "In order to" is deliberately NOT in the CNT-6 lists — SLP-9's filler-phrase rule owns it, so one token never fires two controls. A template segment that follows an interpolation is not a sentence start, so the opener rule skips its first sentence and checks the rest.
 - **CNT-13 (L2):** a US spelling or common misspelling in a multi-word user-facing string or MDX prose line, read from `cnt-13.md`, with the British or corrected spelling as the suggestion. A bare one-word identifier is not flagged.
 
-**Static-subset caveat — what this script does NOT verify:**
+**Static-subset caveat, what this script does NOT verify:**
 
 - Strings built by concatenation, and an imported constant used as copy (`<h1>{TITLE}</h1>`) — unresolvable at the use site; the constant is linted at its definition site instead, as origin `literal`. A template literal IS linted, per static segment; the interpolated expression itself never is.
 - Whether a string is truly user-facing vs. an internal label, key, or fixture — class values, style values, module paths and non-rendering attribute values are masked outright (see Scope above); past that, conservative heuristics, and coordinate / SVG-path data (mostly numeric tokens) is excluded.
@@ -511,7 +511,7 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 
 **TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
 
-**Static-subset caveat — what this script does NOT verify:**
+**Static-subset caveat, what this script does NOT verify:**
 
 - Font *weights* (TYP-1's "PJS 600 / Inter 400/500/600" half) — weight is rarely co-located with the family and "approved weight" needs the family resolved; deferred to the manual pass.
 - The 12px-vs-14px floor *decision* (TYP-2) — whether an element is a label (12px floor) or body (14px floor) needs rendered context; 12–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
@@ -526,6 +526,39 @@ but ancestry answers "am I inside an `h1` to `h6` rule" now, which retired the
 hand-rolled CSS brace state machine and the heading-tag line regex.
 
 **Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
+
+## Component scan (built: three controls, three behaviours)
+
+`python3 checks/cmp-scan.py <path>...` carries the mechanical half of CMP-2, CMP-3 and CMP-9. All three ask the same shape of question (find token X in a file, look for companion token Y in the same file), which is why they share one script. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure. `NOTE` lines never fail a run on their own.
+
+**Rules:**
+
+- **CMP-2 destructive candidates (L0):** one `NOTE <file>:<line> [CMP-2]` per handler-shaped destructive identifier, saying whether a confirm or undo companion sits in the same file. An identifier counts when a destructive verb stem (`delete`, `remove`, `destroy`, `archive`, `discard`, `revoke`, `wipe`, `purge`, `drop`, `withdraw`, `unpublish`, `unshare`, `revert`) is one of its camelCase words **and** it occupies a handler position: named `on*` / `handle*`, passed to a JSX prop matching `on[A-Z]`, wrapped by `useMutation` / `useActionState` / `useFormState` / `useTransition`, exported at module level from a `"use server"` file, or a `fetch` / `axios` call whose method option resolves to `DELETE`. Companions are `AlertDialog`, `confirm`, `undo`, or `Dialog` beside a destructive-variant button.
+- **CMP-3 missing error path (L1):** an `ERROR` on an async call in a `"use client"` file with **no error path anywhere in it**. An error path is a `catch` (which covers `try`/`catch` and `.catch(`), an `onError` prop or option, an error-state setter, an `isError` flag, an `error:` option or field, a framework path (`notFound()`, `redirect()`, `unauthorized()`, `forbidden()`), or a sibling `error.tsx` / `not-found.tsx` in the same route segment or any ancestor.
+- **CMP-9 render sinks (L1):** an `ERROR` on a raw-HTML sink with no allowlisted sanitiser in the same file, and a `NOTE` on one that has a sanitiser, never a silent pass. Sinks: `dangerouslySetInnerHTML`, `v-html`, Svelte's `{@html …}`, an `.innerHTML` / `.outerHTML` **assignment** (a read is not a sink), `insertAdjacentHTML(`, `document.write(` / `document.writeln(`, a `rehype-raw` import, `allowDangerousHtml`, and `skipHtml={false}`.
+
+**CMP-2 enumerates and exits 0, and L0 still blocks.** A candidate is not a violation: CMP-2's fail condition is a destructive action with no consequence surface and no undo or confirmation, and deciding that means reading the consequence copy. The block lives in the verification ledger instead. `--ledger <record.md>` reconciles the listed candidates against the `| Control | Method | Evidence |` table in a decision record and errors on any candidate no row dispositions **by name**; the match is against the candidate key `CMP-2 <path>:<identifier>`, so a blanket `| CMP-2 | manual | verified manually |` row satisfies nothing. There is also a mechanical reason the lister cannot signal through the exit code: `detect.py`'s `classify_run` reads exit 1 with no `ERROR` line as a **crashed** check.
+
+The candidate key carries no line number on purpose: a line number churns on every unrelated edit above it and would invalidate a ledger row that is still correct. Two candidates sharing one identifier in one file therefore share one key and one row.
+
+**The CMP-2 denylist, applied before anything is emitted:** `removeEventListener`, `removeChild`, `.remove()` on a DOM ref, `clearTimeout`, `clearInterval`, `Map` / `Set` `.delete()`, `revokeObjectURL`, and `reset()` on a form are blanked out of a candidate's text before any verb stem is looked for. Without it the rule drowns: a naive destructive-verb grep over this repo's `.tsx` files under `app components lib` returns 8 hits, every one a `window.removeEventListener` cleanup, and the denylist takes that to 0.
+
+**Static-subset caveat, what this script does NOT verify:**
+
+- Whether a consequence surface is adequate, whether confirmation copy names the object, or whether an undo is reachable (CMP-2's judgment half). The lister enumerates; the reviewer decides.
+- Whether CMP-3's loading, success and error states are **visible**. Proving a state is visible means tracing a state variable into JSX and across components, the same cross-file mutation tracking `a11y-static.py` already declares out of reach. `components/page-actions.tsx` is why the wider rule is not attempted: it holds a `busy` flag it sets and clears but never renders, beside an `"idle" | "copied" | "error"` union a naive "three states exist" matcher would false-pass on.
+- Whether a CMP-9 sanitiser sits at the **render boundary** rather than somewhere else in the file, and whether the content it renders crossed a trust boundary at all. Both are the evaluator's read, which is why a sanitiser downgrades to a `NOTE` rather than suppressing.
+- CMP-4, CMP-5, CMP-6, CMP-7 and CMP-8: judgment controls, an accepted gap, and the A11Y-7 `structure` check's territory respectively.
+
+**Known noise, accepted rather than coded around:** `drop` is a destructive verb stem, so a drag-and-drop `onDrop` handler is listed as a candidate. That is a `NOTE` on a check that exits 0, so it costs a reviewer one ledger row rather than a build; narrowing the stem list to guess at intent would cost a real `handleDropTable`, which is the wrong trade on a non-waivable floor.
+
+**Sanitiser allowlist:** harness-held, read at runtime from the `<!-- dx-sync:cmp9-sanitisers -->` span in [`standards/controls/cmp-9.md`](../standards/controls/cmp-9.md), with an embedded fallback and a printed `NOTE` whenever the fallback is used. Which libraries sanitise HTML is portfolio-wide knowledge, and the static check configures nothing in the repo it is checking, so there is no `.dx/config.json` key and no per-product list.
+
+**Waivers:** CMP-2 is L0 and `waiver: none`, so no `dx-waive` marker is parsed for it and it may never appear in a "## Waivers granted" table. CMP-3 and CMP-9 are L1 and `waiver: documented`, so an inline `dx-waive CMP-3` / `dx-waive CMP-9` on the finding's line, or the line directly above it (JSX accepts no comment in attribute position), downgrades the line to the `[CMP-N][waiver-claimed]` form and the run still exits 1.
+
+**Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan` (see "The ast-grep front end" above), in three language buckets: `tsx`, `ts`, and `html` for `.vue` / `.svelte`. The verb stems, the denylist, the companion tokens, the error-path set, the sanitiser allowlist and the ledger reconcile are all Python. A multi-line `fetch(url, { method: "DELETE" })` is the case that needs the parser: the callee and the method option are almost never on the same line.
+
+**Self-test:** `python3 checks/cmp-scan.py --self-test` → `SELF-TEST OK (90 cases)` (includes the `fixtures/cmp-scan/` pass/fail/list files, the ledger-reconcile fixtures, the exit-code contract asserted through a real run, and the ast-grep provisioning contract).
 
 ## Component manifest (built)
 
@@ -554,7 +587,7 @@ Planned for V1 (remaining):
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
-| `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
+| ~~`cmp-scan`~~ | ~~CMP-2, CMP-3, CMP-9 (deterministic halves)~~ | ✅ built (static subset). `cmp-scan` lists every destructive candidate with its confirm/undo companion verdict and reconciles it against the verification ledger (CMP-2), errors on an async call in a client file with no error path at all (CMP-3), and reports every raw-HTML render sink, erroring without an allowlisted sanitiser and noting with one (CMP-9); the consequence copy, whether a state is visible, and whether a sanitiser sits at the render boundary stay with the evaluator |
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
 | `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1, IDN-2 | Logo/lockup files resolve to the approved asset library and product icons to the approved icon family; no inline redraws |
@@ -568,14 +601,20 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
 run the same Python gate: `validate.py --self-test`, `validate.py`,
 `checklib.py --self-test`, `token-audit.py --self-test`, `type-scan.py --self-test`,
-`token-audit.py` over `app components lib`, `a11y-static.py`, and `type-scan.py` over
-`app components`. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
-the checks layer reaches ast-grep with `subprocess`; the three `--self-test` runs are
+`cmp-scan.py --self-test`, `token-audit.py` over `app components lib`,
+`a11y-static.py`, `type-scan.py` over `app components`, and `cmp-scan.py` over
+`app components lib`. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
+the checks layer reaches ast-grep with `subprocess`; the four `--self-test` runs are
 what put the ast-grep provisioning contract and the `fixtures/parity/` corpus in the
 gate rather than leaving them to a dev machine.
 `type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged).
+`cmp-scan` went in clean on day one and needs no `WIRING_EXEMPT` entry: after the
+denylist it lists 0 CMP-2 candidates on this tree, CMP-9 finds no render sink at all,
+and CMP-3's two narrowings, a client-file scope and `notFound()` counting as an error
+path, take its 8 would-be findings on this repo's Next.js server components and route
+handlers to 0. Those narrowings are load-bearing for wireability, not cosmetic.
 
 `content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
 on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the

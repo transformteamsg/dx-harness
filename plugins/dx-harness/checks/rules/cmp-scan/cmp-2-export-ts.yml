@@ -1,0 +1,18 @@
+# The .ts counterpart of cmp-2-export-tsx.yml. Server actions usually live in a
+# .ts file, so this arm carries most of the real traffic.
+id: cmp-scan-cmp-2-export-ts
+language: ts
+severity: warning
+message: candidate cmp 2 export
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-export
+  context: server-action
+rule:
+  kind: export_statement
+  has:
+    any:
+      - kind: function_declaration
+      - kind: generator_function_declaration
+      - kind: lexical_declaration

@@ -1,0 +1,29 @@
+# CMP-2, handler position 3: a declaration wrapping one of the four hooks that
+# turn a function into a user-triggered transaction. The whole declaration is
+# offered rather than the call, so a tuple form (`const [state, act] =
+# useActionState(…)`) reaches Python with both names in the text.
+id: cmp-scan-cmp-2-mutation-tsx
+language: tsx
+severity: warning
+message: candidate cmp 2 mutation
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-mutation
+  context: mutation
+rule:
+  any:
+    - kind: lexical_declaration
+      has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '^(?:useMutation|useActionState|useFormState|useTransition)$'
+    - kind: variable_declaration
+      has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '^(?:useMutation|useActionState|useFormState|useTransition)$'

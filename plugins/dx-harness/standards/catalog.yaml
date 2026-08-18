@@ -456,6 +456,12 @@ controls:
       - silent destructive action
       - confirmation that does not state what will be lost
     detail: controls/cmp-2.md
+    # `partial`, never `script`: cmp-scan.py lists every destructive candidate
+    # and its confirm/undo companion verdict, and the judgment (is the
+    # consequence copy plain and complete) stays with the reviewer. L0 forbids
+    # a `gap:` reason, so the script is this control's only legal exit.
+    enforced: partial
+    script: checks/cmp-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: CMP-3
@@ -471,6 +477,12 @@ controls:
       - missing error state
       - loading state that flickers (no min visible time)
     detail: controls/cmp-3.md
+    # `partial`: cmp-scan.py decides only "async call in a file with no error
+    # path at all". Whether the loading, success and error states are VISIBLE
+    # needs a state variable traced into JSX and across components, so those
+    # three halves stay with the evaluator.
+    enforced: partial
+    script: checks/cmp-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # CMP-4 added 2026-07-08 — ratchet, design-lead approved (empty-state clarity,
@@ -584,6 +596,12 @@ controls:
       - sanitisation is claimed at editor time only ("schema-constrained output") with nothing enforced at render
       - a prototype defers sanitisation with no recorded flag noting the deferral
     detail: controls/cmp-9.md
+    # `partial`: cmp-scan.py finds every render sink and says whether an
+    # allowlisted sanitiser is in the same file. Whether that sanitiser sits at
+    # the render boundary, and whether the content crossed a trust boundary at
+    # all, is the evaluator's read.
+    enforced: partial
+    script: checks/cmp-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Content & naming ──────────────────────────────────────────────────

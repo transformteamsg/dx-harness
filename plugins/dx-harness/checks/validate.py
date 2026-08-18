@@ -785,12 +785,10 @@ GAP_GRANDFATHERED = {
     # #157, checks/motion-scan.py.
     "MOT-1": "script pending in #157",
     "SLP-8": "script pending in #157",
-    # #158, checks/cmp-scan.py. CMP-2 is L0, so a gap: reason can never
-    # legalise it: its only exit is the script, which is why the candidate
-    # lister has to be built.
-    "CMP-2": "L0, so no gap: reason can ever stand in; script pending in #158",
-    "CMP-3": "script pending in #158",
-    "CMP-9": "script pending in #158",
+    # #158 is done: checks/cmp-scan.py ships, so CMP-2, CMP-3 and CMP-9 each
+    # carry a script and enforced: partial, and all three entries are gone.
+    # CMP-2's mattered most. It is L0, so no gap: reason could ever have
+    # legalised it, and the candidate lister was its only legal exit.
     # #159, checks/identity-scan.py.
     "IDN-1": "script pending in #159",
     "IDN-2": "script pending in #159",

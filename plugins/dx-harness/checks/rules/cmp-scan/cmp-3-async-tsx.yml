@@ -1,0 +1,16 @@
+# CMP-3: an await expression, the async call this rule asks about. Only `await`
+# is offered. A bare `.then()` chain is left alone on purpose: its second argument
+# is already an error path, so telling a handled chain from an unhandled one needs
+# argument analysis this rule does not do, and a wrong guess here would be a false
+# positive on an error path that exists.
+id: cmp-scan-cmp-3-async-tsx
+language: tsx
+severity: warning
+message: candidate cmp 3 async
+metadata:
+  control: CMP-3
+  check: cmp-scan
+  surface: cmp3-async
+  context: await
+rule:
+  kind: await_expression

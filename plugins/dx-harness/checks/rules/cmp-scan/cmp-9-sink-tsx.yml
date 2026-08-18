@@ -1,0 +1,31 @@
+# CMP-9: the raw-HTML render sinks a JSX/TSX file can carry. A bare `.innerHTML`
+# READ is not a sink, so only the assignment form is offered. `skipHtml` and
+# `allowDangerousHtml` are offered whatever their value, because whether the value
+# opens the sink is policy and Python decides it.
+id: cmp-scan-cmp-9-sink-tsx
+language: tsx
+severity: warning
+message: candidate cmp 9 sink
+metadata:
+  control: CMP-9
+  check: cmp-scan
+  surface: cmp9-sink
+  context: render-sink
+rule:
+  any:
+    - kind: jsx_attribute
+      regex: '^(?:dangerouslySetInnerHTML|skipHtml|allowDangerousHtml)\b'
+    - kind: assignment_expression
+      regex: '(?s)\.\s*(?:innerHTML|outerHTML)\s*='
+    - kind: call_expression
+      has:
+        field: function
+        regex: '(?:^|\.)insertAdjacentHTML$'
+    - kind: call_expression
+      has:
+        field: function
+        regex: '^document\s*\.\s*(?:write|writeln)$'
+    - kind: pair
+      regex: '^(?:allowDangerousHtml|skipHtml)\s*:'
+    - kind: import_statement
+      regex: 'rehype-raw'

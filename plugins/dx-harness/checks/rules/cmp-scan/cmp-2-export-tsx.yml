@@ -1,0 +1,20 @@
+# CMP-2, handler position 4: a module-level exported function. On its own this is
+# every exported helper in the tree, so Python only treats it as a handler
+# position when the file carries a "use server" directive, because a server action is
+# reachable from a client and is therefore a user-triggered transaction.
+id: cmp-scan-cmp-2-export-tsx
+language: tsx
+severity: warning
+message: candidate cmp 2 export
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-export
+  context: server-action
+rule:
+  kind: export_statement
+  has:
+    any:
+      - kind: function_declaration
+      - kind: generator_function_declaration
+      - kind: lexical_declaration

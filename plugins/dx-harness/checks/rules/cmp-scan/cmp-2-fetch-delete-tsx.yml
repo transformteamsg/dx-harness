@@ -1,0 +1,20 @@
+# CMP-2, handler position 5: a fetch or axios call whose method option resolves to
+# DELETE. This is the arm that needs a parser rather than a line regex: the
+# callee and the `method:` option are almost never on the same line, and matching
+# the call node reaches across all of them.
+id: cmp-scan-cmp-2-fetch-delete-tsx
+language: tsx
+severity: warning
+message: candidate cmp 2 fetch delete
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-fetch-delete
+  context: fetch-delete
+rule:
+  all:
+    - kind: call_expression
+    - has:
+        field: function
+        regex: '(?:^|\.)(?:fetch|axios)$'
+    - regex: '(?s)method\s*:\s*["''`]\s*DELETE\b'

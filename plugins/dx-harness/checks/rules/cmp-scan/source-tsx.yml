@@ -1,0 +1,15 @@
+# The whole file as one span, so checklib.surface_lines() can hand the check a
+# copy of the source with every comment span blanked out. All three CMP rules ask
+# a same-file question ("is there a companion", "is there an error path", "is
+# there a sanitiser"), and a token that only appears in a comment must never
+# answer one of them.
+id: cmp-scan-source-tsx
+language: tsx
+severity: warning
+message: source
+metadata:
+  check: cmp-scan
+  surface: source
+  kind: program
+rule:
+  kind: program

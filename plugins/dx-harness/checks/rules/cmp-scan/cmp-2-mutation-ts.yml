@@ -1,0 +1,26 @@
+# The .ts counterpart of cmp-2-mutation-tsx.yml.
+id: cmp-scan-cmp-2-mutation-ts
+language: ts
+severity: warning
+message: candidate cmp 2 mutation
+metadata:
+  control: CMP-2
+  check: cmp-scan
+  surface: cmp2-mutation
+  context: mutation
+rule:
+  any:
+    - kind: lexical_declaration
+      has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '^(?:useMutation|useActionState|useFormState|useTransition)$'
+    - kind: variable_declaration
+      has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          regex: '^(?:useMutation|useActionState|useFormState|useTransition)$'
