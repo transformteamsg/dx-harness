@@ -7,11 +7,13 @@ describe("docs navigation", () => {
     expect(readingOrder.some((page) => page.href === "/standards")).toBe(false);
   });
 
-  it("keeps product profiles and the designer on-ramp out of primary navigation", () => {
+  it("keeps product profiles, the designer on-ramp and the research brief out of primary navigation", () => {
     expect(visibleNav.some((group) => group.label === "Products")).toBe(false);
     expect(isVisibleNavHref("/harness/on-ramp")).toBe(false);
+    expect(isVisibleNavHref("/harness/research-brief")).toBe(false);
     expect(readingOrder.some((page) => page.href.startsWith("/products"))).toBe(false);
     expect(readingOrder.some((page) => page.href === "/harness/on-ramp")).toBe(false);
+    expect(readingOrder.some((page) => page.href === "/harness/research-brief")).toBe(false);
   });
 
   it("orders the visible harness pages around the core workflow", () => {
@@ -22,7 +24,6 @@ describe("docs navigation", () => {
       { href: "/harness/skills", title: "Skills" },
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/tools", title: "Tools" },
-      { href: "/harness/research-brief", title: "Research brief" },
     ]);
   });
 

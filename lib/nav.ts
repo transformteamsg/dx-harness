@@ -18,7 +18,7 @@ export const nav: NavGroup[] = [
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/on-ramp", title: "Designer on-ramp", hidden: true },
       { href: "/harness/tools", title: "Tools" },
-      { href: "/harness/research-brief", title: "Research brief" },
+      { href: "/harness/research-brief", title: "Research brief", hidden: true },
     ],
   },
   {
@@ -60,7 +60,6 @@ export const nav: NavGroup[] = [
       { href: "/standards/web-interface", title: "Web interface" },
       { href: "/standards/data-viz", title: "Data visualisation" },
       { href: "/standards/illustration", title: "Illustration" },
-      { href: "/standards/product-icons", title: "Product icons" },
     ],
   },
   {

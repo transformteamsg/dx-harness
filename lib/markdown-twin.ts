@@ -42,8 +42,8 @@ export function toMarkdown(title: string, description: string | undefined, body:
    (or an image converted to Markdown). Inside fences/spans, bytes are untouched
    so literals like `<button>`, `<ID>`, `<Link>` survive verbatim.
 
-   The only body JSX in the corpus is content/guidelines/product-icons.mdx:
-   a <div> of <a><img/><span> lockups and a <figure><svg>…</svg></figure> grid. */
+   Body JSX appears in a handful of content pages — specimen grids, figures
+   and diagrams — none of which carry prose a machine reader needs. */
 export function stripJsx(body: string): string {
   const lines = body.split("\n");
   const out: string[] = [];

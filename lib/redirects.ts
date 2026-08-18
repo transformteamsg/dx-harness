@@ -18,7 +18,7 @@ export const movedPages: Record<string, string> = {
   "/guidelines/web-interface": "/standards/web-interface",
   "/guidelines/data-viz": "/standards/data-viz",
   "/guidelines/illustration": "/standards/illustration",
-  "/guidelines/product-icons": "/standards/product-icons",
+  "/guidelines/product-icons": "/standards/iconography",
   "/foundations": "/standards/catalog",
   "/foundations/colour": "/standards/colour",
   "/foundations/typography": "/standards/typography",

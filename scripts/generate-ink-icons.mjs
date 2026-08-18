@@ -23,7 +23,6 @@ const TOPIC_ICONS = {
   "standards/web-interface": "app-window",
   "standards/data-viz": "chart-column",
   "standards/illustration": "image",
-  "standards/product-icons": "squircle",
   "standards/colour": "palette",
   "standards/typography": "type",
   "standards/spacing-radius": "ruler",
