@@ -454,6 +454,19 @@ pass reported 541px of intrusion, which was a false positive — the selector ha
 caught the compare slider's own `clip-path`, which lives inside the sheet by
 design. The scoped re-measurement is the one above.
 
+**2026-08-18 — the docs topbar drops "For agents".** Recorded here because this is
+the only record that governs a nav-link removal, with the scope difference stated:
+this record's subject is the *landing* shell (`app/(landing)/layout.tsx`), and this
+change is the *docs* shell (`components/topbar.tsx`), which no record governs.
+
+The link was the topbar's only right-hand item, so the empty
+`nav[aria-label="Primary"]` went with it rather than being left for assistive tech
+to announce as a navigation landmark with nothing in it (A11Y-7). `/for-agents` is
+not orphaned: the docs sidebar lists it (`lib/nav.ts:99`) and `/overview` links it
+in prose. Two contract assertions that measured that link's target size now
+measure the wordmark home link instead, and one asserts the landmark is gone, so a
+silent re-addition of an empty nav would fail. Suite 47/47 on the production build.
+
 ## Ratchet
 
 1. **[proposed] No control covers a decorative layer's relationship to text.**

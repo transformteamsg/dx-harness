@@ -365,6 +365,34 @@ and stays at rest when `prefers-reduced-motion: reduce` is active.
   production states. Typecheck, ESLint, all 92 unit tests, the 70-control design
   gate, the 245-page production build, and four focused Playwright checks pass.
 
+### The mark's ink and weight — 2026-08-18 (builder ruling)
+
+The traced mark in the hero blueprint now draws in `--mark-ink` at a 7px stroke,
+replacing a 5px stroke in `--blueprint-ink`. Verbatim ask: "Change the logo mark
+(animation one)'s colour into B0E64C and make it thicker."
+
+- **`--mark-ink` is new in `app/globals.css`**, aliasing `--site-accent-hover`
+  (Radix lime-10, `#b0e64c`). It exists so the mark's colour has a name of its
+  own rather than reading as a hover state at the call site, and so the raw hex
+  stays in the token block (TOK-1). Measured in the production DOM: the mark
+  computes `rgb(176, 230, 76)`, `strokeWidth: 7px`.
+- **COL-1 still passes without a waiver.** This record already retired the old
+  COL-1 waiver on the ground that the site's lime *is* this product's own
+  primary; drawing the mark a step brighter in the same family does not reopen
+  that. The construction guides keep `--blueprint-ink` (`#587828`, measured
+  4.75:1 on the `--sheet-band`), so the drawing keeps its readable layer.
+- **What it costs, stated plainly.** Lime-10 measures **1.37:1** on the
+  `--sheet-band` panel where the old ink measured ~4.75:1, so the mark no longer
+  clears the 3:1 non-text floor. It is the brand mark, which WCAG exempts from
+  that floor as a logotype, and the hero's message is carried by the headline
+  beside it — no reader has to resolve the drawing to follow the page. A11Y-1 (L0)
+  is unaffected: it governs text and UI components, and every text pairing on the
+  surface is unchanged. The stale claim in
+  `components/landing/dxd-construction-preview.tsx` that "the mark's own stroke
+  clears the 3:1 floor" was corrected rather than left standing.
+- **The extra 2px is load-bearing**, not decoration: at 5px the lighter ink read
+  as a wash against its own guides. Verified in `hero-mark-1280.png`.
+
 ## Ratchet
 
 Four things the build had to decide that no control cleanly settled. All four are

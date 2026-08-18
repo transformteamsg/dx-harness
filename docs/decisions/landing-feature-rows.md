@@ -472,6 +472,72 @@ because they change the same rows this record governs:
   the copy outcome is announced through a polite live region (A11Y-11) and the
   button label; the clipboard content is pinned by a contract test.
 
+**2026-08-18, second pass of builder rulings.** Four asks, each recorded with what
+it cost:
+
+- **The setup prompt and its copy button are gone.** The builder's reason was that
+  the button does not work. The most likely mechanism, named here because the
+  component is deleted and cannot be debugged later:
+  `navigator.clipboard.writeText` is only defined in a secure context, so on a
+  plain-HTTP origin `navigator.clipboard` is `undefined` and the call throws a
+  `TypeError` *synchronously* — before any promise exists. The component's guard
+  was `.catch(() => settle("failed"))`, which catches a rejection and not a throw,
+  so the documented failure state could never render and the button read as dead.
+  The contract test passed throughout because Playwright runs on `localhost`,
+  which *is* a secure context. Nothing is lost from the page: the two install
+  commands live on `/harness/install`, which the band's Quick start action points
+  at. `components/landing/copy-prompt.tsx` is deleted.
+- **The band's copy is rewritten, and it is no longer a quotation.** It was
+  `<blockquote cite="/note">` carrying "We spent this build on what the harness
+  feels like to use. Worry less: take the quick start, or hand one prompt to your
+  coding agent." — words that appear **nowhere** in `/note`. A cite attribute
+  pointing at a page that never says the quoted thing is a false attribution, so
+  the element is now a signed statement in the builders' own voice, with the note
+  offered as the longer version. New copy, written against the Google developer
+  documentation style guide the note itself was rewritten against (PR #189):
+  *"The harness is our product too, and we spent this build on how it feels to
+  use. Start with one request in your own words, even if you do not write code
+  every day."* Two sentences, 16 and 17 words (the guide's global-audience page:
+  shorter sentences translate better); active voice; present tense; no idiom; "we"
+  kept for the builders and "you" for the reader, which is the carve-out PR #189
+  recorded for a signed letter. `content-lint.py` (CNT-1/3/5/6 + the SLP-9 lint
+  half) exits 0 on both the TSX and the twin. A contract test now asserts that no
+  `blockquote[cite="/note"]` exists, so the false-attribution pattern cannot
+  return unnoticed.
+- **The band carries the closing section's ground.** Both are
+  `bg-site-accent-wash`. Measured in the production DOM: both compute
+  `oklab(0.990988 -0.00818826 0.0113152)` = `#fafef4`, an exact match, pinned by a
+  contract test that reads both computed backgrounds and compares them. A11Y-1 on
+  the new pairings: statement `#18181b` at 30px = **17.34:1**; attribution and
+  note link `#67676f` at 14px = **5.48:1**; the CTA label `#18181b` on `#ffffff` =
+  17.72:1 with its `#67676f` border at 5.48:1 against the wash; target 116x44.
+  (The wash resolves to `oklab()` because it is a `color-mix`, which no contrast
+  formula accepts — the measurement paints each colour into a 1x1 canvas and reads
+  the sRGB bytes back. Worth knowing: `contrast.py` cannot follow a `color-mix`
+  either, so this pairing is manual by construction.)
+- **The row clips run at 85%: `max-w-sm` (384px) → `max-w-80` (320px).** The
+  builder asked for 85%, which is 326px; 320px is the nearest width on the scale,
+  and taking the on-scale step rather than an arbitrary value is the same call the
+  closing clip's `max-w-64` already records. Measured: all three clips render
+  320px wide at 1280. This also eases the LAY-5 density note the reviewer left on
+  this section, since each row's height is clip-driven.
+
+**Verification for the four (production build on an isolated dist dir, no dev
+markers in the served HTML):** contract suite **47/47** (the band test split in
+two: the signed-statement contract and the shared-ground contract); 92 unit tests;
+typecheck clean; ESLint clean; `check:python` (validate + self-test, token-audit,
+a11y-static, type-scan, contrast) all exit 0; `scrollWidth` equals the viewport at
+1280 and 360. Frames in the session scratchpad `evidence/`: `band-1280.png`,
+`band-360.png`, `feature-rows-1280.png`, `hero-mark-1280.png`.
+
+**Note on the environment:** a bare `next dev` (not `pnpm dev`, so without the
+repo's `NEXT_DIST_DIR=.next-dev` guard) was running on port 3000 during this work
+and writing into `.next`, which broke a production build mid-flight with a missing
+`pages-manifest.json`. Every number above was taken from a build and server on
+`NEXT_DIST_DIR=.next-prod` at port 3111, with `app-pages-browser` and
+`next-devtools` marker counts confirmed at 0 in the served HTML. This is Ratchet
+item 4 of `landing-sheet-ground.md` biting a second time.
+
 ## Ratchet
 
 New items this run, all `[proposed — pending design-lead approval]`:
