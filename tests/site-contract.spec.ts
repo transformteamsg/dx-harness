@@ -8,8 +8,8 @@ const routes = [
   { name: "for agents", path: "/for-agents" },
   { name: "the loop", path: "/harness/loop" },
   { name: "standards redirect", path: "/standards" },
-  { name: "motion foundations", path: "/foundations/motion" },
-  { name: "tokens foundations", path: "/foundations/tokens" },
+  { name: "motion standards", path: "/standards/motion" },
+  { name: "tokens standards", path: "/standards/tokens" },
   { name: "governance changes", path: "/governance/changes" },
 ] as const;
 

@@ -10,8 +10,6 @@ import { inkIcons, inkFilter, inkStroke } from "./ink-icons.generated";
 
 export const sectionInk: Record<string, string> = {
   standards: "var(--sec-standards)",
-  guidelines: "var(--sec-guidelines)",
-  foundations: "var(--sec-foundations)",
   research: "var(--sec-research)",
   products: "var(--sec-products)",
   harness: "var(--sec-harness)",

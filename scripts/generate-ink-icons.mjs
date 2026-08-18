@@ -14,21 +14,21 @@ import rough from "roughjs/bundled/rough.esm.js";
 /* Topic → Lucide icon id. Keys match topicArt keys in components/thumbnails.tsx. */
 const TOPIC_ICONS = {
   "standards/catalog": "list-checks",
-  "guidelines/voice-tone": "message-circle",
-  "guidelines/naming": "tag",
-  "guidelines/interaction": "mouse-pointer-click",
-  "guidelines/web-interface": "app-window",
-  "guidelines/data-viz": "chart-column",
-  "guidelines/illustration": "image",
-  "guidelines/product-icons": "squircle",
-  "foundations/colour": "palette",
-  "foundations/typography": "type",
-  "foundations/spacing-radius": "ruler",
-  "foundations/iconography": "shapes",
-  "foundations/tokens": "braces",
+  "standards/voice-tone": "message-circle",
+  "standards/naming": "tag",
+  "standards/interaction": "mouse-pointer-click",
+  "standards/web-interface": "app-window",
+  "standards/data-viz": "chart-column",
+  "standards/illustration": "image",
+  "standards/product-icons": "squircle",
+  "standards/colour": "palette",
+  "standards/typography": "type",
+  "standards/spacing-radius": "ruler",
+  "standards/iconography": "shapes",
+  "standards/tokens": "braces",
   /* Landing FIG 3 only — no docs page; the mark is an easing spline, the
      drawable face of a motion signature. */
-  "foundations/motion": "spline",
+  "standards/motion": "spline",
   "research/research-brief": "notebook-pen",
   /* Products keep the family signature: ink squircle frame + script letter
      (letter is drawn by the component, not generated here). */

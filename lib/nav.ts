@@ -34,44 +34,39 @@ export const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Design reference",
+    /* The group label itself lands on the consolidated catalog; the sub-pages
+       are the standard split by dimension. */
+    label: "Standards",
+    href: "/standards/catalog",
     items: [
-      { href: "/standards/catalog", title: "Control catalog" },
       {
-        label: "Guidelines",
+        label: "Writing",
         items: [
-          { href: "/guidelines", title: "Overview" },
-          { href: "/guidelines/voice-tone", title: "Voice & tone" },
-          { href: "/guidelines/ui-text", title: "UI text" },
-          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
-          { href: "/guidelines/text-patterns", title: "Components & text patterns" },
-          { href: "/guidelines/naming", title: "Naming" },
-          { href: "/guidelines/interaction", title: "Interaction" },
-          { href: "/guidelines/web-interface", title: "Web interface" },
-          { href: "/guidelines/data-viz", title: "Data visualization" },
-          { href: "/guidelines/illustration", title: "Illustration" },
-          { href: "/guidelines/product-icons", title: "Product icons" },
+          { href: "/standards/writing", title: "Overview" },
+          { href: "/standards/voice-tone", title: "Voice & tone" },
+          { href: "/standards/grammar-mechanics", title: "Grammar & mechanics" },
+          { href: "/standards/text-patterns", title: "Components & text patterns" },
+          { href: "/standards/naming", title: "Naming" },
         ],
       },
-      {
-        label: "Foundations",
-        items: [
-          { href: "/foundations", title: "Overview" },
-          { href: "/foundations/colour", title: "Colour" },
-          { href: "/foundations/typography", title: "Typography" },
-          { href: "/foundations/spacing-radius", title: "Spacing & radius" },
-          { href: "/foundations/iconography", title: "Iconography" },
-          { href: "/foundations/motion", title: "Motion" },
-          { href: "/foundations/tokens", title: "Tokens" },
-        ],
-      },
-      {
-        label: "Research",
-        items: [
-          { href: "/research", title: "Overview" },
-          { href: "/research/research-brief", title: "Research brief" },
-        ],
-      },
+      { href: "/standards/colour", title: "Colour" },
+      { href: "/standards/typography", title: "Typography" },
+      { href: "/standards/spacing-radius", title: "Spacing & radius" },
+      { href: "/standards/tokens", title: "Tokens" },
+      { href: "/standards/iconography", title: "Iconography" },
+      { href: "/standards/motion", title: "Motion" },
+      { href: "/standards/interaction", title: "Interaction" },
+      { href: "/standards/web-interface", title: "Web interface" },
+      { href: "/standards/data-viz", title: "Data visualisation" },
+      { href: "/standards/illustration", title: "Illustration" },
+      { href: "/standards/product-icons", title: "Product icons" },
+    ],
+  },
+  {
+    label: "Research",
+    items: [
+      { href: "/research", title: "Overview" },
+      { href: "/research/research-brief", title: "Research brief" },
     ],
   },
   {

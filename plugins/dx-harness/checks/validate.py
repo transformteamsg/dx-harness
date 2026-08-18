@@ -85,10 +85,10 @@ def find_site_root(repo_root):
 
 
 def find_content_root(repo_root):
-    """Nearest ancestor carrying content/guidelines/ — the website tree the
+    """Nearest ancestor carrying content/standards/ — the website tree the
     copy-skill parity checks compare against. None when absent."""
     return _walk_up(repo_root, lambda d: os.path.isdir(
-        os.path.join(d, "content", "guidelines")))
+        os.path.join(d, "content", "standards")))
 
 
 def required_consumer_errors(repo_root, consumers, tag):
@@ -923,7 +923,7 @@ def gap_allowlist_errors(catalog_by_id):
 # The copy skill (skills/design/dx-design-copy/SKILL.md) inlines the voice-attributes
 # and tone-by-context tables and the draft-phase editing sequence; the website
 # guidelines restate them for human readers. Source = the plugin-shipped skill;
-# consumers = the website mdx under content/guidelines/, which live OUTSIDE the plugin
+# consumers = the website mdx under content/standards/, which live OUTSIDE the plugin
 # (found by find_content_root, like package.json in wiring_parity_errors) — so these
 # are website-optional sub-checks that return clean when the site tree is absent (the
 # harness ships standalone as a plugin).
@@ -1028,25 +1028,25 @@ def _table_parity_errors(repo_root, name, tag, consumer_rel):
 def voice_parity_errors(repo_root):
     """[VOICE-SYNC] copy skill's voice-attributes table == voice-tone.mdx's."""
     return _table_parity_errors(repo_root, "voice-attributes", "VOICE-SYNC",
-                                "content/guidelines/voice-tone.mdx")
+                                "content/standards/voice-tone.mdx")
 
 
 def tone_parity_errors(repo_root):
     """[TONE-SYNC] copy skill's tone-by-context table == voice-tone.mdx's."""
     return _table_parity_errors(repo_root, "tone-context", "TONE-SYNC",
-                                "content/guidelines/voice-tone.mdx")
+                                "content/standards/voice-tone.mdx")
 
 
 def uitext_parity_errors(repo_root):
     """
     [UITEXT-SYNC] Every draft-phase step name in the copy skill's editing
-    sequence must appear as a word in a ui-text.mdx section heading — a SUBSET,
+    sequence must appear as a word in a writing.mdx section heading — a SUBSET,
     not equality: the skill's step 6 'Check' deliberately collapses ui-text
     sections 6–11 (human-reviewed, not parity-checked). Website-optional.
     """
     skill_path = os.path.join(repo_root, "skills", "design", "dx-design-copy",
                               "SKILL.md")
-    consumer_rel = "content/guidelines/ui-text.mdx"
+    consumer_rel = "content/standards/writing.mdx"
     present, errors = required_consumer_errors(repo_root, [skill_path],
                                                "UITEXT-SYNC")
     if skill_path not in present:
@@ -1074,7 +1074,7 @@ def uitext_parity_errors(repo_root):
     if missing:
         errors.append(
             f"ERROR {consumer_rel} [UITEXT-SYNC]: copy-skill step name(s) "
-            f"{{{', '.join(sorted(missing))}}} not found in any ui-text.mdx section heading"
+            f"{{{', '.join(sorted(missing))}}} not found in any writing.mdx section heading"
         )
     return errors
 
@@ -1931,7 +1931,7 @@ def run_self_test():
 
     # ── [VOICE-SYNC] / [TONE-SYNC] / [UITEXT-SYNC] cases ─────────────────────
     # Lay out a synthetic repo: harness/skills/design/dx-design-copy/SKILL.md
-    # (source, <!-- --> markers) and content/guidelines/*.mdx one level up
+    # (source, <!-- --> markers) and content/standards/*.mdx one level up
     # (consumers, {/* */} markers) — mirroring the real placement so the
     # helpers' find_content_root walk-up and website-absent bail-out are
     # exercised for real.
@@ -1941,10 +1941,10 @@ def run_self_test():
         skill_dir = os.path.join(harness_dir, "skills", "design", "dx-design-copy")
         os.makedirs(skill_dir)
         skill_path = os.path.join(skill_dir, "SKILL.md")
-        guide_dir = os.path.join(copy_tmp, "content", "guidelines")
+        guide_dir = os.path.join(copy_tmp, "content", "standards")
         os.makedirs(guide_dir)
         voice_path = os.path.join(guide_dir, "voice-tone.mdx")
-        uitext_path = os.path.join(guide_dir, "ui-text.mdx")
+        uitext_path = os.path.join(guide_dir, "writing.mdx")
 
         skill_md = (
             "<!-- dx-sync:voice-attributes source -->\n"

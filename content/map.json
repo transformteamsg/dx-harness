@@ -1,32 +1,23 @@
 {
  "standards": {
   "label": "Standards",
-  "slugs": []
- },
- "guidelines": {
-  "label": "Guidelines",
   "slugs": [
+   "writing",
    "voice-tone",
-   "ui-text",
    "grammar-mechanics",
    "text-patterns",
    "naming",
+   "colour",
+   "typography",
+   "spacing-radius",
+   "tokens",
+   "iconography",
+   "motion",
    "interaction",
    "web-interface",
    "data-viz",
    "illustration",
    "product-icons"
-  ]
- },
- "foundations": {
-  "label": "Foundations",
-  "slugs": [
-   "colour",
-   "typography",
-   "spacing-radius",
-   "iconography",
-   "motion",
-   "tokens"
   ]
  },
  "research": {

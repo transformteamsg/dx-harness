@@ -106,8 +106,8 @@ describe("controlMarkdown", () => {
 
 describe("mdAlternate", () => {
   it("maps an html path to its .md twin url via alternates.types['text/markdown']", () => {
-    expect(mdAlternate("/guidelines/voice-tone")).toEqual({
-      alternates: { types: { "text/markdown": "/guidelines/voice-tone.md" } },
+    expect(mdAlternate("/standards/voice-tone")).toEqual({
+      alternates: { types: { "text/markdown": "/standards/voice-tone.md" } },
     });
   });
 });
