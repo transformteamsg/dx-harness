@@ -51,11 +51,13 @@ a deliberately narrow aside), so it is L2.
 ## How to verify
 
 **Hybrid.** The `checks/type-scan.py` measure rule, built in #161, narrows the surface: it
-judges `ch` caps already written against the measure ceiling, and treats sub-45ch values as
-headings and labels rather than prose. Until it ships, verify manually against the
-rendered output at a wide viewport and label it "verified manually". The evaluator judges
-the remainder: which blocks are genuinely running prose (and so need a measure cap) versus
-headings, tables, and data grids (which do not).
+judges `ch` caps already written against the 75ch ceiling, and treats sub-45ch values as
+headings and labels rather than prose. It shares one rule body with LAY-4, which caps the
+same thing at 80ch, so a measure past 80ch reports under both ids. Where no cap is written,
+or the cap is not in `ch`, the rule stays quiet (or prints a NOTE) and the measure falls to
+the rendered output: verify at a wide viewport and label it "verified manually". The
+evaluator judges the remainder: which blocks are genuinely running prose (and so need a
+measure cap) versus headings, tables, and data grids (which do not).
 
 ## Evaluator guidance
 
