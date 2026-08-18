@@ -586,6 +586,7 @@ WIRING_EXEMPT = {
     "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
     "checks/contrast.py": "blocks for manual A11Y-1 verification until a product declares colour.pairs; build wiring is deferred to the catalogue recount",
     "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
+    "checks/slop-scan.py": "pre-existing SLP-1/SLP-2 findings in the components/compare.tsx teaching exhibit; wire after the exhibit waiver mechanism lands",
 }
 
 
@@ -778,10 +779,8 @@ GAP_GRANDFATHERED = {
     # #155, the rendered runner's anti-slop rules.
     "SLP-4": "rendered nested-card rule pending in #155",
     "SLP-6": "rendered type-ramp rule pending in #155",
-    # #156, checks/slop-scan.py.
-    "SLP-1": "script pending in #156",
-    "SLP-2": "script pending in #156",
-    "SLP-3": "script pending in #156",
+    # #156 is done: checks/slop-scan.py ships with SLP-1, SLP-2 and SLP-3
+    # stamped enforced: partial, so none of the three owes a reason any more.
     # #157, checks/motion-scan.py.
     "MOT-1": "script pending in #157",
     "SLP-8": "script pending in #157",
@@ -1796,19 +1795,23 @@ def run_self_test():
         failures.append(f"FAIL the three accepted gaps carry their reasons: "
                         f"want: {want!r}; got: {got!r}")
 
-    # The allowance list shrank by exactly the seven entries #150 resolves, and
-    # by nothing else. The six controls this issue leaves hybrid-and-manual stay
-    # on it until their build issues ship their scripts: an entry leaves only in
-    # the commit that ships what it was waiting for.
+    # The allowance list shrank by exactly the seven entries #150 resolves plus
+    # the three #156 resolves, and by nothing else. SLP-1, SLP-2 and SLP-3 left
+    # in the commit that shipped checks/slop-scan.py and stamped them
+    # enforced: partial, which is the discipline: an entry leaves only in the
+    # commit that ships what it was waiting for. The five controls still
+    # hybrid-and-manual stay on the list until their own build issues land.
     case_count += 1
-    want = (set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"})
+    want = (set(), set(), {"SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"})
     resolved_by_150 = {"CMP-4", "CMP-8", "SLP-5", "SLP-7", "CMP-5", "LAY-1", "TYP-5"}
-    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"}
+    resolved_by_156 = {"SLP-1", "SLP-2", "SLP-3"}
+    still_pending = {"SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"}
     got = (resolved_by_150 & set(GAP_GRANDFATHERED),
+           resolved_by_156 & set(GAP_GRANDFATHERED),
            still_pending & set(GAP_GRANDFATHERED))
     if want != got:
-        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven "
-                        f"entries: want: {want!r}; got: {got!r}")
+        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven and "
+                        f"#156's three entries: want: {want!r}; got: {got!r}")
 
     # No file cites a check that does not exist (#150). A "planned script" note
     # is the drift class this closes: nothing verified those notes and nothing

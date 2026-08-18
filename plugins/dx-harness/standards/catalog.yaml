@@ -1036,6 +1036,8 @@ controls:
     phase: [implement, verify]
     applies_to: [page, component]
     verify: "Stylesheet scan: no purple/violet gradient palettes, no cyan-on-dark theming, no glow box-shadow accents"
+    enforced: partial
+    script: checks/slop-scan.py
     waiver: documented
     fails_when:
       - the default AI aesthetic anywhere in product UI
@@ -1050,6 +1052,8 @@ controls:
     phase: [implement, verify]
     applies_to: [component]
     verify: "Scan for background-clip:text (and -webkit- variant) gradient fills on text"
+    enforced: partial
+    script: checks/slop-scan.py
     waiver: documented
     fails_when:
       - background-clip text gradients on headings or metrics
@@ -1063,6 +1067,8 @@ controls:
     phase: [implement, verify]
     applies_to: [component]
     verify: "Scan for thick (>= 3px) left/side accent borders combined with border-radius on card containers"
+    enforced: partial
+    script: checks/slop-scan.py
     waiver: documented
     fails_when:
       - the single most recognisable AI-UI tell
