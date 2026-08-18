@@ -22,7 +22,7 @@ export const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Design in Code",
+    label: "Design in code",
     items: [
       { href: "/getting-started", title: "Overview" },
       { href: "/getting-started/git-basics", title: "Introducing Git" },

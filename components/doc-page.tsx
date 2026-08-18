@@ -17,7 +17,7 @@ const sectionCrumbs: Record<string, { label: string; href: string }> = {
   standards: { label: "Standards", href: "/standards/catalog" },
   products: { label: "Products", href: "/products" },
   harness: { label: "Harness", href: "/overview" },
-  "getting-started": { label: "Design in Code", href: "/getting-started" },
+  "getting-started": { label: "Design in code", href: "/getting-started" },
 };
 
 export async function DocPage({

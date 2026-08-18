@@ -26,8 +26,8 @@ describe("docs navigation", () => {
     ]);
   });
 
-  it("names the code workflow Design in Code", () => {
-    expect(visibleNav.some((group) => group.label === "Design in Code")).toBe(true);
+  it("names the code workflow Design in code", () => {
+    expect(visibleNav.some((group) => group.label === "Design in code")).toBe(true);
     expect(visibleNav.some((group) => group.label === "Start with code")).toBe(false);
   });
 });
