@@ -584,6 +584,29 @@ controls:
     detail: controls/cmp-9.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # CMP-10: ratchet PROPOSAL 2026-08-18 — input-validation error-clearing
+  # behaviour, from issue #190 (PG frontend PR #117: an error message stayed
+  # visible after the teacher corrected the input). Pending design-lead
+  # approval. See docs/catalog-changes/cmp-10-input-validation-error-clearing.md.
+  - id: CMP-10
+    source: DX-DS
+    title: An input-validation error message clears as soon as the field is corrected, with no separate action required; each field's error clears independently among multiple simultaneous errors
+    tier: L1
+    status: proposed
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Deterministic: for each in-scope field, enter an invalid value, confirm the error message renders, then correct it and confirm the error message is removed from the DOM (planned interaction script, manual until built). Judgment: with multiple simultaneous field errors, correct one field and confirm only that field's error clears while the others remain visible."
+    waiver: documented
+    fails_when:
+      - the error message for a corrected field remains visible after the input satisfies the validation rule again
+      - correcting one field's input clears another field's error message, or clears all errors at once
+      - the error only clears on an unrelated action (submit, blur elsewhere, navigation) rather than on the correction itself
+    detail: controls/cmp-10.md
+    enforced: manual
+    gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
+    refs: [https://github.com/transformteamsg/dx-harness/issues/190]
+
   # ── Content & naming ──────────────────────────────────────────────────
   - id: CNT-1
     source: DX-DS
