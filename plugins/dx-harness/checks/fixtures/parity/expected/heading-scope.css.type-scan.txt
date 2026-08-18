@@ -1,0 +1,2 @@
+ERROR heading-scope.css:16 [TYP-2] body line-height 1.2 outside 1.5-1.6 (line-height) — suggest: set body line-height to 1.5-1.6
+ERROR heading-scope.css:20 [TYP-2] body line-height 1.2 outside 1.5-1.6 (line-height) — suggest: set body line-height to 1.5-1.6

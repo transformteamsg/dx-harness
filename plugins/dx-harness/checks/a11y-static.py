@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Static a11y scan — checks/a11y-static.py
-Scans UI source files for a high-confidence static subset of A11Y-2, A11Y-3,
-and A11Y-8 violations that are detectable from source text alone, without a
-rendered DOM.
+Static focus scan — checks/a11y-static.py
+Scans UI source files for the one accessibility rule no maintained tool
+provides: a focus outline removed with no visible replacement (A11Y-2). The
+rest of what source alone can decide is eslint-plugin-jsx-a11y's, judged on a
+real AST with maintained exception tables (checks/a11y-eslint.py), and anything
+that needs a rendered page belongs to the rendered check.
 
-Detection rules (line-local only)
+Detection rule (line-local only)
 ──────────────────────────────────
 Rule            Control   What is caught
 FOCUS           A11Y-2    A class string containing an outline-removal token
@@ -17,20 +19,27 @@ FOCUS           A11Y-2    A class string containing an outline-removal token
                           focus-visible:, or CSS :focus-visible {…outline|
                           box-shadow|border…}).
 
-KBD             A11Y-2    A <div/<span/<li/<p opening tag on a line carrying
-                (L0)      onClick/onMouseDown (JSX) or (click)/@click (template)
-                          with NO role= and NO tabIndex/tabindex on the same
-                          opening tag.
-
-NAME            A11Y-3    A <button or role="button" opening tag with NO
-                (L0)      aria-label/aria-labelledby/title, that is self-closing
-                          OR whose same-line content is only an icon (<svg, an
-                          <Icon/*Icon component, or an aria-hidden child) with
-                          no visible text.
+Why this one rule stays bespoke
+────────────────────────────────
+No maintained tool checks for a visible focus indicator: 0 of axe's 105 rules
+and none of jsx-a11y's 39. A removed outline with nothing in its place is the
+most common way an L0 keyboard requirement breaks, so the rule is kept here
+even though it reads text rather than an AST, and its known false-positive
+class (below) is accepted rather than answered with another dependency.
 
 What this script does NOT verify
 ─────────────────────────────────
-- Computed contrast ratios (A11Y-1) — needs rendered colours.
+- Keyboard reachability: a click handler on a non-focusable element, and an
+  interactive role that cannot take focus (A11Y-2's reachability half) —
+  jsx-a11y's click-events-have-key-events, no-static-element-interactions and
+  interactive-supports-focus decide these on a real AST (checks/a11y-eslint.py).
+- Accessible names (A11Y-3): jsx-a11y's `label-has-associated-control` checks
+  label association, but its recommended preset deliberately leaves
+  `control-has-associated-label` disabled. Whether an icon-only control has an
+  accessible name therefore stays with rendered/manual verification; this
+  source check claims neither case.
+- Computed contrast ratios (A11Y-1) — checks/contrast.py answers the declared
+  token pairs; computed colours need rendered ones.
 - Interactive hit-area size (A11Y-4) — needs computed layout.
 - Focus traversal order and completeness (A11Y-2 traversal half) — needs a
   live DOM.
@@ -39,21 +48,17 @@ What this script does NOT verify
   variable mutations across files. Deferred extension; manual pass required.
 - Focus styles inherited from shared CSS files the line-local rule cannot see.
   If a component applies outline-none in JSX but a parent stylesheet provides
-  :focus-visible recovery, this script will flag it as a false positive. See the
-  false-positive note in the docstring. Line-local static analysis cannot
-  eliminate this class of false positive without cross-file CSS resolution (a
-  browser / axe job). When in doubt, verify the rendered element with a keyboard
+  :focus-visible recovery, this script will flag it as a false positive.
+  Line-local static analysis cannot eliminate this class of false positive
+  without cross-file CSS resolution (a browser / axe job), and that cost is
+  accepted here. When in doubt, verify the rendered element with a keyboard
   before treating the flag as a bug.
 
 Waiver suppression
 ──────────────────
-A11Y-2 and A11Y-3 are L0 — never waivable. This script does NOT parse
-dx-waive markers for these controls; every violation is emitted as a hard ERROR.
-A11Y-8 (KBD sub-rule) is L1; waiver parsing is also omitted here because the
-static check is a subset — the full evaluation still goes through the manual
-pass. Implementing waiver parsing for a partial check risks creating a false
-sense of coverage. Record any decision to accept a specific finding in the
-decision record instead.
+A11Y-2 is L0 — never waivable. This script does NOT parse dx-waive markers;
+every violation is emitted as a hard ERROR. Record any decision to accept a
+specific finding in the decision record instead.
 
 Output
 ──────
@@ -103,39 +108,6 @@ FOCUS_VISIBLE_REPLACEMENT_CSS_RE = re.compile(
     r":focus-visible\s*\{[^}]*(?:outline|box-shadow|border)"
 )
 
-# ── KBD rule: click handler on non-interactive element ────────────────────────
-# Matches opening tags for non-interactive elements
-KBD_NONFOCUSABLE_TAG_RE = re.compile(
-    r"<\s*(div|span|li|p)\b"
-)
-# Click handler patterns (JSX, HTML, and Vue template)
-KBD_CLICK_HANDLER_RE = re.compile(
-    r"\bon(?:Click|MouseDown|click)\s*=|\(click\)|@click\b"
-)
-# Role attribute present
-KBD_ROLE_RE = re.compile(r'\brole\s*=')
-# tabIndex attribute present
-KBD_TABINDEX_RE = re.compile(r'\btab[Ii]ndex\s*=')
-
-# ── NAME rule: icon-only button with no accessible name ───────────────────────
-# Opening button tag or role="button"
-NAME_BUTTON_RE = re.compile(
-    r'<button\b|role\s*=\s*["\']button["\']'
-)
-# Accessible name attributes
-NAME_ACCESSIBLE_RE = re.compile(
-    r'\baria-label(?:ledby)?\s*=|\btitle\s*='
-)
-# Icon-only content indicators on the same line (self-closing or icon children)
-# Matches SVG elements, Icon components (*Icon or Icon*), aria-hidden elements
-NAME_ICON_ONLY_RE = re.compile(
-    r'<svg\b|<\w*[Ii]con\b|\baria-hidden\s*=\s*["\']true["\']'
-)
-# Self-closing button patterns
-NAME_SELF_CLOSING_RE = re.compile(r'/\s*>')
-# Visible text heuristic: after stripping tags, is there non-whitespace text?
-NAME_STRIP_TAGS_RE = re.compile(r'<[^>]+>')
-
 
 def _check_focus_rule(scan_line):
     """
@@ -155,70 +127,6 @@ def _check_focus_rule(scan_line):
         return False
 
     return True
-
-
-def _check_kbd_rule(scan_line):
-    """
-    KBD rule (A11Y-2): detects click handlers on non-focusable elements.
-
-    Returns True if a violation is found.
-    """
-    if not KBD_NONFOCUSABLE_TAG_RE.search(scan_line):
-        return False
-    if not KBD_CLICK_HANDLER_RE.search(scan_line):
-        return False
-    if KBD_ROLE_RE.search(scan_line):
-        return False
-    if KBD_TABINDEX_RE.search(scan_line):
-        return False
-    return True
-
-
-def _check_name_rule(scan_line):
-    """
-    NAME rule (A11Y-3): detects icon-only buttons with no accessible name.
-
-    Only flags the same-line / self-closing case.
-    Returns True if a violation is found.
-    """
-    if not NAME_BUTTON_RE.search(scan_line):
-        return False
-    if NAME_ACCESSIBLE_RE.search(scan_line):
-        return False
-
-    # Check if the button has visible text content on the same line
-    # Strip the opening button tag first, then look at what's left
-    # Find the content after the first tag closes
-    tag_close = scan_line.find(">")
-    if tag_close == -1:
-        # No closing > on this line — incomplete tag, skip
-        return False
-
-    after_tag = scan_line[tag_close + 1:]
-
-    # Self-closing (/>): no content possible
-    opening_tag_part = scan_line[:tag_close + 1]
-    if NAME_SELF_CLOSING_RE.search(opening_tag_part):
-        return True
-
-    # Check if there's visible text after stripping tags
-    text_content = NAME_STRIP_TAGS_RE.sub("", after_tag).strip()
-
-    # If there's visible text → not an icon-only button
-    if text_content:
-        return False
-
-    # No visible text — check if it has icon content
-    if NAME_ICON_ONLY_RE.search(after_tag):
-        return True
-
-    # No visible text and no icon — still flag (empty button is also missing a name)
-    # But only if the button tag has a closing tag on the same line
-    if "</button>" in scan_line.lower() or "</button>" in after_tag.lower():
-        return True
-
-    # Opening tag only with no closing tag — skip (multi-line button, can't tell)
-    return False
 
 
 def check_file(filepath):
@@ -244,9 +152,6 @@ def check_file(filepath):
     for lineno, raw_line in enumerate(lines, start=1):
         line = raw_line.rstrip("\n")
 
-        def emit(ctl_id, found, suggest):
-            errors.append(checklib.emit_error(rel, lineno, ctl_id, found, suggest))
-
         # ── Strip comments so comment text is not flagged ─────────────────────
         scan_line = checklib.strip_block_comments(line, in_block_comment)
         in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
@@ -259,30 +164,11 @@ def check_file(filepath):
 
         # ── FOCUS rule (A11Y-2) ───────────────────────────────────────────────
         if _check_focus_rule(scan_line):
-            emit(
-                "A11Y-2",
+            errors.append(checklib.emit_error(
+                rel, lineno, "A11Y-2",
                 "focus outline removed with no focus-visible replacement",
                 "add focus-visible:outline-2 / focus-visible:ring-2",
-            )
-
-        # ── KBD rule (A11Y-2) ────────────────────────────────────────────────
-        if _check_kbd_rule(scan_line):
-            # Extract which non-focusable tag triggered it for better messaging
-            m = KBD_NONFOCUSABLE_TAG_RE.search(scan_line)
-            tag = m.group(1) if m else "element"
-            emit(
-                "A11Y-2",
-                f"click handler on non-focusable <{tag}> (no role, no tabIndex)",
-                "use <button> or add role + tabIndex + key handler",
-            )
-
-        # ── NAME rule (A11Y-3) ───────────────────────────────────────────────
-        if _check_name_rule(scan_line):
-            emit(
-                "A11Y-3",
-                "icon-only button with no accessible name",
-                "add aria-label",
-            )
+            ))
 
     return errors
 
@@ -328,7 +214,7 @@ def run_self_test():
 
         for ctl in expected_ctl_ids:
             if ctl not in found_ctls:
-                failures.append(f"FAIL {name}: expected [{ctl}] violation — got: {errs}")
+                failures.append(f"FAIL {name}: want: {[ctl]!r}; got: {found_ctls!r}")
 
     def assert_clean(name, content, ext):
         nonlocal case_count
@@ -339,7 +225,13 @@ def run_self_test():
             errs = check_file(tf.name)
         os.unlink(tf.name)
         if errs:
-            failures.append(f"FAIL {name}: expected no violations — got: {errs}")
+            failures.append(f"FAIL {name}: want: {[]!r}; got: {errs!r}")
+
+    def assert_doc(name, want_fragment):
+        nonlocal case_count
+        case_count += 1
+        if want_fragment not in " ".join(__doc__.split()):
+            failures.append(f"FAIL {name}: want: {want_fragment!r}; got: not in the docstring")
 
     # ── FOCUS rule cases ──────────────────────────────────────────────────────
 
@@ -373,73 +265,7 @@ def run_self_test():
         ".tsx",
     )
 
-    # ── KBD rule cases ────────────────────────────────────────────────────────
-
-    # Case 5: <div onClick> with no role and no tabIndex → A11Y-2
-    assert_violations(
-        "KBD: div onClick no role no tabIndex",
-        '<div onClick={handleClick} className="item">Label</div>',
-        ".tsx",
-        ["A11Y-2"],
-    )
-
-    # Case 6: <div onClick> WITH role="button" → clean
-    assert_clean(
-        "KBD: div onClick with role=button",
-        '<div onClick={handleClick} role="button" tabIndex={0}>Label</div>',
-        ".tsx",
-    )
-
-    # Case 7: <button onClick> → clean (button is natively focusable, not a non-focusable element)
-    assert_clean(
-        "KBD: button onClick is clean",
-        '<button onClick={handleClick}>Delete</button>',
-        ".tsx",
-    )
-
-    # Case 8: HTML onclick on span → A11Y-2
-    assert_violations(
-        "KBD: HTML span onclick no role",
-        '<span onclick="doSomething()">Click me</span>',
-        ".html",
-        ["A11Y-2"],
-    )
-
-    # ── NAME rule cases ───────────────────────────────────────────────────────
-
-    # Case 9: icon-only button with no aria-label → A11Y-3
-    assert_violations(
-        "NAME: icon-only button no aria-label",
-        '<button><SearchIcon /></button>',
-        ".tsx",
-        ["A11Y-3"],
-    )
-
-    # Case 10: icon-only button WITH aria-label → clean
-    assert_clean(
-        "NAME: icon-only button with aria-label",
-        '<button aria-label="Search"><SearchIcon /></button>',
-        ".tsx",
-    )
-
-    # Case 11: native button with visible text → clean
-    assert_clean(
-        "NAME: button with visible text is clean",
-        "<button>Save</button>",
-        ".tsx",
-    )
-
-    # Case 12: HTML button with SVG icon and no aria-label → A11Y-3
-    assert_violations(
-        "NAME: HTML button with svg no aria-label",
-        '<button><svg aria-hidden="true"></svg></button>',
-        ".html",
-        ["A11Y-3"],
-    )
-
-    # ── Edge cases ────────────────────────────────────────────────────────────
-
-    # Case 13: focus:outline-none WITHOUT focus-visible → A11Y-2
+    # Case 5: focus:outline-none WITHOUT focus-visible → A11Y-2
     assert_violations(
         "FOCUS: focus:outline-none without focus-visible",
         '<input className="border focus:outline-none" />',
@@ -447,7 +273,7 @@ def run_self_test():
         ["A11Y-2"],
     )
 
-    # Case 14: outline-0 (numeric form) without replacement → A11Y-2
+    # Case 6: outline-0 (numeric form) without replacement → A11Y-2
     assert_violations(
         "FOCUS: outline-0 without replacement",
         '<button className="outline-0">Click</button>',
@@ -455,7 +281,45 @@ def run_self_test():
         ["A11Y-2"],
     )
 
-    # ── Report ─────────────────────────────────────────────────────────────────
+    # Case 7: the accepted false positive. The recovery lives in a stylesheet
+    # this line-local rule cannot see, so the flag stands — an accepted cost,
+    # not a bug to code around. Confirm the rendered element with a keyboard.
+    assert_violations(
+        "FOCUS: recovery in another file still flags (accepted false positive)",
+        '<button className="chip outline-none">Save</button>\n'
+        '/* chip.css elsewhere: .chip:focus-visible { outline: 2px solid; } */',
+        ".tsx",
+        ["A11Y-2"],
+    )
+
+    # ── The deleted rules leave no coverage claim behind ──────────────────────
+
+    # Case 8: a click handler on a non-focusable element is jsx-a11y's now;
+    # an icon-only button stays rendered/manual because the recommended preset
+    # leaves control-has-associated-label disabled. This check claims neither.
+    assert_clean(
+        "narrowed: keyboard reachability and accessible names are not this check's",
+        '<div onClick={handleClick} className="item">Label</div>\n'
+        "<button><SearchIcon /></button>",
+        ".tsx",
+    )
+
+    # ── The docstring's load-bearing paragraphs ───────────────────────────────
+
+    # Case 9: the accepted false-positive class keeps its keyboard instruction.
+    assert_doc(
+        "docstring keeps the keyboard-verification instruction",
+        "verify the rendered element with a keyboard before treating the flag as a bug",
+    )
+
+    # Case 10: the A11Y-8 cross-file-mutation paragraph is cited elsewhere as
+    # the reason a state-tracking rule is out of static reach — deleting the
+    # NAME rule must not delete it.
+    assert_doc(
+        "docstring keeps the A11Y-8 cross-file mutation paragraph",
+        "without tracking variable mutations across files",
+    )
+
     # ── Fixtures ───────────────────────────────────────────────────────────────
     fixtures_dir = os.path.join(_CHECKS_DIR, "fixtures", "a11y-static")
     for fname in sorted(os.listdir(fixtures_dir)):
@@ -463,9 +327,9 @@ def run_self_test():
         fpath = os.path.join(fixtures_dir, fname)
         errs = check_file(fpath)
         if "fail" in fname and not errs:
-            failures.append(f"FAIL fixture {fname}: expected >=1 ERROR — got none")
+            failures.append(f"FAIL fixture {fname}: want: >=1 ERROR; got: none")
         elif "pass" in fname and errs:
-            failures.append(f"FAIL fixture {fname}: expected 0 ERRORs — got: {errs}")
+            failures.append(f"FAIL fixture {fname}: want: 0 ERRORs; got: {errs!r}")
 
     checklib.report_self_test(failures, case_count)
 

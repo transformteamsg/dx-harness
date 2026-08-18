@@ -1,0 +1,2 @@
+.a { color: #0064ff }
+.b { color: var(--brand) }

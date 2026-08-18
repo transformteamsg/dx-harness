@@ -1,0 +1,2 @@
+ERROR className.tsx:11 [COL-2] Tailwind palette class 'bg-slate-200' — suggest: use a semantic token class (e.g. bg-primary, text-destructive)
+ERROR className.tsx:11 [TOK-1] raw colour '#ff0000' in arbitrary value — suggest: define it as a token and reference var(--…)

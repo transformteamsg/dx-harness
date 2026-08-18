@@ -1,0 +1,13 @@
+# Comment spans, subtracted from every surface. This is why the harness no
+# longer strips comments with regexes: a parser never offers comment text as
+# code, so the block-comment tracker, the <!-- --> strip and the // strip all go.
+id: shared-comment-tsx
+language: tsx
+severity: warning
+message: comment
+metadata:
+  check: shared
+  surface: comment
+  kind: comment
+rule:
+  kind: comment

@@ -1,0 +1,9 @@
+# The ts counterpart of tsx-code-node, minus the JSX kinds. `.ts` has its own
+# rules because aliasing it to tsx measurably loses a whole file's findings at
+# exit 0 (see sgconfig.yml).
+id: ts-code-node
+language: ts
+rule:
+  any:
+    - kind: string
+    - kind: template_string

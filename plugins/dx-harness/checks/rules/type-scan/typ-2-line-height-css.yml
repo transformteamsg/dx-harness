@@ -1,0 +1,15 @@
+# A line-height. The 1.4 to 1.7 quiet band around 1.5 to 1.6 stays in Python,
+# as does the rule that only unitless and em values are judged. The band is
+# body-scoped, and ancestry now answers "am I inside an h1 to h6 rule". See
+# heading-rule-css.yml and heading-element-*.yml.
+id: type-scan-typ-2-line-height-css
+language: css
+severity: warning
+message: candidate typ 2 line height
+metadata:
+  control: TYP-2
+  check: type-scan
+  surface: code
+rule:
+  matches: css-code-node
+  regex: '(?i)(line-height\s*:|\bleading-\[)'

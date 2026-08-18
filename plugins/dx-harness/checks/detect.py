@@ -11,8 +11,8 @@ makes checks actually get run ("fast signal without asking an AI").
 Profiles
 ────────
 - default = the curated, low-false-positive subset: token-audit, contrast,
-  a11y-static, and type-scan's TYP-1 rule only. The noisier rules (TYP-2 size
-  floor, etc.) stay recording-only.
+  a11y-static, a11y-eslint, and type-scan's TYP-1 rule only. The noisier rules
+  (TYP-2 size floor, etc.) stay recording-only.
 - `--all` = every page-check script: the curated set with type-scan's full rule set
   plus content-lint and (when a manifest exists) component-manifest.
 
@@ -269,8 +269,9 @@ def expand_targets(paths, ignore_globs, repo_root):
 def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     """Return the ordered list of check specs for the chosen profile. Each spec:
     {"name", "args" (script + flags, before targets), "mode"}. mode "targets"
-    appends the scanned targets; mode "manifest" runs against `.dx/component-
-    manifest.json`."""
+    appends the scanned targets; mode "repo" appends `--repo-root <repo_root>`
+    and no targets (contrast grades the declared token pairs, not source files);
+    mode "manifest" runs against `.dx/component-manifest.json`."""
     allow = list(allow_values or [])
     specs = []
 
@@ -282,9 +283,10 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
     co = ["contrast.py"]
     if tokens_file:
         co += ["--tokens", tokens_file]
-    specs.append({"name": "contrast", "args": co, "mode": "targets"})
+    specs.append({"name": "contrast", "args": co, "mode": "repo"})
 
     specs.append({"name": "a11y-static", "args": ["a11y-static.py"], "mode": "targets"})
+    specs.append({"name": "a11y-eslint", "args": ["a11y-eslint.py"], "mode": "targets"})
 
     if all_profile:
         # Full rule set — TYP-2 (and the rest) run.
@@ -399,6 +401,9 @@ def run_checks(specs, targets, ignore_rules, repo_root):
                 continue
             argv = [sys.executable, os.path.join(CHECKS_DIR, spec["args"][0]),
                     manifest, repo_root]
+        elif spec["mode"] == "repo":
+            script = os.path.join(CHECKS_DIR, spec["args"][0])
+            argv = [sys.executable, script] + spec["args"][1:] + ["--repo-root", repo_root]
         else:
             script = os.path.join(CHECKS_DIR, spec["args"][0])
             argv = [sys.executable, script] + spec["args"][1:] + list(targets)
@@ -644,10 +649,18 @@ def run_self_test():
     # 1. Profile selection — curated set + membership.
     curated = build_check_specs(False)
     names_c = [s["name"] for s in curated]
-    check("curated has the four low-FP checks",
-          {"token-audit", "contrast", "a11y-static", "type-scan"} <= set(names_c))
+    check("curated has the five low-FP checks",
+          {"token-audit", "contrast", "a11y-static", "a11y-eslint", "type-scan"}
+          <= set(names_c))
     check("curated excludes content-lint / component-manifest",
           "content-lint" not in names_c and "component-manifest" not in names_c)
+
+    # 1b. contrast runs against the repo, not a file list: it grades the
+    # declared token pairs, so it takes --repo-root and no targets.
+    co_c = next(s for s in curated if s["name"] == "contrast")
+    check("contrast runs in repo mode", co_c["mode"] == "repo")
+    check("a11y-eslint runs over the scanned targets",
+          next(s for s in curated if s["name"] == "a11y-eslint")["mode"] == "targets")
 
     # 2. type-scan curated runs TYP-1 only (TYP-2 excluded).
     ts_c = next(s for s in curated if s["name"] == "type-scan")

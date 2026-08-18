@@ -238,57 +238,36 @@ def parse_passes(value_fragment):
     return False
 
 
-class StyleContextTracker:
+class TokenDefTracker:
     """
-    Tracks whether the current line of a file is in a style context.
+    Tracks the two token-definition exemptions, unchanged:
+      (a) a contiguous run of CSS custom-property declarations (--x: value;)
+      (b) an explicit /* dx-tokens */ … /* /dx-tokens */ region
 
-    Style contexts:
-      - Entire .css files
-      - <style>…</style> blocks in HTML/Vue/Svelte
-      - style="…" attribute spans (single-line; multi-line not handled for now)
-      - Tagged template literals: css`…`, styled.xxx`…`, createGlobalStyle`…`
+    Neither moved to ast-grep. The dx-tokens region is the span between two
+    sibling comments, and ast-grep 0.44.1 has no rule field that expresses that;
+    the custom-property block is exemption machinery other checks reuse, so its
+    behaviour must not shift.
 
-    Also tracks token-definition blocks for exemption.
+    What did move is the answer to "is this line in a style context". That was a
+    regex tracker with two documented defects: a style="…" attribute it read
+    single-line only, and a template literal it closed on a line whose entire
+    content was a backtick. It is now `in_style`, an ast-grep style region.
     """
 
     def __init__(self, file_ext):
         self.file_ext = file_ext
-        self.in_style_tag = file_ext == ".css"
-        self.in_template_literal = False
         self.in_dx_tokens_region = False
         self.in_custom_prop_block = False
 
-    def update(self, line):
-        """Update state from the given raw line. Returns (in_style, in_token_def)."""
+    def update(self, line, in_style):
+        """Update state from the raw line. Returns True when the line is exempt."""
         # dx-tokens region markers (can appear anywhere in file)
         if DX_TOKENS_OPEN_RE.search(line):
             self.in_dx_tokens_region = True
         if DX_TOKENS_CLOSE_RE.search(line):
             self.in_dx_tokens_region = False
-            return (self.in_style_tag or self.in_template_literal, True)
-
-        # HTML/Vue/Svelte: <style> tags
-        if self.file_ext in (".html", ".vue", ".svelte"):
-            if re.search(r"<style\b", line, re.IGNORECASE):
-                self.in_style_tag = True
-            if re.search(r"</style\s*>", line, re.IGNORECASE):
-                self.in_style_tag = False
-                return (False, False)
-
-        # JS/TS/JSX/TSX: tagged template literals (css`...`, styled.x`...`)
-        if self.file_ext in (".js", ".ts", ".jsx", ".tsx"):
-            if re.search(r"\b(?:css|styled\.\w+|createGlobalStyle|injectGlobal)\s*`", line):
-                self.in_template_literal = True
-            if self.in_template_literal and "`" in line and not re.search(
-                r"\b(?:css|styled\.\w+|createGlobalStyle|injectGlobal)\s*`", line
-            ):
-                # closing backtick ends the template literal
-                # (simplified: treats the line with the closing ` as still in context)
-                pass
-            if self.in_template_literal and line.strip() == "`":
-                self.in_template_literal = False
-
-        in_style = self.in_style_tag or self.in_template_literal
+            return True
 
         # Token-definition block tracking (only meaningful inside style contexts)
         if in_style or self.file_ext == ".css":
@@ -302,8 +281,7 @@ class StyleContextTracker:
                     if not CUSTOM_PROP_RE.match(line):
                         self.in_custom_prop_block = False
 
-        in_token_def = self.in_dx_tokens_region or self.in_custom_prop_block
-        return (in_style, in_token_def)
+        return self.in_dx_tokens_region or self.in_custom_prop_block
 
 
 def extract_waived_ctl(line):
@@ -316,7 +294,19 @@ def extract_waived_ctl(line):
 
 
 
-def check_file(filepath, theme_names=None):
+CHECK_NAME = "token-audit"
+
+
+def style_region_lines(candidates):
+    """The 1-based line numbers ast-grep reported as a style region."""
+    lines = set()
+    for cand in candidates:
+        if cand["surface"] == "style-region":
+            lines.update(range(cand["line"], cand["end_line"] + 1))
+    return lines
+
+
+def check_file(filepath, theme_names=None, candidates=None):
     """
     Scan a single file and return a list of error strings.
     Each string is formatted: ERROR <file>:<line> [CTL-ID] <found> — suggest: <...>
@@ -324,6 +314,10 @@ def check_file(filepath, theme_names=None):
     theme_names: set of colour names licensed by the project's @theme (from
     collect_theme_color_names).  Tailwind palette utilities whose name is in this
     set are NOT flagged as COL-2 bypasses.
+
+    candidates: this file's records from checklib.astgrep_scan(). Omit it and the
+    file is scanned on its own; scan_paths() passes a pre-grouped list so a whole
+    tree costs one ast-grep invocation.
     """
     if theme_names is None:
         theme_names = set()
@@ -339,20 +333,26 @@ def check_file(filepath, theme_names=None):
         errors.append(f"ERROR {filepath}: cannot read file — {exc}")
         return errors
 
+    if candidates is None:
+        candidates = checklib.astgrep_scan([filepath], CHECK_NAME)
+
     rel = os.path.relpath(filepath)
-    ctx = StyleContextTracker(ext)
-    in_block_comment = False  # tracks multi-line /* ... */ comments
+    source = [raw.rstrip("\n") for raw in lines]
+    # The two candidate surfaces, per line. `style` is the CSS a style context
+    # holds, wherever that context is written; `text` is every node that carries
+    # author text, which is where a class list lives. Comment spans are in
+    # neither, so a comment's text is never read as code.
+    style_by_line = checklib.surface_lines(source, candidates, ("style",))
+    text_by_line = checklib.surface_lines(source, candidates, ("text",))
+    style_lines = style_region_lines(candidates)
+    ctx = TokenDefTracker(ext)
 
     for lineno, raw_line in enumerate(lines, start=1):
         line = raw_line.rstrip("\n")
-        in_style, in_token_def = ctx.update(line)
+        in_token_def = ctx.update(line, lineno in style_lines)
 
-        # Detect inline-style attribute for HTML (single line only)
-        has_inline_style_attr = bool(re.search(r'\bstyle\s*=\s*["\']', line))
-        effective_style = in_style or (ext in (".html", ".vue", ".svelte") and has_inline_style_attr)
-
-        # Detect waiver claim on this line (before comment stripping, so inline
-        # waiver markers can appear in comments)
+        # Detect waiver claim on this line. Read from the raw source line, not
+        # from the parser's view, because the parser has no comments in it.
         waived_ctl = extract_waived_ctl(line)
 
         def emit(ctl_id, found, suggest):
@@ -369,22 +369,12 @@ def check_file(filepath, theme_names=None):
         if in_token_def:
             continue
 
-        # ── Build scan_line: strip comments so comment text is not flagged ────
-        # Handle multi-line /* ... */ block comments.
-        # Strategy: process the raw line character-by-character to remove spans
-        # that are inside block comments.
-        scan_line = checklib.strip_block_comments(line, in_block_comment)
-        # Update block comment state for next line
-        in_block_comment = checklib.ends_in_block_comment(line, in_block_comment)
-
-        # Strip HTML comments (<!-- ... -->) from the scan line
-        scan_line = re.sub(r"<!--.*?-->", "", scan_line)
-        # Strip single-line // comments from JS/TS contexts
-        if ext in (".js", ".ts", ".jsx", ".tsx"):
-            scan_line = re.sub(r"//.*$", "", scan_line)
+        style_line = style_by_line.get(lineno, "")
+        text_line = text_by_line.get(lineno, "")
 
         # ── TOK-1 / COL-1 / COL-2 : raw colour checks (style contexts only) ──
-        if effective_style:
+        if style_line.strip():
+            scan_line = style_line
             # Hex colours
             for m in HEX_COLOUR_RE.finditer(scan_line):
                 emit("TOK-1", f"raw colour {m.group()}", "use a semantic token (var(--color-…))")
@@ -416,7 +406,7 @@ def check_file(filepath, theme_names=None):
                         emit("TOK-1", f"named colour '{m.group()}'", "use a semantic token (var(--color-…))")
 
         # ── Tailwind palette bypass (all file types — applies in class= attributes and JSX) ──
-        for m in TAILWIND_PALETTE_RE.finditer(scan_line):
+        for m in TAILWIND_PALETTE_RE.finditer(text_line):
             colour_name = m.group(2)  # e.g. 'amber', 'red'
             step = m.group(3)         # e.g. '11', '500'
             name_with_step = f"{colour_name}-{step}"  # e.g. 'amber-11'
@@ -427,7 +417,7 @@ def check_file(filepath, theme_names=None):
 
         # ── TOK-1 : raw colour inside arbitrary-value utilities (all file types) ──
         # e.g. bg-[color-mix(in oklab, var(--tw-blue) 88%, black)] — flags 'black'
-        for arb_m in ARBITRARY_VALUE_RE.finditer(scan_line):
+        for arb_m in ARBITRARY_VALUE_RE.finditer(text_line):
             inner = arb_m.group(1)
             # Skip if the bracket content is purely a var() reference
             # (e.g. bg-[var(--surface)] is fine)
@@ -455,7 +445,8 @@ def check_file(filepath, theme_names=None):
                      "define it as a token and reference var(--…)")
 
         # ── TOK-2 : spacing checks (style contexts only) ──────────────────────
-        if effective_style:
+        if style_line.strip():
+            scan_line = style_line
             for prop_m in SPACING_PROP_RE.finditer(scan_line):
                 # Extract the value portion after the colon
                 value_start = prop_m.end()
@@ -501,7 +492,8 @@ def check_file(filepath, theme_names=None):
                             emit("TOK-2", f"off-scale spacing {part}", f"{suggest_px}px ({round(suggest_px/16,4)}rem) or var(--space-…)")
 
         # ── TOK-3 : border-radius checks (style contexts only) ────────────────
-        if effective_style:
+        if style_line.strip():
+            scan_line = style_line
             for prop_m in RADIUS_PROP_RE.finditer(scan_line):
                 value_start = prop_m.end()
                 rest = scan_line[value_start:]
@@ -547,16 +539,29 @@ def check_file(filepath, theme_names=None):
 
 
 def scan_paths(paths, theme_names=None):
-    """Walk the given paths (files or directories) and collect all violations."""
+    """Walk the given paths (files or directories) and collect all violations.
+
+    checklib.iter_target_files() stays the single walk policy and the file list
+    is handed to ast-grep explicitly: letting ast-grep walk a directory would
+    import .gitignore semantics the Python walker does not have, and a gitignored
+    source file would be skipped silently.
+
+    Raises checklib.AstGrepError when ast-grep is missing, too old or broken."""
     if theme_names is None:
         theme_names = set()
     all_errors = []
+    files = []
     for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
         if kind == "missing":
             print(f"ERROR token-audit: path not found: {val}")
             all_errors.append(f"ERROR token-audit: path not found: {val}")
         else:
-            all_errors.extend(check_file(val, theme_names))
+            files.append(val)
+    by_file = checklib.group_candidates(checklib.astgrep_scan(files, CHECK_NAME))
+    for val in files:
+        all_errors.extend(
+            check_file(val, theme_names, by_file.get(os.path.realpath(val), []))
+        )
     return all_errors
 
 
@@ -815,6 +820,86 @@ def run_self_test():
         elif "pass" in fname and errs:
             failures.append(f"FAIL fixture {fname}: expected 0 ERRORs — got: {errs}")
 
+    # ── Parity corpus ──────────────────────────────────────────────────────────
+    # Every record in fixtures/parity/expected/ was produced by the pre-swap
+    # engine and committed before the matching layer moved to ast-grep. A diff
+    # here means either a fixture changed or the swap changed a decision.
+    parity_failures, parity_count = checklib.parity_cases(CHECK_NAME, check_file)
+    failures.extend(parity_failures)
+    case_count += parity_count
+
+    # ── Two places the swap sharpens the message, on purpose ──────────────────
+    # Neither changes a decision, so neither belongs in the parity records: a
+    # record made pre-swap would enshrine the old text.
+    #
+    # 1. A multi-line html comment is a syntax node, so its text is no longer
+    #    read as code. Pre-swap the `<!-- … -->` strip was per line, so only a
+    #    comment that opened and closed on one line was removed, and a palette
+    #    class named inside a multi-line comment was reported.
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".html", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write("<!--\n  Do not use bg-red-500 here.\n-->\n<p>ok</p>\n")
+        tf.flush()
+        errs = check_file(tf.name)
+    os.unlink(tf.name)
+    if errs:
+        failures.append(
+            f"FAIL multi-line html comment is not code: want: []; got: {errs!r}"
+        )
+
+    # 2. A value is no longer read past the end of the node holding it. Pre-swap
+    #    the whole line was the style context of an inline style attribute, so an
+    #    unterminated declaration swept the markup after it into the message
+    #    (`off-scale spacing 15px">x`). The value is now node-scoped.
+    case_count += 1
+    with tempfile.NamedTemporaryFile(suffix=".html", mode="w", delete=False, encoding="utf-8") as tf:
+        tf.write('<div style="padding: 15px">x</div>\n')
+        tf.flush()
+        errs = check_file(tf.name)
+    os.unlink(tf.name)
+    want = "[TOK-2] off-scale spacing 15px —"
+    if len(errs) != 1 or want not in errs[0]:
+        failures.append(
+            f"FAIL inline style value is node-scoped: want: {want!r}; got: {errs!r}"
+        )
+
+    # ── The walker stays the single walk policy ───────────────────────────────
+    # ast-grep applies .gitignore semantics when it walks a directory itself, and
+    # iter_target_files() does not. Files are handed over explicitly, so a
+    # gitignored source file is still checked rather than silently skipped.
+    case_count += 1
+    with tempfile.TemporaryDirectory() as td:
+        with open(os.path.join(td, ".gitignore"), "w", encoding="utf-8") as fh:
+            fh.write("ignored.tsx\n")
+        with open(os.path.join(td, "ignored.tsx"), "w", encoding="utf-8") as fh:
+            fh.write('export const C = () => <p className="bg-red-500">x</p>;\n')
+        before = sorted(os.listdir(td))
+        errs = scan_paths([td])
+        if not [e for e in errs if "[COL-2]" in e]:
+            failures.append(
+                f"FAIL gitignored file is still checked: want a COL-2 finding; got: {errs!r}"
+            )
+        # ── Nothing is written into the scanned repo ──────────────────────────
+        case_count += 1
+        after = sorted(os.listdir(td))
+        if before != after:
+            failures.append(
+                f"FAIL nothing written into the target repo: want: {before!r}; got: {after!r}"
+            )
+
+    # ── The provisioning contract ─────────────────────────────────────────────
+    def check_eq(name, want, got):
+        nonlocal case_count
+        case_count += 1
+        if want != got:
+            failures.append(f"FAIL {name}: want: {want!r}; got: {got!r}")
+
+    checklib.astgrep_provisioning_cases(
+        "token-audit.py",
+        os.path.join("fixtures", "parity", "known-positive", "declaration.css"),
+        check_eq,
+    )
+
     # ── Report ─────────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
 
@@ -829,7 +914,12 @@ def main():
         sys.exit(1)
 
     if "--self-test" in args:
-        run_self_test()
+        try:
+            run_self_test()
+        except checklib.AstGrepError as exc:
+            # A layer that did not run never reports SELF-TEST OK.
+            exc.report()
+            sys.exit(1)
         return  # run_self_test calls sys.exit
 
     # Parse --allow <name1,name2,...> flag
@@ -852,7 +942,14 @@ def main():
     css_paths = [p for p in filtered_args if os.path.splitext(p)[1].lower() == ".css"]
     theme_names = collect_theme_color_names(css_paths, extra_allow)
 
-    errors = scan_paths(filtered_args, theme_names)
+    try:
+        errors = scan_paths(filtered_args, theme_names)
+    except checklib.AstGrepError as exc:
+        # One ERROR line, exit 1, no findings printed. Never a clean result:
+        # ast-grep can lose a whole file's matches at exit 0, so a check that
+        # could not run must say so and send its controls to manual verification.
+        exc.report()
+        sys.exit(1)
 
     if errors:
         for e in errors:

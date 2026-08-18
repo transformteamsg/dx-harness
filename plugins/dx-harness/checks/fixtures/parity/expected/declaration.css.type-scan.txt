@@ -1,0 +1,3 @@
+ERROR declaration.css:16 [TYP-2] font size 13px below the 14px body floor (CSS font-size) — suggest: body >= 14px; only short labels may go to 12px
+ERROR declaration.css:16 [TYP-3] font size 13px not on the Tailwind default type scale (CSS font-size) — suggest: use a scale size: [128, 96, 72, 60, 48, 36, 30, 24, 20, 18, 16, 14, 12]
+ERROR declaration.css:17 [TYP-2] body line-height 1.2 outside 1.5-1.6 (line-height) — suggest: set body line-height to 1.5-1.6
