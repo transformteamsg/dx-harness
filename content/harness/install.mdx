@@ -80,8 +80,13 @@ one-time machine setup below.
 
 ## Set up your machine, once
 
-The plugin is installed per repo. Run `/dx-harness:dx-design-setup` once on
-your machine and it checks and installs what you need:
+You don't have to do this before you start. The plugin is installed per repo,
+but a few tools are per machine, and `/dx-harness:dx-design` confirms your
+machine is ready the first time you ask it to shape something — if something
+is missing, it stops and walks you through setup then and there.
+
+Run `/dx-harness:dx-design-setup` yourself if you'd rather be ready before you
+start. Either way it checks and installs the same things:
 
 - **agent-browser** — captures the screenshots the verify phase grades.
 - **`gh`, authenticated** — lets `/dx-harness:dx-design-feedback` file an issue the
