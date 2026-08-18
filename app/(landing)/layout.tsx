@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DxdMark } from "@/components/dxd-mark";
+import { SheetGround } from "@/components/landing/sheet-ground";
 
 /* The landing shell: its own nav, no docs sidebar, and the whole page drawn as a
    measured sheet — hairline rules down both flanks, and a registration cross where
@@ -34,8 +35,14 @@ function Registration({ position }: { position: string }) {
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-svh bg-background text-foreground">
-      <div className="relative mx-auto w-full max-w-[1040px] border-x border-border">
+    <div className="relative min-h-svh bg-background text-foreground">
+      <SheetGround />
+      {/* z-10 keeps the sheet and everything on it above the ground layer; the
+          ground draws only in the flanks, so nothing on the sheet is affected. */}
+      <div
+        data-sheet
+        className="relative z-10 mx-auto w-full max-w-[1040px] border-x border-border"
+      >
         <Registration position="-top-1.5 -left-1.5" />
         <Registration position="-top-1.5 -right-1.5" />
         <Registration position="-bottom-1.5 -left-1.5" />
@@ -56,9 +63,6 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
               DX Design Harness
             </Link>
             <div className="flex flex-wrap items-center gap-x-5 sm:gap-x-6">
-              <Link href="/harness/install" className={navLink}>
-                Quick start
-              </Link>
               <Link href="/overview" className={navLink}>
                 Docs
               </Link>

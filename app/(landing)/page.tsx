@@ -1,10 +1,10 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { SlopCompare } from "@/components/compare";
+import { CopyPrompt } from "@/components/landing/copy-prompt";
 import { InkIcon } from "@/components/ink-icon";
 import { FEATURED_SKILLS } from "@/components/landing/data";
 import { DxdConstructionPreview } from "@/components/landing/dxd-construction-preview";
-import { FeatureFigure, type FeatureFigureKind } from "@/components/landing/feature-figure";
+import { IlloVideo } from "@/components/landing/illo-video";
 import { HarnessRun } from "@/components/landing/harness-run";
 
 export const metadata = {
@@ -12,7 +12,7 @@ export const metadata = {
      carries the product name and its own explainer. */
   title: { absolute: "DX Design Harness — design in code with confidence" },
   description:
-    "The DX Design Harness gives coding agents a shared design language, the right skills, and a review before the work returns to you.",
+    "The DX Design Harness gives your coding agent a shared design language, the right skills, and a review before the work returns to you.",
   alternates: { types: { "text/markdown": "/index.md" } },
 };
 
@@ -60,40 +60,17 @@ function SectionHead({ title, action }: { title: string; action?: React.ReactNod
   );
 }
 
-const COLLABORATORS = [
-  {
-    artKey: "landing/human",
-    label: "You",
-    detail: "Direction and judgment",
-    ink: "var(--foreground)",
-  },
-  {
-    artKey: "landing/human-machine",
-    label: "DX Design Harness",
-    detail: "The bridge",
-    ink: "var(--site-accent-text)",
-  },
-  {
-    artKey: "landing/machine",
-    label: "Your agent",
-    detail: "Skills and execution",
-    ink: "var(--foreground)",
-  },
-] as const;
-
-/* Figure, label, claim — and on demand, the argument. The claim stays the cell's
-   voice; the `what`/`why` pair is revealed on hover or focus (and stays open on
-   touch, where hover does not exist), so the grid explains itself without four
-   support paragraphs stacked down the page. Each card links to the doc page
-   that carries the full story, which is also what makes the reveal
-   keyboard-reachable (A11Y-2). */
+/* Three illustrated rows, from the builder's reference (2026-08-18): each pairs a
+   hand-drawn clip with its claim, and "why it matters" reads inline instead of
+   behind a hover. The review card left this section with that reference — its
+   message stays on this page in the run's stage 03 and the skills table. */
 const FEATURES = [
   {
-    figure: "FIG 1",
-    kind: "orchestrator" as FeatureFigureKind,
     eyebrow: "Orchestrator skill",
     claim: "Start with a plain-language request.",
-    href: "/harness/skills",
+    video: "/landing/illo-orchestrator.mp4",
+    poster: "/landing/illo-orchestrator-poster.jpg",
+    flip: false,
     what: (
       <>
         You say what you want in your own words. <Cmd>dx-design</Cmd> reads the request
@@ -103,34 +80,28 @@ const FEATURES = [
     why: "No tool names to learn, no pass order to manage. The routing is the harness's job, not yours.",
   },
   {
-    figure: "FIG 2",
-    kind: "catalog" as FeatureFigureKind,
     eyebrow: "Control catalog",
     claim: "Shared design guidance agents can use.",
-    href: "/standards/catalog",
+    video: "/landing/illo-catalog.mp4",
+    poster: "/landing/illo-catalog-poster.jpg",
+    flip: true,
     what: "One machine-readable catalog of design rules, from contrast floors to anti-slop checks. Every skill reads it before it works.",
     why: "Your agent stops guessing at taste. It builds against the same rules your team reads, so results stop drifting run to run.",
   },
   {
-    figure: "FIG 3",
-    kind: "design-file" as FeatureFigureKind,
-    eyebrow: "DESIGN.md",
-    claim: "Your product’s design language.",
-    href: "/harness/skills#the-design-language",
-    what: "One file in your repo that holds your colours, type, motion, and voice. The same primitives, arranged your way.",
-    why: "The result looks like your product, not like a page any model would make for anyone.",
-  },
-  {
-    figure: "FIG 4",
-    kind: "review" as FeatureFigureKind,
-    eyebrow: "Review skill",
-    /* Names both things it checks against. "A review grounded in both." relied on
-       a support paragraph that this page no longer carries, so "both" pointed at
-       nothing on screen (CNT-14). */
-    claim: "A review against the catalog and your DESIGN.md.",
-    href: "/harness/loop",
-    what: "A separate reviewer grades the built result against both sources before it returns.",
-    why: "Misses are caught inside the run, so you are not the first quality check.",
+    eyebrow: "Design language skill",
+    claim: "A design language your team owns.",
+    video: "/landing/illo-design-file.mp4",
+    poster: "/landing/illo-design-file-poster.jpg",
+    flip: false,
+    what: (
+      <>
+        <Cmd>dx-design-language</Cmd> reads your code, asks what it cannot infer, and
+        writes a <Cmd>DESIGN.md</Cmd> into your repo: your colours, type, motion, and
+        voice. Anyone on the team can edit it from there.
+      </>
+    ),
+    why: "The language lives with your product, so designers and engineers improve it directly instead of filing a request.",
   },
 ];
 
@@ -165,49 +136,38 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── The four parts ─────────────────────────────────────────────────── */}
+      {/* ── The three parts ────────────────────────────────────────────────── */}
       <SectionHead title="What the harness gives your agent." />
-      {/* Cell borders, not per-index rules: every cell draws its own right and
-          bottom hairline and is pulled back a pixel, so the outermost ones land
-          exactly on the sheet's flank and the section seam. The grid can then
-          reflow at any breakpoint without the borders needing to know. */}
-      <ul className="grid border-b border-border sm:grid-cols-2">
+      {/* Alternating illustrated rows: the clip and its claim swap sides each
+          row at lg. DOM order keeps the illustration first, so below lg every
+          row reads illustration-then-text in one consistent rhythm; the flip
+          is purely visual (lg:order-2) and the seam hairline follows it. */}
+      <ul className="border-b border-border">
         {FEATURES.map((f) => (
-          <li
-            key={f.eyebrow}
-            className="-mb-px flex min-w-0 flex-col border-b border-border sm:[&:nth-child(odd)]:border-r"
-          >
-            <Link
-              href={f.href}
-              data-feature-card
-              className={`group flex h-full flex-col ${focusRing} focus-visible:-outline-offset-2`}
+          <li key={f.eyebrow} className="grid border-b border-border last:border-b-0 lg:grid-cols-2">
+            <div
+              data-feature-illo
+              className={`grid place-items-center border-border bg-surface px-6 py-10 max-lg:border-b sm:p-12 ${
+                f.flip ? "lg:order-2 lg:border-l" : "lg:border-r"
+              }`}
             >
-              <FeatureFigure kind={f.kind} number={f.figure} />
-              <div className="px-6 py-8 sm:px-10 sm:py-10">
-                <p className="text-xs font-semibold tracking-wide break-words text-site-accent-text">
-                  {f.eyebrow}
-                </p>
-                <h3 className="mt-3 max-w-[24ch] text-lg font-semibold tracking-tight text-balance text-foreground">
-                  {f.claim}
-                </h3>
-                {/* What it is, then why it matters — clipped until the card is
-                    hovered or focused; always open where hover doesn't exist
-                    (coarse pointers), so nothing is locked behind a mouse. */}
-                <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-(--motion-base) ease-(--ease-out) group-hover:grid-rows-[1fr] group-focus-visible:grid-rows-[1fr] pointer-coarse:grid-rows-[1fr] motion-reduce:transition-none">
-                  <div data-feature-explain className="min-h-0 overflow-hidden">
-                    <p className="max-w-[52ch] pt-3 text-sm leading-relaxed text-pretty text-muted-foreground">
-                      {f.what}
-                    </p>
-                    <p className="max-w-[52ch] pt-2 text-sm leading-relaxed text-pretty text-(--prose-body)">
-                      <span className="font-semibold text-site-accent-text">
-                        Why it matters
-                      </span>{" "}
-                      — {f.why}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Link>
+              <IlloVideo src={f.video} poster={f.poster} />
+            </div>
+            <div className="flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-12">
+              <p className="text-xs font-semibold tracking-wide break-words text-site-accent-text">
+                {f.eyebrow}
+              </p>
+              <h3 className="mt-3 max-w-[24ch] text-xl font-semibold tracking-tight text-balance text-foreground">
+                {f.claim}
+              </h3>
+              <p className="mt-4 max-w-[52ch] text-sm leading-relaxed text-pretty text-muted-foreground">
+                {f.what}
+              </p>
+              <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-pretty text-(--prose-body)">
+                <span className="font-semibold text-site-accent-text">Why it matters</span>{" "}
+                — {f.why}
+              </p>
+            </div>
           </li>
         ))}
       </ul>
@@ -218,6 +178,36 @@ export default function Landing() {
              highlight and the drawing stay in one client boundary. ─────────── */}
       <SectionHead title="From a request to a reviewed result." />
       <HarnessRun />
+
+      {/* ── The builders' word, between the proof of how it runs and the proof of
+             what it changes. One outlined action + the prompt (CMP-5: the hero
+             keeps the page's only filled primary). The blockquote cites /note,
+             where the builders say this at length. */}
+      <section className="border-b border-border px-6 py-14 sm:px-10 sm:py-16">
+        <blockquote cite="/note">
+          <p className="max-w-[36ch] text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            We spent this build on what the harness feels like to use. Worry less:
+            take the quick start, or hand one prompt to your coding agent.
+          </p>
+        </blockquote>
+        <p className="mt-4 text-sm text-muted-foreground">
+          <Link
+            href="/note"
+            className={`inline-flex min-h-11 items-center underline underline-offset-2 hover:text-foreground ${focusRing}`}
+          >
+            From the builders’ note
+          </Link>
+        </p>
+        <div className="mt-6 flex flex-wrap items-start gap-3">
+          <Link
+            href="/harness/install"
+            className={`inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-surface px-5 text-sm font-semibold text-foreground transition-colors duration-(--motion-fast) hover:border-foreground hover:bg-accent ${focusRing}`}
+          >
+            Quick start
+          </Link>
+          <CopyPrompt />
+        </div>
+      </section>
 
       {/* ── The proof. The comparison is evidence, not the argument — so the claim
              and the three passes that produce it sit beside it. A 40/60 split
@@ -235,10 +225,14 @@ export default function Landing() {
             Compare the output.
           </h2>
           <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            The same brief, run twice. Drag the handle to see what three passes
+            The same brief, run twice. Move the handle to see what three passes
             change when they read the catalog.
           </p>
-          <ul className="mt-6 flex flex-col gap-3">
+          <p className="mt-6 text-sm leading-relaxed text-(--prose-body)">
+            This example used three skills. Your request brings in whichever ones it
+            needs.
+          </p>
+          <ul className="mt-4 flex flex-col gap-3">
             <li className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
               <span className="mt-px shrink-0">
                 <InkIcon name="skills/copy" size={18} ink="var(--foreground)" idSuffix="-cmp" />
@@ -278,7 +272,12 @@ export default function Landing() {
             .
           </p>
         </div>
-        <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-10 sm:py-10 lg:px-0">
+        {/* The frame used to run full-bleed at lg (flush to the column seam and the
+            container edge) so its 16/10 aspect bound before any content-driven
+            height floor. The builder asked for breathing room on 2026-08-18, so the
+            padding now holds at every width; the frame's own grid means content
+            taller than 16/10 grows the box instead of being cut. */}
+        <div className="flex min-w-0 flex-col justify-center px-6 py-8 sm:px-10 sm:py-12">
           <SlopCompare />
         </div>
       </div>
@@ -331,14 +330,14 @@ export default function Landing() {
 
       {/* ── Close. The action steps down to outline: the hero already holds the
              page's one filled primary (CMP-5). ──────────────────────────────── */}
-      <section className="grid bg-site-accent-wash lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <section className="grid bg-site-accent-wash lg:grid-cols-2">
         <div className="px-6 py-16 sm:px-10 sm:py-20">
           <h2 className="max-w-[20ch] text-3xl leading-tight font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
             A shared language for you and your agent.
           </h2>
           <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-pretty text-(--prose-body)">
-            The DX Design Harness bridges human judgment and agent execution. It gives
-            both of you the same design language and the checks to build safely on each
+            You bring the judgment. Your agent brings the execution. The harness gives
+            you both the same design language, and the checks to build safely on each
             other’s work.
           </p>
           <div className="mt-8">
@@ -350,39 +349,17 @@ export default function Landing() {
             </Link>
           </div>
         </div>
-        {/* Icon, label, and detail each pin to their own grid row (row-start-*),
-            shared across all three columns — so the middle label's wrap to two
-            lines (the product name is longer than "You"/"Your agent") grows only
-            the label row, and every column's detail line still lands on the same
-            baseline (LAY-6). The per-item DOM order (icon, label, detail) is kept
-            for the accessible reading order; only the visual placement is a grid. */}
-        <figure className="grid grid-cols-3 grid-rows-3 items-start border-t border-border lg:border-t-0">
-          {COLLABORATORS.flatMap((item) => [
-            <div
-              key={`${item.artKey}-icon`}
-              className="row-start-1 flex min-w-0 justify-center px-3 pt-8"
-              style={{ "--ink": item.ink } as CSSProperties}
-            >
-              <InkIcon name={item.artKey} size={48} />
-            </div>,
-            <p
-              key={`${item.artKey}-label`}
-              className="row-start-2 mt-4 min-w-0 px-3 text-center text-sm font-semibold text-foreground"
-            >
-              {item.label}
-            </p>,
-            <p
-              key={`${item.artKey}-detail`}
-              className="row-start-3 mt-1 min-w-0 px-3 pb-8 text-center text-xs leading-normal text-muted-foreground"
-            >
-              {item.detail}
-            </p>,
-          ])}
-          <figcaption className="sr-only">
-            The DX Design Harness bridges your direction and judgment with your agent’s
-            skills and execution.
-          </figcaption>
-        </figure>
+        {/* One drawing instead of three glyphs: the clip shows a person and an
+            agent reading the same book, which is the section's whole claim. No
+            ground of its own — the clip multiplies into the band's tint, so the
+            close stays one washed band rather than splitting into two grounds. */}
+        <div className="grid place-items-center px-6 py-10 sm:p-12">
+          <IlloVideo
+            src="/landing/illo-shared-language.mp4"
+            poster="/landing/illo-shared-language-poster.jpg"
+            className="max-w-64"
+          />
+        </div>
       </section>
     </div>
   );

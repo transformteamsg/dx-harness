@@ -69,7 +69,7 @@ test("publishes current DX Design Harness metadata", async ({ page }) => {
   await expect(page).toHaveTitle("DX Design Harness — design in code with confidence");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "The DX Design Harness gives coding agents a shared design language, the right skills, and a review before the work returns to you."
+    "The DX Design Harness gives your coding agent a shared design language, the right skills, and a review before the work returns to you."
   );
 
   await open(page, "/overview");
@@ -87,13 +87,20 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   await expect(
     page.getByRole("heading", { name: "What the harness gives your agent." })
   ).toBeVisible();
-  const featureGrid = page.locator("ul").filter({ hasText: "Start with a plain-language request." });
-  await expect(featureGrid).toHaveCount(1);
+  const featureRows = page.locator("ul").filter({ hasText: "Start with a plain-language request." });
+  await expect(featureRows).toHaveCount(1);
   await expect(
-    featureGrid.locator(":scope > li > a > div:last-child > p:first-child")
-  ).toHaveText(["Orchestrator skill", "Control catalog", "DESIGN.md", "Review skill"]);
-  await expect(featureGrid.locator("[data-feature-figure]")).toHaveCount(4);
-  await expect(featureGrid.locator("[data-feature-card]")).toHaveCount(4);
+    featureRows.locator(":scope > li > div:last-child > p:first-child")
+  ).toHaveText(["Orchestrator skill", "Control catalog", "Design language skill"]);
+  // Each row carries its looping illustration clip (poster set, muted) and the
+  // why-it-matters copy inline — nothing is gated behind hover any more.
+  await expect(featureRows.locator("[data-feature-illo] video")).toHaveCount(3);
+  for (const video of await featureRows.locator("[data-feature-illo] video").all()) {
+    await expect(video).toHaveAttribute("poster", /illo-.*-poster\.jpg/);
+    await expect(video).toHaveAttribute("loop", "");
+    await expect(video).toHaveAttribute("muted", "");
+  }
+  await expect(featureRows.getByText("Why it matters")).toHaveCount(3);
 
   await expect(
     page.getByRole("heading", { name: "From a request to a reviewed result." })
@@ -116,33 +123,83 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   await expect(page.getByRole("link", { name: "See all skills" })).toBeVisible();
 });
 
-test("feature cards reveal their why on hover and keep it reachable by keyboard", async ({
+
+
+test("the sheet ground draws in the flanks only, and only when there is room", async ({
   page,
 }) => {
+  const construction = () => page.locator("svg[viewBox='0 0 320 760']");
+
+  // Below 1200 the flanks are too narrow to hold a scale: the layer is absent
+  // rather than crowding the sheet edge. It is decorative, so nothing is lost.
+  await page.setViewportSize({ width: 1199, height: 900 });
+  await open(page, "/");
+  await expect(construction().first()).toBeHidden();
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(construction()).toHaveCount(2);
+  await expect(construction().first()).toBeVisible();
+
+  // The load-bearing constraint: nothing the ground draws may sit inside the
+  // sheet, because that is where every glyph on the page lives.
+  const intrusion = await page.evaluate(() => {
+    const sheetElement = document.querySelector("[data-sheet]");
+    if (!sheetElement) throw new Error("the landing sheet is missing its [data-sheet] hook");
+    const sheet = sheetElement.getBoundingClientRect();
+    const parts = document.querySelectorAll(
+      "svg[viewBox='0 0 320 760'], [style*='repeating-linear-gradient']"
+    );
+    return [...parts]
+      .map((element) => element.getBoundingClientRect())
+      .filter((box) => box.width > 0)
+      .reduce(
+        (worst, box) =>
+          Math.max(worst, Math.min(box.right, sheet.right) - Math.max(box.left, sheet.left)),
+        0
+      );
+  });
+  expect(intrusion).toBeLessThanOrEqual(0);
+});
+
+test("looping feature illustrations never play under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await open(page, "/");
 
-  const firstCard = page.locator("[data-feature-card]").first();
-  const explain = firstCard.locator("[data-feature-explain]");
-  const height = () => explain.evaluate((element) => element.clientHeight);
+  // No per-clip control exists any more (builder ruling, 2026-08-18), so the
+  // reduced-motion path is the one stop mechanism — it must hold absolutely:
+  // the clip rests on its poster and never starts.
+  const firstIllo = page.locator("[data-feature-illo]").first();
+  await firstIllo.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+  await expect(
+    firstIllo.locator("video").evaluate((el) => {
+      const video = el as HTMLVideoElement;
+      return { paused: video.paused, t: video.currentTime };
+    })
+  ).resolves.toEqual({ paused: true, t: 0 });
+  await expect(page.locator("[data-feature-illo] button")).toHaveCount(0);
+});
 
-  // Clipped while idle on a hover-capable pointer; revealed on hover.
-  await expect.poll(height).toBe(0);
-  await firstCard.hover();
-  await expect.poll(height).toBeGreaterThan(0);
+test("the builders' quote hands over the setup prompt", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await open(page, "/");
 
-  // The card is a link, so keyboard focus reveals the same content.
-  await page.mouse.move(0, 0);
-  await expect.poll(height).toBe(0);
-  await page.keyboard.press("Escape");
-  for (let i = 0; i < 40; i++) {
-    await page.keyboard.press("Tab");
-    const reached = await firstCard.evaluate(
-      (element) => element === document.activeElement
-    );
-    if (reached) break;
-  }
-  await expect(firstCard).toBeFocused();
-  await expect.poll(height).toBeGreaterThan(0);
+  await expect(
+    page.getByText("We spent this build on what the harness feels like to use", {
+      exact: false,
+    })
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "From the builders’ note" })).toHaveAttribute(
+    "href",
+    "/note"
+  );
+
+  const copy = page.getByRole("button", { name: "Copy the prompt" });
+  await copy.click();
+  await expect(page.getByRole("button", { name: "Copied" })).toBeVisible();
+  const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+  expect(clipboard).toContain("/plugin marketplace add transformteamsg/dx-harness");
+  expect(clipboard).toContain("/plugin install dx-harness@dx-harness");
 });
 
 test("the harness run scrubs by stage and respects reduced motion", async ({ page }) => {
@@ -156,7 +213,8 @@ test("the harness run scrubs by stage and respects reduced motion", async ({ pag
   const stage2 = page.getByRole("button", { name: /The harness at work/ });
   await stage2.click();
   await expect(stage2).toHaveAttribute("aria-current", "step");
-  await expect(page.getByRole("button", { name: "Replay the run" })).toBeVisible();
+  // The run plays once when it scrolls into view, so there is no replay control.
+  await expect(page.getByRole("button", { name: "Replay the run" })).toHaveCount(0);
 
   // The orchestrator visibly runs the specialised skills.
   await expect(page.getByText("layout pass · reads catalog + DESIGN.md")).toBeVisible();

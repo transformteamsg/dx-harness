@@ -56,7 +56,7 @@ function Violation({ children }: { children: string }) {
    is the minimum, so nothing clips at narrow widths. */
 function BeforePanel() {
   return (
-    <div className="relative flex min-h-full flex-col bg-(--demo-slop-surface)">
+    <div className="col-start-1 row-start-1 flex min-h-full flex-col bg-(--demo-slop-surface)">
       {/* dx-waive SLP-1 reason="quarantined anti-specimen: the before panel of the standards demo" */}
       <div
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
@@ -137,7 +137,7 @@ function BeforePanel() {
 function AfterPanel() {
   return (
     <div
-      className="absolute inset-0 overflow-hidden bg-surface"
+      className="col-start-1 row-start-1 bg-surface"
       style={{
         clipPath:
           "polygon(var(--exposure) 0, 100% 0, 100% 100%, var(--exposure) 100%)",
@@ -253,8 +253,15 @@ export function SlopCompare() {
         aria-label="Before and after: the same screen, default AI output versus on standard"
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
-           the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        className="relative mx-auto aspect-[16/10] w-full rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
+           the before panel at narrow widths (css-sizing-4 §5.2.2).
+
+           Both panels share one grid cell rather than the after panel being
+           absolutely positioned, so whichever panel needs more room sets the
+           frame's height and neither is ever cut. The row must be `auto`:
+           `grid-rows-1` resolves to `minmax(0, 1fr)`, whose zero minimum lets the
+           aspect ratio cap the height and clips the taller panel. With `auto` the
+           16/10 aspect is the floor, not the ceiling. */
+        className="relative mx-auto grid aspect-[16/10] w-full grid-cols-1 grid-rows-[auto] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
         style={{ "--exposure": "50%" } as CSSProperties}
       >
         <BeforePanel />
@@ -290,9 +297,11 @@ export function SlopCompare() {
       {/* One line, not two: the left column and the drawing itself already say
           what the panels show, so the caption's only remaining job is the
           interaction hint — an affordance that has to live beside the control
-          it describes. */}
+          it describes. "Move", not "drag": CNT-5 names the action rather than
+          the input device, and one verb then covers the pointer and the arrow
+          keys alike. */}
       <figcaption className="mt-2 max-w-[48ch] text-xs leading-normal text-muted-foreground">
-        Drag the handle — or focus it and use arrow keys.
+        Move the handle to compare the panels. Arrow keys work too.
       </figcaption>
     </figure>
   );

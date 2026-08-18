@@ -59,6 +59,24 @@
      of its own, so the whole sheet is one paper. */
   --blueprint-ink: var(--site-accent-text);
 
+  /* The page ground's drafting scale. The hero blueprint measures on a 50-unit
+     construction grid; in the hero cell at 1040px sheet width that renders at
+     ~40px a division, so the ground and the drawing measure at one rhythm
+     instead of two competing ones. */
+  --ground-pitch: 40px;
+
+  /* The flank grid counts in fives of the tick pitch, so the ruler's every-fifth
+     tick and the grid's rule land on the same line instead of beating against
+     each other. */
+  --ground-module: calc(var(--ground-pitch) * 5);
+  /* And it steps back toward the page, so the whole-page grid stays quieter than
+     the top-of-sheet construction drawn over it. */
+  --ground-rule: color-mix(in oklab, var(--border) 55%, var(--background));
+  /* The snapped patches draw a cell finer than the ruler's division, so a patch
+     reads as fine cells against the ruler rather than repeating it. Half the
+     pitch keeps every patch edge on a tick. */
+  --ground-cell: calc(var(--ground-pitch) / 2);
+
   /* Prose body ink — a touch softer than --foreground */
   --prose-body: #3f3f46;     /* zinc-700 */
 
@@ -276,42 +294,3 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
   .prose hr { margin: 32px 0; border: 0; border-top: 1px solid var(--border); }
 }
 
-/* ── Landing feature figures — the drawing performs its card's message.
-   The SVG markup in components/landing/feature-figure.tsx holds each shape's
-   FINAL pose; these rules pull shapes back to their initial pose while the
-   card ([data-feature-card]) is idle. The whole block is gated on a
-   hover-capable pointer and motion being welcome, so touch and reduced-motion
-   readers simply see the resolved final state, never a frozen mid-pose
-   (A11Y-5). The figures are narrative surfaces, so they may use
-   --motion-story; easing is the standard ease-out, never bounce (SLP-8). ── */
-@layer components {
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    /* dx-waive MOT-1 reason="--motion-story is reserved for narrative surfaces (explanatory diagrams and the landing reveal); these ff-* figures are aria-hidden narrative drawings, not task UI" */
-    .ff-anim {
-      transition:
-        transform var(--motion-story) var(--ease-out),
-        fill var(--motion-slow) var(--ease-out);
-      transform-box: fill-box;
-      transform-origin: center;
-    }
-    .ff-draw { transition: stroke-dashoffset var(--motion-story) var(--ease-out); }
-    /* dash = longest path in the class, so offset=dash hides it fully */
-    .ff-route { stroke-dasharray: 110; }
-    .ff-check { stroke-dasharray: 64; transition-delay: var(--motion-beat-2); }
-    .ff-exit { stroke-dasharray: 60; transition-delay: var(--motion-beat-3); }
-    .ff-pick { transition-delay: var(--motion-beat-1); }
-
-    /* FIG 1 — routes undrawn, no skill picked yet */
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-route { stroke-dashoffset: 110; }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-pick { fill: var(--surface); }
-    /* FIG 2 — the two readers apart, their lines to the catalog undrawn */
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-share-l { transform: translateX(-40px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-share-r { transform: translateX(40px); }
-    /* FIG 4 — the two source rings apart, the check not yet earned, and the
-       arrow home only once the check lands */
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-l { transform: translateX(-34px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-ring-r { transform: translateX(34px); }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-check { stroke-dashoffset: 64; }
-    [data-feature-card]:not(:hover):not(:focus-visible) .ff-exit { stroke-dashoffset: 60; }
-  }
-}

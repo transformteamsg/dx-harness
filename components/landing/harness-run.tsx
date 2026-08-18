@@ -470,24 +470,6 @@ export function HarnessRun() {
             ) : null}
           </div>
         </figure>
-        <button
-          type="button"
-          onClick={() => {
-            setFocused(null);
-            play();
-          }}
-          aria-label="Replay the run"
-          title="Replay the run"
-          /* Icon-only, but never under the floor: size-11 keeps the 44px hit area
-             (A11Y-4) and the aria-label keeps the accessible name (A11Y-3) that an
-             icon-only control otherwise loses. The resting border keeps it
-             legible as a control (CMP-7) — icon-only is a size decision, not a
-             licence to be affordance-free — and the title carries the label the
-             icon replaced. */
-          className={`mt-4 inline-flex size-11 items-center justify-center rounded-lg border border-border bg-surface text-muted-foreground transition-colors duration-(--motion-fast) hover:border-border-strong hover:text-foreground ${focusRing}`}
-        >
-          <InkIcon name="harness/loop" size={20} ink="currentColor" idSuffix="-replay" />
-        </button>
       </div>
       <ol className="grid grid-rows-3">
         {STAGES.map((s, index) => (
