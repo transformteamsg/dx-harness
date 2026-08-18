@@ -47,7 +47,7 @@ the save succeeded.
 
 ## How to verify
 
-Deterministic half — `checks/async-states` (planned): enumerate async actions in the
+Deterministic half — `checks/cmp-scan.py`, built in #158: enumerate async actions in the
 changed surface; assert all three states exist and are reachable in code. Judgment
 half — the evaluator assesses whether each state *communicates clearly*, as described
 below.

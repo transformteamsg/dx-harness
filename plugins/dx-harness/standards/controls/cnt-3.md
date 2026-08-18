@@ -51,7 +51,7 @@ reliably prevents run-on explanations that belong in documentation, not UI.
 
 ## How to verify
 
-Deterministic half — `checks/content-lint` (planned): tokenise copy strings, count
+Deterministic half — `checks/content-lint.py`: tokenise copy strings, count
 words per sentence, exit 1 on sentences > 25 words. Judgment half — the evaluator
 reads the copy for person and voice, as described below.
 

@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared (checks/layout-scan planned)"
+verify: "Where a product declares a grid (.dx/design.json layout_system), gutter/margin values resolve to the TOK-2 spacing scale and column count matches the declared value; evaluator judges whether the column structure reads as coherent; grades N/A where no grid is declared; no script, per this control's accepted gap"
 waiver: rationale
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
@@ -52,9 +52,11 @@ honest-but-inert without a declaration, like CMP-1 without a component manifest.
 
 ## How to verify
 
-**Deterministic half** (once `.dx/design.json` `layout_system` exists and
-`checks/layout-scan` is built): gutter/margin values resolve to the TOK-2 scale and the
-column count matches the declared value.
+**No script — this control accepts its gap.** No product has yet declared a
+`.dx/design.json` `layout_system`, so a column-count check would grade N/A everywhere it
+ran, and a scan that guessed at column counts would flag legitimate subdivisions as
+violations. Where a declaration does exist, verify by hand that gutter and margin values
+resolve to the TOK-2 scale and that the column count matches the declared value.
 
 **Judgment half:** the evaluator confirms the resulting column structure reads as coherent
 (a page can use on-scale gutters in an incoherent arrangement).
