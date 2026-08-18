@@ -16,6 +16,8 @@ const TOPIC_ICONS = {
   "standards/catalog": "list-checks",
   "standards/writing": "pen-line",
   "standards/voice-tone": "message-circle",
+  "standards/grammar-mechanics": "spell-check",
+  "standards/text-patterns": "layout-list",
   "standards/naming": "tag",
   "standards/interaction": "mouse-pointer-click",
   "standards/web-interface": "app-window",

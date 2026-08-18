@@ -13,7 +13,7 @@ export default function CatalogPage() {
   const scopeMeta = getScopeMeta();
   return (
     <div>
-      <SectionIndex sectionKey="standards" showTopics={false} />
+      <SectionIndex sectionKey="standards" omitHref="/standards/catalog" />
       <section className="mt-14 max-w-[720px] border-t border-border pt-10">
         <h2 className="font-display text-2xl font-semibold tracking-tight">
           Control catalog
