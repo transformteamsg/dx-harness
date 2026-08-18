@@ -1959,12 +1959,12 @@ def run_self_test():
         failures.append(f"FAIL the three lay-controls fences agree on LAY-4's "
                         f"measure: want: {want!r}; got: {got!r} ({measures!r})")
 
-    # The teaching exhibit is suppressed at the static-check layer only (#150).
-    # components/compare.tsx is a deliberate anti-specimen carrying six inline
-    # dx-waive markers, so .dx/config.json drops it from the scanned file list.
-    # The rendered layer stays exposed on purpose: the DOM waiver marker
-    # (data-dx-waive) belongs to #154 and #155, so its absence is the assertion,
-    # not an oversight.
+    # The teaching exhibit is suppressed at both check layers now that #154 has
+    # landed. components/compare.tsx is a deliberate anti-specimen carrying six
+    # inline dx-waive markers, so .dx/config.json drops it from the scanned file
+    # list at the static layer. The rendered layer reads the DOM waiver marker
+    # (data-dx-waive), which the rendered check runner introduced, so the marker
+    # is now present and its presence is the assertion.
     site_root = find_site_root(REPO_ROOT)
     if site_root is not None:
         case_count += 1
@@ -1978,11 +1978,11 @@ def run_self_test():
         if os.path.isfile(exhibit):
             with open(exhibit) as fh:
                 rendered_marker = "data-dx-waive" in fh.read()
-        want = (True, False)
+        want = (True, True)
         got = ("components/compare.tsx" in ignore_files, rendered_marker)
         if want != got:
-            failures.append(f"FAIL the exhibit is suppressed statically and left "
-                            f"exposed to the rendered layer: want: {want!r}; "
+            failures.append(f"FAIL the exhibit is suppressed at both the static "
+                            f"and the rendered layer: want: {want!r}; "
                             f"got: {got!r}")
 
         # The .mjs gate runs before the Python one in prebuild, so it is the
