@@ -136,6 +136,8 @@ function countMatches(s: string, re: RegExp): number {
   return (s.match(re) || []).length;
 }
 
+const PROSE_CONTAINERS = new Set(["Aside", "Postcard"]);
+
 /* Turn a stripped element block into honest Markdown. Images become
    ![alt](src); everything else collapses to a single placeholder line. */
 function renderStrippedBlock(tag: string, blockText: string): string | null {
@@ -149,6 +151,18 @@ function renderStrippedBlock(tag: string, blockText: string): string | null {
     if (src) imgs.push(`![${alt}](${src})`);
   }
   if (imgs.length > 0) return imgs.join("\n\n");
+
+  // These wrap prose rather than replace it — an Aside is a container, a
+  // Postcard is a frame around the words it holds. Both keep their inner
+  // Markdown in the twin and lose only the tags; collapsing either to
+  // "interactive element omitted" would drop real copy from the page.
+  if (PROSE_CONTAINERS.has(tag)) {
+    const inner = blockText
+      .replace(new RegExp(`^\\s*<${tag}\\b[^>]*>\\s*`), "")
+      .replace(new RegExp(`\\s*</${tag}\\s*>\\s*$`), "")
+      .trim();
+    return inner || null;
+  }
 
   if (tag === "svg" || tag === "figure") {
     return "*(diagram omitted — view it on the page)*";
