@@ -240,6 +240,8 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-display: "Plus Jakarta Sans Variable", system-ui, sans-serif;
   --font-body: "Inter Variable", system-ui, sans-serif;
+  /* dx-waive TYP-1 reason="the builder's-note postcard prints its decorative marks (header, caption, spine, postmark, stamp) in Anonymous Pro by the builder's direction — a franking-machine register the two product faces cannot carry; confined to the postcard, never product UI" */
+  --font-note-mark: "Anonymous Pro", ui-monospace, monospace;
 }
 
 /* Default border colour for the shadcn/ui components (Base UI): their borders set

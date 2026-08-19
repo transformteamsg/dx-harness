@@ -4,9 +4,16 @@ import { getDoc } from "@/lib/content";
 import { mdxComponents } from "@/components/mdx";
 
 /* The builder's note: a letter, not a doc page. It shares the landing sheet but
-   drops every device the landing uses to sell — no cells, no figures, no filled
-   action. One narrow measure of type is the whole design, because the page's
-   claim is candour and a decorated confession reads as a pitch. */
+   drops every device the landing uses to sell — no cells, no filled action, no
+   figure grid. One narrow measure of type carries the argument, because the
+   page's claim is candour and a decorated confession reads as a pitch.
+
+   The one figure is the postcard the note opens with, and it is the letter's own
+   form rather than an ornament on top of it: it arrives picture-side up and
+   turns itself over as the reader scrolls, the message half carrying the actual
+   opening prose. Because the card carries the illustration, no separate hero
+   image runs above the title — one drawing, doing one job, where the page
+   begins. */
 
 export const metadata = {
   title: "A note from the builders",
@@ -27,24 +34,6 @@ export default async function BuildersNote() {
   return (
     <article className="px-6 py-16 sm:px-10 sm:py-20">
       <div className="mx-auto max-w-[640px]">
-        {typeof doc.data.illo === "string" && (
-          /* The one figure the letter allows: the team around one sheet, drawn in
-             the brand's ink line on the lime that is reserved for figures. Sized
-             as an opener, not a hero — the words are the page.
-
-             A plain img, not next/image: the site ships no other raster image, so
-             the optimizer route is untested in the deploy container, and this asset
-             is already hand-optimized (600px intrinsic for a 300px slot, quantized,
-             ~31KB) — the optimizer would have nothing left to win. */
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={doc.data.illo}
-            alt={typeof doc.data.illoAlt === "string" ? doc.data.illoAlt : ""}
-            width={600}
-            height={600}
-            className="mb-10 w-full max-w-[300px]"
-          />
-        )}
         <p className="text-xs font-semibold tracking-wide text-site-accent-text">
           Builder&apos;s note
           {typeof doc.data.date === "string" && (

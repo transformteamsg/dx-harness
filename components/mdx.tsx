@@ -15,6 +15,7 @@ import { CodeBlock } from "@/components/code-block";
 import { DoDont } from "@/components/foundations/do-dont";
 import { Checklist, Check } from "@/components/foundations/checklist";
 import { Glossary, Term } from "@/components/foundations/glossary";
+import { Postcard } from "@/components/postcard";
 
 export function textOf(node: ReactNode): string {
   if (typeof node === "string" || typeof node === "number") return String(node);
@@ -44,12 +45,25 @@ function Pre({ children }: { children?: ReactNode }) {
   return <pre>{children}</pre>;
 }
 
+/* A quiet container for prose that stands apart from the letter around it —
+   full hairline border, never a side tab (SLP-3). The .md twin keeps its inner
+   text (lib/markdown-twin.ts special-cases the Aside tag). */
+function Aside({ children }: { children?: ReactNode }) {
+  return (
+    <aside className="my-8 rounded-lg border border-border bg-site-accent-wash px-5 py-4 [&_p:last-child]:mb-0">
+      {children}
+    </aside>
+  );
+}
+
 /* Components available inside doc-page MDX bodies. Headings get slug ids so the
    TOC rail can target them; the diagrams are token-only inline SVG. */
 export const mdxComponents = {
   h2: heading("h2"),
   h3: heading("h3"),
   pre: Pre,
+  Aside,
+  Postcard,
   CodeBlock,
   DoDont,
   Checklist,

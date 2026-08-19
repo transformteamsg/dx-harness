@@ -17,6 +17,9 @@ importers:
       '@fontsource-variable/plus-jakarta-sans':
         specifier: ^5.2.8
         version: 5.2.8
+      '@fontsource/anonymous-pro':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
@@ -221,6 +224,9 @@ packages:
 
   '@fontsource-variable/plus-jakarta-sans@5.2.8':
     resolution: {integrity: sha512-iQecBizIdZxezODNHzOn4SvvRMrZL/S8k4MEXGDynCmUrImVW0VmX+tIAMqnADwH4haXlHSXqMgU6+kcfBQJdw==}
+
+  '@fontsource/anonymous-pro@5.3.0':
+    resolution: {integrity: sha512-zoJ/iLJYCkMsjwEgqM6rQr2KmRk+v9+G90NOPxBm1RCN2rjX5kk0t0MoUkzYMT+51jWuIfPGCD/YcZXlNFqMKA==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2939,6 +2945,8 @@ snapshots:
   '@fontsource-variable/inter@5.2.8': {}
 
   '@fontsource-variable/plus-jakarta-sans@5.2.8': {}
+
+  '@fontsource/anonymous-pro@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
