@@ -14,6 +14,10 @@ RUN apt-get update \
 
 RUN corepack enable && corepack prepare pnpm@11 --activate
 
+# The checks layer matches source structure through ast-grep, which is not a
+# package dependency. Pin the same version ci.yml installs.
+RUN npm install --global @ast-grep/cli@0.44.1
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
