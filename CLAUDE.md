@@ -17,6 +17,17 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - When editing prose in `content/`, apply SLP-9 (AI-writing tells) — canonical lists and calibration in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-design-copy skill.
 - Published docs intentionally have no `settled`/`proposed` status axis. Keep unresolved proposals in decision records or issues and label them there; don't add status frontmatter or badges to published pages.
 
+## Technical documents
+
+- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, and PR descriptions follows the [Google developer documentation style guide](https://developers.google.com/style). SLP-9 covers documentation as well as `content/`, so both apply.
+- The rules that bite most often: second person, active voice, present tense (not "will"), descriptive sentence-case headings, one idea per sentence, and no idioms or figures of speech.
+- Em dashes: never chained, never spaced. Use a colon, a comma, or a second sentence. SLP-9 flags em-dash density even when no single sentence holds two.
+- Tables hold short cells. Paragraph-length content becomes a section with a heading.
+- Numerals for 10 and above. Expand an acronym on first use.
+- Two deliberate deviations from Google: keep Commonwealth spelling (`colour`, `catalogue`, `behaviour`) to match the catalogue and `CONTEXT.md`, and spell it `judgment`.
+- Where Google's phrasing collides with `CONTEXT.md`, the vocabulary there wins: it names the terms this repo avoids.
+- Apply this to documents you write or substantially revise. Don't retrofit files you are only passing through; a retrospective sweep is its own piece of work.
+
 ## Verify
 
 - After content edits run `pnpm build` to verify MDX parses.
