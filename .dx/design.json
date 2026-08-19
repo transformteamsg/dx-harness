@@ -1,0 +1,93 @@
+{
+  "generated_from": "DESIGN.md",
+  "generated_at": "2026-08-18T14:56:00Z",
+  "catalog_version": "0.1",
+  "essence": "Drafting-table plainness. The site reads as a measured sheet: hairline rules, a\n1040px plate, construction marks that answer to real numbers. When two options\ncompete, the quieter one wins, and a mark earns its place by deriving from\nsomething already on the page rather than by decoration.",
+  "colour": {
+    "primary": "--site-accent #BDEE63 (Radix lime-9), with --site-accent-hover lime-10 and --site-accent-text lime-11 darkened to #587828",
+    "functional": "none declared; this site carries no success/warning/danger surface",
+    "pairs": [
+      [
+        "--foreground",
+        "--background"
+      ],
+      [
+        "--foreground",
+        "--surface"
+      ],
+      [
+        "--foreground",
+        "--muted"
+      ],
+      [
+        "--foreground",
+        "--sheet-band"
+      ],
+      [
+        "--foreground",
+        "--site-accent"
+      ],
+      [
+        "--prose-body",
+        "--background"
+      ],
+      [
+        "--prose-body",
+        "--surface"
+      ],
+      [
+        "--muted-foreground",
+        "--background"
+      ],
+      [
+        "--muted-foreground",
+        "--surface"
+      ],
+      [
+        "--muted-foreground",
+        "--muted"
+      ],
+      [
+        "--muted-foreground",
+        "--sheet-band"
+      ],
+      [
+        "--site-accent-text",
+        "--background"
+      ],
+      [
+        "--site-accent-text",
+        "--surface"
+      ],
+      [
+        "--site-accent-text",
+        "--muted"
+      ],
+      [
+        "--site-accent-text",
+        "--sheet-band"
+      ]
+    ],
+    "prose": "Two tokens are darkened from their Radix source for one reason, recorded here\nbecause it is the kind of thing a later edit undoes by accident:\n`--muted-foreground` from zinc-500 and `--site-accent-text` from lime-11, each so\nit clears AA on every ground it lands on rather than only on the page background."
+  },
+  "typography": {
+    "display": "Plus Jakarta Sans Variable",
+    "body": "Inter Variable",
+    "families": "those two only; code chips use the body face at the body size",
+    "scale": "12, 14, 16, 18, 20, 24, 30, 36 (Tailwind default steps)",
+    "numerals": "tabular where figures align in a column"
+  },
+  "tokens": {
+    "source": "app/globals.css",
+    "spacing": "Tailwind default scale; no custom spacing tokens",
+    "radius": "--radius 0.5rem, with rounded-lg the site's one shape",
+    "dark-mode": "none; this site is light-only and declares no `.dark` layer"
+  },
+  "motion": {
+    "durations": "--motion-fast 120ms, --motion-base 200ms, --motion-slow 300ms",
+    "narrative": "--motion-story 600ms, for explanatory figures only, never task UI",
+    "easings": "--ease-out for entrances and exits, --ease-in-out for on-screen movement",
+    "reduced-motion": "every consumer ships a variant; narrative figures rest on their finished state"
+  },
+  "tone": "Second person, active voice, sentence case, Singapore English. The audience is\ndesigners and engineers working with coding agents, so the register is plain and\ntechnical without being clipped. \"Catalog\" keeps its US spelling as the artifact's\nown name; everything else follows the SG spelling map.\nThe fuller account lives at content/guidelines/voice-tone.mdx and is the\nauthority; this section records only the weighting."
+}
