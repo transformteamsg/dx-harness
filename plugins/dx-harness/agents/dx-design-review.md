@@ -154,6 +154,15 @@ the surface, manual until a script exists), then read the render boundary direct
 judge whether the sanitisation guarantee holds there, not only at author/editor time.
 An in-code "schema-constrained" comment is not evidence of render-time sanitisation.
 
+**Input-validation error clearing (CMP-10, L1, hybrid, status proposed —
+controls/cmp-10.md).** For each in-scope field: enter an invalid value, confirm
+the error message renders, then correct it and confirm the error message is
+gone (deterministic half, manual until an interaction script exists). Where
+multiple fields are invalid at once, correct one and judge whether only that
+field's error clears while the others remain visible. Client-side validation
+only — a server-side/async validation error follows CMP-3 instead. Quote the
+field(s) and the before/after state you observed.
+
 <!-- dx-sync:lay-controls -->
 **Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
 declared column grid and gutter scale, L2 — controls/lay-1.md; N/A where no grid is
