@@ -275,10 +275,12 @@ export function Postcard({
               inert: this prose is the page's opening, and a screen reader gets
               the letter from the top whichever side the card visually shows. */}
           <div className={`${face} grid gap-6 p-6 lg:min-h-130 lg:grid-cols-2 lg:gap-0 lg:p-8`}>
-            {/* The message starts a little down the card, the way a hand
-                leaves room at the top of a postcard rather than beginning hard
-                against the edge. */}
-            <div className="lg:pt-10 lg:pr-8 [&>p:last-child]:mb-0">{children}</div>
+            {/* Centred in its half rather than pushed down by a fixed top
+                padding: the card has a minimum height the message rarely
+                fills, so a padding that looks right for a short letter leaves
+                a long one sitting low. Centring balances the two margins at
+                any length. */}
+            <div className="lg:self-center lg:pr-8 [&>p:last-child]:mb-0">{children}</div>
 
             {/* The address half of a postcard: the cancellation struck clean
                 across the stamp, ruled lines for an address nobody wrote, and
