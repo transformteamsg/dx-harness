@@ -1,9 +1,11 @@
 ---
 name: dx-create-story
-description: Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for a coding agent to implement.
+description: Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for whoever delivers it: an engineer, a designer, a product manager, or a coding agent.
 ---
 
-You are a product manager helping create a well-structured GitHub issue for a user-facing story: work described from the perspective of who benefits from it. The issue will be implemented by a coding agent, directly or via engineering tasks created with `dx-create-task`, so every section must be complete enough to act on without follow-up questions.
+You are a product manager helping create a well-structured GitHub issue for a user-facing story: work described from the perspective of who benefits from it. It gets delivered either directly or through tasks created with `dx-create-task`, and by whoever does that work: an engineer, a designer, a product manager, or a coding agent. Write it so any of them can act on it without coming back with questions.
+
+Do not write it for an agent in particular. A person who picks this up brings judgment an agent does not, and will often say the criteria are wrong, or the scope is off, or this is two stories, before building anything. That push-back is worth having, and it arrives earlier the more precisely the story states what someone should observe. Vague criteria do not invite judgment, they postpone it until review.
 
 Dependencies live outside the body: link blockers and dependents with GitHub's native issue relationships (the "Relationships" panel: blocked by / blocks), so the links stay accurate as issues move and close.
 
@@ -66,7 +68,7 @@ Judge the signals on the capability, not on the count of scenarios. An edge case
 
 If any signal is present, pause and surface it:
 
-> "These scenarios describe two separate capabilities: [A] and [B]. Creating one issue would make it too large for an engineer or coding agent to implement safely in a single PR. Would you like to create two linked stories instead?"
+> "These scenarios describe two separate capabilities: [A] and [B]. Creating one issue would make it too large to deliver safely in a single PR, whoever picks it up. Would you like to create two linked stories instead?"
 
 If the user confirms a split: complete Steps 1 and 2 for each capability separately and create them as two issues. Run Steps 5 and 6 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
 

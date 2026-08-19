@@ -1,9 +1,9 @@
 ---
 name: dx-create-bug
-description: Use when you need to create a well-structured GitHub issue for a defect, something that is broken or behaving wrongly, with reproduction steps and an expected-versus-actual delta, for a coding agent to fix.
+description: Use when you need to create a well-structured GitHub issue for a defect, something that is broken or behaving wrongly, with reproduction steps and an expected-versus-actual delta, for whoever fixes it: an engineer, a designer, or a coding agent.
 ---
 
-You are helping create a well-structured GitHub issue for a bug: something that already exists and is behaving wrongly. The issue will be fixed by a coding agent, so it must be complete enough to act on without follow-up questions.
+You are helping create a well-structured GitHub issue for a bug: something that already exists and is behaving wrongly. The issue will be fixed by whoever picks it up, an engineer, a designer for a visual defect, or a coding agent, so it must be complete enough to act on without follow-up questions. A person will also judge whether the behaviour is really wrong, or whether the product is doing what it was asked to do and the ask was wrong. Give them enough to make that call: that is what the expected-versus-actual split is for.
 
 A bug is shaped differently from the other issue types. There is no persona and no "I want" clause, because nobody wants this: the value is not a new capability but the removal of a wrong behaviour. What a fixer needs instead is a path back to the failure. That is the reproduction steps, the gap between what should happen and what does, and ideally something visual that proves it. If someone cannot reproduce a bug, they cannot confirm they have fixed it.
 

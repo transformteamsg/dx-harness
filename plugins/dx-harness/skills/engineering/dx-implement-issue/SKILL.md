@@ -148,7 +148,7 @@ criteria scenario, stop and surface the conflict rather than resolving it silent
 
 One contract item, one commit. Each commit must leave the branch in a buildable, passing state. Never commit code that breaks the test suite, even temporarily.
 
-Commit messages are the primary history record that future coding agents will use to understand what was built and why. Write them with that reader in mind. The subject line names the behavior added, not the mechanism: `feat(\`assignments\`): reject submission after due date`not`feat(\`assignments\`): add due date check`. The subject line must be enough to understand the change without reading the diff.
+Commit messages are the primary history record that whoever comes next will use to understand what was built and why, whether that is an engineer, a designer tracing a visual change, or a coding agent. Write them with that reader in mind. The subject line names the behavior added, not the mechanism: `feat(\`assignments\`): reject submission after due date`not`feat(\`assignments\`): add due date check`. The subject line must be enough to understand the change without reading the diff.
 
 If a scenario requires preparatory work (a new type, a schema change, a helper) that is not itself a user-observable behavior, commit the preparation separately before the scenario commit. Label it clearly: `refactor(\`assignments\`): extract due date validation into standalone function`. A future agent bisecting history needs to tell setup commits from behavior commits at a glance.
 
