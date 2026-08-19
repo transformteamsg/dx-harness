@@ -7,7 +7,7 @@ A skill is a command you type in Claude Code. The plugin ships 21 skills:
 13 for design work and 8 for engineering workflow. The design family carries
 the `dx-design-` prefix. They install together when you
 [install the plugin](/harness/install). You do not need to memorise the list:
-type `/dx-harness:dx-design` and it works out what you need and routes you.
+type `/dx-harness:dx-design` and it determines what you need and routes you.
 
 Two rules hold for every skill:
 
@@ -120,13 +120,13 @@ Figma and brand documents. It never writes product code.
   changes.
 - `/dx-harness:dx-design-feedback` files a GitHub issue on the harness repo
   the moment something about the harness itself confuses you, even mid-task.
-  Confusion is a bug report, not a you-problem.
+  Confusion is a bug report, not a user error.
 - `/dx-harness:dx-design-research-brief` writes a research plan that aligns a
   study before a participant is recruited.
 - The **design reviewer** (`dx-design-review`) is an agent, not a command:
   after `dx-design-execute` builds something, a separate agent grades the result
   against what you asked for, then re-checks each fix. The builder never
-  marks its own homework.
+  reviews its own work.
 
 One deliberate stance carried by every skill: **unwarranted novelty is
 flagged as readily as generic output.** A custom pattern where a stack

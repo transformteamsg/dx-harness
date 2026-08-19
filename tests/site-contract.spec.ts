@@ -3,14 +3,11 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 const routes = [
   { name: "landing", path: "/" },
   { name: "overview", path: "/overview" },
-  { name: "how to read", path: "/how-to-read" },
   { name: "standards catalog", path: "/standards/catalog" },
-  { name: "for agents", path: "/for-agents" },
   { name: "the loop", path: "/harness/loop" },
   { name: "standards redirect", path: "/standards" },
   { name: "motion standards", path: "/standards/motion" },
   { name: "tokens standards", path: "/standards/tokens" },
-  { name: "governance changes", path: "/governance/changes" },
 ] as const;
 
 test("standards overview resolves directly to the combined catalog", async ({ page }) => {
@@ -20,6 +17,30 @@ test("standards overview resolves directly to the combined catalog", async ({ pa
   await expect(page.getByRole("heading", { name: "All standards", exact: true })).toBeVisible();
   await expect(page.getByText("See what the catalog catches")).toHaveCount(0);
 });
+
+/* The Reference group's pages were removed on 2026-08-19. Their paths are
+   published URLs, so lib/redirects.ts keeps them resolving. Without this the
+   whole redirect map could be deleted and every other check would still pass. */
+const retiredReferencePaths = [
+  "/how-to-read",
+  "/for-agents",
+  "/governance",
+  "/governance/changes",
+] as const;
+
+for (const path of retiredReferencePaths) {
+  test(`${path} still resolves, landing on the overview`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/overview$/);
+    await expect(page.locator("main#main-content")).toBeVisible();
+  });
+
+  test(`${path}.md still resolves for machine readers`, async ({ request }) => {
+    const response = await request.get(`${path}.md`);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("text/markdown");
+  });
+}
 
 const mobileWidths = [320, 360] as const;
 
@@ -429,7 +450,7 @@ for (const width of mobileWidths) {
     await expectMinimumTarget(page.getByRole("button", { name: "Open navigation" }), 44);
     // The topbar's one remaining link is the wordmark home. The "For agents"
     // link that used to sit opposite it was removed; nothing replaced it, and
-    // the empty nav landmark went with it.
+    // the empty nav landmark went with it. The page itself is gone too.
     await expectMinimumTarget(page.getByRole("link", { name: /DX Design Harness|^dx$/ }), 44);
     await expect(page.getByRole("navigation", { name: "Primary" })).toHaveCount(0);
   });
@@ -447,6 +468,21 @@ for (const width of mobileWidths) {
     await expectMinimumTarget(page.getByRole("link", { name: /^Details/ }).first(), 44);
   });
 }
+
+/* /for-agents used to be the page that pointed machine readers at their entry
+   points. It was removed, so the catalog page carries both links now. */
+test("the catalog page points machine readers at both entry points", async ({ page }) => {
+  await open(page, "/standards/catalog");
+
+  await expect(page.getByRole("link", { name: "catalog.yaml" })).toHaveAttribute(
+    "href",
+    "/standards/catalog.yaml",
+  );
+  await expect(page.getByRole("link", { name: "/llms.txt" })).toHaveAttribute(
+    "href",
+    "/llms.txt",
+  );
+});
 
 test("desktop audited targets are at least 24px", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });

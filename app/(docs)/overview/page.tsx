@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getDoc } from "@/lib/content";
 import { sectionInk, SectionTile } from "@/components/thumbnails";
 import { sectionTopics } from "@/lib/directory";
@@ -81,7 +80,6 @@ export default function Overview() {
             if (!doc) return null;
             return (
               <SectionTile
-                tag={doc.answers}
                 count={sectionTopics("standards").length || undefined}
                 topic={{
                   href: "/standards/catalog",
@@ -110,44 +108,6 @@ export default function Overview() {
             );
           })}
         </div>
-      </section>
-
-      <section className="mt-16 border-t border-border pt-10">
-        <h2 className="font-display text-xl font-semibold">Reference</h2>
-        <div className="mt-5 grid gap-8 sm:grid-cols-3">
-          <div>
-            <h3 className="text-base font-semibold">Humans</h3>
-            <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-              Browse the sections above. The standards&apos; prose is written for judgement
-              calls only a person can make.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold">Humans → machines</h3>
-            <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-              <Link href="/harness/skills" className="text-site-accent-text underline underline-offset-2">
-                Skills
-              </Link>{" "}
-              package repeatable processes as Markdown you can read and an agent can execute.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold">Machines</h3>
-            <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-              <Link href="/for-agents" className="text-site-accent-text underline underline-offset-2">
-                For agents
-              </Link>
-              : the standard as /llms.txt and the control catalog as YAML.
-            </p>
-          </div>
-        </div>
-        <p className="mt-8 text-sm text-muted-foreground">
-          Need the rules behind the structure?{" "}
-          <Link href="/how-to-read" className="text-site-accent-text underline underline-offset-2">
-            How to read the system
-          </Link>{" "}
-          explains what each layer may demand of you.
-        </p>
       </section>
     </div>
   );

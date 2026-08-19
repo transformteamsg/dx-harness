@@ -16,8 +16,8 @@ read the repo they run in, and a session opened deeper may not trigger them.
 ## Add the harness
 
 These are the steps for Claude Code in the terminal or a code editor. On the
-desktop app you [click through menus
-instead](#using-the-claude-code-desktop-app).
+desktop app you [use the menus
+instead](#install-on-the-claude-code-desktop-app).
 
 Run two commands in your Claude Code session, one at a time — send the first
 and wait for it to finish before you send the second. Pasted together they
@@ -39,7 +39,7 @@ That gives you the [skills](/harness/skills), the design reviewer agent, and
 the [catalog](/standards/catalog). The catalog ships inside the
 plugin, so your repo never carries its own copy of the standard.
 
-## Check it worked
+## Verify the installation
 
 Type `/dx-harness:dx-design`. It asks what you want and routes you to the
 right skill; if it responds, the install worked.
@@ -51,10 +51,10 @@ If nothing happens:
 - Confirm your session is open at the repo root, not a subdirectory.
 - Restart Claude Code and try again.
 
-## Using the Claude Code desktop app?
+## Install on the Claude Code desktop app
 
 The desktop app has no command line, and you don't need one. You install the
-same plugin by clicking through menus, and the only thing you paste is the
+same plugin through the menus, and the only thing you paste is the
 repository below. Claude on the web works the same way.
 
 1. On the desktop app, start a session and pick your product repo's root
@@ -68,10 +68,10 @@ repository below. Claude on the web works the same way.
 
    This registers the marketplace; no plugin is installed yet.
 
-4. Find **dx-harness** in the marketplace and click **Install**.
+4. Find **dx-harness** in the marketplace and select **Install**.
 5. Type `/` in a chat to choose a skill, or send `/dx-harness:dx-design`.
 
-To update later, click **Update** on the marketplace on the same **Plugins**
+To update later, select **Update** on the marketplace on the same **Plugins**
 page — the [Stay current](#stay-current) commands below are for the command
 line. And where this page says restart Claude Code, quit and reopen the app.
 
@@ -111,7 +111,7 @@ update from **Customize → Plugins** instead):
 
 The skills and the catalog are versioned together, so one update moves both.
 
-## Adopting the harness for a whole product repo?
+## Adopt the harness for a whole product repo
 
 Installing gives you the tools. Making a repo harness-ready is six more items:
 declared product context, a component manifest, skills verified, deterministic checks,
@@ -119,5 +119,5 @@ record locations, and a named waiver approver. Work through the
 [team onboarding guide](https://github.com/transformteamsg/dx-harness/blob/main/plugins/dx-harness/docs/ONBOARDING.md)
 once per repo.
 
-Working on the harness itself? Open Claude Code in the harness repo and skip
-all of this — its skills load automatically from the repo.
+If you work on the harness itself, open Claude Code in the harness repo and
+skip all of this — its skills load automatically from the repo.

@@ -49,13 +49,5 @@
    "tools",
    "research-brief"
   ]
- },
- "governance": {
-  "label": "Governance",
-  "slugs": [
-   "governance",
-   "changes"
-  ],
-  "root": true
  }
 }

@@ -22,15 +22,11 @@ export type Twin = {
 };
 
 /* Singletons: html path → the content/sections/<slug>.mdx that backs it.
-   `governance` is not in sections/, it lives in content/governance/. A new
-   singleton needs a row here (docs/sections flow in automatically). */
+   A new singleton needs a row here (docs/sections flow in automatically). */
 const SINGLETONS: { htmlPath: string; mdPath: string; section: string; slug: string }[] = [
   { htmlPath: "/", mdPath: "/index.md", section: "sections", slug: "landing" },
   { htmlPath: "/note", mdPath: "/note.md", section: "sections", slug: "builders-note" },
   { htmlPath: "/overview", mdPath: "/overview.md", section: "sections", slug: "home" },
-  { htmlPath: "/how-to-read", mdPath: "/how-to-read.md", section: "sections", slug: "how-to-read" },
-  { htmlPath: "/for-agents", mdPath: "/for-agents.md", section: "sections", slug: "for-agents" },
-  { htmlPath: "/governance", mdPath: "/governance.md", section: "governance", slug: "governance" },
 ];
 
 export function toMarkdown(title: string, description: string | undefined, body: string): string {
