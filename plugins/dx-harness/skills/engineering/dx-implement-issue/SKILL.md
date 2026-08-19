@@ -12,48 +12,27 @@ Determine the input type:
   - If the command fails for any other reason: surface the real error and stop.
 - **Markdown body** (pasted directly): use the pasted content as the issue body. There is no issue number, so omit the `Closes #NNN` line from the draft PR.
 
-In both cases, work out which shape of issue this is, because it decides what you are
-implementing against. The headings tell you, and a `skill:dx-create-*` label confirms it:
+In both cases, work out which shape of issue this is, because it decides what you are implementing against. The headings tell you, and a `skill:dx-create-*` label confirms it:
 
-- **Story** (`## User story`): the acceptance criteria are the contract. `## Open questions`
-  and `## Out of scope` bound it.
-- **Task** (`## Parent`): the acceptance criteria are the contract, and the optional
-  `## Also true when done` checklist adds conditions a reviewer confirms by looking. Read
-  the parent too (`gh issue view <parent>`), since a task only makes sense in the context
-  of what it delivers.
-- **Chore** (`## What is changing`): the `## Done when` list is the contract. There are no
-  Given-When-Then scenarios, and inventing them wastes the run.
-- **Bug** (`## Steps to reproduce`): the reproduction path plus the expected-versus-actual
-  gap is the contract.
+- **Story** (`## User story`): the acceptance criteria are the contract. `## Open questions` and `## Out of scope` bound it.
+- **Task** (`## Parent`): the acceptance criteria are the contract, and the optional `## Also true when done` checklist adds conditions a reviewer confirms by looking. Read the parent too (`gh issue view <parent>`), since a task only makes sense in the context of what it delivers.
+- **Chore** (`## What is changing`): the `## Done when` list is the contract. There are no Given-When-Then scenarios, and inventing them wastes the run.
+- **Bug** (`## Steps to reproduce`): the reproduction path plus the expected-versus-actual gap is the contract.
 
-Read the comments in every case. A decision, a clarification, or a narrowed scope often
-lives there rather than in the body, and a comment that contradicts the body wins, because
-it came later.
+Read the comments in every case. A decision, a clarification, or a narrowed scope often lives there rather than in the body, and a comment that contradicts the body wins, because it came later.
 
 ## Step 2: Check the issue is ready to implement
 
-An issue is ready when it says what must be observably true when the work is done. Judge
-that against the shape, and stop rather than filling a gap with a guess: a guess made here
-surfaces as a rejected pull request, which costs far more than the question.
+An issue is ready when it says what must be observably true when the work is done. Judge that against the shape, and stop rather than filling a gap with a guess: a guess made here surfaces as a rejected pull request, which costs far more than the question.
 
-- **Story or task**: at least one acceptance criteria scenario, written as observable
-  behaviour rather than implementation. A task also needs its parent link.
-- **Chore**: done-when items a reviewer could confirm by looking. "The environment is set
-  up" is not a finish line; "a deploy to staging succeeds and the health endpoint returns
-  200" is.
-- **Bug**: steps that reproduce the defect, and both halves of the expected-versus-actual
-  gap. Reproduce it before changing anything. A fix you cannot see working is a guess, and
-  the reproduction is also the test you are about to write.
+- **Story or task**: at least one acceptance criteria scenario, written as observable behaviour rather than implementation. A task also needs its parent link.
+- **Chore**: done-when items a reviewer could confirm by looking. "The environment is set up" is not a finish line; "a deploy to staging succeeds and the health endpoint returns 200" is.
+- **Bug**: steps that reproduce the defect, and both halves of the expected-versus-actual gap. Reproduce it before changing anything. A fix you cannot see working is a guess, and the reproduction is also the test you are about to write.
 
 Two conditions stop the run whatever the shape:
 
-- **Unresolved open questions.** A story carries them in `## Open questions` precisely so
-  they are visible at this moment. Report them and ask which way to go, because they are
-  decisions someone else owns.
-- **Nothing checkable at all.** An issue written before these templates existed, or a body
-  that is a paragraph of intent, cannot be implemented faithfully. Say what is missing and
-  offer to shape it with `dx-create-story`, `dx-create-task`, `dx-create-chore`, or
-  `dx-create-bug` rather than proceeding on inference.
+- **Unresolved open questions.** A story carries them in `## Open questions` precisely so they are visible at this moment. Report them and ask which way to go, because they are decisions someone else owns.
+- **Nothing checkable at all.** An issue written before these templates existed, or a body that is a paragraph of intent, cannot be implemented faithfully. Say what is missing and offer to shape it with `dx-create-story`, `dx-create-task`, `dx-create-chore`, or `dx-create-bug` rather than proceeding on inference.
 
 ## Step 3: Explore the codebase
 
@@ -70,8 +49,7 @@ If the file exists, read its full contents. Treat every row's **Prevention** col
 
 If the file does not exist, proceed normally.
 
-Before writing any code, read the code you are about to change. The issue names the
-surface, not the implementation, so the patterns come from the repository:
+Before writing any code, read the code you are about to change. The issue names the surface, not the implementation, so the patterns come from the repository:
 
 - The files that already do the nearest thing, and the patterns they follow
 - The current data model if you are extending it
@@ -98,8 +76,7 @@ git checkout -b <branch-name>
 
 ## Step 5: Plan before coding
 
-List the contract items in order: acceptance criteria scenarios on a story or task,
-done-when items on a chore, the reproduction path on a bug. For each one, identify:
+List the contract items in order: acceptance criteria scenarios on a story or task, done-when items on a chore, the reproduction path on a bug. For each one, identify:
 
 - What code needs to change or be created
 - Which file(s) are affected
@@ -119,9 +96,7 @@ If any signal is present, stop. Do not create a branch or write code. Report:
 
 1. The proposed split: capability A (these scenarios, these files) and capability B (these scenarios, these files)
 2. Which signal triggered the recommendation
-3. The instruction: run `/dx-harness:dx-split-issue $ARGUMENTS` to cut the issue into task
-   sub-issues, then return to `/dx-harness:dx-implement-issue` on each slice. The parent
-   stays open and tracks them.
+3. The instruction: run `/dx-harness:dx-split-issue $ARGUMENTS` to cut the issue into task sub-issues, then return to `/dx-harness:dx-implement-issue` on each slice. The parent stays open and tracks them.
 
 If no signal is present, proceed to Step 6.
 
@@ -134,15 +109,9 @@ Work through the contract items in order, one at a time. For each:
 3. Confirm internally that the scenario is satisfied before moving to the next
 4. Commit before moving to the next scenario
 
-Follow the conventions in CLAUDE.md precisely, and where it is silent, follow what the
-surrounding code already does. Naming, test structure, and assertion style are the repo's
-call, not this skill's, so read a neighbouring test before writing the first one. Two
-conventions hold regardless: commit messages are `<type>(<scope>): <message>` with a
-backticked scope, and no em-dashes in code, comments, or documentation.
+Follow the conventions in CLAUDE.md precisely, and where it is silent, follow what the surrounding code already does. Naming, test structure, and assertion style are the repo's call, not this skill's, so read a neighbouring test before writing the first one. Two conventions hold regardless: commit messages are `<type>(<scope>): <message>` with a backticked scope, and no em-dashes in code, comments, or documentation.
 
-Respect every constraint the issue states, including the `Also true when done` items on a
-task and the out-of-scope list on any shape. If a constraint conflicts with an acceptance
-criteria scenario, stop and surface the conflict rather than resolving it silently.
+Respect every constraint the issue states, including the `Also true when done` items on a task and the out-of-scope list on any shape. If a constraint conflicts with an acceptance criteria scenario, stop and surface the conflict rather than resolving it silently.
 
 ### Commit discipline
 
@@ -154,23 +123,15 @@ If a scenario requires preparatory work (a new type, a schema change, a helper) 
 
 ## Step 7: Cover what the criteria do not
 
-Acceptance criteria describe what someone observes, so they rarely cover the cases nobody
-watches: concurrent writes, boundary values, internal error paths. Add tests for the ones
-that apply to what you just built, following the repo's assertion conventions.
+Acceptance criteria describe what someone observes, so they rarely cover the cases nobody watches: concurrent writes, boundary values, internal error paths. Add tests for the ones that apply to what you just built, following the repo's assertion conventions.
 
-On a task, the `Also true when done` checklist belongs here too. Those items are conditions
-a reviewer confirms by looking, so confirm each one yourself and say so in the report. An
-item that can be tested rather than eyeballed is better as a test.
+On a task, the `Also true when done` checklist belongs here too. Those items are conditions a reviewer confirms by looking, so confirm each one yourself and say so in the report. An item that can be tested rather than eyeballed is better as a test.
 
 ## Step 8: Run the checks the repository runs
 
-Run what CI runs, so a green local run means a green pull request. CLAUDE.md and the
-`scripts` block in `package.json` (or the equivalent for the stack) name them: typically a
-lint, a typecheck, and the test suite.
+Run what CI runs, so a green local run means a green pull request. CLAUDE.md and the `scripts` block in `package.json` (or the equivalent for the stack) name them: typically a lint, a typecheck, and the test suite.
 
-All of them must pass. If one fails, fix it before proceeding. Opening a pull request with
-a failing suite moves the work backwards, because the next person has to decide whether the
-failure is yours or theirs.
+All of them must pass. If one fails, fix it before proceeding. Opening a pull request with a failing suite moves the work backwards, because the next person has to decide whether the failure is yours or theirs.
 
 ## Step 9: Open a draft PR
 
