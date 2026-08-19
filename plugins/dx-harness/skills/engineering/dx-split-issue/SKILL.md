@@ -1,124 +1,142 @@
 ---
 name: dx-split-issue
-description: Use when you need to decompose a GitHub issue numbered $ARGUMENTS into atomic child issues, each small enough for a coding agent to implement in a single PR.
+description: Use when an issue that already exists turns out to be too big to deliver in one pull request, for example "this story is too large", "break #142 into pieces", "split this issue up", or when `dx-implement-issue` stops and reports that a plan covers two unrelated capabilities. Reads the parent, proposes how to cut it into single-discipline slices, and creates each confirmed slice with `dx-create-task` as a sub-issue so the parent keeps tracking progress. Not for work that has not been filed yet: a new piece of work goes to `dx-create-story`, `dx-create-chore`, or `dx-create-issue`.
 ---
 
-## Step 1: Fetch and read the issue
+You are splitting a piece of work that is already filed and has turned out too big. The
+parent stays open and keeps its scope; what changes is that the delivery work moves into
+slices hanging off it.
 
-Attempt:
+Two things make this skill worth having, and both are about judgment rather than typing.
+The first is the cut itself: deciding which acceptance criteria belong together is the
+whole decision, and getting it wrong produces slices that fight over the same files. The
+second is that a split happens to work someone already filed, often mid-implementation,
+so the author needs to see the proposed cut before anything is created.
 
+You do not own the issue template. Once a slice is confirmed, `dx-create-task` creates it,
+because it owns the task shape, the sub-issue link, and its own intake. Keeping a second
+copy of that template here is how the two drift apart.
+
+## Workflow
+
+### Step 1: Read the parent
+
+```sh
+gh issue view <number> --json number,title,body,state,labels,comments
 ```
-gh issue view $ARGUMENTS --json number,title,body,labels,state
-```
 
-- **If the command fails with "command not found" or "'gh' is not recognized"**: ask the user to paste the issue body directly. Note that steps 3 and 4 will also need to be completed manually — ask the user to confirm they are prepared to create issues and close the original via the GitHub web interface before continuing.
+- **If the command fails with "command not found" or "'gh' is not recognized"**: ask the
+  author to paste the issue body, and say plainly that you cannot create the slices for
+  them either. You can still propose the cut, which is the part that needs a person.
 - **If the command fails for any other reason**: surface the real error and stop.
 
-Read the entire issue body. Extract:
+Check what shape the parent is, because it decides what you are grouping:
 
-- All acceptance criteria scenarios (Given-When-Then)
-- The user story and background
-- The out of scope list
-- The dependencies (blocked by / blocks)
-- All implementer sections if present
+- **A story** (`## User story`, or a `skill:dx-create-story` label): group the
+  Given-When-Then acceptance criteria.
+- **A chore** (`## What is changing` with `## Done when`): group the done-when items.
+- **A task** (`## Parent`): stop. A task is already one discipline's smallest slice, so
+  splitting it usually means the parent was cut wrongly. Say so and ask whether the real
+  fix is to re-cut the task's own parent.
+- **A bug** (`## Steps to reproduce`): stop. A defect with one reproduction path is one
+  fix. Several unrelated defects filed together should be separate bug reports rather than
+  slices of one, so point the author at `dx-create-bug` for each.
 
-## Step 2: Analyse and propose a split
+Read the comments too. A decision that narrowed or widened the scope often lives there
+rather than in the body, and splitting against a stale body cuts the wrong work.
 
-Group the acceptance criteria scenarios by coherent capability. Two scenarios belong in the same group when they share the same actor, the same area of the system, and would touch overlapping files. Scenarios that describe independent capabilities belong in separate groups.
+### Step 2: Propose the cut
 
-For each proposed child issue, identify:
+Group the criteria into slices. Criteria belong in the same slice when they share an
+actor, an area of the system, and the files a change would touch. They belong in
+different slices when either could ship without the other.
 
-- Which acceptance criteria scenarios it contains
-- The coherent capability those scenarios describe (one sentence)
-- Whether the child depends on another child being implemented first
+A slice is one discipline's piece of work, so the discipline is part of the cut. Laying
+out a screen and building the endpoint behind it are two slices even when they serve the
+same criterion, because a designer delivers one and an engineer the other.
 
-Present the proposed split clearly before taking any action:
+Prefer few, coherent slices. Cutting a story into six pieces to make each one small
+usually means the pieces stop being independently deliverable, and then every slice is
+blocked on another.
 
-```
-Proposed split of #$ARGUMENTS into N issues:
-
-Issue A — <capability name>
-  Scenarios: <list>
-  Depends on: none / Issue B
-
-Issue B — <capability name>
-  Scenarios: <list>
-  Depends on: none / Issue A
-```
-
-Ask the developer to confirm the grouping or adjust it before proceeding. Do not create any issues until confirmed.
-
-## Step 3: Create child issues
-
-For each confirmed child issue, create it using the feature template structure. Populate the sections as follows:
-
-**Author sections** (carry over from the parent):
-
-- User story: the parent user story, narrowed to the child's scope
-- Background: the parent background unchanged
-- Acceptance criteria: only the scenarios assigned to this child
-- Out of scope: the parent out of scope list, plus an explicit entry for the other child issues ("other capabilities split into #NNN")
-- Design assets: same links as the parent
-- Dependencies: "Blocked by: #NNN" if this child depends on another child; otherwise "none"
-
-**Implementer sections**: leave all fields at their placeholder text. The child issues must go back through grooming before implementation begins. The grooming checklist must be unchecked.
-
-Ensure the usage-tracking label exists once (idempotent — `|| true` swallows the error if it already exists):
+Present the proposal and stop for confirmation:
 
 ```
-gh label create "skill:split-issue" --color ededed --description "Created with the split-issue skill" 2>/dev/null || true
+Proposed split of #142 into 2 tasks:
+
+1. Filter controls on the assignments list (design)
+   Criteria: "Filters are visible", "Selected filter is obvious"
+   Depends on: nothing
+
+2. Filtered query behind the assignments list (engineering)
+   Criteria: "List shows only matching assignments", "Empty result explains itself"
+   Depends on: 1
 ```
 
-For each child, attempt (applying the label):
+Name what each slice delivers, which criteria it carries, and what it waits on. Then ask
+the author to confirm or adjust the grouping. Create nothing until they do, because a
+wrong cut costs more to unpick than to redraw.
 
-```
-gh issue create \
-  --title "<type>(`<scope>`): <child capability, following commit convention>" \
-  --body "<populated body>" \
-  --label "skill:split-issue"
-```
+If the criteria do not group, say so rather than inventing a cut. Criteria that all touch
+one screen and one endpoint are one task, and the honest answer is that the issue is
+already the right size.
 
-Append the following visible footer at the very end of each child issue body before passing it to `gh issue create`:
+### Step 3: Create each confirmed slice with `dx-create-task`
 
-```
----
+Run `dx-create-task` once per slice, giving it the parent number and everything you
+already know: the slice's scope, the criteria assigned to it, the discipline, and the
+parent's out-of-scope list. It gathers whatever is missing, files the issue, and links it
+to the parent as a native sub-issue.
 
-*🤖 Generated with split-issue*
-```
+Carry the criteria across in the author's words. Rewriting them here is how a split
+quietly changes what was agreed.
 
-The label makes usage queryable with `gh issue list --label "skill:split-issue"`; the footer gives human-readable attribution.
+If `dx-create-task` is not installed, say which slices you would have created and stop.
+Filing them from here with an improvised template is exactly the drift this split
+prevents.
 
-- **If the command succeeds**: record the created issue number and continue.
-- **If the command fails with "command not found" or "'gh' is not recognized"**: render each child issue title and body as markdown for manual creation via the GitHub web interface. Ask the user to report the created issue numbers before proceeding to Step 4.
-- **If the command fails for any other reason**: surface the real error and stop.
+### Step 4: Record the split on the parent
 
-## Step 4: Update the original issue
+The parent stays open. It now tracks its slices through GitHub's sub-issue progress, and
+closing it would throw away the scope, the background, and the discussion.
 
-Add a comment to the original issue listing the child issues and close it.
+Add a comment so the split is visible to anyone reading the issue rather than only in the
+sub-issue panel:
 
-Attempt:
+```sh
+gh issue comment <number> --body "Split into tasks:
+- #NNN Filter controls on the assignments list (design)
+- #NNN Filtered query behind the assignments list (engineering)
 
-```
-gh issue comment $ARGUMENTS --body "Split into:
-- #NNN — <child A title>
-- #NNN — <child B title>
-
-These child issues need grooming before implementation begins."
-```
-
-Then attempt:
-
-```
-gh issue close $ARGUMENTS --reason "not planned"
+This issue stays open and tracks them as sub-issues."
 ```
 
-- **If either command fails with "command not found" or "'gh' is not recognized"**: render the comment body as markdown for the user to add manually, and instruct the user to close the original issue via the GitHub web interface.
-- **If either command fails for any other reason**: surface the real error and stop.
+Then record that this skill did the split, so the pattern is queryable later:
 
-## Step 5: Report to the developer
+```sh
+gh label create "skill:dx-split-issue" --color ededed --description "Split with the dx-split-issue skill" 2>/dev/null || true
+gh issue edit <number> --add-label "skill:dx-split-issue"
+```
 
-Report:
+The label goes on the parent, not on the slices: the slices are `dx-create-task` issues
+and carry its label already.
 
-1. Child issues created: title and URL for each
-2. Dependency order: which must be implemented first, if any
-3. Next step: each child issue needs engineering grooming (technical sections and grooming checklist) before `/dx-harness:dx-implement-issue` can be run on it
+### Step 5: Report
+
+Say what exists now: each slice with its number and URL, the order they can be picked up
+in, and that the parent is still open and tracking them. If the author came here from
+`dx-implement-issue`, name the slice to start with so they can carry straight on.
+
+## Rules
+
+- Propose before creating. The cut is the decision, and the author owns it.
+- Never close the parent. It holds the scope and the history, and its progress now comes
+  from its sub-issues.
+- Hand creation to `dx-create-task` rather than keeping a template here.
+- One slice is one discipline's deliverable piece. Design and engineering split even when
+  they serve the same criterion.
+- Say when an issue does not need splitting. "This is already the right size" is a useful
+  answer.
+- Do not split a task or a bug. Re-cut the task's parent instead, or file separate bugs.
+- Do not use em-dashes (`—`) in issue titles, bodies, or comments. Use colons,
+  parentheses, or separate sentences instead.
