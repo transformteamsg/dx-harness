@@ -21,15 +21,15 @@ The canonical structure is in [references/issue-template.md](references/issue-te
 
 Ask for the following. Do not invent answers: ask if the user has not provided them.
 
-1. **Scope**: what part of the product does this touch (e.g. `dashboard`, `login`, `profile`)? This becomes the backticked scope in the title.
+1. **Scope**: what part of the product does this touch (for example `dashboard`, `login`, or `profile`)? This becomes the backticked scope in the title.
 2. **User story**: who needs what, and why? Format: "As a [user persona], I want [capability], so that [benefit]." The persona is whoever actually uses the product. Do not invent one to fit technical work: if no real user benefits, this is probably a `dx-create-task`, not a story.
 3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
 4. **Open questions**: is anything about these requirements still unclear or undecided (an ambiguous edge case, a policy nobody has settled, a dependency on someone else's decision)? Capture these rather than guessing or blocking creation on an answer now. If genuinely nothing is unresolved, record "None."
-5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour. Step 2 adds to what the author supplies here: do not ask them to produce every edge case unaided.
+5. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first, for example "Assignment is created" rather than "Create assignment". Push back if scenarios describe implementation rather than observable behaviour. Step 2 adds to what the author supplies here: do not ask them to produce every edge case unaided.
 6. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
 7. **Design assets**: Figma links, screenshots, or a vibe-coded prototype. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
 
-Item 2 is a gate, not just a field. Settle it before gathering the rest: if nobody who actually uses the product benefits, this is not a story. Say so, point the author at `dx-create-task`, and stop. Do not collect the remaining items and do not continue to Step 2, because reading the code to sharpen acceptance criteria is wasted when there will be no acceptance criteria, and it buries the recommendation the author needs under work they did not ask for. If the code reading would help the task issue instead, offer it rather than doing it unasked.
+Item 2 is a gate, not only a field. Settle it before gathering the rest: if nobody who actually uses the product benefits, this is not a story. Say so, point the author at `dx-create-task`, and stop. Do not collect the remaining items and do not continue to Step 2, because reading the code to sharpen acceptance criteria is wasted when there will be no acceptance criteria, and it buries the recommendation the author needs under work they did not ask for. If the code reading would help the task issue instead, offer it rather than doing it unasked.
 
 ### Step 2: Read the code for missed edge cases
 
@@ -64,7 +64,7 @@ After the acceptance criteria are settled, evaluate them before continuing. Chec
 - **Unrelated starting states**: scenarios have Givens that describe completely different parts of the system
 - **Multiple unrelated outcomes**: the scenarios deliver two capabilities a user would ask for separately, rather than one capability plus its edge cases
 
-Judge the signals on the capability, not on the count of scenarios. An edge case added in Step 2 does not justify a split just because it names a second persona or a different starting state: if it is the same capability seen from another angle, it belongs in this story.
+Judge the signals on the capability, not on the count of scenarios. An edge case added in Step 2 does not justify a split on its own, even when it names a second persona or a different starting state: if it is the same capability seen from another angle, it belongs in this story.
 
 If any signal is present, pause and surface it:
 
@@ -155,6 +155,6 @@ The label makes usage queryable with `gh issue list --label "skill:dx-create-sto
 - Never leave a section blank. Every section must be explicitly filled or marked `N/A` / `None`.
 - Acceptance criteria must use Given-When-Then format and be outcome-first named.
 - Do not describe implementation in acceptance criteria: write what a user or system actor observes. This holds for edge cases found by reading the code, which must be restated as experiences before they are offered to the author.
-- Pick one term per concept and use it consistently across all scenarios (e.g. always "customer", never mixing with "user").
+- Pick one term per concept and use it consistently across all scenarios, for example always "customer" and never mixing in "user".
 - Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
 - The PR that implements this issue (or the task issues delivering it) will squash-merge using its title as the commit message, so titles must be valid commit messages.

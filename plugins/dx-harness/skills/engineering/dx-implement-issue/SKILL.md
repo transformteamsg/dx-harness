@@ -7,7 +7,7 @@ description: Use when someone wants an existing GitHub issue built, for example 
 
 Determine the input type:
 
-- **Issue number** (e.g. `42`): attempt `gh issue view $ARGUMENTS --json number,title,body,labels,state,comments` and read the returned data.
+- **Issue number** (for example `42`): attempt `gh issue view $ARGUMENTS --json number,title,body,labels,state,comments` and read the returned data.
   - If the command fails with "command not found" or "'gh' is not recognized": ask the user to paste the issue body directly. Treat it as a pasted markdown body, so omit the `Closes #NNN` line from the draft PR.
   - If the command fails for any other reason: surface the real error and stop.
 - **Markdown body** (pasted directly): use the pasted content as the issue body. There is no issue number, so omit the `Closes #NNN` line from the draft PR.
@@ -123,7 +123,7 @@ If a scenario requires preparatory work (a new type, a schema change, a helper) 
 
 ## Step 7: Cover what the criteria do not
 
-Acceptance criteria describe what someone observes, so they rarely cover the cases nobody watches: concurrent writes, boundary values, internal error paths. Add tests for the ones that apply to what you just built, following the repo's assertion conventions.
+Acceptance criteria describe what someone observes, so they rarely cover the cases nobody watches: concurrent writes, boundary values, internal error paths. Add tests for the ones that apply to what you built, following the repo's assertion conventions.
 
 On a task, the `Also true when done` checklist belongs here too. Those items are conditions a reviewer confirms by looking, so confirm each one yourself and say so in the report. An item that can be tested rather than eyeballed is better as a test.
 

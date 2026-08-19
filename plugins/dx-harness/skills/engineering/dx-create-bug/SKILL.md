@@ -23,7 +23,7 @@ The canonical structure is in [references/issue-template.md](references/issue-te
 
 Ask for the following. Do not invent answers: ask if the author has not provided them. Reproduction details in particular are worth pressing on, since a vague report costs the fixer more time than it saved the reporter.
 
-1. **Scope**: what area of the codebase does this touch (e.g. `auth`, `session`, `catalog`)? This becomes the backticked scope in the title.
+1. **Scope**: what area of the codebase does this touch (for example `auth`, `session`, or `catalogue`)? This becomes the backticked scope in the title.
 2. **Summary**: one sentence naming what is broken and where.
 3. **Steps to reproduce**: a numbered path from a state anyone can reach to the moment it fails. If the author gives you a rough description, turn it into concrete numbered steps and read them back to confirm. Watch for missing preconditions: a specific account, role, feature flag, or seeded data that the author has and a fixer will not.
 4. **Expected behaviour**: what should have happened at the final step.
@@ -31,7 +31,7 @@ Ask for the following. Do not invent answers: ask if the author has not provided
 6. **Evidence**: a screenshot or screen recording showing the bug reproducing. This is often the fastest way for a fixer to confirm they are looking at the same behaviour, so ask for it directly rather than treating it as optional. If the author does not have one, record that explicitly with the reason (`None available: intermittent, not captured yet`) instead of leaving the section blank, so a reader can tell the difference between "nobody looked" and "we tried and could not catch it".
 7. **Environment**: browser and version, OS, device, app version or commit, and any account or role that matters. A bug that only reproduces in one environment is a different bug from one that reproduces everywhere, and the fixer needs to know which they have.
 8. **Impact**: who is affected, how often, and whether a workaround exists. This is what a triager reads to decide whether this is fixed today or next quarter, so avoid a bare severity label with nothing behind it.
-9. **Priority**: a single level from `P0` to `P4`, following Google's Issue Tracker convention (`P0` = drop everything, `P4` = trivial). This is the one-glance signal a triager sorts the backlog by, and it should follow from the impact just described rather than being asserted on its own: derive a suggested level from the impact and read it back for the author to confirm or override, since they may know of business context the report does not carry.
+9. **Priority**: a single level from `P0` to `P4`, following Google's Issue Tracker convention (`P0` = drop everything, `P4` = trivial). This is the one-glance signal a triager sorts the backlog by, and it should follow from the impact described above rather than being asserted on its own: derive a suggested level from the impact and read it back for the author to confirm or override, since they may know of business context the report does not carry.
 10. **Out of scope**: any related problem this fix will not address, or `None`. Bug reports attract adjacent complaints, so an explicit boundary keeps the fix reviewable.
 
 ### Step 1b: Check whether this is already reported
