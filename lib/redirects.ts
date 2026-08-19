@@ -1,8 +1,9 @@
 /* Where pages moved in the IA restructure (guidelines/foundations →
-   /standards/*, research → harness, principles removed). One map, two
-   consumers: middleware.ts issues permanent redirects for the HTML paths,
-   and markdown-twin.ts aliases the old `.md` twins so published
-   machine-reader URLs keep resolving. No fs access — middleware imports it. */
+   /standards/*, research → harness, principles removed) and where the
+   retired Reference pages now land. One map, two consumers: middleware.ts
+   issues permanent redirects for the HTML paths, and markdown-twin.ts
+   aliases the old `.md` twins so published machine-reader URLs keep
+   resolving. No fs access — middleware imports it. */
 
 export const movedPages: Record<string, string> = {
   "/principles": "/overview",
@@ -28,4 +29,10 @@ export const movedPages: Record<string, string> = {
   "/foundations/tokens": "/standards/tokens",
   "/research": "/harness/research-brief",
   "/research/research-brief": "/harness/research-brief",
+  /* The Reference group, removed 2026-08-19. Nothing replaced these pages,
+     so they land on the overview. */
+  "/how-to-read": "/overview",
+  "/for-agents": "/overview",
+  "/governance": "/overview",
+  "/governance/changes": "/overview",
 };

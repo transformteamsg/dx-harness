@@ -13,7 +13,6 @@ export const sectionInk: Record<string, string> = {
   products: "var(--sec-products)",
   harness: "var(--sec-harness)",
   "getting-started": "var(--sec-getting-started)",
-  governance: "var(--sec-governance)",
 };
 
 /* A generated ink glyph, centred in the 96x60 canvas. The rough.js bake is
@@ -126,22 +125,15 @@ export function TopicCard({ topic }: { topic: Topic }) {
   );
 }
 
-/* Landing tile: bigger type, ladder tag, page count. */
-export function SectionTile({ topic, tag, count }: { topic: Topic; tag?: string; count?: number }) {
+/* Landing tile: bigger type, page count. */
+export function SectionTile({ topic, count }: { topic: Topic; count?: number }) {
   return (
     <Link
       href={topic.href}
       className="group block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
     >
       <Thumb ink={topic.ink} art={topicArt[topic.artKey]} />
-      <div className="mt-3 flex items-baseline justify-between gap-3">
-        <p className="font-display text-lg font-semibold leading-snug">{topic.title}</p>
-        {tag && (
-          <span className="shrink-0 text-xs font-semibold text-muted-foreground">
-            {tag}
-          </span>
-        )}
-      </div>
+      <p className="mt-3 font-display text-lg font-semibold leading-snug">{topic.title}</p>
       {topic.description && (
         <p className="mt-1 text-sm leading-snug text-muted-foreground">{topic.description}</p>
       )}

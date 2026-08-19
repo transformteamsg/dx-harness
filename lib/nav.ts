@@ -23,15 +23,15 @@ export const nav: NavGroup[] = [
   },
   {
     label: "Design in code",
+    href: "/getting-started",
     items: [
-      { href: "/getting-started", title: "Overview" },
       { href: "/getting-started/git-basics", title: "Introducing Git" },
       { href: "/getting-started/guardrails", title: "Step 0: Prep guardrails" },
       { href: "/getting-started/set-up", title: "Step 1: Set up" },
       { href: "/getting-started/plan", title: "Step 2: Plan" },
       { href: "/getting-started/build", title: "Step 3: Build" },
       { href: "/getting-started/ship", title: "Step 4: Ship" },
-      { href: "/getting-started/help", title: "Help & prompts" },
+      { href: "/getting-started/help", title: "Help and prompts" },
     ],
   },
   {
@@ -44,15 +44,15 @@ export const nav: NavGroup[] = [
         label: "Writing",
         items: [
           { href: "/standards/writing", title: "Overview" },
-          { href: "/standards/voice-tone", title: "Voice & tone" },
-          { href: "/standards/grammar-mechanics", title: "Grammar & mechanics" },
-          { href: "/standards/text-patterns", title: "Components & text patterns" },
+          { href: "/standards/voice-tone", title: "Voice and tone" },
+          { href: "/standards/grammar-mechanics", title: "Grammar and mechanics" },
+          { href: "/standards/text-patterns", title: "Components and text patterns" },
           { href: "/standards/naming", title: "Naming" },
         ],
       },
       { href: "/standards/colour", title: "Colour" },
       { href: "/standards/typography", title: "Typography" },
-      { href: "/standards/spacing-radius", title: "Spacing & radius" },
+      { href: "/standards/spacing-radius", title: "Spacing and radius" },
       { href: "/standards/tokens", title: "Tokens" },
       { href: "/standards/iconography", title: "Iconography" },
       { href: "/standards/motion", title: "Motion" },
@@ -70,15 +70,6 @@ export const nav: NavGroup[] = [
       { href: "/products/teacher-workspace", title: "Teacher Workspace" },
       { href: "/products/casesync", title: "CaseSync" },
       { href: "/products/glow", title: "Glow" },
-    ],
-  },
-  {
-    label: "Reference",
-    items: [
-      { href: "/how-to-read", title: "How to read the system" },
-      { href: "/for-agents", title: "For agents" },
-      { href: "/governance", title: "How this evolves" },
-      { href: "/governance/changes", title: "Change log" },
     ],
   },
 ];
@@ -100,8 +91,8 @@ export const visibleNav: NavGroup[] = nav
   .filter((group) => !group.hidden)
   .map((group) => ({ ...group, items: visibleItems(group.items) }));
 
-/* True for a page that hangs under a nav sub-group — Writing's Voice & tone,
-   Grammar & mechanics and the rest. Directory grids list the parent topic
+/* True for a page that hangs under a nav sub-group — Writing's Voice and tone,
+   Grammar and mechanics and the rest. Directory grids list the parent topic
    only, so a section's thumbnails read as its topics rather than as every
    page in it. A sub-group's first leaf is its own overview (the page the
    group is named for), so that one is not nested by this rule. */
@@ -127,8 +118,8 @@ export function isVisibleNavHref(href: string): boolean {
 }
 
 /* Reading order for prev/next: each group's index page (when it has one),
-   then its leaves. Deduped so a group href that repeats as a leaf
-   (e.g. /governance) appears once. */
+   then its leaves. Deduped so a group href that also appears as a leaf is
+   listed once. */
 export const readingOrder: NavLeaf[] = (() => {
   const seen = new Set<string>();
   const out: NavLeaf[] = [];

@@ -13,7 +13,7 @@ You have three ways to run your AI assistant:
 - **Claude Code in the terminal**: the command-line version.
 - **A code editor** like VS Code or Cursor, with the [Claude Code extension](https://code.claude.com/docs/en/vs-code).
 
-You sign in with a Claude account. The desktop app uses a personal subscription (Pro or Max). To use GovTech's provided API credits, use the terminal or an editor. Any of them works; the steps are the same, only the interface differs. (What I reach for: Claude Code on the desktop app for building, and Codex for a second opinion on review.)
+You sign in with a Claude account. The desktop app uses a personal subscription (Pro or Max). To use GovTech's provided API credits, use the terminal or an editor. Any of them works; the steps are the same, only the interface differs. (A common setup: Claude Code on the desktop app for building, and Codex for a second opinion on review.)
 
 Getting your computer ready (the app or editor, plus a few tools the project needs) is a one-time setup an engineer can walk you through. To do it yourself, Claude Code's [setup guide](https://code.claude.com/docs/en/setup) covers it. Some repos also ship a design harness you install once; on a dx-harness repo, see [Install](/harness/install).
 
@@ -29,7 +29,7 @@ An engineer adds you to the repo (usually GitLab, sometimes GitHub) so you're al
 
 Cloning downloads the code to your computer.
 
-- On the repo's web page, click **Code** and copy the **HTTPS** address (it starts with `https://`).
+- On the repo's web page, select **Code** and copy the **HTTPS** address (it starts with `https://`).
 - Run `git clone [address]`, or ask your AI to do it.
 - You sign in once; your computer remembers it after that (Keychain on a Mac, credential helpers on Windows and Linux). SSH, the `git@…` address, is an alternative some teams prefer.
 
@@ -46,6 +46,6 @@ A `.env` file holds the app's settings and secret keys, like a database address 
 
 Ask your AI for the command to run the project; it can read the repo and tell you exactly.
 
-- The app opens in your browser at an address like `http://localhost:5173`. That's your **preview**: your own copy, where you see and click your changes.
-- Start it fresh each session. If it stops, that's normal; just ask your AI to start it again.
+- The app opens in your browser at an address like `http://localhost:5173`. That's your **preview**: your own copy, where you view and test your changes.
+- Start it fresh each session. If it stops, that's normal; ask your AI to start it again.
 - Some apps need other pieces too, like a database; an engineer helps set those up the first time.

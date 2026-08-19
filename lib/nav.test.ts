@@ -29,6 +29,13 @@ describe("docs navigation", () => {
 
   it("names the code workflow Design in code", () => {
     expect(visibleNav.some((group) => group.label === "Design in code")).toBe(true);
-    expect(visibleNav.some((group) => group.label === "Start with code")).toBe(false);
+  });
+
+  it("drops the Reference group and its pages", () => {
+    expect(visibleNav.some((group) => group.label === "Reference")).toBe(false);
+    for (const href of ["/how-to-read", "/for-agents", "/governance", "/governance/changes"]) {
+      expect(isVisibleNavHref(href)).toBe(false);
+      expect(readingOrder.some((page) => page.href === href)).toBe(false);
+    }
   });
 });

@@ -53,8 +53,6 @@ export function llmsIndex(): string {
   lines.push("");
   lines.push("- [dx-harness home](/index.md)");
   lines.push("- [Overview](/overview.md)");
-  lines.push("- [How to read this standard](/how-to-read.md)");
-  lines.push("- [For agents](/for-agents.md)");
   lines.push("- [A note from the builders](/note.md)");
   lines.push("");
 
@@ -80,8 +78,8 @@ export function llmsIndex(): string {
     lines.push(`## ${def.label}`);
     lines.push("");
 
-    // Root sections (e.g. governance): the first slug is the doc at the
-    // section path itself; any further slugs live at /section/slug.
+    // Root sections: the first slug is the doc at the section path itself;
+    // any further slugs live at /section/slug.
     if (def.root) {
       for (const [i, slug] of def.slugs.entries()) {
         const doc = getDoc(key, slug);

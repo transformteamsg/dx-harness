@@ -30,6 +30,11 @@ export default function CatalogPage() {
           >
             catalog.yaml
           </a>
+          . To read the whole site instead, start at{" "}
+          <a className="text-site-accent-text underline underline-offset-2" href="/llms.txt">
+            /llms.txt
+          </a>
+          .
         </p>
       </section>
       <CatalogBrowser

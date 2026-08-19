@@ -56,7 +56,6 @@ const TOPIC_ICONS = {
   "getting-started/build": "hammer",
   "getting-started/ship": "rocket",
   "getting-started/help": "life-buoy",
-  "governance/governance": "git-branch",
 };
 
 /* ---- Ink preset (filter mode) — values copied from stroke-renderer.ts ---- */

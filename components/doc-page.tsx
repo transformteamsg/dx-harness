@@ -12,7 +12,7 @@ import { ControlList } from "@/components/control-list";
 import { mdxComponents } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
-   the section root. Single-doc sections (governance) and start pages don't. */
+   the section root. Single-doc sections and start pages don't. */
 const sectionCrumbs: Record<string, { label: string; href: string }> = {
   standards: { label: "Standards", href: "/standards/catalog" },
   products: { label: "Products", href: "/products" },
