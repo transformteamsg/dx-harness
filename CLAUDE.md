@@ -20,9 +20,9 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 
 ## Technical documents
 
-- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, and PR descriptions follows the [Google developer documentation style guide](https://developers.google.com/style). SLP-9 covers documentation as well as `content/`, so both apply.
+- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, and PR descriptions follows the [Google developer documentation style guide](https://developers.google.com/style).
 - The rules that come up most often: second person, active voice, present tense (not "will"), descriptive sentence-case headings, one idea per sentence, and no idioms or figures of speech.
-- Em dashes: never chained, never spaced. Use a colon, a comma, or a second sentence. SLP-9 flags em-dash density even when no single sentence holds two.
+- Em dashes: never chained, never spaced. Use a colon, a comma, or a second sentence. Density counts, so two or three in a short paragraph is too many even when no single sentence holds two.
 - Tables hold short cells. Paragraph-length content becomes a section with a heading.
 - Numerals for 10 and above. Expand an acronym on first use.
 - Google is US English and this repo is not. Keep the Commonwealth spelling rule in Content and copy, and follow every other Google rule as it stands. Do not "correct" a Commonwealth spelling you find in this repo.
