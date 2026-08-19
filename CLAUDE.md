@@ -15,6 +15,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - Content lives in `content/`, not in components. Page chrome lives in `components/`. Don't hardcode standard content into TSX.
 - Copy: second person, active voice, sentence case, plain language. Error messages say what happened and what to do next.
 - When editing prose in `content/`, apply SLP-9 (AI-writing tells). The canonical lists and calibration live in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-design-copy skill.
+- Spelling is Commonwealth English in all prose: UI copy, `content/`, and docs. Write `colour`, `behaviour`, `catalogue`, `organise`, `prioritise`, `centre`, and `-ise` rather than `-ize`. Identifiers keep the spelling they already have, such as `catalog.yaml` and the CSS `color` property. The one settled exception in prose is `judgment`, which is what `docs/` already uses.
 - Published docs intentionally have no `settled`/`proposed` status axis. Keep unresolved proposals in decision records or issues and label them there; don't add status frontmatter or badges to published pages.
 
 ## Technical documents
@@ -24,7 +25,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - Em dashes: never chained, never spaced. Use a colon, a comma, or a second sentence. SLP-9 flags em-dash density even when no single sentence holds two.
 - Tables hold short cells. Paragraph-length content becomes a section with a heading.
 - Numerals for 10 and above. Expand an acronym on first use.
-- Two deliberate deviations from Google: keep Commonwealth spelling (`colour`, `catalogue`, `behaviour`) to match the catalogue and `CONTEXT.md`, and spell it `judgment`.
+- Google is US English and this repo is not. Keep the Commonwealth spelling rule in Content and copy, and follow every other Google rule as it stands. Do not "correct" a Commonwealth spelling you find in this repo.
 - Where Google's phrasing collides with `CONTEXT.md`, the vocabulary there wins: it names the terms this repo avoids.
 - Apply this to documents you write or substantially revise. Don't retrofit files you are only passing through; a retrospective sweep is its own piece of work.
 
