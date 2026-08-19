@@ -13,8 +13,7 @@ Engineering + design skills for agentic product development. Every skill is name
 | `/dx-harness:dx-create-task` | Creates a single-discipline slice of a story or chore, engineering or design, linked as a sub-issue. |
 | `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
 | `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
-| `/dx-harness:dx-groom-issue` | Superseded by the four skills above, pending removal (#22). |
-| `/dx-harness:dx-split-issue` | Superseded by the four skills above, pending removal (#22). |
+| `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |
 | `/dx-harness:dx-implement-issue` | Implements a GitHub issue by number or pasted body. |
 | `/dx-harness:dx-lint-setup` | Sets up linting/formatting after detecting project types. |
 | `/dx-harness:dx-git-hooks-setup` | Sets up or audits pre-commit / pre-push hooks (Husky or Lefthook). |
