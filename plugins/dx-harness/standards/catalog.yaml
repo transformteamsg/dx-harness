@@ -869,7 +869,7 @@ controls:
 
   # CNT-14: ratchet 2026-07-10, design-lead approved 2026-07-22 — holistic voice
   # quality + tone-fit, the one slice of the voice & tone guideline
-  # (content/guidelines/voice-tone.mdx) no existing control owns. Judgment-only:
+  # (content/standards/voice-tone.mdx) no existing control owns. Judgment-only:
   # no static signal decides "sounds
   # thoughtful" or "tone fits this surface". Disjoint from the mechanical voice
   # controls (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12

@@ -106,20 +106,20 @@ describe("controlMarkdown", () => {
 
 describe("mdAlternate", () => {
   it("maps an html path to its .md twin url via alternates.types['text/markdown']", () => {
-    expect(mdAlternate("/guidelines/voice-tone")).toEqual({
-      alternates: { types: { "text/markdown": "/guidelines/voice-tone.md" } },
+    expect(mdAlternate("/standards/voice-tone")).toEqual({
+      alternates: { types: { "text/markdown": "/standards/voice-tone.md" } },
     });
   });
 });
 
 describe("combined standards catalog twin", () => {
-  it("includes the standards overview before the controls", () => {
+  it("includes the standards overview before the list", () => {
     const twin = resolveTwin(["standards", "catalog.md"]);
     const markdown = twin?.render() ?? "";
     expect(markdown).toContain("# Standards");
-    expect(markdown).toContain("## Control catalog");
+    expect(markdown).toContain("## All standards");
     expect(markdown.indexOf("# Standards")).toBeLessThan(
-      markdown.indexOf("## Control catalog"),
+      markdown.indexOf("## All standards"),
     );
   });
 

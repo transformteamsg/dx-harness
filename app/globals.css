@@ -58,6 +58,34 @@
      the hero drawing, which is inked on the --sheet-band rather than on a plate
      of its own, so the whole sheet is one paper. */
   --blueprint-ink: var(--site-accent-text);
+  /* The finished mark inks a step brighter than the construction it is drawn
+     from: the guides stay on --blueprint-ink (the readable text step), and the
+     traced mark is Radix lime-10 — the brand's figure step, the same value
+     --site-accent-hover carries, aliased here so the mark's colour has a name of
+     its own and does not read as a hover state at the call site. The two must
+     differ, or the finished mark disappears into its own scaffolding.
+     Contrast: lime-10 measures ~1.4:1 on the --sheet-band, so this is a
+     logotype call, not a UI-component one — see the note in
+     components/landing/dxd-construction-preview.tsx. */
+  --mark-ink: var(--site-accent-hover);
+
+  /* The page ground's drafting scale. The hero blueprint measures on a 50-unit
+     construction grid; in the hero cell at 1040px sheet width that renders at
+     ~40px a division, so the ground and the drawing measure at one rhythm
+     instead of two competing ones. */
+  --ground-pitch: 40px;
+
+  /* The flank grid counts in fives of the tick pitch, so the ruler's every-fifth
+     tick and the grid's rule land on the same line instead of beating against
+     each other. */
+  --ground-module: calc(var(--ground-pitch) * 5);
+  /* And it steps back toward the page, so the whole-page grid stays quieter than
+     the top-of-sheet construction drawn over it. */
+  --ground-rule: color-mix(in oklab, var(--border) 55%, var(--background));
+  /* The snapped patches draw a cell finer than the ruler's division, so a patch
+     reads as fine cells against the ruler rather than repeating it. Half the
+     pitch keeps every patch edge on a tick. */
+  --ground-cell: calc(var(--ground-pitch) / 2);
 
   /* Prose body ink — a touch softer than --foreground */
   --prose-body: #3f3f46;     /* zinc-700 */
@@ -85,11 +113,7 @@
 
   /* Section inks — colour-code the doc directory. Radix scales (COL-2 spirit);
      avoids product hues (indigo/orange), purple (SLP-1) and red (COL-2). */
-  --sec-principles: #0064ff;   /* TW blue — the brand compass */
   --sec-standards: #46a758;    /* Radix grass-9 — checkable, pass/fail */
-  --sec-guidelines: #ab6400;   /* Radix amber-11 — advisory, judgement applies */
-  --sec-foundations: #12a594;  /* Radix teal-9 — shared material */
-  --sec-research: #5c7c2f;     /* Radix lime-11 — research aligns with the site accent */
   --sec-products: #00a2c7;     /* Radix cyan-9 — the three identities */
   --sec-harness: #ad7f58;      /* Radix brown-9 — the working strap */
   --sec-getting-started: #5b5bd6; /* Radix iris-9 — the hands-on on-ramp */
@@ -107,6 +131,12 @@
   --motion-base: 200ms;
   --motion-slow: 300ms;
   --motion-story: 600ms;
+  /* Stagger offsets for the landing's narrative figures — the same "only these
+     values" rule as the durations above, so a choreographed beat never needs a
+     raw millisecond at the call site. */
+  --motion-beat-1: 180ms;
+  --motion-beat-2: 220ms;
+  --motion-beat-3: 320ms;
   --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
   --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
 
@@ -169,6 +199,7 @@
   --color-border-strong: var(--border-strong);
   --color-sheet-band: var(--sheet-band);
   --color-blueprint-ink: var(--blueprint-ink);
+  --color-mark-ink: var(--mark-ink);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
   --color-success-muted: var(--success-muted);
@@ -269,3 +300,4 @@ h1, h2, h3, h4 { font-family: "Plus Jakarta Sans Variable", system-ui, sans-seri
      own symmetric breathing room. */
   .prose hr { margin: 32px 0; border: 0; border-top: 1px solid var(--border); }
 }
+

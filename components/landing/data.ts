@@ -14,45 +14,56 @@ export type DirectoryGroup = {
 
 /* No `number`: these six are a team, not a sequence — dx-design brings in
    whichever the request needs, in whatever order. The cards carried 01–06 while
-   the field existed, which read as steps to follow. `role` is the key. */
+   the field existed, which read as steps to follow. `role` is the key.
+   `icon` is the skill's tool mark — a `skills/*` key in the ink-icon set
+   (scripts/generate-ink-icons.mjs), drawn through the Icon Generator's Ink
+   preset: these are skills your agent picks up, so each card shows the tool,
+   not a mascot. */
 type FeaturedSkill = {
   role: string;
+  icon: string;
   description: string;
   command?: string;
   note?: string;
 };
 
-/* The front page introduces the harness as a small design team. These are roles,
-   not a hierarchy: dx-design brings in whichever ones the request needs, while
-   review runs automatically after execute. */
+/* The front page introduces the harness as a small set of skills. These are
+   roles, not a hierarchy: dx-design brings in whichever ones the request needs,
+   while review runs automatically after execute. */
 export const FEATURED_SKILLS: FeaturedSkill[] = [
   {
     role: "Orchestrator",
+    icon: "skills/orchestrator",
     description: "Understands the request and brings in the skills it needs.",
     command: "dx-design",
   },
   {
     role: "Copy",
+    icon: "skills/copy",
     description: "Makes interface language clear, useful, and consistent.",
     command: "dx-design-copy",
   },
   {
     role: "Pattern",
+    icon: "skills/pattern",
     description: "Sets the structure, hierarchy, and density of the page.",
     command: "dx-design-pattern",
   },
   {
     role: "Polish",
+    icon: "skills/polish",
     description: "Refines spacing, type, colour, and the small details.",
     command: "dx-design-polish",
   },
   {
     role: "Execute",
+    icon: "skills/execute",
     description: "Turns the approved direction into working product code.",
     command: "dx-design-execute",
   },
   {
     role: "Review",
+    icon: "skills/review",
     description: "Checks the result against the control catalog and DESIGN.md.",
     note: "Runs automatically after execute",
   },

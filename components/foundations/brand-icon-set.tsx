@@ -45,12 +45,12 @@ function InkIcon({ artKey, size }: { artKey: string; size: number }) {
 }
 
 const PAIRS = [
-  { name: "palette", key: "foundations/colour", Lucide: Palette },
-  { name: "type", key: "foundations/typography", Lucide: Type },
+  { name: "palette", key: "standards/colour", Lucide: Palette },
+  { name: "type", key: "standards/typography", Lucide: Type },
   { name: "layers", key: "harness/skills", Lucide: Layers },
-  { name: "message-circle", key: "guidelines/voice-tone", Lucide: MessageCircle },
+  { name: "message-circle", key: "standards/voice-tone", Lucide: MessageCircle },
   { name: "refresh-cw", key: "harness/loop", Lucide: RefreshCw },
-  { name: "image", key: "guidelines/illustration", Lucide: Image },
+  { name: "image", key: "standards/illustration", Lucide: Image },
 ] as const;
 
 export function BrandIconSet() {

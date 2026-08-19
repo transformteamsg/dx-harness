@@ -1,51 +1,66 @@
 ---
-title: DX Harness — design in code with confidence
-description: DX Harness gives coding agents a shared design language, the right skills for each task, and a review before the work returns to you.
+title: DX Design Harness — design in code with confidence
+description: The DX Design Harness gives your coding agent a shared design language, the right skills, and a review before the work returns to you.
 ---
 
 Design in code with confidence.
 
-A design harness gives your coding agent a shared design language, the right skills
-for each task, and a review before the work comes back to you.
+The DX Design Harness gives your coding agent a shared design language and the
+right skills for each task. It reviews the work before it comes back to you.
 
 ## What the harness gives your agent
 
-Four parts keep every design request grounded in the same language and standards.
+Three parts give your agent the same language and standards your team works to.
+The worked example below shows the review that closes each run.
 
-**Start with a plain-language request.** `dx-design` understands what you want and
-brings in the right skills. Call it directly, or let it step in when a request needs
-design work.
+**Start with a plain-language request.** You say what you want in your own words.
+`dx-design` reads the request and brings in only the skills it needs. Why it
+matters: no tool names to learn, no pass order to manage — the routing is the
+harness's job, not yours.
 
-**Shared design guidance agents can use.** The control catalog turns good interface
-design into clear context that every skill can read and check.
+**Shared design guidance agents can use.** One machine-readable catalog of design
+rules, from contrast floors to anti-slop checks. Every skill reads it before it
+works. Why it matters: your agent stops guessing at taste. It builds against the
+same rules your team reads, so results stop drifting run to run.
 
-**Your product's design language.** Keep the decisions that make your product
-distinct in its repository. Every agent works from the same `DESIGN.md` context as
-the product grows.
-
-**A review grounded in both.** A separate reviewer checks the work against the
-control catalog and `DESIGN.md`, then returns specific findings before the work
-ships.
+**A design language your team owns.** `dx-design-language` reads your code, asks
+what it cannot infer, and writes a `DESIGN.md` into your repo: your colours, type,
+motion, and voice. Anyone on the team can edit it from there. Why it matters: the
+language lives with your product, so designers and engineers improve it directly
+instead of filing a request.
 
 ## From a request to a reviewed result
 
-Speak your intent, collaborate on the same standard, and get better design outcomes.
+You describe the change in your own words. The harness picks the skills, you
+approve the plan, and a separate review checks the result.
 
-1. **Your prompt**, in Claude Code: “Make this lesson planner easier to scan and keep
-   it consistent with our product.”
-2. **The harness at work**, running automatically: `dx-design` brings in the skills
-   this request needs. Each one reads the control catalog and your `DESIGN.md`.
-3. **A reviewed result**, back in your product: Execute makes the approved change. A
-   separate review checks the result before it comes back to you.
+1. **Your prompt.** You type the ask in plain words. No skill names, no settings:
+   “make the settings page feel calmer.”
+2. **The harness at work.** `dx-design` picks the passes this ask needs: layout and
+   polish. Each one reads the catalog and your `DESIGN.md`. You approve the
+   plan before anything is built.
+3. **A reviewed result.** Execute makes the approved change. A separate review
+   grades it against both sources; the screen comes back only after it passes.
+
+## From the builders
+
+The harness is our product too, and we spent this build on how it feels to use.
+Start with one request in your own words, even if you do not write code every
+day.
+
+[Quick start](/harness/install) has the install steps.
 
 ## Compare the output
 
-See the same brief with and without the harness.
+The same brief, run twice. On the second run three passes read the catalog: copy
+turns the buzzwords into plain language, pattern pulls the nested cards apart and
+drops the icon tiles, and polish drops the gradients and the second primary for
+your own tokens. Every chip is a standard ID from the catalog.
 
-## Meet your new collaborators
+## The skills inside the harness
 
-Six roles cover the path from an open request to a reviewed interface. DX Design
-calls the right ones for you.
+Six skills cover the path from an open request to a reviewed interface. The DX
+Design Harness brings in the ones your request needs.
 
 | Role | What it does | Command |
 | --- | --- | --- |
@@ -54,13 +69,14 @@ calls the right ones for you.
 | Pattern | Sets the structure, hierarchy, and density of the page. | `/dx-harness:dx-design-pattern` |
 | Polish | Refines spacing, type, colour, and the small details. | `/dx-harness:dx-design-polish` |
 | Execute | Turns the approved direction into working product code. | `/dx-harness:dx-design-execute` |
-| Review | Checks the result against the control catalog and `DESIGN.md`. | Runs automatically after execute |
+| Review | Checks the result against the catalog and `DESIGN.md`. | Runs automatically after execute |
 
 See [all the skills](/harness/skills).
 
 ## A shared language for you and your agent
 
-DX Harness bridges human judgment and agent execution. It gives both of you the
-same design language and the checks to build safely on each other's work.
+You bring the judgment. Your agent brings the execution. The harness gives you
+both the same design language, and the checks to build safely on each other's
+work.
 
 [Quick start](/harness/install)

@@ -30,7 +30,7 @@ export function llmsIndex(): string {
     `- The dx-harness design standard (v${version} draft).`,
   );
   lines.push(
-    "- Litmus for standards: if you can't check it, it's a principle or guideline, not a standard.",
+    "- Litmus for the catalog: if you can't check it, it's guidance and lives in a standards page's prose, not in the catalog.",
   );
   lines.push(
     "- Tiers: L0 non-negotiable (no waiver) · L1 mandatory (documented waiver) · L2 recommended (inline rationale).",
@@ -55,6 +55,7 @@ export function llmsIndex(): string {
   lines.push("- [Overview](/overview.md)");
   lines.push("- [How to read this standard](/how-to-read.md)");
   lines.push("- [For agents](/for-agents.md)");
+  lines.push("- [A note from the builders](/note.md)");
   lines.push("");
 
   const item = (label: string, href: string, desc?: string) =>
@@ -62,10 +63,16 @@ export function llmsIndex(): string {
 
   for (const [key, def] of Object.entries(contentMap)) {
     if (key === "standards") {
+      // The section index is the combined catalog page, not a sections/ doc;
+      // the dimension pages follow it as ordinary slug twins.
       lines.push("## Standards");
       lines.push("");
-      lines.push(item("Standards and control catalog", "/standards/catalog.md", "overview, readable controls + embedded YAML"));
-      lines.push(item("Control catalog (YAML)", "/standards/catalog.yaml", "machine source"));
+      lines.push(item("Standards catalog", "/standards/catalog.md", "overview, readable standards + embedded YAML"));
+      lines.push(item("Standards catalog (YAML)", "/standards/catalog.yaml", "machine source"));
+      for (const slug of def.slugs) {
+        const doc = getDoc(key, slug);
+        if (doc) lines.push(item(doc.title, `/${key}/${slug}.md`, doc.description));
+      }
       lines.push("");
       continue;
     }

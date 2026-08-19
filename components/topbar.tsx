@@ -23,16 +23,18 @@ export function TopBar() {
             <DxdMark className="size-7 shrink-0 text-(--dxd-lime-deep)" />
             <span className="font-display text-base font-semibold tracking-tight">
               <span className="sm:hidden">dx</span>
-              <span className="hidden sm:inline">dx-harness</span>
+              <span className="hidden sm:inline">DX Design Harness</span>
             </span>
             <span className="hidden rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground sm:inline-flex">
               v0.1 draft
             </span>
           </Link>
         </div>
-        <nav aria-label="Primary" className="flex items-center text-sm font-medium text-muted-foreground">
-          <Link href="/for-agents" className="inline-flex min-h-11 items-center px-2 hover:text-foreground sm:min-h-6 sm:px-0">For agents</Link>
-        </nav>
+        {/* The bar's right side is deliberately empty: the "For agents" link was
+            removed on 2026-08-18 at the builder's request, and the whole nav
+            landmark went with it rather than leaving an empty one for assistive
+            tech to announce (A11Y-7). /for-agents is still reachable — the docs
+            sidebar lists it, and /overview links it in prose. */}
       </div>
     </header>
   );

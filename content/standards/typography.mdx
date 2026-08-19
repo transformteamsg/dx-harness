@@ -1,0 +1,50 @@
+---
+title: Typography
+description: "Type sets the hierarchy a tired teacher scans first: what's a heading, what's next, what can wait. Two fonts, clear roles, one scale."
+skills:
+  - name: dx-design-polish
+    description: Reviews the visual craft of a page — spacing, type, radius, colour, shadow — and proposes ranked fixes.
+controls: [TYP-1, TYP-2, TYP-3, TYP-4, TYP-5, TYP-6, SLP-6]
+---
+
+<FontRoles />
+
+**Plus Jakarta Sans** is geometric enough to feel modern, soft enough to feel warm. The name nods to Southeast Asia.
+
+**Inter** is designed for screens: tall x-height, open apertures. For teachers scanning between classes, readability is kindness.
+
+## Type scale
+
+<TypeScale />
+
+| Step | Size | Font |
+| --- | --- | --- |
+| Display | 96 / 72 / 60 / 48px | Plus Jakarta Sans 600 |
+| Heading 1 | 30px | Plus Jakarta Sans 600 |
+| Heading 2 | 24px | Plus Jakarta Sans 600 |
+| Heading 3 | 20px | Plus Jakarta Sans 600 |
+| Body Large | 18px | Inter 400 |
+| Body | 16px | Inter 400 |
+| Body Small | 14px | Inter 400 |
+| Caption / Label | 12px | Inter 500 / 600, sentence case |
+
+The scale **is** the Tailwind default type scale (`text-xs` … `text-9xl`) — sizes come
+from named utilities, never arbitrary `text-[Npx]` values.
+
+Body line-height: 1.5–1.6. Related standards: TYP-1, TYP-2, TYP-3, TYP-4.
+
+## Usage
+
+```tsx
+<h2 className="font-display text-2xl font-semibold" />  {/* Heading 2 */}
+<p className="font-body text-base" />                    {/* Body */}
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Use Plus Jakarta Sans for display and headlines, Inter for body and UI." },
+  { kind: "do", text: "Give body text a line height of 1.5 to 1.6, and respect the scale." },
+  { kind: "dont", text: "Mix display and body roles, or reach for a decorative or script font." },
+  { kind: "dont", text: "Set body text below 14px, or use all-caps — use sentence case (genuine acronyms excepted)." },
+]} />

@@ -26,10 +26,9 @@
    contrast is not a check; the waivers here cover SLP and CMP only, and no
    waiver can ever cover A11Y-1. */
 
-import Link from "next/link";
 import { useEffect, useId, useRef, type CSSProperties } from "react";
 import { animate, useInView } from "motion/react";
-import { ChevronsLeftRight, Cloud, Sparkles, Zap } from "lucide-react";
+import { ChevronsLeftRight, Sparkles, Zap } from "lucide-react";
 import { DUR, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 
 const SLOP_GRADIENT =
@@ -38,7 +37,6 @@ const SLOP_GRADIENT =
 const SLOP_TILES = [
   { icon: Sparkles, label: "AI-powered" },
   { icon: Zap, label: "All-in-one" },
-  { icon: Cloud, label: "Cloud-based" },
 ] as const;
 
 /* Violation chip — plain text, non-interactive. It lives in the before layer,
@@ -58,7 +56,7 @@ function Violation({ children }: { children: string }) {
    is the minimum, so nothing clips at narrow widths. */
 function BeforePanel() {
   return (
-    <div className="relative flex min-h-full flex-col bg-(--demo-slop-surface)">
+    <div className="col-start-1 row-start-1 flex min-h-full flex-col bg-(--demo-slop-surface)">
       {/* dx-waive SLP-1 reason="quarantined anti-specimen: the before panel of the standards demo" */}
       <div
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
@@ -67,7 +65,7 @@ function BeforePanel() {
         <span className="text-sm text-surface">Communication Hub</span>
         <Violation>SLP-1 gradient palette</Violation>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-2">
         {/* dx-waive SLP-2 reason="quarantined anti-specimen: the before panel of the standards demo" */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span
@@ -94,7 +92,7 @@ function BeforePanel() {
           </div>
         </div>
         {/* dx-waive SLP-5 reason="quarantined anti-specimen: the before panel demonstrates the icon-tile feature-card template" */}
-        <div className="grid shrink-0 grid-cols-3 gap-2">
+        <div className="grid shrink-0 grid-cols-2 gap-2">
           {SLOP_TILES.map((tile) => (
             <div
               key={tile.label}
@@ -110,7 +108,7 @@ function BeforePanel() {
             </div>
           ))}
         </div>
-        <div className="mt-auto flex flex-col gap-3">
+        <div className="mt-auto flex flex-col gap-1.5">
           {/* dx-waive CMP-5 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-surface shadow-[0_2px_10px_var(--demo-slop-glow)]">
@@ -139,7 +137,7 @@ function BeforePanel() {
 function AfterPanel() {
   return (
     <div
-      className="absolute inset-0 overflow-hidden bg-surface"
+      className="col-start-1 row-start-1 bg-surface"
       style={{
         clipPath:
           "polygon(var(--exposure) 0, 100% 0, 100% 100%, var(--exposure) 100%)",
@@ -255,8 +253,15 @@ export function SlopCompare() {
         aria-label="Before and after: the same screen, default AI output versus on standard"
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
-           the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        className="relative mx-auto aspect-[16/10] w-full rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
+           the before panel at narrow widths (css-sizing-4 §5.2.2).
+
+           Both panels share one grid cell rather than the after panel being
+           absolutely positioned, so whichever panel needs more room sets the
+           frame's height and neither is ever cut. The row must be `auto`:
+           `grid-rows-1` resolves to `minmax(0, 1fr)`, whose zero minimum lets the
+           aspect ratio cap the height and clips the taller panel. With `auto` the
+           16/10 aspect is the floor, not the ceiling. */
+        className="relative mx-auto grid aspect-[16/10] w-full grid-cols-1 grid-rows-[auto] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
         style={{ "--exposure": "50%" } as CSSProperties}
       >
         <BeforePanel />
@@ -289,19 +294,14 @@ export function SlopCompare() {
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>
       </div>
-      <p className="mt-2 max-w-[48ch] text-xs text-muted-foreground">
-        Drag the handle — or focus it and use arrow keys.
-      </p>
+      {/* One line, not two: the left column and the drawing itself already say
+          what the panels show, so the caption's only remaining job is the
+          interaction hint — an affordance that has to live beside the control
+          it describes. "Move", not "drag": CNT-5 names the action rather than
+          the input device, and one verb then covers the pointer and the arrow
+          keys alike. */}
       <figcaption className="mt-2 max-w-[48ch] text-xs leading-normal text-muted-foreground">
-        The same screen twice: what defaults produce, and what ships under the
-        standard. Every chip is a control ID from the{" "}
-        <Link
-          href="/standards/catalog"
-          className="text-site-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring)"
-        >
-          catalog
-        </Link>
-        .
+        Move the handle to compare the panels. Arrow keys work too.
       </figcaption>
     </figure>
   );

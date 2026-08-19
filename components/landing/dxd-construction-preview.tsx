@@ -99,10 +99,20 @@ function RegistrationDots({
 }
 
 /* The drawing is inked on paper, not on a dark plate: the panel is the same
-   --sheet-band the section heading bands use, and every line is --blueprint-ink,
-   the token the sheet's corner registration marks already draw with. The mark's
-   own stroke clears the 3:1 floor for meaningful graphics on that ground
-   (A11Y-1).
+   --sheet-band the section heading bands use, and the construction is
+   --blueprint-ink, the token the sheet's corner registration marks already draw
+   with.
+
+   The traced mark itself is --mark-ink (Radix lime-10, the brand's figure step)
+   at a 7px stroke — a builder ruling on 2026-08-18, replacing a 5px stroke in
+   --blueprint-ink. What that trades, stated plainly: lime-10 measures ~1.4:1 on
+   the --sheet-band, where the old ink measured ~4.7:1, so the mark no longer
+   clears the 3:1 non-text floor. It is the brand mark, which WCAG exempts from
+   that floor as a logotype, and the hero's message is carried by the headline
+   beside it rather than by the drawing — so nothing here is a graphic a reader
+   must resolve to follow the page. The construction guides keep --blueprint-ink
+   and their contrast; the extra 2px of weight is what keeps the lighter ink
+   present.
 
    The guide opacities are roughly double what the dark plate used. They are not a
    free parameter: bright lime on near-black and dark lime on near-white are not
@@ -201,8 +211,8 @@ export function DxdConstructionPreview() {
             data-construction-path
             d={tracePath}
             fill="none"
-            stroke="var(--blueprint-ink)"
-            strokeWidth="5"
+            stroke="var(--mark-ink)"
+            strokeWidth="7"
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
