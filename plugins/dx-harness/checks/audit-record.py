@@ -48,6 +48,35 @@ checklib = _load_checklib()
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
+# Markers that identify a consumer repo's root, in the order the other checks
+# use them.
+_ROOT_MARKERS = ("package.json", ".git", ".dx")
+
+
+def repo_root_for(path):
+    """The repo root a record's repo-relative references resolve against.
+
+    Derived from the RECORD's own location, not this script's. The old default
+    was the module-level REPO_ROOT, which is the harness plugin directory
+    (checks/../), so a record in a consumer repo citing `docs/decisions/<name>.md`
+    resolved against the wrong tree and every reference it made was reported as
+    missing — including a record citing itself. Callers had to know to pass
+    `--repo-root .`, and the sibling records on this repo all carry that error
+    class as a result. An explicit --repo-root still wins; this is only the
+    default.
+
+    Walks up from the record looking for a root marker, and falls back to the
+    module-level REPO_ROOT so a record inside the harness itself still resolves.
+    """
+    current = os.path.dirname(os.path.abspath(path))
+    while True:
+        if any(os.path.exists(os.path.join(current, m)) for m in _ROOT_MARKERS):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            return REPO_ROOT
+        current = parent
+
 REQUIRED_SECTIONS = [
     "Sprint contract",
     "Tradeoffs",
@@ -444,6 +473,30 @@ def run_self_test():
     failures = []
     case_count = 0
 
+    # ── the repo root a record resolves against ───────────────────────────────
+    # Derived from the record, not from this script. The old script-relative
+    # default made a consumer repo's record report every reference it made as
+    # missing, including a reference to itself.
+    import tempfile as _tempfile
+    with _tempfile.TemporaryDirectory() as _td:
+        _repo = os.path.join(_td, "consumer")
+        os.makedirs(os.path.join(_repo, "docs", "decisions"))
+        open(os.path.join(_repo, "package.json"), "w").write("{}\n")
+        _record = os.path.join(_repo, "docs", "decisions", "surface.md")
+        open(_record, "w").write("# placeholder\n")
+        _resolved = repo_root_for(_record)
+        _orphan = repo_root_for(os.path.join(_td, "loose.md"))
+    _cases = [
+        ("the root comes from the record's repo, not the harness",
+         os.path.realpath(_repo), os.path.realpath(_resolved)),
+        ("a record outside any repo falls back to the harness root",
+         os.path.realpath(REPO_ROOT), os.path.realpath(_orphan)),
+    ]
+    for _name, _want, _got in _cases:
+        case_count += 1
+        if _want != _got:
+            failures.append(f"FAIL {_name}: want: {_want!r}; got: {_got!r}")
+
     def assert_passes(case_name, text):
         nonlocal case_count
         case_count += 1
@@ -679,27 +732,31 @@ def main():
         run_self_test()
         return  # run_self_test calls sys.exit
 
-    # Parse --repo-root <path> flag (backward-compatible; default = module REPO_ROOT)
-    repo_root = REPO_ROOT
+    # Parse --repo-root <path> (an explicit root always wins). Without it the
+    # root is derived per record from the record's own location, so a consumer
+    # repo's record resolves its own repo-relative references — see
+    # repo_root_for for what the old script-relative default broke.
+    explicit_root = None
     filtered_args = []
     i = 0
     while i < len(args):
         if args[i] == "--repo-root" and i + 1 < len(args):
-            repo_root = os.path.abspath(args[i + 1])
+            explicit_root = os.path.abspath(args[i + 1])
             i += 2
         else:
             filtered_args.append(args[i])
             i += 1
 
-    decisions_dir = os.path.join(repo_root, "docs", "decisions")
+    listing_root = explicit_root or os.getcwd()
+    decisions_dir = os.path.join(listing_root, "docs", "decisions")
     paths = filtered_args if filtered_args else default_records(decisions_dir)
     if not paths:
-        print("ERROR audit-record: no records found in docs/decisions/")
+        print(f"ERROR audit-record: no records found in {decisions_dir}")
         sys.exit(1)
 
     errors = []
     for path in paths:
-        errors.extend(audit_file(path, repo_root))
+        errors.extend(audit_file(path, explicit_root or repo_root_for(path)))
 
     if errors:
         for e in errors:
