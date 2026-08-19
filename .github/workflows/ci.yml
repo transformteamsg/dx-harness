@@ -15,7 +15,10 @@ permissions:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    # Pinned to the arm64 image rather than ubuntu-latest, which is x64. ARM images
+    # are only published version-pinned, so there is no -latest to track: moving to a
+    # newer image is a deliberate edit here. Free for public repositories.
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
 
