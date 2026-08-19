@@ -1,10 +1,10 @@
 ---
 title: Skills
-description: "The 21 commands shipped with dx-harness: design work, issue delivery, review, and repository upkeep."
+description: "The 25 commands shipped with dx-harness: design work, issue delivery, review, and repository upkeep."
 ---
 
-A skill is a command you type in Claude Code. The plugin ships 21 skills:
-13 for design work and 8 for engineering workflow. The design family carries
+A skill is a command you type in Claude Code. The plugin ships 25 skills:
+13 for design work and 12 for engineering workflow. The design family carries
 the `dx-design-` prefix. They install together when you
 [install the plugin](/harness/install). You do not need to memorise the list:
 type `/dx-harness:dx-design` and it determines what you need and routes you.
@@ -38,14 +38,32 @@ repository gates healthy.
 
 | You want to... | Type |
 | --- | --- |
-| Write a complete implementation-ready issue | `/dx-harness:dx-create-issue` |
-| Add technical decisions and constraints during grooming | `/dx-harness:dx-groom-issue` |
-| Split a large issue into atomic child issues | `/dx-harness:dx-split-issue` |
-| Implement a groomed issue and open its pull request | `/dx-harness:dx-implement-issue` |
+| File an issue when you are not sure which kind it is | `/dx-harness:dx-create-issue` |
+| File a user-facing story, the "As a [persona], I want..." shape | `/dx-harness:dx-create-story` |
+| File one discipline's slice of a story or chore, engineering or design | `/dx-harness:dx-create-task` |
+| File a chore: maintenance, config, tooling, infrastructure, nothing a user sees | `/dx-harness:dx-create-chore` |
+| File a bug with reproduction steps and an expected-versus-actual delta | `/dx-harness:dx-create-bug` |
+| Implement an issue and open its pull request | `/dx-harness:dx-implement-issue` |
 | Review a pull request or local branch across seven angles | `/dx-harness:dx-code-review` |
 | Configure linting and formatting | `/dx-harness:dx-lint-setup` |
 | Wire existing checks into pre-commit and pre-push hooks | `/dx-harness:dx-git-hooks-setup` |
 | Resolve vulnerable npm dependencies with a release cooldown | `/dx-harness:dx-update-npm-dependencies` |
+
+### Four shapes of issue
+
+Each shape needs different questions, so each has its own skill. A story is
+user-facing work described from the perspective of whoever benefits. A task is
+one discipline's slice of a story or chore, with no persona of its own. A chore
+keeps the system healthy without changing what a user can observe. A bug is
+something already built that behaves wrongly.
+
+Reach for `dx-create-issue` when the shape is not obvious, or when one request
+mixes several kinds of work. It makes that one decision and hands over. When you
+already know the shape, call the skill for it directly.
+
+`dx-groom-issue` and `dx-split-issue` are superseded by the five skills above
+and pending removal. The template they were built around no longer exists, so
+create a correctly shaped issue rather than grooming an old one.
 
 ## The front door
 
