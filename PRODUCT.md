@@ -10,7 +10,7 @@ Two audiences. Humans: TFX builders, designers, and engineers across the Teacher
 
 ## Product Purpose
 
-The TFX Design Standard site is the single source of truth for how TransformX designs for Singapore's teachers. It publishes principles that settle arguments, machine-checkable controls (the catalog), guidelines, foundations, and a harness. Success: any builder, human or agent, ships UI that passes the catalog on the first review.
+The TFX Design Standard site is the single source of truth for how TransformX designs for Singapore's teachers. It publishes machine-checkable controls (the catalog), judgement prose per design dimension (the standards pages), and a harness. Success: any builder, human or agent, ships UI that passes the catalog on the first review.
 
 ## Brand Personality
 

@@ -8,12 +8,16 @@ import { Illo } from "@/components/illo";
 export function SectionIndex({
   sectionKey,
   showTopics = true,
+  omitHref,
 }: {
   sectionKey: string;
   showTopics?: boolean;
+  /* Drop one card from the grid — a section index rendered on a page that is
+     itself one of its topics would otherwise show a card linking to here. */
+  omitHref?: string;
 }) {
   const doc = getDoc("sections", sectionKey);
-  const topics = sectionTopics(sectionKey);
+  const topics = sectionTopics(sectionKey).filter((t) => t.href !== omitHref);
   if (!doc) return null;
   return (
     <div className="max-w-[760px]">

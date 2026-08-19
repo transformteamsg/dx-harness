@@ -18,10 +18,11 @@ export const nav: NavGroup[] = [
       { href: "/harness/loop", title: "The loop" },
       { href: "/harness/on-ramp", title: "Designer on-ramp", hidden: true },
       { href: "/harness/tools", title: "Tools" },
+      { href: "/harness/research-brief", title: "Research brief", hidden: true },
     ],
   },
   {
-    label: "Design in Code",
+    label: "Design in code",
     items: [
       { href: "/getting-started", title: "Overview" },
       { href: "/getting-started/git-basics", title: "Introducing Git" },
@@ -34,52 +35,31 @@ export const nav: NavGroup[] = [
     ],
   },
   {
-    label: "Design reference",
+    /* The group label itself lands on the consolidated catalog; the sub-pages
+       are the standard split by dimension. */
+    label: "Standards",
+    href: "/standards/catalog",
     items: [
       {
-        label: "Principles",
+        label: "Writing",
         items: [
-          { href: "/principles", title: "Overview" },
-          { href: "/principles/brand-principles", title: "Brand principles" },
-          { href: "/principles/product-design-principles", title: "Product design principles" },
+          { href: "/standards/writing", title: "Overview" },
+          { href: "/standards/voice-tone", title: "Voice & tone" },
+          { href: "/standards/grammar-mechanics", title: "Grammar & mechanics" },
+          { href: "/standards/text-patterns", title: "Components & text patterns" },
+          { href: "/standards/naming", title: "Naming" },
         ],
       },
-      { href: "/standards/catalog", title: "Control catalog" },
-      {
-        label: "Guidelines",
-        items: [
-          { href: "/guidelines", title: "Overview" },
-          { href: "/guidelines/voice-tone", title: "Voice & tone" },
-          { href: "/guidelines/ui-text", title: "UI text" },
-          { href: "/guidelines/grammar-mechanics", title: "Grammar & mechanics" },
-          { href: "/guidelines/text-patterns", title: "Components & text patterns" },
-          { href: "/guidelines/naming", title: "Naming" },
-          { href: "/guidelines/interaction", title: "Interaction" },
-          { href: "/guidelines/web-interface", title: "Web interface" },
-          { href: "/guidelines/data-viz", title: "Data visualization" },
-          { href: "/guidelines/illustration", title: "Illustration" },
-          { href: "/guidelines/product-icons", title: "Product icons" },
-        ],
-      },
-      {
-        label: "Foundations",
-        items: [
-          { href: "/foundations", title: "Overview" },
-          { href: "/foundations/colour", title: "Colour" },
-          { href: "/foundations/typography", title: "Typography" },
-          { href: "/foundations/spacing-radius", title: "Spacing & radius" },
-          { href: "/foundations/iconography", title: "Iconography" },
-          { href: "/foundations/motion", title: "Motion" },
-          { href: "/foundations/tokens", title: "Tokens" },
-        ],
-      },
-      {
-        label: "Research",
-        items: [
-          { href: "/research", title: "Overview" },
-          { href: "/research/research-brief", title: "Research brief" },
-        ],
-      },
+      { href: "/standards/colour", title: "Colour" },
+      { href: "/standards/typography", title: "Typography" },
+      { href: "/standards/spacing-radius", title: "Spacing & radius" },
+      { href: "/standards/tokens", title: "Tokens" },
+      { href: "/standards/iconography", title: "Iconography" },
+      { href: "/standards/motion", title: "Motion" },
+      { href: "/standards/interaction", title: "Interaction" },
+      { href: "/standards/web-interface", title: "Web interface" },
+      { href: "/standards/data-viz", title: "Data visualisation" },
+      { href: "/standards/illustration", title: "Illustration" },
     ],
   },
   {
@@ -119,6 +99,20 @@ const visibleItems = (items: NavItem[]): NavItem[] =>
 export const visibleNav: NavGroup[] = nav
   .filter((group) => !group.hidden)
   .map((group) => ({ ...group, items: visibleItems(group.items) }));
+
+/* True for a page that hangs under a nav sub-group — Writing's Voice & tone,
+   Grammar & mechanics and the rest. Directory grids list the parent topic
+   only, so a section's thumbnails read as its topics rather than as every
+   page in it. A sub-group's first leaf is its own overview (the page the
+   group is named for), so that one is not nested by this rule. */
+export function isNestedNavHref(href: string): boolean {
+  return visibleNav.some((group) =>
+    group.items.some(
+      (item) =>
+        isSubGroup(item) && item.items.slice(1).some((leaf) => leaf.href === href),
+    ),
+  );
+}
 
 export function isVisibleNavHref(href: string): boolean {
   return visibleNav.some(

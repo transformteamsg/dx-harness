@@ -4,16 +4,16 @@ description: The must layer. Checkable rules that bind every screen we ship, hum
 answers: must
 ---
 
-Principles tell you how to decide; guidelines tell you what usually works. Standards are different: they are **requirements**. If a screen violates one, it doesn't ship, no matter who or what built it.
+The guidance pages tell you how to decide and what usually works. The catalog is different: every entry in it is a **standard**, and a standard is a requirement. If a screen violates one, it doesn't ship, no matter who or what built it.
 
-Each standard is a **control**: one verifiable statement with explicit fail conditions. "Text meets WCAG AA contrast" is a control. "Interfaces should feel calm" is not; that's a principle, because no machine can check it. Checkability is the whole trick: it lets the bar be enforced automatically, before anyone sits down to review.
+Each standard is one verifiable statement with explicit fail conditions. "Text meets WCAG AA contrast" is a standard. "Interfaces should feel calm" is not; that's guidance, because no machine can check it. Checkability is the whole trick: it lets the bar be enforced automatically, before anyone sits down to review.
 
 The same catalog binds both audiences:
 
-- **Humans** read it rendered in the [control catalog](/standards/catalog), and cite control IDs in reviews ("this fails SLP-3").
+- **Humans** read it rendered in the [catalog](/standards/catalog), and cite IDs in reviews ("this fails SLP-3").
 - **AI agents** read the identical catalog as [YAML](/standards/catalog.yaml) and apply it while generating UI.
 
-Controls come in three tiers:
+Standards come in three tiers:
 
 - **L0 — non-negotiable.** Accessibility floors, destructive-action safety. No waiver exists; a violation blocks ship.
 - **L1 — mandatory.** Binding by default. Deviation requires a documented waiver in code: `dx-waive <ID> reason="<specific reason>"`.

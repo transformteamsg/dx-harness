@@ -62,7 +62,7 @@ export default async function ControlDetailPage({
   return (
     <div className="min-w-0 max-w-[720px]">
       <Breadcrumb
-        section={{ label: "Control catalog", href: "/standards/catalog" }}
+        section={{ label: "All standards", href: "/standards/catalog" }}
         current={detail.id}
       />
       <div className="flex flex-wrap items-center gap-2">

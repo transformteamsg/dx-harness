@@ -47,7 +47,7 @@ const PROMPT = "make the settings page feel calmer";
    focus mode a single stage's `figureLabel` (below) replaces it, because the
    full narration would describe regions no longer drawn. */
 const RUN_LABEL =
-  "A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the control catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath.";
+  "A Claude Code session played end to end: you type a request in plain words — make the settings page feel calmer. The dx-design orchestrator picks layout and polish passes. Each reads the catalog and your DESIGN.md. The plan is approved, the build runs, and the design review passes. A small finished settings screen comes back underneath.";
 
 /* beat: 0 typing · 1 orchestrator picks the passes · 2 layout pass ·
    3 polish pass · 4 plan approved, building · 5 review passed + result */
@@ -119,14 +119,14 @@ const STAGES = [
     body: (
       <>
         <Cmd>dx-design</Cmd> picks the passes this ask needs: layout and polish. Each
-        one reads the control catalog and your <Cmd>DESIGN.md</Cmd>. You approve the
+        one reads the catalog and your <Cmd>DESIGN.md</Cmd>. You approve the
         plan before anything is built.
       </>
     ),
     /* Split into two sentences (the plan's single run-on sentence trips CNT-3's
        25-word cap) without changing what it says. */
     figureLabel:
-      "A run panel: the dx-design orchestrator picks the layout and polish passes. Each pass reads the control catalog and your DESIGN.md before the plan is approved and the build runs. Below it, two notes name each source: the control catalog and your DESIGN.md.",
+      "A run panel: the dx-design orchestrator picks the layout and polish passes. Each pass reads the catalog and your DESIGN.md before the plan is approved and the build runs. Below it, two notes name each source: the catalog and your DESIGN.md.",
     /* Grounded in the section's own copy (content/sections/landing.mdx: "Shared
        design guidance agents can use" and "Your product's design language") —
        these name the two sources the panel's rows only shorthand as
@@ -134,7 +134,7 @@ const STAGES = [
     annotations: [
       {
         icon: "standards/catalog",
-        text: "The control catalog: shared design rules every skill reads first.",
+        text: "The catalog: shared design rules every skill reads first.",
         ink: "var(--foreground)",
       },
       {

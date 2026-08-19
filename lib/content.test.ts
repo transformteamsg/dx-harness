@@ -24,7 +24,9 @@ describe("content frontmatter", () => {
       expect(data, path.relative(process.cwd(), file)).not.toHaveProperty("status");
     }
 
-    expect(getDoc("guidelines", "ui-text")).not.toHaveProperty("status");
+    const writing = getDoc("standards", "writing");
+    expect(writing).not.toBeNull();
+    expect(writing).not.toHaveProperty("status");
   });
 });
 

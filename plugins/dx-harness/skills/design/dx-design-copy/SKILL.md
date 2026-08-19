@@ -15,7 +15,7 @@ CNT-1 through CNT-14 (error anatomy, naming, voice mechanics, domain fidelity, d
 verbs, filler, lead-with-purpose, plain verbs, clarity, term consistency, established
 terms, sentence case, spelling, and voice/tone quality) and SLP-9 (AI-writing tells),
 each with a detail file in `../../../standards/controls/`. This skill is their application
-layer (it travels in the plugin); the website's voice & tone, naming, UI text, grammar &
+layer (it travels in the plugin); the website's voice & tone, naming, writing, grammar &
 mechanics, and text-patterns guidelines present the same controls for human readers. If
 any disagree, the catalog control wins and the others are corrected.
 
@@ -61,7 +61,7 @@ stress, or it goes.
 ## Voice (constant)
 
 The voice is **Clear, Thoughtful, Approachable** — the three attributes the
-[voice & tone guideline](/guidelines/voice-tone) defines and CNT-14 grades. Its
+[voice & tone guideline](/standards/voice-tone) defines and CNT-14 grades. Its
 "we are / we are not" table is the boundary to hold:
 
 <!-- dx-sync:voice-attributes source -->
@@ -136,8 +136,8 @@ The voice is **Clear, Thoughtful, Approachable** — the three attributes the
 - Singapore English spelling, proofread (CNT-13): organise, colour, centre; no
   typos, homophones, or doubled words in shipped text.
 
-The [Grammar & mechanics](/guidelines/grammar-mechanics) and [Text
-patterns](/guidelines/text-patterns) guidelines present these for human readers.
+The [Grammar & mechanics](/standards/grammar-mechanics) and [Text
+patterns](/standards/text-patterns) guidelines present these for human readers.
 
 ## The editing sequence (method, not a control)
 
@@ -162,7 +162,7 @@ in passes:
    spelling and a proofread (CNT-13), plain error anatomy (CNT-1), and a last
    pass for AI-writing tells (SLP-9).
 
-The website's [UI text](/guidelines/ui-text) guideline presents the full sequence
+The website's [Writing](/standards/writing) guideline presents the full sequence
 for human readers; this skill is where an agent applies it.
 
 ## AI writing tells (SLP-9)

@@ -8,16 +8,16 @@ const routes = [
   { name: "for agents", path: "/for-agents" },
   { name: "the loop", path: "/harness/loop" },
   { name: "standards redirect", path: "/standards" },
-  { name: "motion foundations", path: "/foundations/motion" },
-  { name: "tokens foundations", path: "/foundations/tokens" },
+  { name: "motion standards", path: "/standards/motion" },
+  { name: "tokens standards", path: "/standards/tokens" },
   { name: "governance changes", path: "/governance/changes" },
 ] as const;
 
-test("standards overview resolves directly to the combined control catalog", async ({ page }) => {
+test("standards overview resolves directly to the combined catalog", async ({ page }) => {
   await page.goto("/standards");
   await expect(page).toHaveURL(/\/standards\/catalog$/);
   await expect(page.getByRole("heading", { name: "Standards", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Control catalog", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "All standards", exact: true })).toBeVisible();
   await expect(page.getByText("See what the catalog catches")).toHaveCount(0);
 });
 
@@ -91,7 +91,7 @@ test("publishes the Granola landing-page messaging baseline", async ({ page }) =
   await expect(featureRows).toHaveCount(1);
   await expect(
     featureRows.locator(":scope > li > div:last-child > p:first-child")
-  ).toHaveText(["Orchestrator skill", "Control catalog", "Design language skill"]);
+  ).toHaveText(["Orchestrator skill", "The catalog", "Design language skill"]);
   // Each row carries its looping illustration clip (poster set, muted) and the
   // why-it-matters copy inline — nothing is gated behind hover any more.
   await expect(featureRows.locator("[data-feature-illo] video")).toHaveCount(3);
@@ -357,13 +357,13 @@ test("selecting a run stage shows only that stage's graphic", async ({ page }) =
       page.getByText("dx-design reads it and brings in only the skills it needs."),
     ).toBeVisible();
     await expect(
-      page.getByText("The control catalog: shared design rules every skill reads first."),
+      page.getByText("The catalog: shared design rules every skill reads first."),
     ).toBeHidden();
 
     // Stage 02: the panel alone, with its own source notes.
     await page.getByRole("button", { name: /The harness at work/ }).click();
     await expect(
-      page.getByText("The control catalog: shared design rules every skill reads first."),
+      page.getByText("The catalog: shared design rules every skill reads first."),
     ).toBeVisible();
     await expect(
       page.getByText("dx-design reads it and brings in only the skills it needs."),
@@ -378,7 +378,7 @@ test("selecting a run stage shows only that stage's graphic", async ({ page }) =
       page.getByText("dx-design reads it and brings in only the skills it needs."),
     ).toBeHidden();
     await expect(
-      page.getByText("The control catalog: shared design rules every skill reads first."),
+      page.getByText("The catalog: shared design rules every skill reads first."),
     ).toBeHidden();
 
     // Exactly one stage is ever current.
@@ -443,7 +443,7 @@ for (const width of mobileWidths) {
       page.getByRole("button", { name: /^deterministic\b/ }),
       44
     );
-    await expectMinimumTarget(page.getByTitle("Copy control ID").first(), 44);
+    await expectMinimumTarget(page.getByTitle("Copy ID").first(), 44);
     await expectMinimumTarget(page.getByRole("link", { name: /^Details/ }).first(), 44);
   });
 }
@@ -458,7 +458,7 @@ test("desktop audited targets are at least 24px", async ({ page }) => {
     page.getByRole("button", { name: /^deterministic\b/ }),
     24
   );
-  await expectMinimumTarget(page.getByTitle("Copy control ID").first(), 24);
+  await expectMinimumTarget(page.getByTitle("Copy ID").first(), 24);
   await expectMinimumTarget(page.getByRole("link", { name: /^Details/ }).first(), 24);
 });
 

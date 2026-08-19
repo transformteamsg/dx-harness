@@ -24,7 +24,7 @@ export default function Page() {
           href="/standards/catalog.yaml"
           className="rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-medium hover:border-border-strong"
         >
-          catalog.yaml — just the controls
+          catalog.yaml — just the standards
         </a>
       </div>
     </DocPage>

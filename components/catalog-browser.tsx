@@ -127,7 +127,7 @@ export function CatalogBrowser({
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => copy(c.id)}
-          title="Copy control ID"
+          title="Copy ID"
           className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-accent px-2 py-0.5 text-xs font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) sm:min-h-6 sm:min-w-0"
         >
           {copied === c.id ? "copied ✓" : c.id}
@@ -182,8 +182,8 @@ export function CatalogBrowser({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search controls — id, rule, fail condition"
-          aria-label="Search controls"
+          placeholder="Search standards — id, rule, fail condition"
+          aria-label="Search standards"
           className="min-h-11 w-full max-w-[360px] rounded-md border border-border bg-surface px-3 py-1.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) sm:min-h-8"
         />
         <kbd className="rounded border border-border bg-muted px-1.5 text-xs text-muted-foreground">
@@ -249,7 +249,7 @@ export function CatalogBrowser({
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        {filtered.length} of {controls.length} controls
+        {filtered.length} of {controls.length} standards
       </p>
 
       {isGrouped ? (

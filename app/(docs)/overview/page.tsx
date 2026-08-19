@@ -6,14 +6,13 @@ import { mdAlternate } from "@/lib/markdown-twin";
 
 export const metadata = { title: "Overview", ...mdAlternate("/overview") };
 
-/* Section tiles: index pages, Apple-HIG style. Art keys pick one
-   representative glyph per section. */
-const tiles = [
-  { key: "principles", href: "/principles", art: "principles/brand-principles" },
-  { key: "standards", href: "/standards/catalog", art: "standards/catalog" },
-  { key: "guidelines", href: "/guidelines", art: "guidelines/voice-tone" },
-  { key: "foundations", href: "/foundations", art: "foundations/colour" },
-  { key: "research", href: "/research", art: "research/research-brief" },
+/* Standards tiles: the consolidated catalog first, then representative
+   dimension pages. Art keys pick one glyph per tile. */
+const standardsTiles = [
+  { slug: "writing", art: "standards/writing" },
+  { slug: "colour", art: "standards/colour" },
+  { slug: "typography", art: "standards/typography" },
+  { slug: "motion", art: "standards/motion" },
 ];
 
 const harnessStart = [
@@ -69,27 +68,43 @@ export default function Overview() {
 
       <section className="mt-16 border-t border-border pt-10">
         <h2 className="font-display text-xl font-semibold tracking-tight">
-          Design reference
+          Standards
         </h2>
         <p className="mt-2 max-w-[62ch] text-base text-muted-foreground">
-          Use the control catalog for enforceable requirements. Use principles,
-          guidelines, foundations, and research when the work needs judgement.
+          Use the control catalog for enforceable requirements. Use the pages
+          under it — writing, colour, typography, motion, and the rest — when
+          the work needs judgement.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2">
-          {tiles.map((t) => {
-            const doc = getDoc("sections", t.key);
+          {(() => {
+            const doc = getDoc("sections", "standards");
             if (!doc) return null;
             return (
               <SectionTile
-                key={t.key}
                 tag={doc.answers}
-                count={sectionTopics(t.key).length || undefined}
+                count={sectionTopics("standards").length || undefined}
                 topic={{
-                  href: t.href,
+                  href: "/standards/catalog",
+                  title: doc.title,
+                  description: doc.description,
+                  artKey: "standards/catalog",
+                  ink: sectionInk.standards,
+                }}
+              />
+            );
+          })()}
+          {standardsTiles.map((t) => {
+            const doc = getDoc("standards", t.slug);
+            if (!doc) return null;
+            return (
+              <SectionTile
+                key={t.slug}
+                topic={{
+                  href: `/standards/${t.slug}`,
                   title: doc.title,
                   description: doc.description,
                   artKey: t.art,
-                  ink: sectionInk[t.key] ?? "var(--foreground)",
+                  ink: sectionInk.standards,
                 }}
               />
             );
@@ -103,7 +118,7 @@ export default function Overview() {
           <div>
             <h3 className="text-base font-semibold">Humans</h3>
             <p className="mt-1.5 text-sm leading-normal text-muted-foreground">
-              Browse the sections above. Principles and guidelines are written for judgement
+              Browse the sections above. The standards&apos; prose is written for judgement
               calls only a person can make.
             </p>
           </div>

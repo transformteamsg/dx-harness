@@ -79,7 +79,7 @@ const FEATURES = [
     why: "No tool names to learn, no pass order to manage. The routing is the harness's job, not yours.",
   },
   {
-    eyebrow: "Control catalog",
+    eyebrow: "The catalog",
     claim: "Shared design guidance agents can use.",
     video: "/landing/illo-catalog.mp4",
     poster: "/landing/illo-catalog-poster.jpg",

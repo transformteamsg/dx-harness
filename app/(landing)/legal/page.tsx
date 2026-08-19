@@ -67,7 +67,7 @@ export default function LegalPage() {
           Lucide license below covers the icons as well as the package. Anyone
           redistributing these icons needs to carry it too — see{" "}
           <Link
-            href="/foundations/iconography"
+            href="/standards/iconography"
             className="text-foreground underline underline-offset-4"
           >
             Iconography
