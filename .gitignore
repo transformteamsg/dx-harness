@@ -31,3 +31,6 @@ next-env.d.ts
 # Playwright
 /test-results/
 /playwright-report/
+
+# Claude worktrees
+.claude
