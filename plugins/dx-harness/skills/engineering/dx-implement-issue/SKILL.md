@@ -139,47 +139,16 @@ All tests must pass. If any test fails, fix it before proceeding. Do not open a 
 
 ## Step 9: Open a draft PR
 
-The title must match the issue title exactly — it becomes the squash-merge commit message in `main`. Fill in the body sections before running this command.
+Do not open the PR from here. `dx-create-pr` owns pull request creation, including the body template, the draft state, the platform difference between a pull request and a GitLab merge request, and the check for a request already open on this branch. Run [../dx-create-pr/SKILL.md](../dx-create-pr/SKILL.md) and pass it:
 
-Ensure the usage-tracking label exists first (idempotent — `|| true` swallows the error if it already exists):
+- The issue number, so the title matches the issue title verbatim and the body carries a `Closes` line. If Step 1 worked from a pasted markdown body, say there is no issue number.
+- The acceptance criteria you covered in Steps 6 and 7, so its test plan names each one against the test that covers it.
+- The label `skill:implement-issue`, so this skill's usage stays queryable alongside the one `dx-create-pr` applies.
 
-```
-gh label create "skill:implement-issue" --color ededed --description "Opened with the implement-issue skill" 2>/dev/null || true
-```
+Do not write a body template here. A second template is how the two drift apart.
 
-Then create the PR with the label. The label makes usage queryable with `gh pr list --label "skill:implement-issue"`, and the footer in the body gives human-readable attribution.
-
-```
-gh pr create --draft \
-  --title "<issue title verbatim>" \
-  --label "skill:implement-issue" \
-  --body "$(cat <<'EOF'
-Closes #$ARGUMENTS
-
-## Summary
-
-<!-- 1-3 bullet points describing what was implemented -->
-
-## Changes
-
-<!-- Concrete list: file changed and why -->
-
-## Test plan
-
-<!-- For each acceptance criteria scenario: name it and confirm it has an automated test -->
-
----
-
-> **Before marking ready for review**: run `pnpm dev:all` and manually walk through the golden-path scenario. Automated tests cover correctness; this step covers integration and visual behaviour.
-
-*🤖 Generated with implement-issue*
-EOF
-)"
-```
-
-- **If the command succeeds**: proceed to Step 10.
-- **If the command fails with "command not found" or "'gh' is not recognized"**: render the PR title and body as markdown and instruct the user to create the draft PR manually via the GitHub web interface.
-- **If the command fails for any other reason**: surface the real error and stop.
+- **If the PR opens**: proceed to Step 10.
+- **If `dx-create-pr` stops on an error**: surface that error and stop. Do not fall back to opening the PR yourself.
 
 ## Step 10: Report to the developer
 
@@ -189,4 +158,4 @@ After the draft PR is open, report:
 2. **Files changed**: each file and what changed
 3. **Acceptance criteria coverage**: for each scenario, confirm it has an automated test
 4. **PR**: the draft PR URL
-5. **Manual verification required**: describe exactly what the developer must walk through in `pnpm dev:all` before marking the PR ready for review
+5. **Manual verification required**: describe exactly what the developer must walk through before marking the PR ready for review, naming the repository's own dev command from its scripts rather than assuming one
