@@ -2,7 +2,7 @@ Closes #NNN
 
 ## Summary
 
-<!-- One to three bullets saying what this branch changes, in terms a reviewer who has not read the issue can follow. -->
+<!-- At most three bullets, one line each, saying what this branch changes in terms a reviewer who has not read the issue can follow. -->
 
 ## Changes
 

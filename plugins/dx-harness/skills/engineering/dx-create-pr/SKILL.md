@@ -86,7 +86,18 @@ Fill the sections from the canonical template:
 
 If a calling skill supplied extra content, add it as its own named section below Manual verification. Leave the shared sections as they are.
 
-Render the complete body in a markdown code block and ask for confirmation before you submit it.
+Then cut it down. A body orients a reviewer; it is not a record of the work. The diff already shows what changed, the issue holds the reasoning, and the commit message holds the history, so a body that repeats any of them costs a reviewer time and buries the part only you could tell them. Write to these limits:
+
+- Summary: at most three bullets, one line each.
+- Changes: one line per file or area, with related files grouped under one line rather than listed path by path.
+- Test plan: one line per criterion, with no preamble.
+- Manual verification: a few lines on what is still to do.
+
+Cut anything that meets one of these tests: it restates another section, it restates the issue, it argues a decision rather than naming it, or it reports work you have already finished. A check you ran and passed is not a reviewer's task, so it does not belong here. Name a deviation from the issue in one line and let the issue carry the rest.
+
+If the body runs past roughly one screen, it is too long. Cut it rather than reaching for subheadings, which make a long body look organised without making it shorter.
+
+Render the finished body in a markdown code block and ask for confirmation before you submit it.
 
 ### Step 5: Open the draft, or update the one that is open
 
@@ -136,6 +147,7 @@ That is the whole extension point. A calling skill that finds the shared section
 - Every request opens as a draft. Only Step 6 takes one out of draft, and only when the developer asks.
 - The title of a tracked request matches the issue title verbatim, because it becomes the squash-merge commit message.
 - Never leave a comment placeholder from the template in a submitted body.
+- Keep the body to roughly one screen. It orients a reviewer, so do not restate the issue or the diff, and do not report checks you already ran.
 - Report in the platform's own vocabulary. A GitLab repository has merge requests, not pull requests.
 - Never write a template file into a repository. Follow the one it has, or use the canonical template when it has none.
 - Name a verification command only after confirming the repository defines it.
