@@ -21,9 +21,11 @@ The full check suite needs three tools that no manifest declares, because the ch
 
 ```sh
 pip install pyyaml
-npm install --global @ast-grep/cli@0.44.1
+pnpm add --global @ast-grep/cli@0.44.1
 pnpm exec playwright install --with-deps chromium
 ```
+
+If `pnpm add --global` reports that no global bin directory is set, run `pnpm setup` once and reopen your shell.
 
 Pin ast-grep to 0.44.1 rather than tracking the latest release. The checks enforce it as a floor, and `plugins/dx-harness/checks/sgconfig.yml` is written against behaviour measured at that version. A check that cannot reach ast-grep fails with one `ERROR` line instead of reporting a clean run, because a scan that did not happen must never look like a scan that found nothing.
 
