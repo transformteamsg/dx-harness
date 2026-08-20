@@ -61,7 +61,11 @@ describe("Dockerfile", () => {
 
   it("installs dependencies fresh, rather than copying node_modules from the host", () => {
     expect(dockerfile).toContain("pnpm install");
-    expect(dockerfile).not.toMatch(/COPY[^\n]*node_modules/);
+    // A bare `COPY node_modules` would pull the host's node_modules straight into
+    // the image -- wrong-platform native builds (sharp, unrs-resolver), skipping
+    // pnpm install entirely. `COPY --from=<stage>` is fine: that's the runtime
+    // stage picking up the builder stage's own fresh install, not the host's.
+    expect(dockerfile).not.toMatch(/^COPY(?!.*--from=)[^\n]*node_modules/m);
   });
 
   it("binds 0.0.0.0 and falls back to a default port, per the Airbase runtime contract", () => {
@@ -72,9 +76,10 @@ describe("Dockerfile", () => {
 
 describe("next.config.mjs", () => {
   it("does not opt into standalone output", () => {
-    // Runtime stage ships the full app tree instead of a pruned/standalone
-    // output, so this doesn't silently regress into relying on the
-    // outputFileTracingIncludes list matching every fs read at runtime.
+    // The Dockerfile already copies only the runtime-needed paths by hand
+    // (see its runtime-stage comment); opting into `output: "standalone"` on
+    // top of that would prune node_modules a second way and the two could
+    // silently disagree about what's actually needed.
     const config = readRoot("next.config.mjs");
     expect(config).not.toContain("standalone");
   });
