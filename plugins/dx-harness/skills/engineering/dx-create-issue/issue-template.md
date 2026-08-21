@@ -26,7 +26,10 @@ As a [role], I want [capability], so that [benefit].
 
 ## Design assets
 
-<Figma links, screenshots, a Mermaid diagram, or N/A>
+<Figma links, screenshots, a Mermaid diagram, or N/A. If this issue adds or changes
+user-facing UI and none of these exist yet, say so explicitly here rather than
+defaulting to N/A — a UI-facing issue with no assets may need a design pass before
+implementation, not a direct implementation run.>
 
 ---
 

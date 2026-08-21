@@ -27,7 +27,7 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
 4. **Acceptance criteria**: at minimum one happy-path scenario and one error/edge-case scenario in Given-When-Then format. Names must be outcome-first (e.g. "Assignment is created", not "Create assignment"). Push back if scenarios describe implementation rather than observable behaviour.
 5. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
-6. **Design assets**: Figma links or screenshots. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
+6. **Design assets**: first, does this issue add or change a user-facing screen, page, flow, or component? If yes, ask for Figma links or screenshots; if none are available, offer to produce a Mermaid diagram based on the described flow (state diagrams suit multi-step forms; sequence diagrams suit actor interactions). If the issue is user-facing and no assets exist yet, say so explicitly in the section rather than defaulting to N/A — a UI-facing issue with nothing to show may need a design pass before implementation, not a direct implementation run. If the issue is not user-facing (backend, data, infra), mark this section N/A.
 
 ### Step 1b: Evaluate for split
 
@@ -82,6 +82,10 @@ Ask: "Are the technical sections already known, or will engineers fill those in 
 
 Note the answer: it determines what happens after the issue is created (see step 3).
 
+### Step 1d: Design-need triage
+
+Before the issue is created, decide whether it can be safely handed to an engineer without a designer in the loop, or should be routed to one *before* implementation starts. This is a coarser, earlier version of the same judgment `dx-harness:dx-design`'s Phase 3 reviewer-routing table makes per acceptance-criteria scenario — running it here catches the need before Intent and Diverge happen solo, not after. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md` (the canonical copy — do not duplicate it here) and judge each acceptance-criteria scenario from Step 1 against it. If any scenario is "strongly recommended": note it now, so Step 3 can write a "Design routing: needs designer input before an engineer starts" line into the Design assets section and apply the `needs-design-review` label. If every scenario "can defer", no line or label is needed — the default is silent. Skip this step entirely when Design assets is already N/A (no user-facing surface).
+
 ### Step 2: Preview and confirm
 
 Render the complete issue body in a markdown code block and ask for confirmation before creating the issue. Leave implementer sections with their placeholder text regardless of whether technical details are known; those will be filled in after creation.
@@ -92,12 +96,20 @@ The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <s
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure the usage-tracking label exists (idempotent — `gh label create` exits non-zero if it already exists, which `|| true` swallows), then create the issue with it:
+Ensure the usage-tracking label exists (idempotent — `gh label create` exits non-zero if it already exists, which `|| true` swallows). If Step 1d flagged design routing, also ensure the routing label exists:
 
 ```sh
 gh label create "skill:create-issue" --color ededed --description "Created with the create-issue skill" 2>/dev/null || true
 
+# Only if Step 1d flagged design routing:
+gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
+```
+
+Then create the issue once, adding `--label "needs-design-review"` only if Step 1d flagged design routing:
+
+```sh
 gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:create-issue"
+# If Step 1d flagged design routing, add: --label "needs-design-review"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:create-issue"` (exact, unlike free-text search), and the `*🤖 Generated with create-issue*` footer in the body template gives human-readable attribution.
