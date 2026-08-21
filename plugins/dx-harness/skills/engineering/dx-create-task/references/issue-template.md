@@ -14,7 +14,13 @@ Part of #NNN
 - **When** <action>
 - **Then** <observable outcome>
 
-### <Outcome-first scenario name (error / edge case)>
+### <Outcome-first scenario name (unhappy path; required)>
+
+- **Given** <starting state>
+- **When** <the action is refused, or fails>
+- **Then** <what happens instead, and what state it is left in>
+
+### <Outcome-first scenario name (edge case; one heading per case that matters)>
 
 - **Given** <starting state>
 - **When** <action>
@@ -26,8 +32,8 @@ Part of #NNN
 
 ### Also true when done
 
-- [ ] <independently checkable condition, e.g. "colours come only from tokens in `app/globals.css`, no raw hex">
-- [ ] <another, e.g. "the layout holds at the mobile, tablet, and desktop breakpoints">
+- [ ] <independently checkable condition, for example "colours come only from tokens in `app/globals.css`, no raw hex">
+- [ ] <another, for example "the layout holds at the mobile, tablet, and desktop breakpoints">
 
 ## Out of scope
 

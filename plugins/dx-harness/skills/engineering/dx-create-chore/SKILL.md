@@ -89,10 +89,14 @@ Ensure the usage-tracking label exists (idempotent: `gh label create` exits non-
 ```sh
 gh label create "skill:dx-create-chore" --color ededed --description "Created with the dx-create-chore skill" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:dx-create-chore"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Chore --label "skill:dx-create-chore"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-chore"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-chore*` footer gives human-readable attribution.
+
+`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. `Chore` is the one shape GitHub does not ship a type for: the built-in three are `Task`, `Bug`, and `Feature`, so a `Chore` type exists only where an organisation owner has added one. Ask for it anyway and fall back cleanly.
+
+If the create fails because the type is not available, retry without `--type`, print the URL, and tell the author the issue has no type and that adding a `Chore` type in the organisation's settings under **Planning** > **Issue types** would fix it for every chore after this one. Do not fall back to `Task`: a task in this model is a slice of something already tracked, so typing a chore as one collapses the distinction the four shapes rest on.
 
 - **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1b as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 

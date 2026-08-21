@@ -7,12 +7,12 @@ description: Use when someone wants an existing GitHub issue built, for example 
 
 Determine the input type:
 
-- **Issue number** (for example `42`): attempt `gh issue view $ARGUMENTS --json number,title,body,labels,state,comments` and read the returned data.
+- **Issue number** (for example `42`): attempt `gh issue view $ARGUMENTS --json number,title,body,labels,issueType,state,comments` and read the returned data.
   - If the command fails with "command not found" or "'gh' is not recognized": ask the user to paste the issue body directly. Treat it as a pasted markdown body, so omit the `Closes #NNN` line from the draft PR.
   - If the command fails for any other reason: surface the real error and stop.
 - **Markdown body** (pasted directly): use the pasted content as the issue body. There is no issue number, so omit the `Closes #NNN` line from the draft PR.
 
-In both cases, work out which shape of issue this is, because it decides what you are implementing against. The headings tell you, and a `skill:dx-create-*` label confirms it:
+In both cases, work out which shape of issue this is, because it decides what you are implementing against. The headings are authoritative, because they are what you read the contract out of. A native issue type (`Feature` for a story, `Task`, `Chore`, `Bug`) and a `skill:dx-create-*` label confirm the reading, and a pasted body has neither, so never depend on them:
 
 - **Story** (`## User story`): the acceptance criteria are the contract. `## Open questions` and `## Out of scope` bound it.
 - **Task** (`## Parent`): the acceptance criteria are the contract, and the optional `## Also true when done` checklist adds conditions a reviewer confirms by looking. Read the parent too (`gh issue view <parent>`), since a task only makes sense in the context of what it delivers.

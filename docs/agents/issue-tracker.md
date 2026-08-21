@@ -10,8 +10,24 @@ Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all op
 - **Comment on an issue**: `gh issue comment <number> --body "..."`
 - **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
 - **Close**: `gh issue close <number> --comment "..."`
+- **Set the issue type**: `gh issue create --type <name>`, or `gh issue edit <number> --type <name>` after the fact. Types are configured for the whole organisation, not per repo.
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
+
+## Issue types
+
+This organisation has GitHub's three built-in types enabled: `Task`, `Bug`, and `Feature`. The four issue shapes map onto them like this, and the `dx-create-*` skills set the type when they create an issue.
+
+| Shape | Issue type |
+| --- | --- |
+| Story | `Feature` |
+| Task | `Task` |
+| Chore | `Chore` |
+| Bug | `Bug` |
+
+`Chore` is the gap: GitHub does not ship it, so it exists only once an organisation owner adds it in the organisation's settings, under **Planning** > **Issue types**. Until then, `dx-create-chore` files chores with no type rather than borrowing `Task`, which in this model means a slice of something already tracked.
+
+The type carries the shape. The `skill:dx-create-*` labels carry provenance, which is a different question: they answer which skill wrote the issue, not what kind of work it is.
 
 ## Pull requests as a triage surface
 

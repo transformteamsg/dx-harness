@@ -16,6 +16,17 @@ That division is the point. Each shape needs different questions, and the skill 
 | **Chore** | Nothing a user observes changes: a bump, a rename, dead code, config, tooling, or infrastructure and environment work | `dx-create-chore` |
 | **Bug** | Something already built behaves wrongly, and there is a gap between what should happen and what does | `dx-create-bug` |
 
+## Issue types
+
+Each shape also maps to a GitHub native issue type, which the leaf skill sets when it creates the issue. You never set it yourself. Know the mapping only so you can answer why a story shows up in the backlog as a `Feature`.
+
+| Shape | Issue type |
+| --- | --- |
+| Story | `Feature`, GitHub's built-in type for new functionality |
+| Task | `Task` |
+| Chore | `Chore`, which is not built in, so an organisation owner adds it under **Planning** > **Issue types** |
+| Bug | `Bug` |
+
 ## Classifying
 
 Work through these in order. Most requests are settled by the first or second question, and the rest by the third.

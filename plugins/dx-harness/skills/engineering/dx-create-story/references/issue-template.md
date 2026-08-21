@@ -18,7 +18,13 @@ As a [user persona], I want [capability], so that [benefit].
 - **When** <action>
 - **Then** <observable outcome>
 
-### <Outcome-first scenario name (error / edge case)>
+### <Outcome-first scenario name (unhappy path; required)>
+
+- **Given** <starting state>
+- **When** <the action is refused, or fails>
+- **Then** <what the user sees instead, and what state they are left in>
+
+### <Outcome-first scenario name (edge case; one heading per case that matters)>
 
 - **Given** <starting state>
 - **When** <action>

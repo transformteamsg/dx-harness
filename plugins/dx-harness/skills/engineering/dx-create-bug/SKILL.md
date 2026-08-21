@@ -9,13 +9,21 @@ A bug is shaped differently from the other issue types. There is no persona and 
 
 Before accepting a report as a bug, confirm the behaviour was ever built. A report that something "doesn't work" often means it was never there, and the two need opposite responses. Check the code and the history (`git log -S` for the feature's key terms) rather than inferring from the report alone: an author who cannot find a button has not established that it once existed.
 
-If nothing is actually broken and the request is for behaviour that was never built, this is not a bug. Say so and route the author to the skill that fits: `dx-create-story` for user-facing capability work, or `dx-create-task` for a scoped slice of an existing story. If those skills are not installed, fall back to `dx-create-issue`, which routes to whichever is available. Do not file the report as a defect, and do not apply this skill's usage label to it: the label records what this skill produced, and a rerouted report is not that.
+If nothing is actually broken and the request is for behaviour that was never built, this is not a bug. Say so and route the author to the skill that fits: `dx-create-story` for user-facing capability work, or `dx-create-task` for a scoped slice of an existing story. If those skills are not installed, fall back to `dx-create-issue`, which routes to whichever is available. Do not file the report as a defect, and do not apply this skill's usage label or the `Bug` issue type to it: the label records what this skill produced, the type records the shape, and a rerouted report is neither.
 
 Dependencies live outside the body: link blockers and dependents with GitHub's native issue relationships (the "Relationships" panel: blocked by / blocks), so the links stay accurate as issues move and close.
 
 ## Issue template
 
 The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading.
+
+## Attaching screenshots and recordings
+
+Images and recordings belong on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in GitHub's web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body. `gh` cannot attach binaries, so this step stays manual: say so rather than leaving the author to find out when the link does not resolve.
+
+Never commit a screenshot or a video to the repository so that an issue can link to it. It sits in every clone from then on, it outlives the issue that needed it, and deleting it later does not shrink the history. This applies to a coding agent at least as much as to a person: if you are the one holding the file, hand it to the author to upload instead of writing it into the working tree.
+
+Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. If the GIF is unreadable at that size, trim the recording to the few seconds that matter rather than raising the resolution.
 
 ## Workflow
 
@@ -28,7 +36,7 @@ Ask for the following. Do not invent answers: ask if the author has not provided
 3. **Steps to reproduce**: a numbered path from a state anyone can reach to the moment it fails. If the author gives you a rough description, turn it into concrete numbered steps and read them back to confirm. Watch for missing preconditions: a specific account, role, feature flag, or seeded data that the author has and a fixer will not.
 4. **Expected behaviour**: what should have happened at the final step.
 5. **Actual behaviour**: what happens instead. Ask for error messages verbatim, including stack traces or console output, rather than paraphrased.
-6. **Evidence**: a screenshot or screen recording showing the bug reproducing. This is often the fastest way for a fixer to confirm they are looking at the same behaviour, so ask for it directly rather than treating it as optional. If the author does not have one, record that explicitly with the reason (`None available: intermittent, not captured yet`) instead of leaving the section blank, so a reader can tell the difference between "nobody looked" and "we tried and could not catch it".
+6. **Evidence**: a screenshot or screen recording showing the bug reproducing. This is often the fastest way for a fixer to confirm they are looking at the same behaviour, so ask for it directly rather than treating it as optional. If the author does not have one, record that explicitly with the reason (`None available: intermittent, not captured yet`) instead of leaving the section blank, so a reader can tell the difference between "nobody looked" and "we tried and could not catch it". Where the evidence goes matters as much as having it, so follow the rules in Attaching screenshots and recordings above.
 7. **Environment**: browser and version, OS, device, app version or commit, and any account or role that matters. A bug that only reproduces in one environment is a different bug from one that reproduces everywhere, and the fixer needs to know which they have.
 8. **Impact**: who is affected, how often, and whether a workaround exists. This is what a triager reads to decide whether this is fixed today or next quarter, so avoid a bare severity label with nothing behind it.
 9. **Priority**: a single level from `P0` to `P4`, following Google's Issue Tracker convention (`P0` = drop everything, `P4` = trivial). This is the one-glance signal a triager sorts the backlog by, and it should follow from the impact described above rather than being asserted on its own: derive a suggested level from the impact and read it back for the author to confirm or override, since they may know of business context the report does not carry.
@@ -82,10 +90,14 @@ Ensure the usage-tracking label exists (idempotent, `gh label create` exits non-
 ```sh
 gh label create "skill:dx-create-bug" --color ededed --description "Created with the dx-create-bug skill" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:dx-create-bug"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Bug --label "skill:dx-create-bug"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-bug"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-bug*` footer in the body template gives human-readable attribution.
+
+`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. A bug is a `Bug`, GitHub's built-in type for an unexpected problem, so it needs no setup. The type carries the shape and the label carries the provenance: set both.
+
+If the create fails because the type is not available, retry without `--type`, print the URL, and say that the issue has no type and that an organisation owner enables types in the organisation's settings under **Planning** > **Issue types**. Do not substitute a different type to clear the error, because the backlog is filtered on it and a wrong type is worse than none.
 
 - **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1b as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 
@@ -99,7 +111,7 @@ The label makes usage queryable with `gh issue list --label "skill:dx-create-bug
 
   If no dependencies were confirmed, skip this.
 
-  If the author has a screenshot or recording but has not attached it, remind them: evidence has to be uploaded through the GitHub web interface or dragged into a comment, since `gh` cannot attach binaries to an issue body.
+  If the author has a screenshot or recording but has not attached it, remind them to upload it now, following Attaching screenshots and recordings. An issue whose Evidence section says "see the recording" with nothing attached claims evidence that is not there, which is worse than an honest `None available`.
 - **If the command fails with "command not found" or "'gh' is not recognized"**: render the issue title and body as markdown and instruct the author to create the issue manually via the GitHub web interface.
 - **If the command fails for any other reason**: surface the real error and stop.
 
@@ -108,6 +120,7 @@ The label makes usage queryable with `gh issue list --label "skill:dx-create-bug
 - Never leave a section blank. Every section must be explicitly filled or marked `None`.
 - Reproduction steps must be numbered and start from a state a fixer can reach without the author's machine.
 - Record error messages verbatim, not paraphrased. The exact string is often what makes a bug searchable.
+- Attach evidence to the issue, never commit it to the repository. Recordings go up as GIFs under 10 MB.
 - Distinguish `None` (there is nothing to say) from `None available` (there is something, but we do not have it), especially for evidence.
 - Describe the defect, never the presumed fix. A report that says "the session cache needs clearing" hides what was actually observed, and it may be wrong about the cause.
 - Confirm the behaviour existed before filing a regression against it. Verify in the code and history, not from the report's framing.

@@ -11,6 +11,14 @@ A task only makes sense in the context of the work it delivers, so every task li
 
 The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading. The one exception is the optional `Also true when done` checklist described in Step 2, which you delete outright when it is empty, because a heading standing over an empty list reads as an oversight rather than a decision.
 
+## Attaching screenshots and recordings
+
+Images and recordings belong on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in GitHub's web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body. `gh` cannot attach binaries, so this step stays manual: say so rather than leaving the author to find out when the link does not resolve.
+
+Never commit a screenshot or a video to the repository so that an issue can link to it. It sits in every clone from then on, it outlives the issue that needed it, and deleting it later does not shrink the history. This applies to a coding agent at least as much as to a person: if you are the one holding the file, hand it to the author to upload instead of writing it into the working tree.
+
+Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. If the GIF is unreadable at that size, trim the recording to the few seconds that matter rather than raising the resolution.
+
 ## Workflow
 
 ### Step 1: Identify the parent
@@ -18,12 +26,12 @@ The canonical structure is in [references/issue-template.md](references/issue-te
 Ask which story or chore this task delivers, if not already given (an issue number, or a description you can look up). Then verify it:
 
 ```sh
-gh issue view <number> --json number,title,body,state,labels
+gh issue view <number> --json number,title,body,state,labels,issueType
 ```
 
 - **If the issue does not exist or the command errors on an invalid number**: tell the user, and offer to run `dx-create-story` or `dx-create-chore` first rather than proceeding without a parent.
 - **If the issue exists but is closed**: flag this before continuing. "#NNN is closed. Are you sure this is the right parent, or has this task's scope already shipped?"
-- **If the issue exists and is open, check that it reads as a story or a chore.** The reliable signal is a `skill:dx-create-story` or `skill:dx-create-chore` label. Issues written before these skills existed will not carry one, so fall back to the body: a story has a `## User story` heading, a chore has `## What is changing` with `## Done when`. Either shape is a valid parent.
+- **If the issue exists and is open, check that it reads as a story or a chore.** The quickest signals are the native issue type (`Feature` for a story, `Chore` for a chore) and a `skill:dx-create-story` or `skill:dx-create-chore` label. Issues written before these skills existed carry neither, and an untyped chore is expected wherever the organisation has no `Chore` type, so fall back to the body: a story has a `## User story` heading, a chore has `## What is changing` with `## Done when`. Either shape is a valid parent.
 - **If it reads as neither**: it may be a bug report, or a task itself. Flag it rather than guessing: "Issue #NNN doesn't look like a story or a chore. Is this really the parent, or did you mean a different issue?" A task parented to another task is worth questioning specifically, since a task is already the smallest slice one discipline can deliver: ask whether the real parent is that task's own parent. Proceed only once the user confirms.
 - **If the command fails with "command not found" or "'gh' is not recognized"**: ask the user to paste the parent's number and confirm its title manually; you cannot verify it, so say so.
 - **If the command fails for any other reason**: surface the real error and stop.
@@ -34,7 +42,7 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
 
 1. **Scope**: what area does this touch (a part of the codebase like `ci` or `assignments`, or a surface like the assignments list screen)?
 2. **Description**: what is this task, and why does the parent need it? A task is a means to an end, not an end in itself: tie it back to what the parent requires.
-3. **Acceptance criteria**: how you will know the task is done. Given-When-Then scenarios are the spine, whatever the discipline: at minimum one happy path and one error or edge case, named outcome-first, for example "Migration applies cleanly" rather than "Write migration", stating the observable outcome rather than the implementation.
+3. **Acceptance criteria**: how you will know the task is done. Given-When-Then scenarios are the spine, whatever the discipline: at minimum one happy path and one unhappy path, where the action is refused or fails, plus an edge-case scenario for each boundary that matters. Name them outcome-first, for example "Migration applies cleanly" rather than "Write migration", and state the observable outcome rather than the implementation. The unhappy path is required here for the same reason it is on a story: a slice that only says what happens when it works leaves the failure to whoever picks it up.
 
    Design work fits this shape more often than it first looks, because a visual state is something you can observe. "Given a teacher has no assignments, When they open the assignments list, Then they see the empty state with a create button" pins down what that state actually contains, which "empty state is designed" never does. Reach for scenarios first for design tasks too.
 
@@ -43,7 +51,7 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
    The checklist supplements the scenarios, it does not replace them: a task with only a checklist and no scenario usually means either the behaviour has not been thought through yet, or the work is maintenance that belongs in `dx-create-chore`. When nothing invariant needs recording, delete the heading rather than filling it with `None`.
 4. **Out of scope**: at least one explicit exclusion, or confirm nothing adjacent is in scope.
 
-There is no user story section here: a task is described from the doing discipline's perspective, not a persona's. A design task may reference or attach the design context it needs (a parent Figma frame, the parent's design assets); an engineering task usually will not.
+There is no user story section here: a task is described from the doing discipline's perspective, not a persona's. A design task may reference or attach the design context it needs (a parent Figma frame, the parent's design assets); an engineering task usually will not. Where it does attach something, follow Attaching screenshots and recordings above.
 
 ### Step 3: Preview and confirm
 
@@ -60,8 +68,12 @@ Ensure the usage-tracking label exists (idempotent, `gh label create` exits non-
 ```sh
 gh label create "skill:dx-create-task" --color ededed --description "Created with the dx-create-task skill" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:dx-create-task"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Task --label "skill:dx-create-task"
 ```
+
+`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. A task is a `Task`, GitHub's built-in type for a specific piece of work, so it needs no setup. The type carries the shape and the label carries the provenance: set both.
+
+If the create fails because the type is not available, retry without `--type`, print the URL, and say that the issue has no type and that an organisation owner enables types in the organisation's settings under **Planning** > **Issue types**. Do not substitute a different type to clear the error, because the backlog is filtered on it and a wrong type is worse than none.
 
 - **If the command succeeds**: print the issue URL, then link it to the parent as a native GitHub sub-issue. Resolve both issues' node IDs first, then call the mutation:
 
@@ -82,8 +94,9 @@ gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "skill:
 
 - Never leave a section blank. Every section must be explicitly filled or marked `N/A` / `None`.
 - Never create a task without a verified parent, a story or a chore, linked as a sub-issue.
-- Acceptance criteria lead with Given-When-Then scenarios, outcome-first named, for both engineering and design tasks. The `Also true when done` checklist is optional, is only for criteria with no trigger, and never stands in for the scenarios.
+- Acceptance criteria lead with Given-When-Then scenarios, outcome-first named, covering at least one happy path and one unhappy path, for both engineering and design tasks. The `Also true when done` checklist is optional, is only for criteria with no trigger, and never stands in for the scenarios.
 - Do not describe implementation in acceptance criteria: write what is observably true when the task is done (the system's behaviour, or the state of the deliverable), not how it was built.
+- Attach design context to the issue, never commit it to the repository. Recordings go up as GIFs under 10 MB.
 - Pick one term per concept and use it consistently across all scenarios or checklist items.
 - Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
 - The PR that implements this issue will squash-merge using its title as the commit message, so titles must be valid commit messages.
