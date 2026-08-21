@@ -144,19 +144,26 @@ The title must follow the commit convention from CLAUDE.md: `feat(<scope>): <sho
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure the usage-tracking label exists (idempotent, `gh label create` exits non-zero if it already exists, which `|| true` swallows), then create the issue with it:
+Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows), then create the issue with them:
 
 ```sh
 gh label create "skill:dx-create-story" --color ededed --description "Created with the dx-create-story skill" 2>/dev/null || true
+gh label create "story" --color 0e8a16 --description "A capability someone outside the team observes" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Feature --label "skill:dx-create-story"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "story" --label "skill:dx-create-story"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-story"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-story*` footer in the body template gives human-readable attribution.
 
-`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. A story is a `Feature`, GitHub's built-in type for new functionality, so it needs no setup. The type carries the shape and the label carries the provenance: set both.
+The shape label is the taxonomy: it answers what kind of work this is, and `gh issue list --label "story"` matches it exactly, so a `skill:dx-create-story` label never gets pulled in by the same filter. The skill label answers a different question, which is what wrote the issue, so set both.
 
-If the create fails because the type is not available, retry without `--type`, print the URL, and say that the issue has no type and that an organisation owner enables types in the organisation's settings under **Planning** > **Issue types**. Do not substitute a different type to clear the error, because the backlog is filtered on it and a wrong type is worse than none.
+If `gh issue create` fails because a label does not exist, the repository probably already carries it under different casing (`Task` and `Feature` predate this vocabulary in some repos). List the labels and reuse the one that matches, rather than creating a near-duplicate:
+
+```sh
+gh label list --limit 200 --json name --jq '.[].name' | grep -ix "story"
+```
+
+If label creation is refused outright because the token cannot write labels, create the issue without labels, print the URL, and say which two labels someone with write access should add.
 
 - **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 4 as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 

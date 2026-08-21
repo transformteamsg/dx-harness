@@ -16,16 +16,11 @@ That division is the point. Each shape needs different questions, and the skill 
 | **Chore** | Nothing a user observes changes: a bump, a rename, dead code, config, tooling, or infrastructure and environment work | `dx-create-chore` |
 | **Bug** | Something already built behaves wrongly, and there is a gap between what should happen and what does | `dx-create-bug` |
 
-## Issue types
+## Shape labels
 
-Each shape also maps to a GitHub native issue type, which the leaf skill sets when it creates the issue. You never set it yourself. Know the mapping only so you can answer why a story shows up in the backlog as a `Feature`.
+Each shape also has a label, which the leaf skill applies when it creates the issue: `story`, `task`, `chore`, or `bug`. You never apply one yourself. Know they exist so you can answer how to filter the backlog by shape, which is `gh issue list --label "chore"`. Label filters match exactly, so that query returns chores and never the `skill:dx-create-chore` label that sits alongside.
 
-| Shape | Issue type |
-| --- | --- |
-| Story | `Feature`, GitHub's built-in type for new functionality |
-| Task | `Task` |
-| Chore | `Chore`, which is not built in, so an organisation owner adds it under **Planning** > **Issue types** |
-| Bug | `Bug` |
+The shape label and the `skill:dx-create-*` label answer different questions. The first is what kind of work this is, the second is what wrote the issue.
 
 ## Classifying
 

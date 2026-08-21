@@ -26,12 +26,12 @@ Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's c
 Ask which story or chore this task delivers, if not already given (an issue number, or a description you can look up). Then verify it:
 
 ```sh
-gh issue view <number> --json number,title,body,state,labels,issueType
+gh issue view <number> --json number,title,body,state,labels
 ```
 
 - **If the issue does not exist or the command errors on an invalid number**: tell the user, and offer to run `dx-create-story` or `dx-create-chore` first rather than proceeding without a parent.
 - **If the issue exists but is closed**: flag this before continuing. "#NNN is closed. Are you sure this is the right parent, or has this task's scope already shipped?"
-- **If the issue exists and is open, check that it reads as a story or a chore.** The quickest signals are the native issue type (`Feature` for a story, `Chore` for a chore) and a `skill:dx-create-story` or `skill:dx-create-chore` label. Issues written before these skills existed carry neither, and an untyped chore is expected wherever the organisation has no `Chore` type, so fall back to the body: a story has a `## User story` heading, a chore has `## What is changing` with `## Done when`. Either shape is a valid parent.
+- **If the issue exists and is open, check that it reads as a story or a chore.** The quickest signals are a `story` or `chore` shape label and a `skill:dx-create-story` or `skill:dx-create-chore` label. Issues written before this vocabulary existed carry neither, so fall back to the body: a story has a `## User story` heading, a chore has `## What is changing` with `## Done when`. Either shape is a valid parent.
 - **If it reads as neither**: it may be a bug report, or a task itself. Flag it rather than guessing: "Issue #NNN doesn't look like a story or a chore. Is this really the parent, or did you mean a different issue?" A task parented to another task is worth questioning specifically, since a task is already the smallest slice one discipline can deliver: ask whether the real parent is that task's own parent. Proceed only once the user confirms.
 - **If the command fails with "command not found" or "'gh' is not recognized"**: ask the user to paste the parent's number and confirm its title manually; you cannot verify it, so say so.
 - **If the command fails for any other reason**: surface the real error and stop.
@@ -63,17 +63,24 @@ The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <s
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure the usage-tracking label exists (idempotent, `gh label create` exits non-zero if it already exists, which `|| true` swallows), then create the issue with it:
+Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows), then create the issue with them:
 
 ```sh
 gh label create "skill:dx-create-task" --color ededed --description "Created with the dx-create-task skill" 2>/dev/null || true
+gh label create "task" --color 1d76db --description "One discipline's slice of a tracked story or chore" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Task --label "skill:dx-create-task"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "task" --label "skill:dx-create-task"
 ```
 
-`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. A task is a `Task`, GitHub's built-in type for a specific piece of work, so it needs no setup. The type carries the shape and the label carries the provenance: set both.
+The shape label is the taxonomy: it answers what kind of work this is, and `gh issue list --label "task"` matches it exactly, so a `skill:dx-create-task` label never gets pulled in by the same filter. The skill label answers a different question, which is what wrote the issue, so set both.
 
-If the create fails because the type is not available, retry without `--type`, print the URL, and say that the issue has no type and that an organisation owner enables types in the organisation's settings under **Planning** > **Issue types**. Do not substitute a different type to clear the error, because the backlog is filtered on it and a wrong type is worse than none.
+If `gh issue create` fails because a label does not exist, the repository probably already carries it under different casing (`Task` and `Feature` predate this vocabulary in some repos). List the labels and reuse the one that matches, rather than creating a near-duplicate:
+
+```sh
+gh label list --limit 200 --json name --jq '.[].name' | grep -ix "task"
+```
+
+If label creation is refused outright because the token cannot write labels, create the issue without labels, print the URL, and say which two labels someone with write access should add.
 
 - **If the command succeeds**: print the issue URL, then link it to the parent as a native GitHub sub-issue. Resolve both issues' node IDs first, then call the mutation:
 

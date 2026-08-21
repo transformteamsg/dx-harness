@@ -14,7 +14,7 @@ You do not own the issue template. Once a slice is confirmed, `dx-create-task` c
 ### Step 1: Read the parent
 
 ```sh
-gh issue view <number> --json number,title,body,state,labels,issueType,comments
+gh issue view <number> --json number,title,body,state,labels,comments
 ```
 
 - **If the command fails with "command not found" or "'gh' is not recognized"**: ask the author to paste the issue body, and say plainly that you cannot create the slices for them either. You can still propose the cut, which is the part that needs a person.
@@ -22,7 +22,7 @@ gh issue view <number> --json number,title,body,state,labels,issueType,comments
 
 Check what shape the parent is, because it decides what you are grouping:
 
-- **A story** (`## User story`, confirmed by the `Feature` issue type or a `skill:dx-create-story` label): group the Given-When-Then acceptance criteria.
+- **A story** (`## User story`, confirmed by a `story` or `skill:dx-create-story` label): group the Given-When-Then acceptance criteria.
 - **A chore** (`## What is changing` with `## Done when`): group the done-when items.
 - **A task** (`## Parent`): stop. A task is already one discipline's smallest slice, so splitting it usually means the parent was cut wrongly. Say so and ask whether the real fix is to re-cut the task's own parent.
 - **A bug** (`## Steps to reproduce`): stop. A defect with one reproduction path is one fix. Several unrelated defects filed together should be separate bug reports rather than slices of one, so point the author at `dx-create-bug` for each.

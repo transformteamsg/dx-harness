@@ -9,7 +9,7 @@ A bug is shaped differently from the other issue types. There is no persona and 
 
 Before accepting a report as a bug, confirm the behaviour was ever built. A report that something "doesn't work" often means it was never there, and the two need opposite responses. Check the code and the history (`git log -S` for the feature's key terms) rather than inferring from the report alone: an author who cannot find a button has not established that it once existed.
 
-If nothing is actually broken and the request is for behaviour that was never built, this is not a bug. Say so and route the author to the skill that fits: `dx-create-story` for user-facing capability work, or `dx-create-task` for a scoped slice of an existing story. If those skills are not installed, fall back to `dx-create-issue`, which routes to whichever is available. Do not file the report as a defect, and do not apply this skill's usage label or the `Bug` issue type to it: the label records what this skill produced, the type records the shape, and a rerouted report is neither.
+If nothing is actually broken and the request is for behaviour that was never built, this is not a bug. Say so and route the author to the skill that fits: `dx-create-story` for user-facing capability work, or `dx-create-task` for a scoped slice of an existing story. If those skills are not installed, fall back to `dx-create-issue`, which routes to whichever is available. Do not file the report as a defect, and do not apply this skill's `bug` or `skill:dx-create-bug` label to it: one records the shape and the other records what this skill produced, and a rerouted report is neither.
 
 Dependencies live outside the body: link blockers and dependents with GitHub's native issue relationships (the "Relationships" panel: blocked by / blocks), so the links stay accurate as issues move and close.
 
@@ -85,19 +85,28 @@ The title must follow the commit convention from CLAUDE.md: `fix(<scope>): <shor
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure the usage-tracking label exists (idempotent, `gh label create` exits non-zero if it already exists, which `|| true` swallows), then create the issue with it:
+Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows), then create the issue with them:
 
 ```sh
 gh label create "skill:dx-create-bug" --color ededed --description "Created with the dx-create-bug skill" 2>/dev/null || true
+gh label create "bug" --color d73a4a --description "Something already built behaves wrongly" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Bug --label "skill:dx-create-bug"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "bug" --label "skill:dx-create-bug"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-bug"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-bug*` footer in the body template gives human-readable attribution.
 
-`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. A bug is a `Bug`, GitHub's built-in type for an unexpected problem, so it needs no setup. The type carries the shape and the label carries the provenance: set both.
+The shape label is the taxonomy: it answers what kind of work this is, and `gh issue list --label "bug"` matches it exactly, so a `skill:dx-create-bug` label never gets pulled in by the same filter. The skill label answers a different question, which is what wrote the issue, so set both.
 
-If the create fails because the type is not available, retry without `--type`, print the URL, and say that the issue has no type and that an organisation owner enables types in the organisation's settings under **Planning** > **Issue types**. Do not substitute a different type to clear the error, because the backlog is filtered on it and a wrong type is worse than none.
+If `gh issue create` fails because a label does not exist, the repository probably already carries it under different casing (`Task` and `Feature` predate this vocabulary in some repos). List the labels and reuse the one that matches, rather than creating a near-duplicate:
+
+```sh
+gh label list --limit 200 --json name --jq '.[].name' | grep -ix "bug"
+```
+
+If label creation is refused outright because the token cannot write labels, create the issue without labels, print the URL, and say which two labels someone with write access should add.
+
+Most repositories already have a `bug` label, because GitHub creates one by default. The `gh label create` above then exits non-zero, `|| true` swallows it, and the existing label is used with whatever description it already carries. That is the intended outcome: reuse beats a second label meaning the same thing.
 
 - **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1b as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 

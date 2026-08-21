@@ -84,19 +84,26 @@ The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <s
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline: an inline `--body "..."` would let the shell interpret backticks as command substitution. Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure the usage-tracking label exists (idempotent: `gh label create` exits non-zero if it already exists, which `|| true` swallows), then create the issue with it:
+Ensure both labels exist, the shape label and the usage-tracking label (both idempotent: `gh label create` exits non-zero if a label already exists, which `|| true` swallows), then create the issue with them:
 
 ```sh
 gh label create "skill:dx-create-chore" --color ededed --description "Created with the dx-create-chore skill" 2>/dev/null || true
+gh label create "chore" --color fbca04 --description "Work with no user-facing behaviour change" 2>/dev/null || true
 
-gh issue create --title "<title>" --body-file /tmp/issue-body.md --type Chore --label "skill:dx-create-chore"
+gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "chore" --label "skill:dx-create-chore"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-chore"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-chore*` footer gives human-readable attribution.
 
-`--type` sets GitHub's native issue type, which is what the issue list groups and filters by. `Chore` is the one shape GitHub does not ship a type for: the built-in three are `Task`, `Bug`, and `Feature`, so a `Chore` type exists only where an organisation owner has added one. Ask for it anyway and fall back cleanly.
+The shape label is the taxonomy: it answers what kind of work this is, and `gh issue list --label "chore"` matches it exactly, so a `skill:dx-create-chore` label never gets pulled in by the same filter. The skill label answers a different question, which is what wrote the issue, so set both.
 
-If the create fails because the type is not available, retry without `--type`, print the URL, and tell the author the issue has no type and that adding a `Chore` type in the organisation's settings under **Planning** > **Issue types** would fix it for every chore after this one. Do not fall back to `Task`: a task in this model is a slice of something already tracked, so typing a chore as one collapses the distinction the four shapes rest on.
+If `gh issue create` fails because a label does not exist, the repository probably already carries it under different casing (`Task` and `Feature` predate this vocabulary in some repos). List the labels and reuse the one that matches, rather than creating a near-duplicate:
+
+```sh
+gh label list --limit 200 --json name --jq '.[].name' | grep -ix "chore"
+```
+
+If label creation is refused outright because the token cannot write labels, create the issue without labels, print the URL, and say which two labels someone with write access should add.
 
 - **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 1b as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
 

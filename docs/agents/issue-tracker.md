@@ -10,24 +10,25 @@ Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all op
 - **Comment on an issue**: `gh issue comment <number> --body "..."`
 - **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
 - **Close**: `gh issue close <number> --comment "..."`
-- **Set the issue type**: `gh issue create --type <name>`, or `gh issue edit <number> --type <name>` after the fact. Types are configured for the whole organisation, not per repo.
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
-## Issue types
+## Shape labels
 
-This organisation has GitHub's three built-in types enabled: `Task`, `Bug`, and `Feature`. The four issue shapes map onto them like this, and the `dx-create-*` skills set the type when they create an issue.
+Each of the four issue shapes has a label, applied by the `dx-create-*` skill that files the issue. Anyone with write access can create these, which is why they are labels rather than GitHub's native issue types: a type has to be added by an organisation owner.
 
-| Shape | Issue type |
-| --- | --- |
-| Story | `Feature` |
-| Task | `Task` |
-| Chore | `Chore` |
-| Bug | `Bug` |
+| Shape | Label | Colour |
+| --- | --- | --- |
+| Story | `story` | `#0e8a16` |
+| Task | `task` | `#1d76db` |
+| Chore | `chore` | `#fbca04` |
+| Bug | `bug` | `#d73a4a` |
 
-`Chore` is the gap: GitHub does not ship it, so it exists only once an organisation owner adds it in the organisation's settings, under **Planning** > **Issue types**. Until then, `dx-create-chore` files chores with no type rather than borrowing `Task`, which in this model means a slice of something already tracked.
+Filter by shape with `gh issue list --label "chore"`. Label filters are exact, so that query never pulls in the `skill:dx-create-chore` label sitting next to it.
 
-The type carries the shape. The `skill:dx-create-*` labels carry provenance, which is a different question: they answer which skill wrote the issue, not what kind of work it is.
+The shape label and the `skill:dx-create-*` label answer different questions. The first is what kind of work this is; the second is what wrote the issue.
+
+Three labels predate this vocabulary and overlap it: `bug`, which the skills reuse as-is because GitHub creates it by default; `Task`, which differs from `task` only in casing; and `Feature`, which was the de facto story label. Renaming or retiring `Task` and `Feature` is a separate piece of work, because it touches issues that are already filed.
 
 ## Pull requests as a triage surface
 
