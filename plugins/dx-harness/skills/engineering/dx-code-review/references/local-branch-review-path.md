@@ -18,7 +18,9 @@ Run the review, triage each finding interactively with the user, then optionally
    Record the user's answer against each finding. If the user wants to fix it now, assist with the fix before moving to the next finding — mark it **Fixed** once done. If later, mark it **To be fixed**.
 
 5. Print the full review summary:
+    - When no important finding was raised, open with `No blocking findings.` above the table, so a run that is all nits is not read as one that found a problem. Omit the line when an important finding exists.
     - Severity counts table (🔴 Important / 🟡 Nit / 🟣 Pre-existing)
+    - **Truncated** — the angle that reached its 6-candidate ceiling and how many it dropped, when one did
     - All findings grouped by triage: **Fixed** first, then **To be fixed** — each with severity, file, line, and one-line summary
     - Reviewer To-Do — manual-test items for scenarios with no automated test (omit if empty)
     - What Looks Good (2–4 specific strengths)

@@ -16,6 +16,8 @@
 | 🟡 Nit          | N |
 | 🟣 Pre-existing | N |
 
+**Truncated:** the <angle> angle reached its 6-candidate ceiling with N more outstanding. Omit this line when no angle truncated.
+
 <One paragraph: what the change does well, the biggest risk, recommended next step.>
 
 ---

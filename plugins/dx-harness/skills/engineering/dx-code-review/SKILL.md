@@ -50,6 +50,7 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
 
 1. Run the PR & Issue Check (below) — this must complete before the review angles.
 2. Run all 7 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
+   - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
 3. Deduplicate near-duplicates (same defect, same location → keep one).
 4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**.
    - PLAUSIBLE by default for: races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor
@@ -222,7 +223,7 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 
 **What looks good:** always include; specifics only; 2–4 bullets max
 
-**Scope:** every confirmed or plausible finding regardless of severity — no cap
+**Scope:** every confirmed or plausible finding survives the Analysis Phase, at every severity. Volume control is a posting concern and belongs to the path that posts: the PR review path caps nits at 5 and suppresses new ones on a re-review, and its summary carries the count held back. The local branch path posts nothing and triages everything, so no cap applies there
 
 **Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
 
