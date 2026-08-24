@@ -50,6 +50,10 @@ contrast. It complements, not duplicates: `checks/contrast` (the mechanical cont
 backstop) and the HF-18 procedural fix (preserved elements are still graded, never waved
 through).
 
+See also [[CMP-11]] — a related but distinct self-consistency check: a component's own
+nested interactive child (a focus ring, active-state fill) against its own container
+geometry, proposed from a later incident.
+
 ## Passes when
 
 - Components render at their design-system defaults; any override is recorded with a

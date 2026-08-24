@@ -110,7 +110,6 @@ export const SKILL_DIRECTORY: DirectoryGroup[] = [
     role: "Carry a change from an idea to a merged pull request.",
     skills: [
       "dx-create-issue",
-      "dx-groom-issue",
       "dx-split-issue",
       "dx-implement-issue",
       "dx-code-review",
