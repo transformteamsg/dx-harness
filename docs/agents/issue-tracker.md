@@ -13,6 +13,23 @@ Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all op
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
+## Shape labels
+
+Each of the four issue shapes has a label, applied by the `dx-create-*` skill that files the issue. Anyone with write access can create these, which is why they are labels rather than GitHub's native issue types: a type has to be added by an organisation owner.
+
+| Shape | Label | Colour |
+| --- | --- | --- |
+| Story | `story` | `#0e8a16` |
+| Task | `task` | `#1d76db` |
+| Chore | `chore` | `#fbca04` |
+| Bug | `bug` | `#d73a4a` |
+
+Filter by shape with `gh issue list --label "chore"`. Label filters are exact, so that query never pulls in the `skill:dx-create-chore` label sitting next to it.
+
+The shape label and the `skill:dx-create-*` label answer different questions. The first is what kind of work this is; the second is what wrote the issue.
+
+Three labels predate this vocabulary and overlap it: `bug`, which the skills reuse as-is because GitHub creates it by default; `Task`, which differs from `task` only in casing; and `Feature`, which was the de facto story label. Renaming or retiring `Task` and `Feature` is a separate piece of work, because it touches issues that are already filed.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
