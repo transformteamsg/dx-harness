@@ -76,6 +76,8 @@ A finding produced by a rule from this file names that rule, so the author can s
 
    **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and why a newly discovered pattern is proposed as an issue rather than written.
 
+   **A finding matching a row whose `Status` is suppressed is dropped here**, on both paths: not tagged, not verified further, not posted. Count the drops and carry the number to the summary, because a suppressed pattern hiding findings must not look like a review that found nothing.
+
    The PR review path has no triage, so it has no verdict to record. It reports the rows it would have added and writes nothing.
 
 ---
