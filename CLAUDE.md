@@ -34,6 +34,11 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - One deliberate deviation, and only one: spelling stays Commonwealth English per Content and copy. Google is US English and this repo is not, so a Commonwealth spelling you find here is not a mistake to correct.
 - Apply this to documents you write or substantially revise. Don't retrofit files you are only passing through; a retrospective sweep is its own piece of work.
 
+## Contributing
+
+- The contribution process is in [CONTRIBUTING.md](CONTRIBUTING.md): how to set up the tools the checks need, the commit convention, branch naming, what a pull request must carry, the checks that must pass, and the rules for adding a skill.
+- Commit messages take `<type>(<scope>): <short description>` with the scope in backticks. CONTRIBUTING.md states the convention in full, including the types in use and how squash merging appends the pull request number.
+
 ## Verify
 
 - After content edits, run `pnpm build` to verify that MDX parses.

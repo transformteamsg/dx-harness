@@ -124,4 +124,5 @@ reads the catalog directly from `plugins/dx-harness/standards/`.
 
 ## Contributing
 
-See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the commit convention, branch naming,
+the checks that must pass, and the rules for adding a skill.
