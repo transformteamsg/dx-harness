@@ -18,6 +18,8 @@
 
 **Truncated:** the <angle> angle reached its 6-candidate ceiling with N more outstanding. Omit this line when no angle truncated.
 
+**Skipped:** N path(s) matched a skip rule in `REVIEW.md` and were not reviewed. Omit this line when nothing was skipped.
+
 <One paragraph: what the change does well, the biggest risk, recommended next step.>
 
 ---

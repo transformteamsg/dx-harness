@@ -48,6 +48,18 @@ Run the review, triage each finding interactively with the user, then optionally
 
 Shared by both paths — run on the diff produced by that path's diff-sourcing step, then continue with the path's remaining steps.
 
+**Before step 1, read the repository's review instructions.** Look for `REVIEW.md` at the repository root.
+
+- **Present and readable**: apply it for the rest of the run. It can add rules this review must check, and list paths to skip.
+- **Present but unreadable**: stop the review, name the file and the error, and leave the pull request untouched. Findings calibrated by rules that were never applied are worse than no review, because they read like a complete one.
+- **Absent**: run exactly as this file describes and say nothing about it. A repository that has not opted in is not misconfigured.
+
+Only the root file is read. A nested `REVIEW.md` deeper in the tree is ignored, so there is one file to find and one precedence rule.
+
+Skip rules act on the diff, not on findings: remove every matching path before step 1, so no angle ever sees them. A skipped file must not consume an angle's candidate ceiling, or the nit budget the PR review path applies before it posts. Record which paths were skipped, because the summary reports them. A review that looked at nothing must never read as a review that found nothing.
+
+A finding produced by a rule from this file names that rule, so the author can see what asked for it.
+
 1. Run the PR & Issue Check (below) — this must complete before the review angles.
 2. Run all 7 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
    - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
@@ -224,6 +236,8 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 **What looks good:** always include; specifics only; 2–4 bullets max
 
 **Scope:** every confirmed or plausible finding survives the Analysis Phase, at every severity. Volume control is a posting concern and belongs to the path that posts: the PR review path caps nits at 5 and suppresses new ones on a re-review, and its summary carries the count held back. The local branch path posts nothing and triages everything, so no cap applies there
+
+**Repository instructions:** `REVIEW.md` at the repository root tunes the review, and only the root file is read. A finding produced by one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
 
 **Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
 
