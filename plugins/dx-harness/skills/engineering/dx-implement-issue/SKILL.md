@@ -36,19 +36,24 @@ Two conditions stop the run whatever the shape:
 
 ## Step 3: Explore the codebase
 
-Before reading implementation files, check whether this project has accumulated agent-pattern history:
+Before reading implementation files, load the agent patterns that bind this session. They come from two places, read together:
+
+- **The shipped seeds**, at `../dx-code-review/assets/agent-patterns-seed.md` relative to this skill. These are universal agent pathologies and they apply in every repository, including one that has never run a review.
+- **This repository's observations**, at `review/agent-patterns.md`. This file holds only the patterns this repository has actually tripped over, so it is often absent, and its absence is normal rather than a problem.
 
 ```bash
 ls review/agent-patterns.md
 ```
 
-If the file exists, read its full contents. Treat every **active** row's **Prevention** column as a binding constraint for this session:
-- **Skip any row whose `Status` is suppressed.** Reviewers in this repository rejected that pattern more often than they confirmed it, so it is not a constraint here. Its counts stay in the file as the record of that decision, not as an instruction to you.
-- **High `Confirmed by` counts** (3+ reviews): these are recurrent patterns; apply extra scrutiny before any commit that touches the same Angle.
+The repository's file is an overlay on the seeds. Where both carry the same `AP-NNN`, the repository's row wins, because it is the one with local counts and status. A pattern in one and not the other simply binds as it stands.
+
+Treat every **active** row's **Prevention** column as a binding constraint for this session:
+- **Skip any row whose `Status` is suppressed.** Reviewers in this repository rejected that pattern more often than they confirmed it, so it is not a constraint here. Its counts stay in the file as the record of that decision, not as an instruction to you. This is how the overlay switches a shipped seed off as well as extending it.
+- **High `Confirmed by` counts** (3+ reviews): these are recurrent patterns; apply extra scrutiny before any commit that touches the same Angle. A seed with no row here has been observed nowhere in this repository, so bind it without the extra scrutiny.
 - Before each commit, verify that none of the listed patterns appear in the staged diff.
 - If the correct implementation naturally resembles a listed pattern, note the distinction explicitly in the commit message.
 
-If the file does not exist, proceed normally.
+If `review/agent-patterns.md` does not exist, bind the seeds alone. If the seed file cannot be found, say so and continue on whatever the repository's file holds: a missing plugin asset is worth reporting, but it is not a reason to stop implementing.
 
 Before writing any code, read the code you are about to change. The issue names the surface, not the implementation, so the patterns come from the repository:
 
