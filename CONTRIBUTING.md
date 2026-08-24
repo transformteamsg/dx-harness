@@ -68,6 +68,16 @@ Title the pull request with the issue title, character for character. Squash mer
 
 Open it as a draft until the checks pass and you have walked through the change by hand. The body comes from the repository's pull request template. Where no template file is present yet, the body needs the issue link, a summary, the list of changes with the reason for each, and a test plan naming every acceptance criterion or done-when item with the automated test that covers it.
 
+## Keep it to one reviewable change
+
+A pull request is one change a reviewer can hold in their head at once and say yes or no to as a unit. That is the test, and size is only its proxy: a large change that does one thing is fine, and a small change that does three is not.
+
+Split it when the honest description of it needs an "and", when a reviewer would have to hold two unrelated parts of the system at once to judge it, or when half of it could ship without the other half.
+
+As a rough trigger, 600 changed lines in code files or 25 changed files is the point at which you owe the reviewer a sentence on why this is still one change. Markdown, lockfiles, and snapshots do not count towards it, because 1,000 lines of documentation and 1,000 lines of TypeScript are not the same review. Over the trigger, a clean commit sequence is usually the honest answer: one contract item per commit, each building and passing, in an order that tells the story. A reviewer can work through that commit by commit however long it runs.
+
+This binds an agent harder than it binds you. An agent pays nothing to write 5,000 lines, and the reviewer pays what they always paid without having chosen the size. So an agent working in this repository does not decide for itself that an oversized change is acceptable. It reports the measure and asks you.
+
 ## Pass the checks
 
 Run these before you push. CI runs the same set, so a green local run predicts a green pull request:
