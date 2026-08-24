@@ -1,0 +1,130 @@
+---
+title: A note from the builders
+description: What we believe about the harness today, why the standards work the way they do, and what we expect to change.
+date: August 2026
+---
+
+<Postcard picture="/illos/builders-note.png" pictureAlt="An ink drawing of four builders leaning over one sheet of paper together." month="AUG" year="2026">
+
+Hello from the DXD builders!
+
+You might wonder who we are. If you do, great. If not, sad, but that is OK.
+We wrote this one for our own history.
+
+We are product builders and system thinkers who studied different things like
+design, computer science or psychology, and started our careers inside those
+crafts. Those jobs are blurring now, so we decided to embrace the chaos and
+ambiguity by building this harness, to help ourselves build faster and better,
+and the teams around us too. Out of appreciation for our core value — craft.
+
+We hope you enjoy building things with it too.
+
+Warmly, the DXD builders
+
+</Postcard>
+
+<Aside>
+
+Most of this site tells you what the harness does. This page tells you what we
+were thinking when we built it, and what we still argue about.
+
+</Aside>
+
+## Where we think the harness stands
+
+Before we settled on this shape, we studied the harnesses we respect and
+measured ours against them. With the models available today, we think ours
+compares well. We are proud of that.
+
+We are also careful with the word "today". Models improve every few months.
+Each improvement moves the line between what a harness must supply and what a
+model brings on its own. Some of the scaffolding we built this year will be
+unnecessary next year. We would rather write that down than let this site imply
+we found the answer. We found an answer that works today, and we keep checking
+whether it still does.
+
+## Standards that give your agent eyes
+
+The part of this harness we defend hardest is the
+[standards](/standards/catalog). The obvious version would have been a
+linter: measurable rules, pass or fail, done. Design does not work that way. A
+harness that pretends otherwise enforces whatever a script can count and loses
+the rest.
+
+So the standards range the way design judgment ranges, from deterministic to
+abstract. One end holds rules a script can measure: contrast floors, target
+sizes, and steps on the type scale. The other end holds calls that need
+judgment: whether a page reads as generated, or whether motion tells the truth
+about what changed. Every standard declares which kind it is, how it gets
+checked, and what waiving it costs. That range is what gives your agent eyes: a
+way of reading a screen that holds the measurable and the judged at once.
+
+We also built the standards to be read. Every standard is a page a designer can
+open and argue with. The file the checks run against is the file this site
+renders, so the two cannot drift apart. A standard that only tooling can read is
+one your team will ignore, and your team would be right to.
+
+## Why DESIGN.md lives in your repo
+
+We could have kept every product's design language in one central place. We
+chose the opposite: the
+[design language skill](/harness/skills#the-design-language) interviews you,
+reads your code, and writes a `DESIGN.md` that stays in your product's repo.
+
+We chose it because your context is not our context. Every team ships under
+different constraints: a different audience, a different codebase, and a
+different history of decisions that made sense at the time. A central file would
+flatten those differences or go stale trying to track them. A file in your repo
+evolves the way the rest of your product does, through pull requests, by the
+people closest to the work.
+
+It also keeps the choice of design system yours. If your team already has one,
+`DESIGN.md` points at it. If you want a different one, adopt it without asking
+us. The standards still hold the floors that protect users: contrast,
+target sizes, and copy that says what happens. Everything above those floors
+belongs to your team.
+
+That is the trade we are trying to make: consistent where inconsistency would
+hurt users, flexible where your product knows better than we do.
+
+## Where the harness came from
+
+This site is about design, and design is what the harness ships. It did not
+start there. Before the design harness we built an engineering one. Its review
+loops, issue skills, and repo conventions taught us how agents behave inside a
+codebase. The design harness inherits that shape: everything is a file in a
+repo, checkable and versioned.
+
+The habits from both crafts still show: we care how a standard reads and how it
+runs. We want our products to stay worth using at the speed and scale that
+agents make possible.
+
+## What we expect to change
+
+We built the structure to hold more than it holds today. The standards can carry
+another design system's rules. The skills are a set we curate, and we expect to
+add some and retire others. If a better way of working with agents appears, the
+harness should be able to absorb it. If it cannot, we will discard the harness
+before we discard the better way.
+
+Writing that sentence is cheap, so here is what meaning it costs us: re-reading
+our own decisions when a new model ships, retiring work we were fond of, and
+telling you when something here is out of date instead of quietly leaving it up.
+What stays constant is the job underneath. We adjust how we support teams
+working with AI, and we keep that support within reach of people who do not
+write code every day.
+
+If this page stops being true, the fix is to change the harness, not the page.
+
+<Aside>
+
+**Where this is heading**
+
+We started with a design-focused harness because design is where our products
+needed the most help, especially for product designers producing coded
+prototypes that hand over cleanly to engineering. It stands on the engineering
+harness that came before it, and the two are becoming one product harness. This
+site describes the design half today; it will grow to cover the whole product
+build.
+
+</Aside>

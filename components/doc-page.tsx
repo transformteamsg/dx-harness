@@ -7,25 +7,31 @@ import { Toc } from "@/components/toc";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { PageActions } from "@/components/page-actions";
 import { ToolCard, type Tool } from "@/components/tool-card";
+import { SkillCard, type SkillRef } from "@/components/skill-card";
+import { ControlList } from "@/components/control-list";
 import { mdxComponents } from "@/components/mdx";
 
 /* Sections whose docs live at /{section}/{slug} and get a breadcrumb back to
-   the section root. Single-doc sections (governance) and start pages don't. */
+   the section root. Single-doc sections and start pages don't. */
 const sectionCrumbs: Record<string, { label: string; href: string }> = {
-  principles: { label: "Principles", href: "/principles" },
-  standards: { label: "Standards", href: "/standards" },
-  guidelines: { label: "Guidelines", href: "/guidelines" },
-  foundations: { label: "Foundations", href: "/foundations" },
-  research: { label: "Research", href: "/research" },
+  standards: { label: "Standards", href: "/standards/catalog" },
   products: { label: "Products", href: "/products" },
-  harness: { label: "Harness", href: "/harness" },
-  "getting-started": { label: "Start with code", href: "/getting-started" },
+  harness: { label: "Harness", href: "/overview" },
+  "getting-started": { label: "Design in code", href: "/getting-started" },
 };
 
-export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNode }) {
+export async function DocPage({
+  doc,
+  children,
+}: {
+  doc: Doc;
+  children?: ReactNode;
+}) {
   const crumb = sectionCrumbs[doc.section];
   const headings = extractHeadings(doc.content);
   const tools = (doc.data.tools ?? []) as Tool[];
+  const skills = (doc.data.skills ?? []) as SkillRef[];
+  const controls = (doc.data.controls ?? []) as string[];
 
   /* Doc bodies are plain Markdown, but a stray angle token outside a code
      span (e.g. "<date>" in prose) makes MDX read it as an unclosed JSX tag.
@@ -56,29 +62,24 @@ export async function DocPage({ doc, children }: { doc: Doc; children?: ReactNod
   return (
     <div className="flex gap-12">
       <div className="min-w-0 max-w-[720px] flex-1">
-        <div className="mb-3 flex justify-end">
-          <PageActions />
-        </div>
         {crumb && <Breadcrumb section={crumb} current={doc.title} />}
-        {doc.status === "proposed" && (
-          <span className="mb-2 inline-block rounded-full border border-warning-muted bg-warning-subtle px-2 py-0.5 text-xs font-medium text-warning">
-            ⚑ Proposed — react, don&apos;t obey
-          </span>
-        )}
-        {doc.status === "settled" && (
-          <span className="mb-2 inline-block rounded-full border border-success-muted bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
-            Settled
-          </span>
-        )}
         <h1 className="font-display text-3xl font-semibold tracking-tight">{doc.title}</h1>
         {doc.description && (
-          <p className="mt-3 text-lg text-muted-foreground">
+          <p className="mt-3 text-base leading-relaxed text-muted-foreground">
             {doc.description}
           </p>
         )}
+        {/* Clerk-style placement: page tools sit under the title, not in a corner. */}
+        <div className="mt-5">
+          <PageActions />
+        </div>
         {tools.map((tool) => (
           <ToolCard key={tool.href} tool={tool} />
         ))}
+        {skills.map((skill) => (
+          <SkillCard key={skill.name} skill={skill} />
+        ))}
+        <ControlList ids={controls} />
         {rawFallback ? (
           <div className="mt-8">
             <p className="text-sm text-muted-foreground">

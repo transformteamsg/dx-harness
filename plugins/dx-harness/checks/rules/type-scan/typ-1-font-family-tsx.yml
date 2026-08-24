@@ -1,0 +1,15 @@
+# A typeface choice: a CSS font-family declaration, a Tailwind font-[…]
+# arbitrary value, or the font-serif / font-mono family utilities. Which
+# typefaces are approved is policy and stays in Python, and so does the rule
+# that a weight utility (font-semibold, …) is never a typeface choice.
+id: type-scan-typ-1-font-family-tsx
+language: tsx
+severity: warning
+message: candidate typ 1 font family
+metadata:
+  control: TYP-1
+  check: type-scan
+  surface: code
+rule:
+  matches: tsx-code-node
+  regex: '(?i)(font-family\s*:|\bfont-\[|\bfont-(serif|mono)\b)'

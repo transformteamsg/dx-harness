@@ -1,11 +1,12 @@
 import { getDoc } from "@/lib/content";
 import { contentMap } from "@/lib/content-map";
+import { movedPages } from "@/lib/redirects";
 import { getCatalog, getPublicCatalogYaml } from "@/lib/catalog";
 import { getControlDetail, listControlIds } from "@/lib/control-detail";
 
-/* The single source of which `.md` twin URLs exist and how each renders.
-   The route handler, generateStaticParams, the /llms.txt index, and the
-   sitemap all derive from allTwins() so they cannot diverge.
+/* The single source of which canonical `.md` twin URLs exist and how each
+   renders. The /llms.txt index and sitemap derive from allTwins(); the route
+   handler also includes the narrow compatibility aliases below.
 
    A twin is "frontmatter-derived header + the raw MDX body, JSX stripped" —
    no HTML→Markdown conversion, because getDoc() already hands back the raw
@@ -21,14 +22,11 @@ export type Twin = {
 };
 
 /* Singletons: html path → the content/sections/<slug>.mdx that backs it.
-   `governance` is not in sections/, it lives in content/governance/. A new
-   singleton needs a row here (docs/sections flow in automatically). */
+   A new singleton needs a row here (docs/sections flow in automatically). */
 const SINGLETONS: { htmlPath: string; mdPath: string; section: string; slug: string }[] = [
   { htmlPath: "/", mdPath: "/index.md", section: "sections", slug: "landing" },
+  { htmlPath: "/note", mdPath: "/note.md", section: "sections", slug: "builders-note" },
   { htmlPath: "/overview", mdPath: "/overview.md", section: "sections", slug: "home" },
-  { htmlPath: "/how-to-read", mdPath: "/how-to-read.md", section: "sections", slug: "how-to-read" },
-  { htmlPath: "/for-agents", mdPath: "/for-agents.md", section: "sections", slug: "for-agents" },
-  { htmlPath: "/governance", mdPath: "/governance.md", section: "governance", slug: "governance" },
 ];
 
 export function toMarkdown(title: string, description: string | undefined, body: string): string {
@@ -40,8 +38,8 @@ export function toMarkdown(title: string, description: string | undefined, body:
    (or an image converted to Markdown). Inside fences/spans, bytes are untouched
    so literals like `<button>`, `<ID>`, `<Link>` survive verbatim.
 
-   The only body JSX in the corpus is content/guidelines/product-icons.mdx:
-   a <div> of <a><img/><span> lockups and a <figure><svg>…</svg></figure> grid. */
+   Body JSX appears in a handful of content pages — specimen grids, figures
+   and diagrams — none of which carry prose a machine reader needs. */
 export function stripJsx(body: string): string {
   const lines = body.split("\n");
   const out: string[] = [];
@@ -134,6 +132,8 @@ function countMatches(s: string, re: RegExp): number {
   return (s.match(re) || []).length;
 }
 
+const PROSE_CONTAINERS = new Set(["Aside", "Postcard"]);
+
 /* Turn a stripped element block into honest Markdown. Images become
    ![alt](src); everything else collapses to a single placeholder line. */
 function renderStrippedBlock(tag: string, blockText: string): string | null {
@@ -147,6 +147,18 @@ function renderStrippedBlock(tag: string, blockText: string): string | null {
     if (src) imgs.push(`![${alt}](${src})`);
   }
   if (imgs.length > 0) return imgs.join("\n\n");
+
+  // These wrap prose rather than replace it — an Aside is a container, a
+  // Postcard is a frame around the words it holds. Both keep their inner
+  // Markdown in the twin and lose only the tags; collapsing either to
+  // "interactive element omitted" would drop real copy from the page.
+  if (PROSE_CONTAINERS.has(tag)) {
+    const inner = blockText
+      .replace(new RegExp(`^\\s*<${tag}\\b[^>]*>\\s*`), "")
+      .replace(new RegExp(`\\s*</${tag}\\s*>\\s*$`), "")
+      .trim();
+    return inner || null;
+  }
 
   if (tag === "svg" || tag === "figure") {
     return "*(diagram omitted — view it on the page)*";
@@ -184,6 +196,7 @@ function sectionIndexTwins(): Twin[] {
   // Each section key (incl. standards) → content/sections/<key>.mdx if present.
   for (const key of Object.keys(contentMap)) {
     if (contentMap[key].root) continue; // root sections render at their own path, handled as a doc
+    if (key === "standards") continue; // /standards redirects to the combined catalog page
     const doc = getDoc("sections", key);
     if (!doc) continue;
     const htmlPath = `/${key}`;
@@ -221,15 +234,16 @@ function catalogTwin(): Twin {
   return {
     mdPath: "/standards/catalog.md",
     htmlPath,
-    title: "Control catalog",
+    title: "Standards catalog",
     description:
-      "Every control in the standard — one verifiable statement each, with its tier, how it's checked, and its fail conditions.",
+      "How the standard works, followed by every standard and its verifiable fail conditions.",
     render: () => renderCatalogMarkdown(),
   };
 }
 
 function renderCatalogMarkdown(): string {
   const controls = getCatalog();
+  const standards = getDoc("sections", "standards");
   const sorted = [...controls].sort((a, b) =>
     a.category === b.category ? a.id.localeCompare(b.id, undefined, { numeric: true }) : a.category.localeCompare(b.category),
   );
@@ -255,16 +269,14 @@ function renderCatalogMarkdown(): string {
 
   const yamlBlock =
     "\n\n## Machine source\n\n" +
-    "The control catalog is also published as data at [/standards/catalog.yaml](/standards/catalog.yaml). The same content, inline:\n\n" +
+    "The catalog is also published as data at [/standards/catalog.yaml](/standards/catalog.yaml). The same content, inline:\n\n" +
     "```yaml\n" +
     getPublicCatalogYaml().trimEnd() +
     "\n```\n";
 
-  const header = toMarkdown(
-    "Control catalog",
-    "Every control in the standard — one verifiable statement each, with its tier, how it's checked, and its fail conditions.",
-    "",
-  ).trimEnd();
+  const header = standards
+    ? `${toMarkdown(standards.title, standards.description, standards.content).trimEnd()}\n\n## All standards`
+    : "# Standards\n\n## All standards";
 
   return `${header}\n\n${table}${failsBlock}${yamlBlock}`;
 }
@@ -272,7 +284,7 @@ function renderCatalogMarkdown(): string {
 /* Honest note shown when a control has no extended detail file. Exported so
    the HTML detail page renders the identical text — one note, two surfaces. */
 export const NO_EXTENDED_DETAIL =
-  "No extended detail — this control is defined by its catalog entry above. Full rationale and examples are added when a control needs them.";
+  "No extended detail — this standard is defined by its catalog entry above. Full rationale and examples are added when a standard needs them.";
 
 /* Per-control twins (/standards/catalog/<id>.md): one reader (getControlDetail),
    the same body the HTML page shows. Header + a tier · check · category line,
@@ -320,16 +332,41 @@ export function allTwins(): Twin[] {
   return cached;
 }
 
+/* Keep previously published machine-reader URLs working without advertising
+   duplicate documents in /llms.txt, /llms-full.txt, or the sitemap. The IA
+   restructure's moved pages (lib/redirects.ts) each alias their old `.md`
+   path to the twin now living at the new path. */
+function compatibilityTwins(): Twin[] {
+  const byHtmlPath = new Map(allTwins().map((t) => [t.htmlPath, t]));
+  const moved: Twin[] = [];
+  for (const [oldPath, newPath] of Object.entries(movedPages)) {
+    const target = byHtmlPath.get(newPath);
+    if (!target) continue;
+    moved.push({ ...target, mdPath: `${oldPath}.md` });
+  }
+  return [
+    {
+      mdPath: "/standards.md",
+      htmlPath: "/standards/catalog",
+      title: "Standards catalog",
+      description: "Compatibility alias for the combined Standards page.",
+      render: () => renderCatalogMarkdown(),
+    },
+    ...moved,
+  ];
+}
+
 export function mdPaths(): string[] {
-  return allTwins().map((t) => t.mdPath);
+  return [...allTwins(), ...compatibilityTwins()].map((t) => t.mdPath);
 }
 
 /* Resolve a list of URL segments (e.g. ["guidelines","voice-tone.md"]) to a
-   twin. Requires a trailing `.md`; matches against allTwins() by mdPath. */
+   twin. Requires a trailing `.md`; matches canonical twins and compatibility
+   aliases by mdPath. */
 export function resolveTwin(segments: string[]): Twin | null {
   const joined = "/" + segments.join("/");
   if (!joined.endsWith(".md")) return null;
-  return allTwins().find((t) => t.mdPath === joined) ?? null;
+  return [...allTwins(), ...compatibilityTwins()].find((t) => t.mdPath === joined) ?? null;
 }
 
 export function markdownResponse(text: string, htmlPath: string): Response {

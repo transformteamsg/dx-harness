@@ -1,0 +1,14 @@
+# Liveness, not a finding: a non-empty file that yields no root node was not
+# parsed in this language, and checklib.astgrep_scan() refuses to report a
+# zero-findings result for it. ast-grep can lose an entire file's matches at
+# exit 0, so this is the per-file guard against a silent zero.
+id: shared-parsed-ts
+language: ts
+severity: warning
+message: parsed
+metadata:
+  check: shared
+  surface: parsed
+  kind: program
+rule:
+  kind: program

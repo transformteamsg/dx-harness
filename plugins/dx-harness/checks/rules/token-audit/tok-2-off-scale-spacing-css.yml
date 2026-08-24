@@ -1,0 +1,16 @@
+# A spacing declaration. The rule finds the property; the spacing scale, the
+# nearest-value suggestion and every pass rule (var(), auto, 0, percentages,
+# viewport units) stay in Python.
+id: token-audit-tok-2-off-scale-spacing-css
+language: css
+severity: warning
+message: candidate tok 2 off scale spacing
+metadata:
+  control: TOK-2
+  check: token-audit
+  surface: style
+  kind: declaration
+  context: declaration
+rule:
+  matches: css-declaration
+  regex: '(?i)\b(margin|padding|gap|column-gap|row-gap|top|left|right|bottom)[a-z-]*\s*:'

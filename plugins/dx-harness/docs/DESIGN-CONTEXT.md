@@ -44,7 +44,7 @@ normative source in each section you keep. Template:
 | Section (`## `) | json key | Carries | Cites |
 |---|---|---|---|
 | `Essence` | `essence` | what the product should feel like, one or two sentences | (interview) |
-| `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table | COL-1, COL-2 |
+| `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table, and `pairs` (the declared [foreground, background] token pairs `checks/contrast.py` measures against AA) | COL-1, COL-2, A11Y-1 |
 | `Typography` | `typography` | family, base size/leading, scale steps, tabular numerals | TYP controls |
 | `Tokens` | `tokens` | source file, prefix, spacing base, dark-mode strategy (pointers into code; code is the authority) | TOK controls |
 | `Motion` | `motion` | signature moves only (durations, easing) | MOT-1, SLP-8, A11Y-5 |
@@ -94,7 +94,7 @@ Generated only, never hand-edited. Shape:
   "generated_at": "2026-08-12T00:00:00Z",
   "catalog_version": "0.1",
   "essence": "Kind Utility: useful first, kind at the surface.",
-  "colour": { "primary": "--tw-blue #0064FF" },
+  "colour": { "primary": "--tw-blue #0064FF", "pairs": [["--foreground", "--background"]] },
   "layout_system": { "columns": 12, "gutter": "space-4", "breakpoints": [360, 768, 1280] },
   "tone": "Neutral, steady, quietly confident.",
   "guardrails": ["Check the component manifest before building anything new."],

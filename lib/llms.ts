@@ -11,17 +11,15 @@ import { allTwins } from "@/lib/markdown-twin";
 export function llmsIndex(): string {
   const { version, waiver_syntax } = getCatalogMeta();
   const lines: string[] = [];
-  lines.push("# TFX Design Standard");
+  lines.push("# dx-harness");
   lines.push("");
   lines.push(
-    "> Make the quality bar independent of staffing. Brand essence: Kind Utility —",
+    "> Make the quality bar independent of staffing. Shared product intent, checkable",
   );
   lines.push(
-    "> useful first, kind at the surface. The one test: does this help teachers work",
+    "> standards, and a repeatable workflow help people and agents ship coherent interfaces.",
   );
-  lines.push(
-    "> faster with less stress? Every page below is also available as Markdown by",
-  );
+  lines.push("> Every page below is also available as Markdown by");
   lines.push("> appending `.md` to its path.");
   lines.push("");
 
@@ -29,17 +27,17 @@ export function llmsIndex(): string {
   lines.push("## About");
   lines.push("");
   lines.push(
-    `- TransformX, Teacher & School portfolio, GovTech Singapore (v${version} draft).`,
+    `- The dx-harness design standard (v${version} draft).`,
   );
   lines.push(
-    "- Litmus for standards: if you can't check it, it's a principle or guideline, not a standard.",
+    "- Litmus for the catalog: if you can't check it, it's guidance and lives in a standards page's prose, not in the catalog.",
   );
   lines.push(
     "- Tiers: L0 non-negotiable (no waiver) · L1 mandatory (documented waiver) · L2 recommended (inline rationale).",
   );
   lines.push(`- Waiver syntax: \`${waiver_syntax}\`.`);
   lines.push(
-    "- Stack: Base UI components + Radix Colors + shadcn/ui default tokens. Fonts: Plus Jakarta Sans (display), Inter (body).",
+    "- Product context: implemented stack and standing deviations belong in the product repo's DESIGN.md. Current catalog defaults use Base UI, Radix Colors, shadcn/ui tokens, Plus Jakarta Sans, and Inter.",
   );
   lines.push("");
 
@@ -53,10 +51,9 @@ export function llmsIndex(): string {
   // Start here: the singleton entry points.
   lines.push("## Start here");
   lines.push("");
-  lines.push("- [TFX Design Standard home](/index.md)");
+  lines.push("- [dx-harness home](/index.md)");
   lines.push("- [Overview](/overview.md)");
-  lines.push("- [How to read this standard](/how-to-read.md)");
-  lines.push("- [For agents](/for-agents.md)");
+  lines.push("- [A note from the builders](/note.md)");
   lines.push("");
 
   const item = (label: string, href: string, desc?: string) =>
@@ -64,12 +61,16 @@ export function llmsIndex(): string {
 
   for (const [key, def] of Object.entries(contentMap)) {
     if (key === "standards") {
+      // The section index is the combined catalog page, not a sections/ doc;
+      // the dimension pages follow it as ordinary slug twins.
       lines.push("## Standards");
       lines.push("");
-      const std = getDoc("sections", "standards");
-      if (std) lines.push(item("Standards overview", "/standards.md", std.description));
-      lines.push(item("Control catalog", "/standards/catalog.md", "readable controls + embedded YAML"));
-      lines.push(item("Control catalog (YAML)", "/standards/catalog.yaml", "machine source"));
+      lines.push(item("Standards catalog", "/standards/catalog.md", "overview, readable standards + embedded YAML"));
+      lines.push(item("Standards catalog (YAML)", "/standards/catalog.yaml", "machine source"));
+      for (const slug of def.slugs) {
+        const doc = getDoc(key, slug);
+        if (doc) lines.push(item(doc.title, `/${key}/${slug}.md`, doc.description));
+      }
       lines.push("");
       continue;
     }
@@ -77,8 +78,8 @@ export function llmsIndex(): string {
     lines.push(`## ${def.label}`);
     lines.push("");
 
-    // Root sections (e.g. governance): the first slug is the doc at the
-    // section path itself; any further slugs live at /section/slug.
+    // Root sections: the first slug is the doc at the section path itself;
+    // any further slugs live at /section/slug.
     if (def.root) {
       for (const [i, slug] of def.slugs.entries()) {
         const doc = getDoc(key, slug);
@@ -107,7 +108,7 @@ export function llmsIndex(): string {
    catalog projection. */
 export function llmsFull(): string {
   const lines = [
-    "# TFX Design Standard — full Markdown corpus",
+    "# dx-harness — full Markdown corpus",
     "",
     "> Complete corpus generated from the site's Markdown twins. Each source is delimited by its canonical Markdown path.",
     "",

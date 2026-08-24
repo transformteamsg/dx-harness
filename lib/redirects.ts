@@ -1,0 +1,38 @@
+/* Where pages moved in the IA restructure (guidelines/foundations →
+   /standards/*, research → harness, principles removed) and where the
+   retired Reference pages now land. One map, two consumers: middleware.ts
+   issues permanent redirects for the HTML paths, and markdown-twin.ts
+   aliases the old `.md` twins so published machine-reader URLs keep
+   resolving. No fs access — middleware imports it. */
+
+export const movedPages: Record<string, string> = {
+  "/principles": "/overview",
+  "/principles/brand-principles": "/overview",
+  "/principles/product-design-principles": "/overview",
+  "/guidelines": "/standards/catalog",
+  "/guidelines/ui-text": "/standards/writing",
+  "/guidelines/voice-tone": "/standards/voice-tone",
+  "/guidelines/grammar-mechanics": "/standards/grammar-mechanics",
+  "/guidelines/text-patterns": "/standards/text-patterns",
+  "/guidelines/naming": "/standards/naming",
+  "/guidelines/interaction": "/standards/interaction",
+  "/guidelines/web-interface": "/standards/web-interface",
+  "/guidelines/data-viz": "/standards/data-viz",
+  "/guidelines/illustration": "/standards/illustration",
+  "/guidelines/product-icons": "/standards/iconography",
+  "/foundations": "/standards/catalog",
+  "/foundations/colour": "/standards/colour",
+  "/foundations/typography": "/standards/typography",
+  "/foundations/spacing-radius": "/standards/spacing-radius",
+  "/foundations/iconography": "/standards/iconography",
+  "/foundations/motion": "/standards/motion",
+  "/foundations/tokens": "/standards/tokens",
+  "/research": "/harness/research-brief",
+  "/research/research-brief": "/harness/research-brief",
+  /* The Reference group, removed 2026-08-19. Nothing replaced these pages,
+     so they land on the overview. */
+  "/how-to-read": "/overview",
+  "/for-agents": "/overview",
+  "/governance": "/overview",
+  "/governance/changes": "/overview",
+};

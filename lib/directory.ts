@@ -1,6 +1,7 @@
 import { getDoc } from "@/lib/content";
 import { contentMap } from "@/lib/content-map";
 import { sectionInk, type Topic } from "@/components/thumbnails";
+import { isNestedNavHref, isVisibleNavHref } from "@/lib/nav";
 
 /* Directory structure is chrome (like the sidebar); doc registration comes
    from content/map.json via lib/content-map, titles and descriptions from
@@ -16,9 +17,9 @@ const chromePages: Record<string, Omit<Topic, "ink">[]> = {
   standards: [
     {
       href: "/standards/catalog",
-      title: "Control catalog",
+      title: "All standards",
       description:
-        "Every control with its tier, fail conditions and check type. Filter, copy IDs, cite them in review.",
+        "Every standard with its tier, fail conditions and check type. Filter, copy IDs, cite them in review.",
       artKey: "standards/catalog",
     },
   ],
@@ -37,13 +38,17 @@ export function sectionTopics(key: string): Topic[] {
   const section = sections[key];
   if (!section) return [];
   const ink = sectionInk[key] ?? "var(--foreground)";
-  const fromPages = (section.pages ?? []).map((page) => ({ ...page, ink }));
+  const fromPages = (section.pages ?? []).flatMap((page) =>
+    isVisibleNavHref(page.href) ? [{ ...page, ink }] : [],
+  );
   const fromSlugs = (section.slugs ?? []).flatMap((slug) => {
+    const href = `/${key}/${slug}`;
+    if (!isVisibleNavHref(href) || isNestedNavHref(href)) return [];
     const doc = getDoc(key, slug);
     if (!doc) return [];
     return [
       {
-        href: `/${key}/${slug}`,
+        href,
         title: doc.title,
         description: doc.description,
         artKey: `${key}/${slug}`,

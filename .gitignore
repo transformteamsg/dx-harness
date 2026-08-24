@@ -27,8 +27,10 @@ out/
 .env*
 *.tsbuildinfo
 next-env.d.ts
-.vercel
 
 # Playwright
 /test-results/
 /playwright-report/
+
+# Claude worktrees
+.claude

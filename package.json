@@ -4,21 +4,25 @@
   "private": true,
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev",
-    "prebuild": "node scripts/check-standards.mjs && (test -n \"$VERCEL\" && echo 'Vercel build: skipping Python standards gate (pyyaml not provisioned; catalog validated by check-standards.mjs)' || pnpm run check:python)",
+    "prebuild": "node scripts/check-standards.mjs && pnpm run check:python && pnpm run check:notices",
     "build": "next build",
+    "postbuild": "node scripts/externalize-next-inline-scripts.mjs",
     "check:standards": "node scripts/check-standards.mjs",
-    "check:python": "python3 plugins/dx-harness/checks/validate.py --self-test && python3 plugins/dx-harness/checks/validate.py && python3 plugins/dx-harness/checks/token-audit.py app components lib && python3 plugins/dx-harness/checks/a11y-static.py app components && python3 plugins/dx-harness/checks/type-scan.py app components",
+    "check:python": "python3 plugins/dx-harness/checks/validate.py --self-test && python3 plugins/dx-harness/checks/validate.py && python3 plugins/dx-harness/checks/checklib.py --self-test && python3 plugins/dx-harness/checks/token-audit.py --self-test && python3 plugins/dx-harness/checks/type-scan.py --self-test && python3 plugins/dx-harness/checks/token-audit.py app components lib && python3 plugins/dx-harness/checks/a11y-static.py app components && python3 plugins/dx-harness/checks/type-scan.py app components",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "gen:icons": "node scripts/generate-ink-icons.mjs"
+    "gen:icons": "node scripts/generate-ink-icons.mjs",
+    "gen:notices": "node scripts/generate-notices.mjs",
+    "check:notices": "node scripts/generate-notices.mjs --check"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
+    "@fontsource/anonymous-pro": "^5.3.0",
     "@radix-ui/colors": "^3.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -1,0 +1,16 @@
+# The JSX counterpart of heading-element-html.yml.
+id: type-scan-heading-element-tsx
+language: tsx
+severity: warning
+message: heading element
+metadata:
+  control: TYP-2
+  check: type-scan
+  surface: heading-element
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  has:
+    field: name
+    regex: '^[hH][1-6]$'

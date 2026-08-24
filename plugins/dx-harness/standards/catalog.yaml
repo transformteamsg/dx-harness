@@ -584,6 +584,56 @@ controls:
     detail: controls/cmp-9.md
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
+  # CMP-10: ratchet PROPOSAL 2026-08-18 — input-validation error-clearing
+  # behaviour, from issue #190 (PG frontend PR #117: an error message stayed
+  # visible after the teacher corrected the input). Pending design-lead
+  # approval. See docs/catalog-changes/cmp-10-input-validation-error-clearing.md.
+  - id: CMP-10
+    source: DX-DS
+    title: An input-validation error message clears as soon as the field is corrected, with no separate action required; each field's error clears independently among multiple simultaneous errors
+    tier: L1
+    status: proposed
+    check: hybrid
+    phase: [implement, verify]
+    applies_to: [component]
+    verify: "Deterministic: for each in-scope field, enter an invalid value, confirm the error message renders, then correct it and confirm the error message is removed from the DOM (planned interaction script, manual until built). Judgment: with multiple simultaneous field errors, correct one field and confirm only that field's error clears while the others remain visible."
+    waiver: documented
+    fails_when:
+      - the error message for a corrected field remains visible after the input satisfies the validation rule again
+      - correcting one field's input clears another field's error message, or clears all errors at once
+      - the error only clears on an unrelated action (submit, blur elsewhere, navigation) rather than on the correction itself
+    detail: controls/cmp-10.md
+    enforced: manual
+    gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
+    refs: [https://github.com/transformteamsg/dx-harness/issues/190]
+
+  # CMP-11: ratchet PROPOSAL 2026-08-06 — nested-child geometry self-consistency,
+  # from a two-independent-run efficacy report (docs/tfx-design-skill-report): a
+  # stat-tile's active/focus ring sat visibly inside its card rather than flush
+  # with the card's edge, and both evaluator passes missed it because CMP-7's
+  # guidance only covers component defaults and cross-page consistency, never a
+  # component's self-consistency against its own nested child's box model.
+  # Boundary with CMP-7: CMP-7 checks a component against its own defaults and
+  # its sibling-page usage; CMP-11 checks a component against itself — does its
+  # own nested interactive child trace its own container's edge and radius.
+  # Numbered CMP-11, not CMP-10: CMP-10 was independently claimed by the
+  # input-validation error-clearing control above (#191, merged first).
+  # Pending design-lead approval.
+  - id: CMP-11
+    source: DX-DS
+    title: A component's own nested interactive child (a focus ring, active-state fill, icon) traces that component's own container edge and radius — not a smaller box floating inside it
+    tier: L2
+    status: proposed
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: for each interactive component, does a focus ring, active-state fill, or icon nested inside it trace the container's true edge and radius (accounting for padding), or does it float inside a smaller box than the container it's meant to outline? A self-consistency read distinct from A11Y-8 (state-tracking) — a ring can correctly track aria-pressed and still sit in the wrong box"
+    waiver: rationale
+    fails_when:
+      - a component's own nested interactive child (a focus ring, active-state fill) does not trace that component's own container edge or radius — it reads as floating inside a smaller box, not outlining the container
+    detail: controls/cmp-11.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # ── Content & naming ──────────────────────────────────────────────────
   - id: CNT-1
     source: DX-DS
@@ -869,7 +919,7 @@ controls:
 
   # CNT-14: ratchet 2026-07-10, design-lead approved 2026-07-22 — holistic voice
   # quality + tone-fit, the one slice of the voice & tone guideline
-  # (content/guidelines/voice-tone.mdx) no existing control owns. Judgment-only:
+  # (content/standards/voice-tone.mdx) no existing control owns. Judgment-only:
   # no static signal decides "sounds
   # thoughtful" or "tone fits this surface". Disjoint from the mechanical voice
   # controls (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12
@@ -929,6 +979,7 @@ controls:
       - a surface that animates but declares no motion token set
       - the narrative tier (--motion-story) used on interface or task UI
     enforced: manual
+    gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
     refs: [https://github.com/transformteamsg/tfx-design-standard]
 
   # MOT-3: ratchet PROPOSAL 2026-07-12 — static information parity, written for

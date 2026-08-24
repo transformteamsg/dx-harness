@@ -1,0 +1,21 @@
+# A raw colour value in a style context. Only .css rules exist for the style
+# surface: every other style context (a <style> block, a style="…" attribute, a
+# tagged style template literal) is re-scanned as CSS by
+# checklib.astgrep_scan(), so one rule reaches all four contexts.
+#
+# The regex is a locator, deliberately looser than the policy: Python decides
+# whether the value is really a colour, whether a named colour sits in a value
+# position, and whether the line is exempt.
+id: token-audit-tok-1-raw-colour-css
+language: css
+severity: warning
+message: candidate tok 1 raw colour
+metadata:
+  control: TOK-1
+  check: token-audit
+  surface: style
+  kind: declaration
+  context: declaration
+rule:
+  matches: css-declaration
+  regex: '(?i)(#[0-9a-fA-F]{3,8}|\brgba?\s*\(|\bhsla?\s*\(|\boklch\s*\(|\b(white|black|red|green|blue|gray|grey|orange|yellow|purple)\b)'
