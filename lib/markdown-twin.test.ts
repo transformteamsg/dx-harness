@@ -106,8 +106,30 @@ describe("controlMarkdown", () => {
 
 describe("mdAlternate", () => {
   it("maps an html path to its .md twin url via alternates.types['text/markdown']", () => {
-    expect(mdAlternate("/guidelines/voice-tone")).toEqual({
-      alternates: { types: { "text/markdown": "/guidelines/voice-tone.md" } },
+    expect(mdAlternate("/standards/voice-tone")).toEqual({
+      alternates: { types: { "text/markdown": "/standards/voice-tone.md" } },
     });
+  });
+});
+
+describe("combined standards catalog twin", () => {
+  it("includes the standards overview before the list", () => {
+    const twin = resolveTwin(["standards", "catalog.md"]);
+    const markdown = twin?.render() ?? "";
+    expect(markdown).toContain("# Standards");
+    expect(markdown).toContain("## All standards");
+    expect(markdown.indexOf("# Standards")).toBeLessThan(
+      markdown.indexOf("## All standards"),
+    );
+  });
+
+  it("keeps the old standards twin as a compatibility alias", () => {
+    const canonical = resolveTwin(["standards", "catalog.md"]);
+    const compatibilityAlias = resolveTwin(["standards.md"]);
+
+    expect(compatibilityAlias?.htmlPath).toBe("/standards/catalog");
+    expect(compatibilityAlias?.render()).toBe(canonical?.render());
+    expect(allTwins().some((twin) => twin.mdPath === "/standards.md")).toBe(false);
+    expect(mdPaths()).toContain("/standards.md");
   });
 });

@@ -138,6 +138,16 @@ colour/contrast override under A11Y-1. Judgment for now — the deterministic
 override-detection sub-check is planned once the CMP-1 manifest is wired; say "verified
 manually" and name what you checked.
 
+**Nested-child geometry (CMP-11, L2, judgment, proposed — controls/cmp-11.md).**
+Also check each component against **its own nested interactive child's geometry** —
+does a focus ring or active-state fill trace the component's own edge, or does it
+float inside a smaller box than the container it's meant to outline? This is a
+self-consistency read distinct from CMP-7's default/sibling-page checks, and distinct
+from A11Y-8 (state-tracking): a ring can correctly track `aria-pressed` and still sit in
+the wrong box — check the geometry itself, not just whether the ring is present. CMP-11
+is proposed, pending design-lead approval — report a violation as an advisory
+suggestion, not a blocking or advisory finding, until approved.
+
 **Draft safety / escapability (CMP-8, L1, hybrid — controls/cmp-8.md).** For a
 multi-step or data-entry flow in scope: confirm every step has a reachable, visible
 cancel/back affordance (deterministic half, manual until a script exists), then walk
@@ -153,6 +163,15 @@ the render path (deterministic half — grep for `dangerouslySetInnerHTML`/`v-ht
 the surface, manual until a script exists), then read the render boundary directly and
 judge whether the sanitisation guarantee holds there, not only at author/editor time.
 An in-code "schema-constrained" comment is not evidence of render-time sanitisation.
+
+**Input-validation error clearing (CMP-10, L1, hybrid, status proposed —
+controls/cmp-10.md).** For each in-scope field: enter an invalid value, confirm
+the error message renders, then correct it and confirm the error message is
+gone (deterministic half, manual until an interaction script exists). Where
+multiple fields are invalid at once, correct one and judge whether only that
+field's error clears while the others remain visible. Client-side validation
+only — a server-side/async validation error follows CMP-3 instead. Quote the
+field(s) and the before/after state you observed.
 
 <!-- dx-sync:lay-controls -->
 **Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
@@ -184,7 +203,7 @@ surface with neither is a finding.
 
 **Voice quality + tone-fit (CNT-14, L2, judgment — controls/cnt-14.md).** Read the copy
 against the voice attributes (Clear / Thoughtful / Approachable) and the tone-by-context
-table in `content/guidelines/voice-tone.mdx`: name the surface's context
+table in `content/standards/voice-tone.mdx`: name the surface's context
 (success, error, onboarding, destructive, empty state, permission) and judge whether the
 tone fits — affirming/brief success, calm/helpful error, sober/precise destructive,
 inviting empty state. This is the *gestalt* only: a mechanical miss belongs to its own

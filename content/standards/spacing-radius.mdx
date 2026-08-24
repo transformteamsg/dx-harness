@@ -1,0 +1,41 @@
+---
+title: Spacing and radius
+description: Consistent spacing and corners are what make a screen feel calm instead of busy. One shared scale, so nothing is arbitrary.
+skills:
+  - name: dx-design-polish
+    description: Reviews the visual craft of a page — spacing, type, radius, colour, shadow — and proposes ranked fixes.
+controls: [TOK-2, TOK-3, SLP-7]
+---
+
+We use the **shadcn/ui default token scales** for spacing, radius, and elevation, deliberately unmodified.
+
+Every deviation we don't make is consistency we get for free, and a vocabulary AI agents already know. Values live in the shadcn documentation; standards TOK-1, TOK-2, and TOK-3 bind every product to them.
+
+<SpacingScale />
+
+## Rhythm, not monotony
+
+The scale gives you values; rhythm is still your job. Related items group tighter than unrelated ones. One spacing value everywhere is an AI-slop tell (SLP-7).
+
+## Radius
+
+Corner radii come from the shadcn radius scale (TOK-3). Cards top out around 12–16px; reserve full-pill for tags and buttons. Nested radii: child radius ≤ parent radius, concentric so curves align.
+
+<RadiusScale />
+
+## Usage
+
+```tsx
+{/* padding step 4 = 16px, gap step 2 = 8px, radius lg */}
+<div className="p-4 gap-2 rounded-lg" />
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Use the shadcn scale through Tailwind utilities — p-4, gap-2, rounded-lg." },
+  { kind: "do", text: "Group related items more tightly than unrelated ones (SLP-7)." },
+  { kind: "do", text: "Keep a child's radius at or below its parent's, so curves stay concentric." },
+  { kind: "dont", text: "Reach for an off-scale value for margin, padding, or gap (TOK-2), or radius (TOK-3)." },
+  { kind: "dont", text: "Use one spacing value everywhere — flat rhythm is an AI-slop tell (SLP-7)." },
+]} />

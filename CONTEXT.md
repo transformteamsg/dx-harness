@@ -55,3 +55,11 @@ _Avoid_: Branch check, git precheck
 **Source-of-truth election**:
 The human's choice, during a dx-design-language session, of which evidence source — code, Figma, or a hybrid split per part — seeds DESIGN.md's decisions when sources disagree. Guides elicitation only; code stays the runtime authority, and fix-todos bring it in line with the elected source.
 _Avoid_: Precedence override, truth source
+
+**Issue shape**:
+Which of the four kinds a piece of work is: a story (someone outside the team observes a new capability), a task (one discipline's slice of something already tracked, with no persona of its own), a chore (nothing a user observes changes), or a bug (something already built behaves wrongly). The shape decides which skill does the intake, because each shape needs different questions. `dx-create-issue` owns this one decision and nothing else.
+_Avoid_: Issue type, ticket type, epic, subtask
+
+**Slice**:
+One discipline's deliverable piece of a tracked story or chore, filed as a task and linked to its parent as a native GitHub sub-issue so the parent's progress reflects it. A slice never stands alone: work with no parent is a story or a chore. `dx-split-issue` proposes how to cut an existing issue into slices; `dx-create-task` files each one.
+_Avoid_: Child issue, sub-task, decomposition

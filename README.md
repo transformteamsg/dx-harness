@@ -3,9 +3,10 @@
 AI harness for agentic-driven product development — a single Claude Code plugin
 bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
-- **21 skills** in two groups: 8 engineering (`dx-code-review`, `dx-create-issue`,
-  `dx-groom-issue`, `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`,
-  `dx-git-hooks-setup`, `dx-update-npm-dependencies`) and 13 design (`dx-design`,
+- **24 skills** in two groups: 11 engineering (`dx-code-review`, `dx-create-issue`,
+  `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`,
+  `dx-split-issue`, `dx-implement-issue`, `dx-lint-setup`, `dx-git-hooks-setup`,
+  `dx-update-npm-dependencies`) and 13 design (`dx-design`,
   `dx-design-setup`, `dx-design-execute`, `dx-design-critique`,
   `dx-design-language`, `dx-design-copy`, `dx-design-polish`, `dx-design-motion`,
   `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`, `dx-design-git`,
@@ -43,12 +44,21 @@ Skills appear as `/dx-harness:dx-<name>` (e.g. `/dx-harness:dx-code-review`,
 `/reload-plugins`. Claude Code installs updates only when the version in `plugin.json`
 changes.
 
-If the update reports no changes and the installed plugin is still `0.3.0`, remove
-only that version's cached plugin directory, then reinstall and reload:
+If the update reports no changes and the installed plugin is still on an older
+version, remove the stale cached directories and reinstall. The cache lives under
+your Claude Code config directory, which is `~/.claude` unless `CLAUDE_CONFIG_DIR`
+says otherwise, and each version gets its own directory:
 
-    rm -rf ~/.claude/plugins/cache/dx-harness/dx-harness/0.3.0
+    ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/cache/dx-harness/dx-harness"
+    rm -rf "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/cache/dx-harness/dx-harness"
+
+Then reinstall and reload:
+
     /plugin install dx-harness@dx-harness
     /reload-plugins
+
+Check what you actually have with `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"`.
+The `version` recorded there is the one in use, whatever the repository says.
 
 The design skills need Python 3 + PyYAML for the `checks/` scripts. Run `/dx-harness:dx-design-setup`
 (or `/dx-harness:dx-design`) for the per-user tool checklist.

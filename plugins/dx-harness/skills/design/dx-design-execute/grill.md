@@ -85,3 +85,11 @@ early-approval rule. In an unattended run there is no human to answer the grill,
 grill yourself: write the questions and your reasoned answers into that same section,
 so the async reviewer sees what was interrogated (the parallel of the operator-proxy
 rule for the approval gate).
+
+Record each resolved decision with enough concrete specificity to stand on its own
+after compaction — not just the topic ("action-column placement resolved") but the
+actual recommendation and answer ("recommended: a dedicated action column beside the
+status column, not embedded under the student name — approved"). A label that only
+names the topic is not sufficient: a future turn, or a different agent picking up the
+decision record, must be able to reconstruct *what was decided* without re-deriving it
+from the conversation — compaction is not guaranteed to preserve that.

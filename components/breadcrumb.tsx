@@ -12,7 +12,7 @@ export function Breadcrumb({
     <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-1.5 text-xs">
       <Link
         href={section.href}
-        className="font-medium text-tw-blue underline-offset-2 hover:underline"
+        className="font-medium text-site-accent-text underline-offset-2 hover:underline"
       >
         {section.label}
       </Link>

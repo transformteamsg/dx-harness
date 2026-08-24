@@ -15,11 +15,14 @@ permissions:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    # Pinned to the arm64 image rather than ubuntu-latest, which is x64. ARM images
+    # are only published version-pinned, so there is no -latest to track: moving to a
+    # newer image is a deliberate edit here. Free for public repositories.
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 11
 
@@ -40,12 +43,20 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Install PyYAML
         run: pip install pyyaml
+
+      # The checks layer matches source structure through ast-grep. It is a
+      # harness-side dependency reached with subprocess, like PyYAML above: no
+      # manifest declares it, this step provisions it in CI, and every check
+      # fails loudly with one ERROR line when it is missing or below the floor.
+      # Nothing is installed into the repo being checked.
+      - name: Install ast-grep
+        run: npm install --global @ast-grep/cli@0.44.1
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium

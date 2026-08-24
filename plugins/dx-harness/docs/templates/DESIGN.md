@@ -25,9 +25,12 @@ Kind Utility: useful first, kind at the surface. Calm tools for busy teachers,
 never playful at the cost of clarity. When unsure, choose the quieter option.
 
 ## Colour
-<!-- Cites: COL-1, COL-2. Values only. -->
+<!-- Cites: COL-1, COL-2. Values only. `pairs` is machine-read by
+     checks/contrast.py: each [foreground, background] pair of token names is
+     measured against WCAG AA. Omit it and A11Y-1 stays a manual check. -->
 - primary: --tw-blue #0064FF
 - accent: none; functional colour comes from the Radix scales
+- pairs: [["--foreground", "--background"], ["--muted-foreground", "--background"]]
 
 ## Typography
 <!-- Cites: TYP controls. -->

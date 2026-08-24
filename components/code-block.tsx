@@ -21,7 +21,7 @@ export function CodeBlock({ code, lang }: { code: string; lang?: string }) {
           type="button"
           onClick={copy}
           aria-label="Copy code"
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 transition-colors duration-(--motion-fast) hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11"
+          className="inline-flex items-center gap-1 rounded-md px-2 py-1 transition-colors duration-(--motion-fast) hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) max-sm:min-h-11"
         >
           {copied ? <Check className="size-3.5" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
           {copied ? "Copied" : "Copy"}

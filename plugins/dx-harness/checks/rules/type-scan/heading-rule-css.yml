@@ -1,0 +1,16 @@
+# Every CSS rule, with its selector group. type-scan reads the innermost rule
+# containing a line to answer "am I inside an h1 to h6 rule", which retires the
+# hand-rolled brace state machine. Which selectors count as heading-only stays in
+# Python: ast-grep 0.44.1 has no rule field that expresses "the rightmost
+# compound selector of every comma group".
+id: type-scan-heading-rule-css
+language: css
+severity: warning
+message: css rule
+metadata:
+  control: TYP-2
+  check: type-scan
+  surface: heading-rule
+  kind: rule_set
+rule:
+  matches: css-rule-set

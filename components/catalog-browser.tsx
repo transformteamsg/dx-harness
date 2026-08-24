@@ -103,7 +103,7 @@ export function CatalogBrowser({
       onClick={onClick}
       aria-pressed={active}
       className={clsx(
-        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0",
+        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) sm:min-h-6 sm:min-w-0",
         active
           ? "border-foreground bg-foreground text-white"
           : "border-border bg-surface text-muted-foreground hover:text-foreground",
@@ -127,8 +127,8 @@ export function CatalogBrowser({
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => copy(c.id)}
-          title="Copy control ID"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-accent px-2 py-0.5 text-xs font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6 sm:min-w-0"
+          title="Copy ID"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-border bg-accent px-2 py-0.5 text-xs font-semibold hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) sm:min-h-6 sm:min-w-0"
         >
           {copied === c.id ? "copied ✓" : c.id}
         </button>
@@ -159,7 +159,7 @@ export function CatalogBrowser({
         )}
         <a
           href={`/standards/catalog/${c.id.toLowerCase()}`}
-          className="ml-auto inline-flex min-h-11 items-center text-xs text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-6"
+          className="ml-auto inline-flex min-h-11 items-center text-xs text-site-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) sm:min-h-6"
         >
           Details →
         </a>
@@ -182,9 +182,9 @@ export function CatalogBrowser({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search controls — id, rule, fail condition"
-          aria-label="Search controls"
-          className="min-h-11 w-full max-w-[360px] rounded-md border border-border bg-surface px-3 py-1.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) sm:min-h-8"
+          placeholder="Search standards — id, rule, fail condition"
+          aria-label="Search standards"
+          className="min-h-11 w-full max-w-[360px] rounded-md border border-border bg-surface px-3 py-1.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) sm:min-h-8"
         />
         <kbd className="rounded border border-border bg-muted px-1.5 text-xs text-muted-foreground">
           /
@@ -249,7 +249,7 @@ export function CatalogBrowser({
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        {filtered.length} of {controls.length} controls
+        {filtered.length} of {controls.length} standards
       </p>
 
       {isGrouped ? (

@@ -1,12 +1,11 @@
 ---
-title: Install
-description: Two commands put the skills, the evaluator, and the control catalog in your Claude Code session.
-status: settled
+title: Quick start
+description: Install the harness, check it works, and set up the tools it uses.
 ---
 
 The harness ships as a Claude Code plugin. Install it once per product repo;
 everyone who opens Claude Code in that repo gets the same skills, the same
-evaluator, and the same control catalog.
+design reviewer, and the same catalog.
 
 ## Before you start
 
@@ -14,61 +13,111 @@ You need [Claude Code](https://claude.com/claude-code) installed and signed in.
 Open a session at the root of your product repo, not a subdirectory — skills
 read the repo they run in, and a session opened deeper may not trigger them.
 
-## Install the plugin
+## Add the harness
 
-Run these two commands in your Claude Code session:
+These are the steps for Claude Code in the terminal or a code editor. On the
+desktop app you [use the menus
+instead](#install-on-the-claude-code-desktop-app).
+
+Run two commands in your Claude Code session, one at a time — send the first
+and wait for it to finish before you send the second. Pasted together they
+read as a single command and the install never runs.
+
+First, register the harness repository as a plugin marketplace:
 
 ```
 /plugin marketplace add transformteamsg/dx-harness
+```
+
+Then install the `dx-harness` plugin from it:
+
+```
 /plugin install dx-harness@dx-harness
 ```
 
-The first registers the harness repository as a plugin marketplace. The
-second installs the `dx-harness` plugin from it: the [skills](/harness/skills),
-the evaluator agent, and the [control catalog](/standards/catalog). The catalog
-ships inside the plugin, so your repo never carries its own copy of the
-standard.
+That gives you the [skills](/harness/skills), the design reviewer agent, and
+the [catalog](/standards/catalog). The catalog ships inside the
+plugin, so your repo never carries its own copy of the standard.
 
-## Check it worked
+## Verify the installation
 
-Type `/dx-harness:dx-design`. It orients you and routes you to the right skill;
-if it responds, the install worked.
+Type `/dx-harness:dx-design`. It asks what you want and routes you to the
+right skill; if it responds, the install worked.
 
 If nothing happens:
 
-- Run `/plugin` and confirm `dx-harness` appears and is enabled.
+- Confirm `dx-harness` appears and is enabled — run `/plugin` on the command
+  line, or open **Customize → Plugins** in the app.
 - Confirm your session is open at the repo root, not a subdirectory.
 - Restart Claude Code and try again.
 
-## Set up your machine, once per person
+## Install on the Claude Code desktop app
 
-The plugin is per-repo; three tools are per-person. Run `/dx-harness:dx-design` once and
-the setup skill checks and installs them:
+The desktop app has no command line, and you don't need one. You install the
+same plugin through the menus, and the only thing you paste is the
+repository below. Claude on the web works the same way.
+
+1. On the desktop app, start a session and pick your product repo's root
+   folder as the **Project folder**.
+2. Open **Customize** in the sidebar, then **Plugins**.
+3. Select **Add marketplace** and paste this repository, then confirm:
+
+   ```
+   transformteamsg/dx-harness
+   ```
+
+   This registers the marketplace; no plugin is installed yet.
+
+4. Find **dx-harness** in the marketplace and select **Install**.
+5. Type `/` in a chat to choose a skill, or send `/dx-harness:dx-design`.
+
+To update later, select **Update** on the marketplace on the same **Plugins**
+page — the [Stay current](#stay-current) commands below are for the command
+line. And where this page says restart Claude Code, quit and reopen the app.
+
+If you also work in a product repo on your machine, continue with the
+one-time machine setup below.
+
+## Set up your machine, once
+
+You don't have to do this before you start. The plugin is installed per repo,
+but a few tools are per machine, and `/dx-harness:dx-design` confirms your
+machine is ready the first time you ask it to shape something — if something
+is missing, it stops and walks you through setup then and there.
+
+Run `/dx-harness:dx-design-setup` yourself if you'd rather be ready before you
+start. Either way it checks and installs the same things:
 
 - **agent-browser** — captures the screenshots the verify phase grades.
-- **`gh`, authenticated** — lets `/dx-harness:dx-design-feedback` file an issue the moment the
-  harness confuses you.
+- **`gh`, authenticated** — lets `/dx-harness:dx-design-feedback` file an issue the
+  moment the harness confuses you.
 - **Python with PyYAML** — runs the deterministic check scripts.
+- **Commit signing** — set up once per machine.
+- **The design-ticket tracker** — wired to your repo.
 
 ## Stay current
 
 Plugin updates are manual — third-party marketplaces don't update themselves.
-When the catalog or the skills change, run:
+When the catalog or the skills change, run these one at a time (in the app,
+update from **Customize → Plugins** instead):
 
 ```
 /plugin marketplace update dx-harness
+```
+
+```
 /reload-plugins
 ```
 
 The skills and the catalog are versioned together, so one update moves both.
 
-## Adopting the harness for a whole product repo?
+## Adopt the harness for a whole product repo
 
 Installing gives you the tools. Making a repo harness-ready is six more items:
-the fixed stack, a component manifest, skills verified, deterministic checks,
+declared product context, a component manifest, skills verified, deterministic checks,
 record locations, and a named waiver approver. Work through the
 [team onboarding guide](https://github.com/transformteamsg/dx-harness/blob/main/plugins/dx-harness/docs/ONBOARDING.md)
 once per repo.
 
-Working on the harness itself? Open Claude Code in the harness repo and skip
-all of this — its skills load automatically from the repo.
+If you work on the harness itself, open Claude Code in the harness repo and
+skip all of this — its skills load automatically from the repo.

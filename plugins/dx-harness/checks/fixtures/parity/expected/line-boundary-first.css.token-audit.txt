@@ -1,0 +1,1 @@
+ERROR line-boundary-first.css:1 [TOK-1] raw colour #0064ff — suggest: use a semantic token (var(--color-…))

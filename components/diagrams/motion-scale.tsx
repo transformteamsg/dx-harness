@@ -37,7 +37,7 @@ export function MotionScale() {
               <div aria-hidden className="relative h-3 min-w-0 flex-1 rounded-full bg-muted">
                 {reduced ? (
                   <div className="absolute inset-y-0 left-0 right-3 translate-x-full">
-                    <div className="h-3 w-3 rounded-sm bg-tw-blue" />
+                    <div className="h-3 w-3 rounded-sm bg-site-accent" />
                   </div>
                 ) : (
                   <motion.div
@@ -47,7 +47,7 @@ export function MotionScale() {
                     animate={{ x: played ? "100%" : 0 }}
                     transition={{ duration: row.duration, ease: EASE_OUT }}
                   >
-                    <div className="h-3 w-3 rounded-sm bg-tw-blue" />
+                    <div className="h-3 w-3 rounded-sm bg-site-accent" />
                   </motion.div>
                 )}
               </div>
@@ -58,7 +58,7 @@ export function MotionScale() {
           <button
             type="button"
             onClick={() => setRunId((n) => n + 1)}
-            className="mt-4 inline-flex items-center justify-center rounded-full border border-border px-3 py-1 text-xs font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue) max-sm:min-h-11"
+            className="mt-4 inline-flex items-center justify-center rounded-full border border-border px-3 py-1 text-xs font-medium transition-colors duration-(--motion-fast) hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ring) max-sm:min-h-11"
           >
             Play
           </button>

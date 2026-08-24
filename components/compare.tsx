@@ -15,12 +15,20 @@
 
    A11Y-1 note: the before panel violates only waivable style/content tiers —
    every text/background pair in BOTH panels passes WCAG AA against the
-   --demo-slop-* token values in globals.css. L0 is never demonstrated broken. */
+   --demo-slop-* token values in globals.css. L0 is never demonstrated broken.
 
-import Link from "next/link";
+   That claim was false for a while, which is worth recording. The panel's labels
+   on the purple fills used --primary-foreground, and when that token was mapped
+   to --foreground (the dark label the lime primary needs), the labels became
+   #18181b on #7c3aed — 3.109:1, an L0 breach inside the exhibit that exists to
+   prove L0 is never breached. They take --surface now: 5.699:1 on the gradient's
+   near stop, 6.323:1 on its far one. The lesson is that a prose assertion about
+   contrast is not a check; the waivers here cover SLP and CMP only, and no
+   waiver can ever cover A11Y-1. */
+
 import { useEffect, useId, useRef, type CSSProperties } from "react";
 import { animate, useInView } from "motion/react";
-import { ChevronsLeftRight, Cloud, Sparkles, Zap } from "lucide-react";
+import { ChevronsLeftRight, Sparkles, Zap } from "lucide-react";
 import { DUR, EASE_OUT, useReducedMotionSafe } from "@/lib/motion";
 
 const SLOP_GRADIENT =
@@ -29,7 +37,6 @@ const SLOP_GRADIENT =
 const SLOP_TILES = [
   { icon: Sparkles, label: "AI-powered" },
   { icon: Zap, label: "All-in-one" },
-  { icon: Cloud, label: "Cloud-based" },
 ] as const;
 
 /* Violation chip — plain text, non-interactive. It lives in the before layer,
@@ -49,16 +56,16 @@ function Violation({ children }: { children: string }) {
    is the minimum, so nothing clips at narrow widths. */
 function BeforePanel() {
   return (
-    <div className="relative flex min-h-full flex-col bg-(--demo-slop-surface)">
+    <div className="col-start-1 row-start-1 flex min-h-full flex-col bg-(--demo-slop-surface)">
       {/* dx-waive SLP-1 reason="quarantined anti-specimen: the before panel of the standards demo" */}
       <div
         className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-2.5"
         style={{ background: SLOP_GRADIENT }}
       >
-        <span className="text-sm text-primary-foreground">Communication Hub</span>
+        <span className="text-sm text-surface">Communication Hub</span>
         <Violation>SLP-1 gradient palette</Violation>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-2">
         {/* dx-waive SLP-2 reason="quarantined anti-specimen: the before panel of the standards demo" */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span
@@ -84,14 +91,15 @@ function BeforePanel() {
             <span className="text-sm text-(--demo-slop-ink)">4 classes · 127 parents</span>
           </div>
         </div>
-        <div className="grid shrink-0 grid-cols-3 gap-2">
+        {/* dx-waive SLP-5 reason="quarantined anti-specimen: the before panel demonstrates the icon-tile feature-card template" */}
+        <div className="grid shrink-0 grid-cols-2 gap-2">
           {SLOP_TILES.map((tile) => (
             <div
               key={tile.label}
               className="flex flex-col items-center gap-1.5 rounded-lg border border-(--demo-slop-border) bg-surface px-1 py-3 text-center shadow-sm"
             >
               <span
-                className="grid size-8 shrink-0 place-items-center rounded-md text-primary-foreground"
+                className="grid size-8 shrink-0 place-items-center rounded-md text-surface"
                 style={{ background: SLOP_GRADIENT }}
               >
                 <tile.icon className="size-4" aria-hidden />
@@ -100,13 +108,13 @@ function BeforePanel() {
             </div>
           ))}
         </div>
-        <div className="mt-auto flex flex-col gap-3">
+        <div className="mt-auto flex flex-col gap-1.5">
           {/* dx-waive CMP-5 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-surface shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Get started!
             </span>
-            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-primary-foreground shadow-[0_2px_10px_var(--demo-slop-glow)]">
+            <span className="rounded-md bg-(--demo-slop-grad-a) px-3.5 py-2 text-sm text-surface shadow-[0_2px_10px_var(--demo-slop-glow)]">
               Learn more
             </span>
             <Violation>CMP-5 two primaries</Violation>
@@ -129,7 +137,7 @@ function BeforePanel() {
 function AfterPanel() {
   return (
     <div
-      className="absolute inset-0 overflow-hidden bg-surface"
+      className="col-start-1 row-start-1 bg-surface"
       style={{
         clipPath:
           "polygon(var(--exposure) 0, 100% 0, 100% 100%, var(--exposure) 100%)",
@@ -147,17 +155,38 @@ function AfterPanel() {
         <p className="mt-1.5 max-w-[44ch] text-sm leading-normal text-muted-foreground">
           Reaches every parent by Friday morning. Drafts save automatically.
         </p>
-        <div className="mt-4 border-t border-border pt-3">
-          <p className="text-sm text-foreground">
-            To: <span className="font-medium">4 classes</span>
-            <span className="text-muted-foreground"> · 127 parents</span>
+        {/* Label left, value right — and that is load-bearing, not styling. This
+            panel is only ever seen through a divider that shows its RIGHT side, so
+            content anchored to the left edge is content nobody sees: the earlier
+            single left-aligned row rendered as a hairline and an empty box, which
+            made "on standard" read as "nothing here". Summary rows put a real value
+            in the right half at every divider position, and they are what a
+            broadcast composer actually shows: who, when, what. */}
+        <div className="mt-4 flex items-baseline justify-between gap-x-6 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">To</p>
+          <p className="text-sm font-medium text-foreground">4 classes · 127 parents</p>
+        </div>
+        <div className="mt-3 flex items-baseline justify-between gap-x-6 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">Sends</p>
+          <p className="text-sm font-medium text-foreground">Friday, 7:00am</p>
+        </div>
+        <div className="mt-3 flex items-baseline justify-between gap-x-6 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">Attached</p>
+          <p className="text-sm font-medium text-foreground">Term 3 report slip</p>
+        </div>
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="text-sm text-muted-foreground">Message</p>
+          <p className="mt-1 max-w-[62ch] text-sm leading-normal text-foreground">
+            Term 3 report books go home this Friday. Please sign the acknowledgement
+            slip and return it with your child by Monday. If you would like to
+            discuss the report, reply here and I will arrange a time.
           </p>
         </div>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4">
           <p className="text-xs text-muted-foreground">Draft · saved just now</p>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-muted-foreground">Save draft</span>
-            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-primary-foreground">
+            <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-surface">
               Send to 4 classes
             </span>
           </div>
@@ -224,8 +253,15 @@ export function SlopCompare() {
         aria-label="Before and after: the same screen, default AI output versus on standard"
         /* Rounded clipping via clip-path, not overflow-hidden: hidden overflow
            would zero the aspect box's content-based minimum height and clip
-           the before panel at narrow widths (css-sizing-4 §5.2.2). */
-        className="relative aspect-[16/10] w-full max-w-[760px] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
+           the before panel at narrow widths (css-sizing-4 §5.2.2).
+
+           Both panels share one grid cell rather than the after panel being
+           absolutely positioned, so whichever panel needs more room sets the
+           frame's height and neither is ever cut. The row must be `auto`:
+           `grid-rows-1` resolves to `minmax(0, 1fr)`, whose zero minimum lets the
+           aspect ratio cap the height and clips the taller panel. With `auto` the
+           16/10 aspect is the floor, not the ceiling. */
+        className="relative mx-auto grid aspect-[16/10] w-full grid-cols-1 grid-rows-[auto] rounded-lg border border-border bg-surface [clip-path:inset(0_round_var(--radius))]"
         style={{ "--exposure": "50%" } as CSSProperties}
       >
         <BeforePanel />
@@ -247,30 +283,25 @@ export function SlopCompare() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-tw-blue"
+          className="pointer-events-none absolute inset-y-0 w-[1.5px] -translate-x-1/2 bg-site-accent-text"
           style={{ left: "var(--exposure)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-tw-blue) motion-reduce:transition-none"
+          className="pointer-events-none absolute top-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border bg-surface shadow-sm transition-[border-color,box-shadow] duration-(--motion-fast) peer-hover:border-border-strong peer-hover:shadow-md peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--color-ring) motion-reduce:transition-none"
           style={{ left: "var(--exposure)" }}
         >
           <ChevronsLeftRight className="size-3.5 text-muted-foreground" aria-hidden />
         </div>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Drag the handle — or focus it and use arrow keys.
-      </p>
-      <figcaption className="mt-2 max-w-[62ch] text-xs leading-normal text-muted-foreground">
-        The same screen twice: what defaults produce, and what ships under the
-        standard. Every chip is a control ID from the{" "}
-        <Link
-          href="/standards/catalog"
-          className="text-tw-blue underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-tw-blue)"
-        >
-          catalog
-        </Link>
-        .
+      {/* One line, not two: the left column and the drawing itself already say
+          what the panels show, so the caption's only remaining job is the
+          interaction hint — an affordance that has to live beside the control
+          it describes. "Move", not "drag": CNT-5 names the action rather than
+          the input device, and one verb then covers the pointer and the arrow
+          keys alike. */}
+      <figcaption className="mt-2 max-w-[48ch] text-xs leading-normal text-muted-foreground">
+        Move the handle to compare the panels. Arrow keys work too.
       </figcaption>
     </figure>
   );

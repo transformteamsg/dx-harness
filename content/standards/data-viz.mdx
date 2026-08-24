@@ -1,0 +1,29 @@
+---
+title: Data visualisation
+description: Teachers read charts between classes, so clarity beats density. Make the one number that matters impossible to miss.
+---
+
+> Reference: [Adobe Spectrum — data visualization fundamentals](https://spectrum.adobe.com/page/data-visualization-fundamentals/). Adapted for our scale: most T&S data viz is small multiples in dashboards and gradebooks, not analyst tooling.
+
+## Principles
+
+- **Answer a question, don't decorate a page.** Every chart names the question it answers in its title, not a dataset label. "Which classes have missing submissions?" is a title; "Submissions" is a label.
+- **Choose the encoding by the comparison.** Position and length (bar, dot, line) before angle and area (pie, donut). If teachers must compare values, put them on a common axis.
+- **Default to less.** Direct-label instead of legends where possible; gridlines light or absent; no 3D, shadows, or decorative gradients ever.
+
+## Colour in charts
+
+- **Categorical:** maximum 6 distinguishable hues from the shared Radix palette; beyond that, group into "other" or use small multiples.
+- **Sequential/diverging:** single-hue Radix ramps for magnitude; diverging only when there's a meaningful midpoint.
+- **Semantic consistency:** the same metric keeps the same colour everywhere in a product. Functional colours (success/warning/danger) keep their meaning; never use red decoratively in a chart.
+- **Never colour alone:** pair with labels, patterns, or position; verify with a colour-blindness simulator (accessible-chart baseline).
+
+## Numbers and text
+
+- Tabular numbers in tables and axes. Locale-aware formats.
+- Round to the precision teachers act on: "78%", not "78.42%".
+- Empty and loading states designed: a chart with no data explains why and what to do next.
+
+## The table question
+
+Tables are our most-used "visualization". Density versus core columns is an open pattern question (OPQ-1). Until evidence closes it, both directions are valid divergence options in the harness, with column-usage telemetry attached.

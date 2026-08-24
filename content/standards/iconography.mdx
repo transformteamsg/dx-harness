@@ -1,0 +1,51 @@
+---
+title: Iconography
+description: Icons help teachers spot an action faster than words alone. One consistent set for the UI, a warmer hand-drawn style for brand moments.
+tools:
+  - name: Icon Generator
+    description: Produces on-brand brand and feature iconography. Stroke weight, corner radius, and silhouette are enforced by construction, so the output is on-standard before review.
+    href: https://icon-generator-seven.vercel.app/
+    repo: https://github.com/wondopamine/icon-generator
+controls: [IDN-2]
+---
+
+## UI icons — Lucide
+
+Interface icons come from **Lucide** (the shadcn/ui companion set): consistent stroke weight, predictable naming, tree-shakeable, and a vocabulary AI agents already know. Don't mix icon sets in product UI — this is the vocabulary for system interfaces: nav, controls, product UI.
+
+<IconSet />
+
+## Brand icons — Icon Generator
+
+Brand and feature iconography is generated with the internal **Icon Generator**, which maintains stroke weight, corner radius, and silhouette rules by construction.
+
+<BrandIconSet />
+
+Use the inked style for product marketing and communications, not dense UI — it's slower to scan than Lucide.
+
+## Attribution
+
+Lucide is ISC-licensed, so you can use, modify, and ship its icons freely, including commercially. It asks one thing back: its copyright and permission notice travels with every copy you distribute. Icons the Icon Generator produces are Lucide derivatives, so they carry the same notice as the originals.
+
+This doesn't mean crediting icons in the interface. One third-party notices page or file per product covers everything you ship — [this site's](/legal) shows the shape. Linking to Lucide's own repository doesn't discharge it: the notice has to be served from your product, not borrowed from someone else's.
+
+## Usage
+
+```tsx
+import { Calendar } from "lucide-react";
+
+<Calendar aria-hidden size={20} strokeWidth={2} />
+
+{/* An icon-only button carries a label */}
+<button aria-label="Open calendar"><Calendar aria-hidden /></button>
+```
+
+## Best practices
+
+<DoDont items={[
+  { kind: "do", text: "Use Lucide for interface icons, and the ink set for marketing and comms." },
+  { kind: "do", text: "Give every icon-only button a descriptive aria-label (A11Y-3)." },
+  { kind: "do", text: "Match an icon's stroke weight to the adjacent text weight." },
+  { kind: "dont", text: "Mix icon sets inside product UI." },
+  { kind: "dont", text: "Stack an icon in a decorative tile above its heading (SLP-5)." },
+]} />
