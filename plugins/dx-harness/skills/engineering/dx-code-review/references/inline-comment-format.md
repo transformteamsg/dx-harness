@@ -2,6 +2,14 @@
 
 Used by the PR Review Path (step 8). All values are already available from steps 1–2: owner and repo from `gh repo view`, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
+## The recurring-pattern line
+
+Include it only on a finding that Analysis Phase step 7 tagged `[AI-PATTERN]`, and omit the line entirely otherwise. Never print it empty.
+
+It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` cell. The count is what makes it worth reading: "seen once" is a coincidence and "seen five times" is a habit, and the author cannot tell which from the finding alone. The Prevention cell is the actionable half, and it is already written in imperative voice for exactly this.
+
+Without this line the tag is computed and discarded. Classification would run on every review and teach the author nothing, which defeats the registry's purpose: `dx-implement-issue` reads it so review teaches implementation, and this line is how review teaches the person.
+
 ## Posting each finding
 
 Assign the body to a variable first to avoid shell escaping issues with multiline content:
@@ -19,6 +27,8 @@ BODY="**[Severity] One-sentence summary**
 \`\`\`<lang>
 // Corrected version
 \`\`\`
+
+**Recurring pattern:** AP-NNN <Pattern name>, seen N time(s) in this repository. <Prevention>
 
 ---
 *🤖 code-review · {model}*"

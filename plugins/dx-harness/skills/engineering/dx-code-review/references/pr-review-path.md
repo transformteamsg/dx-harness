@@ -80,7 +80,7 @@ Every comment posted by this skill ends with the following footer so that skill 
 
       When there is no important finding, open the summary with `No blocking findings.` on its own line above the table, so a review that is all nits is not mistaken for one that found a problem. Omit that line when an important finding exists.
 
-      Include the **Held back**, **Truncated**, and **Skipped** lines only when they are non-empty. Never print an empty one: a review that held nothing back and truncated nothing should say neither.
+      Include the **Held back**, **Truncated**, **Skipped**, and **Registry** lines only when they are non-empty. Never print an empty one: a review that held nothing back and truncated nothing should say neither.
       ```
       ## Code Review Summary
 
@@ -97,6 +97,8 @@ Every comment posted by this skill ends with the following footer so that skill 
       **Truncated:** the <angle> angle reached its 6-candidate ceiling with N more outstanding.
 
       **Skipped:** N path(s) matched a skip rule in `REVIEW.md` and were not reviewed.
+
+      **Registry:** N finding(s) matched a known pattern, and N matched none. This path records nothing; run a local branch review to record them.
 
       ## Reviewer To-Do
       - Manually test: <scenario> (omit this section if empty)

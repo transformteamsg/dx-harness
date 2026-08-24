@@ -36,6 +36,8 @@ Each finding follows this structure, grouped under `### 🔴 Important`, `### �
 // 5–15 lines of context; mark the problem line with // ←
 ```
 
+**Recurring pattern:** AP-NNN <Pattern name>, seen N time(s). <Prevention> — omit this line when the finding matched no pattern
+
 **Problem:** What breaks, what input/state triggers it, what goes wrong.
 
 **Suggestion:**

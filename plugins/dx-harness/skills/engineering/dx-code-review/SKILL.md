@@ -72,9 +72,9 @@ A finding produced by a rule from this file names that rule, so the author can s
    - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not
    - If none found: note no manifest detected and mentally trace any shell commands against the failure modes described
 6. Drop all REFUTED findings — see Rules › Refuted findings.
-7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns in `review/agent-patterns.md`, falling back to this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md) when that file does not exist yet. Tag matching findings `[AI-PATTERN]`.
+7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns of two sources read together: this repository's `review/agent-patterns.md`, which holds only the patterns this repository has actually observed, and this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md), which ships the universal ones. The repository's file is an overlay: where both carry the same `AP-NNN`, its row wins, because it holds this repository's counts and status. Tag matching findings `[AI-PATTERN]`.
 
-   **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and how a newly discovered pattern is routed.
+   **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and why a newly discovered pattern is proposed as an issue rather than written.
 
    The PR review path has no triage, so it has no verdict to record. It reports the rows it would have added and writes nothing.
 
