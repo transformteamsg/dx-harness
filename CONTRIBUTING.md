@@ -60,9 +60,13 @@ For example, `fix/container-build`, `docs/roadmap`, and `feat/aif-design-issue`.
 
 ## Open the pull request
 
+Every pull request links to an issue. File the issue first, then carry the link in the body: `Closes #NNN`, or `Part of #NNN` when the branch delivers one slice and the issue stays open. Nothing reaches `main` that no issue documents.
+
+The two documents answer different questions, and a reviewer needs both. The pull request says what changed; the issue says what it was for and what "done" meant. Once a pull request merges the diff is what survives, so a change with no issue behind it leaves its reasoning nowhere. If you are partway into work no issue covers, file one with the `/dx-harness:dx-create-*` skills before you open the request.
+
 Title the pull request with the issue title, character for character. Squash merging uses that title as the commit message in `main`, so a title that is not a valid commit message becomes a bad commit.
 
-Open it as a draft until the checks pass and you have walked through the change by hand. The body comes from the repository's pull request template. Where no template file is present yet, the body needs a `Closes #NNN` line, a summary, the list of changes with the reason for each, and a test plan naming every acceptance criterion or done-when item with the automated test that covers it.
+Open it as a draft until the checks pass and you have walked through the change by hand. The body comes from the repository's pull request template. Where no template file is present yet, the body needs the issue link, a summary, the list of changes with the reason for each, and a test plan naming every acceptance criterion or done-when item with the automated test that covers it.
 
 ## Pass the checks
 
