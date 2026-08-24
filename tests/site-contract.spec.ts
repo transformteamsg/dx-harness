@@ -233,6 +233,77 @@ test("the builders' band states the page's own words, with nothing to attribute"
   );
 });
 
+test("the builders' band answers the pointer, and only as decoration", async ({ page }) => {
+  await open(page, "/");
+
+  const band = page.locator("section", {
+    has: page.getByText("The harness is our product too", { exact: false }),
+  });
+  const trail = band.locator("canvas[data-ink-trail]");
+
+  await expect(trail).toHaveCount(1);
+  // Decoration, so it is hidden from assistive technology (A11Y-6) and takes no
+  // pointer events — the band's own link must stay reachable through it.
+  await expect(trail).toHaveAttribute("aria-hidden", "true");
+  await expect(trail).toHaveCSS("pointer-events", "none");
+
+  const painted = () =>
+    trail.evaluate((el) => {
+      const canvas = el as HTMLCanvasElement;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return -1;
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let marks = 0;
+      for (let i = 3; i < data.length; i += 4) if (data[i] > 0) marks += 1;
+      return marks;
+    });
+
+  expect(await painted(), "an untouched band is empty").toBe(0);
+
+  // Scrolled into reach first: the trail caches the band's origin and follows it
+  // on scroll, so a sweep after scrolling is also the check that it still knows
+  // where it is.
+  await band.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(600);
+  const box = (await band.boundingBox())!;
+  for (let step = 0; step <= 20; step += 1) {
+    await page.mouse.move(box.x + 80 + step * 24, box.y + box.height / 2);
+  }
+  await page.waitForTimeout(200);
+  expect(await painted(), "marks land where the pointer passed").toBeGreaterThan(0);
+
+  // And the field clears itself: --motion-trail is a decay, not a state, so a
+  // band nobody is touching returns to blank paper.
+  await page.waitForTimeout(3200);
+  expect(await painted(), "the trail decays back to nothing").toBe(0);
+});
+
+test("the band's trail never mounts for a reader who asked for less motion", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await open(page, "/");
+
+  // Not paused, not shortened — absent (A11Y-5). Nothing is lost with it gone,
+  // which is what makes the absence the right answer rather than a static frame.
+  await expect(page.locator("canvas[data-ink-trail]")).toHaveCount(0);
+  await context.close();
+});
+
+test("the band's trail withdraws under forced colours", async ({ browser }) => {
+  const context = await browser.newContext({ forcedColors: "active" });
+  const page = await context.newPage();
+  await open(page, "/");
+
+  /* The failure class the sheet ground already met (issue #201): the UA forces
+     every other colour on the page while a canvas keeps painting its own, so
+     decoration comes out louder in the mode a reader chose for clarity. It is
+     decoration, so it withdraws. */
+  await expect(page.locator("canvas[data-ink-trail]")).toHaveCSS("display", "none");
+  await context.close();
+});
+
 test("the notices page serves the licence texts it owes, and links their sources", async ({
   page,
 }) => {
