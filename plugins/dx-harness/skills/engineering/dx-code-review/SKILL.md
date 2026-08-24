@@ -74,20 +74,9 @@ A finding produced by a rule from this file names that rule, so the author can s
 6. Drop all REFUTED findings — see Rules › Refuted findings.
 7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns in `review/agent-patterns.md`, falling back to this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md) when that file does not exist yet. Tag matching findings `[AI-PATTERN]`.
 
-   **Classifying is read-only and runs on both paths. Everything below it that writes runs on the Local Branch Review Path only.** A PR review sources its diff from GitHub and needs no branch checked out, so a write lands on whatever branch the reviewer is parked on, which is unrelated to the pull request under review and is often `main`. On the PR path, report each update you would have made and leave the working tree alone.
+   **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and how a newly discovered pattern is routed.
 
-   For each tagged finding, look for the matching row in the Pattern name column (case-insensitive substring):
-   - **Seed row, unobserved** (`Confirmed by: 0`) — fill in `First seen` (today), `Concrete example` (this instance), `Severity` (this finding's severity), and set `Confirmed by` to `1 review`.
-   - **Already observed** (`Confirmed by` ≥ 1) — increment `Confirmed by` and append `(also seen: <file>)` to the `Concrete example`.
-   - **No match at all** (a pattern outside the 9 seeds) — append a new row: next sequential `AP-NNN` ID, directive Pattern name, one-sentence Trigger, one-sentence Prevention instruction, one project-anchored Concrete example, today's ISO date, severity, `1 review`.
-
-   On the Local Branch Review Path, create `review/agent-patterns.md` from the seed if it does not exist, apply those updates, and commit the file: `docs(review): update agent-patterns.md [skip ci]`.
-
-   For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes, and again on the Local Branch Review Path only:
-   - Implement the guard using `dx-lint-setup` (lint rule) or `dx-git-hooks-setup` (hook script) as appropriate.
-   - Remove the pattern's row from `review/agent-patterns.md`.
-   - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
-   - If the guard requires CI pipeline changes, surface a recommendation to the developer instead of implementing directly.
+   The PR review path has no triage, so it has no verdict to record. It reports the rows it would have added and writes nothing.
 
 ---
 
