@@ -182,20 +182,6 @@ def _mix_oklab(rgb_a, rgb_b, weight_a):
 
 _DECL_RE = re.compile(r"(--[\w-]+)\s*:\s*([^;]+);")
 
-# CSS comments, stripped before declarations are read. A token name written
-# inside a comment followed by a colon otherwise hijacks that token: measured on
-# this repo, `/* between --accent and --muted: reads as a band … */` bound
-# `--muted` to the comment's prose, so every declared pair using --muted became
-# unresolvable and fell to manual verification. Replaced with a newline rather
-# than an empty string so the per-line index below still reports the line a
-# declaration is actually on.
-_CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
-
-
-def _strip_css_comments(css_text):
-    return _CSS_COMMENT_RE.sub(
-        lambda m: "\n" * m.group(0).count("\n"), css_text
-    )
 # Where a declaration starts, so a finding can point at the token's own line.
 _DECL_START_RE = re.compile(r"(--[\w-]+)\s*:")
 _VAR_RE = re.compile(r"var\(\s*(--[\w-]+)\s*\)")
@@ -214,9 +200,16 @@ class TokenResolver:
         self.decl_lines = {}  # --name -> 1-based line it is declared on
         if css_text:
             # Comments come out first: a token name mentioned inside one, with a
-            # colon after it, reads as a declaration otherwise (see
-            # _strip_css_comments).
-            css_text = _strip_css_comments(css_text)
+            # colon after it, reads as a declaration otherwise. Measured on this
+            # repo, `/* between --accent and --muted: reads as a band … */` bound
+            # --muted to the comment's prose, so every declared pair using
+            # --muted became unresolvable and fell to manual verification.
+            in_comment = False
+            stripped_lines = []
+            for line in css_text.splitlines():
+                stripped_lines.append(checklib.strip_block_comments(line, in_comment))
+                in_comment = checklib.ends_in_block_comment(line, in_comment)
+            css_text = "\n".join(stripped_lines)
             # Parsed over the whole text, so a declaration wrapped across lines
             # still resolves; the line index is a separate, per-line pass.
             for name, value in _DECL_RE.findall(css_text):
