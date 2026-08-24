@@ -532,3 +532,42 @@ test.describe("reduced motion", () => {
     });
   }
 });
+
+test("the loop diagram's tabs keep roving-tabindex keyboard control", async ({ page }) => {
+  await open(page, "/harness/loop");
+
+  /* The arrow-key handler moved from the tablist onto each tab, which is where
+     the ARIA tabs pattern puts it and which clears
+     jsx-a11y/interactive-supports-focus (an interactive role carrying a keyboard
+     handler while deliberately not being focusable). The behaviour has to be
+     identical, so it is pinned here: it had no test before the move. */
+  const tablist = page.getByRole("tablist", { name: "Design loop phases" });
+  const tabs = tablist.getByRole("tab");
+  const count = await tabs.count();
+  expect(count).toBeGreaterThan(2);
+
+  // Roving tabindex: exactly one tab is in the tab order at a time.
+  const inTabOrder = async () =>
+    tabs.evaluateAll((els) => els.filter((el) => el.getAttribute("tabindex") === "0").length);
+  expect(await inTabOrder()).toBe(1);
+
+  // The tablist itself is not focusable. That is the pattern, not an oversight.
+  await expect(tablist).not.toHaveAttribute("tabindex", /.*/);
+
+  await tabs.first().focus();
+  await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+
+  await page.keyboard.press("ArrowRight");
+  await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+  await expect(tabs.nth(1)).toBeFocused();
+
+  await page.keyboard.press("ArrowLeft");
+  await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+
+  await page.keyboard.press("End");
+  await expect(tabs.nth(count - 1)).toHaveAttribute("aria-selected", "true");
+
+  await page.keyboard.press("Home");
+  await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+  expect(await inTabOrder()).toBe(1);
+});
