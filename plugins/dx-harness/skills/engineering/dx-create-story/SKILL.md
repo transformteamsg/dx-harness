@@ -94,12 +94,12 @@ The test that decides it: can each half be written as "As a [persona], I want [c
 Either cut has to fall on a clean seam. Each piece must be independently reviewable, and no single acceptance criterion may end up half in one piece and half in the other. A seam running through a criterion is the wrong seam: move the whole criterion to one side, or cut somewhere else.
 
 - **If the user chooses two stories**: complete Steps 1 and 2 for each capability separately and create them as two issues. Run Steps 5 and 6 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
-- **If the user chooses tasks**: keep one issue and carry all the criteria on it. Note in out of scope that delivery is split into tasks, and hand the slices to `dx-create-task` after Step 6. Do not create the tasks here: `dx-create-task` verifies the parent and gathers criteria per slice, and it cannot verify a parent that does not exist yet.
+- **If the user chooses tasks**: keep one issue and carry all the criteria on it. Note in out of scope that delivery is split into tasks, and hand the slices to `dx-create-task` after Step 7. Do not create the tasks here: `dx-create-task` verifies the parent and gathers criteria per slice, and it cannot verify a parent that does not exist yet.
 - **If the user wants it left as one undivided issue**: note that explicitly in the out of scope section and continue.
 
 ### Step 4: Identify dependencies from the backlog
 
-After the split evaluation, attempt to fetch open issues to surface likely blockers or dependents. These are linked as GitHub relationships after the issue is created (Step 6), not written into the body.
+After the split evaluation, attempt to fetch open issues to surface likely blockers or dependents. These are linked as GitHub relationships after the issue is created (Step 7), not written into the body.
 
 ```sh
 gh issue list --state open --json number,title,body --limit 100
@@ -125,12 +125,16 @@ gh issue list --state open --json number,title,body --limit 100
   >
   > Are any of these actual dependencies, or are they unrelated?"
 
-  Let the author confirm or dismiss each suggestion. Use the confirmed ones to link as GitHub relationships in Step 6. If no related issues are found, proceed without prompting: do not ask the author to confirm a null result.
+  Let the author confirm or dismiss each suggestion. Use the confirmed ones to link as GitHub relationships in Step 7. If no related issues are found, proceed without prompting: do not ask the author to confirm a null result.
 
 - **If the command fails with "command not found" or "'gh' is not recognized"**: skip the automated scan. Ask the author to identify any blocking or dependent issues manually, or confirm "none".
 - **If the command fails for any other reason**: surface the real error and stop.
 
-### Step 5: Preview and confirm
+### Step 5: Design-need triage
+
+Decide whether this story can be handed to an engineer without a designer in the loop, or should be routed to one *before* implementation starts. This is a coarser, earlier version of the same judgment `dx-harness:dx-design`'s Phase 3 reviewer-routing table makes per acceptance-criteria scenario — running it here catches the need before Intent and Diverge happen solo, not after. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md` (the canonical copy — do not duplicate it here) and judge each acceptance-criteria scenario against it. If any scenario is "strongly recommended": note it now, so Step 7 can write a "Design routing: needs designer input before an engineer starts" line into the Design assets section and apply the `needs-design-review` label. If every scenario "can defer", no line or label is needed — the default is silent. Skip this step entirely when Design assets is `N/A` (no user-facing surface).
+
+### Step 6: Preview and confirm
 
 Render the complete issue body in a markdown code block. If the Open Questions section is non-empty, call it out explicitly before asking for confirmation:
 
@@ -138,19 +142,27 @@ Render the complete issue body in a markdown code block. If the Open Questions s
 
 Ask for confirmation before creating the issue either way.
 
-### Step 6: Create the issue
+### Step 7: Create the issue
 
 The title must follow the commit convention from CLAUDE.md: `feat(<scope>): <short description>` using backticks around the scope.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
-Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows), then create the issue with them:
+Ensure both labels exist, the shape label and the usage-tracking label (both idempotent, `gh label create` exits non-zero if a label already exists, which `|| true` swallows). If Step 5 flagged design routing, also ensure the routing label exists:
 
 ```sh
 gh label create "skill:dx-create-story" --color ededed --description "Created with the dx-create-story skill" 2>/dev/null || true
 gh label create "story" --color 0e8a16 --description "A capability someone outside the team observes" 2>/dev/null || true
 
+# Only if Step 5 flagged design routing:
+gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
+```
+
+Then create the issue once, adding `--label "needs-design-review"` only if Step 5 flagged design routing:
+
+```sh
 gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "story" --label "skill:dx-create-story"
+# If Step 5 flagged design routing, add: --label "needs-design-review"
 ```
 
 The label makes usage queryable with `gh issue list --label "skill:dx-create-story"` (exact, unlike free-text search), and the `*🤖 Generated with dx-create-story*` footer in the body template gives human-readable attribution.
