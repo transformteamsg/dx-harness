@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+
 /* The builders' band answers the pointer: drafting marks bloom on a fixed grid
    where the pointer passes and decay behind it, so the paragraph about how the
    harness feels to use is the one place on the page that responds to your hand.
@@ -41,7 +43,6 @@ import { useEffect, useRef, useState } from "react";
       purpose. */
 
 const HOVER_QUERY = "(hover: hover) and (pointer: fine)";
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /* The field's rhythm is the sheet's, not a number chosen here: the page ground
    measures on --ground-pitch, and the trail lands on a quarter of that division,
@@ -134,19 +135,16 @@ function readDurationMs(styles: CSSStyleDeclaration, token: string): number {
 
 export function InkTrail() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [enabled, setEnabled] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const [finePointer, setFinePointer] = useState(false);
+  const enabled = finePointer && !reducedMotion;
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
-    const finePointer = window.matchMedia(HOVER_QUERY);
-    const update = () => setEnabled(!reducedMotion.matches && finePointer.matches);
+    const query = window.matchMedia(HOVER_QUERY);
+    const update = () => setFinePointer(query.matches);
     update();
-    reducedMotion.addEventListener("change", update);
-    finePointer.addEventListener("change", update);
-    return () => {
-      reducedMotion.removeEventListener("change", update);
-      finePointer.removeEventListener("change", update);
-    };
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
@@ -208,6 +206,12 @@ export function InkTrail() {
       height = rect.height;
       maxCx = Math.floor(width / cellPx);
       maxCy = Math.floor(height / cellPx);
+      // A narrower band after resize leaves stray cells beyond the new
+      // bounds; drop them rather than let them decay against a canvas
+      // they no longer fit.
+      for (const [key, cell] of cells) {
+        if (cell.cx > maxCx || cell.cy > maxCy) cells.delete(key);
+      }
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);

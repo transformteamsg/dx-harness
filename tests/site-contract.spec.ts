@@ -278,6 +278,28 @@ test("the builders' band answers the pointer, and only as decoration", async ({ 
   expect(await painted(), "the trail decays back to nothing").toBe(0);
 });
 
+test("the builders' band's link stays clickable through the trail", async ({ page }) => {
+  await open(page, "/");
+
+  const band = page.locator("section", {
+    has: page.getByText("The harness is our product too", { exact: false }),
+  });
+  const link = band.getByRole("link", { name: "Quick start" });
+
+  await band.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(600);
+  // Paint the field directly over the link before clicking it: the canvas
+  // takes no pointer events, so a mark sitting under the link must not be
+  // able to intercept the click Playwright is about to send.
+  const box = (await link.boundingBox())!;
+  const steps = 12;
+  for (let step = 0; step <= steps; step += 1) {
+    await page.mouse.move(box.x + (box.width * step) / steps, box.y + box.height / 2);
+  }
+  await link.click();
+  await expect(page).toHaveURL(/\/harness\/install$/);
+});
+
 test("the band's trail never mounts for a reader who asked for less motion", async ({
   browser,
 }) => {
@@ -301,6 +323,17 @@ test("the band's trail withdraws under forced colours", async ({ browser }) => {
      decoration comes out louder in the mode a reader chose for clarity. It is
      decoration, so it withdraws. */
   await expect(page.locator("canvas[data-ink-trail]")).toHaveCSS("display", "none");
+  await context.close();
+});
+
+test("the band's trail never mounts for a touch pointer", async ({ browser }) => {
+  const context = await browser.newContext({ hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+  await open(page, "/");
+
+  // There is nothing for the trail to follow on touch, so it withdraws the
+  // same way it does for reduced motion — absent, not present-but-inert.
+  await expect(page.locator("canvas[data-ink-trail]")).toHaveCount(0);
   await context.close();
 });
 
