@@ -34,6 +34,9 @@ still announces where it came from.
 
 ## Install
 
+The documentation site for the harness and the standard is
+[go.gov.sg/dxharness](https://go.gov.sg/dxharness).
+
 ### Claude Code (plugin marketplace) — primary
 
     /plugin marketplace add transformteamsg/dx-harness
@@ -108,15 +111,18 @@ A one-shot sweep for a product repo:
     grep -rl 'tfx' . | xargs sed -i '' 's/tfx-waive/dx-waive/g; s/tfx-sync/dx-sync/g; s/tfx-tokens/dx-tokens/g; s/\.tfx/.dx/g; s/TFX-DS/DX-DS/g'
     git mv .tfx .dx
 
-The upstream design-standard repo and its Notion source keep their existing
-`tfx-design-standard` URLs; only the harness renamed.
+The upstream `tfx-design-standard` repo is deprecated and no longer maintained.
+Its harness, control catalogue, and website all live here now, published at
+[go.gov.sg/dxharness](https://go.gov.sg/dxharness). The Notion source keeps its
+existing URL.
 
 ## Website
 
 This repo also hosts the design-standard website (Next.js 15, pnpm) — the
 human- and agent-readable rendering of the standard, including `/llms.txt`
 (with control details: `/llms-full.txt`) and `/standards/catalog.yaml`. It
-reads the catalog directly from `plugins/dx-harness/standards/`.
+reads the catalog directly from `plugins/dx-harness/standards/`. The site is
+published at [go.gov.sg/dxharness](https://go.gov.sg/dxharness).
 
     pnpm install
     pnpm dev      # local dev server
