@@ -72,7 +72,7 @@ A finding produced by a rule from this file names that rule, so the author can s
    - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not
    - If none found: note no manifest detected and mentally trace any shell commands against the failure modes described
 6. Drop all REFUTED findings — see Rules › Refuted findings.
-7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns of two sources read together: this repository's `review/agent-patterns.md`, which holds only the patterns this repository has actually observed, and this skill's [references/agent-patterns.md](references/agent-patterns.md), which ships the universal ones. The repository's file is an overlay: where both carry the same `AP-NNN`, its row wins, because it holds this repository's counts and status. Tag matching findings `[AI-PATTERN]`.
+7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns of two sources read together: the **reviewed repository's** `review/agent-patterns.md`, which holds only the patterns that repository has actually observed, and this skill's [references/agent-patterns.md](references/agent-patterns.md), which ships the universal ones. The reviewed repository is the one the work belongs to, never the one the reviewer's shell happens to be in: the local branch path reads the overlay from disk because it is checked out there, and the PR path fetches it from the pull request's own repository in its step 4. The repository's file is an overlay: where both carry the same `AP-NNN`, its row wins, because it holds this repository's counts and status. Tag matching findings `[AI-PATTERN]`.
 
    **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and why a newly discovered pattern is proposed as an issue rather than written.
 
@@ -229,6 +229,8 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 **Scope:** every confirmed or plausible finding survives the Analysis Phase, at every severity. Volume control is a posting concern and belongs to the path that posts: the PR review path caps nits at 5 and suppresses new ones on a re-review, and its summary carries the count held back. The local branch path posts nothing and triages everything, so no cap applies there
 
 **Repository instructions:** `REVIEW.md` at the repository root tunes the review, and only the root file is read. A finding produced by one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
+
+**Repository identity on the PR path:** the reviewed repository comes from the pull request, never from the working directory. Every `gh` call carries `--repo`, and the pattern overlay is fetched from that repository rather than read from disk
 
 **Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
 

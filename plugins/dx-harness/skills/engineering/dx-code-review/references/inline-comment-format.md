@@ -1,6 +1,6 @@
 # Inline Comment Format
 
-Used by the PR Review Path (step 8). All values are already available from steps 1–2: owner and repo from `gh repo view`, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
+Used by the PR Review Path (step 8). All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
 ## The recurring-pattern line
 
@@ -58,5 +58,5 @@ Use `"event": "COMMENT"`. Never `REQUEST_CHANGES` or `APPROVE`: approving is the
 **Fallback:** the whole request fails if any single comment names a line outside the diff, and the error does not say which one. Rather than retrying blind, re-post with the unanchorable comments removed from the array, then send those as one regular PR comment naming the file and line each refers to:
 
 ```bash
-gh pr comment {pr_number} --body "$BODY"
+gh pr comment {pr_number} --repo {owner}/{repo} --body "$BODY"
 ```
