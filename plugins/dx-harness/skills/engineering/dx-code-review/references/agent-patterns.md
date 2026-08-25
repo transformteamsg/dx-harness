@@ -1,9 +1,12 @@
-# Agent Pattern Registry
+# Agent Pattern Standard
 
-> Shipped with the plugin and never edited in place. `dx-code-review` reads it as the underlay beneath a repository's own `review/agent-patterns.md`, which holds only the patterns that repository has observed.
-> Deduplication key: Pattern name (case-insensitive). Increment "Confirmed by" on recurrence.
-> When a pattern is promoted to a programmatic guard, remove its row and note the guard location in a comment above the table.
-> Seed rows below start at `Confirmed by: 0` and `Rejected by: 0`, status `active` — unobserved. The first real match fills in `Concrete example`, `First seen`, and `Severity`, and bumps the count to `1 review`.
+> The patterns every repository using `dx-code-review` is held to. Shipped with the plugin, edited only here, and never copied into a consuming repository.
+>
+> `dx-code-review` and `dx-implement-issue` read this as the underlay beneath a repository's own `review/agent-patterns.md`, which holds only the patterns that repository has observed. Where both carry the same `AP-NNN`, the repository's row wins: it is the one with local counts and status, and it is how a repository suppresses a pattern that is wrong for it.
+>
+> The six right-hand columns stay empty here. `Concrete example`, `First seen`, `Severity`, `Confirmed by`, `Rejected by`, and `Status` are per repository and are filled in by that repository's overlay, never in this file.
+>
+> Deduplication key: Pattern name, case-insensitive. Adding a pattern here is a change to the standard and goes through a pull request, not through a review.
 
 | ID | Angle | Pattern name | Trigger | Prevention | Concrete example | First seen | Severity | Confirmed by | Rejected by | Status |
 |----|-------|-------------|--------|-----------|-----------------|------------|----------|-------------|-------------|--------|
