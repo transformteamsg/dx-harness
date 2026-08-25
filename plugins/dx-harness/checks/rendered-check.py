@@ -103,6 +103,7 @@ checklib = _load_checklib()
 LAYER = "axe-rendered"
 
 DRIVER = os.path.join(_CHECKS_DIR, "rendered", "axe-driver.mjs")
+CSS_PATH_FILE = os.path.join(_CHECKS_DIR, "rendered", "css-path.js")
 
 # The CLI the capture step already uses. It is asked for one thing only: the
 # CDP endpoint of the session it has open.
@@ -141,23 +142,12 @@ class DriverError(Exception):
 # the buckets, the waiver markers, the state restore, the theme loop — applies
 # to a registered evaluation exactly as it applies to an axe result.
 
-_CSS_PATH_JS = """
-  function cssPath(el) {
-    if (!el || el.nodeType !== 1) return "(no element)";
-    if (el.id) return "#" + CSS.escape(el.id);
-    const parts = [];
-    let node = el;
-    while (node && node.nodeType === 1 && parts.length < 6) {
-      let part = node.localName;
-      const cls = (node.getAttribute("class") || "").trim().split(/\\s+/).filter(Boolean);
-      if (cls.length) part += "." + cls.slice(0, 2).map(CSS.escape).join(".");
-      parts.unshift(part);
-      if (node.id) { parts[0] = "#" + CSS.escape(node.id); break; }
-      node = node.parentElement;
-    }
-    return parts.join(" > ");
-  }
-"""
+# Read from css-path.js, the single source axe-driver.mjs reads too — see
+# that file's header comment. A divergence here previously left this
+# evaluation's sibling elements indistinguishable, dropping distinct
+# reduced-motion findings as false duplicates.
+with open(CSS_PATH_FILE, encoding="utf-8") as _fh:
+    _CSS_PATH_JS = _fh.read()
 
 # The floor below which an animation is effectively instantaneous. The standard
 # reduced-motion reset sets `animation-duration: 0.01ms !important`, which is a
@@ -514,8 +504,11 @@ def node_target(node):
 
 def node_key(node):
     """The key the driver reports per-node facts under — axe's own target list,
-    which is unique per node including across frames."""
-    return json.dumps(node.get("target") or [])
+    which is unique per node including across frames. Compact separators to
+    match the driver's `JSON.stringify(node.target)`: json.dumps's default
+    ", " after commas diverges from JSON.stringify's bare "," for multi-element
+    (frame-nested) targets, silently breaking the key match."""
+    return json.dumps(node.get("target") or [], separators=(",", ":"))
 
 
 def demote_hidden(control, node, hidden_keys):
