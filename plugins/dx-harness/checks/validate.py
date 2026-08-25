@@ -1888,7 +1888,11 @@ def run_self_test():
             continue
         with open(os.path.join(control_dir, fname)) as fh:
             text = fh.read()
-        for match in re.finditer(r"built in #\d+", text):
+        # \s+ rather than a literal space: prose wraps at the column width, so
+        # "built in #155" can land as "built\nin #155" across a line break —
+        # a plain space in the pattern missed slp-6.md's claim for exactly
+        # this reason during #150's own review.
+        for match in re.finditer(r"built\s+in\s+#\d+", text):
             before = text[max(0, match.start() - 200):match.start()]
             after = text[match.end():match.end() + 40]
             script = re.search(r"checks/([\w./-]+\.py)", after) or \
@@ -1897,9 +1901,10 @@ def run_self_test():
             if not script:
                 continue
             script_path = os.path.join(REPO_ROOT, "checks", script.group(1))
+            claim = re.sub(r"\s+", " ", match.group(0))
             if not os.path.isfile(script_path):
                 got.append(f"standards/controls/{fname} claims "
-                          f"checks/{script.group(1)} exists via {match.group(0)!r}; "
+                          f"checks/{script.group(1)} exists via {claim!r}; "
                           f"it does not")
     if want != got:
         failures.append(f"FAIL every 'built in #N' claim names a script that "

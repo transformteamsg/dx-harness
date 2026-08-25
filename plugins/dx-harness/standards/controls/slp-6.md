@@ -51,8 +51,8 @@ reopening the contradiction with TYP-3.
 **Rendered-check half.** The measurement only exists once the page is rendered: what
 matters is which sizes actually land adjacent in the visual hierarchy of a real page, and
 a source scan cannot know that. A class may be declared and never used, and a size may be
-inherited rather than declared. That half belongs to the rendered check layer and is built
-in #155.
+inherited rather than declared. That half belongs to the rendered check layer and is
+planned in #155; no rule exists yet in `rendered-check.py`'s evaluation registry.
 
 **Judgment half.** Whether two sizes are adjacent *steps* — rather than two unrelated
 elements that happen to sit near one another — is a reading of the page's structure. The
