@@ -5,7 +5,7 @@ description: Use when asked to review code changes — either posting findings a
 
 # Code Review
 
-Reviews code changes using 7 structured angles across the diff. Posts findings as inline PR comments directly on GitHub, or runs an interactive triage session on a local working branch with optional report generation at the end.
+Reviews code changes using 8 structured angles across the diff. Posts findings as inline PR comments directly on GitHub, or runs an interactive triage session on a local working branch with optional report generation at the end.
 
 ---
 
@@ -73,7 +73,7 @@ Skip rules act on the diff, not on findings: remove every matching path before s
 A finding produced by a rule from this file names that rule, so the author can see what asked for it.
 
 1. Run the PR & Issue Check (below) — this must complete before the review angles.
-2. Run all 7 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
+2. Run all 8 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
    - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
 3. Deduplicate near-duplicates (same defect, same location → keep one).
 4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label through to the comment. The label is the work this step exists to do, so throwing it away before posting leaves a verified bug and a maybe reading identically to the author.
@@ -140,7 +140,7 @@ Run as Analysis Phase step 1, before the review angles. The goal: confirm the ch
 
 ## Review Angles
 
-Shared by both paths. Run all seven; each surfaces up to 6 candidates. Work through each checklist item explicitly — don't just scan.
+Shared by both paths. Run all eight; each surfaces up to 6 candidates. Work through each checklist item explicitly — don't just scan.
 
 ### Line-by-line
 
@@ -164,6 +164,17 @@ Look for functionality that was deleted but whose absence creates a gap.
 - **Guards:** was a defensive condition removed or its predicate weakened (e.g. `> 0` changed to `>= 0`)?
 - **Rate limiting / throttling:** was a call-frequency cap, debounce, or retry limit removed?
 - **Observability:** was a log, metric, or trace statement removed from an error path or a significant state transition?
+
+### Security
+
+Look for a change that lets untrusted input reach somewhere it should not. Four classes, deliberately few: a long list produces speculation, and speculation is what makes a security reviewer easy to ignore.
+
+- **Secrets in the diff:** was a key, token, password, connection string, or private key added to source, a config file, a fixture, or a test? A committed secret is compromised whether or not the file is later changed, so say so rather than suggesting it be edited out.
+- **Injection:** does untrusted input reach a SQL query, a shell command, an HTML or template render, or an eval-like call by concatenation or interpolation rather than through a parameterised or escaping API?
+- **Authorisation:** does a new or changed entry point read or write something on behalf of a caller without establishing that the caller may? Look for the check the neighbouring handlers make and this one does not.
+- **Untrusted input into a dangerous sink:** does caller-controlled data reach a filesystem path, an outbound request URL, a deserialiser, or a redirect target without being constrained to something known-safe? This covers path traversal, server-side request forgery, and unsafe deserialisation, which are one shape wearing three names.
+
+**Severity here follows the same rules as every other angle, with one floor: a CONFIRMED security finding is always Important.** There is no minor confirmed injection. A finding you cannot verify is still posted, labelled Unverified per the verification rules, and it does not become Important by being about security. A review that marks everything security-shaped as blocking teaches the author to stop reading it, which costs more than the finding was worth.
 
 ### Cross-file
 
