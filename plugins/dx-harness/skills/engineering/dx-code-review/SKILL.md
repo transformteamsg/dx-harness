@@ -46,7 +46,7 @@ The three markers stay as they are. They already match Claude Code's managed rev
 
 ## PR Review Path
 
-Source the diff from GitHub via `gh` — the branch does not need to be checked out locally. No report file is written; all findings are posted as inline PR comments. See [references/pr-review-path.md](references/pr-review-path.md) for the full steps.
+Works on GitHub pull requests and GitLab merge requests. The forge is named from the request URL, or from the remote, before anything runs; the commands for each live in [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md), and everything after sourcing the diff is identical on both. Source the diff from the forge via its CLI — the branch does not need to be checked out locally. No report file is written; all findings are posted as inline PR comments. See [references/pr-review-path.md](references/pr-review-path.md) for the full steps.
 
 ---
 
