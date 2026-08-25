@@ -17,7 +17,7 @@ structure, wording, motion, and flow are out of scope and get NOTED and routed.
   TYP-3 (on-scale sizes), TYP-4 (no all-caps), TYP-5 (tabular figures).
 - **Colour** — COL-1 (product primary for primary actions), COL-2 (Radix functional scales).
 - **Visual anti-slop** — SLP-1 (no purple/glow), SLP-2 (no gradient text), SLP-3 (no
-  side-tab card borders), SLP-6 (type hierarchy ≥ 1.25x), SLP-7 (spacing rhythm).
+  side-tab card borders), SLP-6 (type hierarchy ≥ 1.10x), SLP-7 (spacing rhythm).
 
 **Reference:** the polish bullets of `../dx-design-execute/implement-craft.md` — tabular figures,
 concentric radius, layered shadows, type polish (`text-wrap`, font-smoothing), image

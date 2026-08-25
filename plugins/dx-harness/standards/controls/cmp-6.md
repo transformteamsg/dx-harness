@@ -73,10 +73,10 @@ still so the teacher's attention can move.
 
 ## How to verify
 
-**Deterministic half** (`checks/` — planned): assert `<table>`/`<th>` semantics on
-tabular data; flag numeric columns (cells matching a number pattern) that are not
-right-aligned or lack `tabular-nums`. Until the script exists, verify against the
-rendered table by hand and label it "verified manually".
+**Deterministic half** — the static structure check, built in #160: assert `<table>`/`<th>`
+semantics on tabular data; flag numeric columns (cells matching a number pattern) that are
+not right-aligned or lack `tabular-nums`. Until it ships, verify against the rendered table
+by hand and label it "verified manually".
 
 **Judgment half:** the evaluator confirms the header stays visible while scrolling, the
 density fits the task (LAY-5), and the empty/loading states exist and read clearly

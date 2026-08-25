@@ -201,7 +201,7 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (97 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (110 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -554,13 +554,12 @@ Planned for V1 (remaining):
 | `announce` | A11Y-11 (deterministic half) | Each async state surface has live-region role XOR focus-target wiring |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
-| `destructive` | CMP-2 (deterministic half) | Enumerate destructive actions; assert consequence surface + undo/confirm exists |
-| `async-states` | CMP-3 (deterministic half) | Enumerate async actions; assert loading/success/error states exist and are reachable |
+| `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
-| `motion` | MOT-1, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; no bounce/elastic/overshoot easing |
-| `identity` | IDN-1 | Logo/lockup files resolve to the approved asset library; no inline redraws |
-| `slop-scan` | SLP-1..4 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards, nested cards |
-| `slop-layout` | SLP-5..7 | Layout heuristics: identical-card grids / icon-tile templates, adjacent type-scale ratio < 1.25, a single spacing value used uniformly |
+| `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
+| `identity` | IDN-1, IDN-2 | Logo/lockup files resolve to the approved asset library and product icons to the approved icon family; no inline redraws |
+| `slop-scan` | SLP-1..3 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards |
+| `slop-rendered` | SLP-4, SLP-6 | Rendered checks, because both need a real page: nested cards in the rendered tree, and the adjacent type-scale ratio actually used |
 
 Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate

@@ -40,6 +40,6 @@ inverts Utility by Default.
 
 ## How to verify
 
-`checks/type-scan` (planned): walk computed styles for text nodes; report any below
-the floors with selector and computed size. Until the script exists, verify manually
-against rendered output and label it "verified manually".
+`checks/type-scan.py`: statically scan resolvable font-size and line-height declarations
+and report values below the floors with file and line. Verify rendered-only sizes and
+label/body applicability manually against the rendered output.

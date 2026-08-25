@@ -6,7 +6,7 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure subcheck (planned)"
+verify: "Running-prose blocks carry a max-width measure cap (Tailwind `max-w-prose` / `max-w-[65ch]`); evaluator judges which blocks are running prose versus headings, tables, and data grids; checks/type-scan measure rule (built in #161)"
 waiver: rationale
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
@@ -50,9 +50,9 @@ a deliberately narrow aside), so it is L2.
 
 ## How to verify
 
-**Hybrid.** A static scan (`checks/type-scan`, planned measure subcheck) can narrow the
-surface — flag prose containers (paragraphs, prose wrappers) that carry no `max-width` and
-sit in a full-width or wide parent. Until the subcheck exists, verify manually against the
+**Hybrid.** The `checks/type-scan.py` measure rule, built in #161, narrows the surface: it
+judges `ch` caps already written against the measure ceiling, and treats sub-45ch values as
+headings and labels rather than prose. Until it ships, verify manually against the
 rendered output at a wide viewport and label it "verified manually". The evaluator judges
 the remainder: which blocks are genuinely running prose (and so need a measure cap) versus
 headings, tables, and data grids (which do not).
