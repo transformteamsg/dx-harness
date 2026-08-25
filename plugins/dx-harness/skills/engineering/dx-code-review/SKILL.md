@@ -76,9 +76,14 @@ A finding produced by a rule from this file names that rule, so the author can s
 2. Run all 7 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
    - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
 3. Deduplicate near-duplicates (same defect, same location → keep one).
-4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**.
-   - PLAUSIBLE by default for: races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor
-   - REFUTED only when provably wrong — cite the exact line or invariant that rules it out
+4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label through to the comment. The label is the work this step exists to do, so throwing it away before posting leaves a verified bug and a maybe reading identically to the author.
+   - **CONFIRMED** needs evidence, not inference. For a claim about behaviour, hold the `file:line` in the source that establishes it. A name is not evidence: that a function is called `validateInput` does not establish that it validates anything.
+   - **A behaviour claim with no citation is dropped**, not downgraded. It never posts and never reaches the summary counts. A finding the author has to disprove costs them a round trip, and the review had no grounds for it.
+   - **PLAUSIBLE by default for**: races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These stay, and post saying what they are, because they are the cases worth raising precisely when they cannot be settled by reading.
+   - **A Removed behaviour finding cites the removal**, in the diff, since the line that carried the behaviour no longer exists in the file to point at.
+   - **REFUTED only when provably wrong** — cite the exact line or invariant that rules it out.
+
+   The citation requirement is for behaviour claims. A Simplification, Reuse, or Altitude finding is an argument about the change in front of you, and the diff is its evidence.
 5. For each CONFIRMED or PLAUSIBLE finding, validate the suggestion:
    - Look for `package.json`, `go.mod`, `requirements.txt`, or `Gemfile` at the repo root
    - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not

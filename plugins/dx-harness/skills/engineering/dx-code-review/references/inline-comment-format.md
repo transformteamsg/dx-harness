@@ -2,6 +2,15 @@
 
 Used by the PR Review Path (step 8). All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
+## Saying whether it was verified
+
+Every comment carries exactly one of two lines, from the label the Analysis Phase already assigned.
+
+- **CONFIRMED** carries **Verified:** and the `file:line` that establishes the behaviour. For a Removed behaviour finding, cite the removal in the diff, because the line it refers to is gone from the file.
+- **PLAUSIBLE** carries **Unverified:** and what would settle it, in one line. Say what to run, read, or check. "Unverified" alone tells the author nothing they cannot already see.
+
+A plausible finding is posted, not held back. It is exactly the case worth raising when it cannot be settled by reading, and the label is what lets the author spend their attention accordingly. Volume is the nit cap's job, not this label's.
+
 ## Saying what blocks
 
 A 🟡 Nit or 🟣 Pre-existing comment carries `(not blocking)` on its first line, immediately after the summary. A 🔴 Important comment carries nothing extra, because blocking is what Important already means.
@@ -28,6 +37,9 @@ BODY="**[Severity] One-sentence summary**  <!-- 🟡 and 🟣 append: (not block
 \`\`\`
 
 **Problem:** What breaks, what input/state triggers it, what goes wrong.
+
+**Verified:** `path/to/file.ts:42` establishes it.        <!-- CONFIRMED -->
+**Unverified:** <what would confirm or rule this out>.    <!-- PLAUSIBLE -->
 
 **Suggestion:**
 \`\`\`<lang>
