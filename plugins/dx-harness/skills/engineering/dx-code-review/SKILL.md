@@ -22,13 +22,25 @@ Reviews code changes using 7 structured angles across the diff. Posts findings a
 
 ---
 
+## The standard
+
+A review exists to make the change better, not perfect. Google's senior rule is the one to hold: approve once a change definitely improves the health of the system, even when it is not perfect, because there is no such thing as perfect code, only better code. A reviewer who withholds agreement until nothing is left to say stops the work and teaches the author to expect that.
+
+Two things follow, and the severity table below is how they are expressed.
+
+**Only an Important finding is ever blocking.** Everything else is a suggestion the author is free to decline without reply. A review that treats every observation as a requirement is indistinguishable from one that found something serious, and the author cannot tell which they are reading.
+
+**This skill never issues a merge verdict.** It reports what it found and stops. "No blocking findings" is a statement about the findings; "good to merge" is a decision about the change, and that belongs to a person who is accountable for it. This is why the skill posts comments rather than approving or requesting changes.
+
 ## Severity Levels
 
-| Level | What it means |
-|-------|--------------|
-| 🔴 **Important** | A bug that should be fixed before merging. |
-| 🟡 **Nit** | A minor issue, worth fixing but not blocking. |
-| 🟣 **Pre-existing** | A bug that exists in the codebase but was not introduced by this PR. |
+| Level | Blocking | What it means |
+|-------|----------|--------------|
+| 🔴 **Important** | Yes | A bug that should be fixed before merging. |
+| 🟡 **Nit** | No | A minor issue, worth fixing but not blocking. |
+| 🟣 **Pre-existing** | No | A bug that exists in the codebase but was not introduced by this PR. |
+
+The three markers stay as they are. They already match Claude Code's managed review exactly, so findings from both read consistently side by side, and adding a second vocabulary of prefixes on top would label every comment twice.
 
 ---
 
@@ -219,6 +231,10 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 ## Rules
 
 **Code excerpts:** 5–15 lines of context · correct language fence identifier · mark problem line with `// ←`
+
+**Address the code, never the author:** describe what the code does and what follows from it. A candidate phrased at the developer ("why did you", "you forgot to") is rewritten before it posts, and the original phrasing is never submitted
+
+**Blocking:** only 🔴 Important blocks. A 🟡 or 🟣 comment says on its face that it does not block, so declining it needs no reply and no justification
 
 **Problem statements:** name the concrete failure — inputs → wrong output/crash/data loss; never "this could be a problem"
 
