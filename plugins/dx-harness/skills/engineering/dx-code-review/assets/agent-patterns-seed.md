@@ -1,6 +1,6 @@
 # Agent Pattern Registry
 
-> Auto-maintained by `dx-code-review`. Read by `dx-implement-issue` as an anti-pattern list.
+> Shipped with the plugin and never edited in place. `dx-code-review` reads it as the underlay beneath a repository's own `review/agent-patterns.md`, which holds only the patterns that repository has observed.
 > Deduplication key: Pattern name (case-insensitive). Increment "Confirmed by" on recurrence.
 > When a pattern is promoted to a programmatic guard, remove its row and note the guard location in a comment above the table.
 > Seed rows below start at `Confirmed by: 0` — unobserved. The first real match fills in `Concrete example`, `First seen`, and `Severity`, and bumps the count to `1 review`.
