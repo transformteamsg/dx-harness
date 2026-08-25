@@ -15,13 +15,15 @@ Every comment posted by this skill ends with the following footer so that skill 
 
 ## Steps
 
-1. Parse the PR number:
-   - Full URL (e.g. `https://github.com/owner/repo/pull/42`) → extract the trailing number.
-   - Number provided directly → use as-is.
-2. Fetch PR metadata and repo identity:
+1. Parse the pull request, and establish which repository it belongs to. This decides everything downstream, so get it right before running anything else.
+   - **Full URL** (for example `https://github.com/owner/repo/pull/42`): take `{number}`, `{owner}`, and `{repo}` from the URL itself. The pull request names its own repository, and that is the reviewed repository.
+   - **Number alone**: the reviewed repository is the one the working directory is in, because a bare number means "here". Read it with `gh repo view --json owner,name`.
+
+   Once `{owner}` and `{repo}` are known, pass `--repo {owner}/{repo}` to every `gh` call in this path, and use them in every `gh api` path. Never let a later command resolve the repository from the working directory again. This path does not require the reviewed branch, or the reviewed repository, to be checked out, so the directory the reviewer happens to be sitting in is unrelated to the pull request under review and is frequently a different project.
+
+2. Fetch PR metadata:
    ```bash
-   gh pr view {number} --json number,headRefName,headRefOid,baseRefName,title
-   gh repo view --json owner,name
+   gh pr view {number} --repo {owner}/{repo} --json number,headRefName,headRefOid,baseRefName,title
    ```
 3. Fetch all existing review threads on the PR — used for both deduplication (step 6) and conversation resolution (step 7):
    ```bash
@@ -46,10 +48,15 @@ Every comment posted by this skill ends with the following footer so that skill 
    - **All open threads** — all threads where `isResolved` is false (used for dedup in step 6)
    - **Open skill threads** — subset where `comments[0].body` also contains `code-review` (used for resolution in step 7)
    - **Any skill thread** — every thread whose `comments[0].body` contains `code-review`, resolved or not. A non-empty set means this skill has reviewed the pull request before, which is what makes this run a re-review for volume control. Resolved threads count: an author who fixed everything last round has still had their nits, and a second round of style comments is the outcome that rule exists to prevent.
-4. Fetch the full PR diff:
+4. Fetch the full PR diff, and the reviewed repository's pattern overlay:
    ```bash
-   gh pr diff {number}
+   gh pr diff {number} --repo {owner}/{repo}
+
+   gh api "repos/{owner}/{repo}/contents/review/agent-patterns.md?ref={head_sha}" -q '.content' | base64 -d
    ```
+   The overlay is not in the diff and the branch is not checked out, so it has to be fetched like everything else on this path. A 404 means the repository has no overlay, which is the ordinary case: the Analysis Phase then matches against the shipped standard alone.
+
+   **Never read `review/agent-patterns.md` from disk on this path.** A file at that path belongs to whichever repository the reviewer is sitting in, so reading it would match one project's findings against another project's patterns, and after the suppression rule would silently drop findings on the strength of a decision taken in a different codebase.
 5. Run the Analysis Phase (see `SKILL.md` § Analysis Phase) on the diff from step 4.
 6. Deduplicate against existing comments — using the **all open threads** set from step 3, check each remaining finding against every open thread. If any thread's comment already addresses the same issue at the same `path` and `originalLine`, or raises the same concern in substance (regardless of who posted it), skip posting to avoid repeating feedback already given.
 7. Resolve addressed conversations — for each open skill thread, check whether the current diff has addressed the issue it describes. If yes, resolve the thread:
