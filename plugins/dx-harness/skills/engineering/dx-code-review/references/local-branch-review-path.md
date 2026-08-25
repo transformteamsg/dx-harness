@@ -21,6 +21,7 @@ Run the review, triage each finding interactively with the user, then optionally
     - When no important finding was raised, open with `No blocking findings.` above the table, so a run that is all nits is not read as one that found a problem. Omit the line when an important finding exists.
     - Severity counts table (🔴 Important / 🟡 Nit / 🟣 Pre-existing)
     - **Truncated** — the angle that reached its 6-candidate ceiling and how many it dropped, when one did
+    - **Skipped** — the paths that matched a skip rule in `REVIEW.md` and were not reviewed, when any did
     - All findings grouped by triage: **Fixed** first, then **To be fixed** — each with severity, file, line, and one-line summary
     - Reviewer To-Do — manual-test items for scenarios with no automated test (omit if empty)
     - What Looks Good (2–4 specific strengths)
