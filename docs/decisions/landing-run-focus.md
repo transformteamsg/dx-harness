@@ -155,6 +155,55 @@ None. No L0 or L1 control is violated by this change.
 
 ## Verify verdict
 
+CMP-1: asserted, no manifest — no `.dx/component-manifest.json` exists in
+this repo (only `.dx/design.json`, design tokens, added later and unrelated).
+
+VERDICT: pass
+
+Round 2's evaluator verdict: "pass, and this stands as the run's standing
+verdict." Round 3 (fresh instance) reviewed further builder-directed
+content and returned pass-with-findings; its fixes (`0969973`) were never
+formally re-signed-off at the time.
+
+Independently re-verified 2026-08-25 against the current shipped code
+(`components/landing/harness-run.tsx`, unchanged since commit `377b919`'s
+rebuild squash): figure height held at exactly 504.5px across all three
+focused stages — matching the record's own post-`0969973` measurement
+exactly, not the pre-fix 544.5px. Single `aria-current="step"` at all
+times, computed `display: none` on non-focused regions in focus mode,
+ghost/opacity treatment present and distinct in autoplay, no document
+overflow at 320/360px. No defects found on this independent pass.
+
+QUALITY GRADES:
+Round 1 (pre-fix): design quality acceptable, originality strong, craft
+acceptable, functionality strong. All of round 1's craft-affecting
+findings (the reserve break, the inverted stage-03 accessible name, the
+stranded caption) were fixed in round 2 and confirmed by independent
+measurement, but grades were never numerically restated after the fix.
+Treat round 1's grades as a floor, not the final state — not re-graded.
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1 / TOK-2 | script | `token-audit.py` clean on `harness-run.tsx` today (exit 0) |
+| TYP-1 / TYP-2 / TYP-3 | script | `type-scan.py` clean on `harness-run.tsx` today (exit 0) |
+| COL-1 | manual | active stage uses `--site-accent-text` on `--site-accent-wash` per code; consistent with declared site accent |
+| CMP-5 | manual | stage buttons are equal-weight selection controls, no filled-primary style; replay is a distinct secondary action |
+| CMP-7 | manual | code-documented resting affordance on every stage (hairline rule + hover wash inactive, lime step-up active) — verified present in rendered DOM today |
+| SLP-4 | unverified | no nested-card check run |
+| SLP-8 | manual | transition-colors only, `motion-reduce:transition-none` — verified live: `transition-property` computes to "none" under `prefers-reduced-motion` |
+| SLP-9 | manual | record's own scope: "modification (one interaction behaviour; no copy, no timing)" — no new copy introduced |
+| MOT-1 | manual | code inspection: only `--motion-base`/`--ease-*` tokens used, no `--motion-story` override; consistent with "no L0/L1 violated" |
+| MOT-3 | manual | verified live: `transition-property: none` under reduced motion — state change (`aria-current`, label) still occurs with no animation |
+| LAY-2 | script | Playwright probe today: no document overflow at 320px/360px |
+| LAY-5 / LAY-6 | manual | historical pixel measurements in this record (symmetric 203.25/203.25 blank space, ink-density percentages); not independently re-measured pixel-by-pixel today |
+| A11Y-1 | unverified | `DESIGN.md`'s 15 declared pairs do not include `--site-accent-text` on `--site-accent-wash`, the actual pairing rendered on the active stage — `contrast.py` cannot verify an undeclared pairing |
+| A11Y-2 | script | `a11y-eslint.py` clean today (covers keyboard-reachability + visible focus); live-verified: focus-visible outline present |
+| A11Y-3 | script | `a11y-eslint.py` clean today — no form fields in this component |
+| A11Y-4 | manual | live-verified: stage buttons measure 373×163px at 375px viewport, far over the 44px mobile floor |
+| A11Y-5 | manual | verified live: `transition-property: none` under reduced motion |
+| A11Y-7 | script | `a11y-eslint.py` clean today |
+| A11Y-8 | script | `a11y-eslint.py` clean today (covers custom-component name/role/value exposure) |
+
 - **Evaluator verdict — round 1 (`dx-design-review`): pass-with-findings.** No
   L0 or L1 control violated. Gates re-run by the reviewer against its own fresh
   `pnpm build` + `pnpm start` rather than the coordinator's preview server;

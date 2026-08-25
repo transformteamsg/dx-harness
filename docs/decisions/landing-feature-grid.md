@@ -153,6 +153,39 @@ No L0 or L1 waiver was needed or granted this run.
 
 ## Verify verdict
 
+VERDICT: pass-with-findings
+
+Three review rounds plus a round-4 sign-off, all pass-with-findings. No L0
+or L1 violation at any point. Every finding the reviewer raised is closed
+and independently re-measured; three items remain open as the builder's
+own judgment calls (see "Open decisions for the builder"), all resolved
+2026-08-18.
+
+QUALITY GRADES:
+- Design quality — strong
+- Originality — strong
+- Craft — strong (climbed from acceptable across the rounds)
+- Functionality — strong
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1 | script | "the five checks/ scripts" (part of the run's nine gates) reported clean across all three rounds |
+| TYP-1 / TYP-2 / TYP-3 | script | covered by the same nine-gate run; no typography-specific finding raised across 3 rounds |
+| COL-1 | manual | picked marks/discs render in `--site-accent` per the ink rule (subject mark accent, supporting marks foreground) |
+| CMP-1 | manual | asserted, no manifest — no `.dx/` directory existed in this repo at the time; reviewer inspected the codebase directly |
+| CMP-5 | manual | card actions (one link per card) unchanged this run; not newly evaluated |
+| CMP-7 | manual | upgraded to a clean pass in round 2 — the ink rule (subject mark accent, supporting marks foreground) written into the file's header comment, verified obeyed by all 16 rendered strokes |
+| SLP-4 | unverified | no nested-card check specific to this run recorded |
+| SLP-8 | manual | hover choreography restricted to `--motion-*`/`--ease-*` tokens only, no bounce — confirmed by code review of the commits; no script scans product code for this |
+| SLP-9 | manual | card copy untouched this run (only the four figures redrawn); no new copy to check |
+| MOT-1 | manual | L2 rationale waiver, inline `dx-waive` on the `ff-*` block in `app/globals.css` |
+| MOT-3 | manual | flip emphasises only — accessibility tree and content unaffected by motion state (per the run's own accessibility framing) |
+| LAY-2 | script | part of the nine-gate run; no overflow finding raised across 3 rounds |
+| LAY-5 / LAY-6 | manual | upgraded to clean passes in round 2 — height-fill spread narrowed 28.2→9.5 points, content centres within ±6 units of 180; ink-centroid method adopted round 3 for symmetric vs directional compositions |
+| A11Y-1 | unverified | applies to card chrome, not this run's `aria-hidden` decorative figures; not independently measured here |
+| A11Y-5 | manual | round-3 regression sweep: "reduced-motion and keyboard-focus states resolving fully" |
+| A11Y-7 | unverified | not independently measured in this run; figures are `aria-hidden` decorative content, structure belongs to the card chrome outside this run's scope |
+
 - **Executor isolation failed on the first dispatch, again.** The
   auto-provisioned worktree was cut from `935f5e5` — six commits behind, from
   before plan 001's work landed — so the executor's drift check tripped and it
