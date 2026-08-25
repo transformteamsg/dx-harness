@@ -8,10 +8,14 @@ Engineering + design skills for agentic product development. Every skill is name
 | Skill | What it does |
 |---|---|
 | `/dx-harness:dx-code-review` | Reviews code changes — inline PR comments or local branch review. |
-| `/dx-harness:dx-create-issue` | Creates a well-structured GitHub issue for a coding agent. |
-| `/dx-harness:dx-groom-issue` | Fills in the implementer sections of an existing issue. |
-| `/dx-harness:dx-split-issue` | Decomposes an issue into atomic, single-PR child issues. |
+| `/dx-harness:dx-create-issue` | Front door for issue creation: works out the shape, then hands off to one of the four below. |
+| `/dx-harness:dx-create-story` | Creates a user-facing story issue ("As a [persona], I want..."). |
+| `/dx-harness:dx-create-task` | Creates a single-discipline slice of a story or chore, engineering or design, linked as a sub-issue. |
+| `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
+| `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
+| `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |
 | `/dx-harness:dx-implement-issue` | Implements a GitHub issue by number or pasted body. |
+| `/dx-harness:dx-create-pr` | Opens a pull request for the current branch, or updates an open one to match new commits. |
 | `/dx-harness:dx-lint-setup` | Sets up linting/formatting after detecting project types. |
 | `/dx-harness:dx-git-hooks-setup` | Sets up or audits pre-commit / pre-push hooks (Husky or Lefthook). |
 | `/dx-harness:dx-update-npm-dependencies` | Audits and updates vulnerable JS/TS deps with a release cooldown. |

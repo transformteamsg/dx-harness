@@ -48,6 +48,53 @@ checklib = _load_checklib()
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
+# Fallback markers, checked only once no .git exists anywhere in the ancestor
+# chain. .git is unambiguous and always wins over these: in a monorepo/workspace
+# layout a nested package's own package.json sits below the true repo root, so
+# treating the two markers as equally ranked would stop the walk early and
+# resolve against the wrong tree.
+_FALLBACK_ROOT_MARKERS = ("package.json", ".dx")
+
+
+def _find_root(start):
+    """Walk up from `start` looking first for .git across the whole ancestor
+    chain, then fall back to the nearest package.json/.dx, then to the
+    module-level REPO_ROOT so a location inside the harness itself still
+    resolves.
+    """
+    current = start
+    while True:
+        if os.path.exists(os.path.join(current, ".git")):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            break
+        current = parent
+
+    current = start
+    while True:
+        if any(os.path.exists(os.path.join(current, m)) for m in _FALLBACK_ROOT_MARKERS):
+            return current
+        parent = os.path.dirname(current)
+        if parent == current:
+            return REPO_ROOT
+        current = parent
+
+
+def repo_root_for(path):
+    """The repo root a record's repo-relative references resolve against.
+
+    Derived from the RECORD's own location, not this script's. The old default
+    was the module-level REPO_ROOT, which is the harness plugin directory
+    (checks/../), so a record in a consumer repo citing `docs/decisions/<name>.md`
+    resolved against the wrong tree and every reference it made was reported as
+    missing — including a record citing itself. Callers had to know to pass
+    `--repo-root .`, and the sibling records on this repo all carry that error
+    class as a result. An explicit --repo-root still wins; this is only the
+    default.
+    """
+    return _find_root(os.path.dirname(os.path.abspath(path)))
+
 REQUIRED_SECTIONS = [
     "Sprint contract",
     "Tradeoffs",
@@ -444,6 +491,53 @@ def run_self_test():
     failures = []
     case_count = 0
 
+    # ── the repo root a record resolves against ───────────────────────────────
+    # Derived from the record, not from this script. The old script-relative
+    # default made a consumer repo's record report every reference it made as
+    # missing, including a reference to itself.
+    import tempfile as _tempfile
+    with _tempfile.TemporaryDirectory() as _td:
+        _repo = os.path.join(_td, "consumer")
+        os.makedirs(os.path.join(_repo, "docs", "decisions"))
+        open(os.path.join(_repo, "package.json"), "w").write("{}\n")
+        _record = os.path.join(_repo, "docs", "decisions", "surface.md")
+        open(_record, "w").write("# placeholder\n")
+        _resolved = repo_root_for(_record)
+        _orphan = repo_root_for(os.path.join(_td, "loose.md"))
+
+        # A monorepo/workspace layout: the true repo root has .git, but a
+        # nested package several levels down has its own package.json. .git
+        # must win, or a record under the nested package resolves its
+        # repo-relative references against the wrong tree.
+        _mono = os.path.join(_td, "monorepo")
+        os.makedirs(os.path.join(_mono, "apps", "site", "docs", "decisions"))
+        open(os.path.join(_mono, ".git"), "w").write("")
+        open(os.path.join(_mono, "package.json"), "w").write("{}\n")
+        open(os.path.join(_mono, "apps", "site", "package.json"), "w").write("{}\n")
+        _nested_record = os.path.join(
+            _mono, "apps", "site", "docs", "decisions", "nested.md")
+        open(_nested_record, "w").write("# placeholder\n")
+        _nested_resolved = repo_root_for(_nested_record)
+
+        # The default record listing walks up from cwd the same way, so
+        # invoking from a workspace subdirectory still finds the real repo
+        # root instead of silently listing an empty or wrong docs/decisions.
+        _cwd_from_subdir = _find_root(os.path.join(_mono, "apps", "site"))
+    _cases = [
+        ("the root comes from the record's repo, not the harness",
+         os.path.realpath(_repo), os.path.realpath(_resolved)),
+        ("a record outside any repo falls back to the harness root",
+         os.path.realpath(REPO_ROOT), os.path.realpath(_orphan)),
+        ("a nested package's package.json does not outrank .git further up",
+         os.path.realpath(_mono), os.path.realpath(_nested_resolved)),
+        ("the default listing root walks up from cwd, not just uses it as-is",
+         os.path.realpath(_mono), os.path.realpath(_cwd_from_subdir)),
+    ]
+    for _name, _want, _got in _cases:
+        case_count += 1
+        if _want != _got:
+            failures.append(f"FAIL {_name}: want: {_want!r}; got: {_got!r}")
+
     def assert_passes(case_name, text):
         nonlocal case_count
         case_count += 1
@@ -679,27 +773,34 @@ def main():
         run_self_test()
         return  # run_self_test calls sys.exit
 
-    # Parse --repo-root <path> flag (backward-compatible; default = module REPO_ROOT)
-    repo_root = REPO_ROOT
+    # Parse --repo-root <path> (an explicit root always wins). Without it the
+    # root is derived per record from the record's own location, so a consumer
+    # repo's record resolves its own repo-relative references — see
+    # repo_root_for for what the old script-relative default broke.
+    explicit_root = None
     filtered_args = []
     i = 0
     while i < len(args):
         if args[i] == "--repo-root" and i + 1 < len(args):
-            repo_root = os.path.abspath(args[i + 1])
+            explicit_root = os.path.abspath(args[i + 1])
             i += 2
         else:
             filtered_args.append(args[i])
             i += 1
 
-    decisions_dir = os.path.join(repo_root, "docs", "decisions")
+    # Walked from cwd rather than taken as-is, so invoking from a subdirectory
+    # (e.g. a workspace package) still finds the real repo root instead of
+    # silently listing an empty or wrong docs/decisions.
+    listing_root = explicit_root or _find_root(os.getcwd())
+    decisions_dir = os.path.join(listing_root, "docs", "decisions")
     paths = filtered_args if filtered_args else default_records(decisions_dir)
     if not paths:
-        print("ERROR audit-record: no records found in docs/decisions/")
+        print(f"ERROR audit-record: no records found in {decisions_dir}")
         sys.exit(1)
 
     errors = []
     for path in paths:
-        errors.extend(audit_file(path, repo_root))
+        errors.extend(audit_file(path, explicit_root or repo_root_for(path)))
 
     if errors:
         for e in errors:

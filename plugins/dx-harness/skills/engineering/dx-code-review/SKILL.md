@@ -48,8 +48,21 @@ Run the review, triage each finding interactively with the user, then optionally
 
 Shared by both paths — run on the diff produced by that path's diff-sourcing step, then continue with the path's remaining steps.
 
+**Before step 1, read the repository's review instructions.** Look for `REVIEW.md` at the repository root.
+
+- **Present and readable**: apply it for the rest of the run. It can add rules this review must check, and list paths to skip.
+- **Present but unreadable**: stop the review, name the file and the error, and leave the pull request untouched. Findings calibrated by rules that were never applied are worse than no review, because they read like a complete one.
+- **Absent**: run exactly as this file describes and say nothing about it. A repository that has not opted in is not misconfigured.
+
+Only the root file is read. A nested `REVIEW.md` deeper in the tree is ignored, so there is one file to find and one precedence rule.
+
+Skip rules act on the diff, not on findings: remove every matching path before step 1, so no angle ever sees them. A skipped file must not consume an angle's candidate ceiling, or the nit budget the PR review path applies before it posts. Record which paths were skipped, because the summary reports them. A review that looked at nothing must never read as a review that found nothing.
+
+A finding produced by a rule from this file names that rule, so the author can see what asked for it.
+
 1. Run the PR & Issue Check (below) — this must complete before the review angles.
 2. Run all 7 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
+   - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
 3. Deduplicate near-duplicates (same defect, same location → keep one).
 4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**.
    - PLAUSIBLE by default for: races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor
@@ -59,26 +72,19 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
    - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not
    - If none found: note no manifest detected and mentally trace any shell commands against the failure modes described
 6. Drop all REFUTED findings — see Rules › Refuted findings.
-7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns in `review/agent-patterns.md`. If the file doesn't exist yet, create it by copying this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md). Tag matching findings `[AI-PATTERN]`.
+7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns of two sources read together: this repository's `review/agent-patterns.md`, which holds only the patterns this repository has actually observed, and this skill's [references/agent-patterns.md](references/agent-patterns.md), which ships the universal ones. The repository's file is an overlay: where both carry the same `AP-NNN`, its row wins, because it holds this repository's counts and status. Tag matching findings `[AI-PATTERN]`.
 
-   For each tagged finding, look for the matching row in the Pattern name column (case-insensitive substring):
-   - **Seed row, unobserved** (`Confirmed by: 0`) — fill in `First seen` (today), `Concrete example` (this instance), `Severity` (this finding's severity), and set `Confirmed by` to `1 review`.
-   - **Already observed** (`Confirmed by` ≥ 1) — increment `Confirmed by` and append `(also seen: <file>)` to the `Concrete example`.
-   - **No match at all** (a pattern outside the 9 seeds) — append a new row: next sequential `AP-NNN` ID, directive Pattern name, one-sentence Trigger, one-sentence Prevention instruction, one project-anchored Concrete example, today's ISO date, severity, `1 review`.
+   **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and why a newly discovered pattern is proposed as an issue rather than written.
 
-   Commit the file: `docs(review): update agent-patterns.md [skip ci]`
+   **A finding matching a row whose `Status` is suppressed is dropped here**, on both paths: not tagged, not verified further, not posted. Count the drops and carry the number to the summary, because a suppressed pattern hiding findings must not look like a review that found nothing.
 
-   For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes:
-   - Implement the guard using `lint-setup` (lint rule) or `git-hooks-setup` (hook script) as appropriate.
-   - Remove the pattern's row from `review/agent-patterns.md`.
-   - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
-   - If the guard requires CI pipeline changes, surface a recommendation to the developer instead of implementing directly.
+   The PR review path has no triage, so it has no verdict to record. It reports the rows it would have added and writes nothing.
 
 ---
 
 ## PR & Issue Check
 
-Run as Analysis Phase step 1, before the review angles. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised.
+Run as Analysis Phase step 1, before the review angles. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised. The four issue shapes state that contract under different headings, so step 4 reads the shape first.
 
 1. **Resolve the PR.**
    - PR Review Path: already fetched in that path's steps 1–2.
@@ -91,13 +97,23 @@ Run as Analysis Phase step 1, before the review angles. The goal: confirm the ch
      - Number provided → fetch it as above.
      - "Proceed" → no issue for the rest of this check; skip step 4 below.
 3. **Check the PR has a test plan.** Look for a "Test plan" / "Testing" / "How to test" section in the PR body. If missing, treat it as an empty test plan and continue.
-4. **Check the test plan covers the linked issue(s)' acceptance criteria** (skip if no issue was resolved in step 2). Each issue follows the `create-issue` template — each entry under `## Acceptance criteria` is a Given-When-Then scenario. For each scenario across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
+4. **Check the test plan covers each linked issue's contract** (skip if no issue was resolved in step 2). What the contract is depends on the shape of the issue, so read the shape from its headings, which are authoritative. A shape label (`story`, `task`, `chore`, or `bug`) confirms the reading, and an issue written before the four shapes existed carries neither, so never depend on the label alone:
+
+   | Shape | Heading that identifies it | Its contract |
+   | --- | --- | --- |
+   | Story | `## User story` | Each Given-When-Then scenario under `## Acceptance criteria` |
+   | Task | `## Parent` | Each scenario under `## Acceptance criteria`, plus each item in the optional `### Also true when done` checklist |
+   | Chore | `## What is changing` | Each item under `## Done when` |
+   | Bug | `## Steps to reproduce` | The reproduction path, plus the gap between `## Expected behaviour` and `## Actual behaviour` |
+
+   For each contract item across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
    - All covered → continue to step 5.
+   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5. Never pass this gate in silence: an issue with nothing to check against and an issue whose contract is fully covered are different outcomes, and they must not look the same.
    - Any uncovered → ask the reviewer:
-     > "The test plan doesn't cover these acceptance criteria scenarios: <list>. Continue the review anyway?"
+     > "The test plan doesn't cover these contract items: <list>. Continue the review anyway?"
      - No → stop the review here; the reviewer should update the PR's test plan first.
-     - Yes → continue to step 5, carrying the uncovered scenarios into it alongside the test plan's own scenarios.
-5. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered acceptance-criteria scenarios carried from step 4), check whether an automated test exercises it.
+     - Yes → continue to step 5, carrying the uncovered items into it alongside the test plan's own scenarios.
+5. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
    - All covered → done, continue to the review angles.
    - Any scenario with no automated test:
      - File it directly as a 🔴 **Important** finding — "Missing automated test for: <scenario>" — alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (Analysis Phase steps 3–4) and goes straight into the final findings list.
@@ -196,7 +212,7 @@ Used by the PR Review Path (step 8). See [references/inline-comment-format.md](r
 
 ## Agent Pattern Registry
 
-Used by the Analysis Phase (shared by both review paths) to persist and promote AI-characteristic findings, seeded from [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md). See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for the file schema and the programmability-promotion criteria.
+Used by the Analysis Phase (shared by both review paths) to persist and promote AI-characteristic findings, with the shipped standard in [references/agent-patterns.md](references/agent-patterns.md). See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for the file schema and the programmability-promotion criteria.
 
 ---
 
@@ -210,7 +226,11 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 
 **What looks good:** always include; specifics only; 2–4 bullets max
 
-**Scope:** every confirmed or plausible finding regardless of severity — no cap
+**Scope:** every confirmed or plausible finding survives the Analysis Phase, at every severity. Volume control is a posting concern and belongs to the path that posts: the PR review path caps nits at 5 and suppresses new ones on a re-review, and its summary carries the count held back. The local branch path posts nothing and triages everything, so no cap applies there
+
+**Repository instructions:** `REVIEW.md` at the repository root tunes the review, and only the root file is read. A finding produced by one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
+
+**Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
 
 **Refuted findings:** drop silently — no struck-through text, no "considered but dismissed" note, no mention at all
 

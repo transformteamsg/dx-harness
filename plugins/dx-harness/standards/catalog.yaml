@@ -607,6 +607,33 @@ controls:
     gap: "No script: the control is status proposed, and the harness does not enforce a rule a design lead has not ratified."
     refs: [https://github.com/transformteamsg/dx-harness/issues/190]
 
+  # CMP-11: ratchet PROPOSAL 2026-08-06 — nested-child geometry self-consistency,
+  # from a two-independent-run efficacy report (docs/tfx-design-skill-report): a
+  # stat-tile's active/focus ring sat visibly inside its card rather than flush
+  # with the card's edge, and both evaluator passes missed it because CMP-7's
+  # guidance only covers component defaults and cross-page consistency, never a
+  # component's self-consistency against its own nested child's box model.
+  # Boundary with CMP-7: CMP-7 checks a component against its own defaults and
+  # its sibling-page usage; CMP-11 checks a component against itself — does its
+  # own nested interactive child trace its own container's edge and radius.
+  # Numbered CMP-11, not CMP-10: CMP-10 was independently claimed by the
+  # input-validation error-clearing control above (#191, merged first).
+  # Pending design-lead approval.
+  - id: CMP-11
+    source: DX-DS
+    title: A component's own nested interactive child (a focus ring, active-state fill, icon) traces that component's own container edge and radius — not a smaller box floating inside it
+    tier: L2
+    status: proposed
+    check: judgment
+    phase: [plan, implement, verify]
+    applies_to: [page, component]
+    verify: "Evaluator: for each interactive component, does a focus ring, active-state fill, or icon nested inside it trace the container's true edge and radius (accounting for padding), or does it float inside a smaller box than the container it's meant to outline? A self-consistency read distinct from A11Y-8 (state-tracking) — a ring can correctly track aria-pressed and still sit in the wrong box"
+    waiver: rationale
+    fails_when:
+      - a component's own nested interactive child (a focus ring, active-state fill) does not trace that component's own container edge or radius — it reads as floating inside a smaller box, not outlining the container
+    detail: controls/cmp-11.md
+    refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
+
   # ── Content & naming ──────────────────────────────────────────────────
   - id: CNT-1
     source: DX-DS
