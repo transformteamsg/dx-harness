@@ -7,7 +7,7 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 ```markdown
 # Agent Pattern Registry
 
-> Auto-maintained by `code-review`. Read by `implement-issue` as an anti-pattern list.
+> Auto-maintained by `dx-code-review`. Read by `dx-implement-issue` as an anti-pattern list.
 > Deduplication key: Pattern name (case-insensitive). Increment "Confirmed by" on recurrence.
 > When a pattern is promoted to a programmatic guard, remove its row and note the guard location in a comment above the table.
 

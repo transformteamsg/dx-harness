@@ -71,7 +71,7 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
    On the Local Branch Review Path, create `review/agent-patterns.md` from the seed if it does not exist, apply those updates, and commit the file: `docs(review): update agent-patterns.md [skip ci]`.
 
    For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes, and again on the Local Branch Review Path only:
-   - Implement the guard using `lint-setup` (lint rule) or `git-hooks-setup` (hook script) as appropriate.
+   - Implement the guard using `dx-lint-setup` (lint rule) or `dx-git-hooks-setup` (hook script) as appropriate.
    - Remove the pattern's row from `review/agent-patterns.md`.
    - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
    - If the guard requires CI pipeline changes, surface a recommendation to the developer instead of implementing directly.
