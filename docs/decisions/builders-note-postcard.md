@@ -8,6 +8,23 @@
 - **The reader and the moment:** a visitor opening the builder's note; the card
   is the letter's own form, not a doc-page figure.
 
+## Sprint contract (done-criteria)
+
+> Written retrospectively — this was an attended, session-directed run with no
+> criteria declared upfront. The three below describe what the shipped
+> component actually delivers, confirmed against the code on 2026-08-25.
+
+1. The card opens picture-side up and flips to the message as the reader
+   scrolls past the reference thresholds, and flips back above them —
+   verified in both directions, plus an idle-timer fallback for a reader
+   who never scrolls.
+2. The message is the letter's actual opening prose and stays in the
+   accessibility tree and in server-rendered (no-JS) HTML regardless of
+   which face is visually showing.
+3. Under reduced motion the two faces swap with no animated transition
+   (verified: transition-duration 0s); the hidden face is marked inert
+   so its content and alt text are never exposed or read twice.
+
 ## Chosen approach
 
 The note opens as a postcard that arrives picture-side up and turns itself over
@@ -67,8 +84,46 @@ LAY-2 (no overflow at 320).
   ask, the serif ask, and "make it naturally flip upon scrolling the page
   itself", all given verbatim in session on 2026-08-19.
 
-## Verdict
+## Verify verdict
 
-Shipped after the dx-design-review agent's pass-with-findings verdict on the
-first (click-toggle) version; both blocking findings and all advisories were
-fixed before this scroll-driven revision, which keeps those fixes.
+- **Original review:** Shipped after the dx-design-review agent's
+  pass-with-findings verdict on the first (click-toggle) version; both
+  blocking findings and all advisories were fixed before this scroll-driven
+  revision, which keeps those fixes.
+
+VERDICT: pass
+
+Re-verified against the shipped scroll-driven revision (not the earlier
+click-toggle draft the original dx-design-review pass-with-findings covered).
+No blocking or advisory findings on this independent pass.
+
+QUALITY GRADES:
+Not separately graded — this run predates the quality-grades convention.
+Today's re-verification is limited to mechanical/behavioural criteria; see
+the verification ledger below.
+
+| Control | Method | Evidence |
+|---------|--------|----------|
+| TOK-1 | script | `token-audit.py` clean on `postcard.tsx` + `/note` (exit 0) |
+| TYP-1 | manual | inline `dx-waive TYP-1` at the `--font-note-mark` token definition in `app/globals.css`; `type-scan.py` also ran clean |
+| TYP-2 / TYP-3 | script | `type-scan.py` clean on `postcard.tsx` + `/note` (exit 0) — no sub-14px body text, scale-compliant |
+| MOT-1 | manual | inline `dx-waive MOT-1` recorded at the deviation site in `postcard.tsx` |
+| MOT-3 | manual | live-verified: live region announces the state change and content stays in the DOM regardless of animation — meaning isn't carried by motion alone |
+| A11Y-5 | manual | live-verified: `transition-duration: 0s` under `prefers-reduced-motion: reduce` |
+| A11Y-6 | manual | live-verified: hidden face carries `inert` (toggles correctly), alt text present, live region announces each state |
+| SLP-4 | manual | code inspection: `Postcard` sits directly in plain prose flow (`content/sections/builders-note.mdx`), not nested in another card |
+| SLP-11 | manual | catalog marks this `check: judgment` (not script-checkable) — the postcard is itself the interactive unit (scroll-driven flip), not static content boxed for decoration |
+| LAY-2 | script | Playwright probe: `scrollWidth === clientWidth` at 320px and 360px |
+
+## Ratchet
+
+1. [proposed — pending design-lead approval] type-scan.py's FONT rule
+   (TYP-1) does not catch a non-standard typeface applied via a custom
+   Tailwind utility class (e.g. `font-note-mark`, a project-defined class
+   mapping to a CSS variable) rather than `font-family:`, `font-[…]`, or
+   a named utility. This run's own `--font-note-mark` waiver passed the
+   script silently — not because it was recognised as compliant, but
+   because the rule has no pattern for that syntax at all. An undocumented
+   future misuse via the same pattern would pass silently too. Candidate
+   fix: extend FONT to flag any `font-{name}` utility class not in
+   ALLOWED_FONT_TOKENS, not only the three named forms.
