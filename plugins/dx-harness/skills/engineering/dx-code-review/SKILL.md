@@ -5,7 +5,7 @@ description: Use when asked to review code changes — either posting findings a
 
 # Code Review
 
-Reviews code changes using 8 structured angles across the diff. Posts findings as inline PR comments directly on GitHub, or runs an interactive triage session on a local working branch with optional report generation at the end.
+Reviews code changes using 9 structured angles across the diff. Posts findings as inline PR comments directly on GitHub, or runs an interactive triage session on a local working branch with optional report generation at the end.
 
 ---
 
@@ -73,7 +73,7 @@ Skip rules act on the diff, not on findings: remove every matching path before s
 A finding produced by a rule from this file names that rule, so the author can see what asked for it.
 
 1. Run the PR & Issue Check (below) — this must complete before the review angles.
-2. Run all 8 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
+2. Run all 9 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
    - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
 3. Deduplicate near-duplicates (same defect, same location → keep one).
 4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label through to the comment. The label is the work this step exists to do, so throwing it away before posting leaves a verified bug and a maybe reading identically to the author.
@@ -140,7 +140,7 @@ Run as Analysis Phase step 1, before the review angles. The goal: confirm the ch
 
 ## Review Angles
 
-Shared by both paths. Run all eight; each surfaces up to 6 candidates. Work through each checklist item explicitly — don't just scan.
+Shared by both paths. Run all nine; each surfaces up to 6 candidates. Work through each checklist item explicitly — don't just scan.
 
 ### Line-by-line
 
@@ -175,6 +175,21 @@ Look for a change that lets untrusted input reach somewhere it should not. Four 
 - **Untrusted input into a dangerous sink:** does caller-controlled data reach a filesystem path, an outbound request URL, a deserialiser, or a redirect target without being constrained to something known-safe? This covers path traversal, server-side request forgery, and unsafe deserialisation, which are one shape wearing three names.
 
 **Severity here follows the same rules as every other angle, with one floor: a CONFIRMED security finding is always Important.** There is no minor confirmed injection. A finding you cannot verify is still posted, labelled Unverified per the verification rules, and it does not become Important by being about security. A review that marks everything security-shaped as blocking teaches the author to stop reading it, which costs more than the finding was worth.
+
+### Design
+
+Look for a change to an interface that breaks the standard this repository is held to. This angle exists because a design regression ships as easily as a logic one and nothing else in the review looks for it.
+
+**Every design finding cites a control ID from the standards catalogue, and one that does not is dropped.** That is the whole guard against this angle becoming taste. "This spacing looks wrong" is an opinion and does not post; "LAY-3" is a rule the repository already agreed to, and the disagreement is with the catalogue rather than with the reviewer. Read `standards/catalog.yaml`, three levels up from this skill, and cite the control by ID in the finding.
+
+- **Accessibility:** does the change break an A11Y control? Contrast, focus order, keyboard reachability, labelling, and target size are the ones a diff can show.
+- **Tokens and typography:** does it introduce a raw value where the catalogue requires a token, or a typeface or scale step the standard does not carry?
+- **Component and layout:** does it reimplement something the catalogue already defines, or violate a layout control?
+- **Content:** does a new or changed user-facing string break a CNT control, or an anti-slop SLP one?
+
+**Severity: a failed A11Y control is Important, and everything else here is a Nit.** An accessibility failure is a bug that stops someone using the product, which is what Important means. The rest are real but do not block, and marking them otherwise would make every design comment a gate.
+
+**This angle reads the diff, like every other angle.** A control needing the whole codebase to judge, such as whether a component duplicates one three directories away, is out of scope here: the design skills own the full sweep and have the context for it. Reviewing the diff means this angle can miss things, and that is the trade accepted for a review that runs in seconds.
 
 ### Cross-file
 
