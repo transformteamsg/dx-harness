@@ -1844,21 +1844,66 @@ def run_self_test():
         # catalog still carries CNT-12's note (content-lint.py ships, so it is
         # the shipped-script error class, filed separately) and README.md's own
         # "Planned for V1" heading, which names a table of real build targets.
-        if rel.startswith("standards/controls/") and re.search(r"planned", text,
+        # A "planned in/for #NNN" note is exempt: it is traceable to a tracked
+        # issue, unlike the bare "(planned)" notes this sweep exists to catch —
+        # those never expire because nothing checks them against anything.
+        untraceable = re.sub(r"planned\s+(?:in|for)\s+#\d+", "", text,
+                             flags=re.IGNORECASE)
+        if rel.startswith("standards/controls/") and re.search(r"planned",
+                                                               untraceable,
                                                                re.IGNORECASE):
-            got.append(f"{rel} still carries a 'planned' note")
+            got.append(f"{rel} still carries an untraceable 'planned' note")
     if "slop-layout" in open(os.path.join(REPO_ROOT, "checks", "README.md")).read():
         got.append("checks/README.md still has a slop-layout row")
     # The triaged controls' own verify: strings, read as data rather than text,
-    # so a promise reintroduced through the catalog is caught too.
+    # so a promise reintroduced through the catalog is caught too. Same
+    # traceable-issue exemption as the sweep above.
     for slug in triaged:
         control = live_by_id.get(slug.upper(), {})
-        verify = str(control.get("verify", ""))
+        verify = re.sub(r"planned\s+(?:in|for)\s+#\d+", "",
+                        str(control.get("verify", "")), flags=re.IGNORECASE)
         if re.search(r"planned|until a script exists", verify, re.IGNORECASE):
             got.append(f"{slug.upper()} verify: still promises a script")
     if want != got:
         failures.append(f"FAIL no file cites a check that does not exist: "
                         f"want: {want!r}; got: {got!r}")
+
+    # Every "built in #NNN" claim, anywhere in standards/controls/, names a
+    # script that actually exists (#150 first showed this drift: swapping a
+    # bare "(planned)" for "built in #NNN" satisfies the sweep above without
+    # the referenced issue having actually shipped anything — TYP-6/LAY-4's
+    # "built in #161" was true when #150 wrote it because #161 had already
+    # landed; SLP-1/IDN-1/IDN-2/MOT-1's "built in #156/#157/#159" were not,
+    # because those issues were still open). Scoped to every control detail
+    # file, not just the ones #150 touched, as a standing guardrail rather
+    # than a one-time fix. A claim with no `checks/*.py` filename nearby (the
+    # structure-check note in cmp-6.md, for one) isn't mechanically checkable
+    # either way and is left to the manual/evaluator read, not flagged here.
+    case_count += 1
+    want = []
+    got = []
+    control_dir = os.path.join(REPO_ROOT, "standards", "controls")
+    for fname in sorted(os.listdir(control_dir)):
+        if not fname.endswith(".md"):
+            continue
+        with open(os.path.join(control_dir, fname)) as fh:
+            text = fh.read()
+        for match in re.finditer(r"built in #\d+", text):
+            before = text[max(0, match.start() - 200):match.start()]
+            after = text[match.end():match.end() + 40]
+            script = re.search(r"checks/([\w./-]+\.py)", after) or \
+                re.search(r"checks/([\w./-]+\.py)(?!.*checks/[\w./-]+\.py)",
+                          before, re.DOTALL)
+            if not script:
+                continue
+            script_path = os.path.join(REPO_ROOT, "checks", script.group(1))
+            if not os.path.isfile(script_path):
+                got.append(f"standards/controls/{fname} claims "
+                          f"checks/{script.group(1)} exists via {match.group(0)!r}; "
+                          f"it does not")
+    if want != got:
+        failures.append(f"FAIL every 'built in #N' claim names a script that "
+                        f"exists: want: {want!r}; got: {got!r}")
 
     # SLP-6 and TYP-3 can both pass on the same page (#150). Read both controls
     # from the live catalog and measure, rather than restating the numbers: the

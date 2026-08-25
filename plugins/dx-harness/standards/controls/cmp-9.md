@@ -6,7 +6,7 @@ tier: L1
 check: hybrid
 phase: [implement, verify]
 applies_to: [component, flow]
-verify: "Deterministic: checks/cmp-scan.py (built in #158) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
+verify: "Deterministic: checks/cmp-scan.py (planned in #158, not yet built) finds dangerouslySetInnerHTML/v-html on any surface rendering another user's authored content, and checks whether a sanitiser call sits in the render path. Judgment: evaluator reads the render boundary and confirms sanitisation holds there, not only at author/editor time; a mock-data prototype deferral is acceptable only if explicitly flagged in the decision record"
 waiver: documented
 fails_when:
   - dangerouslySetInnerHTML/v-html renders another user's authored content with no sanitiser in the render path
@@ -59,8 +59,8 @@ gap the catalog was silent on, not a style preference.
 
 Two halves, one hybrid check:
 
-1. **Deterministic sub-check** — `checks/cmp-scan.py`, built in #158; manual until it
-   ships: search the changed surface for `dangerouslySetInnerHTML` / `v-html`
+1. **Deterministic sub-check** — `checks/cmp-scan.py`, planned in #158, not yet built;
+   manual until it ships: search the changed surface for `dangerouslySetInnerHTML` / `v-html`
    or equivalent, and identify whether the content it renders originates from a
    *different* user than the one viewing it. If so, confirm a sanitiser call sits in
    the render path (not merely at the editor).

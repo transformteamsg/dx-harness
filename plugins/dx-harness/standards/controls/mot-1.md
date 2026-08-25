@@ -45,7 +45,8 @@ from any of the three.
 
 **Static-check half.** Durations, easing functions, and `transition-all` are literal
 values in stylesheets and component source, and finding those that fall outside the band
-is mechanical. That half is built in #157 as `checks/motion-scan.py`.
+is mechanical. That half is planned in #157 as `checks/motion-scan.py`; no script exists
+yet.
 
 **Judgment half.** "Critical path" and "decorative" are not properties of the source. A
 300ms transition is legal by the band and still wrong if it sits between two steps of a

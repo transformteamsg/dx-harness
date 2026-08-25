@@ -43,7 +43,7 @@ shared chrome and becomes per-product decoration.
 **Static-check half.** Resolving an icon reference against the approved product-icon set
 is mechanical, and so are two of the three failure conditions: a background colour or
 gradient declared on an icon container, and a `box-shadow` or gloss gradient inside the
-mark. That half is built in #159 as `checks/identity-scan.py`.
+mark. That half is planned in #159 as `checks/identity-scan.py`; no script exists yet.
 
 **Judgment half.** Whether an inline mark is a *product* icon — rather than a general
 interface icon, which this control does not govern — is a reading of what the element

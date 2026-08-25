@@ -45,7 +45,7 @@ not a glow accent.
 whose stops both resolve to hues in the purple/violet band, a cyan foreground token paired
 with a near-black background token, and a `box-shadow` with a large blur, no offset, and a
 saturated colour. A static check can find each of them in stylesheets and component
-source. That half is built in #156 as `checks/slop-scan.py`.
+source. That half is planned in #156 as `checks/slop-scan.py`; no script exists yet.
 
 **Judgment half.** Whether a given violet is the default aesthetic or the product's own
 brand cannot be decided from the declaration alone — it depends on the product's declared

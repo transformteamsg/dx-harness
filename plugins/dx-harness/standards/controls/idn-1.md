@@ -40,7 +40,8 @@ This is an L1 control: a waiver is available and must be documented.
 library is mechanically decidable: the check follows image and SVG references from page
 source and compares them against the library's manifest. It can also find the strongest
 recreation signal — a large inline SVG path in a component whose name identifies it as a
-logo or lockup. That half is built in #159 as `checks/identity-scan.py`.
+logo or lockup. That half is planned in #159 as `checks/identity-scan.py`; no script
+exists yet.
 
 **Judgment half.** Whether an inline mark is a *recreation of this product's logo*, rather
 than an unrelated illustration or icon, needs a human reading. So does distortion: a
