@@ -28,7 +28,7 @@
 
 Each finding follows this structure, grouped under `### 🔴 Important`, `### 🟡 Nit`, `### 🟣 Pre-existing` — omit any section with no entries.
 
-#### 1. <One-sentence summary>
+#### 1. <One-sentence summary> <!-- 🟡 and 🟣 append: (not blocking) -->
 
 **File:** `path/to/file.ext` · **Line:** 42 · **Triage:** Fixed / To be fixed
 

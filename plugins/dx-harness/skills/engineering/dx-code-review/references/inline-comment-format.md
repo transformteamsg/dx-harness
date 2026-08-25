@@ -2,6 +2,12 @@
 
 Used by the PR Review Path (step 8). All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
+## Saying what blocks
+
+A 🟡 Nit or 🟣 Pre-existing comment carries `(not blocking)` on its first line, immediately after the summary. A 🔴 Important comment carries nothing extra, because blocking is what Important already means.
+
+The label is for the author, not the reviewer. Without it every comment arrives with the same weight, and someone reading five of them cannot tell whether they are looking at one requirement and four suggestions or five requirements. Declining a comment marked `(not blocking)` needs no reply and no justification.
+
 ## The recurring-pattern line
 
 Include it only on a finding that Analysis Phase step 7 tagged `[AI-PATTERN]`, and omit the line entirely otherwise. Never print it empty.
@@ -15,7 +21,7 @@ Without this line the tag is computed and discarded. Classification would run on
 Assign the body to a variable first to avoid shell escaping issues with multiline content:
 
 ```bash
-BODY="**[Severity] One-sentence summary**
+BODY="**[Severity] One-sentence summary**  <!-- 🟡 and 🟣 append: (not blocking) -->
 
 \`\`\`<lang>
 // 5–10 lines of context; problem line marked with // ←
