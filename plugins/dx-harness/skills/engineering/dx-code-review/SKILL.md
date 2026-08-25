@@ -59,17 +59,19 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
    - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not
    - If none found: note no manifest detected and mentally trace any shell commands against the failure modes described
 6. Drop all REFUTED findings — see Rules › Refuted findings.
-7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns in `review/agent-patterns.md`. If the file doesn't exist yet, create it by copying this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md). Tag matching findings `[AI-PATTERN]`.
+7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns in `review/agent-patterns.md`, falling back to this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md) when that file does not exist yet. Tag matching findings `[AI-PATTERN]`.
+
+   **Classifying is read-only and runs on both paths. Everything below it that writes runs on the Local Branch Review Path only.** A PR review sources its diff from GitHub and needs no branch checked out, so a write lands on whatever branch the reviewer is parked on, which is unrelated to the pull request under review and is often `main`. On the PR path, report each update you would have made and leave the working tree alone.
 
    For each tagged finding, look for the matching row in the Pattern name column (case-insensitive substring):
    - **Seed row, unobserved** (`Confirmed by: 0`) — fill in `First seen` (today), `Concrete example` (this instance), `Severity` (this finding's severity), and set `Confirmed by` to `1 review`.
    - **Already observed** (`Confirmed by` ≥ 1) — increment `Confirmed by` and append `(also seen: <file>)` to the `Concrete example`.
    - **No match at all** (a pattern outside the 9 seeds) — append a new row: next sequential `AP-NNN` ID, directive Pattern name, one-sentence Trigger, one-sentence Prevention instruction, one project-anchored Concrete example, today's ISO date, severity, `1 review`.
 
-   Commit the file: `docs(review): update agent-patterns.md [skip ci]`
+   On the Local Branch Review Path, create `review/agent-patterns.md` from the seed if it does not exist, apply those updates, and commit the file: `docs(review): update agent-patterns.md [skip ci]`.
 
-   For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes:
-   - Implement the guard using `lint-setup` (lint rule) or `git-hooks-setup` (hook script) as appropriate.
+   For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes, and again on the Local Branch Review Path only:
+   - Implement the guard using `dx-lint-setup` (lint rule) or `dx-git-hooks-setup` (hook script) as appropriate.
    - Remove the pattern's row from `review/agent-patterns.md`.
    - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
    - If the guard requires CI pipeline changes, surface a recommendation to the developer instead of implementing directly.
@@ -78,7 +80,7 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
 
 ## PR & Issue Check
 
-Run as Analysis Phase step 1, before the review angles. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised.
+Run as Analysis Phase step 1, before the review angles. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised. The four issue shapes state that contract under different headings, so step 4 reads the shape first.
 
 1. **Resolve the PR.**
    - PR Review Path: already fetched in that path's steps 1–2.
@@ -91,13 +93,23 @@ Run as Analysis Phase step 1, before the review angles. The goal: confirm the ch
      - Number provided → fetch it as above.
      - "Proceed" → no issue for the rest of this check; skip step 4 below.
 3. **Check the PR has a test plan.** Look for a "Test plan" / "Testing" / "How to test" section in the PR body. If missing, treat it as an empty test plan and continue.
-4. **Check the test plan covers the linked issue(s)' acceptance criteria** (skip if no issue was resolved in step 2). Each issue follows the `create-issue` template — each entry under `## Acceptance criteria` is a Given-When-Then scenario. For each scenario across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
+4. **Check the test plan covers each linked issue's contract** (skip if no issue was resolved in step 2). What the contract is depends on the shape of the issue, so read the shape from its headings, which are authoritative. A shape label (`story`, `task`, `chore`, or `bug`) confirms the reading, and an issue written before the four shapes existed carries neither, so never depend on the label alone:
+
+   | Shape | Heading that identifies it | Its contract |
+   | --- | --- | --- |
+   | Story | `## User story` | Each Given-When-Then scenario under `## Acceptance criteria` |
+   | Task | `## Parent` | Each scenario under `## Acceptance criteria`, plus each item in the optional `### Also true when done` checklist |
+   | Chore | `## What is changing` | Each item under `## Done when` |
+   | Bug | `## Steps to reproduce` | The reproduction path, plus the gap between `## Expected behaviour` and `## Actual behaviour` |
+
+   For each contract item across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
    - All covered → continue to step 5.
+   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5. Never pass this gate in silence: an issue with nothing to check against and an issue whose contract is fully covered are different outcomes, and they must not look the same.
    - Any uncovered → ask the reviewer:
-     > "The test plan doesn't cover these acceptance criteria scenarios: <list>. Continue the review anyway?"
+     > "The test plan doesn't cover these contract items: <list>. Continue the review anyway?"
      - No → stop the review here; the reviewer should update the PR's test plan first.
-     - Yes → continue to step 5, carrying the uncovered scenarios into it alongside the test plan's own scenarios.
-5. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered acceptance-criteria scenarios carried from step 4), check whether an automated test exercises it.
+     - Yes → continue to step 5, carrying the uncovered items into it alongside the test plan's own scenarios.
+5. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
    - All covered → done, continue to the review angles.
    - Any scenario with no automated test:
      - File it directly as a 🔴 **Important** finding — "Missing automated test for: <scenario>" — alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (Analysis Phase steps 3–4) and goes straight into the final findings list.
@@ -211,6 +223,8 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 **What looks good:** always include; specifics only; 2–4 bullets max
 
 **Scope:** every confirmed or plausible finding regardless of severity — no cap
+
+**Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
 
 **Refuted findings:** drop silently — no struck-through text, no "considered but dismissed" note, no mention at all
 
