@@ -28,6 +28,7 @@
  */
 
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -97,28 +98,12 @@ function failure(job, message) {
 
 // ── In-page helpers, all serialised as strings for page.evaluate ─────────────
 
-/** A stable-enough CSS path for an element, used to name a waiver marker. */
-const CSS_PATH_FN = `
-  function cssPath(el) {
-    if (el.id) return "#" + CSS.escape(el.id);
-    const parts = [];
-    let node = el;
-    while (node && node.nodeType === 1 && parts.length < 6) {
-      let part = node.localName;
-      const cls = (node.getAttribute("class") || "").trim().split(/\\s+/).filter(Boolean);
-      if (cls.length) part += "." + cls.slice(0, 2).map(CSS.escape).join(".");
-      const parent = node.parentElement;
-      if (parent) {
-        const sibs = Array.from(parent.children).filter((c) => c.localName === node.localName);
-        if (sibs.length > 1) part += ":nth-of-type(" + (sibs.indexOf(node) + 1) + ")";
-      }
-      parts.unshift(part);
-      if (node.id) { parts[0] = "#" + CSS.escape(node.id); break; }
-      node = node.parentElement;
-    }
-    return parts.join(" > ");
-  }
-`;
+/**
+ * A stable-enough CSS path for an element, used to name a waiver marker and
+ * to key the reduced-motion dedup set. Read from `css-path.js`, the single
+ * source `rendered-check.py` reads too — see that file's header comment.
+ */
+const CSS_PATH_FN = readFileSync(resolve(HERE, "css-path.js"), "utf8");
 
 /**
  * Does this product have a dark mode at all? Verify's own detection: a theme
@@ -173,10 +158,10 @@ function applyThemeJs(theme) {
     const root = document.documentElement;
     if (${JSON.stringify(theme)} === "dark") {
       root.classList.add("dark");
-      if (root.hasAttribute("data-theme")) root.setAttribute("data-theme", "dark");
+      root.setAttribute("data-theme", "dark");
     } else if (${JSON.stringify(theme)} === "light") {
       root.classList.remove("dark");
-      if (root.hasAttribute("data-theme")) root.setAttribute("data-theme", "light");
+      root.setAttribute("data-theme", "light");
     }
     return true;
   })()`;
