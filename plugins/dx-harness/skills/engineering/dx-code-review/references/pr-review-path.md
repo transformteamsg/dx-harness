@@ -111,7 +111,9 @@ Every comment posted by this skill ends with the following footer so that skill 
 
       **Skipped:** N path(s) matched a skip rule in `REVIEW.md` and were not reviewed.
 
-      **Registry:** N finding(s) matched a known pattern, and N matched none. This path records nothing; run a local branch review to record them.
+      **Registry:** N finding(s) matched a known pattern, and N matched none. This path records nothing, because recording follows the author saying which findings were real and this path has no triage.
+
+      For each finding that matched nothing, render the row it would propose and the `gh issue create` command that would file it, so acting on it is one copy rather than a second review. A team that reviews only through pull requests otherwise never adds a pattern, and would have no way to notice that.
 
       **Suppressed:** N finding(s) were dropped because their pattern is suppressed in this repository's registry.
 

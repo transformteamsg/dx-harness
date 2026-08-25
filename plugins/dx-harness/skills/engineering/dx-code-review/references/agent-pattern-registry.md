@@ -51,6 +51,14 @@ Two rejections rather than one, deliberately. The nine shipped patterns start at
 
 **Suppression is permanent until a human edits the row.** This is structural rather than a preference: a suppressed pattern is never raised, so it can never accumulate the confirmations that would let it earn its way back. Nothing automatic reverses it, and no cooldown exists. The row carries its counts and its date so someone can see why and undo it deliberately.
 
+**A suppressed pattern that came from the standard is worth reporting back.** When the suppressed row carries an `AP-NNN` the shipped standard also carries, this repository has just concluded that a pattern shipped to everyone is wrong here. Offer to report it, using the same mechanism and the same stripping rule as a proposal:
+
+> "**<Pattern name>** is now suppressed here: rejected <N> times against <M> confirmations. It came from the shipped standard, so dx-harness may want to know. Report it? The issue carries the pattern ID and the counts, and nothing from this codebase."
+
+The report carries the `AP-NNN` and the two counts. Never the concrete example, never a path, never an excerpt, exactly as a proposal is stripped, because it goes to the same public tracker. A pattern this repository added itself is not reported: dx-harness never shipped it and has nothing to learn from its suppression.
+
+One project's suppression is weak evidence and nobody should act on a single report. It is filed so several become visible, which is a judgement a maintainer makes by reading them, not a threshold anything computes. Declining changes nothing: the suppression is already recorded locally and never depended on the report.
+
 **A suppressed row is never removed.** Removing it causes amnesia: a later review rediscovers the same pattern, adds it as a fresh row, has it rejected again, and re-suppresses it, forever. A promoted row can be removed because a lint rule succeeds it. Suppression has no successor.
 
 ### What the repository's file holds
