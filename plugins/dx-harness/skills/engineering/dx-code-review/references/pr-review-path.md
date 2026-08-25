@@ -15,13 +15,19 @@ Every comment posted by this skill ends with the following footer so that skill 
 
 ## Steps
 
-1. Parse the pull request, and establish which repository it belongs to. This decides everything downstream, so get it right before running anything else.
-   - **Full URL** (for example `https://github.com/owner/repo/pull/42`): take `{number}`, `{owner}`, and `{repo}` from the URL itself. The pull request names its own repository, and that is the reviewed repository.
+1. Parse the request, and establish which forge and which repository it belongs to. This decides everything downstream, so get it right before running anything else.
+
+   **Name the forge first**, per [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). A URL names its own host, which settles it outright and is the reliable answer for a repository mirrored on both. Otherwise read `git remote get-url origin`. A host containing `github.com` is GitHub and one containing `gitlab` is GitLab; if the remote names neither, say so and stop rather than guessing at a CLI.
+
+   Everything below is written in GitHub's commands. The GitLab equivalent for each is in that procedure's command map and its reviewing section, and the rest of this path is identical: same angles, same verification, same volume control, same summary. Report in the platform's own vocabulary, so a GitLab developer is told about a merge request and an MR number, never a pull request.
+   - **Full URL** (for example `https://github.com/owner/repo/pull/42`, or `https://gitlab.com/owner/repo/-/merge_requests/42`): take `{number}`, `{owner}`, and `{repo}` from the URL itself. The pull request names its own repository, and that is the reviewed repository.
    - **Number alone**: the reviewed repository is the one the working directory is in, because a bare number means "here". Read it with `gh repo view --json owner,name`.
 
    Once `{owner}` and `{repo}` are known, pass `--repo {owner}/{repo}` to every `gh` call in this path, and use them in every `gh api` path. Never let a later command resolve the repository from the working directory again. This path does not require the reviewed branch, or the reviewed repository, to be checked out, so the directory the reviewer happens to be sitting in is unrelated to the pull request under review and is frequently a different project.
 
-2. Fetch PR metadata:
+   **Check the forge CLI before running anything else.** If `gh` or `glab` is absent, or present but not authenticated, stop and say which tool is missing and the command that fixes it. Do not start a review you cannot post.
+
+2. Fetch request metadata:
    ```bash
    gh pr view {number} --repo {owner}/{repo} --json number,headRefName,headRefOid,baseRefName,title
    ```
