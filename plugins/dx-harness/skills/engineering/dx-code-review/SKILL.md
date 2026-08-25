@@ -48,8 +48,21 @@ Run the review, triage each finding interactively with the user, then optionally
 
 Shared by both paths — run on the diff produced by that path's diff-sourcing step, then continue with the path's remaining steps.
 
+**Before step 1, read the repository's review instructions.** Look for `REVIEW.md` at the repository root.
+
+- **Present and readable**: apply it for the rest of the run. It can add rules this review must check, and list paths to skip.
+- **Present but unreadable**: stop the review, name the file and the error, and leave the pull request untouched. Findings calibrated by rules that were never applied are worse than no review, because they read like a complete one.
+- **Absent**: run exactly as this file describes and say nothing about it. A repository that has not opted in is not misconfigured.
+
+Only the root file is read. A nested `REVIEW.md` deeper in the tree is ignored, so there is one file to find and one precedence rule.
+
+Skip rules act on the diff, not on findings: remove every matching path before step 1, so no angle ever sees them. A skipped file must not consume an angle's candidate ceiling, or the nit budget the PR review path applies before it posts. Record which paths were skipped, because the summary reports them. A review that looked at nothing must never read as a review that found nothing.
+
+A finding produced by a rule from this file names that rule, so the author can see what asked for it.
+
 1. Run the PR & Issue Check (below) — this must complete before the review angles.
 2. Run all 7 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
+   - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
 3. Deduplicate near-duplicates (same defect, same location → keep one).
 4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**.
    - PLAUSIBLE by default for: races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor
@@ -59,22 +72,13 @@ Shared by both paths — run on the diff produced by that path's diff-sourcing s
    - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not
    - If none found: note no manifest detected and mentally trace any shell commands against the failure modes described
 6. Drop all REFUTED findings — see Rules › Refuted findings.
-7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns in `review/agent-patterns.md`, falling back to this skill's [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md) when that file does not exist yet. Tag matching findings `[AI-PATTERN]`.
+7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns of two sources read together: this repository's `review/agent-patterns.md`, which holds only the patterns this repository has actually observed, and this skill's [references/agent-patterns.md](references/agent-patterns.md), which ships the universal ones. The repository's file is an overlay: where both carry the same `AP-NNN`, its row wins, because it holds this repository's counts and status. Tag matching findings `[AI-PATTERN]`.
 
-   **Classifying is read-only and runs on both paths. Everything below it that writes runs on the Local Branch Review Path only.** A PR review sources its diff from GitHub and needs no branch checked out, so a write lands on whatever branch the reviewer is parked on, which is unrelated to the pull request under review and is often `main`. On the PR path, report each update you would have made and leave the working tree alone.
+   **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and why a newly discovered pattern is proposed as an issue rather than written.
 
-   For each tagged finding, look for the matching row in the Pattern name column (case-insensitive substring):
-   - **Seed row, unobserved** (`Confirmed by: 0`) — fill in `First seen` (today), `Concrete example` (this instance), `Severity` (this finding's severity), and set `Confirmed by` to `1 review`.
-   - **Already observed** (`Confirmed by` ≥ 1) — increment `Confirmed by` and append `(also seen: <file>)` to the `Concrete example`.
-   - **No match at all** (a pattern outside the 9 seeds) — append a new row: next sequential `AP-NNN` ID, directive Pattern name, one-sentence Trigger, one-sentence Prevention instruction, one project-anchored Concrete example, today's ISO date, severity, `1 review`.
+   **A finding matching a row whose `Status` is suppressed is dropped here**, on both paths: not tagged, not verified further, not posted. Count the drops and carry the number to the summary, because a suppressed pattern hiding findings must not look like a review that found nothing.
 
-   On the Local Branch Review Path, create `review/agent-patterns.md` from the seed if it does not exist, apply those updates, and commit the file: `docs(review): update agent-patterns.md [skip ci]`.
-
-   For any pattern whose `Confirmed by` count has just reached 3, evaluate it against the programmability criteria (Specificity, Repeatability, Speed, Tool availability, Semantic dependency — see [references/agent-pattern-registry.md](references/agent-pattern-registry.md)). If it passes, and again on the Local Branch Review Path only:
-   - Implement the guard using `dx-lint-setup` (lint rule) or `dx-git-hooks-setup` (hook script) as appropriate.
-   - Remove the pattern's row from `review/agent-patterns.md`.
-   - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
-   - If the guard requires CI pipeline changes, surface a recommendation to the developer instead of implementing directly.
+   The PR review path has no triage, so it has no verdict to record. It reports the rows it would have added and writes nothing.
 
 ---
 
@@ -208,7 +212,7 @@ Used by the PR Review Path (step 8). See [references/inline-comment-format.md](r
 
 ## Agent Pattern Registry
 
-Used by the Analysis Phase (shared by both review paths) to persist and promote AI-characteristic findings, seeded from [assets/agent-patterns-seed.md](assets/agent-patterns-seed.md). See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for the file schema and the programmability-promotion criteria.
+Used by the Analysis Phase (shared by both review paths) to persist and promote AI-characteristic findings, with the shipped standard in [references/agent-patterns.md](references/agent-patterns.md). See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for the file schema and the programmability-promotion criteria.
 
 ---
 
@@ -222,7 +226,9 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 
 **What looks good:** always include; specifics only; 2–4 bullets max
 
-**Scope:** every confirmed or plausible finding regardless of severity — no cap
+**Scope:** every confirmed or plausible finding survives the Analysis Phase, at every severity. Volume control is a posting concern and belongs to the path that posts: the PR review path caps nits at 5 and suppresses new ones on a re-review, and its summary carries the count held back. The local branch path posts nothing and triages everything, so no cap applies there
+
+**Repository instructions:** `REVIEW.md` at the repository root tunes the review, and only the root file is read. A finding produced by one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
 
 **Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
 
