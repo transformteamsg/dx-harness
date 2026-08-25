@@ -10,9 +10,10 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 > Auto-maintained by `dx-code-review`. Read by `dx-implement-issue` as an anti-pattern list.
 > Deduplication key: Pattern name (case-insensitive). Increment "Confirmed by" on recurrence.
 > When a pattern is promoted to a programmatic guard, remove its row and note the guard location in a comment above the table.
+> A suppressed row stays. It is the only record that the pattern was tried and rejected.
 
-| ID | Angle | Pattern name | Trigger | Prevention | Concrete example | First seen | Severity | Confirmed by |
-|----|-------|-------------|--------|-----------|-----------------|------------|----------|-------------|
+| ID | Angle | Pattern name | Trigger | Prevention | Concrete example | First seen | Severity | Confirmed by | Rejected by | Status |
+|----|-------|-------------|--------|-----------|-----------------|------------|----------|-------------|-------------|--------|
 ```
 
 - **ID**: sequential `AP-NNN`, never reused
@@ -24,6 +25,8 @@ Used by the Analysis Phase (shared by both review paths) to persist and promote 
 - **First seen**: ISO date — `—` for an unobserved seed row
 - **Severity**: 🔴 Important / 🟡 Nit / 🟣 Pre-existing — `—` for an unobserved seed row
 - **Confirmed by**: `N review(s)` — `0` for an unseeded, unobserved row; set to `1 review` on its first real match; incremented on each recurrence
+- **Rejected by**: `N review(s)` — `0` until a reviewer first rejects a finding this pattern tagged; incremented on each rejection. Never incremented by a finding the reviewer accepted, and never decremented
+- **Status**: `active`, or `suppressed (YYYY-MM-DD)` with the date suppression was applied. A suppressed row is not raised and is not promotable
 
 ## Recording what a review learned
 
@@ -31,7 +34,22 @@ Classification (Analysis Phase step 7) only reads and tags. Recording happens af
 
 **The PR review path records nothing.** It sources its diff from GitHub and needs no branch checked out, so any write lands on whatever branch the reviewer is parked on, unrelated to the pull request under review and often `main`. It has no triage either, so it has no verdict to record. It reports the rows it would have added and stops.
 
-**Only a finding the author accepted is recorded.** A dismissal never counts in a pattern's favour: no row, no `Confirmed by` increment, no proposal. Recording a dismissal as evidence *against* a pattern belongs to [#235](https://github.com/transformteamsg/dx-harness/issues/235), together with the third triage answer that makes a dismissal expressible at all. Until that lands, "Fix now or later?" offers no dismissing answer, so every triaged finding is an accepted one.
+**A dismissal never counts in a pattern's favour, and counts against it.** Triage offers three answers, and the third rejects the finding outright. An accepted finding, whether the author fixes it now or later, increments `Confirmed by`. A rejected one increments `Rejected by` instead, and is never proposed, locally or upstream. Only an accepted finding can become a proposal, because an issue asking a team to adopt a rule their own reviewer just threw out is worse than silence. A pattern that produces false positives must get quieter, not climb towards promotion on findings the author threw out.
+
+Whether a rejection creates a row depends on what the finding matched, and the two cases differ:
+
+- **It matched a pattern**, from a seed or from a row already here. Record the rejection, creating the overlay row if the match came from a seed and this repository has none yet. A rejection of a shipped pattern is exactly the evidence that pattern is wrong here, and it is lost if there is nowhere to put it.
+- **It matched nothing.** Create no row, file no issue, and do not ask. This is the discovery case, and discovery belongs to accepted findings only: the author rejected this one, so it established no pattern to disconfirm and none worth proposing. Inventing a row, or an issue, to record the rejection of a pattern that never existed would make the registry longer without making it truer.
+
+### Suppression
+
+After updating the counts, suppress the pattern when **`Rejected by` is 2 or more and exceeds `Confirmed by`**. Set `Status` to `suppressed (YYYY-MM-DD)` and leave both counts in place, because they are the evidence for the decision.
+
+Two rejections rather than one, deliberately. The nine shipped seeds start at `Confirmed by: 0`, so a bare majority would let a single rejection kill a seed on its first outing, before it had ever been confirmed once.
+
+**Suppression is permanent until a human edits the row.** This is structural rather than a preference: a suppressed pattern is never raised, so it can never accumulate the confirmations that would let it earn its way back. Nothing automatic reverses it, and no cooldown exists. The row carries its counts and its date so someone can see why and undo it deliberately.
+
+**A suppressed row is never removed.** Removing it causes amnesia: a later review rediscovers the same pattern, adds it as a fresh row, has it rejected again, and re-suppresses it, forever. A promoted row can be removed because a lint rule succeeds it. Suppression has no successor.
 
 ### What the repository's file holds
 
@@ -50,7 +68,7 @@ Copying the shipped seeds into each repository instead would cost four things, a
 
 Update the row:
 
-- **Matched a seed, with no row here yet** — create the row in this repository's file, **keeping the seed's `AP-NNN` ID** along with its Angle, Pattern name, Trigger, and Prevention, and filling in `First seen` (today), `Concrete example` (this instance), `Severity` (this finding's severity), `Confirmed by` `1 review`, `Rejected by` `0`, and `Status` `active`. Keeping the ID is what stops a later review reading the same pattern as a new discovery and adding it twice. Create the file itself here if it does not exist, with the header and column row from § File schema and this one row beneath it.
+- **Matched a seed, with no row here yet** — create the row in this repository's file, **keeping the seed's `AP-NNN` ID** along with its Angle, Pattern name, Trigger, and Prevention, and filling in `First seen` (today), `Concrete example` (this instance), `Severity` (this finding's severity), and `Status` `active`. The two counts come from the verdict: an accepted finding starts the row at `Confirmed by` `1 review` and `Rejected by` `0`, and a rejected one starts it the other way round. Keeping the ID is what stops a later review reading the same pattern as a new discovery and adding it twice. Create the file itself here if it does not exist, with the header and column row from § File schema and this one row beneath it.
 - **Already has a row here** — increment `Confirmed by` and append `(also seen: <file>)` to the `Concrete example`.
 
 Then decide whether to commit, by asking whether the project opted in:
@@ -171,5 +189,5 @@ On the Local Branch Review Path only, and after the author has accepted the find
 - Prepend a promotion comment above the table: `<!-- AP-NNN "<Pattern name>" promoted to <tool> (<tier>) on <date> -->`
 - If the guard needs CI pipeline changes, recommend it to the developer rather than implementing it directly.
 
-A suppressed pattern is never promoted, whatever its `Confirmed by` count. That rule arrives with [#235](https://github.com/transformteamsg/dx-harness/issues/235), which introduces suppression.
+**A suppressed pattern is never promoted, whatever its `Confirmed by` count.** Refuse the promotion, leave the row in place, and record the refusal in the row's Status: `suppressed (YYYY-MM-DD), promotion refused (YYYY-MM-DD)`. A pattern the authors here keep rejecting must not become a lint rule that fires on valid code across the whole repository.
 

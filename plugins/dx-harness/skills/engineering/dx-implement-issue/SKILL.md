@@ -42,7 +42,8 @@ Before reading implementation files, check whether this project has accumulated 
 ls review/agent-patterns.md
 ```
 
-If the file exists, read its full contents. Treat every row's **Prevention** column as a binding constraint for this session:
+If the file exists, read its full contents. Treat every **active** row's **Prevention** column as a binding constraint for this session:
+- **Skip any row whose `Status` is suppressed.** Reviewers in this repository rejected that pattern more often than they confirmed it, so it is not a constraint here. Its counts stay in the file as the record of that decision, not as an instruction to you.
 - **High `Confirmed by` counts** (3+ reviews): these are recurrent patterns; apply extra scrutiny before any commit that touches the same Angle.
 - Before each commit, verify that none of the listed patterns appear in the staged diff.
 - If the correct implementation naturally resembles a listed pattern, note the distinction explicitly in the commit message.
