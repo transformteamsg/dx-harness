@@ -6,7 +6,7 @@ tier: L2
 check: judgment
 phase: [plan, implement, verify]
 applies_to: [page, component]
-verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance; deterministic override-detection planned once the component manifest (CMP-1) is wired"
+verify: "Evaluator: the surface's components use their design-system defaults; any override of a default that changes colour, contrast, or shape is flagged (and its contrast re-checked under A11Y-1), the surface's component usage matches sibling pages, and a control group's members share one resting affordance"
 waiver: rationale
 fails_when:
   - a design-system component default is overridden in a way that changes colour, contrast, or shape with no recorded reason
@@ -72,13 +72,16 @@ geometry, proposed from a later incident.
 
 ## Evaluator guidance
 
-Judgment for now: read the surface's components against their design-system defaults and
-against the same component on sibling pages. When you find an override, check whether it
-is recorded with a reason; if it changes colour or contrast, re-check it under A11Y-1.
-Inspect every toggle/segmented group for a shared resting affordance. The deterministic
-override-detection sub-check is **planned** once the CMP-1 component manifest is wired (the
-manifest is what makes "overrode a default" mechanically detectable) — until then, say
-"verified manually" and name what you checked.
+Read the surface's components against their design-system defaults and against the same
+component on sibling pages. When you find an override, check whether it is recorded with a
+reason; if it changes colour or contrast, re-check it under A11Y-1. Inspect every
+toggle/segmented group for a shared resting affordance.
+
+This control is judgment: the evaluator is the enforcement, and no script covers any half
+of it. `checks/component-manifest.py` is the nearest analogue in the checks layer — it
+compares component usage against a product's declared manifest — but it does not decide
+this control, and citing it as a precedent for a deterministic override-detection
+sub-check here would be citing a check that does not grade CMP-7.
 
 ## Do not flag
 

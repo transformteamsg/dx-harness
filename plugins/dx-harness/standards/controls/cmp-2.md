@@ -46,8 +46,9 @@ portfolio. That is why it is L0 — never waivable.
 
 ## How to verify
 
-Deterministic half — `checks/destructive` (planned): enumerate destructive actions in
-the changed surface, assert each has a consequence + undo/confirm surface. Judgment
+Deterministic half — `checks/cmp-scan.py`, planned in #158 (not yet built, manual until it
+ships): enumerate destructive actions in the changed surface, assert each has a
+consequence + undo/confirm surface. Judgment
 half — the evaluator quotes the consequence copy and grades it against: names the
 object, states the consequence, says whether it is reversible. L0: a failure here
 blocks output, full stop.
