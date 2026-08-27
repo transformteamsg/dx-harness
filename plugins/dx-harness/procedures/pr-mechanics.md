@@ -1,7 +1,7 @@
 # Pull request mechanics (shared procedure)
 
 This is the shared home for the command mechanics every skill needs when it opens,
-updates, or finishes a pull request. `dx-create-pr` owns the standard itself: what a
+updates, reviews, or finishes a pull request. `dx-create-pr` owns the standard itself: what a
 body says and when a request opens. This file owns the parts that do not change
 between skills, so a correction lands once. A skill that opens a pull request
 references this file rather than restating it, and states only what is specific to
@@ -34,6 +34,37 @@ The `gh` commands and flags above are stable. `glab` has moved its
 description-from-file and draft flags between versions, so confirm the exact flag
 with `glab mr create --help` or `glab mr update --help` before running it, rather
 than trusting this table for the GitLab column. Fetch the help output; do not guess.
+
+## Reviewing a request
+
+A review needs more than the map above: it reads a request, its diff, and its existing
+discussion, then writes back to specific lines. Those commands differ more between the
+two platforms than the opening ones do, because GitHub threads a comment on a line
+while GitLab pins a discussion to a position.
+
+| Purpose | GitHub | GitLab |
+| --- | --- | --- |
+| Read the request | `gh pr view <n> --repo <o>/<r> --json ...` | `glab mr view <n> --repo <o>/<r>` |
+| Read its diff | `gh pr diff <n> --repo <o>/<r>` | `glab mr diff <n> --repo <o>/<r>` |
+| Read existing threads | `gh api graphql` on `reviewThreads` | `glab api projects/:id/merge_requests/:iid/discussions` |
+| Post everything at once | `POST .../pulls/<n>/reviews` with a `comments` array | no equivalent: post each discussion, then one note |
+| Post one inline comment | part of the review payload | `POST .../merge_requests/:iid/discussions` with `position` |
+| Post a summary | `gh pr comment <n>` | `glab mr note <n>` |
+| Resolve a thread | `resolveReviewThread` mutation | `PUT .../discussions/:id` with `resolved=true` |
+
+Two differences are worth stating rather than discovering.
+
+**GitLab has no batched review.** GitHub can post every finding as one review, which is
+one notification. GitLab posts one discussion per finding, so an author gets one
+notification each. Post the inline discussions first and the summary note last, so the
+summary arrives after the things it summarises.
+
+**A GitLab position is pinned to SHAs.** A discussion carries `base_sha`, `head_sha`,
+`start_sha`, and both line numbers. A force-push during the review changes the head, and
+a position built against the old head no longer describes the diff. Treat a rejected
+position exactly as GitHub's 422 is treated: do not retry it against a guessed position.
+Post that finding as a plain note naming the file and line it refers to, and say in the
+summary that it could not be anchored.
 
 ## Reporting in the platform's own vocabulary
 
@@ -74,6 +105,11 @@ does not.
   (or the same for `glab`): render the title and body as markdown and tell the
   developer to open or edit the request manually in the web interface. Say plainly
   that you could not verify the result.
+- **If the CLI is present but not authenticated**: name the tool and the command that
+  authenticates it, `gh auth login` or `glab auth login`, and stop. This is separate
+  from a missing CLI because the fix is different and the developer can act on it in
+  one command. A review must not fall back to the manual path here: it would hide an
+  authentication problem behind output that looks like a finished review.
 - **If the command fails for any other reason**: surface the real error and stop.
   Do not retry with different flags, and do not fall back to the manual path, which
   would hide a permission or authentication problem the developer needs to see.
