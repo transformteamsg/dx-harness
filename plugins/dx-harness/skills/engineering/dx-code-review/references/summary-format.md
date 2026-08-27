@@ -1,0 +1,47 @@
+# Summary and outcome format
+
+Used by the last step of the review sequence in `SKILL.md`, after everything that survives has been posted. Three outcomes, and each prints something different. Pick the one that matches and follow it exactly.
+
+- **Every changed path was skipped by `REVIEW.md`**: post no review and no LGTM. Print `Review skipped — every changed path matched a skip rule in REVIEW.md.` and name the rules. A review that looked at nothing is not a review that found nothing, and LGTM would say it was.
+- **No new findings and no open skill threads remaining** (all were resolved in step 7): post the following as a PR comment, then print `Review complete — LGTM posted to PR #{number}.`
+  ```
+  LGTM 👍
+
+  ---
+  *🤖 dx-code-review · {model}*
+  ```
+- **Otherwise**: post the following as a PR comment, then print `Review complete — posted N comment(s) to PR #{number}.`
+
+  When there is no important finding, open the summary with `No blocking findings.` on its own line above the table, so a review that is all nits is not mistaken for one that found a problem. Omit that line when an important finding exists.
+
+  Include the **Held back**, **Truncated**, **Skipped**, **Registry**, and **Suppressed** lines only when they are non-empty. Never print an empty one: a review that held nothing back and truncated nothing should say neither.
+  ```
+  ## Code Review Summary
+
+  No blocking findings.
+
+  | Severity | Count |
+  |----------|-------|
+  | 🔴 Important    | N |
+  | 🟡 Nit          | N |
+  | 🟣 Pre-existing | N |
+
+  **Held back:** N further nit(s) found and not posted (cap of 5 per review), and N new nit(s) suppressed because this is a re-review.
+
+  **Truncated:** the <angle> angle reached its 6-candidate ceiling with N more outstanding.
+
+  **Skipped:** N path(s) matched a skip rule in `REVIEW.md` and were not reviewed.
+
+  **Registry:** N finding(s) matched a known pattern, and N matched none. The registry is read-only to this review, so nothing was recorded.
+
+  **Suppressed:** N finding(s) were dropped because their pattern is suppressed in this repository's registry.
+
+  ## Reviewer To-Do
+  - Manually test: <scenario> (omit this section if empty)
+
+  ## What Looks Good
+  - 2–4 specific strengths — name the design decision, not just "good code"
+
+  ---
+  *🤖 dx-code-review · {model}*
+  ```

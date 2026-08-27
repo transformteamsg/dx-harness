@@ -4,82 +4,12 @@
     {
       "id": 1,
       "prompt": "Review my code changes.",
-      "expected_output": "Skill asks 'Are you reviewing a PR or your local working branch?' before doing any diff or analysis. The mode selection question is the first substantive output. (In absence of a user response, the skill may default to local branch and proceed.)",
+      "expected_output": "The skill has no pull request to review, so it asks for one. It names the request as what it needs (a link, or a number for this repository) and does not offer to review the local working branch or fall back to it.",
       "files": [],
       "assertions": [
-        "Output contains a mode selection question referencing 'PR' and 'local' or 'branch'",
-        "Output contains at least one finding or a severity table (the review actually ran after mode selection)"
-      ]
-    },
-    {
-      "id": 2,
-      "prompt": "Review my code on my local working branch. For any triage prompts asking 'Fix now, fix later, or not a problem?', answer 'later' for all findings. Do not generate a report at the end.",
-      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 9 review angles on the branch diff, triages all findings as 'To be fixed', prints a severity counts table and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped). No report file is written to the review/ directory.",
-      "files": [],
-      "assertions": [
-        "Output contains 'No PR found for this branch' printed before the severity counts table",
-        "Output contains a severity counts table (🔴 Important / 🟡 Nit / 🟣 Pre-existing)",
-        "Output contains 'To be fixed' (triage status applied)",
-        "Output contains 'What Looks Good' section with at least one bullet",
-        "Output does NOT contain a 'Reviewer To-Do' section",
-        "No git commit is created (the registry is untracked in the fixture, so review/agent-patterns.md may be written to disk but must never be committed)",
-        "If any finding is tagged [AI-PATTERN], the summary carries the opt-in line naming `git add review/agent-patterns.md`"
-      ]
-    },
-    {
-      "id": 3,
-      "prompt": "Review my code on my local working branch. For any triage prompts asking 'Fix now, fix later, or not a problem?', answer 'later' for all findings. Yes, generate a report at the end.",
-      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 9 review angles, triages findings as 'To be fixed', prints the summary, then writes a report file to review/<safe-branch>/report-<timestamp>.md. Report contains severity table, findings with Triage field, and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped).",
-      "files": [],
-      "assertions": [
-        "Output contains 'No PR found for this branch' printed before the review angles run",
-        "A report file is created under review/ (path starts with review/)",
-        "Report contains a severity counts table",
-        "Report contains 'Triage:' field on at least one finding entry",
-        "Report contains 'What Looks Good' section",
-        "Report does NOT contain a 'Reviewer To-Do' section"
-      ]
-    },
-    {
-      "id": 4,
-      "prompt": "Review my code on my local working branch. There's no PR open for this branch yet — I just want feedback before I push. For any triage prompts asking 'Fix now, fix later, or not a problem?', answer 'later' for all findings. Do not generate a report at the end.",
-      "expected_output": "Skill runs the Analysis Phase's PR & Issue Check first: it checks for an open PR on the current branch via `gh pr view`, finds none, and prints 'No PR found for this branch — skipping issue and test plan checks' — then proceeds straight to the 9 review angles without asking about a linked issue or a test plan. Findings are triaged as 'To be fixed', and the summary has no Reviewer To-Do section since the check that produces those items never ran.",
-      "files": [],
-      "assertions": [
-        "Output contains 'No PR found for this branch' printed before any review angle findings",
-        "Output does NOT contain a reviewer prompt asking for an issue number (the PR & Issue Check is skipped entirely, not run to completion with no issue found)",
-        "Output does NOT contain a 'Reviewer To-Do' section",
-        "Output still contains a severity counts table and a 'What Looks Good' section (the rest of the review runs normally)"
-      ]
-    },
-    {
-      "id": 5,
-      "prompt": "Review my code on my local working branch. Answer 'later' to every 'Fix now, fix later, or not a problem?' prompt. If asked whether to propose a pattern upstream to dx-harness, answer no. Do not generate a report at the end.",
-      "expected_output": "Skill runs the local branch path. After triage, it reaches the registry step and records only the findings the author accepted. review/agent-patterns.md is untracked in the fixture, so the registry is written to disk and never committed, and the summary carries the opt-in line. If a finding matched no existing row, the skill states whether the pattern reads as universal or project-specific with its reasoning, records it locally regardless, and asks once whether to propose it upstream. Answering no leaves the local row in place and files nothing.",
-      "files": [],
-      "assertions": [
-        "The registry step runs after triage, not before it (the recording happens once findings are marked Fixed or To be fixed)",
-        "No git commit is created for review/agent-patterns.md",
-        "Summary contains the opt-in line naming `git add review/agent-patterns.md`",
-        "If a new pattern was discovered, the output states a generality verdict (universal or project-specific) together with a reason",
-        "If a new pattern was discovered, it is recorded in the local registry even though the upstream proposal was declined",
-        "No issue is created on transformteamsg/dx-harness",
-        "Output does NOT contain a prompt asking about upstreaming for a finding that merely incremented an existing row"
-      ]
-    },
-    {
-      "id": 6,
-      "prompt": "Review my code on my local working branch. Answer 'not a problem' to every 'Fix now, fix later, or not a problem?' prompt. Do not generate a report at the end.",
-      "expected_output": "Skill runs the local branch path and triages every finding as Rejected. At the registry step, each rejected finding increments its pattern's Rejected by count and never Confirmed by, and no new row is created for a rejected finding that matched nothing. Any pattern reaching Rejected by 2 or more while exceeding its Confirmed by is marked suppressed with today's date, keeping both counts. Nothing is proposed upstream. The summary groups the findings under Rejected and names any pattern newly suppressed.",
-      "files": [],
-      "assertions": [
-        "Every finding is grouped under 'Rejected' in the summary",
-        "No pattern's 'Confirmed by' count is incremented",
-        "No new registry row is created for a rejected finding that matched no existing pattern",
-        "A pattern reaching 'Rejected by' of 2 or more that exceeds its 'Confirmed by' is marked suppressed with a date, and both counts remain in the row",
-        "No suppressed row is deleted from the registry",
-        "No issue is created on transformteamsg/dx-harness",
-        "No git commit is created for review/agent-patterns.md"
+        "Output asks for a pull request link or number",
+        "Output does not offer a mode choice between PR and local branch",
+        "Output does not review the working branch, and posts nothing"
       ]
     }
   ]

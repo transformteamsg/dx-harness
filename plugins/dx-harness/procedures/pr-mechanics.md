@@ -7,9 +7,27 @@ between skills, so a correction lands once. A skill that opens a pull request
 references this file rather than restating it, and states only what is specific to
 it: the usage label it applies, and the footer it signs.
 
-## Naming the platform before running anything
+## Resolving the request and its repository
 
-Never assume GitHub. Read the remote first:
+Never assume GitHub, and never assume the request belongs to the working directory.
+Settle three things before running any command: the forge, the repository, and the
+request number.
+
+**A URL beats the remote.** When the developer supplies a request URL, it names its
+own host and its own repository, and that settles both outright. Only fall back to
+the remote when no URL was given. This ordering matters for a repository mirrored on
+both forges, and for a request reviewed from a checkout of a different project.
+
+- **Full URL** (`https://github.com/owner/repo/pull/42`, or
+  `https://gitlab.com/owner/repo/-/merge_requests/42`): take the host, `{owner}`,
+  `{repo}`, and `{number}` from the URL itself.
+- **Number alone**: the request belongs to the repository the working directory is
+  in, because a bare number means "here". Read the repository with
+  `gh repo view --json owner,name` (or `glab repo view` on GitLab), and read the
+  forge from the remote.
+- **Neither**: ask which request, and stop. Do not scan for one.
+
+Reading the forge from the remote:
 
 ```sh
 git remote get-url origin
@@ -18,6 +36,17 @@ git remote get-url origin
 A host containing `github.com` is GitHub, and one containing `gitlab` is GitLab. If
 the remote names neither, or the command fails because the directory has no remote,
 say so and stop rather than guessing at a CLI.
+
+**Carry the repository explicitly from then on.** Once `{owner}` and `{repo}` are
+known, pass `--repo {owner}/{repo}` to every `gh` call and use both in every `gh api`
+path. Never let a later command resolve the repository from the working directory
+again: a skill that needs no checkout can be run from an unrelated project, and a
+command that re-resolves silently reads the wrong repository.
+
+**Check the CLI before the first call that matters**, rather than discovering it
+mid-run. If `gh` or `glab` is absent, or present but unauthenticated, follow the
+outcomes in Handling a failed command below: name the tool and the command that fixes
+it, and stop.
 
 ## The command map
 
