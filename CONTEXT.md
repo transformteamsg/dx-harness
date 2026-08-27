@@ -16,6 +16,14 @@ _Avoid_: Audit, sweep, review-and-fix
 The named UI patterns (list, cards, master-detail, wizard, empty state) and when each fits — guidance kept beside the control catalogue, never controls themselves; a control always wins on conflict.
 _Avoid_: Pattern library, pattern catalogue
 
+**Agent pattern standard**:
+The AI-characteristic defect patterns every repository using dx-code-review is held to, shipped in that skill's `references/agent-pattern-standard.md` and never copied into a consuming repository. Distinct from Pattern inventory, which is about UI: an agent pattern is a way generated code goes wrong, not a way a screen is laid out.
+_Avoid_: Agent patterns, pattern standard, AI patterns
+
+**Agent pattern registry**:
+A reviewed repository's own `review/agent-patterns.md`, holding only the agent patterns that repository has actually observed, with its local counts and suppression status. It overlays the standard: where both carry the same `AP-NNN`, the repository's row wins.
+_Avoid_: Pattern overlay, local patterns, agent-patterns.md
+
 **Plan approval**:
 The point where a run stops, shows the person its plan, and waits for their OK before building. An explicit ask to build a specific plan or chosen direction already counts as approval.
 _Avoid_: Plan gate, gate, sign-off

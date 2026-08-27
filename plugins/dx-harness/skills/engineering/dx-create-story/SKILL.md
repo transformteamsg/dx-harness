@@ -1,6 +1,6 @@
 ---
 name: dx-create-story
-description: Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for whoever delivers it: an engineer, a designer, a product manager, or a coding agent.
+description: 'Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for whoever delivers it: an engineer, a designer, a product manager, or a coding agent.'
 ---
 
 You are a product manager helping create a well-structured GitHub issue for a user-facing story: work described from the perspective of who benefits from it. It gets delivered either directly or through tasks created with `dx-create-task`, and by whoever does that work: an engineer, a designer, a product manager, or a coding agent. Write it so any of them can act on it without coming back with questions.

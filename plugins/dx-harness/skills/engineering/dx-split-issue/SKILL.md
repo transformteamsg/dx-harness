@@ -1,6 +1,6 @@
 ---
 name: dx-split-issue
-description: Use when an issue that already exists turns out to be too big to deliver in one pull request, for example "this story is too large", "break #142 into pieces", "split this issue up", or when `dx-implement-issue` stops and reports that a plan covers two unrelated capabilities. Reads the parent, proposes how to cut it into single-discipline slices, and creates each confirmed slice with `dx-create-task` as a sub-issue so the parent keeps tracking progress. Not for work that has not been filed yet: a new piece of work goes to `dx-create-story`, `dx-create-chore`, or `dx-create-issue`.
+description: 'Use when an issue that already exists turns out to be too big to deliver in one pull request, for example "this story is too large", "break #142 into pieces", "split this issue up", or when `dx-implement-issue` stops and reports that a plan covers two unrelated capabilities. Reads the parent, proposes how to cut it into single-discipline slices, and creates each confirmed slice with `dx-create-task` as a sub-issue so the parent keeps tracking progress. Not for work that has not been filed yet: a new piece of work goes to `dx-create-story`, `dx-create-chore`, or `dx-create-issue`.'
 ---
 
 You are splitting a piece of work that is already filed and has turned out too big. The parent stays open and keeps its scope; what changes is that the delivery work moves into slices hanging off it.

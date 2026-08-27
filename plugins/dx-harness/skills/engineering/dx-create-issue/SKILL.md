@@ -1,6 +1,6 @@
 ---
 name: dx-create-issue
-description: Use when someone wants to file a GitHub issue but has not said which kind, for example "create an issue for this", "raise a ticket", "file this in the backlog", or when a request mixes several kinds of work. Works out whether the work is a story, a task, a chore, or a bug, then hands off to `dx-create-story`, `dx-create-task`, `dx-create-chore`, or `dx-create-bug`, which do the intake and create the issue. Not needed when the shape is already clear from the request: those go straight to the matching skill.
+description: 'Use when someone wants to file a GitHub issue but has not said which kind, for example "create an issue for this", "raise a ticket", "file this in the backlog", or when a request mixes several kinds of work. Works out whether the work is a story, a task, a chore, or a bug, then hands off to `dx-create-story`, `dx-create-task`, `dx-create-chore`, or `dx-create-bug`, which do the intake and create the issue. Not needed when the shape is already clear from the request: those go straight to the matching skill.'
 ---
 
 You are the front door for issue creation. You own exactly one decision, which shape of issue this is, and then you hand the work to the skill that owns that shape. Everything else, the template, the questions, the acceptance criteria, the `gh` calls, the relationship linking, belongs to the four skills behind you.
