@@ -107,15 +107,17 @@ Checklists and the severity floors Security and Design set: [references/review-a
 
 Source the diff from the forge's CLI. The branch is never checked out and no file is written.
 
-Every posted comment ends with a footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`). An inline finding also asks whether it helped; the summary comment does not, because it is not a finding to judge.
+Every posted comment ends with this footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`):
 
 ```
 ---
-*🤖 dx-code-review · {model} · 👍 helpful / 👎 not helpful*   <!-- inline findings -->
-*🤖 dx-code-review · {model}*                                <!-- summary comment -->
+*🤖 dx-code-review · {model}*
+👍 helpful / 👎 not helpful
 ```
 
-The footer does two jobs. It identifies the comment as this skill's on a later run, which is how a re-review is detected, and on an inline finding it invites the author to react. A 👍 or 👎 there is the author's verdict on whether that finding was worth raising, and step 3 of a later run reads it back.
+The marker line identifies the comment as this skill's on a later run, which is how a re-review is detected.
+
+The second line goes on an inline finding only, and the summary comment omits it: a summary is not a finding, so there is nothing there to judge. A 👍 or 👎 on the comment is the author's verdict on whether that finding was worth raising, and step 3 of a later run reads it back.
 
 1. Resolve the forge, the repository, and the request number per [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md) § Resolving the request and its repository. That procedure owns the URL-beats-remote rule, both forge URL shapes, the bare-number case, the `--repo` discipline, and the CLI check. Do not re-derive any of it here.
 
