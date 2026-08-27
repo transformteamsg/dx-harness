@@ -107,12 +107,15 @@ Checklists and the severity floors Security and Design set: [references/review-a
 
 Source the diff from the forge's CLI. The branch is never checked out and no file is written.
 
-Every posted comment ends with this footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`):
+Every posted comment ends with a footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`). An inline finding also asks whether it helped; the summary comment does not, because it is not a finding to judge.
 
 ```
 ---
-*🤖 dx-code-review · {model}*
+*🤖 dx-code-review · {model} · 👍 helpful / 👎 not helpful*   <!-- inline findings -->
+*🤖 dx-code-review · {model}*                                <!-- summary comment -->
 ```
+
+The footer does two jobs. It identifies the comment as this skill's on a later run, which is how a re-review is detected, and on an inline finding it invites the author to react. A 👍 or 👎 there is the author's verdict on whether that finding was worth raising, and step 3 of a later run reads it back.
 
 1. Resolve the forge, the repository, and the request number per [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md) § Resolving the request and its repository. That procedure owns the URL-beats-remote rule, both forge URL shapes, the bare-number case, the `--repo` discipline, and the CLI check. Do not re-derive any of it here.
 
@@ -133,7 +136,10 @@ Every posted comment ends with this footer, `{model}` replaced by the current mo
              id
              isResolved
              comments(first: 1) {
-               nodes { body path originalLine }
+               nodes {
+                 body path originalLine
+                 reactionGroups { content users { totalCount } }
+               }
              }
            }
          }
@@ -145,6 +151,9 @@ Every posted comment ends with this footer, `{model}` replaced by the current mo
    - **All open threads** — `isResolved` is false. Used for dedup in step 6.
    - **Open skill threads** — of those, `comments[0].body` contains `code-review`. Used for resolution in step 7.
    - **Any skill thread** — every thread whose `comments[0].body` contains `code-review`, resolved or not. Non-empty means this is a re-review. Resolved threads count.
+   - **Helpfulness verdicts** — for each skill thread, the `THUMBS_UP` and `THUMBS_DOWN` counts from its first comment's `reactionGroups`. This is the author's verdict on findings this skill posted before, and it costs no extra call because it rides the query above. Carry the totals to the summary.
+
+     **Do not act on a verdict yet, beyond reporting it.** A single 👎 can mean the finding was wrong, or that the author disagreed with a correct one, and those need different responses. Suppressing a pattern already has a threshold and a home in the registry for exactly that reason, so one thumb down does not silence anything.
 4. Fetch the diff and the repository's pattern overlay:
    ```bash
    gh pr diff {number} --repo {owner}/{repo}

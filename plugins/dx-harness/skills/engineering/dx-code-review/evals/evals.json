@@ -206,6 +206,40 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "id": 5,
+      "name": "reports-helpfulness-feedback",
+      "fixture_setup": "No repository needed. The prompt supplies completed analysis output plus thread state in which three earlier skill comments carry reactions: two THUMBS_UP and one THUMBS_DOWN across three threads, one of them resolved.",
+      "prompt": "Analysis is done, results attached, and I've reacted to some of your earlier comments. Apply the posting rules and tell me exactly what you'd post and what the summary says. Don't post anything.",
+      "expected_output": "Recognises a re-review, so posts the Important finding and no new nits. Reports the helpfulness verdicts on the Feedback line: 2 of 3 marked helpful, 1 not helpful, counting the resolved thread's reaction. Does not act on the single thumbs down beyond reporting it: nothing is suppressed, no pattern is silenced, and the finding at that line is not dropped for having been disliked.",
+      "assertions": [
+        {
+          "text": "Reports a Feedback line with the helpfulness counts",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Counts the resolved thread's reaction, not only the open ones",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not suppress or silence anything on the strength of one thumbs down",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Still applies the re-review rule: posts the Important finding and zero new nits",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not write to the agent-pattern registry",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
     }
   ]
 }

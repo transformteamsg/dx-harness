@@ -21,6 +21,12 @@ Include it only on a finding that analysis step 7 tagged `[AI-PATTERN]`, and omi
 
 It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` cell. The count matters to the author: seen once is a coincidence, seen five times is a habit.
 
+## Asking whether the finding helped
+
+The footer carries `👍 helpful / 👎 not helpful`. Reactions are native on both forges, so the author needs no link and no form, and the counts come back on the next run's thread query at no extra cost.
+
+Invite it, never chase it. A finding that goes unreacted is the ordinary case, and an author who ignores the ask has still had the finding.
+
 ## Posting each finding
 
 Assign the body to a variable first to avoid shell escaping issues with multiline content:
@@ -45,7 +51,7 @@ BODY="**[Severity] One-sentence summary**  <!-- 🟡 and 🟣 append: (not block
 **Recurring pattern:** AP-NNN <Pattern name>, seen N time(s) in this repository. <Prevention>
 
 ---
-*🤖 code-review · {model}*"
+*🤖 dx-code-review · {model} · 👍 helpful / 👎 not helpful*"
 
 Post every finding in **one review**, not one comment at a time. The comments endpoint creates a standalone comment and notifies the author once per call, so a five-finding review arrives as five notifications. The reviews endpoint takes them all in a single `comments` array and notifies once. The threads it creates are ordinary review threads, so the deduplication in step 6 and the resolution in step 7 keep working unchanged.
 

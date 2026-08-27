@@ -16,7 +16,7 @@ Used by the last step of the review sequence in `SKILL.md`, after everything tha
 
   The severity table counts what was **posted**, not what was found. Findings held back, truncated, dropped for a missing citation, or suppressed do not appear in it; each has its own line below. A review that found nine nits and posted none shows `🟡 Nit | 0` and reports the nine on the Held back line.
 
-  Include the **Held back**, **Truncated**, **Skipped**, **Registry**, and **Suppressed** lines only when they are non-empty. Never print an empty one.
+  Include the **Held back**, **Truncated**, **Skipped**, **Registry**, **Suppressed**, and **Feedback** lines only when they are non-empty. Never print an empty one. The Feedback line is empty on a first review, because there is nothing earlier to have reacted to.
   ```
   ## Code Review Summary
 
@@ -37,6 +37,8 @@ Used by the last step of the review sequence in `SKILL.md`, after everything tha
   **Registry:** N finding(s) matched a known pattern, and N matched none. The registry is read-only to this review, so nothing was recorded.
 
   **Suppressed:** N finding(s) were dropped because their pattern is suppressed in this repository's registry.
+
+  **Feedback:** N of M findings from earlier reviews were marked helpful, and N not helpful.
 
   ## Reviewer To-Do
   - Manually test: <scenario> (omit this section if empty)
