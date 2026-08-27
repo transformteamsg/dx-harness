@@ -40,6 +40,8 @@ Each finding follows this structure, grouped under `### 🔴 Important`, `### �
 
 **Problem:** What breaks, what input/state triggers it, what goes wrong.
 
+**Verified:** `file:line` — or **Unverified:** what would settle it
+
 **Suggestion:**
 ```<lang>
 // Corrected version
