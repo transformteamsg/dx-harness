@@ -29,29 +29,29 @@ Look for functionality that was deleted but whose absence creates a gap.
 
 ### Security
 
-Look for a change that lets untrusted input reach somewhere it should not. Four classes, deliberately few: a long list produces speculation, and speculation is what makes a security reviewer easy to ignore.
+Look for a change that lets untrusted input reach somewhere it should not. Four classes, deliberately few, because a longer list produces speculation.
 
-- **Secrets in the diff:** was a key, token, password, connection string, or private key added to source, a config file, a fixture, or a test? A committed secret is compromised whether or not the file is later changed, so say so rather than suggesting it be edited out.
+- **Secrets in the diff:** was a key, token, password, connection string, or private key added to source, a config file, a fixture, or a test? A committed secret is compromised whether or not the file is later changed, so say that rather than suggesting it be edited out.
 - **Injection:** does untrusted input reach a SQL query, a shell command, an HTML or template render, or an eval-like call by concatenation or interpolation rather than through a parameterised or escaping API?
 - **Authorisation:** does a new or changed entry point read or write something on behalf of a caller without establishing that the caller may? Look for the check the neighbouring handlers make and this one does not.
-- **Untrusted input into a dangerous sink:** does caller-controlled data reach a filesystem path, an outbound request URL, a deserialiser, or a redirect target without being constrained to something known-safe? This covers path traversal, server-side request forgery, and unsafe deserialisation, which are one shape wearing three names.
+- **Untrusted input into a dangerous sink:** does caller-controlled data reach a filesystem path, an outbound request URL, a deserialiser, or a redirect target without being constrained to something known-safe? This covers path traversal, server-side request forgery, and unsafe deserialisation.
 
-**Severity here follows the same rules as every other angle, with one floor: a CONFIRMED security finding is always Important.** There is no minor confirmed injection. A finding you cannot verify is still posted, labelled Unverified per the verification rules, and it does not become Important by being about security. A review that marks everything security-shaped as blocking teaches the author to stop reading it, which costs more than the finding was worth.
+**One floor, otherwise the usual severity rules: a CONFIRMED security finding is always Important.** A finding you cannot verify still posts, labelled PLAUSIBLE, and being about security does not make it Important.
 
 ### Design
 
-Look for a change to an interface that breaks the standard this repository is held to. This angle exists because a design regression ships as easily as a logic one and nothing else in the review looks for it.
+Look for a change to an interface that breaks the standard this repository is held to.
 
-**Every design finding cites a control ID from the standards catalogue, and one that does not is dropped.** That is the whole guard against this angle becoming taste. "This spacing looks wrong" is an opinion and does not post; "LAY-3" is a rule the repository already agreed to, and the disagreement is with the catalogue rather than with the reviewer. Read `standards/catalog.yaml`, three levels up from this skill, and cite the control by ID in the finding.
+**Every design finding cites a control ID from the standards catalogue, and one that does not is dropped.** "This spacing looks wrong" does not post; "LAY-3" does. Read `standards/catalog.yaml`, three levels up from this skill, and cite the control by ID.
 
 - **Accessibility:** does the change break an A11Y control? Contrast, focus order, keyboard reachability, labelling, and target size are the ones a diff can show.
 - **Tokens and typography:** does it introduce a raw value where the catalogue requires a token, or a typeface or scale step the standard does not carry?
 - **Component and layout:** does it reimplement something the catalogue already defines, or violate a layout control?
 - **Content:** does a new or changed user-facing string break a CNT control, or an anti-slop SLP one?
 
-**Severity: a failed A11Y control is Important, and everything else here is a Nit.** An accessibility failure is a bug that stops someone using the product, which is what Important means. The rest are real but do not block, and marking them otherwise would make every design comment a gate.
+**Severity: a failed A11Y control is Important, everything else here is a Nit.**
 
-**This angle reads the diff, like every other angle.** A control needing the whole codebase to judge, such as whether a component duplicates one three directories away, is out of scope here: the design skills own the full sweep and have the context for it. Reviewing the diff means this angle can miss things, and that is the trade accepted for a review that runs in seconds.
+**This angle reads the diff only.** A control needing the whole codebase to judge, such as whether a component duplicates one three directories away, is out of scope here and belongs to the design skills. This angle will therefore miss things, which is accepted.
 
 ### Cross-file
 

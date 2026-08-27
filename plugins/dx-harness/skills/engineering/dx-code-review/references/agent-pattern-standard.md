@@ -1,4 +1,4 @@
-# Agent Pattern Standard
+# Agent pattern standard
 
 > The patterns every repository using `dx-code-review` is held to. Shipped with the plugin, edited only here, and never copied into a consuming repository.
 >

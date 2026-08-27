@@ -22,7 +22,7 @@ Run as analysis step 1, before the review angles. The goal: confirm the change i
 
    For each contract item across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
    - All covered → continue to step 5.
-   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5. Never pass this gate in silence: an issue with nothing to check against and an issue whose contract is fully covered are different outcomes, and they must not look the same.
+   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5. Never pass this gate silently.
    - Any uncovered → ask the reviewer:
      > "The test plan doesn't cover these contract items: <list>. Continue the review anyway?"
      - No → stop the review here; the reviewer should update the PR's test plan first.

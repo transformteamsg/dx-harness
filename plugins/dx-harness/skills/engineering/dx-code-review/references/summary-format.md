@@ -12,9 +12,9 @@ Used by the last step of the review sequence in `SKILL.md`, after everything tha
   ```
 - **Otherwise**: post the following as a PR comment, then print `Review complete — posted N comment(s) to PR #{number}.`
 
-  When there is no important finding, open the summary with `No blocking findings.` on its own line above the table, so a review that is all nits is not mistaken for one that found a problem. Omit that line when an important finding exists.
+  When there is no important finding, open the summary with `No blocking findings.` on its own line above the table. Omit it when an important finding exists.
 
-  Include the **Held back**, **Truncated**, **Skipped**, **Registry**, and **Suppressed** lines only when they are non-empty. Never print an empty one: a review that held nothing back and truncated nothing should say neither.
+  Include the **Held back**, **Truncated**, **Skipped**, **Registry**, and **Suppressed** lines only when they are non-empty. Never print an empty one.
   ```
   ## Code Review Summary
 
