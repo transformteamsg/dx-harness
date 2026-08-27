@@ -62,6 +62,11 @@
           "text": "Uses merge request vocabulary",
           "passed": null,
           "evidence": ""
+        },
+        {
+          "text": "Carries `--repo acme/widgets` on every subsequent call rather than re-resolving from the working directory",
+          "passed": null,
+          "evidence": ""
         }
       ]
     },
@@ -99,6 +104,16 @@
         },
         {
           "text": "Does not present the review as clean",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Resolves no thread, because the open skill thread set is empty, and leaves the human thread at cart.js:12 alone",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The severity table counts posted findings, so the Nit row reads 0 rather than 9",
           "passed": null,
           "evidence": ""
         }
@@ -182,6 +197,11 @@
         },
         {
           "text": "Does not treat the unreadable file as an absent one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not repair REVIEW.md itself: it may show the commands but must not run them",
           "passed": null,
           "evidence": ""
         }
