@@ -14,7 +14,7 @@
     {
       "id": 2,
       "prompt": "Review my code on my local working branch. For any triage prompts asking 'Fix now, fix later, or not a problem?', answer 'later' for all findings. Do not generate a report at the end.",
-      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 8 review angles on the branch diff, triages all findings as 'To be fixed', prints a severity counts table and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped). No report file is written to the review/ directory.",
+      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 9 review angles on the branch diff, triages all findings as 'To be fixed', prints a severity counts table and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped). No report file is written to the review/ directory.",
       "files": [],
       "assertions": [
         "Output contains 'No PR found for this branch' printed before the severity counts table",
@@ -29,7 +29,7 @@
     {
       "id": 3,
       "prompt": "Review my code on my local working branch. For any triage prompts asking 'Fix now, fix later, or not a problem?', answer 'later' for all findings. Yes, generate a report at the end.",
-      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 8 review angles, triages findings as 'To be fixed', prints the summary, then writes a report file to review/<safe-branch>/report-<timestamp>.md. Report contains severity table, findings with Triage field, and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped).",
+      "expected_output": "Skill first runs the PR & Issue Check, finds no open PR for the branch, and prints 'No PR found for this branch — skipping issue and test plan checks' before running the review angles. It then runs all 9 review angles, triages findings as 'To be fixed', prints the summary, then writes a report file to review/<safe-branch>/report-<timestamp>.md. Report contains severity table, findings with Triage field, and What Looks Good section (no Reviewer To-Do section, since the PR/issue check was skipped).",
       "files": [],
       "assertions": [
         "Output contains 'No PR found for this branch' printed before the review angles run",
@@ -43,7 +43,7 @@
     {
       "id": 4,
       "prompt": "Review my code on my local working branch. There's no PR open for this branch yet — I just want feedback before I push. For any triage prompts asking 'Fix now, fix later, or not a problem?', answer 'later' for all findings. Do not generate a report at the end.",
-      "expected_output": "Skill runs the Analysis Phase's PR & Issue Check first: it checks for an open PR on the current branch via `gh pr view`, finds none, and prints 'No PR found for this branch — skipping issue and test plan checks' — then proceeds straight to the 8 review angles without asking about a linked issue or a test plan. Findings are triaged as 'To be fixed', and the summary has no Reviewer To-Do section since the check that produces those items never ran.",
+      "expected_output": "Skill runs the Analysis Phase's PR & Issue Check first: it checks for an open PR on the current branch via `gh pr view`, finds none, and prints 'No PR found for this branch — skipping issue and test plan checks' — then proceeds straight to the 9 review angles without asking about a linked issue or a test plan. Findings are triaged as 'To be fixed', and the summary has no Reviewer To-Do section since the check that produces those items never ran.",
       "files": [],
       "assertions": [
         "Output contains 'No PR found for this branch' printed before any review angle findings",
