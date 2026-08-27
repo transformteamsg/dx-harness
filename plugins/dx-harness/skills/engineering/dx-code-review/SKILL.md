@@ -66,7 +66,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 4. Label each candidate **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label into the comment.
    - **CONFIRMED** requires evidence, not inference: for a behaviour claim, hold the `file:line` that establishes it. A function named `validateInput` is not evidence that it validates.
    - **A behaviour claim with no citation is dropped**, not downgraded. It never posts and never reaches the summary counts.
-   - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible.
+   - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible. The default is conditional: it holds because these usually cannot be settled by reading, so a cited line that does settle one makes it CONFIRMED. The shape of the defect never decides the label on its own.
    - **A Removed behaviour finding cites the removal in the diff**, not the file.
    - **REFUTED only when provably wrong** — cite the line or invariant that rules it out.
 

@@ -1,15 +1,190 @@
 {
-  "skill_name": "code-review",
+  "skill_name": "dx-code-review",
+  "notes": "Offline eval. The skill posts inline comments to a real pull request, so these test DECISION and PROCESS behaviour rather than live posting: request resolution, the REVIEW.md gate, verification labelling, and posting volume control. Run each with no network and with posting disabled, and tell the runner to record what it WOULD post rather than posting it. A run that stops at a question it must ask the user is a complete and valid outcome. Fixtures are described in fixture_setup rather than committed, because two of them are git repositories and one needs an unreadable file, neither of which travels well in version control. Assertions carry passed=null until a run fills them in.",
   "evals": [
     {
-      "id": 1,
+      "id": 0,
+      "name": "no-pr-given",
+      "fixture_setup": "mkdir repo && cd repo && git init && git remote add origin https://github.com/acme/widgets.git && commit a cart.js with an off-by-one loop on main, then `git checkout -b feat/cart-total` and commit one more change. No pull request exists.",
       "prompt": "Review my code changes.",
-      "expected_output": "The skill has no pull request to review, so it asks for one. It names the request as what it needs (a link, or a number for this repository) and does not offer to review the local working branch or fall back to it.",
-      "files": [],
+      "expected_output": "The skill has no pull request. It asks which pull request to review and stops. It does not review the checked-out feature branch, does not run a diff against the base branch, and does not offer a choice between reviewing a PR and reviewing the local branch.",
       "assertions": [
-        "Output asks for a pull request link or number",
-        "Output does not offer a mode choice between PR and local branch",
-        "Output does not review the working branch, and posts nothing"
+        {
+          "text": "Asks which pull request to review",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not review the checked-out branch",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not offer a local-branch review option",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Stops without posting anything",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "url-beats-remote",
+      "fixture_setup": "Same fixture as eval 0. The point is that the working directory's origin remote is github.com while the request URL given in the prompt is gitlab.com.",
+      "prompt": "can you review https://gitlab.com/acme/widgets/-/merge_requests/42 for me. no network available so just tell me exactly how you'd resolve the forge, the repository, the request number and which CLI you'd use, then stop before running anything.",
+      "expected_output": "Resolves GitLab from the URL rather than from the GitHub origin remote. Takes owner=acme, repo=widgets, number=42 from the URL itself. Names glab as the CLI. Refers to it as a merge request and an MR number, never a pull request. Does not use the working directory's github.com remote to decide the forge.",
+      "assertions": [
+        {
+          "text": "Identifies GitLab from the URL",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not let the github.com remote decide the forge",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Extracts owner=acme, repo=widgets, number=42 from the URL",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names glab as the CLI",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Uses merge request vocabulary",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "volume-control-on-rereview",
+      "fixture_setup": "No repository needed. The prompt supplies the completed analysis output inline or as an attached file: 1 Important, 1 Pre-existing, 9 Nits, one open human thread, zero open skill threads, and one RESOLVED thread whose first comment contains `code-review`.",
+      "prompt": "The analysis is already done, results attached. Apply the posting rules and tell me exactly which findings get posted and what the summary section says. Do not post anything; just tell me.",
+      "expected_output": "Recognises this is a re-review because the Any-skill-thread set is non-empty (a resolved skill thread counts). Posts the 1 Important and the 1 Pre-existing. Posts ZERO of the 9 nits, because on a re-review no new nit is posted at all, not merely 5 of them. Summary reports the nits held back and does not claim a clean review.",
+      "assertions": [
+        {
+          "text": "Recognises this as a re-review",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Counts a resolved skill thread as evidence of a prior review",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts zero new nits",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts the Important and the Pre-existing finding",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Summary reports the nits held back",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not present the review as clean",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "verification-drops-uncited-claim",
+      "fixture_setup": "No repository needed. The prompt supplies five candidates C1-C5 and states, for each, what evidence it holds. C1 is a behaviour claim about a second file with no citation; C4 is a Removed-behaviour claim citing the current file rather than a removal in the diff.",
+      "prompt": "Here are the raw candidates from the angles. Run the verification step on them and tell me, for each one, the label you assign and whether it posts.",
+      "expected_output": "C1 is DROPPED entirely: it is a behaviour claim with no citation, so it never posts and never reaches the summary counts, and it is not downgraded to a lower severity or to plausible. C2 is CONFIRMED and posts. C3 is PLAUSIBLE and posts, labelled as such. C4 is dropped or rejected because a Removed-behaviour finding must cite the removal in the diff and the diff shows no removal. C5 posts as a Nit with the diff as its evidence, since the citation rule applies to behaviour claims only.",
+      "assertions": [
+        {
+          "text": "C1 is dropped entirely",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "C1 is not merely downgraded",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "C2 is CONFIRMED and posts, because its cited line settles the off-by-one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "C3 is PLAUSIBLE and posts",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "C4 is rejected for citing the file rather than the removal",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "C5 posts with the diff as its evidence",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The PLAUSIBLE-by-default list is applied conditionally, not by defect shape alone",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "unreadable-review-md-stops",
+      "fixture_setup": "Same fixture as eval 0, plus a REVIEW.md at the repository root that cannot be read as a file (create it as a directory: `mkdir REVIEW.md`).",
+      "prompt": "review PR 7 on this repo please",
+      "expected_output": "Finds REVIEW.md at the repository root, fails to read it as a file, and stops the review naming the file and the error. Posts nothing and leaves the pull request untouched. Does not silently continue as though no REVIEW.md existed.",
+      "assertions": [
+        {
+          "text": "Attempts to read REVIEW.md at the repository root",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Detects that REVIEW.md cannot be read as a file",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Stops the review",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names the file and the error",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts nothing and leaves the request untouched",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not treat the unreadable file as an absent one",
+          "passed": null,
+          "evidence": ""
+        }
       ]
     }
   ]
