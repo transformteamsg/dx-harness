@@ -1,6 +1,6 @@
 ---
 name: dx-implement-issue
-description: 'Use when someone wants an existing GitHub issue built, for example "implement #142", "pick up this issue", "build the story in #98", or when they paste an issue body and ask for the code. Reads the issue, checks it is specific enough to build, plans against its acceptance criteria, implements one scenario per commit, runs the checks the repository defines, and opens a draft pull request. The argument is either an issue number or a pasted markdown body: $ARGUMENTS'
+description: Use when someone wants an existing GitHub issue built, for example "implement issue 142", "pick up this issue", "build the story in issue 98", or when they paste an issue body and ask for the code. Reads the issue, checks it is specific enough to build, plans against its acceptance criteria, implements one scenario per commit, runs the checks the repository defines, and opens a draft pull request. The argument is either an issue number or a pasted markdown body, given as $ARGUMENTS
 ---
 
 ## Step 1: Fetch and read the issue
