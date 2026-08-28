@@ -780,36 +780,10 @@ VALID_RULES = {"TYP-1", "TYP-2", "TYP-3", "TYP-4"}
 
 
 def parse_rules_flag(args):
-    """Additive `--rules TYP-1,TYP-3` (or `--rules=TYP-1`). Removes the flag from
-    `args` in place; returns the rule-id set (or None when absent). Raises
-    ValueError on an unknown/empty rule id so the caller can fail as a usage
-    error — the default (no flag) runs every rule, unchanged."""
-    rules = None
-    i = 0
-    while i < len(args):
-        a = args[i]
-        val = None
-        if a == "--rules":
-            if i + 1 >= len(args):
-                raise ValueError("--rules needs a comma-separated control-id list")
-            val = args[i + 1]
-            del args[i:i + 2]
-        elif a.startswith("--rules="):
-            val = a[len("--rules="):]
-            del args[i]
-        else:
-            i += 1
-            continue
-        ids = {r.strip().upper() for r in val.split(",") if r.strip()}
-        if not ids:
-            raise ValueError("--rules needs at least one control id")
-        unknown = ids - VALID_RULES
-        if unknown:
-            raise ValueError(
-                f"--rules: unknown id(s) {sorted(unknown)}; valid: {sorted(VALID_RULES)}"
-            )
-        rules = ids if rules is None else (rules | ids)
-    return rules
+    """Additive `--rules TYP-1,TYP-3` (or `--rules=TYP-1`) against this script's
+    own `VALID_RULES`. See `checklib.parse_rules_flag` for the shared
+    implementation every `*-scan.py` --rules flag parses through."""
+    return checklib.parse_rules_flag(args, VALID_RULES)
 
 
 def main():

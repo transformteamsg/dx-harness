@@ -68,12 +68,17 @@ which is why it is not here. Do not widen the rule to close that gap.
 A dynamically composed header is a NOTE, not an ERROR
 ─────────────────────────────────────────────────────
 Calibration found one false-positive class: a table whose header region is built
-by a component or a JSX expression, `<thead><HeaderRow columns={columns} /></thead>`.
-The header cells exist, just not where source can see them. The header region is
-the `<thead>` subtree if present, else the first `<tr>` subtree, else the whole
-matched subtree; when that region holds a component element or a JSX expression
-container, the finding downgrades to a NOTE per control id and the run still
-exits 0. A check never blocks on a guess, and a NOTE is never a silent pass.
+by a component, `<thead><HeaderRow columns={columns} /></thead>`. The header cells
+exist, just not where source can see them. The header region is the `<thead>`
+subtree if present, else the first `<tr>` subtree, else the whole matched
+subtree; when that region holds a component element, the finding downgrades to a
+NOTE per control id and the run still exits 0. A check never blocks on a guess,
+and a NOTE is never a silent pass.
+
+A bare JSX expression container (`{s.name}`) in the region does not downgrade on
+its own: a mapped table body puts one in the "first <tr>" fallback of every
+dynamically-rendered table, and a value interpolation can never hide a <th>.
+Only a component element can render markup source cannot see.
 
 Languages
 ─────────
@@ -179,12 +184,17 @@ def header_region(text):
 
 def header_is_composed(text):
     """
-    True when the header region is built at runtime, so source cannot say whether
-    header cells exist. The finding downgrades to a NOTE rather than blocking on
-    a guess.
+    True when the header region is built by a component reference, so source
+    cannot say whether header cells exist. The finding downgrades to a NOTE
+    rather than blocking on a guess.
+
+    A bare JSX expression (`{s.name}`) is not enough on its own: a mapped table
+    body puts one in the "first <tr>" fallback of every dynamically-rendered
+    table, and that value interpolation can never hide a <th>. Only a component
+    element can render markup source cannot see, so only that signal counts.
     """
     region = header_region(text)
-    return "{" in region or bool(_COMPONENT_ELEMENT_RE.search(region))
+    return bool(_COMPONENT_ELEMENT_RE.search(region))
 
 
 def check_file(filepath, rules=None, candidates=None):
@@ -493,6 +503,27 @@ def run_self_test():
              [re.search(r"\[([A-Z0-9-]+)\]", ln).group(1)
               for ln in composed if ln.startswith("NOTE")])
 
+    # A bare JSX expression is not a component: a mapped body's row template
+    # always carries one for its cell values, and that must never be mistaken
+    # for a composed header. Both spellings of the sub-rule stay ERROR.
+    assert_violations(
+        "a mapped table body's cell interpolation is not a composed header",
+        "export function T({ students }) {\n  return (\n    <table>\n"
+        "      <tbody>\n        {students.map((s) => (\n"
+        "          <tr key={s.id}><td>{s.name}</td></tr>\n"
+        "        ))}\n      </tbody>\n    </table>\n  )\n}\n",
+        ".tsx", ["A11Y-7", "CMP-6"],
+    )
+    assert_violations(
+        "a mapped role=table body's cell interpolation is not a composed header",
+        "export function T({ students }) {\n  return (\n    <div role=\"table\">\n"
+        "      <div role=\"row\"><div>Name</div></div>\n"
+        "      {students.map((s) => (\n"
+        "        <div role=\"row\" key={s.id}><div role=\"cell\">{s.name}</div></div>\n"
+        "      ))}\n    </div>\n  )\n}\n",
+        ".tsx", ["A11Y-7", "CMP-6"],
+    )
+
     # The header region resolves in the documented order, so a composed <thead>
     # downgrades even when the body rows below it are static, and a static first
     # <tr> still blocks when no <thead> is present.
@@ -612,36 +643,10 @@ USAGE = ("Usage: python3 checks/structure-scan.py [--rules A11Y-7,CMP-6] "
 
 
 def parse_rules_flag(args):
-    """Additive `--rules A11Y-7,CMP-6` (or `--rules=A11Y-7`). Removes the flag
-    from `args` in place; returns the control-id set (or None when absent).
-    Raises ValueError on an unknown or empty id so the caller can fail as a usage
-    error. The default (no flag) emits both ids, unchanged."""
-    rules = None
-    i = 0
-    while i < len(args):
-        a = args[i]
-        val = None
-        if a == "--rules":
-            if i + 1 >= len(args):
-                raise ValueError("--rules needs a comma-separated control-id list")
-            val = args[i + 1]
-            del args[i:i + 2]
-        elif a.startswith("--rules="):
-            val = a[len("--rules="):]
-            del args[i]
-        else:
-            i += 1
-            continue
-        ids = {r.strip().upper() for r in val.split(",") if r.strip()}
-        if not ids:
-            raise ValueError("--rules needs at least one control id")
-        unknown = ids - VALID_RULES
-        if unknown:
-            raise ValueError(
-                f"--rules: unknown id(s) {sorted(unknown)}; valid: {sorted(VALID_RULES)}"
-            )
-        rules = ids if rules is None else (rules | ids)
-    return rules
+    """Additive `--rules A11Y-7,CMP-6` (or `--rules=A11Y-7`) against this
+    check's own `VALID_RULES`. See `checklib.parse_rules_flag` for the shared
+    implementation every `*-scan.py` --rules flag parses through."""
+    return checklib.parse_rules_flag(args, VALID_RULES)
 
 
 def main():

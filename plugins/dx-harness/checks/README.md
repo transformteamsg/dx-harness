@@ -785,9 +785,10 @@ sub-rule (one per grammar) in `checks/rules/structure/`. In `tsx` the kinds are
 `jsx_element` / `jsx_opening_element` / `jsx_attribute`; in `html` they are `element` /
 `start_tag` / `tag_name` / `attribute`. One body cannot serve both.
 
-**Self-test:** `python3 checks/structure-scan.py --self-test` → `SELF-TEST OK (58 cases)`
+**Self-test:** `python3 checks/structure-scan.py --self-test` → `SELF-TEST OK (62 cases)`
 (includes the `fixtures/structure-scan/` pass/fail files, which carry a regression
-fixture for every exclusion above, the two-lines-one-id output contract, the `NOTE` downgrade, the
+fixture for every exclusion above, the two-lines-one-id output contract, the `NOTE`
+downgrade (and the mapped-body cell interpolation that must never be mistaken for one), the
 `.vue`/`.svelte` count, and the ast-grep provisioning contract).
 
 ## Component manifest (built)
