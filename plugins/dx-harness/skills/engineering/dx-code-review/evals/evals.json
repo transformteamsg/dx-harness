@@ -204,6 +204,11 @@
           "text": "Does not repair REVIEW.md itself: it may show the commands but must not run them",
           "passed": null,
           "evidence": ""
+        },
+        {
+          "text": "Prints no Reviewer To-Do section, because the issue and test plan check never ran",
+          "passed": null,
+          "evidence": ""
         }
       ]
     },

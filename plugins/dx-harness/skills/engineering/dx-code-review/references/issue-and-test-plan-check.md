@@ -31,4 +31,4 @@ Run as analysis step 1, before the review angles. The goal: confirm the change i
    - All covered → done, continue to the review angles.
    - Any scenario with no automated test:
      - File it directly as a 🔴 **Important** finding — "Missing automated test for: <scenario>" — alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (analysis steps 3–4) and goes straight into the final findings list.
-     - Add the same scenario to the **Reviewer To-Do** list — "Manually test: <scenario>" — printed with the review summary (see Rules).
+     - Add the same scenario to the **Reviewer To-Do** list — "Manually test: <scenario>" — printed with the review summary (see Rules). This step is the list's only source.

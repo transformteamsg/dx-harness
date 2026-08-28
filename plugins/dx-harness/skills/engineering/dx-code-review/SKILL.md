@@ -208,4 +208,4 @@ The second line goes on an inline finding only, and the summary comment omits it
 
 **Refuted findings:** drop silently. No strikethrough, no "considered but dismissed", no mention
 
-**Reviewer To-Do:** one bullet per scenario with no automated test, phrased as an action ("Manually test: ..."). Include the section whenever it is non-empty; omit the heading entirely when empty
+**Reviewer To-Do:** one bullet per test-plan scenario the issue and test plan check found no automated test for, phrased as an action ("Manually test: ..."). That check is the list's only source. A manual check a finding wants goes in that finding's suggestion. Include the section whenever it is non-empty; omit the heading entirely when empty

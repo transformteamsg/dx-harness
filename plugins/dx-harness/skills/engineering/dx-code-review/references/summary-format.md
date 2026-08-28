@@ -41,7 +41,7 @@ Used by the last step of the review sequence in `SKILL.md`, after everything tha
   **Feedback:** N of M findings from earlier reviews were marked helpful, and N not helpful.
 
   ## Reviewer To-Do
-  - Manually test: <scenario> (omit this section if empty)
+  - Manually test: <scenario> (one per test-plan scenario with no automated test; omit this section if empty)
 
   ## What Looks Good
   - 2–4 specific strengths — name the design decision, not just "good code"
