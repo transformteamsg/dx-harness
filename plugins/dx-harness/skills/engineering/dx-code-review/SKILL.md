@@ -5,7 +5,7 @@ description: 'Use when asked to review a pull request or merge request, posting 
 
 # Code review
 
-Reviews a pull request with 9 angles across its diff and posts findings as inline comments on the request. Works on GitHub pull requests and GitLab merge requests.
+Reviews a pull request with 8 angles across its diff and posts findings as inline comments on the request. Works on GitHub pull requests and GitLab merge requests.
 
 Reads and reports only. Never edits a file, never commits, never issues a merge verdict.
 
@@ -60,7 +60,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 ### The steps
 
 1. Run the issue and test plan check (below). It must complete before the angles.
-2. Run all 9 review angles (below) on the diff. Collect candidates with `file`, `line`, `summary`, `failure_scenario`, and a severity from the table above.
+2. Run all 8 review angles (below) on the diff. Collect candidates with `file`, `line`, `summary`, `failure_scenario`, and a severity from the table above.
    - An angle stops at 6 candidates. If it reaches 6 with more it would have raised, record the angle name and the number dropped for the summary.
 3. Deduplicate: same defect at the same location, keep one.
 4. Label each candidate **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label into the comment.
@@ -95,9 +95,11 @@ Steps, the shape-to-contract table, and the exact prompts: [references/issue-and
 
 ## Review angles
 
-Nine, run by analysis step 2: Line-by-line, Removed behaviour, Security, Design, Cross-file, Reuse, Simplification, Efficiency, Altitude.
+Eight, run by analysis step 2: Line-by-line, Removed behaviour, Security, Cross-file, Reuse, Simplification, Efficiency, Altitude.
 
-Checklists and the severity floors Security and Design set: [references/review-angles.md](references/review-angles.md). Run all nine.
+Design is not among them. Judging a change against the design standards belongs to the design skills, which read the whole surface rather than a diff. Send a design question there.
+
+Checklists, and the severity floor Security sets: [references/review-angles.md](references/review-angles.md). Run all eight.
 
 **Correctness first.** On the lower-altitude angles (Simplification, Reuse, Efficiency, Altitude), raise only genuine problems, not cosmetic preferences.
 

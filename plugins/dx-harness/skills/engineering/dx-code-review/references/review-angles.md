@@ -1,8 +1,8 @@
 # Review angles
 
-Run by analysis step 2, on the diff that step was given. Run all nine; each surfaces up to 6 candidates and stops there. Work through each checklist item explicitly, rather than scanning for anything that stands out.
+Run by analysis step 2, on the diff that step was given. Run all eight; each surfaces up to 6 candidates and stops there. Work through each checklist item explicitly, rather than scanning for anything that stands out.
 
-Each candidate carries `file`, `line`, `summary`, and `failure_scenario`, plus a severity from the Severity levels table in `SKILL.md`. Two angles set their own severity floor, and each says so below. Return the candidates to analysis step 3; the labelling, dropping, and posting rules all live in `SKILL.md`.
+Each candidate carries `file`, `line`, `summary`, and `failure_scenario`, plus a severity from the Severity levels table in `SKILL.md`. Security sets its own severity floor, and says so below. Return the candidates to analysis step 3; the labelling, dropping, and posting rules all live in `SKILL.md`.
 
 ### Line-by-line
 
@@ -38,21 +38,6 @@ Look for a change that lets untrusted input reach somewhere it should not, or re
 - **Untrusted input into a dangerous sink:** does caller-controlled data reach a filesystem path, an outbound request URL, a deserialiser, or a redirect target without being constrained to something known-safe? This covers path traversal, server-side request forgery, and unsafe deserialisation.
 
 **One floor, otherwise the usual severity rules: a CONFIRMED security finding is always Important.** A finding you cannot verify still posts, labelled PLAUSIBLE, and being about security does not make it Important.
-
-### Design
-
-Look for a change to an interface that breaks the standard this repository is held to.
-
-**Every design finding cites a control ID from the standards catalogue, and one that does not is dropped.** "This spacing looks wrong" does not post; "LAY-3" does. Read `standards/catalog.yaml`, three levels up from this skill, and cite the control by ID.
-
-- **Accessibility:** does the change break an A11Y control? Contrast, focus order, keyboard reachability, labelling, and target size are the ones a diff can show.
-- **Tokens and typography:** does it introduce a raw value where the catalogue requires a token, or a typeface or scale step the standard does not carry?
-- **Component and layout:** does it reimplement something the catalogue already defines, or violate a layout control?
-- **Content:** does a new or changed user-facing string break a CNT control, or an anti-slop SLP one?
-
-**Severity: a failed A11Y control is Important, everything else here is a Nit.**
-
-**This angle reads the diff only.** A control needing the whole codebase to judge, such as whether a component duplicates one three directories away, is out of scope here and belongs to the design skills. This angle will therefore miss things, which is accepted.
 
 ### Cross-file
 

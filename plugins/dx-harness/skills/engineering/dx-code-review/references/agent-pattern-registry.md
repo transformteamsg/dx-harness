@@ -20,7 +20,7 @@ The counts and the status are therefore a repository's own record, not a review'
 ```
 
 - **ID**: sequential `AP-NNN`, never reused
-- **Angle**: one of the 9 review angle names (e.g. Reuse, Security, Altitude)
+- **Angle**: one of the 8 review angle names (for example Reuse, Security, Altitude)
 - **Pattern name**: directive form, 3–6 words, title-cased — the deduplication key (e.g. "Search Before Implementing Utilities")
 - **Trigger**: one sentence describing the concrete condition that matches this pattern (e.g. "logic re-implemented that already exists in a shared or utils module")
 - **Prevention**: one sentence, imperative voice, stating what to do instead
