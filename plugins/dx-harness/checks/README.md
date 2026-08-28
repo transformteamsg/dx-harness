@@ -230,7 +230,7 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (110 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (111 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -680,7 +680,7 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 
 ## Type scan (built — static subset)
 
-`python3 checks/type-scan.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the statically-resolvable subset of TYP-1, TYP-2, TYP-3, and TYP-4. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure (`NOTE` lines for unresolvable cases do not, on their own, fail the run).
+`python3 checks/type-scan.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the statically-resolvable subset of TYP-1, TYP-2, TYP-3, TYP-4, LAY-4, and TYP-6. Accepts files or directories (recursive). Exit 0 on pass; exit 1 with `ERROR` lines on failure (`NOTE` lines for unresolvable cases do not, on their own, fail the run).
 
 **Rules:**
 
@@ -689,8 +689,11 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
 - **TYP-3 on-scale (L1):** a `text-[Npx]`/`text-[Nrem]` or `font-size:Npx`/`Nrem` whose size (rem converted at ×16) is not on the **Tailwind default type scale `{128,96,72,60,48,36,30,24,20,18,16,14,12}`**. A fractional-pixel size is off-scale by definition, even when its rounded value happens to be in the set. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
 - **TYP-4 all-caps (L2):** a `text-transform: uppercase` declaration or an `uppercase` Tailwind utility (matched as a class token — inside a class/className attr or a class-list-shaped string). Text is never set in all-caps, at any length — short labels included (HF-20). The English word "uppercase" in body text, and genuine acronyms (literal capitals, not a transform), are not flagged.
+- **LAY-4 + TYP-6 measure (both L2):** a line-measure cap **already written in `ch`** that runs past its control's ceiling: above **80ch** for LAY-4, above **75ch** for TYP-6. One rule body, two thresholds, read at runtime from the two controls' catalog **titles** ("never above 80ch", "roughly 45-75 characters per line") so they cannot drift; the same numbers are the embedded fallback if the catalog can't be read. Both ceilings are tested for every cap, so a cap above 80ch reports twice, once `[LAY-4]` and once `[TYP-6]`, the way one font size already reports under both TYP-2 and TYP-3. Two findings is deliberate: it keeps the two controls independently selectable with `--rules` and independently waivable. Each ceiling is **exclusive**: 80ch reports TYP-6 only, 75ch reports nothing. Forms read: `max-w-[Nch]`, the arbitrary property `[max-width:Nch]`, a CSS `max-width: Nch` (in a stylesheet, a `<style>` block, a `style="…"` attribute, or a styled-components body), a JSX `style={{ maxWidth: 'Nch' }}`, and a `var()` whose custom property is defined in the **same file**, resolved and reported at the use site. A cap **below 45ch** is a heading, a label, or small print, never running text, so it is never flagged. That floor is measured **by value, not by element**, because a 44ch `text-sm` caption on a `<p>` is genuine narrow prose.
 
 **TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
+
+**LAY-4 / TYP-6 scope decision:** a missing cap is **never** flagged. The built half is each control's *second* `fails_when` only: a **disallow** rule over caps already present. Each control's first `fails_when` ("no max-width and spans the full viewport") is **presence-requiring**, and a presence-requiring static rule either flags every paragraph or proves nothing, because deciding which block is running prose is the judgment half. An element with no cap produces no `ERROR` and no `NOTE`; that silence is the contract, and it is what separates this rule from TYP-5's accepted gap. Merging the two controls is deliberately **not** done here: the near-duplicate numbers (80 vs 75 ceiling, ~66 vs 40-60 target) are known, and whether to merge them is an open catalogue question.
 
 **Static-subset caveat — what this script does NOT verify:**
 
@@ -698,15 +701,27 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 - The 12px-vs-14px floor *decision* (TYP-2) — whether an element is a label (12px floor) or body (14px floor) needs rendered context; 12–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
 - Line-heights given in px or % (TYP-2) — the ratio needs the font size, rarely on the same line.
 - All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
+- A **missing** measure cap (LAY-4 / TYP-6) — the presence-requiring half of both controls, which stays with the evaluator (see the scope decision above).
+- A measure written in any unit but `ch` (LAY-4 / TYP-6) — converting `px` / `rem` / `%` to characters needs the rendered font size, the same reason px and percentage line-heights are not judged. One `NOTE` per line, never an `ERROR`, so a stylesheet full of px max-widths cannot flood the report.
+- A measure reached through a `var()` chain that leaves the file (LAY-4 / TYP-6) — out of static reach. One `NOTE` per line, never an `ERROR`.
 - Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
 
 **Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
 (see "The ast-grep front end" above). The type scale, both floors, the line-height
 band and per-rule selection are unchanged Python. TYP-2's band stays body-scoped,
 but ancestry answers "am I inside an `h1` to `h6` rule" now, which retired the
-hand-rolled CSS brace state machine and the heading-tag line regex.
+hand-rolled CSS brace state machine and the heading-tag line regex. The measure
+rule was written against this front end from the start, and its candidates sit on
+their own `measure` surface rather than the `code` surface the four typography
+rules read, so adding it changed nothing about what TYP-1 to TYP-4 decide.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
+**Per-rule selection:** `--rules` accepts `TYP-1`, `TYP-2`, `TYP-3`, `TYP-4`,
+`LAY-4`, and `TYP-6`. `detect.py`'s curated implement-phase profile still runs
+`--rules TYP-1` and is unchanged: the two measure rules ride `--all` and the
+verify-phase gate, and the measure rule (its `NOTE` lines included) does not run
+at all when `--rules` selects neither of its controls.
+
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (107 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
 ## Structure scan (built: one rule, two control ids)
 
@@ -814,7 +829,7 @@ Planned for V1 (remaining):
 | ~~`structure`~~ | ~~A11Y-7, CMP-6 (static halves)~~ | ✅ built (static subset): `structure-scan` flags a `<table>` or `role="table"` with no `<th>` and no `role="columnheader"`, under both control ids. No heading-hierarchy walk and no list rule ship: axe's `heading-order`, `list` and `listitem` own those at the rendered layer, and alignment, tabular figures, form grouping and the styled-div judgment are never guessed from source |
 | ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-eslint` covers the aria suite (`aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, the role-conversion rules); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
-| ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
+| ~~`type-scan`~~ | ~~TYP-1..4, LAY-4, TYP-6~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt), and LAY-4 + TYP-6 (one measure rule, two ceilings, sourced from the catalog); font *weights*, the label-vs-body floor decision, px/% line-heights, and a *missing* measure cap still need rendered context |
 | `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
 | ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
 | `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
