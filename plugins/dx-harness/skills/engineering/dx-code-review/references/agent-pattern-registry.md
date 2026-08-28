@@ -34,6 +34,6 @@ The counts and the status are therefore a repository's own record, not a review'
 
 ## Precedence
 
-`review/agent-patterns.md` in the reviewed repository holds **only the patterns that repository has actually observed**. The nine shipped patterns stay in the plugin, in `references/agent-pattern-standard.md`, and are never copied into a repository. Classification reads the two together, and the repository's file is the overlay: where both carry the same `AP-NNN`, its row wins, because it is the one with that repository's counts and status.
+`review/agent-patterns.md` in the reviewed repository holds **only the patterns that repository has actually observed**. The nine shipped patterns stay in the plugin, in `references/agent-pattern-standard.md`, and are never copied into a repository. Classification reads the two together, and the repository's file is the overlay: where both carry the same `AP-NNN`, its row wins.
 
 **The overlay belongs to the reviewed repository, not to the reviewer's working directory.** The review needs no checkout, so it fetches the overlay from the pull request's own repository. Reading it from disk would match one project's findings against another project's rows, and the suppression rule would then silently drop findings on a decision taken in a different codebase.

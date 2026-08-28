@@ -1,6 +1,6 @@
 # Inline comment format
 
-Used by the review sequence (step 8) in `SKILL.md`. **The commands here are GitHub's.** On GitLab, take each from the reviewing section of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md), which maps them one for one; the body format below is the same on both. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
+Used by the review sequence (step 8) in `SKILL.md`. **The commands here are GitHub's.** On GitLab, take each from the reviewing section of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). The body format below is the same on both. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
 ## Saying whether it was verified
 
@@ -23,7 +23,7 @@ It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` 
 
 ## Asking whether the finding helped
 
-The footer's second line carries `👍 helpful / 👎 not helpful`, below the marker line. It is an invitation to react to the comment with an emoji, not a button and not a link. The counts it collects are the only measure of whether findings land, until something better exists to measure that. Reactions are native on both forges, so the author needs no link and no form, and the counts come back on the next run's thread query at no extra cost.
+The footer's second line carries `👍 helpful / 👎 not helpful`, below the marker line. It asks for an emoji reaction on the comment. It is not a button and not a link. Reactions are native on both forges, so the author needs no link and no form, and the counts come back on the next run's thread query at no extra cost.
 
 Invite it, never chase it. A finding that goes unreacted is the ordinary case, and an author who ignores the ask has still had the finding.
 
@@ -54,7 +54,7 @@ BODY="**[Severity] One-sentence summary**  <!-- 🟡 and 🟣 append: (not block
 *🤖 dx-code-review · {model}*
 👍 helpful / 👎 not helpful"
 
-Post every finding in **one review**, not one comment at a time. The comments endpoint creates a standalone comment and notifies the author once per call, so a five-finding review arrives as five notifications. The reviews endpoint takes them all in a single `comments` array and notifies once. The threads it creates are ordinary review threads, so the deduplication in step 6 and the resolution in step 7 keep working unchanged.
+Post every finding in **one review**, not one comment at a time. Use the reviews endpoint with a single `comments` array; the comments endpoint notifies the author once per call. The threads it creates are ordinary review threads, so the deduplication in step 6 and the resolution in step 7 apply to them unchanged.
 
 Build the array, one entry per finding, then post it:
 

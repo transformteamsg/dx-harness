@@ -66,7 +66,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 4. Label each candidate **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label into the comment.
    - **CONFIRMED** requires evidence, not inference: for a behaviour claim, hold the `file:line` that establishes it. A function named `validateInput` is not evidence that it validates.
    - **A behaviour claim with no citation is dropped**, not downgraded. It never posts and never reaches the summary counts.
-   - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible. The default is conditional: it holds because these usually cannot be settled by reading, so a cited line that does settle one makes it CONFIRMED. The shape of the defect never decides the label on its own.
+   - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible. The default yields to evidence: a cited line that settles one makes it CONFIRMED. The shape of the defect never decides the label on its own.
    - **A Removed behaviour finding cites the removal in the diff**, not the file.
    - **REFUTED only when provably wrong** — cite the line or invariant that rules it out.
 
@@ -97,7 +97,7 @@ Steps, the shape-to-contract table, and the exact prompts: [references/issue-and
 
 Eight, run by analysis step 2: Line-by-line, Removed behaviour, Security, Cross-file, Reuse, Simplification, Efficiency, Altitude.
 
-Design is not among them. Judging a change against the design standards belongs to the design skills, which read the whole surface rather than a diff. Send a design question there.
+Design is not among them. Send a design question to the design skills.
 
 Checklists, and the severity floor Security sets: [references/review-angles.md](references/review-angles.md). Run all eight.
 
@@ -123,7 +123,7 @@ The second line goes on an inline finding only, and the summary comment omits it
 
 1. Resolve the forge, the repository, and the request number per [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md) § Resolving the request and its repository. That procedure owns the URL-beats-remote rule, both forge URL shapes, the bare-number case, the `--repo` discipline, and the CLI check. Do not re-derive any of it here.
 
-   The commands below are GitHub's. For GitLab, use the equivalents in that procedure's command map and its reviewing section; everything else in this sequence is identical. Report in the platform's own vocabulary, so a GitLab developer is told about a merge request and an MR number.
+   The commands below are GitHub's. For GitLab, use the equivalents in that procedure's command map and its reviewing section; everything else in this sequence is identical. Report in the platform's own vocabulary.
 
 2. Fetch request metadata. `headRefOid` is `{head_sha}`, used in step 4:
    ```bash
@@ -155,9 +155,9 @@ The second line goes on an inline finding only, and the summary comment omits it
    - **All open threads** — `isResolved` is false. Used for dedup in step 6.
    - **Open skill threads** — of those, `comments[0].body` contains `code-review`. Used for resolution in step 7.
    - **Any skill thread** — every thread whose `comments[0].body` contains `code-review`, resolved or not. Non-empty means this is a re-review. Resolved threads count.
-   - **Helpfulness verdicts** — for each skill thread, the `THUMBS_UP` and `THUMBS_DOWN` counts from its first comment's `reactionGroups`. This is the author's verdict on findings this skill posted before, and it costs no extra call because it rides the query above. Carry the totals to the summary.
+   - **Helpfulness verdicts** — for each skill thread, the `THUMBS_UP` and `THUMBS_DOWN` counts from its first comment's `reactionGroups`. This is the author's verdict on findings this skill posted before. Carry the totals to the summary.
 
-     **Do not act on a verdict yet, beyond reporting it.** A single 👎 can mean the finding was wrong, or that the author disagreed with a correct one, and those need different responses. Suppressing a pattern already has a threshold and a home in the registry for exactly that reason, so one thumb down does not silence anything.
+     **Report the verdicts and nothing more.** One 👎 silences no pattern and drops no finding. Suppression is the registry's, and it has a threshold.
 4. Fetch the diff and the repository's pattern overlay:
    ```bash
    gh pr diff {number} --repo {owner}/{repo}
