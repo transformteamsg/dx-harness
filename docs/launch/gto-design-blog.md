@@ -74,6 +74,23 @@ isn't replaced here. It's the input the whole loop runs on: see it, then fix it.
 
 [Visual: before/after — the same brief with and without the harness.]
 
+## The last stretch is your hands
+
+The harness carries a screen from brief to good, and that is about 70% of the
+work. We're deliberate about the rest. Some decisions shouldn't pass through a
+prompt at all. You want your hands on the thing: nudge the spacing, feel the
+hover.
+
+So the other tool we're building is a visual editor over the production
+codebase. You edit the live product directly, the way you'd edit a canvas,
+while git quietly keeps a copy of the codebase to work on and a save point for
+every change. No prompt sits between your taste and the pixel. The harness gets
+the work to good, your hands take it the rest of the way, and the review grades
+all of it the same.
+
+[Visual: short screen recording — selecting an element in the live product and
+adjusting it directly, no prompt.]
+
 ## The part I couldn't have built alone
 
 I want to be honest about the collaboration, because the harness is half
@@ -137,3 +154,9 @@ If you design with an agent, try it, and tell me what breaks.
   credits only with their OK.
 - The coding agent is named generically; the repo README says Claude Code. Mimi
   to advise whether the blog names vendor tools.
+- "The last stretch is your hands" describes a second, unreleased tool without
+  naming or linking it, because its repo is not public. Confirm its public name
+  and whether it may be mentioned at all before publication. The 70/30 split is
+  the author's framing.
+- Word count is now ~1,020 for the body; trim with Mimi if the 1,000 ceiling is
+  firm.
