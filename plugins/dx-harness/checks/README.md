@@ -166,8 +166,10 @@ silently.
 `token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, and `type-scan`'s **TYP-1 rule
 only** (via `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
 recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
-full rule set (so TYP-2 runs), plus `content-lint` and `component-manifest` (the latter
-only when a `.dx/component-manifest.json` exists; otherwise it is reported skipped).
+full rule set (so TYP-2 runs), plus `structure`, `content-lint` and `component-manifest`
+(the last only when a `.dx/component-manifest.json` exists; otherwise it is reported
+skipped). `structure` is in `--all` and not the curated set because its rule has a known
+false-positive class (a header composed at runtime) and one repo's worth of calibration.
 
 **Output.** Text mode groups each script's findings under a `── <check> ──` header and
 passes through its `ERROR`/`NOTE` lines. `--json` emits
@@ -706,6 +708,89 @@ hand-rolled CSS brace state machine and the heading-tag line regex.
 
 **Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (73 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
+## Structure scan (built: one rule, two control ids)
+
+`python3 checks/structure-scan.py [--rules A11Y-7,CMP-6] <path>...` runs the static
+structure walk. It scans `.tsx`, `.jsx`, `.js`, `.ts` and `.html` for one sub-rule:
+a `<table>` or a `role="table"` element whose subtree holds no `<th>` and no
+`role="columnheader"`. Accepts files or directories (recursive). Exit 0 silent on
+pass; exit 1 with `ERROR` lines on any violation (`NOTE` lines alone do not fail).
+
+The check is named `structure` (what `detect.py` prints, and what prefixes every
+operational `ERROR`); the file is `structure-scan.py`, because every scan script in
+this layer is `*-scan.py`.
+
+**Coverage: A11Y-7 (L1) and CMP-6 (L2), from one detection.** Both controls fail in
+the same shape and are decided by the same walk, so one check carries both. One
+detected element prints **two** `ERROR` lines at the same file and line, `[A11Y-7]`
+first then `[CMP-6]`, never a compound `[A11Y-7, CMP-6]` bracket, because
+`detect.py`'s `_FINDING_RE` captures one control per line. Attribution lives in the
+script's `RULE_CONTROLS` table and nowhere else. Reporting under CMP-6 alone was
+rejected: the tiers differ (an L1 failure loops the agent back to implement, an L2
+does not) and so do the waiver classes (documented vs rationale), so which id a
+finding lands under changes what happens next. The sub-rule is **not** in
+`a11y-rule-map.json`: that file maps one axe or jsx-a11y rule to exactly one control
+id and refuses a list, and CMP-6 is not an accessibility control.
+
+**A dynamically composed header is a `NOTE`, not an `ERROR`.** The header region is
+the `<thead>` subtree if present, else the first `<tr>` subtree, else the whole
+matched subtree. When that region holds a component element or a JSX expression
+container (`<thead><HeaderRow columns={columns} /></thead>`), the finding downgrades
+to one `NOTE` per control id and the run still exits 0. That is the one
+false-positive class calibration found, and a check never blocks on a guess.
+
+**`.vue` and `.svelte` are counted, never scanned.** They are not ast-grep languages
+at 0.44.1, and although `sgconfig.yml` routes them to the html rules, a single-file
+component composes its table from directives and slots that grammar reads as plain
+text. The run prints one `NOTE` naming how many files it could not parse and sends
+A11Y-7 and CMP-6 to manual verification for them, so a layer that did not run never
+reads as a pass.
+
+**What this check does NOT verify:**
+
+- Heading hierarchy and list semantics. axe's `heading-order`, `list` and `listitem`
+  own those at the rendered layer. A source walk cannot see a page assembled from a
+  layout, MDX and components, so a static heading walk would flag good work. No such
+  walk ships here, despite what `a11y-7.md` used to promise.
+- Styled divs standing in for a heading, a list or a table (A11Y-7's own first
+  `fails_when` clause). Deciding the content *is* one of those is pattern-fit
+  judgment, which `cmp-6.md` keeps with the evaluator. A static rule for it flags
+  every CSS grid.
+- Numeric alignment and tabular figures (CMP-6's other clauses). No rule reads an
+  alignment utility, `tabular-nums` or the content of a `<td>`. A source scan cannot
+  see which figures line up in a rendered column, and `cmp-6.md` exempts a
+  deliberately left-aligned identifier column. TYP-5's gap is accepted for the same
+  reason.
+- Form grouping (`fieldset` / `legend`), descriptive headings and labels, persistent
+  header behaviour, and empty/loading states (CMP-3, which is `cmp-scan`'s).
+- `role="grid"` and `role="treegrid"`. Both carry interaction contracts a source
+  scan cannot judge, so the narrowing leaves them out.
+
+Note that the shipped rule catches a case neither control's `fails_when` list names
+literally: both lists describe divs used *instead of* a table, and this rule catches a
+real table *missing* its `<th>`. The div case is the judgment above. Do not widen the
+rule to close that gap.
+
+**Per-rule selection:** `--rules A11Y-7` prints the A11Y-7 half only, `--rules CMP-6`
+the CMP-6 half only, parsed exactly as `type-scan`'s flag is. Unknown ids are a usage
+error (exit 1).
+
+**Waiver suppression:** none. This script does not parse `dx-waive` markers, for the
+reason `a11y-static.py` records: waiver parsing inside a partial check manufactures a
+false sense of coverage. `waiver-reconcile.py` reconciles recorded waivers, and the two
+controls' waiver classes differ, so one suppression must never mute both.
+
+**Matching engine:** ast-grep through `checklib.astgrep_scan`, with two rule bodies per
+sub-rule (one per grammar) in `checks/rules/structure/`. In `tsx` the kinds are
+`jsx_element` / `jsx_opening_element` / `jsx_attribute`; in `html` they are `element` /
+`start_tag` / `tag_name` / `attribute`. One body cannot serve both.
+
+**Self-test:** `python3 checks/structure-scan.py --self-test` → `SELF-TEST OK (62 cases)`
+(includes the `fixtures/structure-scan/` pass/fail files, which carry a regression
+fixture for every exclusion above, the two-lines-one-id output contract, the `NOTE`
+downgrade (and the mapped-body cell interpolation that must never be mistaken for one), the
+`.vue`/`.svelte` count, and the ast-grep provisioning contract).
+
 ## Component manifest (built)
 
 `python3 checks/component-manifest.py <manifest.json> [<source-root>]` — validates a product's `.dx/component-manifest.json` against the DX SPEC (`docs/spikes/component-manifest/SPEC.md`): required keys, enum values, date format. Exit 0 silent on pass; exit 1 with one `ERROR` line per violation.
@@ -726,7 +811,7 @@ Planned for V1 (remaining):
 | ~~`targets`~~ | ~~A11Y-4~~ | ✅ built (rendered) — `rendered-check` runs axe `target-size`, force-enabled, at 360 and 1280 |
 | ~~`reduced-motion`~~ | ~~A11Y-5~~ | ✅ built (rendered) — `rendered-check`'s one reduced-motion cell reports what still moves under the emulation; whether an animation is *essential* stays with the evaluator |
 | ~~`alt-scan`~~ | ~~A11Y-6~~ | ✅ built (static subset) — `a11y-eslint` covers `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`; the informative-versus-decorative judgment and every non-JSX image stay manual |
-| `structure` | A11Y-7 (deterministic half) | Heading-hierarchy walk; lists/tables/groups are semantic elements |
+| ~~`structure`~~ | ~~A11Y-7, CMP-6 (static halves)~~ | ✅ built (static subset): `structure-scan` flags a `<table>` or `role="table"` with no `<th>` and no `role="columnheader"`, under both control ids. No heading-hierarchy walk and no list rule ship: axe's `heading-order`, `list` and `listitem` own those at the rendered layer, and alignment, tabular figures, form grouping and the styled-div judgment are never guessed from source |
 | ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-eslint` covers the aria suite (`aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, the role-conversion rules); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
 | ~~`type-scan`~~ | ~~TYP-1..4~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt); font *weights*, the label-vs-body floor decision, and px/% line-heights still need rendered context |
@@ -744,14 +829,17 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
 run the same Python gate: `validate.py --self-test`, `validate.py`,
 `checklib.py --self-test`, `token-audit.py --self-test`, `type-scan.py --self-test`,
-`token-audit.py` over `app components lib`, `a11y-static.py`, and `type-scan.py` over
-`app components`. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
+`structure-scan.py --self-test`, `token-audit.py` over `app components lib`,
+`a11y-static.py`, `type-scan.py` over `app components`, and `structure-scan.py` over
+`app components lib`. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
 the checks layer reaches ast-grep with `subprocess`; the three `--self-test` runs are
 what put the ast-grep provisioning contract and the `fixtures/parity/` corpus in the
 gate rather than leaving them to a dev machine.
 `type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
-`leading-[…]` headings it flagged).
+`leading-[…]` headings it flagged). `structure-scan` was wired in on the same rule:
+it reports zero findings over `app components lib`, where the repo's one real table
+(`components/foundations/token-table.tsx`) carries its `<th>` elements.
 
 `content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
 on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the

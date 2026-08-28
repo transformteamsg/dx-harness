@@ -719,6 +719,39 @@ def group_candidates(candidates):
     return by_file
 
 
+def parse_rules_flag(args, valid_rules):
+    """Additive `--rules ID1,ID2` (or `--rules=ID1`). Removes the flag from
+    `args` in place; returns the control-id set (or None when absent). Raises
+    ValueError on an unknown or empty id so the caller can fail as a usage
+    error. The default (no flag) selects every id, unchanged."""
+    rules = None
+    i = 0
+    while i < len(args):
+        a = args[i]
+        val = None
+        if a == "--rules":
+            if i + 1 >= len(args):
+                raise ValueError("--rules needs a comma-separated control-id list")
+            val = args[i + 1]
+            del args[i:i + 2]
+        elif a.startswith("--rules="):
+            val = a[len("--rules="):]
+            del args[i]
+        else:
+            i += 1
+            continue
+        ids = {r.strip().upper() for r in val.split(",") if r.strip()}
+        if not ids:
+            raise ValueError("--rules needs at least one control id")
+        unknown = ids - valid_rules
+        if unknown:
+            raise ValueError(
+                f"--rules: unknown id(s) {sorted(unknown)}; valid: {sorted(valid_rules)}"
+            )
+        rules = ids if rules is None else (rules | ids)
+    return rules
+
+
 def emit_error(rel, lineno, ctl, found, suggest, extra=None):
     """The canonical `ERROR {rel}:{lineno} [{ctl}] {found} — suggest: {suggest}`
     line. detect.py's `_FINDING_RE` reverse-parses this exact shape — change
@@ -1101,6 +1134,24 @@ def _self_test():
         == "ERROR app/x.tsx:3 [A11Y-2][jsx-a11y/interactive-supports-focus] "
            "not focusable — suggest: add tabIndex",
     )
+
+    # ── parse_rules_flag ─────────────────────────────────────────────────────
+    valid = {"A11Y-7", "CMP-6"}
+    args = ["--rules", "A11Y-7,CMP-6", "some/path"]
+    check_eq("parse_rules_flag: list form",
+             ({"A11Y-7", "CMP-6"}, ["some/path"]),
+             (parse_rules_flag(args, valid), args))
+    args = ["--rules=cmp-6", "p"]
+    check_eq("parse_rules_flag: = form normalises case",
+             ({"CMP-6"}, ["p"]), (parse_rules_flag(args, valid), args))
+    check_eq("parse_rules_flag: absent returns None",
+             None, parse_rules_flag(["p"], valid))
+    try:
+        parse_rules_flag(["--rules", "TYP-1", "p"], valid)
+        check_eq("parse_rules_flag: rejects an unknown id", "ValueError", "no error")
+    except ValueError as exc:
+        check_eq("parse_rules_flag: rejects an unknown id", True,
+                 "TYP-1" in str(exc) and "A11Y-7" in str(exc))
 
     # ── rule map ──────────────────────────────────────────────────────────────
     rule_map = load_rule_map()
