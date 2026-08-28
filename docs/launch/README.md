@@ -6,7 +6,8 @@ Both are drafts. Nothing here is published.
 | File | What it is |
 |---|---|
 | `blog.html` | The launch blog post, standalone HTML using the site tokens from `app/globals.css` |
-| `slack-post.md` | The `#dx-harness` announcement, with a pre-post checklist |
+| `slack-post.md` | The `#dx-harness` announcement and the design team post, with a pre-post checklist |
+| `gto-design-blog.md` | Personal-voice article for the GTO design practice blog (contact: Mimi; publish mid-October) |
 | `assets/harness-architecture.png` | Architecture sketch, embedded in the blog as image 2 |
 | `assets/builders.png` | Builders illustration (from the Desktop illo set, downscaled to 1024px), closes the blog |
 
