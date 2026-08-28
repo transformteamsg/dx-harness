@@ -1,29 +1,31 @@
-# Inline Comment Format
+# Inline comment format
 
-Used by the PR Review Path (step 8). All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
+Used by the review sequence (step 8) in `SKILL.md`. **The commands here are GitHub's.** On GitLab, take each from the reviewing section of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). The body format below is the same on both. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
 ## Saying whether it was verified
 
-Every comment carries exactly one of two lines, from the label the Analysis Phase already assigned.
+Every comment carries exactly one of two lines, from the label the analysis already assigned.
 
-- **CONFIRMED** carries **Verified:** and the `file:line` that establishes the behaviour. For a Removed behaviour finding, cite the removal in the diff, because the line it refers to is gone from the file.
-- **PLAUSIBLE** carries **Unverified:** and what would settle it, in one line. Say what to run, read, or check. "Unverified" alone tells the author nothing they cannot already see.
+- **CONFIRMED** carries **Verified:** and the `file:line` that establishes the behaviour. For a Removed behaviour finding, cite the removal in the diff.
+- **PLAUSIBLE** carries **Unverified:** and what would settle it, in one line: what to run, read, or check.
 
-A plausible finding is posted, not held back. It is exactly the case worth raising when it cannot be settled by reading, and the label is what lets the author spend their attention accordingly. Volume is the nit cap's job, not this label's.
+A plausible finding is posted, not held back. Volume is the nit cap's job, never this label's.
 
 ## Saying what blocks
 
-A 🟡 Nit or 🟣 Pre-existing comment carries `(not blocking)` on its first line, immediately after the summary. A 🔴 Important comment carries nothing extra, because blocking is what Important already means.
-
-The label is for the author, not the reviewer. Without it every comment arrives with the same weight, and someone reading five of them cannot tell whether they are looking at one requirement and four suggestions or five requirements. Declining a comment marked `(not blocking)` needs no reply and no justification.
+A 🟡 Nit or 🟣 Pre-existing comment carries `(not blocking)` on its first line, immediately after the summary. A 🔴 Important comment carries nothing extra.
 
 ## The recurring-pattern line
 
-Include it only on a finding that Analysis Phase step 7 tagged `[AI-PATTERN]`, and omit the line entirely otherwise. Never print it empty.
+Include it only on a finding that analysis step 7 tagged `[AI-PATTERN]`, and omit the line entirely otherwise. Never print it empty.
 
-It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` cell. The count is what makes it worth reading: "seen once" is a coincidence and "seen five times" is a habit, and the author cannot tell which from the finding alone. The Prevention cell is the actionable half, and it is already written in imperative voice for exactly this.
+It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` cell. The count matters to the author: seen once is a coincidence, seen five times is a habit.
 
-Without this line the tag is computed and discarded. Classification would run on every review and teach the author nothing, which defeats the registry's purpose: `dx-implement-issue` reads it so review teaches implementation, and this line is how review teaches the person.
+## Asking whether the finding helped
+
+The footer's second line carries `👍 helpful / 👎 not helpful`, below the marker line. It asks for an emoji reaction on the comment. It is not a button and not a link. Reactions are native on both forges, so the author needs no link and no form, and the counts come back on the next run's thread query at no extra cost.
+
+Invite it, never chase it. A finding that goes unreacted is the ordinary case, and an author who ignores the ask has still had the finding.
 
 ## Posting each finding
 
@@ -49,9 +51,10 @@ BODY="**[Severity] One-sentence summary**  <!-- 🟡 and 🟣 append: (not block
 **Recurring pattern:** AP-NNN <Pattern name>, seen N time(s) in this repository. <Prevention>
 
 ---
-*🤖 code-review · {model}*"
+*🤖 dx-code-review · {model}*
+👍 helpful / 👎 not helpful"
 
-Post every finding in **one review**, not one comment at a time. The comments endpoint creates a standalone comment and notifies the author once per call, so a five-finding review arrives as five notifications. The reviews endpoint takes them all in a single `comments` array and notifies once. The threads it creates are ordinary review threads, so the deduplication in step 6 and the resolution in step 7 keep working unchanged.
+Post every finding in **one review**, not one comment at a time. Use the reviews endpoint with a single `comments` array; the comments endpoint notifies the author once per call. The threads it creates are ordinary review threads, so the deduplication in step 6 and the resolution in step 7 apply to them unchanged.
 
 Build the array, one entry per finding, then post it:
 

@@ -1,38 +1,37 @@
 ---
 name: dx-code-review
-description: Use when asked to review code changes — either posting findings as inline PR comments or running an interactive local branch review with optional report generation. Triggers on "review this", "give me feedback on", "review my changes", "review this PR", "post findings to PR", "add review comments to the pull request", or any request for a code review.
+description: 'Use when asked to review a pull request or merge request, posting findings as inline comments on the request itself. Triggers on "review this PR", "review this merge request", "give me feedback on this PR", "post findings to PR", "add review comments to the pull request", or any request to review a pull request. Reviews a pull request only: it does not review an uncommitted local working branch.'
 ---
 
-# Code Review
+# Code review
 
-Reviews code changes using 9 structured angles across the diff. Posts findings as inline PR comments directly on GitHub, or runs an interactive triage session on a local working branch with optional report generation at the end.
+Reviews a pull request with 8 angles across its diff and posts findings as inline comments on the request. Works on GitHub pull requests and GitLab merge requests.
+
+Reads and reports only. Never edits a file, never commits, never issues a merge verdict.
 
 ---
 
-## Mode Selection
+## Getting the pull request
 
-**Before spawning a subagent**, ask the user:
+- **Link or number provided** → use it, go to the sequence.
+- **Nothing provided** → ask, then wait:
 
-> "Are you reviewing a PR or your local working branch?"
-> - **PR** — if a PR link or number wasn't provided, ask for it now.
-> - **Local branch** — proceed.
+  > "Which pull request should I review? Paste the link, or give me the number if it is in this repository."
 
-- **PR** → spawn a fresh subagent and pass it: this `SKILL.md`, [references/pr-review-path.md](references/pr-review-path.md), the selected mode, and the PR number. The subagent runs the PR Review Path from scratch — no user interaction is needed.
-- **Local branch** → before doing anything else, explicitly state: *"Starting fresh local branch review — all prior session context discarded."* Then treat every subsequent step as if this were the first message in a new conversation: no prior analysis, no prior findings, no prior assumptions. Read [references/local-branch-review-path.md](references/local-branch-review-path.md) and run its Steps from step 1. (Interactive triage in step 4 means this path cannot run as a subagent.)
+Never fall back to reviewing the working branch. There is no local-branch mode.
+
+Run the sequence in a fresh subagent. Pass it this `SKILL.md`, the link or number, and nothing else.
 
 ---
 
 ## The standard
 
-A review exists to make a change better, not to make it perfect. Perfect is not on the table: there is only better code, and a review that holds out for more than better stops the work while teaching the author to expect that it will. The bar is whether the change leaves the system healthier than it found it.
+Approve better, not perfect. The bar is whether the change leaves the system healthier than it found it.
 
-Two things follow, and the severity table below is how they are expressed.
+- **Only 🔴 Important blocks.** Everything else is a suggestion the author may decline without reply.
+- **Never issue a merge verdict.** Report the findings and stop. "No blocking findings" is allowed; "good to merge" is not.
 
-**Only an Important finding is ever blocking.** Everything else is a suggestion the author is free to decline without reply. A review that treats every observation as a requirement is indistinguishable from one that found something serious, and the author cannot tell which they are reading.
-
-**This skill never issues a merge verdict.** It reports what it found and stops. "No blocking findings" is a statement about the findings; "good to merge" is a decision about the change, and that belongs to a person who is accountable for it. This is why the skill posts comments rather than approving or requesting changes.
-
-## Severity Levels
+## Severity levels
 
 | Level | Blocking | What it means |
 |-------|----------|--------------|
@@ -40,247 +39,175 @@ Two things follow, and the severity table below is how they are expressed.
 | 🟡 **Nit** | No | A minor issue, worth fixing but not blocking. |
 | 🟣 **Pre-existing** | No | A bug that exists in the codebase but was not introduced by this PR. |
 
-The three markers stay as they are. They already match Claude Code's managed review exactly, so findings from both read consistently side by side, and adding a second vocabulary of prefixes on top would label every comment twice.
+---
+
+## Analysis
+
+Run on the diff from sequence step 4, then return to the sequence.
+
+### Before step 1: the repository's review instructions
+
+Read `REVIEW.md` at the repository root. Only the root file; ignore any nested one.
+
+- **Present and readable** → apply it for the rest of the run. It can add rules to check and paths to skip.
+- **Present but unreadable** → stop the review, name the file and the error, post nothing.
+- **Absent** → run as this file describes, and say nothing about it.
+
+Skip rules act on the diff: remove every matching path before step 1, so no angle sees them and they consume no candidate ceiling or nit budget. Record the skipped paths for the summary.
+
+A finding produced by a rule from `REVIEW.md` names that rule.
+
+### The steps
+
+1. Run the issue and test plan check (below). It must complete before the angles.
+2. Run all 8 review angles (below) on the diff. Collect candidates with `file`, `line`, `summary`, `failure_scenario`, and a severity from the table above.
+   - An angle stops at 6 candidates. If it reaches 6 with more it would have raised, record the angle name and the number dropped for the summary.
+3. Deduplicate: same defect at the same location, keep one.
+4. Label each candidate **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label into the comment.
+   - **CONFIRMED** requires evidence, not inference: for a behaviour claim, hold the `file:line` that establishes it. A function named `validateInput` is not evidence that it validates.
+   - **A behaviour claim with no citation is dropped**, not downgraded. It never posts and never reaches the summary counts.
+   - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible. The default yields to evidence: a cited line that settles one makes it CONFIRMED. The shape of the defect never decides the label on its own.
+   - **A Removed behaviour finding cites the removal in the diff**, not the file.
+   - **REFUTED only when provably wrong** — cite the line or invariant that rules it out.
+
+   Citations are required for behaviour claims only. For Simplification, Reuse, and Altitude, the diff is the evidence.
+5. For each CONFIRMED or PLAUSIBLE finding, validate the suggestion against the repo's manifest (`package.json`, `go.mod`, `requirements.txt`, `Gemfile`):
+   - **Found** → check any library named in the suggestion exists at the installed version; revise it, or note the upgrade it needs.
+   - **None** → note that no manifest was found, and trace any shell command in the suggestion against the failure modes described.
+6. Drop every REFUTED finding, silently.
+7. **Agent pattern classification.** Match each remaining finding's `Pattern name` / `Trigger` against two sources read together:
+   - the reviewed repository's `review/agent-patterns.md`, fetched in step 4 — **never read from disk**
+   - this skill's [references/agent-pattern-standard.md](references/agent-pattern-standard.md)
+
+   Where both carry the same `AP-NNN`, the repository's row wins. Tag matches `[AI-PATTERN]`.
+
+   **This step reads and tags. It writes nothing.** The registry is read-only here; a repository maintains its own counts and status. Schema and precedence: [references/agent-pattern-registry.md](references/agent-pattern-registry.md).
+
+   **Drop any finding matching a suppressed row**: not tagged, not verified, not posted. Count the drops for the summary.
+
+### Step 1 in detail: the issue and test plan check
+
+Checks the change against the issue it closes and the tests against the stated test plan. Can stop the review, or add an Important finding of its own.
+
+Steps, the shape-to-contract table, and the exact prompts: [references/issue-and-test-plan-check.md](references/issue-and-test-plan-check.md).
 
 ---
 
-## PR Review Path
+## Review angles
 
-Works on GitHub pull requests and GitLab merge requests. The forge is named from the request URL, or from the remote, before anything runs; the commands for each live in [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md), and everything after sourcing the diff is identical on both. Source the diff from the forge via its CLI — the branch does not need to be checked out locally. No report file is written; all findings are posted as inline PR comments. See [references/pr-review-path.md](references/pr-review-path.md) for the full steps.
+Eight, run by analysis step 2: Line-by-line, Removed behaviour, Security, Cross-file, Reuse, Simplification, Efficiency, Altitude.
 
----
+Design is not among them. Send a design question to the design skills.
 
-## Local Branch Review Path
+Checklists, and the severity floor Security sets: [references/review-angles.md](references/review-angles.md). Run all eight.
 
-Run the review, triage each finding interactively with the user, then optionally generate a report at the end. See [references/local-branch-review-path.md](references/local-branch-review-path.md) for the full steps.
-
----
-
-## Analysis Phase
-
-Shared by both paths — run on the diff produced by that path's diff-sourcing step, then continue with the path's remaining steps.
-
-**Before step 1, read the repository's review instructions.** Look for `REVIEW.md` at the repository root.
-
-- **Present and readable**: apply it for the rest of the run. It can add rules this review must check, and list paths to skip.
-- **Present but unreadable**: stop the review, name the file and the error, and leave the pull request untouched. Findings calibrated by rules that were never applied are worse than no review, because they read like a complete one.
-- **Absent**: run exactly as this file describes and say nothing about it. A repository that has not opted in is not misconfigured.
-
-Only the root file is read. A nested `REVIEW.md` deeper in the tree is ignored, so there is one file to find and one precedence rule.
-
-Skip rules act on the diff, not on findings: remove every matching path before step 1, so no angle ever sees them. A skipped file must not consume an angle's candidate ceiling, or the nit budget the PR review path applies before it posts. Record which paths were skipped, because the summary reports them. A review that looked at nothing must never read as a review that found nothing.
-
-A finding produced by a rule from this file names that rule, so the author can see what asked for it.
-
-1. Run the PR & Issue Check (below) — this must complete before the review angles.
-2. Run all 9 review angles (see Review Angles) on the diff; collect candidates with `file`, `line`, `summary`, `failure_scenario`, and assign a severity level (🔴 Important / 🟡 Nit / 🟣 Pre-existing) based on the Severity Levels table.
-   - An angle stops at 6 candidates. If one reaches 6 with candidates it would still have raised, record the angle's name and how many it dropped, and carry that to the summary. A truncated review must never read like a complete one.
-3. Deduplicate near-duplicates (same defect, same location → keep one).
-4. Verify each candidate — label as **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label through to the comment. The label is the work this step exists to do, so throwing it away before posting leaves a verified bug and a maybe reading identically to the author.
-   - **CONFIRMED** needs evidence, not inference. For a claim about behaviour, hold the `file:line` in the source that establishes it. A name is not evidence: that a function is called `validateInput` does not establish that it validates anything.
-   - **A behaviour claim with no citation is dropped**, not downgraded. It never posts and never reaches the summary counts. A finding the author has to disprove costs them a round trip, and the review had no grounds for it.
-   - **PLAUSIBLE by default for**: races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These stay, and post saying what they are, because they are the cases worth raising precisely when they cannot be settled by reading.
-   - **A Removed behaviour finding cites the removal**, in the diff, since the line that carried the behaviour no longer exists in the file to point at.
-   - **REFUTED only when provably wrong** — cite the exact line or invariant that rules it out.
-
-   The citation requirement is for behaviour claims. A Simplification, Reuse, or Altitude finding is an argument about the change in front of you, and the diff is its evidence.
-5. For each CONFIRMED or PLAUSIBLE finding, validate the suggestion:
-   - Look for `package.json`, `go.mod`, `requirements.txt`, or `Gemfile` at the repo root
-   - If found: verify any library referenced in the suggestion is available in the installed version; revise or note a required upgrade if not
-   - If none found: note no manifest detected and mentally trace any shell commands against the failure modes described
-6. Drop all REFUTED findings — see Rules › Refuted findings.
-7. **Agent pattern classification** — for each remaining CONFIRMED or PLAUSIBLE finding, check it against the `Pattern name` / `Trigger` columns of two sources read together: the **reviewed repository's** `review/agent-patterns.md`, which holds only the patterns that repository has actually observed, and this skill's [references/agent-patterns.md](references/agent-patterns.md), which ships the universal ones. The reviewed repository is the one the work belongs to, never the one the reviewer's shell happens to be in: the local branch path reads the overlay from disk because it is checked out there, and the PR path fetches it from the pull request's own repository in its step 4. The repository's file is an overlay: where both carry the same `AP-NNN`, its row wins, because it holds this repository's counts and status. Tag matching findings `[AI-PATTERN]`.
-
-   **This step only reads and tags. Nothing here writes a file, on either path.** What a review learned is recorded after the author has said which findings were real, which is the Local Branch Review Path's registry step, not this one. See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for what gets recorded, when it is committed, and why a newly discovered pattern is proposed as an issue rather than written.
-
-   **A finding matching a row whose `Status` is suppressed is dropped here**, on both paths: not tagged, not verified further, not posted. Count the drops and carry the number to the summary, because a suppressed pattern hiding findings must not look like a review that found nothing.
-
-   The PR review path has no triage, so it has no verdict to record. It reports the rows it would have added and writes nothing.
+**Correctness first.** On the lower-altitude angles (Simplification, Reuse, Efficiency, Altitude), raise only genuine problems, not cosmetic preferences.
 
 ---
 
-## PR & Issue Check
+## The review sequence
 
-Run as Analysis Phase step 1, before the review angles. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised. The four issue shapes state that contract under different headings, so step 4 reads the shape first.
+Source the diff from the forge's CLI. The branch is never checked out and no file is written.
 
-1. **Resolve the PR.**
-   - PR Review Path: already fetched in that path's steps 1–2.
-   - Local Branch Review Path: check whether the current branch has an open PR: `gh pr view --json number,title,body,closingIssuesReferences`. If none exists, print "No PR found for this branch — skipping issue and test plan checks" and skip the rest of this section entirely.
-2. **Resolve the linked issue(s).**
-   - Read `closingIssuesReferences` from the PR — the issue(s) it will close via `Closes #NNN` / `Fixes #NNN` / `Resolves #NNN`. If more than one is linked, use all of them.
-   - If one or more are linked, fetch each: `gh issue view {number} --json title,body`.
-   - If none are linked, ask the reviewer:
-     > "No issue is linked to this PR. Pass an issue number to check against, or reply 'proceed' to continue without an issue check."
-     - Number provided → fetch it as above.
-     - "Proceed" → no issue for the rest of this check; skip step 4 below.
-3. **Check the PR has a test plan.** Look for a "Test plan" / "Testing" / "How to test" section in the PR body. If missing, treat it as an empty test plan and continue.
-4. **Check the test plan covers each linked issue's contract** (skip if no issue was resolved in step 2). What the contract is depends on the shape of the issue, so read the shape from its headings, which are authoritative. A shape label (`story`, `task`, `chore`, or `bug`) confirms the reading, and an issue written before the four shapes existed carries neither, so never depend on the label alone:
+Every posted comment ends with this footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`):
 
-   | Shape | Heading that identifies it | Its contract |
-   | --- | --- | --- |
-   | Story | `## User story` | Each Given-When-Then scenario under `## Acceptance criteria` |
-   | Task | `## Parent` | Each scenario under `## Acceptance criteria`, plus each item in the optional `### Also true when done` checklist |
-   | Chore | `## What is changing` | Each item under `## Done when` |
-   | Bug | `## Steps to reproduce` | The reproduction path, plus the gap between `## Expected behaviour` and `## Actual behaviour` |
-
-   For each contract item across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
-   - All covered → continue to step 5.
-   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5. Never pass this gate in silence: an issue with nothing to check against and an issue whose contract is fully covered are different outcomes, and they must not look the same.
-   - Any uncovered → ask the reviewer:
-     > "The test plan doesn't cover these contract items: <list>. Continue the review anyway?"
-     - No → stop the review here; the reviewer should update the PR's test plan first.
-     - Yes → continue to step 5, carrying the uncovered items into it alongside the test plan's own scenarios.
-5. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
-   - All covered → done, continue to the review angles.
-   - Any scenario with no automated test:
-     - File it directly as a 🔴 **Important** finding — "Missing automated test for: <scenario>" — alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (Analysis Phase steps 3–4) and goes straight into the final findings list.
-     - Add the same scenario to the **Reviewer To-Do** list — "Manually test: <scenario>" — printed with the review summary (see Rules).
-
+```
 ---
+*🤖 dx-code-review · {model}*
+👍 helpful / 👎 not helpful
+```
 
-## Review Angles
+The marker line identifies the comment as this skill's on a later run, which is how a re-review is detected.
 
-Shared by both paths. Run all nine; each surfaces up to 6 candidates. Work through each checklist item explicitly — don't just scan.
+The second line goes on an inline finding only, and the summary comment omits it: a summary is not a finding, so there is nothing there to judge. A 👍 or 👎 on the comment is the author's verdict on whether that finding was worth raising, and step 3 of a later run reads it back.
 
-### Line-by-line
+1. Resolve the forge, the repository, and the request number per [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md) § Resolving the request and its repository. That procedure owns the URL-beats-remote rule, both forge URL shapes, the bare-number case, the `--repo` discipline, and the CLI check. Do not re-derive any of it here.
 
-Look for defects in individual statements or small expressions.
+   The commands below are GitHub's. For GitLab, use the equivalents in that procedure's command map and its reviewing section; everything else in this sequence is identical. Report in the platform's own vocabulary.
 
-- **Condition logic:** inverted `==`/`!=`, wrong boolean operator (`&&` vs `||`), missing negation, condition that is always-true or always-false
-- **Off-by-one:** boundary comparisons (`<` vs `<=`), slice/index ranges, loop start/end values, fence-post in pagination or chunking
-- **Null/nil safety:** value used before a null check, null returned by a function and immediately dereferenced by its caller, optional field accessed unconditionally
-- **Async correctness:** async call made without `await`, `await` on a non-async value, fire-and-forget on a critical path with no error handling
-- **Error handling:** catch block that swallows the error (no re-throw, no log, no observable side-effect), error return value ignored at the call site
-- **Type coercion:** implicit comparison between incompatible types, string + number concatenation where arithmetic addition was intended
-- **Mutation:** function modifying an argument it doesn't own, shared collection mutated during iteration
+2. Fetch request metadata. `headRefOid` is `{head_sha}`, used in step 4:
+   ```bash
+   gh pr view {number} --repo {owner}/{repo} --json number,headRefName,headRefOid,baseRefName,title
+   ```
+3. Fetch every existing review thread, for dedup (step 6) and resolution (step 7):
+   ```bash
+   gh api graphql -f query='
+   query($owner: String!, $repo: String!, $number: Int!) {
+     repository(owner: $owner, name: $repo) {
+       pullRequest(number: $number) {
+         reviewThreads(first: 100) {
+           nodes {
+             id
+             isResolved
+             comments(first: 1) {
+               nodes {
+                 body path originalLine
+                 reactionGroups { content users { totalCount } }
+               }
+             }
+           }
+         }
+       }
+     }
+   }' -f owner="{owner}" -f repo="{repo}" -F number={number}
+   ```
+   Derive three sets:
+   - **All open threads** — `isResolved` is false. Used for dedup in step 6.
+   - **Open skill threads** — of those, `comments[0].body` contains `code-review`. Used for resolution in step 7.
+   - **Any skill thread** — every thread whose `comments[0].body` contains `code-review`, resolved or not. Non-empty means this is a re-review. Resolved threads count.
+   - **Helpfulness verdicts** — for each skill thread, the `THUMBS_UP` and `THUMBS_DOWN` counts from its first comment's `reactionGroups`. This is the author's verdict on findings this skill posted before. Carry the totals to the summary.
 
-### Removed behavior
+     **Report the verdicts and nothing more.** One 👎 silences no pattern and drops no finding. Suppression is the registry's, and it has a threshold.
+4. Fetch the diff and the repository's pattern overlay:
+   ```bash
+   gh pr diff {number} --repo {owner}/{repo}
 
-Look for functionality that was deleted but whose absence creates a gap.
+   gh api "repos/{owner}/{repo}/contents/review/agent-patterns.md?ref={head_sha}" -q '.content' | base64 -d
+   ```
+   A 404 means no overlay, which is the ordinary case: match against the shipped standard alone. **Never read `review/agent-patterns.md` from disk.**
+5. Run the analysis (above) on the diff from step 4.
+6. Deduplicate against existing comments. For each finding, check the **all open threads** set: if a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, do not post it.
+7. Resolve addressed conversations. For each **open skill thread** the current diff has addressed:
+    ```bash
+    gh api graphql -f query='
+    mutation($threadId: ID!) {
+      resolveReviewThread(input: {threadId: $threadId}) {
+        thread { isResolved }
+      }
+    }' -f threadId="{thread_id}"
+    ```
+8. **Apply volume control, then post once.**
+   - **Never cap Important or Pre-existing.** Post every one.
+   - **Cap nits at 5.** Rank CONFIRMED before PLAUSIBLE, then diff order; post the first 5 and carry the number held back to the summary. The cap is global, not per-angle, so one angle may use all 5.
+   - **On a re-review (Any skill thread non-empty), post no new nit at all.** Post Important and Pre-existing, resolve addressed threads, hold back every nit not already on an open thread.
 
-- **Input validation:** was a null, length, type, or range check removed from an entry point or guard clause?
-- **Error propagation:** was an error path dropped — try/catch added without re-throw, error return ignored, promise rejection left unhandled?
-- **Test deletions:** were any tests deleted that cover code paths still present in production code?
-- **Guards:** was a defensive condition removed or its predicate weakened (e.g. `> 0` changed to `>= 0`)?
-- **Rate limiting / throttling:** was a call-frequency cap, debounce, or retry limit removed?
-- **Observability:** was a log, metric, or trace statement removed from an error path or a significant state transition?
-
-### Security
-
-Look for a change that lets untrusted input reach somewhere it should not. Four classes, deliberately few: a long list produces speculation, and speculation is what makes a security reviewer easy to ignore.
-
-- **Secrets in the diff:** was a key, token, password, connection string, or private key added to source, a config file, a fixture, or a test? A committed secret is compromised whether or not the file is later changed, so say so rather than suggesting it be edited out.
-- **Injection:** does untrusted input reach a SQL query, a shell command, an HTML or template render, or an eval-like call by concatenation or interpolation rather than through a parameterised or escaping API?
-- **Authorisation:** does a new or changed entry point read or write something on behalf of a caller without establishing that the caller may? Look for the check the neighbouring handlers make and this one does not.
-- **Untrusted input into a dangerous sink:** does caller-controlled data reach a filesystem path, an outbound request URL, a deserialiser, or a redirect target without being constrained to something known-safe? This covers path traversal, server-side request forgery, and unsafe deserialisation, which are one shape wearing three names.
-
-**Severity here follows the same rules as every other angle, with one floor: a CONFIRMED security finding is always Important.** There is no minor confirmed injection. A finding you cannot verify is still posted, labelled Unverified per the verification rules, and it does not become Important by being about security. A review that marks everything security-shaped as blocking teaches the author to stop reading it, which costs more than the finding was worth.
-
-### Design
-
-Look for a change to an interface that breaks the standard this repository is held to. This angle exists because a design regression ships as easily as a logic one and nothing else in the review looks for it.
-
-**Every design finding cites a control ID from the standards catalogue, and one that does not is dropped.** That is the whole guard against this angle becoming taste. "This spacing looks wrong" is an opinion and does not post; "LAY-3" is a rule the repository already agreed to, and the disagreement is with the catalogue rather than with the reviewer. Read `standards/catalog.yaml`, three levels up from this skill, and cite the control by ID in the finding.
-
-- **Accessibility:** does the change break an A11Y control? Contrast, focus order, keyboard reachability, labelling, and target size are the ones a diff can show.
-- **Tokens and typography:** does it introduce a raw value where the catalogue requires a token, or a typeface or scale step the standard does not carry?
-- **Component and layout:** does it reimplement something the catalogue already defines, or violate a layout control?
-- **Content:** does a new or changed user-facing string break a CNT control, or an anti-slop SLP one?
-
-**Severity: a failed A11Y control is Important, and everything else here is a Nit.** An accessibility failure is a bug that stops someone using the product, which is what Important means. The rest are real but do not block, and marking them otherwise would make every design comment a gate.
-
-**This angle reads the diff, like every other angle.** A control needing the whole codebase to judge, such as whether a component duplicates one three directories away, is out of scope here: the design skills own the full sweep and have the context for it. Reviewing the diff means this angle can miss things, and that is the trade accepted for a review that runs in seconds.
-
-### Cross-file
-
-Look for callers or dependents broken by changes in this diff.
-
-- **Signature changes:** function/method signature changed — are all call sites updated to match?
-- **Return type changes:** return shape or type changed — do all callers handle the new shape correctly?
-- **Precondition strengthening:** function now requires a new invariant (non-null param, specific ordering, pre-initialised state) — do all callers satisfy it?
-- **Interface / type changes:** a shared type, interface, or schema changed — are all implementations and consumers updated?
-- **Shared utility changes:** a utility used in more than one place was changed — check every caller, not just the one that motivated the change
-
-### Reuse
-
-Look for new code that duplicates something already available.
-
-- **Utility duplication:** does this logic already exist in a shared, utils, or helpers module?
-- **Custom error types:** does this code define a new error class or sentinel value that already exists elsewhere in the codebase?
-- **Parsing / serialisation:** does this code re-implement data transformation that a shared formatter or library already provides?
-- **Validation:** does this code validate inputs in a way an existing validator already handles?
-
-### Simplification
-
-Look for complexity that doesn't pay for itself.
-
-- **Redundant variable:** variable assigned once and used once — could inline it without losing clarity
-- **Dead branch:** a condition provably always true or always false given surrounding invariants
-- **Copy-paste variation:** two or more blocks doing nearly the same thing with minor differences — could be parameterised
-- **Deep nesting:** three or more levels of `if`/loop nesting that a guard clause or extracted function would flatten
-- **Unnecessary intermediate:** value transformed through multiple named steps that could be composed directly
-
-### Efficiency
-
-Look for performance problems on reachable paths.
-
-- **Loop-internal constant:** value that doesn't change across iterations computed inside the loop body
-- **N+1 I/O:** database query, network call, or file read inside a loop over a result set
-- **Sequential I/O:** multiple independent I/O operations run in series when they could run concurrently
-- **Over-fetching:** loading a full record or collection when only a small subset of fields or items is needed downstream
-- **Blocking hot path:** synchronous or CPU-heavy work on a latency-sensitive request path that should be deferred or offloaded
-
-### Altitude
-
-Look for band-aid patches to shared infrastructure instead of fixing the underlying problem.
-
-- **Special-case parameter:** new parameter added to a shared function whose only purpose is to change behaviour for one specific caller
-- **Caller-specific branch:** `if (callerContext === 'X')` or equivalent inside shared infrastructure — shared code shouldn't know about its callers
-- **Output patching:** post-processing the result of a shared function at the call site to fix a problem that belongs inside the function itself
-- **Layered duplication:** the same logic implemented at multiple layers (e.g. controller + service + repo) because no single layer owns it
-
----
-
-## Inline Comment Format
-
-Used by the PR Review Path (step 8). See [references/inline-comment-format.md](references/inline-comment-format.md) for the exact `gh api` invocation and fallback.
-
----
-
-## Report Template
-
-*(Local Branch Review Path only)* See [references/report-template.md](references/report-template.md) for the full template.
-
----
-
-## Agent Pattern Registry
-
-Used by the Analysis Phase (shared by both review paths) to persist and promote AI-characteristic findings, with the shipped standard in [references/agent-patterns.md](references/agent-patterns.md). See [references/agent-pattern-registry.md](references/agent-pattern-registry.md) for the file schema and the programmability-promotion criteria.
+   Post everything surviving as a **single review**, not one comment per finding: [references/inline-comment-format.md](references/inline-comment-format.md) for the `gh api` invocation and its fallback.
+9. Print the outcome and summary per [references/summary-format.md](references/summary-format.md). Three outcomes: every path skipped, nothing found, findings posted.
 
 ---
 
 ## Rules
 
-**Code excerpts:** 5–15 lines of context · correct language fence identifier · mark problem line with `// ←`
+**Code excerpts:** 5–15 lines of context · correct language fence identifier · mark the problem line with `// ←`
 
-**Address the code, never the author:** describe what the code does and what follows from it. A candidate phrased at the developer ("why did you", "you forgot to") is rewritten before it posts, and the original phrasing is never submitted
+**Address the code, never the author:** rewrite any candidate phrased at the developer ("why did you", "you forgot to") before posting. Never submit the original phrasing
 
-**Blocking:** only 🔴 Important blocks. A 🟡 or 🟣 comment says on its face that it does not block, so declining it needs no reply and no justification
+**Blocking:** only 🔴 Important blocks. Declining a 🟡 or 🟣 needs no reply
 
-**Problem statements:** name the concrete failure — inputs → wrong output/crash/data loss; never "this could be a problem"
+**Problem statements:** name the concrete failure, inputs → wrong output, crash, or data loss. Never "this could be a problem"
 
-**Fix suggestions:** always show corrected code; if no single fix is right, show two options with a one-line tradeoff note
+**Fix suggestions:** always show corrected code. If no single fix is right, show two options with a one-line tradeoff note
 
-**What looks good:** always include; specifics only; 2–4 bullets max
+**What looks good:** always include. Specifics only, 2–4 bullets
 
-**Scope:** every confirmed or plausible finding survives the Analysis Phase, at every severity. Volume control is a posting concern and belongs to the path that posts: the PR review path caps nits at 5 and suppresses new ones on a re-review, and its summary carries the count held back. The local branch path posts nothing and triages everything, so no cap applies there
+**Scope:** every confirmed or plausible finding survives the analysis, at every severity. Volume control applies at posting only
 
-**Repository instructions:** `REVIEW.md` at the repository root tunes the review, and only the root file is read. A finding produced by one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
+**Repository instructions:** only the root `REVIEW.md` is read. A finding from one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
 
-**Repository identity on the PR path:** the reviewed repository comes from the pull request, never from the working directory. Every `gh` call carries `--repo`, and the pattern overlay is fetched from that repository rather than read from disk
+**Repository identity:** the reviewed repository comes from the pull request, never the working directory (resolution and the `--repo` discipline live in `pr-mechanics.md`). The pattern overlay is fetched from that repository, never read from disk
 
-**Working tree on the PR path:** a PR review reads and reports only — it never edits, creates, or commits a file, including `review/agent-patterns.md`
+**Working tree:** never edit, create, or commit a file, including `review/agent-patterns.md`
 
-**Refuted findings:** drop silently — no struck-through text, no "considered but dismissed" note, no mention at all
+**Refuted findings:** drop silently. No strikethrough, no "considered but dismissed", no mention
 
-**Reviewer To-Do:** one bullet per scenario with no automated test, phrased as an action ("Manually test: ..."); include the section in every summary/report where it's non-empty, omit it entirely when empty — never print an empty heading
+**Reviewer To-Do:** one bullet per test-plan scenario the issue and test plan check found no automated test for, phrased as an action ("Manually test: ..."). That check is the list's only source. A manual check a finding wants goes in that finding's suggestion. Include the section whenever it is non-empty; omit the heading entirely when empty

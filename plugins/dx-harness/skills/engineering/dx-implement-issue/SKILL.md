@@ -1,6 +1,6 @@
 ---
 name: dx-implement-issue
-description: Use when someone wants an existing GitHub issue built, for example "implement #142", "pick up this issue", "build the story in #98", or when they paste an issue body and ask for the code. Reads the issue, checks it is specific enough to build, plans against its acceptance criteria, implements one scenario per commit, runs the repository's checks, and opens a draft pull request. The argument is either an issue number or a pasted markdown body: $ARGUMENTS
+description: Use when someone wants an existing GitHub issue built, for example "implement issue 142", "pick up this issue", "build the story in issue 98", or when they paste an issue body and ask for the code. Reads the issue, checks it is specific enough to build, plans against its acceptance criteria, implements one scenario per commit, runs the checks the repository defines, and opens a draft pull request. The argument is either an issue number or a pasted markdown body, given as $ARGUMENTS
 ---
 
 ## Step 1: Fetch and read the issue
@@ -38,7 +38,7 @@ Two conditions stop the run whatever the shape:
 
 Before reading implementation files, load the agent patterns that bind this session. They come from two places, read together:
 
-- **The shipped standard**, at `../dx-code-review/references/agent-patterns.md` relative to this skill. These are universal agent pathologies and they apply in every repository, including one that has never run a review.
+- **The shipped standard**, at `../dx-code-review/references/agent-pattern-standard.md` relative to this skill. These are universal agent pathologies and they apply in every repository, including one that has never run a review.
 - **This repository's observations**, at `review/agent-patterns.md`. This file holds only the patterns this repository has actually tripped over, so it is often absent, and its absence is normal rather than a problem.
 
 ```bash
