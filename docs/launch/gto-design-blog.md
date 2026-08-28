@@ -7,9 +7,9 @@
 
 ---
 
-My main design tool this year is a chat box.
+Since July, our main design tool has been a chat box.
 
-Designers on my team design in code now. Not mockups handed over a wall — real
+Designers on our team design in code now. Not mockups handed over a wall — real
 screens, in the product repo, built in conversation with an AI coding agent. The
 first time it works, it feels like a superpower. You describe a screen in plain
 language and watch it appear.
@@ -28,7 +28,7 @@ purple gradients, cards nested inside cards, copy that promises much and says
 nothing.
 
 It also knows nothing about your product. Your colour, your voice, the reason
-your buttons look the way they do. Every designer on my team was solving this
+your buttons look the way they do. Every designer on our team was solving this
 alone, one prompt at a time, and every fix lived and died inside a single chat.
 
 I kept thinking about what we give a new designer on their first week. We don't
@@ -87,6 +87,11 @@ in our own checks, we fixed the checks and kept the findings on record, the way
 engineers keep a decision log. The standard gets stricter the same way code
 does: by review.
 
+All of it lives in git, our single source of truth: the standards, each
+product's design language file, the decision records, and the checks that
+enforce them. A rule and the code it governs travel together, so neither can
+quietly drift from the other.
+
 That mix taught me a better name for what we are: builders. System thinkers who
 care about craft and user experience, at speed and at scale.
 
@@ -105,9 +110,10 @@ ceiling a designer would reach, but far above what shipped before. And the
 designers we do have stop policing that floor. Review time goes to the questions
 that deserve a designer.
 
-The harness has almost no screens of its own, and it is still the most designed
-thing I've shipped this year. Design was never only the pixels: it is deciding
-what good means, then building the path that gets everyone there.
+The harness went from first commit to a launched plugin in about three weeks,
+and it has almost no screens of its own. It is still the most designed thing
+we've shipped. Design was never only the pixels: it is deciding what good
+means, then building the path that gets everyone there.
 
 dx-harness is open source at
 [github.com/transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness).
@@ -117,9 +123,12 @@ If you design with an agent, try it, and tell me what breaks.
 
 ## Editor notes (not for publication)
 
-- Word count: ~890 for the article body.
+- Word count: ~910 for the article body.
 - Counts verified against the repo on 2026-08-28: 72 standards, 4 non-negotiable.
   Re-verify before publication; they move.
+- Timeline from the public repo, verified 2026-08-28: first commit 2026-07-23,
+  renamed dx-harness 2026-08-05, v0.4.0 to installed users 2026-08-14 (the
+  "about three weeks" claim), site landing merged 2026-08-19.
 - "One of the least technical designers" points at a real colleague. Get their OK
   or cut it.
 - Product specifics (Teacher & School portfolio, MOE) are deliberately absent;
