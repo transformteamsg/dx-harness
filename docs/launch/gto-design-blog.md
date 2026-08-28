@@ -111,7 +111,7 @@ designers we do have stop policing that floor. Review time goes to the questions
 that deserve a designer.
 
 The harness went from first commit to a launched plugin in about three weeks,
-and it has almost no screens of its own. It is still the most designed thing
+and it has almost no screens of its own. Even so, it is the most designed thing
 we've shipped. Design was never only the pixels: it is deciding what good
 means, then building the path that gets everyone there.
 
