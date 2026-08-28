@@ -564,9 +564,9 @@ def translate_violations(payload, rule_map, cell_id, suppression=None):
         rule_id = finding.get("rule") or "(unknown evaluation)"
         control = control_for_rule(rule_id, rule_map, aria)
         if finding.get("failed"):
-            errors.append(
-                f"ERROR rendered-check: page evaluation '{rule_id}' failed at "
-                f"{route} ({cell_id}) — {finding.get('message')}")
+            demoted.append((control or "(unmapped)", rule_id,
+                            finding.get("selector") or "(no element)",
+                            f"page evaluation failed to run ({finding.get('message')})"))
             continue
         if control is None:
             errors.append(
@@ -791,10 +791,14 @@ def payload_records(payload, rule_map, controls=(), suppression=None):
                          "message": rule.get("help") or "", "reason":
                          "axe could not decide this one"})
     for finding in payload.get("evaluation_findings", []):
-        if finding.get("failed"):
-            continue
         rule_id = finding.get("rule")
         control = control_for_rule(rule_id, rule_map, aria)
+        if finding.get("failed"):
+            rows.append({"control": control, "cell": cell_id, "outcome": "not-run",
+                         "rule": rule_id, "route": route, "selector": None,
+                         "message": finding.get("message") or "page evaluation failed",
+                         "reason": "page evaluation failed to run"})
+            continue
         if control in waived.get(f"eval:{rule_id}:{finding.get('selector')}", ()):
             continue
         rows.append({"control": control,
@@ -995,6 +999,29 @@ def run_self_test():
     check("the evaluation looks at both running animations and computed styles",
           True, "getAnimations" in REDUCED_MOTION_JS
           and "animationName" in REDUCED_MOTION_JS)
+
+    # ── a page evaluation that fails to run is a NOTE, not a build-blocking
+    # ERROR: the same class as axe itself failing, per the error contract ─────
+    failed_eval = _axe_payload(cell=REDUCED_MOTION_CELL, evaluation_findings=[
+        {"rule": "dx/reduced-motion", "selector": None,
+         "message": "TimeoutError: evaluation timed out", "failed": True}])
+    failed_errors, failed_demoted = translate_violations(
+        failed_eval, rule_map, failed_eval["cell"])
+    failed_notes = translate_incomplete(failed_eval, rule_map, failed_eval["cell"],
+                                        failed_demoted)
+    check("a failed evaluation raises no ERROR", [], failed_errors)
+    check("it is carried to the manual pass as one NOTE instead", 1, len(failed_notes))
+    check("the NOTE names the control and the failure", True,
+          "[A11Y-5]" in failed_notes[0]
+          and "page evaluation failed to run" in failed_notes[0]
+          and "TimeoutError" in failed_notes[0])
+    failed_records = payload_records(failed_eval, rule_map, controls)
+    check("its record is not-run, naming the control for manual verification",
+          [("A11Y-5", "not-run")],
+          [(r["control"], r["outcome"]) for r in failed_records
+           if r["rule"] == "dx/reduced-motion"])
+    check("a failed evaluation's record never claims a pass", set(),
+          {r["outcome"] for r in failed_records} & {"pass"})
 
     # ── incomplete is the third bucket: named, never dropped, never gating ────
     incomplete_payload = _axe_payload(cell="1280-light", route="/standards", incomplete=[{

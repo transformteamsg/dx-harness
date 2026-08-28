@@ -575,11 +575,13 @@ def run_self_test():
     jsx_rules = [r for r in rule_map["rules"] if r.startswith("jsx-a11y/")]
     check("every rule in jsx-a11y's recommended preset has a row", 31, len(jsx_rules))
     check("the map has no jsx-a11y rows outside the preset", 31, len(jsx_rules))
-    # The map is shared with the rendered check, whose rows carry their own
-    # prefix. This layer reads none of them and must not be broken by them.
-    check("every row this layer reads is a jsx-a11y row", set(),
-          {r for r in rule_map["rules"] if not r.startswith("jsx-a11y/")}
-          & set(jsx_rules))
+    # The map is shared with the rendered check, whose rows carry their own,
+    # un-prefixed keys. Confirm the map genuinely holds both, rather than
+    # having drifted to jsx-a11y rows alone — a set built from the same
+    # `not r.startswith(...)` filter as `jsx_rules` would never disagree
+    # with it, so this checks the raw row count instead.
+    check("the map is shared with rendered-check rows, not scoped to "
+          "jsx-a11y alone", True, len(rule_map["rules"]) > len(jsx_rules))
     catalog_ids = set(checklib.catalog_tiers())
     check("every mapped control id is in the catalogue", set(),
           set(rule_map["rules"].values()) - catalog_ids)

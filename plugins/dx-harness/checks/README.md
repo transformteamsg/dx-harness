@@ -354,7 +354,7 @@ operational `ERROR`s too. These lines carry no `<file>:<line> [<CTL>]` shape, so
 detector keeps them as control-less findings. When the given paths contain no lintable
 source at all, the layer prints a NOTE and exits 0 because it had nothing in scope.
 
-**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (42 cases)`
+**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (46 cases)`
 (includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`
 which proves the three rules the maintainers switch off stay off). The fixture cases
 need the target toolchain; where it cannot be resolved they assert the honest skip path
@@ -598,7 +598,7 @@ A11Y-10 all stay or become `enforced: partial` with `checks/rendered-check.py` a
 available and every one keeps a manual remainder. A11Y-5 in particular stays `partial`
 and gains both keys, which it has neither of today.
 
-**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (144
+**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (149
 cases)` — the matrix, the job the driver reads, the finding shape against `detect.py`'s
 real `_FINDING_RE`, the three buckets, the marker grammar and its four error cases, the
 did-not-run paths, and a set of cases that read the driver's source with its comments
