@@ -1,6 +1,10 @@
 # Issue and test plan check
 
-Run as analysis step 1, before the review angles. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised. The four issue shapes state that contract under different headings, so step 4 reads the shape first.
+Run as analysis step 1, before the review angles.
+
+**"PR" below means the request on either forge.** The commands are GitHub's; the GitLab equivalent for each is in the command map of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). Report to the developer in their platform's vocabulary, so a GitLab developer hears about a merge request and an MR number.
+
+**When the request and the issue live on different forges**, which is the case for a GitLab repository whose issues are tracked on GitHub, no automatic link exists: `closingIssuesReferences` only resolves issues on the request's own forge. Read the request description for a `Closes` reference, and if it names an issue elsewhere, ask the reviewer for the number rather than guessing. If neither yields one, treat it as no issue linked and follow the branch below. The goal: confirm the change is validated against the issue it addresses and that the test coverage matches what was promised. The four issue shapes state that contract under different headings, so step 4 reads the shape first.
 
 1. **Resolve the PR.** Already fetched in the sequence's steps 1–2, so use what those steps returned rather than fetching again.
 2. **Resolve the linked issue(s).**

@@ -1,6 +1,6 @@
 # Inline comment format
 
-Used by the review sequence (step 8) in `SKILL.md`. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
+Used by the review sequence (step 8) in `SKILL.md`. **The commands here are GitHub's.** On GitLab, take each from the reviewing section of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md), which maps them one for one; the body format below is the same on both. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
 ## Saying whether it was verified
 
@@ -23,7 +23,7 @@ It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` 
 
 ## Asking whether the finding helped
 
-The footer's second line carries `👍 helpful / 👎 not helpful`, below the marker line. Reactions are native on both forges, so the author needs no link and no form, and the counts come back on the next run's thread query at no extra cost.
+The footer's second line carries `👍 helpful / 👎 not helpful`, below the marker line. It is an invitation to react to the comment with an emoji, not a button and not a link. The counts it collects are the only measure of whether findings land, until something better exists to measure that. Reactions are native on both forges, so the author needs no link and no form, and the counts come back on the next run's thread query at no extra cost.
 
 Invite it, never chase it. A finding that goes unreacted is the ordinary case, and an author who ignores the ask has still had the finding.
 
