@@ -476,7 +476,7 @@ def run_self_test():
     check("the finding matches detect's finding shape", True, parsed is not None)
     check("the finding carries its control id", "A11Y-2", parsed.group("control"))
     check("the finding path is repo-relative", "components/row.tsx", parsed.group("file"))
-    check("the finding keeps eslint's line number", 12, int(parsed.group("line")))
+    check("the finding keeps eslint's line number", 12, int(parsed.group("pos")))
     check("the rule that fired is named in the second bracket", True,
           "[jsx-a11y/click-events-have-key-events]" in errors[0])
     check("a clean run of the translator adds no notes", [], notes)
@@ -574,7 +574,14 @@ def run_self_test():
     # ── the rule map covers the whole preset and only real controls ────────────
     jsx_rules = [r for r in rule_map["rules"] if r.startswith("jsx-a11y/")]
     check("every rule in jsx-a11y's recommended preset has a row", 31, len(jsx_rules))
-    check("the map has no rows outside the preset", len(jsx_rules), len(rule_map["rules"]))
+    check("the map has no jsx-a11y rows outside the preset", 31, len(jsx_rules))
+    # The map is shared with the rendered check, whose rows carry their own,
+    # un-prefixed keys. Confirm the map genuinely holds both, rather than
+    # having drifted to jsx-a11y rows alone — a set built from the same
+    # `not r.startswith(...)` filter as `jsx_rules` would never disagree
+    # with it, so this checks the raw row count instead.
+    check("the map is shared with rendered-check rows, not scoped to "
+          "jsx-a11y alone", True, len(rule_map["rules"]) > len(jsx_rules))
     catalog_ids = set(checklib.catalog_tiers())
     check("every mapped control id is in the catalogue", set(),
           set(rule_map["rules"].values()) - catalog_ids)

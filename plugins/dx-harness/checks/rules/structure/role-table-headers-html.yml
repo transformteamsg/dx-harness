@@ -1,0 +1,28 @@
+# The html twin of structure-role-table-headers-tsx.
+#
+# html attribute values may be unquoted or single-quoted, so the regex accepts
+# all three spellings rather than only the double-quoted one JSX is limited to.
+id: structure-role-table-headers-html
+language: html
+severity: warning
+message: candidate role="table" with no column header
+metadata:
+  control: A11Y-7
+  check: structure
+  surface: structure
+  rule: TABLE-HEADERS
+  pattern: role-table
+  kind: element
+rule:
+  kind: element
+  all:
+    - has:
+        kind: start_tag
+        has:
+          kind: attribute
+          regex: '^[rR][oO][lL][eE]=("table"|''table''|table)$'
+    - not:
+        has:
+          stopBy: end
+          kind: attribute
+          regex: '^[rR][oO][lL][eE]=("columnheader"|''columnheader''|columnheader)$'

@@ -676,7 +676,9 @@ def wiring_parity_errors(repo_root, catalog_by_id):
 # wired) are free — shrink-only in practice.
 SKILL_WIRING_GRANDFATHERED = {
     "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
-    "TYP-6": "hybrid measure (line-length) control — unwired at introduction of SKILL-SYNC — wire into layout/polish skill or justify",
+    # TYP-6 came off this list in #161, the commit that shipped its check:
+    # skills/design/dx-design-pattern/SKILL.md now names it beside LAY-4, the
+    # control it shares a measure rule body with.
 }
 
 
@@ -794,12 +796,11 @@ GAP_GRANDFATHERED = {
     # #159, checks/identity-scan.py.
     "IDN-1": "script pending in #159",
     "IDN-2": "script pending in #159",
-    # #160, the static structure check.
-    "A11Y-7": "structure check pending in #160",
-    "CMP-6": "structure check pending in #160",
-    # #161, the type-scan.py measure rules.
-    "LAY-4": "type-scan rule pending in #161",
-    "TYP-6": "type-scan rule pending in #161",
+    # #160 is done: checks/structure-scan.py ships the table-headers rule under
+    # both A11Y-7 and CMP-6, so both now carry enforced: partial and need no
+    # allowance.
+    # #161 is done: type-scan.py's measure rule ships, so LAY-4 and TYP-6 carry
+    # enforced: partial with a script and no longer need the allowance.
     # #162, the coverage recount. Each of these is decided by the rendered
     # runner or the static accessibility config (#151, #154), and its label is
     # corrected in the recount; A11Y-11 needs interaction, so it has no script
@@ -1796,19 +1797,36 @@ def run_self_test():
         failures.append(f"FAIL the three accepted gaps carry their reasons: "
                         f"want: {want!r}; got: {got!r}")
 
-    # The allowance list shrank by exactly the seven entries #150 resolves, and
-    # by nothing else. The six controls this issue leaves hybrid-and-manual stay
-    # on it until their build issues ship their scripts: an entry leaves only in
-    # the commit that ships what it was waiting for.
+    # The allowance list shrank by exactly the seven entries #150 resolves, plus
+    # the two #161 resolves, and by nothing else. The controls still waiting on a
+    # script stay on it: an entry leaves only in the commit that ships what it
+    # was waiting for.
     case_count += 1
-    want = (set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"})
+    want = (set(), set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "MOT-1"})
     resolved_by_150 = {"CMP-4", "CMP-8", "SLP-5", "SLP-7", "CMP-5", "LAY-1", "TYP-5"}
-    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "LAY-4", "MOT-1"}
+    resolved_by_161 = {"LAY-4", "TYP-6"}
+    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "MOT-1"}
     got = (resolved_by_150 & set(GAP_GRANDFATHERED),
+           resolved_by_161 & set(GAP_GRANDFATHERED),
            still_pending & set(GAP_GRANDFATHERED))
     if want != got:
-        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven "
-                        f"entries: want: {want!r}; got: {got!r}")
+        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven and "
+                        f"#161's two entries: want: {want!r}; got: {got!r}")
+
+    # #161's two measure controls left the allowance list because they now carry
+    # a script, not because the rule was relaxed: both must resolve to
+    # enforced:partial with checks/type-scan.py, which is what makes the gap
+    # rule stop asking them for a reason.
+    case_count += 1
+    want = [(cid, "partial", "checks/type-scan.py", False) for cid in ("LAY-4", "TYP-6")]
+    got = []
+    for cid in ("LAY-4", "TYP-6"):
+        control = live_by_id.get(cid, {})
+        enforced, _defaulted = effective_enforcement(control)
+        got.append((cid, enforced, control.get("script"), gap_required(control)))
+    if want != got:
+        failures.append(f"FAIL the measure controls carry type-scan.py: "
+                        f"want: {want!r}; got: {got!r}")
 
     # No file cites a check that does not exist (#150). A "planned script" note
     # is the drift class this closes: nothing verified those notes and nothing
@@ -2009,12 +2027,12 @@ def run_self_test():
         failures.append(f"FAIL the three lay-controls fences agree on LAY-4's "
                         f"measure: want: {want!r}; got: {got!r} ({measures!r})")
 
-    # The teaching exhibit is suppressed at the static-check layer only (#150).
-    # components/compare.tsx is a deliberate anti-specimen carrying six inline
-    # dx-waive markers, so .dx/config.json drops it from the scanned file list.
-    # The rendered layer stays exposed on purpose: the DOM waiver marker
-    # (data-dx-waive) belongs to #154 and #155, so its absence is the assertion,
-    # not an oversight.
+    # The teaching exhibit is suppressed at both check layers now that #154 has
+    # landed. components/compare.tsx is a deliberate anti-specimen carrying six
+    # inline dx-waive markers, so .dx/config.json drops it from the scanned file
+    # list at the static layer. The rendered layer reads the DOM waiver marker
+    # (data-dx-waive), which the rendered check runner introduced, so the marker
+    # is now present and its presence is the assertion.
     site_root = find_site_root(REPO_ROOT)
     if site_root is not None:
         case_count += 1
@@ -2028,11 +2046,11 @@ def run_self_test():
         if os.path.isfile(exhibit):
             with open(exhibit) as fh:
                 rendered_marker = "data-dx-waive" in fh.read()
-        want = (True, False)
+        want = (True, True)
         got = ("components/compare.tsx" in ignore_files, rendered_marker)
         if want != got:
-            failures.append(f"FAIL the exhibit is suppressed statically and left "
-                            f"exposed to the rendered layer: want: {want!r}; "
+            failures.append(f"FAIL the exhibit is suppressed at both the static "
+                            f"and the rendered layer: want: {want!r}; "
                             f"got: {got!r}")
 
         # The .mjs gate runs before the Python one in prebuild, so it is the

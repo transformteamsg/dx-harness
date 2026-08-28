@@ -37,10 +37,14 @@ which is within the target range and shows the intent is already operationalised
 
 **Deterministic half** — the `checks/type-scan.py` measure rule, built in #161. It judges
 `ch` caps that are already present against the 80ch ceiling; it never flags a missing cap,
-because a container with no declared cap may still render inside the ceiling.
+because a container with no declared cap may still render inside the ceiling. It reads a
+`max-w-[Nch]` class, a `[max-width:Nch]` arbitrary property, a CSS `max-width: Nch`, a JSX
+`style={{ maxWidth: 'Nch' }}`, and a `var()` defined in the same file. A cap in any other
+unit gets a NOTE and never an ERROR, because converting it needs the rendered font size.
 
-Until it ships: inspect prose containers in the component source, check for a `max-width`
-rule, and estimate the rendered measure at 1280 px. Label findings "verified manually."
+Where no cap is written, or the cap is not in `ch`: inspect prose containers in the
+component source, check for a `max-width` rule, and estimate the rendered measure at
+1280 px. Label findings "verified manually."
 
 **Judgment half** — the evaluator:
 

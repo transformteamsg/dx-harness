@@ -142,12 +142,14 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [page]
-    verify: "Script asserts semantic elements over styled divs (heading hierarchy, lists, fieldsets); evaluator judges headings/labels are descriptive and link text makes sense out of context"
+    verify: "Script asserts a table or role=table carries header cells (checks/structure-scan.py); the rendered runner covers heading order and list semantics; evaluator judges headings/labels are descriptive and link text makes sense out of context"
     waiver: documented
     fails_when:
       - styled divs standing in for headings, lists, or tables
       - headings or labels that do not describe their content
     detail: controls/a11y-7.md
+    enforced: partial
+    script: checks/structure-scan.py
     refs: [https://a11y.tech.gov.sg/checklist/]
 
   - id: A11Y-8
@@ -379,6 +381,8 @@ controls:
       - a paragraph that spans the full viewport width with no measure cap
       - body copy running well past ~75ch per line
     detail: controls/typ-6.md
+    enforced: partial
+    script: checks/type-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Colour ────────────────────────────────────────────────────────────
@@ -519,7 +523,7 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [component, page]
-    verify: "Script asserts table/th semantics and right-aligned tabular numeric columns; evaluator judges header persistence, density, and that empty/loading states are designed (CMP-3)"
+    verify: "Script asserts table/th and role=table/columnheader semantics (checks/structure-scan.py); evaluator judges numeric alignment and tabular figures, header persistence, density, and that empty/loading states are designed (CMP-3)"
     waiver: rationale
     fails_when:
       - numeric columns centre- or left-aligned, or in proportional figures, so values do not line up (TYP-5)
@@ -527,6 +531,8 @@ controls:
       - tabular data rendered as stacked cards or divs instead of a real table (A11Y-7)
       - a table that can be empty or slow has no designed empty or loading state (CMP-3)
     detail: controls/cmp-6.md
+    enforced: partial
+    script: checks/structure-scan.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # CMP-7 added 2026-06-25 — ratchet, design-lead approved (component-default
@@ -1286,6 +1292,8 @@ controls:
       - body-text column has no max-width and spans the full viewport at 1280
       - measure exceeds 80ch
     detail: controls/lay-4.md
+    enforced: partial
+    script: checks/type-scan.py
     refs: [https://www.w3.org/TR/WCAG21/#visual-presentation]
 
   # LAY-3 / LAY-5 / LAY-6: ratchet additions 2026-06-17 — activated from the layout

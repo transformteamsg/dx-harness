@@ -10,7 +10,7 @@ Run in this order; do not present output to the user while a step is failing:
    `<this-skill-dir>/../../../checks/` (the same path works in the harness dev repo
    and when installed as the `dx-harness` plugin; do not expect a `checks/`
    directory in the project cwd). The commands below are written repo-relative for
-   brevity; prefix each with that resolved path. The four that catch the most:
+   brevity; prefix each with that resolved path. The five that catch the most:
    - `python3 checks/token-audit.py <path>...` — TOK-1..3, COL-1..2.
    - `python3 checks/a11y-eslint.py <path>...` — jsx-a11y's `recommended` preset over the
      product's JSX: static halves of A11Y-2, A11Y-3, A11Y-6, A11Y-8. Needs no setup in
@@ -20,6 +20,11 @@ Run in this order; do not present output to the user while a step is failing:
      outline removed with no focus-visible replacement on the same line. No tool
      covers it, and focus styling in a stylesheet it cannot see flags as a false
      positive: confirm the rendered element with a keyboard before treating it as a bug.
+   - `python3 checks/structure-scan.py <path>...` runs the static structure walk: a
+     `<table>` or `role="table"` with no `<th>` and no `role="columnheader"`, reported
+     under A11Y-7 and CMP-6 both. A header composed at runtime downgrades to a NOTE:
+     check that table's headers by hand. Heading order and list semantics belong to
+     the rendered runner, and alignment and tabular figures are never guessed.
    - `python3 checks/contrast.py --tokens <globals.css> --repo-root <product root>` — the
      foreground/background token pairs declared under `## Colour` in DESIGN.md, measured
      against AA (A11Y-1). With no pairs declared it grades A11Y-1 N/A and says so: that
@@ -80,38 +85,33 @@ Run in this order; do not present output to the user while a step is failing:
      init-script that sets `.dark` / the theme attribute *before* load, or the
      app's own toggle); a token-resolution argument alone is not evidence that
      the mode renders.
-3. **Evaluator review** — spawn the `dx-evaluator` subagent (a genuinely separate
-   agent — do not write the verdict yourself) with: the sprint contract, the approved
-   plan, the screenshots, the component inventory from Phase 1, the judgment/hybrid
-   controls in scope, **and the absolute path to the harness's `standards/` directory**
-   (the evaluator cannot resolve it from the product cwd). **If you cannot spawn subagents** (you are yourself a
-   subagent, or running unattended), stop at this step and report — the proven
-   pattern is *orchestrator dispatch*: whoever orchestrates you spawns the evaluator
-   and routes its verdict back to you. Never write the verdict yourself, and never
-   present unverified work as verified while waiting.
-
-   **If the `evaluator` agent type specifically is not spawnable** (unregistered
-   this session) but subagents in general are available, spawn a `general-purpose`
-   agent and paste this harness's `agents/dx-evaluator.md` procedure into its prompt
-   verbatim. Note in the decision record that this workaround was used — it produces
-   a usable verdict but is not the intended mechanism, and should not read as if it
-   were.
-
-   **If an evaluator pass is interrupted mid-run** (session or rate limit), resume it
-   with a follow-up message to the *same* agent instance rather than restarting — it
-   picks up from its own transcript. Note the interruption and resumption explicitly
-   in the decision record; do not silently retry as if nothing happened.
-
-   **Paste the full verdict verbatim into the decision record** — the record is the
-   durable artifact; a summary in its place is a defect ("full text in the session
-   log" does not survive the session). You never grade your own design work. Note
-   the shared limit honestly: the evaluator runs the same model on the same
-   standards, so it is a second read, not a fully independent one — treat split
-   findings and any control you could not mechanically verify as candidates for
-   human review.
-4. **E2E suite and accessibility scan.** If the product repo has an existing E2E
-   suite, run it in full — not just the tests for this change — and triage every
-   failure before proceeding:
+3. **Rendered check** — while the capture session from step 2 is still open, run
+   `python3 checks/rendered-check.py --session <the session you captured with>`
+   (add `--url <url>` when the session is on another page). It attaches to that
+   open session over CDP, runs axe at 360 and 1280 in each supported theme plus
+   one reduced-motion cell, and hands the session back as it found it. It boots
+   nothing: if the app is not already serving, there is no rendered check.
+   - A finding reads `ERROR <route>:<cell> [<CTL>] …`, where the cell names the
+     viewport and theme that produced it.
+   - `NOTE` lines carry the third bucket: what axe could not decide, what it
+     found on markup nobody can currently reach, and A11Y-10, which is
+     report-only. Each is an item for the manual accessibility pass in step 1,
+     not a gate.
+   - When it prints `did not run` — no session, or the driver is not
+     provisioned — the controls it names go to manual verification, never a
+     pass, and A11Y-1 and A11Y-3 still block until verified by some path.
+   - It covers no part of A11Y-2 (no axe rule checks a visible focus indicator)
+     and no part of A11Y-11 (that needs interaction, and this check interacts
+     with nothing). Both stay with the inventory checkoff above.
+4. **Evaluator review** — run the reviewer dispatch in
+   `../../../procedures/design-review.md`: it holds who spawns the `dx-design-review`
+   subagent, the inputs to pass (contract, approved plan, screenshots, component
+   inventory, in-scope judgment/hybrid controls, and the absolute `standards/` path),
+   the cannot-spawn rule, the verbatim-verdict rule, and the verdict re-check from
+   new screenshots. You never write the verdict yourself, and never present
+   unverified work as verified while waiting.
+5. **E2E suite.** If the product repo has an existing E2E suite, run it in full —
+   not just the tests for this change — and triage every failure before proceeding:
 
    | Failure cause | Action |
    |---|---|
@@ -122,25 +122,18 @@ Run in this order; do not present output to the user while a step is failing:
    Do not consider this phase complete with a failing suite. If the product repo has
    no E2E suite, record **N/A — product has no E2E suite** in the decision record
    (same honesty rule as the dark-mode check above) — never treat the absence as a
-   pass.
-
-   **Accessibility scan, same Playwright run.** If `@axe-core/playwright` is
-   available, run `AxeBuilder` against each page/viewport/state already captured
-   above and fold its findings into the verification ledger — this converts the
-   `manual`/`unverified` rows for inherited-background contrast (A11Y-1), alt text
-   (A11Y-6), heading structure (A11Y-7), title/lang (A11Y-9), and skip-link (A11Y-10)
-   into `script`-verified rows. If axe-core is not installed, those stay on the
-   manual pass, as today — never claim a `script` row without one having actually
-   run.
-
-5. Address findings, then decide how to re-verify — a full evaluator re-grade is not
+   pass. The accessibility scan itself runs in step 3, not here — do not also reach
+   for an ad hoc `@axe-core/playwright` run in this suite; `rendered-check.py` is the
+   one accessibility scan and covers a wider viewport/theme/motion matrix than a
+   single Playwright run would.
+6. Address findings, then decide how to re-verify — a full evaluator re-grade is not
    always the right weight for what changed:
    - **Direct recheck** (re-screenshot the specific finding, re-check its control by
      hand, no new evaluator spawn) is enough when the prior verdict was
      pass-with-findings (zero BLOCKING) and the fix is small and targeted — touches
      only the flagged element, not structure or plan fidelity.
    - **Full evaluator re-grade** (back to step 2 to recapture evidence for whatever
-     changed, then step 3) is required when: any BLOCKING finding was addressed, the
+     changed, then step 4) is required when: any BLOCKING finding was addressed, the
      fix touched structure or plan fidelity, or several findings were fixed together
      (harder to isolate whether one fix regressed another). Never spawn the evaluator
      against evidence captured before the fix — stale screenshots being re-graded as

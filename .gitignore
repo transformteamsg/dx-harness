@@ -34,3 +34,8 @@ next-env.d.ts
 
 # Claude worktrees
 .claude
+
+# The harness's own Node dependencies (plugins/dx-harness/package.json) are a
+# provisioning surface, like the global ast-grep install: the manifest is
+# tracked, the install output is not.
+plugins/dx-harness/package-lock.json
