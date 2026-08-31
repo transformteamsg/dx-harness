@@ -25,7 +25,7 @@ An umbrella chore is still one issue with one finish line, so keep its Done when
 
 ## Issue template
 
-The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading.
+The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading. Write every section following [Writing style](../../../procedures/writing-style.md): a chore names what is changing and why, not every step that will get there.
 
 ## Workflow
 
@@ -76,7 +76,7 @@ gh issue list --state open --json number,title,body --limit 100
 
 ### Step 2: Preview and confirm
 
-Render the complete issue body in a markdown code block and ask for confirmation before creating it.
+Before rendering the body, apply the "Before you post it" checks in [Writing style](../../../procedures/writing-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block and ask for confirmation before creating it.
 
 ### Step 3: Create the issue
 

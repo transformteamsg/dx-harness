@@ -20,7 +20,8 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 
 ## Technical documents
 
-- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, PR descriptions, and the plugin's `SKILL.md` files follows the [Google developer documentation style guide](https://developers.google.com/style). It is the only authority for these documents. The catalogue controls do not apply: `CNT-3`'s 25-word sentence limit and the rest were written for UI strings, and enforcing them on instructional prose is the wrong bar.
+- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, GitHub issue bodies, PR descriptions, and the plugin's `SKILL.md` files follows the [Google developer documentation style guide](https://developers.google.com/style). It is the only authority for these documents. The catalogue controls do not apply: `CNT-3`'s 25-word sentence limit and the rest were written for UI strings, and enforcing them on instructional prose is the wrong bar.
+- Issue bodies, PR descriptions, decision records, and code review comments carry a stricter concision bar on top of Google's mechanics: [Orwell's six rules](plugins/dx-harness/procedures/writing-style.md), carried by the `dx-create-issue` family and the `dx-create-pr` skill. It does not apply to UI copy, which SLP-9 already governs.
 - Second person, active voice, present tense. Google permits `will` to mark an action that happens later, so present tense is the default rather than a ban.
 - Sentence case for headings and titles. Serial commas. Code-related text in code font, UI elements in bold.
 - Em dashes take no space before or after. For separating an item from its description, use a colon or a period instead.

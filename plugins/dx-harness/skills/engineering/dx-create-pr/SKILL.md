@@ -86,7 +86,7 @@ Fill the sections from the canonical template:
 
 If a calling skill supplied extra content, add it as its own named section below Manual verification. Leave the shared sections as they are.
 
-Then cut it down. A body orients a reviewer; it is not a record of the work. The diff already shows what changed, the issue holds the reasoning, and the commit message holds the history, so a body that repeats any of them costs a reviewer time and buries the part only you could tell them. Write to these limits:
+Then cut it down, following [Writing style](../../../procedures/writing-style.md). A body orients a reviewer; it is not a record of the work. The diff already shows what changed, the issue holds the reasoning, and the commit message holds the history, so a body that repeats any of them costs a reviewer time and buries the part only you could tell them. Write to these limits:
 
 - Summary: at most three bullets, one line each.
 - Changes: one line per file or area, with related files grouped under one line rather than listed path by path.

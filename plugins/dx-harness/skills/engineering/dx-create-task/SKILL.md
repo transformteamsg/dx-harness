@@ -9,7 +9,7 @@ A task only makes sense in the context of the work it delivers, so every task li
 
 ## Issue template
 
-The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading. The one exception is the optional `Also true when done` checklist described in Step 2, which you delete outright when it is empty, because a heading standing over an empty list reads as an oversight rather than a decision.
+The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading. The one exception is the optional `Also true when done` checklist described in Step 2, which you delete outright when it is empty, because a heading standing over an empty list reads as an oversight rather than a decision. Write every section following [Writing style](../../../procedures/writing-style.md): the parent already carries the background, so a task restates only what is specific to its own slice.
 
 ## Attaching screenshots and recordings
 
@@ -59,7 +59,7 @@ Only for a design task, or an engineering task that changes user-facing UI: deci
 
 ### Step 4: Preview and confirm
 
-Render the complete issue body in a markdown code block, including the `Part of #NNN` line linking it to the parent, and ask for confirmation before creating the issue.
+Before rendering the body, apply the "Before you post it" checks in [Writing style](../../../procedures/writing-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block, including the `Part of #NNN` line linking it to the parent, and ask for confirmation before creating the issue.
 
 ### Step 5: Create the issue and link it to the parent
 
