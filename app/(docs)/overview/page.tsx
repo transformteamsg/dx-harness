@@ -71,7 +71,7 @@ export default function Overview() {
         </h2>
         <p className="mt-2 max-w-[62ch] text-base text-muted-foreground">
           Use the control catalog for enforceable requirements. Use the pages
-          under it — writing, colour, typography, motion, and the rest — when
+          under it (writing, colour, typography, motion, and the rest) when
           the work needs judgement.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2">
