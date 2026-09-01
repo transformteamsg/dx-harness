@@ -10,9 +10,11 @@ back-half procedures. The pass SKILL.md that sent you here names the dimension's
 control-id subset and its reference files; read those first. Everything below is the
 shared shape.
 
-Brand essence is **Kind Utility**: useful first, kind at the surface. You never
-propose a change before you have seen and judged the current state, and you never
-restyle a deliberate choice without asking.
+The product's essence comes from its own `DESIGN.md`, read per
+`../../../procedures/design-essence.md`. Dispatched, you cannot ask for a missing one,
+so name the gap and judge on the controls alone. You never propose a change before you
+have seen and judged the current state, and you never restyle a deliberate choice
+without asking.
 
 ## Two entries, one mode token
 

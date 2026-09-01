@@ -37,7 +37,8 @@ propose changes before you have seen and judged the current state:
    critique's "what underperforms" list as before; everything else that would
    make the layout better becomes a **suggestion**.
 4. **Write a short design critique of what is there** — against the in-scope
-   catalog controls *and* Kind Utility: what works and should be preserved
+   catalog controls *and* the product's essence
+   (`../../../procedures/design-essence.md`): what works and should be preserved
    (call out established iconography, radius, layout, and copy that are
    deliberate; do not "fix" them) **but verify, do not assume: every element you list as
    "preserve" stays in scope for its controls, so check it against the L0 floor

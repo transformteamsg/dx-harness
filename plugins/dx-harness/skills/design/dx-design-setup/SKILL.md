@@ -5,8 +5,8 @@ description: 'Set up a person''s machine for the design harness and orient newco
 
 # Harness setup: per-user tools, tracker, and commit signing
 
-Get a person's machine ready for the design loop. Brand essence is **Kind Utility**:
-useful first, kind at the surface. Keep turns short; ask before you install.
+Get a person's machine ready for the design loop. Keep turns short; ask before you
+install.
 
 **New to the harness?** Two lines: the harness makes an agent follow the DX Design
 Standard whenever it builds Teacher & School UI — one promise, *intent without loss*,
@@ -36,10 +36,12 @@ list.
 
 ## DESIGN.md belongs to dx-design-language
 
-Setup never asks for, creates, or writes `DESIGN.md` or `.dx/design.json` content. A
-repo with neither just gets the portfolio defaults everywhere, which is a valid,
-complete state, never a failure. If someone asks for that here, point them to
-`/dx-harness:dx-design-language` in one line and stop: it scans the repo, walks the
+Setup never asks for, creates, or writes `DESIGN.md` or `.dx/design.json` content, and
+it never asserts a design language of its own: the product's essence is whatever its
+`DESIGN.md` declares (`../../../procedures/design-essence.md`). A repo with neither gets
+the portfolio defaults everywhere, which is a valid, complete state, never a
+failure. If someone asks for that here, point them to `/dx-harness:dx-design-language`
+in one line and stop: it scans the repo, walks the
 sections with them, writes the file, and generates the projection. Full spec:
 `../../../docs/DESIGN-CONTEXT.md`.
 
