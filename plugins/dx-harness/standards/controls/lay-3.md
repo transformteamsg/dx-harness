@@ -28,8 +28,8 @@ Invent structure only when no template fits, and say so.
 Teachers move between Teacher Workspace, CaseSync, and Glow all day; templates are what
 let them carry muscle memory across surfaces (HIG: Familiarity). A settings page that
 puts its save button somewhere new, or a form laid out like a dashboard, makes the
-teacher re-learn the surface before they can use it — the opposite of Kind Utility. The
-page type is decided in Phase 1; LAY-3 holds the build to it so the declared type is a
+teacher re-learn the surface before they can use it, which is the cost templates exist
+to remove. The page type is decided in Phase 1; LAY-3 holds the build to it so the declared type is a
 promise, not a label.
 
 ## Passes when

@@ -29,8 +29,8 @@ Density is not a style preference; it is a task fit. A marks form padded out lik
 marketing page forces the teacher to scroll and tab through dead space on every row,
 the week reports are due — friction that compounds across forty students. A reference
 notice crammed to gradebook density is a wall the teacher mis-reads under time
-pressure. Kind Utility means the surface's density serves the teacher's actual job,
-which is why this control is judged against the page type, not a fixed metric.
+pressure. A surface's density has to serve the teacher's actual job, which is why this
+control is judged against the page type, not a fixed metric.
 
 ## Passes when
 

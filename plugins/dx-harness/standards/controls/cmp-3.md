@@ -21,9 +21,9 @@ error. All three must be reachable by the user and by automated checks.
 ## Rationale
 
 Teachers submit marks, notes, and attendance data mid-class. Ambiguity about whether
-an action succeeded — "did that save?" — is a trust failure. Kind Utility demands
-that every action is perceivable: the interface confirms the outcome so the teacher
-can move on with confidence. Missing states are also the source of silent data loss:
+an action succeeded — "did that save?" — is a trust failure. Every action has to be
+perceivable: the interface confirms the outcome so the teacher can move on with
+confidence. Missing states are also the source of silent data loss:
 an unhandled error state often means the user retries blindly or walks away thinking
 the save succeeded.
 

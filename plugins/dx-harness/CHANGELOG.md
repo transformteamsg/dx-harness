@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1 (2026-09-01)
+
+- The design skills and the design reviewer read your product's essence from your own `DESIGN.md` instead of assuming the Teacher & School portfolio's. A product that declares a different essence is now designed and graded against that one. Essence is also the one section with no portfolio default behind it: leave it out and your product declares none, which the skills ask about and the reviewer says out loud, rather than either quietly inheriting a brand ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+- Eight standards controls appealed to that brand essence. Seven cited it only as the reason behind a rule and now give the reason directly, so what passes and fails is unchanged. The eighth, CNT-14, required copy to embody it: that requirement now names the voice attributes it actually grades ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+- `checks/skill-locators.py` runs in the check gate, covers `agents/` and `procedures/` as well as `skills/`, and checks every locator depth rather than the three-level form alone. A skill that points at a file which is not there fails the build instead of failing silently in front of an agent ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+
 ## 0.6.0 (2026-09-01)
 
 - A new skill, `dx-create-pr`, opens your pull request and keeps its description matching the branch as you push. Every other skill now calls it, so each request the harness opens reads the same way, on GitHub and on GitLab alike ([#225](https://github.com/transformteamsg/dx-harness/pull/225), [#251](https://github.com/transformteamsg/dx-harness/pull/251)).

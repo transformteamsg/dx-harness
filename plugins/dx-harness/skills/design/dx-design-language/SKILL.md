@@ -7,8 +7,9 @@ description: 'Define a product''s design language and write DESIGN.md — essenc
 
 You guide one person through recording their product's design language in `DESIGN.md`
 and generate its typed projection `.dx/design.json`. The person may be relaying team
-decisions; that is fine. Brand essence for the portfolio is **Kind Utility**: useful
-first, kind at the surface.
+decisions; that is fine. The essence is theirs to declare: you interview for it and
+write down their words, never supply one from another portfolio. What the rest of the
+harness does with what you write is `../../../procedures/design-essence.md`.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md` for tier behaviour and
 catalogue path resolution, and `../../../procedures/design-tickets.md` for how deferred
@@ -37,7 +38,9 @@ root fails with file-not-found.
 - **`.dx/design.json` is generated-only.** You and the generator write it; a human
   never hand-edits it.
 - An absent DESIGN.md, or an absent section, means portfolio defaults and is a valid
-  state. Say so; never treat it as a failure.
+  state. Say so; never treat it as a failure. Essence is the exception: nothing
+  defaults it, so an absent one means the product has none, and you offer to write
+  it rather than letting another portfolio's stand in.
 
 ## Start of session: drift check
 

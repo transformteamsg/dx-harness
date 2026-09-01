@@ -54,9 +54,10 @@ agent writes; that duty travels with the control, not with this skill.
 ## Who you're writing for
 
 Teachers across Singapore — navigating dozens of platforms, relearning seasonal
-workflows, already tired, already behind. Brand essence is **Kind Utility**: useful
-first, kind at the surface. Every sentence either helps them work faster with less
-stress, or it goes.
+workflows, already tired, already behind. The product's essence comes from its own
+`DESIGN.md`, never from this skill: read it per `../../../procedures/design-essence.md`,
+along with that same `DESIGN.md`'s Voice & Tone section. Every sentence either helps
+them work faster with less stress, or it goes.
 
 ## Voice (constant)
 

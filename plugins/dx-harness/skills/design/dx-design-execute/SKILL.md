@@ -6,9 +6,10 @@ description: 'Build product UI — a new page, screen, form, flow, or component,
 # Design UI
 
 You are designing UI for the Teacher & School portfolio (Teacher Workspace, CaseSync,
-Glow, and TW surfaces). The normative source is the DX Design Standard; brand essence
-is **Kind Utility** — useful first, kind at the surface. Standards compliance is not a
-final check — it shapes every phase. The run is: intent, diverge, plan approval,
+Glow, and TW surfaces). The normative source is the DX Design Standard; the product's
+essence comes from its own `DESIGN.md`, read per
+`../../../procedures/design-essence.md`. Standards compliance is not a final check —
+it shapes every phase. The run is: intent, diverge, plan approval,
 implement, design review. Work through the phases in order; do not skip a gate even
 if the request seems simple. This is the ONLY skill that edits the product: the
 passes and dx-design-critique propose only, and their accepted findings are built
@@ -38,8 +39,8 @@ this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalo
 controls by `phase` and scope (`products`/`audiences` — absent = global) as you
 go; read a control's `detail` file (same `standards/`
 directory) before applying it. Also read the product's `DESIGN.md` (repo root)
-if present — per-product parameters only; on conflict with implemented code
-conventions, the code wins and you flag the drift. Spec: the harness's
+if present — the essence and per-product parameters only; on conflict with implemented
+code conventions, the code wins and you flag the drift. Spec: the harness's
 `docs/DESIGN-CONTEXT.md`. Also read `../../../procedures/catalogue-mechanics.md`
 for the catalog mechanics: filtering, tier behaviour for agents, detail files, the
 waiver protocol, and plain-title rule naming. For any waiver or applicability
@@ -55,8 +56,8 @@ brand moments in its **own** primary (Teacher Workspace → Teacher & School Blu
 `#0064FF`; Glow → orange; CaseSync → indigo — see COL-1's detail file for the
 table). Build from these by default.
 
-**Judgment lens.** Where no control decides and Kind Utility alone is too coarse,
-weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
+**Judgment lens.** Where no control decides and the product's essence alone is too
+coarse, weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
 Responsibility, Familiarity, Flexibility, Simplicity, Craft, Delight —
 developer.apple.com/design/human-interface-guidelines/design-principles). A
 reference point like SGDS and GOV.UK, never a checkable standard: principles settle
@@ -134,7 +135,7 @@ re-audit), the evaluate step belongs to the `critique` skill — **invoke
 not propose changes before the current state has been captured and judged. The
 critique captures the live page, runs a structured layout read (against the
 pattern inventory, `../../../standards/layout-patterns.md`), grades it against the in-scope catalog
-controls and Kind Utility, and returns ranked suggestions whose "what
+controls and the product's essence, and returns ranked suggestions whose "what
 underperforms" list sets the scope of the polish; the procedure lives in
 `../dx-design-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
 has to pass its controls, it only means don't restyle a deliberate choice.
@@ -231,8 +232,9 @@ Establish the rest, asking the user only what you cannot infer:
    teachers (the default; assume it when unstated), students (ask which band:
    primary, or secondary and up), or parents? Record it in the sprint contract;
    it scopes `audiences:`-scoped controls for the rest of the loop. If the product
-   repo has a `DESIGN.md`, load it now — it calibrates colour/tone/motion for
-   everything downstream. **Any
+   repo has a `DESIGN.md`, load it now — it carries the product's essence and
+   calibrates colour/tone/motion for everything downstream. Where the repo declares
+   no essence, ask for it once per `../../../procedures/design-essence.md`. **Any
    surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
    page — do not let the page/flow split scope them out.

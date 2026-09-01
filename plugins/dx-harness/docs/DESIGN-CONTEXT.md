@@ -15,7 +15,10 @@ for "what makes this product this product":
   detection. Never hand-edited.
 
 Both are **optional**. A repo with neither gets portfolio defaults everywhere; that
-is a valid, complete state. Never grade a missing context file as a failure.
+is a valid, complete state. Never grade a missing context file as a failure. Essence
+is the exception, and the only one: the harness ships no default essence, so a repo
+that declares none has none. Nothing supplies one on its behalf
+(`../procedures/design-essence.md`).
 
 **Precedence:** the catalogue governs portfolio rules; code governs implemented
 primitives; `DESIGN.md` carries this product's decisions and deviations.
@@ -33,7 +36,9 @@ source:
   rule restated; it will drift from the catalog and mislead.
 
 Omit any section that does not differ from the portfolio default. An absent section
-means "portfolio default applies", not "unspecified".
+means "portfolio default applies", not "unspecified". Essence has no portfolio
+default to inherit, so keep that section: absent, it means the product has not
+declared an essence, and no skill, agent, or control supplies one.
 
 ## `DESIGN.md`: the ten sections (all optional)
 
@@ -43,7 +48,7 @@ normative source in each section you keep. Template:
 
 | Section (`## `) | json key | Carries | Cites |
 |---|---|---|---|
-| `Essence` | `essence` | what the product should feel like, one or two sentences | (interview) |
+| `Essence` | `essence` | what the product should feel like, one or two sentences; the one section with no portfolio default behind it | (interview) |
 | `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table, and `pairs` (the declared [foreground, background] token pairs `checks/contrast.py` measures against AA) | COL-1, COL-2, A11Y-1 |
 | `Typography` | `typography` | family, base size/leading, scale steps, tabular numerals | TYP controls |
 | `Tokens` | `tokens` | source file, prefix, spacing base, dark-mode strategy (pointers into code; code is the authority) | TOK controls |
@@ -141,7 +146,9 @@ narrative notes.
 - Read `DESIGN.md` at **intent** (once the product is identified) and implement
   against its decisions for the rest of the loop.
 - **Absent file: portfolio defaults apply.** Do not grade missing context as a
-  failure.
+  failure. Essence is the exception: there is no default essence, so a run without
+  one asks (interactive) or names the gap and grades without it (dispatched), per
+  `../procedures/design-essence.md`.
 - **Code overrides stale docs.** When `DESIGN.md` disagrees with the product's
   *implemented* conventions, the code wins: follow the implemented convention and
   tell the user that `DESIGN.md` has drifted so `dx-design-language` can reconcile

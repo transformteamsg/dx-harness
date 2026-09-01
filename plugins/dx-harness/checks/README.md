@@ -246,6 +246,14 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 `standards/README.md` §Enforcement).
 
 
+## Skill locators (built)
+
+`python3 checks/skill-locators.py` — resolves every relative `../` locator in the plugin's agent-facing markdown (`skills/`, `agents/`, `procedures/`) against the file that names it, and fails on any that points at nothing. An agent follows these literally, so a dead locator is a dead instruction: the agent reads nothing, carries on without the rule, and no other check notices. This is the only guard on them, which is why moving a skill file between directory depths is caught here rather than in review.
+
+A locator that climbs above the plugin root is reported as a `NOTE`, not a failure: it is a form quoted on behalf of a file at another depth (`catalogue-mechanics.md` documenting the `../../../standards/catalog.yaml` a skill uses), so its target cannot be judged from the quoting file's directory.
+
+**Self-test:** `python3 checks/skill-locators.py --self-test` → `SELF-TEST OK (13 cases)`.
+
 ## Token audit (built)
 
 `python3 checks/token-audit.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for raw colour values, off-scale spacing, and off-scale border-radius that should be replaced with design tokens. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
