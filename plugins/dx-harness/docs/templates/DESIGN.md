@@ -15,7 +15,8 @@ Rules (full spec: the harness's docs/DESIGN-CONTEXT.md):
   - Precedence: the catalogue governs portfolio rules; code governs implemented
     primitives; DESIGN.md carries this product's decisions and deviations.
 Filled below with Teacher Workspace examples. Replace the values with your product's,
-or delete the section if this product matches the portfolio default.
+or delete the section if this product matches the portfolio default. Essence has no
+default to match: replace it or delete it knowing your product declares none.
 -->
 
 # DESIGN.md - Teacher Workspace
