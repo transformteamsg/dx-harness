@@ -31,8 +31,9 @@ For an ask that shapes the product, confirm the machine and repo are ready:
   attempt a capture without it.
 - Look in the product repo root for `DESIGN.md` (and its generated twin
   `.dx/design.json`). If it is missing, route to **dx-design-language**, not setup: a
-  repo with portfolio defaults only is valid, not broken, but a person shaping a
-  product deserves the offer to define its design language first.
+  repo with portfolio defaults only is valid, not broken, but its essence is the one
+  thing no default covers, so a person shaping a product deserves the offer to define
+  its design language first.
 
 If both check out, move straight to the grill.
 

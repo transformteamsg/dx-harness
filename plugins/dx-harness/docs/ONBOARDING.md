@@ -86,8 +86,10 @@ must be consistent across TW, CaseSync, and Glow.
 itself — its primary colour, tone weighting, motion conventions, and column grid — and its
 generated twin `.dx/design.json` lets the check scripts and the design loop read them.
 This is the one item that is **optional** and not counted among the six: a repo with no
-`DESIGN.md` gets the portfolio defaults everywhere, which is a valid, complete state — it
-is never graded as a failure. Add one only if your product's parameters actually differ.
+`DESIGN.md` gets the portfolio defaults everywhere those exist, which is a valid,
+complete state — it is never graded as a failure. Add one if your product's parameters
+actually differ, or to declare its essence, which is the one thing the harness ships no
+default for.
 
 **The concrete step:**
 

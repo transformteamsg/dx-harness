@@ -38,9 +38,9 @@ list.
 
 Setup never asks for, creates, or writes `DESIGN.md` or `.dx/design.json` content, and
 it never asserts a design language of its own: the product's essence is whatever its
-`DESIGN.md` declares (`../../../procedures/design-essence.md`). A repo with neither gets
-the portfolio defaults everywhere, which is a valid, complete state, never a
-failure. If someone asks for that here, point them to `/dx-harness:dx-design-language`
+`DESIGN.md` declares (`../../../procedures/design-essence.md`), and no default stands in
+for it. A repo with neither gets the portfolio defaults for everything that has one,
+which is a valid, complete state, never a failure. If someone asks for that here, point them to `/dx-harness:dx-design-language`
 in one line and stop: it scans the repo, walks the
 sections with them, writes the file, and generates the projection. Full spec:
 `../../../docs/DESIGN-CONTEXT.md`.

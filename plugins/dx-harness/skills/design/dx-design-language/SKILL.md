@@ -38,7 +38,9 @@ root fails with file-not-found.
 - **`.dx/design.json` is generated-only.** You and the generator write it; a human
   never hand-edits it.
 - An absent DESIGN.md, or an absent section, means portfolio defaults and is a valid
-  state. Say so; never treat it as a failure.
+  state. Say so; never treat it as a failure. Essence is the exception: nothing
+  defaults it, so an absent one means the product has none, and you offer to write
+  it rather than letting another portfolio's stand in.
 
 ## Start of session: drift check
 
