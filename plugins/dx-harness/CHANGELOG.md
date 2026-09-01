@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1 (2026-09-01)
+
+- The design skills and the design reviewer read your product's essence from your own `DESIGN.md` instead of assuming the Teacher & School portfolio's. A product that declares a different essence is now designed and graded against that one, and a repo with no `DESIGN.md` is asked rather than assumed ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+- Eight standards controls said what they require by appealing to that same brand essence. Each now states its own reason, so the rule reads the same whoever adopts it ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+
 ## 0.6.0 (2026-09-01)
 
 - A new skill, `dx-create-pr`, opens your pull request and keeps its description matching the branch as you push. Every other skill now calls it, so each request the harness opens reads the same way, on GitHub and on GitLab alike ([#225](https://github.com/transformteamsg/dx-harness/pull/225), [#251](https://github.com/transformteamsg/dx-harness/pull/251)).
