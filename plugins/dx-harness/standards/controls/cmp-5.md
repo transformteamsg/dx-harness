@@ -33,8 +33,8 @@ complementary, not duplicative.
 
 The primary button answers "what does this view want me to do next?" When two or three
 buttons all shout, that answer disappears and the teacher has to stop and choose —
-exactly the decision load Kind Utility exists to remove (Hick's law: fewer competing
-choices, faster action). One filled button against quieter siblings is the cheapest,
+exactly the decision load one clear primary exists to remove (Hick's law: fewer
+competing choices, faster action). One filled button against quieter siblings is the cheapest,
 most reliable way to make the main path obvious without a word of instruction. It also
 protects safety: a delete styled identically to "Save" invites the misclick CMP-2
 is meant to prevent.

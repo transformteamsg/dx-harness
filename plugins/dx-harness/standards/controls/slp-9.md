@@ -31,7 +31,7 @@ decision records.
 ## Rationale
 
 Buzzword copy is the written form of AI slop: it reads as generated, erodes
-trust, and tells the teacher nothing. Kind Utility means the copy works —
+trust, and tells the teacher nothing. Copy that works beats copy that performs:
 "Save marks" beats "Effortlessly streamline your assessment workflow" every
 time. The same applies to structure: negative parallelisms, forced triads, and
 copula avoidance are statistical filler, not meaning. Redundant helper text is

@@ -14,9 +14,10 @@ refs:
 
 ## Requirement
 
-Copy **embodies the DX voice** and **fits its surface's tone**. The voice is guided by
-**Kind Utility** — useful at the core, human at the surface. It is constant across
-products; the tone adapts to the moment.
+Copy **embodies the DX voice** and **fits its surface's tone**. The voice attributes
+below are what this control grades, and they are constant across products; the tone
+adapts to the moment. The product's own essence and Voice & Tone section, in its
+`DESIGN.md`, calibrate them. This control never supplies an essence of its own.
 
 **Voice attributes** — copy should sound:
 
@@ -114,7 +115,7 @@ is judged against a concrete alternative.
   undo/confirm is CMP-2. CNT-14 governs only whether the *wording* is sober vs dramatic.
 - Copy where a raised or firm tone is doing real work: a genuine warning that *should* be
   firm, a data/permission request that must be direct. Tone-fit is context-relative, not
-  "always gentle" — Kind Utility is useful first.
+  "always gentle": usefulness comes first.
 - Copy inside quoted or waived text, code spans, and tables — the same exemptions the
   other content controls honour.
 
