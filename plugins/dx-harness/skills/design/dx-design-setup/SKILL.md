@@ -22,8 +22,9 @@ check. The checklist covers three things: the per-user tools, the design-ticket 
 wiring, and a once-per-machine commit-signing flow. The checklist's axe row needs the
 plugin's own installation directory: on Claude Code that is `${CLAUDE_PLUGIN_ROOT}`, and
 on any other host it is three levels above this file, the directory that holds `skills/`
-and the plugin's `package.json`. Carry that absolute path into the row as `PLUGIN_ROOT`. Every check is idempotent: a re-run detects existing state,
-repeats nothing, and reports what already passes. Two rules bind
+and the plugin's `package.json`. Carry that absolute path into the row as `PLUGIN_ROOT`.
+Every check is idempotent: a re-run detects existing state, repeats nothing, and reports
+what already passes. Two rules bind
 every row and do not change:
 
 - **Ask before installing.** Show the exact command, get a yes, then run it. In an
