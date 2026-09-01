@@ -32,10 +32,13 @@ complementary, not duplicative.
 ## Rationale
 
 The primary button answers "what does this view want me to do next?" When two or three
-buttons all shout, that answer disappears and the teacher has to stop and choose —
-exactly the decision load one clear primary exists to remove (Hick's law: fewer
-competing choices, faster action). One filled button against quieter siblings is the cheapest,
-most reliable way to make the main path obvious without a word of instruction. It also
+buttons all shout, that answer disappears and the teacher has to stop and choose
+between them (Hick's law: fewer competing choices, faster action). That cost is what
+the control removes, and it is also why co-equal actions are allowed: where a view
+honestly has two equal next steps, one arbitrary filled button does not save the
+teacher a decision, it hides one. One filled button against quieter siblings is the
+cheapest, most reliable way to make the main path obvious without a word of
+instruction. It also
 protects safety: a delete styled identically to "Save" invites the misclick CMP-2
 is meant to prevent.
 

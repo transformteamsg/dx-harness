@@ -15,9 +15,11 @@ refs:
 ## Requirement
 
 Copy **embodies the DX voice** and **fits its surface's tone**. The voice attributes
-below are what this control grades, and they are constant across products; the tone
-adapts to the moment. The product's own essence and Voice & Tone section, in its
-`DESIGN.md`, calibrate them. This control never supplies an essence of its own.
+below are what this control grades, and they bind every product as written; the tone
+adapts to the moment. A product's `DESIGN.md` shifts the tone weighting between
+contexts, never the attributes themselves: loosening one of those is a deviation, and
+takes the `rationale` waiver below. This control asserts no brand essence of its own,
+and grades against none.
 
 **Voice attributes** — copy should sound:
 
