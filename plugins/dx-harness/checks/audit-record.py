@@ -18,6 +18,9 @@ design-ui loop and the TEMPLATE.md structure:
      manual or unverified row states its evidence/reason.
  11. The ledger has a row for every control in "Controls in scope". Extra
      rows (reviewer-added findings) are allowed.
+ 12. No ledger row on an L0 control has the method `unverified` — L0 has
+     no waiver, so it gets no quiet exit either. L1/L2 rows may stay
+     unverified (with a reason, which assertion 10 enforces).
 
 Usage:
   python3 checks/audit-record.py [record.md ...]   # default: all
@@ -349,6 +352,7 @@ def audit_record(text, name, repo_root):
             method_idx = column_index(header, "method", 1)
             evidence_idx = column_index(header, "evidence", 2)
             valid_methods = {"script", "manual", "unverified"}
+            tiers = checklib.catalog_tiers()
             ledger_controls = set()
             for row in rows:
                 control = row[0] if len(row) > 0 else ""
@@ -373,6 +377,21 @@ def audit_record(text, name, repo_root):
                     messages.append(
                         f"ledger row '{control}' is 'unverified' with no reason"
                     )
+                # ── 12. L0 never unverified ─────────────────────────────
+                # An unverified row that nobody reads is a quiet pass. L0
+                # has no waiver, so it gets no quiet exit either. Tier
+                # lookup states less when the catalogue is unreadable
+                # (catalog_tiers returns {}), so this never crashes and
+                # never guesses a tier.
+                if m == "unverified":
+                    for control_id in CONTROL_ID_RE.findall(control):
+                        if tiers.get(control_id) == "L0":
+                            messages.append(
+                                f"ledger row '{control_id}' is 'unverified' "
+                                f"on an L0 control — L0 is never waivable "
+                                f"and never unverified; check it or fail "
+                                f"the review"
+                            )
 
             # ── 11. Ledger completeness against "Controls in scope" ────────
             # Until the scope manifest ships (#293), the checked set is the
@@ -818,6 +837,26 @@ def run_self_test():
             "— flag for a human |\n"
             "| SLP-6 | manual | heading weights step down consistently |",
         ),
+    )
+
+    # Case 24 (assertion 12): unverified row on an L0 control (A11Y-1) —
+    # fails, naming the control and its tier.
+    assert_fails(
+        "unverified row on an L0 control",
+        PASSING_RECORD.replace(
+            "| A11Y-1 | manual | measured fg/bg with the picker "
+            "— 5.1:1 at the smallest text |",
+            "| A11Y-1 | unverified | ran out of time |",
+        ),
+        "ledger row 'A11Y-1' is 'unverified' on an L0 control",
+    )
+
+    # Case 25 (assertion 12): the same unverified row on an L1 control
+    # (A11Y-4) stays legal — PASSING_RECORD already carries it and passes
+    # (Case 1); this names the boundary explicitly.
+    assert_passes(
+        "unverified row on an L1 control stays legal",
+        PASSING_RECORD,
     )
 
     checklib.report_self_test(failures, case_count)

@@ -285,12 +285,17 @@ nothing uncovered" counts), a CMP-1-in-scope record carries exactly one fixed-fo
 CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 `| Control | Method | Evidence |` table — each method is `script` / `manual` /
 `unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
-"verified manually" is an auditable claim rather than a prose blob). Exit 0 with
+"verified manually" is an auditable claim rather than a prose blob), the ledger has
+a row for **every control in "Controls in scope"** (extra rows for reviewer-added
+findings are allowed; until the scope manifest ships the checked set is the full
+in-scope set, so a review that stops early fails here), and **no L0 control's
+ledger row is `unverified`** (L0 has no waiver, so it gets no quiet exit either —
+the same row on an L1/L2 control stays legal). Exit 0 with
 `OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
 failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
 hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (29 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
