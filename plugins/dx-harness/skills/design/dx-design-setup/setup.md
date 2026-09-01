@@ -20,12 +20,13 @@ Work the table top to bottom: run the check; if it passes, move on; if not,
 offer the install, run it (or hand it to the user where marked), and re-run
 the check. Then continue with the tracker and commit-signing steps below.
 
-The axe row names `${CLAUDE_PLUGIN_ROOT}`: the plugin's own installation
-directory. Claude Code resolves it when it loads `SKILL.md`, so the absolute
-path is already in your context before you open this checklist. It is not a
-shell environment variable. If either command still carries the literal text,
-put the path in yourself. Never run either command with an empty value,
-because `npm install --prefix ""` installs in the wrong place.
+The axe row needs one value you supply: `PLUGIN_ROOT`, the plugin's own
+installation directory. `SKILL.md` names that path before you reach this
+checklist, so set the variable to it. Keep the assignment in the same command
+as the rest of the line, because shell state does not carry from one call to
+the next. The `:?` guard is load-bearing: without it an empty `PLUGIN_ROOT`
+turns the install into `npm install --prefix ""`, which exits 0 and writes
+into the repository being checked instead of the plugin.
 
 | Tool | Why the harness needs it | Check (exit 0 = present) | Install |
 |---|---|---|---|
@@ -34,7 +35,7 @@ because `npm install --prefix ""` installs in the wrong place.
 | `gh` CLI, authenticated | The `feedback` skill files issues through `scripts/file-feedback-issue.py` | `gh auth status` | `brew install gh`, then the user runs `gh auth login` themselves (interactive — never run it for them) |
 | Python 3 + PyYAML | The `checks/*.py` scripts import `yaml` | `python3 -c "import yaml"` | `python3 -m pip install --user pyyaml` |
 | Pillow | The critique report step crops and annotates screenshots | `python3 -c "import PIL"` | `python3 -m pip install --user Pillow` |
-| axe on Playwright (harness-side) | The rendered check drives axe against the page already open in the capture session | `node -e "require('node:module').createRequire('${CLAUDE_PLUGIN_ROOT}/').resolve('@axe-core/playwright')"` | `npm install --prefix "${CLAUDE_PLUGIN_ROOT}"` — installs into the plugin's own `node_modules` only; nothing is installed into the repo being checked. Missing is not a failure: the rendered check says it did not run and sends its controls to manual verification |
+| axe on Playwright (harness-side) | The rendered check drives axe against the page already open in the capture session | `PLUGIN_ROOT="<absolute path>"; node -e "require('node:module').createRequire('${PLUGIN_ROOT:?name the plugin directory}/').resolve('@axe-core/playwright')"` | `PLUGIN_ROOT="<absolute path>"; npm install --prefix "${PLUGIN_ROOT:?name the plugin directory}"` — installs into the plugin's own `node_modules` only; nothing is installed into the repo being checked. Missing is not a failure: the rendered check says it did not run and sends its controls to manual verification |
 | `dx-harness` plugin (product repos only) | The harness itself; skills load from the installed `dx-harness` plugin, same as any product repo | ask the user: `/plugin list` shows `dx-harness` | the two commands in the README Install section (`../../../README.md`) |
 
 ## Wire the design-ticket tracker

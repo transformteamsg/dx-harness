@@ -1,7 +1,7 @@
 {
   "name": "dx-harness",
   "displayName": "DX Harness",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "license": "MIT",
   "description": "Engineering + design skills for agentic product development: issue workflow, code review, lint/hooks, dependency hygiene, and the DX design loop with standards catalog + evaluator agent.",
   "keywords": ["skills", "design", "engineering", "code-review", "design-system", "dx-harness"],

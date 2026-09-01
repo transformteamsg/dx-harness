@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 (2026-09-01)
+
+- The setup checklist's axe row can be run as written. Both of its commands take the plugin's own directory from a `PLUGIN_ROOT` you set, and they refuse to run when it is empty rather than installing into the repository you are checking ([#307](https://github.com/transformteamsg/dx-harness/pull/307)).
+
 ## 0.6.0 (2026-09-01)
 
 - A new skill, `dx-create-pr`, opens your pull request and keeps its description matching the branch as you push. Every other skill now calls it, so each request the harness opens reads the same way, on GitHub and on GitLab alike ([#225](https://github.com/transformteamsg/dx-harness/pull/225), [#251](https://github.com/transformteamsg/dx-harness/pull/251)).
