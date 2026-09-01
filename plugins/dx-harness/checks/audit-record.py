@@ -397,14 +397,13 @@ def audit_record(text, name, repo_root):
             # Until the scope manifest ships (#293), the checked set is the
             # record's full "Controls in scope" set. A review that stops
             # early leaves a scoped control with no row, which fails here.
-            # Extra rows (reviewer-added findings) are allowed.
+            # Extra rows (reviewer-added findings) are allowed. The scope
+            # notation (ranges, slash lists, N/A and out-of-scope sentences)
+            # is parsed by checklib.scoped_controls, shared with
+            # reaudit-scope.py.
             if controls_section is not None:
-                scoped = CONTROL_ID_RE.findall(controls_section)
-                seen = set()
-                for control_id in scoped:
-                    if control_id in seen or control_id in ledger_controls:
-                        continue
-                    seen.add(control_id)
+                scoped = checklib.scoped_controls(controls_section, tiers)
+                for control_id in sorted(scoped - ledger_controls):
                     messages.append(
                         f"control {control_id} is in scope but has no "
                         f"verification-ledger row — every checked control "
@@ -851,12 +850,39 @@ def run_self_test():
         "ledger row 'A11Y-1' is 'unverified' on an L0 control",
     )
 
-    # Case 25 (assertion 12): the same unverified row on an L1 control
-    # (A11Y-4) stays legal — PASSING_RECORD already carries it and passes
-    # (Case 1); this names the boundary explicitly.
+    # Case 25 (assertion 12): the same unverified row on an L1 control stays
+    # legal. Flips a scoped L1 control (CMP-3) from manual to unverified so
+    # the case covers the boundary independently of the untouched fixture.
     assert_passes(
         "unverified row on an L1 control stays legal",
-        PASSING_RECORD,
+        PASSING_RECORD.replace(
+            "| CMP-3 | manual | compared against the pattern inventory "
+            "entry |",
+            "| CMP-3 | unverified | needs the pattern inventory "
+            "— flag for a human |",
+        ),
+    )
+
+    # Case 26 (assertion 11): controls a record rules out ("N/A",
+    # "out of scope") are not demanded back as ledger rows.
+    assert_passes(
+        "N/A and out-of-scope mentions need no ledger row",
+        PASSING_RECORD.replace(
+            "A11Y-1, A11Y-2, TOK-1, CMP-3.",
+            "A11Y-1, A11Y-2, TOK-1, CMP-3. CMP-4 N/A — no async action.\n"
+            "**Out of scope, stated:** CNT-2, TYP-5.",
+        ),
+    )
+
+    # Case 27 (assertion 11): range notation expands, so every member of
+    # `TOK-1..2` needs a row — TOK-2 has none and fails.
+    assert_fails(
+        "range notation demands a row for every member",
+        PASSING_RECORD.replace(
+            "A11Y-1, A11Y-2, TOK-1, CMP-3.",
+            "A11Y-1, A11Y-2, TOK-1..2, CMP-3.",
+        ),
+        "control TOK-2 is in scope but has no verification-ledger row",
     )
 
     checklib.report_self_test(failures, case_count)

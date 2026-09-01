@@ -62,10 +62,6 @@ CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 CATALOG_PATH = os.path.join(REPO_ROOT, "standards", "catalog.yaml")
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
-# Control-id token (matches audit-record's XREF-style id regex).
-CONTROL_ID_RE = re.compile(r"\b([A-Z0-9]+-\d+)\b")
-
-
 # ── Reuse audit-record's section parser (do not rewrite it) ───────────────────
 def _load_audit_record():
     """Import split_sections / find_section from the sibling audit-record.py
@@ -124,7 +120,10 @@ def catalog_categories(catalog_path=CATALOG_PATH):
 # ── Records: record path → set of in-scope control ids ────────────────────────
 def record_controls(records_dir):
     """For each docs/decisions/*.md (skip TEMPLATE.md), extract the set of
-    catalog control ids named in its `## Controls in scope` section.
+    catalog control ids its `## Controls in scope` section puts in scope
+    (checklib.scoped_controls — shared with audit-record.py's assertion 11,
+    so ranges and slash lists expand and an N/A or out-of-scope mention does
+    not count as scope).
 
     Returns {record_path: set(ids)}. A record with no such section maps to an
     empty set. Raises FileNotFoundError if records_dir is missing — that is a
@@ -142,7 +141,7 @@ def record_controls(records_dir):
         except OSError:
             continue
         body = find_section(split_sections(text), "Controls in scope")
-        ids = set(CONTROL_ID_RE.findall(body or ""))
+        ids = checklib.scoped_controls(body or "")
         out[path] = ids
     return out
 
