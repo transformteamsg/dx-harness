@@ -252,7 +252,7 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 A locator that climbs above the plugin root is reported as a `NOTE`, not a failure: it is a form quoted on behalf of a file at another depth (`catalogue-mechanics.md` documenting the `../../../standards/catalog.yaml` a skill uses), so its target cannot be judged from the quoting file's directory.
 
-**Self-test:** `python3 checks/skill-locators.py --self-test` → `SELF-TEST OK (11 cases)`.
+**Self-test:** `python3 checks/skill-locators.py --self-test` → `SELF-TEST OK (13 cases)`.
 
 ## Token audit (built)
 

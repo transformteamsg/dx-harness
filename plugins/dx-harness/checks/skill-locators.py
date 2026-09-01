@@ -25,18 +25,24 @@ import os
 import re
 import sys
 
+import checklib
+
 # One or more `../` segments, then a path. The negative lookbehind rejects the
 # `...` of an elided URL (`POST .../pulls/<n>/reviews`), which otherwise ends in
-# `../` and reads as a locator.
-LOCATOR_RE = re.compile(r"(?<![./])(?:\.\./)+[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*/?")
+# `../` and reads as a locator. It rejects a preceding dot only: a preceding
+# slash is the ordinary `<this-skill-dir>/../../../standards/` form, and
+# rejecting that drops five real locators from the walk.
+LOCATOR_RE = re.compile(r"(?<!\.)(?:\.\./)+[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*/?")
 TRAILING_PUNCT = ".,;:'\")]}`"
 SEARCH_DIRS = ("skills", "agents", "procedures")
 
 
 def find_md_files(*roots):
     for root in roots:
+        # A renamed or moved directory must fail loudly: skipping it silently
+        # turns a check that scanned nothing into a check that found nothing.
         if not os.path.isdir(root):
-            continue
+            raise SystemExit(f"ERROR missing search directory: {root}")
         for dirpath, _dirnames, filenames in os.walk(root):
             for name in filenames:
                 if name.endswith(".md"):
@@ -64,8 +70,6 @@ def check_text(text, file_dir, plugin_root, exists=os.path.exists):
     root = os.path.normpath(plugin_root)
     for match in LOCATOR_RE.finditer(text):
         locator = clean_locator(match.group(0))
-        if not locator.startswith("../"):
-            continue
         resolved_path = os.path.normpath(os.path.join(file_dir, locator))
         if os.path.commonpath([root, resolved_path]) != root:
             escaped.append((locator, resolved_path))
@@ -119,6 +123,12 @@ def self_test():
         # reported rather than failed.
         ("from a skill directory: `../../../standards/catalog.yaml`",
          "/plugin/procedures", 0, 0, 1),
+        # A locator preceded by a slash is the ordinary absolute-prefix form and
+        # must still be checked; rejecting it dropped five real locators.
+        ("resolve `<this-skill-dir>/../../../standards/catalog.yaml`",
+         "/plugin/skills/design/dx-design", 1, 0, 0),
+        ("run `python3 <dir>/../../../scripts/missing.py`",
+         "/plugin/skills/design/dx-design", 0, 1, 0),
         # An elided URL is not a locator: `.../pulls/` ends in `../` but the
         # lookbehind rejects it.
         ("POST `.../pulls/<n>/reviews` posts the review",
@@ -139,12 +149,8 @@ def self_test():
                 f"case {i}: want: {want_ok} resolved / {want_bad} unresolved / "
                 f"{want_out} escaped; got: {len(ok)} / {len(bad)} / {len(out)}"
             )
-    if failures:
-        for f in failures:
-            print(f"SELF-TEST FAIL {f}")
-        return 1
-    print(f"SELF-TEST OK ({len(cases)} cases)")
-    return 0
+    # Reports and exits; every check script reports self-test results this way.
+    checklib.report_self_test(failures, len(cases))
 
 
 def main():
