@@ -42,10 +42,13 @@ below) so the three a11y layers read one file rather than three copies of it, an
 reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
 `l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
 `waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
-bodies. `scoped_controls` parses a record's "Controls in scope" notation (ranges,
-slash lists, N/A and out-of-scope sentences) into the in-scope id set, shared by
-`audit-record.py` and `reaudit-scope.py`. checklib has its own gate:
-`python3 checks/checklib.py --self-test` → `SELF-TEST OK (63 cases)`.
+bodies. `scoped_controls` parses a record's "Controls in scope" notation into the
+in-scope id set, shared by `audit-record.py` and `reaudit-scope.py`: ranges and
+slash lists expand, "out of scope" excludes its whole segment (and the bullets
+under an out-of-scope label), and an inline "N/A" excludes only the ids in its
+own clause, so exclusion wins without unchecking the in-scope controls named
+beside it. checklib has its own gate:
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (68 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -289,8 +292,9 @@ CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 `unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
 "verified manually" is an auditable claim rather than a prose blob), the ledger has
 a row for **every control in "Controls in scope"** (the scope notation is parsed
-by `checklib.scoped_controls`: ranges and slash lists expand, and an N/A or
-out-of-scope sentence does not count as scope; extra rows for reviewer-added
+by `checklib.scoped_controls`: ranges and slash lists expand, and a control a
+record rules out with "N/A" or "out of scope" is not demanded back as scope;
+extra rows for reviewer-added
 findings are allowed; until the scope manifest ships the checked set is the full
 in-scope set, so a review that stops early fails here), and **no L0 control's
 ledger row is `unverified`** (L0 has no waiver, so it gets no quiet exit either —

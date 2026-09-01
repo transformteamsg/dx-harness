@@ -53,7 +53,6 @@ Exit codes
 
 import importlib.util
 import os
-import re
 import sys
 
 # ── Paths ────────────────────────────────────────────────────────────────────
@@ -131,6 +130,7 @@ def record_controls(records_dir):
     if not os.path.isdir(records_dir):
         raise FileNotFoundError(records_dir)
     out = {}
+    tiers = checklib.catalog_tiers()
     for fname in sorted(os.listdir(records_dir)):
         if not fname.endswith(".md") or fname == "TEMPLATE.md":
             continue
@@ -141,7 +141,7 @@ def record_controls(records_dir):
         except OSError:
             continue
         body = find_section(split_sections(text), "Controls in scope")
-        ids = checklib.scoped_controls(body or "")
+        ids = checklib.scoped_controls(body or "", tiers)
         out[path] = ids
     return out
 

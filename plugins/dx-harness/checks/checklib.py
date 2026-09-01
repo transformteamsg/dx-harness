@@ -836,55 +836,94 @@ def l0_subset(controls, tiers=None):
 _SCOPE_TOKEN_RE = re.compile(
     r"\b([A-Z][A-Z0-9]*)-(\d+(?:\.\.\d+)?(?:/\d+(?:\.\.\d+)?)*)\b"
 )
-_SCOPE_EXCLUDE_RE = re.compile(r"\bN/A\b|out of scope", re.IGNORECASE)
+_SCOPE_NA_RE = re.compile(r"\bN/A\b", re.IGNORECASE)
+_SCOPE_OUT_RE = re.compile(r"out of scope", re.IGNORECASE)
+_SCOPE_BULLET_RE = re.compile(r"^\s*[-*]\s")
 _SCOPE_SEGMENT_START_RE = re.compile(r"^\s*(?:[-*]\s|\*\*)")
+
+
+def _scope_ids_in(text):
+    """Every control id named in `text`, with ranges (`TOK-1..3`) and slash
+    lists (`CNT-2/4/7`) expanded to every member. A reversed range is read as
+    its span, not as empty: a typo must widen the checked set, never silently
+    shrink it."""
+    ids = set()
+    for prefix, numbers in _SCOPE_TOKEN_RE.findall(text):
+        for part in numbers.split("/"):
+            if ".." in part:
+                first, second = (int(n) for n in part.split("..", 1))
+                low, high = min(first, second), max(first, second)
+                span = range(low, min(high, low + 99) + 1)
+            else:
+                span = [int(part)]
+            ids.update(f"{prefix}-{n}" for n in span)
+    return ids
 
 
 def scoped_controls(section_body, tiers=None):
     """The control ids a record's "Controls in scope" section puts in scope.
 
     Records write scope in a shorthand a naive id regex misreads in both
-    directions. Ranges (`TOK-1..3`) and slash lists (`CNT-2/4/7`) expand to
-    every member, so no listed control escapes the set. A sentence that rules
-    controls out ("N/A", "out of scope") contributes nothing, so an exclusion
-    list is never read back as scope. The result is filtered against the
-    catalogue so a prose token shaped like an id (UTF-8) drops out; when the
-    catalogue is unreadable (tiers == {}) the filter is skipped rather than
-    emptying the scope.
+    directions, so this collects an included set and an excluded set and
+    returns the difference — exclusion wins when a record says both:
 
-    Sentences are judged inside their own segment — a bullet or a bold-label
-    chunk — so one excluded bullet cannot shadow the in-scope list beside it.
+    - Ranges (`TOK-1..3`) and slash lists (`CNT-2/4/7`) expand to every
+      member, so no listed control escapes the set.
+    - "out of scope" excludes its whole segment (a bullet, a bold-label
+      chunk, or a paragraph). When the segment is a label above a bulleted
+      list, the bullets under it are excluded too, until a blank line or the
+      next non-bullet segment.
+    - "N/A" excludes only the ids between the previous clause boundary
+      (comma, semicolon, or full stop) and the marker, so an inline N/A
+      cannot uncheck the in-scope controls named beside it.
+
+    The result is filtered against the catalogue so a prose token shaped
+    like an id (UTF-8) drops out; when the catalogue is unreadable
+    (tiers == {}) the filter is skipped rather than emptying the scope.
     """
     if not section_body:
         return set()
-    segments, current = [], []
+    # Segments: (text, is_bullet, paragraph index). A bullet or a bold-label
+    # line starts a new segment; wrapped continuation lines join it; a blank
+    # line closes the paragraph.
+    segments, current, current_is_bullet, paragraph = [], [], False, 0
     for line in section_body.splitlines():
         if not line.strip() or _SCOPE_SEGMENT_START_RE.match(line):
             if current:
-                segments.append(" ".join(current))
+                segments.append((" ".join(current), current_is_bullet, paragraph))
                 current = []
             if line.strip():
-                current.append(line.strip())
+                current = [line.strip()]
+                current_is_bullet = bool(_SCOPE_BULLET_RE.match(line))
+            else:
+                paragraph += 1
             continue
         current.append(line.strip())
     if current:
-        segments.append(" ".join(current))
+        segments.append((" ".join(current), current_is_bullet, paragraph))
 
-    ids = set()
-    for segment in segments:
-        for sentence in re.split(r"(?<=\.)\s+", segment):
-            if _SCOPE_EXCLUDE_RE.search(sentence):
-                continue
-            for prefix, numbers in _SCOPE_TOKEN_RE.findall(sentence):
-                for part in numbers.split("/"):
-                    if ".." in part:
-                        start, end = part.split("..", 1)
-                        span = range(
-                            int(start), min(int(end), int(start) + 99) + 1
-                        )
-                    else:
-                        span = [int(part)]
-                    ids.update(f"{prefix}-{n}" for n in span)
+    included, excluded = set(), set()
+    exclusion_header_paragraph = None
+    for text, is_bullet, paragraph in segments:
+        inherits = (
+            is_bullet and paragraph == exclusion_header_paragraph
+        )
+        if _SCOPE_OUT_RE.search(text) or inherits:
+            excluded |= _scope_ids_in(text)
+            if not is_bullet:
+                exclusion_header_paragraph = paragraph
+            continue
+        if not is_bullet:
+            exclusion_header_paragraph = None
+        for marker in _SCOPE_NA_RE.finditer(text):
+            clause_start = max(
+                text.rfind(boundary, 0, marker.start())
+                for boundary in (",", ";", ".")
+            )
+            excluded |= _scope_ids_in(text[clause_start + 1:marker.start()])
+        included |= _scope_ids_in(text)
+
+    ids = included - excluded
     tiers = catalog_tiers() if tiers is None else tiers
     if tiers:
         ids &= set(tiers)
@@ -1142,6 +1181,44 @@ def _self_test():
             "`TOK-1`, `LAY-2`.\n\n- `CNT-2` — N/A, no prose added.",
             _scope_tiers,
         ),
+    )
+    check_eq(
+        "scope: an inline N/A keeps the in-scope ids beside it",
+        {"TOK-1", "LAY-2"},
+        scoped_controls(
+            "`TOK-1`, `LAY-2` (320 reflow), `LAY-1` N/A — nothing declared.",
+            _scope_tiers,
+        ),
+    )
+    check_eq(
+        "scope: a multi-sentence out-of-scope block is excluded whole",
+        {"TOK-1"},
+        scoped_controls(
+            "`TOK-1`.\n**Out of scope, stated:** `CNT-2`. `LAY-1` as well.",
+            _scope_tiers,
+        ),
+    )
+    check_eq(
+        "scope: bullets under an out-of-scope label are excluded too",
+        {"TOK-1"},
+        scoped_controls(
+            "`TOK-1`.\n\n**Out of scope, stated:**\n"
+            "- `CNT-2` (no prose)\n- `LAY-1`",
+            _scope_tiers,
+        ),
+    )
+    check_eq(
+        "scope: exclusion wins when a record says both",
+        {"TOK-1"},
+        scoped_controls(
+            "`LAY-1`, `TOK-1`.\n**Out of scope, stated:** `LAY-1`.",
+            _scope_tiers,
+        ),
+    )
+    check_eq(
+        "scope: a reversed range widens to its span, never empties",
+        {"TOK-1", "TOK-2", "TOK-3"},
+        scoped_controls("`TOK-3..1`.", _scope_tiers),
     )
     check_eq(
         "scope: a prose token shaped like an id is filtered by the catalogue",
