@@ -1,7 +1,7 @@
 ---
 name: dx-design-review
 description: Reviews a designed page or flow against the sprint contract, judgment controls, and design quality criteria. Spawn during the verify phase of the design skill — always as a separate agent from the one that produced the design. Pass it the sprint contract, approved plan, screenshots, and in-scope controls.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Agent
 model: opus
 ---
 
@@ -76,21 +76,27 @@ say-so. The most expensive misses hide here — a default that was overridden, o
 long-standing element nobody re-checks. Read the element against its L0/L1 controls
 directly.
 
-Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
-not *assume* they ran; for any control whose script is unbuilt or wasn't run, ask
-whether it was verified manually, and if neither, say the control is unverified
-rather than passed. When you record "verified manually", state what you
-checked and how — it becomes a `manual` row in the VERIFICATION LEDGER (below) that
-the record audit validates, so "verified manually" carries evidence rather than being
-an unauditable claim. Any deterministic violation you can see — in a screenshot or in
-the code — is a finding regardless, belt and braces. Which scripts exist and the
-static subset each covers: `checks/README.md`.
-**Locating the scripts:** `checks/` ships with this harness, not with the product
-repo — resolve it relative to this agent file, one level up:
-`<this-agent-dir>/../checks/` (the same path works in the harness dev repo and when
-installed as the `dx-harness` plugin; do not expect a `checks/` directory in the
-product cwd, which is where you run). `checks/…` paths in this file are written
-repo-relative for brevity; prefix them with that resolved path when running one.
+Deterministic controls are verified by **verifier agents you dispatch**, not by the
+harness's static `checks/` scripts. A static script grades token tables and source
+text rather than the rendered page, which is how it emits false positives: dark-token
+contrast errors on a product that never renders dark mode, or Radix scale classes
+flagged as raw colour. A verifier agent measures the live surface instead, and its
+report carries the evidence a script cannot.
+
+**Dispatching verifiers:** spawn read-only subagents in parallel, one per
+deterministic control family in scope — contrast (computed foreground/background
+pairs at rendered size, on the live page), type scale (computed font-size, weight,
+and letter-spacing against the declared scale), content lint (rendered strings
+against the CNT controls), and token discipline (raw hex or off-scale classes in the
+changed files). Pass each verifier the surface's URLs, the capture recipe, and the
+files under review; require each to return measured evidence — ratios, px values,
+file:line — never a bare pass. You remain the judge: a verifier's report is evidence
+for your ledger, not a verdict, and a verifier's silence on a control is not a pass.
+For any control no verifier covered, verify it yourself and record a `manual` row, or
+say the control is unverified rather than passed. When you cannot spawn subagents at
+all, do the measurements yourself and record them as `manual` rows. Any deterministic
+violation you can see — in a screenshot or in the code — is a finding regardless,
+belt and braces.
 
 **Findings sort by tier and waiver status, never by how you found them:**
 
@@ -99,9 +105,8 @@ repo-relative for brevity; prefix them with that resolved path when running one.
   *could* be written — no waiver on file means blocking; say what a waiver would
   need, don't grant one hypothetically.
 - **UNCOVERED is only for defects no in-scope control covers.** A violation of an
-  in-scope control never goes there, even when you verified it manually because its
-  script is unbuilt — file it under BLOCKING/ADVISORY per tier and note "verified
-  manually" as the evidence source.
+  in-scope control never goes there, however you found it — through a verifier agent
+  or by hand — file it under BLOCKING/ADVISORY per tier and name the evidence source.
 
 **Before you exclude a finding as "external chrome / out of scope," confirm the
 element actually renders outside the surface.** Read the route's code or DOM to
@@ -158,15 +163,15 @@ double-count one defect under both.
 
 **Cross-user content sanitisation (CMP-9, L1, hybrid — controls/cmp-9.md).** Where
 content authored by one user renders to a different user, confirm a sanitiser sits in
-the render path (deterministic half — grep for `dangerouslySetInnerHTML`/`v-html` on
-the surface, manual until a script exists), then read the render boundary directly and
+the render path (deterministic half — a verifier agent or your own grep for
+`dangerouslySetInnerHTML`/`v-html` on the surface), then read the render boundary directly and
 judge whether the sanitisation guarantee holds there, not only at author/editor time.
 An in-code "schema-constrained" comment is not evidence of render-time sanitisation.
 
 **Input-validation error clearing (CMP-10, L1, hybrid, status proposed —
 controls/cmp-10.md).** For each in-scope field: enter an invalid value, confirm
 the error message renders, then correct it and confirm the error message is
-gone (deterministic half, manual until an interaction script exists). Where
+gone (deterministic half, walked live by you or a verifier agent). Where
 multiple fields are invalid at once, correct one and judge whether only that
 field's error clears while the others remain visible. Client-side validation
 only — a server-side/async validation error follows CMP-3 instead. Quote the
@@ -189,8 +194,8 @@ controls/idn-3.md) on all copy-bearing surfaces. Grade IDN-4 (no
 celebration/gamification around case data, L1 — controls/idn-4.md) only when the
 surface's product is CaseSync (`products: [casesync]` — check the run's declared
 product). Flag IDN-2 violations (product icons redrawn or regenerated outside the
-approved family, L1, hybrid) as findings; `checks/identity-scan.py` is built in #159 and
-covers the reference-resolution half, while the container-colour, gloss, and wordmark
+approved family, L1, hybrid) as findings; a verifier agent covers the
+reference-resolution half, while the container-colour, gloss, and wordmark
 clauses stay yours.
 
 **Domain fidelity (CNT-4, L2, judgment — controls/cnt-4.md).** Where a surface models
@@ -286,18 +291,21 @@ JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
 VERIFICATION LEDGER (one row per in-scope control — the record pastes this verbatim):
 | Control | Method | Evidence |
 |---------|--------|----------|
-| A11Y-1  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
-| TOK-1   | script | `checks/token-audit.py` clean |
+| A11Y-1  | agent | contrast verifier measured every rendered tint pair — 5.1:1 at the smallest text |
+| TYP-2   | agent | type verifier: computed sizes on the changed files, none below 12px |
+| CMP-7   | manual | compared the toolbar's focus treatments by hand — three variants found |
 | A11Y-4  | unverified | needs computed layout — flag for a human |
-  Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what
-  was checked and how; a `script` row names the script/command; an `unverified` row
-  says why. When a control was verified more than one way — e.g. a script ran and you
-  also confirmed by hand — record the single strongest method (`script` over `manual`
-  over `unverified`) and put the other evidence in the Evidence column; the Method cell
-  is always exactly one of the three tokens (`checks/audit-record.py` rejects compound
-  values like `script + manual`). This is the same fixed-form precedent as the CMP-1 line above — the record
-  audit (`checks/audit-record.py`) validates it, so a manual row with no evidence or a
-  method outside the vocabulary is a defect.
+  Method is one of `agent` / `manual` / `unverified` (`script` stays valid when
+  reading older records, but new reviews verify through agents). An `agent` row MUST
+  name the verifier and what it measured; a `manual` row MUST name what was checked
+  and how; an `unverified` row says why. When a control was verified more than one
+  way — for example a verifier measured it and you also confirmed by hand — record
+  the single strongest method (`agent` over `manual` over `unverified`) and put the
+  other evidence in the Evidence column; the Method cell is always exactly one token
+  (`checks/audit-record.py` rejects compound values like `agent + manual`). This is
+  the same fixed-form precedent as the CMP-1 line above — the record audit
+  (`checks/audit-record.py`) validates it, so an agent or manual row with no evidence
+  or a method outside the vocabulary is a defect.
 
 UNCOVERED (defects no control covers — feed the ratchet):
 - ...

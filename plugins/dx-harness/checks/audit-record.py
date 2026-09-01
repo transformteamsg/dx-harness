@@ -14,8 +14,9 @@ design-ui loop and the TEMPLATE.md structure:
   8. Ratchet section is non-empty ("no proposal" text counts as content).
   9. CMP-1 (if in scope) carries exactly one fixed-form CMP-1 verdict line.
  10. Verify verdict carries a verification ledger (| Control | Method |
-     Evidence | table); each method is script / manual / unverified, and a
-     manual or unverified row states its evidence/reason.
+     Evidence | table); each method is agent / manual / unverified
+     (`script` accepted for older records), and an agent, manual, or
+     unverified row states its evidence/reason.
 
 Usage:
   python3 checks/audit-record.py [record.md ...]   # default: all
@@ -330,9 +331,9 @@ def audit_record(text, name, repo_root):
     # ── 10. Verification ledger (Method/Evidence table in Verify verdict) ──
     # Required: the Verify verdict section must carry a verification-ledger
     # table (header has both a Method and an Evidence column). Each row's
-    # method must be from a fixed vocabulary, and a `manual`/`unverified`
-    # row must state its evidence/reason. Modeled on assertion 9's
-    # fixed-form precedent; reuses parse_table_rows / column_index.
+    # method must be from a fixed vocabulary, and an `agent`/`manual`/
+    # `unverified` row must state its evidence/reason. Modeled on assertion
+    # 9's fixed-form precedent; reuses parse_table_rows / column_index.
     verdict_section = find_section(sections, "Verify verdict")
     if verdict_section is not None:
         header, rows = find_ledger_table(verdict_section)
@@ -340,12 +341,14 @@ def audit_record(text, name, repo_root):
             messages.append(
                 "Verify verdict section has no verification ledger — add a "
                 "| Control | Method | Evidence | table (one row per in-scope "
-                "control; method is script / manual / unverified)"
+                "control; method is agent / manual / unverified)"
             )
         else:
             method_idx = column_index(header, "method", 1)
             evidence_idx = column_index(header, "evidence", 2)
-            valid_methods = {"script", "manual", "unverified"}
+            # `script` stays valid so older records keep passing the audit;
+            # new reviews verify deterministic controls through verifier agents.
+            valid_methods = {"agent", "script", "manual", "unverified"}
             for row in rows:
                 control = row[0] if len(row) > 0 else ""
                 method = row[method_idx] if len(row) > method_idx else ""
@@ -356,9 +359,14 @@ def audit_record(text, name, repo_root):
                 if m not in valid_methods:
                     messages.append(
                         f"ledger row '{control}' has invalid method "
-                        f"'{method.strip()}' — use script / manual / unverified"
+                        f"'{method.strip()}' — use agent / manual / unverified"
                     )
                     continue
+                if m == "agent" and not evidence.strip():
+                    messages.append(
+                        f"ledger row '{control}' is 'agent' with no evidence "
+                        f"— name the verifier and what it measured"
+                    )
                 if m == "manual" and not evidence.strip():
                     messages.append(
                         f"ledger row '{control}' is 'manual' with no evidence "
@@ -705,10 +713,31 @@ def run_self_test():
     # Case 17 (assertion 10): valid ledger (script + manual-with-evidence +
     # unverified-with-reason) — passes. PASSING_RECORD already carries this
     # ledger, so the minimal-record case (Case 1) also exercises it; this is
-    # the explicit, self-describing instance.
+    # the explicit, self-describing instance. The `script` row doubles as the
+    # back-compat case: older records keep passing after the agent migration.
     assert_passes(
         "valid verification ledger (script/manual/unverified)",
         PASSING_RECORD,
+    )
+
+    # Case 17b (assertion 10): agent row with evidence — passes (the method
+    # new reviews use since the reviewer verifies through verifier agents).
+    assert_passes(
+        "ledger agent row with evidence",
+        PASSING_RECORD.replace(
+            "| TOK-1 | script | `checks/token-audit.py` clean (exit 0) |",
+            "| TOK-1 | agent | token verifier: no raw hex in changed files |",
+        ),
+    )
+
+    # Case 17c (assertion 10): agent row with empty Evidence cell — fails
+    assert_fails(
+        "ledger agent row with no evidence",
+        PASSING_RECORD.replace(
+            "| TOK-1 | script | `checks/token-audit.py` clean (exit 0) |",
+            "| TOK-1 | agent |  |",
+        ),
+        "is 'agent' with no evidence",
     )
 
     # Case 18 (assertion 10): manual row with empty Evidence cell — fails
