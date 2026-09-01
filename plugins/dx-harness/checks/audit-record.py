@@ -16,6 +16,8 @@ design-ui loop and the TEMPLATE.md structure:
  10. Verify verdict carries a verification ledger (| Control | Method |
      Evidence | table); each method is script / manual / unverified, and a
      manual or unverified row states its evidence/reason.
+ 11. The ledger has a row for every control in "Controls in scope". Extra
+     rows (reviewer-added findings) are allowed.
 
 Usage:
   python3 checks/audit-record.py [record.md ...]   # default: all
@@ -110,6 +112,7 @@ NUMBERED_ITEM_RE = re.compile(r"^\s*\d+\.\s+\S")
 VERDICT_LINE_RE = re.compile(r"^\s*VERDICT:", re.MULTILINE)
 RUN_TYPE_RE = re.compile(r"\*\*Run type:\*\*")
 DOCS_PATH_RE = re.compile(r"docs/[A-Za-z0-9_./-]+")
+CONTROL_ID_RE = re.compile(r"[A-Z][A-Z0-9]*-\d+")
 TABLE_SEPARATOR_CELL_RE = re.compile(r"^:?-{2,}:?$")
 
 
@@ -346,12 +349,14 @@ def audit_record(text, name, repo_root):
             method_idx = column_index(header, "method", 1)
             evidence_idx = column_index(header, "evidence", 2)
             valid_methods = {"script", "manual", "unverified"}
+            ledger_controls = set()
             for row in rows:
                 control = row[0] if len(row) > 0 else ""
                 method = row[method_idx] if len(row) > method_idx else ""
                 evidence = row[evidence_idx] if len(row) > evidence_idx else ""
                 if not control and not method:
                     continue  # empty placeholder row
+                ledger_controls.update(CONTROL_ID_RE.findall(control))
                 m = method.strip().lower()
                 if m not in valid_methods:
                     messages.append(
@@ -367,6 +372,24 @@ def audit_record(text, name, repo_root):
                 if m == "unverified" and not evidence.strip():
                     messages.append(
                         f"ledger row '{control}' is 'unverified' with no reason"
+                    )
+
+            # ── 11. Ledger completeness against "Controls in scope" ────────
+            # Until the scope manifest ships (#293), the checked set is the
+            # record's full "Controls in scope" set. A review that stops
+            # early leaves a scoped control with no row, which fails here.
+            # Extra rows (reviewer-added findings) are allowed.
+            if controls_section is not None:
+                scoped = CONTROL_ID_RE.findall(controls_section)
+                seen = set()
+                for control_id in scoped:
+                    if control_id in seen or control_id in ledger_controls:
+                        continue
+                    seen.add(control_id)
+                    messages.append(
+                        f"control {control_id} is in scope but has no "
+                        f"verification-ledger row — every checked control "
+                        f"needs a row"
                     )
 
     return messages
@@ -475,6 +498,8 @@ QUALITY GRADES:
 |---------|--------|----------|
 | TOK-1 | script | `checks/token-audit.py` clean (exit 0) |
 | A11Y-1 | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
+| A11Y-2 | manual | tabbed through the page — every stop shows a 2px ring |
+| CMP-3 | manual | compared against the pattern inventory entry |
 | A11Y-4 | unverified | needs computed layout — flag for a human |
 
 ## Ratchet
@@ -689,6 +714,9 @@ def run_self_test():
         ).replace(
             "VERDICT: pass",
             "CMP-1: asserted, no manifest — manifest absent for TW\n\nVERDICT: pass",
+        ).replace(
+            "| TOK-1 | script |",
+            "| CMP-1 | manual | asserted, no manifest |\n| TOK-1 | script |",
         ),
     )
 
@@ -754,11 +782,42 @@ def run_self_test():
             "| TOK-1 | script | `checks/token-audit.py` clean (exit 0) |\n"
             "| A11Y-1 | manual | measured fg/bg with the picker "
             "— 5.1:1 at the smallest text |\n"
+            "| A11Y-2 | manual | tabbed through the page "
+            "— every stop shows a 2px ring |\n"
+            "| CMP-3 | manual | compared against the pattern inventory "
+            "entry |\n"
             "| A11Y-4 | unverified | needs computed layout "
             "— flag for a human |\n",
             "",
         ),
         "no verification ledger",
+    )
+
+    # Case 22 (assertion 11): a scoped control with no ledger row — fails,
+    # naming the control. This is the stop-early signal: a review that never
+    # reached CMP-3 leaves it without a row.
+    assert_fails(
+        "scoped control missing from ledger",
+        PASSING_RECORD.replace(
+            "| CMP-3 | manual | compared against the pattern inventory "
+            "entry |\n",
+            "",
+        ),
+        "control CMP-3 is in scope but has no verification-ledger row",
+    )
+
+    # Case 23 (assertion 11): extra ledger rows beyond the scoped set are
+    # allowed — A11Y-4 in PASSING_RECORD is already such a row; this adds a
+    # second to make the allowance explicit.
+    assert_passes(
+        "extra ledger rows for reviewer-added findings",
+        PASSING_RECORD.replace(
+            "| A11Y-4 | unverified | needs computed layout "
+            "— flag for a human |",
+            "| A11Y-4 | unverified | needs computed layout "
+            "— flag for a human |\n"
+            "| SLP-6 | manual | heading weights step down consistently |",
+        ),
     )
 
     checklib.report_self_test(failures, case_count)
