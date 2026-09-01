@@ -30,7 +30,7 @@ export function Blueprint() {
       <svg
         viewBox="192 192 616 676"
         role="img"
-        aria-label="The DXD mark drawn on its construction grid. A four-cusp concave superellipse sits inside a square bounding box, with a dashed circle through its four tips and a dashed diamond through its four waists."
+        aria-label="The DXD mark drawn on its construction grid. A four-cusp concave superellipse sits inside a square bounding box. A dashed circle runs through its four tips and a dashed diamond through its four waists."
         className="block h-auto w-full"
       >
         {/* modular grid, 50 units */}
