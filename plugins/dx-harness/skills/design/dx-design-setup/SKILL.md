@@ -19,8 +19,10 @@ machine and repo ready, so continue here for that.
 Work the checklist in `setup.md` (beside this file) top to bottom: run each check; if it
 passes, move on; if not, offer the install, run it once you have a yes, and re-run the
 check. The checklist covers three things: the per-user tools, the design-ticket tracker
-wiring, and a once-per-machine commit-signing flow. Every check is idempotent: a re-run
-detects existing state, repeats nothing, and reports what already passes. Two rules bind
+wiring, and a once-per-machine commit-signing flow. The checklist's axe row needs the
+plugin's own directory, which is `${CLAUDE_PLUGIN_ROOT}`; carry that path into both of
+that row's commands. Every check is idempotent: a re-run detects existing state,
+repeats nothing, and reports what already passes. Two rules bind
 every row and do not change:
 
 - **Ask before installing.** Show the exact command, get a yes, then run it. In an
