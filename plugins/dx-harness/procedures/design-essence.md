@@ -8,13 +8,14 @@ adopter against another portfolio's brand.
 
 ## Where to read it
 
-Read in this order and stop at the first hit:
+`DESIGN.md` at the product repo root, the `## Essence` section. That section is the
+essence, and its absence means the product declares none.
 
-1. `.dx/design.json` at the product repo root, `essence` key. This is the generated
-   typed projection and the cheapest read.
-2. `DESIGN.md` at the product repo root, the `## Essence` section. This is the human
-   source; read it when the projection is missing or stale.
-3. Nothing. The repo declares no essence, which is a valid state, never a failure.
+`.dx/design.json`'s `essence` key is the generated projection of that section, so it
+is a convenience for an agent already reading that file (the design reviewer reads it
+for the standing overrides). It is never the authority. A projection that carries an
+essence whose `DESIGN.md` no longer has the section is stale, and the product declares
+none: take the source's answer, not the projection's.
 
 `dx-design-language` writes both files. The full spec is `../docs/DESIGN-CONTEXT.md`.
 
@@ -38,10 +39,5 @@ waiver, or lowers the L0 floor. Where the essence is itself too coarse to settle
 trade-off, the judgment lens takes over
 (`../skills/design/dx-design-execute/SKILL.md`).
 
-## Path resolution
-
-This file ships with the harness, never with the product repo:
-
-- From a procedure doc in `procedures/`: `design-essence.md`.
-- From a skill directory (`skills/design/<dir>/`): `../../../procedures/design-essence.md`.
-- From `agents/dx-design-review.md`: `../procedures/design-essence.md`.
+This file ships with the harness, never with the product repo. Resolve it the way
+`catalogue-mechanics.md` resolves the catalogue, from the same three starting points.

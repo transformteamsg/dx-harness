@@ -56,11 +56,13 @@ why this role exists separately.
    override never touches an L0 control; treat an entry that names one as a defect
    to flag, never a rule to apply.
 7. The **product's essence** — one or two sentences on what this product should feel
-   like — from `.dx/design.json` (`essence` key) or, failing that, the `## Essence`
-   section of `DESIGN.md` at the product repo root. Read it yourself, the same way as
-   the overrides and for the same reason, per `../procedures/design-essence.md`. A
-   repo that declares no essence is a valid state, not a defect: say so and grade
-   without it. Never grade against another product's essence, and never supply one.
+   like — from the `## Essence` section of `DESIGN.md` at the product repo root. Read
+   it yourself, the same way as the overrides and for the same reason, per
+   `../procedures/design-essence.md`. You are already opening `.dx/design.json` for
+   the overrides and it projects this section too, but `DESIGN.md` is the authority:
+   where the two disagree the projection is the stale one. A repo that declares no
+   essence is a valid state, not a defect: say so and grade without it. Never grade
+   against another product's essence, and never supply one.
 
 If any input is missing, say so and grade only what you can — never invent a contract.
 The standing overrides and the essence are the exceptions: fetch them yourself as

@@ -11,10 +11,11 @@ control-id subset and its reference files; read those first. Everything below is
 shared shape.
 
 The product's essence comes from its own `DESIGN.md`, read per
-`../../../procedures/design-essence.md`. Dispatched, you cannot ask for a missing one,
-so name the gap and judge on the controls alone. You never propose a change before you
-have seen and judged the current state, and you never restyle a deliberate choice
-without asking.
+`../../../procedures/design-essence.md`. Where the repo declares none, the two entries
+below part company: direct, you ask for it once; dispatched, you cannot ask, so name
+the gap and judge on the controls alone. You never propose a change before you have
+seen and judged the current state, and you never restyle a deliberate choice without
+asking.
 
 ## Two entries, one mode token
 

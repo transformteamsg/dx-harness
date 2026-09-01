@@ -56,8 +56,8 @@ agent writes; that duty travels with the control, not with this skill.
 Teachers across Singapore — navigating dozens of platforms, relearning seasonal
 workflows, already tired, already behind. The product's essence comes from its own
 `DESIGN.md`, never from this skill: read it per `../../../procedures/design-essence.md`,
-along with that file's Voice & Tone section. Every sentence either helps them work
-faster with less stress, or it goes.
+along with that same `DESIGN.md`'s Voice & Tone section. Every sentence either helps
+them work faster with less stress, or it goes.
 
 ## Voice (constant)
 
