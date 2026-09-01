@@ -136,6 +136,14 @@
   --motion-beat-1: 180ms;
   --motion-beat-2: 220ms;
   --motion-beat-3: 320ms;
+  /* Decay of the builders' band pointer trail, which is not an interface
+     duration and is not trying to be: it is how long one deposited mark takes
+     to fade off a decorative layer, so MOT-1's ≤300ms interface bound does not
+     govern it any more than it governs the landing reveal. It lives here
+     because a duration read at a call site is a duration nobody can find
+     (MOT-2), and because the trail declines to draw at all when it cannot read
+     this. Never used for feedback on a task. */
+  --motion-trail: 2400ms;
   --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
   --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
 

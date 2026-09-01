@@ -4,6 +4,7 @@ import { InkIcon } from "@/components/ink-icon";
 import { FEATURED_SKILLS } from "@/components/landing/data";
 import { DxdConstructionPreview } from "@/components/landing/dxd-construction-preview";
 import { IlloVideo } from "@/components/landing/illo-video";
+import { InkTrail } from "@/components/landing/ink-trail";
 import { HarnessRun } from "@/components/landing/harness-run";
 
 export const metadata = {
@@ -191,19 +192,27 @@ export default function Landing() {
              this layout, so nothing is orphaned. The band holds the closing
              section's wash, so this voice and the close read as one ground rather
              than two. ─────────────────────────────────────────────────────────── */}
-      <section className="border-b border-border bg-site-accent-wash px-6 py-14 sm:px-10 sm:py-16">
-        <p className="max-w-[36ch] text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
-          The harness is our product too, and we spent this build on how it feels
-          to use. Start with one request in your own words, even if you do not
-          write code every day.
-        </p>
-        <div className="mt-6">
-          <Link
-            href="/harness/install"
-            className={`inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-surface px-5 text-sm font-semibold text-foreground transition-colors duration-(--motion-fast) hover:border-foreground hover:bg-accent ${focusRing}`}
-          >
-            Quick start
-          </Link>
+      <section className="relative border-b border-border bg-site-accent-wash px-6 py-14 sm:px-10 sm:py-16">
+        {/* The one band on the page that answers the pointer. It is the band that
+            claims the harness was built for how it feels to use, so the claim is
+            the place to show a hand being answered rather than to assert it
+            again in prose. Decoration only: the words below paint over the field
+            and read the same with it absent. */}
+        <InkTrail />
+        <div className="relative">
+          <p className="max-w-[36ch] text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
+            The harness is our product too, and we spent this build on how it feels
+            to use. Start with one request in your own words, even if you do not
+            write code every day.
+          </p>
+          <div className="mt-6">
+            <Link
+              href="/harness/install"
+              className={`inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-surface px-5 text-sm font-semibold text-foreground transition-colors duration-(--motion-fast) hover:border-foreground hover:bg-accent ${focusRing}`}
+            >
+              Quick start
+            </Link>
+          </div>
         </div>
       </section>
 
