@@ -42,8 +42,13 @@ below) so the three a11y layers read one file rather than three copies of it, an
 reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
 `l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
 `waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
-bodies. checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (51 cases)`.
+bodies. `scoped_controls` parses a record's "Controls in scope" notation into the
+in-scope id set, shared by `audit-record.py` and `reaudit-scope.py`: ranges and
+slash lists expand, "out of scope" excludes its whole segment (and the bullets
+under an out-of-scope label), and an inline "N/A" excludes only the ids in its
+own clause, so exclusion wins without unchecking the in-scope controls named
+beside it. checklib has its own gate:
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (74 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -285,12 +290,20 @@ nothing uncovered" counts), a CMP-1-in-scope record carries exactly one fixed-fo
 CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 `| Control | Method | Evidence |` table — each method is `script` / `manual` /
 `unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
-"verified manually" is an auditable claim rather than a prose blob). Exit 0 with
+"verified manually" is an auditable claim rather than a prose blob), the ledger has
+a row for **every control in "Controls in scope"** (the scope notation is parsed
+by `checklib.scoped_controls`: ranges and slash lists expand, and a control a
+record rules out with "N/A" or "out of scope" is not demanded back as scope;
+extra rows for reviewer-added
+findings are allowed; until the scope manifest ships the checked set is the full
+in-scope set, so a review that stops early fails here), and **no L0 control's
+ledger row is `unverified`** (L0 has no waiver, so it gets no quiet exit either —
+the same row on an L1/L2 control stays legal). Exit 0 with
 `OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
 failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
 hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (31 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
@@ -629,7 +642,7 @@ separately, and an L0 id refused).
 
 ## Reaudit scope (built)
 
-`python3 checks/reaudit-scope.py <CTL-ID>` (or `--category <name>`) — a **read-only query, not a gate**. When a control is added or tightened, already-shipped surfaces are silently out of date "until re-audited"; this answers "which decision records should I re-audit now that control X changed?" It reads two sources, both read-only: `standards/catalog.yaml` `meta.categories` (each control's category = `meta.categories[id.split("-")[0]]`) and the `## Controls in scope` sections of `docs/decisions/*.md` (skipping `TEMPLATE.md`). It reuses `audit-record.py`'s `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` to query a consumer repo's `docs/decisions/`; the category map always comes from the harness catalog.
+`python3 checks/reaudit-scope.py <CTL-ID>` (or `--category <name>`) — a **read-only query, not a gate**. When a control is added or tightened, already-shipped surfaces are silently out of date "until re-audited"; this answers "which decision records should I re-audit now that control X changed?" It reads two sources, both read-only: `standards/catalog.yaml` `meta.categories` (each control's category = `meta.categories[id.split("-")[0]]`) and the `## Controls in scope` sections of `docs/decisions/*.md` (skipping `TEMPLATE.md`, and reading each section with `checklib.scoped_controls`, so an N/A or out-of-scope mention does not count as scope). It reuses `audit-record.py`'s `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` to query a consumer repo's `docs/decisions/`; the category map always comes from the harness catalog.
 
 **What it computes:**
 
