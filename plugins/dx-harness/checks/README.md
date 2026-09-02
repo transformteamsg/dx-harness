@@ -48,7 +48,7 @@ slash lists expand, "out of scope" excludes its whole segment (and the bullets
 under an out-of-scope label), and an inline "N/A" excludes only the ids in its
 own clause, so exclusion wins without unchecking the in-scope controls named
 beside it. checklib has its own gate:
-`python3 checks/checklib.py --self-test` → `SELF-TEST OK (68 cases)`.
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (74 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
