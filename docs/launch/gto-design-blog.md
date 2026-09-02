@@ -1,190 +1,163 @@
-# Teaching the agent what we already knew
+# What the agent didn't know
 
 > Draft for the GTO design practice blog (contact: Mimi, design practice comms).
 > Publish mid-October. Audience: GovTech designers first, then PMs, engineers,
-> and the public. Written in Wondo's voice: an "I" narrator telling a "we"
-> story, plain register, no hooks. Length relaxed from the 1,000-word template
-> by the author (2026-09-02). Image slots are marked `[Visual: …]` for Mimi.
+> and the public. Written in Wondo's voice as an essay: continuous prose, no
+> section headings, no lists, no call to action. Length relaxed from the
+> 1,000-word template by the author (2026-09-02). Visual placements are in the
+> editor notes at the end, so the body reads clean.
 
 ---
 
-I kept telling the agent the same things.
+I kept explaining the same things to the agent.
 
-A few of us on the design team had started designing in code. Nobody asked us
-to. We're the kind of team that tries every new way of working to see what it
-does to the work, and learns from whoever is doing it best. Coding agents were
-the newest thing worth trying: an AI you talk to in plain language, and it
-writes the code. So we opened the product's codebase (the folder of code that
-is the product, the same one the engineers work in), described a screen, and
-watched it appear. It was fast. It was also, often, wrong in ways that were
-easy to see and hard to explain.
+A few of us on the design team had started designing in code, using one of the
+AI coding agents: a program you talk to in ordinary language, and it writes the
+code. We did it out of curiosity, mostly. When something new appears that might
+change how the work gets done, we tend to try it and see. So we opened the
+codebase of the product we work on (the folder of code that is the product, the
+same one the engineers work in), described a screen, and watched the agent build
+it. The agent was fast, and it was often wrong in ways I could see immediately
+but couldn't easily put into words.
 
-The wrong wasn't random. Over the previous year we had put a lot of work into
-what good looks like for Teacher Workspace, the product we design for teachers:
-the brand, the principles, the small rules about spacing and copy and colour
-that make a product feel like itself. The agent had none of it. So every
-session began the same way. Here's our colour. Here's our voice. Don't do the
-gradient thing. Teachers are busy, keep it calm. And every session ended the
-same way, with all of it forgotten.
+The reason it was wrong wasn't mysterious. We'd spent about a year working out
+what good looked like for Teacher Workspace, the product we design for teachers.
+Not only the brand, but hundreds of smaller decisions: how much space things
+get, how we talk to a teacher who is already tired, why we don't use the
+gradient everyone else uses. The agent knew none of this. So every session
+started with me explaining it again, our colours, our tone, keep it calm, no
+gradients, and every session ended with the agent forgetting all of it.
 
-That's an odd position for a designer to be in. The hard part of design was
-never producing the screen. The hard part is deciding what good looks like for
-this product and these people, and we had done that. We were watching it
-evaporate at the end of every chat.
+At first that was tedious. After a while it was strange, and the strangeness was
+more interesting than the tedium. The agent could make the screen. What it
+couldn't do was the part we'd spent a year on, which meant that part was the
+design. I would have said so before if you'd asked me, but I'd never seen it
+demonstrated so literally: here is a thing that produces interfaces on demand
+and still can't design, and the difference is everything it doesn't know.
 
-[Visual: a real session — the same context being typed into the agent, again.]
+So the first version of what became the harness wasn't a tool for anyone. It
+was us writing down what we knew, in files the agent could read, so we could
+stop repeating ourselves. One set of files for what's true of good interfaces in
+general: contrast, spacing, what an error message should say. One small file for
+what's true of ours. We put them in the product's repo (short for repository,
+the shared folder where the code lives and everyone building the product works
+from), because that is where the agent looks.
 
-## Making it remember
+It worked well enough that other designers on the team asked for it, and that
+changed the problem. A thing you made for yourself can be as rough as you like.
+A thing other people will use has to be designed, and the hardest people to
+design for are the ones who didn't make it and don't want to learn it. That is
+when it became the harness: a plugin (something you install once) for the
+coding agent. You describe what you want. It asks the questions a senior
+designer would ask, then does the work with the standards and your product's
+file in front of it. When it finishes, a separate reviewer looks at the finished
+screens, the actual pixels rather than the code, and grades them against the
+same two files. The agent that built a screen doesn't get to mark it. You don't
+have to remember any commands. We tested that last claim on one of the least
+technical designers on the team, and it held.
 
-The first version of the harness was for us. We wanted the agent to remember
-what we'd already decided so we could stop re-explaining it. So we wrote it
-down, not as a longer prompt but as files that live in the product's repo
-(short for repository: the shared folder where the product's code lives, which
-everyone building it works from). One set of files for what's true of good
-interfaces in general. One small file for what's true of ours.
+Writing the standards down turned up a problem I should have expected. Most
+rules for agents are deterministic: a rule goes in and one right answer comes
+out. That is the right shape for checking code style and the wrong shape for
+design, because design never had exact answers. Ask a designer where a button
+should go and you'll hear "it depends". People tease us for that, but it is the
+true answer, and any tool that pretends otherwise ends up producing the same
+safe screen every time.
 
-It worked well enough that the next problem showed up on its own. The rest of
-the team wanted it. And the moment a tool has to work for people who didn't
-build it, it stops being a shortcut and becomes a product. You have to design
-it.
+So the standards had to run on a spectrum. Contrast is arithmetic; a script can
+measure it and nothing is left to discuss. Whether a page feels calm is a
+judgment, and the best a rule can do is say what to look at, not what to
+conclude. We have 72 of these rules now. Four never bend. The rest can, if you
+write down why. And before the harness builds anything it offers two or three
+directions instead of one, because choosing between directions is exactly what
+a designer is for. You still have to look at the result and decide whether it
+is right. The tool's job is to make that possible, not to do it for you. Your
+taste, the thing you built by looking at thousands of screens, is what all of
+this depends on.
 
-## What we built
+Not everything should go through language, though. The harness gets a screen
+from a brief to something good, most of the way there, maybe 70% of it, though
+I don't know how you would measure that. Some of what's left shouldn't be a
+prompt at all. You want to put your hands on it: move the spacing a little,
+feel the hover state. So the other thing we're building is a visual editor over
+the live product, where you select an element and change it directly, the way
+you would in a design tool, while git (the system engineers use to keep every
+version of the code) keeps a copy and a save point for each change. The review
+then checks that work the same way it checks everything else.
 
-dx-harness is a plugin (a package you install once) for the coding agent.
-Install it in a product's repo and everyone working there, designer, engineer,
-or the agent itself, works from the same standard. Four parts.
+I couldn't have built any of this alone. The harness is half engineering.
+Designers wrote the judgment end of the standards, the rules about voice, the
+flow of the tool itself. Engineers made it trustworthy: every check is code with
+its own tests, the standards file is validated every time it changes, and the
+whole thing installs with two commands. When our first full run found gaps in
+our own checks, they fixed the checks and kept a record of what had been wrong,
+the way engineers keep decision logs. All of it lives in git, so a rule and the
+code it governs stay together, and neither can drift without someone noticing.
+Somewhere along the way it stopped being clear where the design ended and the
+engineering began. I've come to think that is a good sign.
 
-- **A skill you talk to.** You describe what you want. It asks what a senior
-  designer would ask, then hands the work to specialists for copy, flow,
-  pattern, motion, and polish. Nothing to memorise.
-- **The standards.** 72 rules for what good interfaces do, written so they can
-  be checked. Four never bend, including readable contrast and undo for
-  destructive actions. The rest bend, with a written reason.
-- **A design language file per product.** The standards hold what's true
-  everywhere. A small file in each repo holds what's true of that product: its
-  colours, its type, its voice. One tool, many products, none of them flattened
-  into the same look.
-- **A review with eyes.** When the work is done, a separate reviewer captures
-  the finished screens and grades what it sees against both. The agent that
-  built the screen doesn't mark its own work.
+The thing I keep thinking about is who this is for. Designers, first; that is
+who we made it for. But any large organisation has more products than
+designers, and plenty of teams ship interfaces with no designer anywhere near
+them. I think the harness gives those teams a floor: colours and spacing that
+stay consistent, contrast that passes, empty and error states that exist, copy
+that says something. That isn't the ceiling a designer would reach. Still, it's
+well above what those teams shipped before, and it means the designers we do
+have can stop spending their time policing the floor. I say "I think" because
+the harness is new and I don't have the evidence yet. I would like to.
 
-[Visual: the architecture sketch — context on the left, the orchestrator
-routing to specialist skills on the right.]
+What I didn't expect was that building a tool with almost no screens of its own
+would turn out to be the clearest design work I've done. It was the same work
+we'd been doing all along, deciding what good looks like for particular people
+and then making that decision hold, with the screens taken out. The screens
+turned out to be the smaller part. I don't think I would have believed that a
+year ago. I'm not sure I would have wanted to.
 
-## It depends
-
-I care most about getting this next part right. Most tooling for agents is
-deterministic: rules in, one exact answer out. That's fine for checking code
-style and the wrong shape for design, because design never had exact answers.
-Ask a designer where the button should go and you'll hear "it depends". People
-make fun of us for that. But it's the true answer, and a tool that pretends
-otherwise turns every screen into the same safe one.
-
-So the standards run on a spectrum. Contrast is arithmetic, and a script
-measures it. Whether a page feels calm is judgment, and the rule can only say
-what a reviewer should look at, not what to conclude. Before anything gets
-built, the harness offers two or three directions instead of one, and you
-choose. Your taste, the thing you built by looking at thousands of screens, is
-what the whole loop runs on. The tool shows you the screen. You decide.
-
-[Visual: before/after — the same brief with and without the harness.]
-
-## The last stretch is your hands
-
-The harness gets a screen from a brief to good, and that's most of the work,
-maybe 70% of it. Some of what's left shouldn't go through a prompt at all. You
-want your hands on the thing: nudge the spacing, feel the hover.
-
-So the other tool we're building is a visual editor over the live product. You
-select an element and change it directly, the way you would on a canvas, while
-git (the system engineers use to keep every version of the code, so nothing is
-lost) keeps a working copy and a save point for every change. Nothing sits
-between your taste and the pixel. The harness gets the work to good, your hands
-take it the rest of the way, and the review checks all of it the same way.
-
-[Visual: short screen recording — selecting an element in the live product and
-adjusting it directly, no prompt.]
-
-## The part I couldn't have built alone
-
-I should be honest about the collaboration, because the harness is half
-engineering and I'm a designer who needed partners.
-
-Designers wrote the judgment end of the standards, the voice rules, and the
-flow of the tool. Engineers made it trustworthy: every check is code with its
-own tests, the standards file is validated on every change, and the whole thing
-installs with two commands. When our first end-to-end run found gaps in our own
-checks, we fixed them and kept the findings on record, the way engineers keep a
-decision log. The standard gets stricter the same way code does: by review.
-
-All of it lives in git, one source of truth: the standards, each product's
-design language file, the decision records, and the checks. A rule and the code
-it governs travel together, so neither drifts from the other without someone
-noticing.
-
-Somewhere in there, the job titles stopped describing the work. We're builders.
-We care about craft, and about getting it into a lot of hands without waiting
-years.
-
-[Visual: the builders illustration — one team around one sheet of work.]
-
-## Who this is for
-
-Designers first. We tested the whole path with one of the least technical
-designers on the team, and they shipped. If the setup needs an engineer, we
-treat that as a bug.
-
-But any large organisation has more products than designers. A team with no
-design support gets a floor from the harness: colours and spacing that stay
-consistent, contrast that passes, empty and error states that exist, copy that
-says something. That floor isn't the ceiling a designer would reach. It's still
-well above what shipped before. And the designers we do have stop spending
-their time policing the floor. Their attention goes to the questions that
-need a designer.
-
-The harness has almost no screens of its own. Building it was still design
-work, and maybe the clearest design work I've done: deciding what good means,
-writing it down so it survives, and building the path that gets everyone
-there. Which, looking back, is what we were doing the whole time we were
-repeating ourselves to the agent. We hadn't finished.
-
-dx-harness is open source at
+The harness is open source, if you want to look at it:
 [github.com/transformteamsg/dx-harness](https://github.com/transformteamsg/dx-harness).
-If you design with an agent, try it, and tell me what breaks.
 
 ---
 
 ## Editor notes (not for publication)
 
-- Register pass 2026-09-02, after the author's note that the previous opening
-  read as forced and markety: hooks removed ("main design tool has been a chat
-  box", "superpower", "the most designed thing we've shipped", "at speed and at
-  scale", the repeated "see it, then fix it"). The opening is now the honest
-  origin: re-explaining the Teacher Workspace context to an agent that forgot
-  it every session. Plain sentences, contractions, jargon glossed in
-  parentheses (coding agent, codebase, repo, plugin, git).
-- Narrative stance: an "I" narrator telling a "we" story. The origin is
-  honestly "a few of us", the build is "we", the reflection is "I".
-- Structure: belief earned by the story. The belief that the hard part of
-  design is deciding what good looks like is stated in the opening and paid
-  off in the close; "It depends" carries the second belief.
-- Title changed to "Teaching the agent what we already knew" (describes what
-  happened, no trick). Previous candidates: "Design never had exact answers",
-  "A harness for designing in code". Author to confirm.
-- Teacher Workspace is now named once, because the honest origin is specific
-  to it. Mimi to confirm this is fine for a public blog; if not, "the product
-  we design for teachers" stands alone.
-- Word count: ~1,150 for the article body. The 1,000-word template was relaxed
-  by the author on 2026-09-02; confirm with Mimi.
+- Form pass 2026-09-02, benchmarked against Paul Graham's essays after the
+  author read the previous draft as still markety. What his essays do that the
+  draft didn't: no section headings, no bulleted feature lists, no quotable
+  lines engineered for effect, no self-description ("we're the kind of team
+  that…"), no announced honesty ("I should be honest"), uncertainty stated
+  where it exists, no call to action, the thing built described once and then
+  left alone so the essay is about the idea. All of those are now applied.
+  Removed as branding: "We're builders" (the idea survives as "it stopped
+  being clear where the design ended and the engineering began").
+- Narrative stance: "I" for observing and thinking, "we" for what a few of us
+  did and then the team did. Belief earned by the story: the design was the
+  part the agent couldn't do, stated early, paid off at the close.
+- Title: "What the agent didn't know" (plain, describes the essay's subject).
+  Alternatives: "It depends", "Teaching the agent what we already knew".
+  Author to confirm.
+- Visual placements for Mimi (body kept clean): (1) after "every session
+  ended with the agent forgetting all of it": a real session, the same context
+  typed again. (2) after "We tested that last claim… and it held": the
+  architecture sketch. (3) after "what all of this depends on": before/after,
+  same brief with and without the harness. (4) after "the same way it checks
+  everything else": short recording of selecting an element in the live product
+  and changing it directly. (5) after "I've come to think that is a good sign":
+  the builders illustration.
+- Teacher Workspace is named once because the origin is specific to it. Mimi
+  to confirm for a public blog; if not, "the product we design for teachers"
+  stands alone.
+- Two honest hedges are deliberate: "maybe 70%… I don't know how you would
+  measure that", and "I say 'I think' because the harness is new and I don't
+  have the evidence yet." Keep them; they are the register.
+- Word count: ~1,290 for the body. The 1,000-word template was relaxed by the
+  author on 2026-09-02; confirm with Mimi.
 - Counts verified against the repo on 2026-08-28: 72 standards, 4
   non-negotiable. Re-verify before publication; they move.
 - "One of the least technical designers" points at a real colleague. Get their
-  OK or cut it.
-- Colleagues are named by role only ("the engineers on our team"). Add names
-  and credits only with their OK.
+  OK or cut the sentence.
+- Colleagues are named by role only. Add names and credits only with their OK.
 - The coding agent is named generically; the repo README says Claude Code.
   Mimi to advise whether the blog names vendor tools.
-- "The last stretch is your hands" describes a second, unreleased tool without
-  naming or linking it, because its repo is not public. Confirm its public
-  name and whether it may be mentioned at all before publication. The 70/30
-  split is the author's framing.
+- The visual editor is described without a name or link because its repo is
+  not public. Confirm its public name and whether it may be mentioned before
+  publication.
