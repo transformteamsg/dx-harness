@@ -61,7 +61,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 
 1. Run the issue and test plan check (below). It must complete before the angles.
 2. Run all 8 review angles (below) on the diff. Collect candidates with `file`, `line`, `summary`, `failure_scenario`, and a severity from the table above.
-   - An angle stops at 6 candidates. If it reaches 6 with more it would have raised, record the angle name and the number dropped for the summary.
+   - **Raise every candidate the angle finds, then trim.** Do not stop looking at a count. Rank what the angle raised, carry the top 6 forward, and record the angle name and the number trimmed for the summary. The ceiling bounds what is posted, not what is examined: an angle that stops analysing at its sixth candidate loses the seventh defect outright instead of deferring it.
 3. Deduplicate: same defect at the same location, keep one.
 4. Label each candidate **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label into the comment.
    - **CONFIRMED** requires evidence, not inference: for a behaviour claim, hold the `file:line` that establishes it. A function named `validateInput` is not evidence that it validates.
@@ -108,6 +108,11 @@ Checklists, and the severity floor Security sets: [references/review-angles.md](
 ## The review sequence
 
 Source the diff from the forge's CLI. The branch is never checked out and no file is written.
+
+Write every `summary`, `failure_scenario`, and outcome line following [House
+style](../../../procedures/house-style.md). The structural format each comment
+type takes is fixed by the references below; house style governs the prose
+inside it.
 
 Every posted comment ends with this footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`):
 

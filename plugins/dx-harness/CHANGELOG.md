@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 (2026-09-02)
+
+- A shared house style, `procedures/house-style.md`, now governs every artifact `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`, `dx-create-pr`, `dx-code-review`, and `dx-design-feedback` write. It draws on Orwell's six rules, the Google developer documentation style guide, and ASD-STE100, and it applies with no setup the moment any of those skills runs.
+- The style says how long an artifact should be, not only how it should read. A section with nothing to say takes `None` rather than filler, length comes from load-bearing content, and an artifact that runs long because its scope is too wide gets split rather than trimmed.
+- Words that certify their own claim are out: `real`, `genuine`, `honestly`, `actually`, `truly`. A bug is a bug. The exception is a contrast a reader needs, such as a confirmed finding against a plausible one.
+- A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
+
 ## 0.6.0 (2026-09-01)
 
 - A new skill, `dx-create-pr`, opens your pull request and keeps its description matching the branch as you push. Every other skill now calls it, so each request the harness opens reads the same way, on GitHub and on GitLab alike ([#225](https://github.com/transformteamsg/dx-harness/pull/225), [#251](https://github.com/transformteamsg/dx-harness/pull/251)).
