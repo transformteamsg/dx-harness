@@ -48,7 +48,7 @@ So, with the engineers on our team, we wrote them down. The result is a tool.
 
 ## What we built
 
-dx-harness is a plugin — a package you install once — for the coding agent. You
+dx-harness is a plugin (a package you install once) for the coding agent. You
 add it to a product's repo (short for repository: the shared, versioned folder
 where that product's code lives), and everyone working there, designer or
 engineer or agent, now works against the same standard. Four parts do the work.
@@ -99,8 +99,8 @@ hover.
 
 So the other tool we're building is a visual editor over the live product. You
 select an element and adjust it directly, the way you would on a canvas, while
-git — the system engineers use to keep every version of the code, so nothing is
-ever truly lost — quietly keeps a working copy and a save point for every
+git (the system engineers use to keep every version of the code, so nothing is
+ever truly lost) quietly keeps a working copy and a save point for every
 change. No prompt sits between your taste and the pixel. The harness gets the
 work to good, your hands take it the rest of the way, and the review grades all
 of it the same.
