@@ -1,6 +1,6 @@
 # Review angles
 
-Run by analysis step 2, on the diff that step was given. Run all eight; each surfaces up to 6 candidates and stops there. Work through each checklist item explicitly, rather than scanning for anything that stands out.
+Run by analysis step 2, on the diff that step was given. Run all eight. Work through each checklist item explicitly, rather than scanning for anything that stands out: raise every candidate the angle finds, and let step 2 rank and trim to 6. The ceiling bounds what gets posted, never what gets examined.
 
 Each candidate carries `file`, `line`, `summary`, and `failure_scenario`, plus a severity from the Severity levels table in `SKILL.md`. Security sets its own severity floor, and says so below. Return the candidates to analysis step 3; the labelling, dropping, and posting rules all live in `SKILL.md`.
 
