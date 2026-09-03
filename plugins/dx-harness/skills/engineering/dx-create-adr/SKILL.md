@@ -39,21 +39,48 @@ Find the directory by filename shape, not by directory name.
 git ls-files \
   | grep -E '(^|/)[0-9]{4}-[^/]+\.md$' \
   | grep -vE '(^|/)[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
+  | grep '/' \
   | sed 's|/[^/]*$||' | sort -u        # keep filter 2: a year is four digits too
 ```
 
-Confirm each candidate holds records, not just numbered files:
+Confirm each candidate holds records, not just numbered files. Match any ADR
+format, not only MADR: a house template records status as `**Status:**` and heads
+its outcome `## Decision`, and dropping those loses a real directory.
 
 ```sh
-grep -lE '^status:|^## Decision Outcome' <candidate>/[0-9][0-9][0-9][0-9]-*.md | head -1
+grep -lE '^status:|^\*\*Status:\*\*|^## Decision' <candidate>/[0-9][0-9][0-9][0-9]-*.md
 ```
 
-A candidate with no match is not an ADR directory. Drop it.
+Judge on the output, not on `$?` alone if you add a pipe: `head` and friends own
+the exit status and report 0 on no matches. No output means not an ADR directory.
+Drop it.
 
-- **One directory**: use it, unchanged.
+- **One directory**: use it, and run the format check below.
 - **Several**: name them and ask which. Do not guess.
 - **None**: create `docs/adr/`, write the record into it, and say the directory is
-  new.
+  new. Skip the format check.
+
+### Format check
+
+An existing directory sets the convention. Read its highest-numbered record:
+
+```sh
+head -1 <dir>/[0-9][0-9][0-9][0-9]-*.md | tail -20
+```
+
+If it opens with `---`, the directory is MADR and step 6 proceeds unchanged.
+
+If it does not, the directory uses another template. Stop and ask, because writing
+MADR beside it leaves one listing with two conventions, and `supersede.md` edits a
+`status:` field those records do not have, so nothing this skill writes could ever
+supersede them:
+
+> `docs/adr/` holds 3 records in a template that is not MADR: they carry
+> `**Status:**` rather than YAML frontmatter. Match the existing shape, or start
+> MADR here and accept two conventions in one directory?
+
+On "match the existing shape", follow the shape of the record you just read rather
+than `references/madr-templates.md`, and keep its field names exactly.
 
 ## Step 3: Question a change with no architectural consequence
 
@@ -77,8 +104,29 @@ Write the record on a yes. On a no, write nothing and say where the change belon
 
 ## Step 4: Check the decision against the records on file
 
-Read the `status` and title of every record. Read the body only of those whose
-subject overlaps this decision.
+Read every record in the directory, and say so when there are none:
+
+```sh
+grep -l . <dir>/[0-9][0-9][0-9][0-9]-*.md 2>/dev/null | wc -l
+```
+
+Read the title and status of each. Read the body only of those whose subject
+overlaps this decision.
+
+Records on unmerged branches are not in the working tree, and this check does not
+fetch them:
+
+```sh
+git log --remotes --name-only --pretty=format: --diff-filter=A -- '<dir>/*.md' \
+  | sort -u
+```
+
+Name any record that listing returns but the working tree does not hold, and say it
+was not read. A check that examined nothing must never report as a clean pass:
+
+> Checked 0 records: `docs/adr/` does not exist on this branch. 0001 and 0002 exist
+> on unmerged branches and were not read, so a contradiction with either would not
+> have been caught.
 
 **If an accepted record contradicts this decision**, stop before writing anything.
 Name the record, state the contradiction in one sentence, and ask:
