@@ -29,26 +29,20 @@ Ask for each of these. Invent none of them.
 If the person supplies only a conclusion, ask for the options before continuing.
 
 **If the ask is to supersede an existing record**, read `references/supersede.md`
-now. It changes steps 4 to 6, and its first check can end the run before any file
-is written.
+now. It changes steps 4 to 6.
 
 ## Step 2: Locate the ADR directory
 
-Find the directory by filename shape, not by directory name: a repository names its
-directory what it likes.
+Find the directory by filename shape, not by directory name.
 
 ```sh
 git ls-files \
   | grep -E '(^|/)[0-9]{4}-[^/]+\.md$' \
   | grep -vE '(^|/)[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
-  | sed 's|/[^/]*$||' | sort -u
+  | sed 's|/[^/]*$||' | sort -u        # keep filter 2: a year is four digits too
 ```
 
-Keep the second filter. A year is also four digits, so without it a repository
-holding dated plans or specs reports directories that contain no records.
-
-Then confirm each candidate holds records, because a directory of numbered plans
-passes the filename test too:
+Confirm each candidate holds records, not just numbered files:
 
 ```sh
 grep -lE '^status:|^## Decision Outcome' <candidate>/[0-9][0-9][0-9][0-9]-*.md | head -1
@@ -71,9 +65,7 @@ Apply one test. Does the change do any of these?
 
 **If it does at least one**, continue to step 4 without comment.
 
-**If it does none**, say so once and ask. Do not refuse: the person knows
-constraints this test cannot see, and a refusal they disagree with sends them to
-write the file by hand, losing the format and the numbering.
+**If it does none**, say so once and ask. Do not refuse.
 
 > This looks like an implementation detail rather than a decision: it changes no
 > interface, no dependency, and no constraint on future work. A commit message may
@@ -106,22 +98,16 @@ Check three sources and take one above the highest number found in any of them.
 
 **1. The working tree.** List the directory found in step 2.
 
-**2. Remote branches.** A number claimed on an unmerged branch is still claimed.
-This also covers open pull requests raised from this repository, which is why
-source 3 is only about forks:
+**2. Remote branches**, which also covers pull requests raised from this
+repository:
 
 ```sh
 git fetch --quiet --all
+# not ls-tree: it takes ONE tree-ish, so many refs return empty at exit 0
+# --diff-filter=A: a number claimed by a since-deleted record is still claimed
 git log --remotes --name-only --pretty=format: --diff-filter=A -- '<dir>/*.md' \
   | grep -E '(^|/)[0-9]{4}-[^/]+\.md$' | sort -u
 ```
-
-`--diff-filter=A` also catches a number claimed by a record later deleted on that
-branch. It stays claimed.
-
-Do not substitute `git ls-tree`. It takes one tree-ish, so passing it every remote
-ref reads the first as the tree and the rest as pathspecs: empty output, exit status
-0, indistinguishable from a clean scan.
 
 **3. Pull requests from forks.** These have no branch in this repository:
 
@@ -169,8 +155,7 @@ empty: a section with nothing to say gets `N/A` and a one-line reason.
 - Never edit the body of an accepted record. Supersede it instead, per
   `references/supersede.md`.
 - Never reuse a number, including one freed by a rejected or deleted record.
-- One decision per record. Two in one file cannot be superseded separately.
+- One decision per record.
 - Write nothing while a question is open. Steps 3, 4, and 5 all stop and wait.
-- Detect, do not assume: the directory name, the tracker, and the network.
 - Do not use em dashes in a record, a filename, or a report. Use colons,
   parentheses, or separate sentences.
