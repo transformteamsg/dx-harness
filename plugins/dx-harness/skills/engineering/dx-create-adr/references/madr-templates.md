@@ -18,32 +18,25 @@ not. `status`, `date`, `authors`, and `discussion` are required on every record.
 ---
 status: accepted
 date: YYYY-MM-DD
-authors:
+authors:                          # who WROTE the record, not who decided
   - Name / [@handle](https://github.com/handle)
-decision-makers: <names, or N/A>
+decision-makers: <names, or N/A>  # who settled it; often not the authors
 consulted: <names, or N/A>
 informed: <names, or N/A>
-discussion: <link to the RFC issue or thread where this was argued>
+discussion: <where this was argued>
 supersedes: <ADR-NNNN, omitted when this record replaces nothing>
 ---
 ```
 
-### Why these four are not stock MADR
+`authors` and `decision-makers` sit adjacent and sound alike, so fill them
+separately. A record is often written up by one person after a group settled it, and
+a reader with a question needs the writer rather than the room.
 
-- **`authors`** records who wrote the record. MADR's `decision-makers` is who decided,
-  which is a different set: a record is often written up by one person after a group
-  settled it, and a reader with a question needs the writer, not the room.
-- **`discussion`** is a required link to where the decision was argued. Stock MADR
-  offers only an optional `More Information` section, so the trail to the debate is
-  the first thing to go missing. Fill it even when there was no RFC: write what
-  happened, such as `settled in grooming on 2026-09-03; no RFC issue was raised`. A
-  plain statement is worth more than a link to a delivery ticket that does not hold
-  the argument.
-- **`supersedes`** names what this record replaces. Stock MADR has no such field at
-  all: only the replaced record carries `superseded by`, so the chain reads in one
-  direction. A reader who opens the newest record cannot tell what it changed.
-- **`date`** is MADR's own field, and it is required here rather than optional. A
-  record with no date cannot be read as current or historic.
+Fill `discussion` even when no RFC was raised: write what happened instead, such as
+`settled in grooming on 2026-09-03; no RFC issue was raised`. Never reach for the
+nearest issue to have something to link. A delivery ticket that does not hold the
+argument looks like a trail and leads nowhere, which is worse than the plain
+sentence.
 
 ### Status values
 
