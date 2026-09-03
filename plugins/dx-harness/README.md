@@ -18,6 +18,7 @@ coverage declaration that passes between the two halves.
 | `/dx-harness:dx-create-task` | Creates a single-discipline slice of a story or chore, engineering or design, linked as a sub-issue. |
 | `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
 | `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
+| `/dx-harness:dx-create-adr` | Records an architecture decision as a numbered MADR file, seeding the ADR directory on first use. |
 | `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |
 | `/dx-harness:dx-implement-issue` | Front door for building an issue: reads it, plans, then runs the two halves below in order. |
 | `/dx-harness:dx-write-tests` | Writes one failing test per contract item before any code exists, and records what automation cannot settle. |

@@ -168,14 +168,24 @@ git log --remotes --name-only --pretty=format: --diff-filter=A -- '<dir>/*.md' \
   | grep -E '(^|/)[0-9]{4}-[^/]+\.md$' | sort -u
 ```
 
-**3. Pull requests from forks.** These have no branch in this repository:
+**3. Requests from forks.** These have no branch in this repository. Settle the
+forge first, per `../../../procedures/pr-mechanics.md`: never assume GitHub, read it
+from `git remote get-url origin`, and stop rather than guess if it names neither.
+
+On GitHub:
 
 ```sh
+owner=$(gh repo view --json owner --jq .owner.login)
 gh pr list --state open --json number,headRepositoryOwner \
-  --jq '.[] | select(.headRepositoryOwner.login != "<this repo owner>") | .number'
+  --jq ".[] | select(.headRepositoryOwner.login != \"$owner\") | .number" \
+  | while read -r n; do gh pr view "$n" --json files --jq '.files[].path'; done
 ```
 
-Read the files of each number returned and take the claimed numbers from them.
+On GitLab the equivalent is `glab mr list` filtered to merge requests whose source
+project differs from the target. `glab` moves its flags between versions, so confirm
+the exact form with `glab mr list --help` before running it. Do not guess a flag.
+
+Take the claimed numbers from the paths returned.
 
 **If a source cannot be reached**, number from what you could read and name what you
 could not check:
