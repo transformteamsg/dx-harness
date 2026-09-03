@@ -26,7 +26,12 @@ Files are named `NNNN-title-with-dashes.md`, where `NNNN` is the next free numbe
 in sequence. Numbers are never reused, including for a record that was rejected or
 abandoned, because a reused number breaks every link written before the change.
 
-Each record opens with frontmatter carrying at least a `status` and a `date`:
+Each record opens with frontmatter. Four fields are required: `status`, `date`,
+`authors`, and `discussion`, the last being where the decision was argued. A record
+that replaces another also carries `supersedes`, so the chain reads in both
+directions rather than only backwards.
+
+The status values are:
 
 | Status | Means |
 | --- | --- |
