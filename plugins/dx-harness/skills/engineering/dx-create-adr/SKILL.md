@@ -51,23 +51,35 @@ git fetch --quiet --all
 
 Step 5 reuses this fetch.
 
-Read each candidate's highest-numbered record once. That single read answers both
-questions below. A record living on a branch is not in the working tree, so fall
-back to the ref that added it:
+Confirm each candidate holds records rather than numbered files. Test every record,
+not only the newest: one unusual record must not condemn a directory. `git grep`
+reads from refs, so this covers records that exist only on a branch.
+
+Recognise any ADR format here. Recognising a directory is not adopting its template:
+a house-format record carries `**Status:**` and heads its outcome `## Decision`
+rather than carrying MADR frontmatter, and a pattern that only matches MADR drops a
+real directory, after which step 5 numbers against nothing and reuses a number.
 
 ```sh
-P=$( { git ls-files '<candidate>/*.md'; \
-       git log --remotes --name-only --pretty=format: --diff-filter=A -- '<candidate>/*.md'; } \
+git grep -lE '^status:|^\*\*Status:\*\*|^## Decision' \
+  $(git for-each-ref --format='%(refname)' refs/remotes) HEAD \
+  -- '<candidate>/[0-9][0-9][0-9][0-9]-*.md' \
+     ':(exclude)<candidate>/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*'
+```
+
+No output means numbered files that are not records. Drop the candidate.
+
+Then read the chosen directory's highest-numbered record, which the next section
+needs. A record on a branch is not in the working tree, so fall back to the ref that
+added it:
+
+```sh
+P=$( { git ls-files '<dir>/*.md'; \
+       git log --remotes --name-only --pretty=format: --diff-filter=A -- '<dir>/*.md'; } \
      | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
      | sort -u | tail -1 )
 cat "$P" 2>/dev/null || git show "$(git log --remotes --format=%H -1 -- "$P"):$P"
 ```
-
-**Is it an ADR directory?** Yes when that record matches `^status:`,
-`^\*\*Status:\*\*`, or `^## Decision`. Match any ADR format, not only MADR: a house
-template records status as `**Status:**` and heads its outcome `## Decision`, and
-dropping those loses a real directory. No match means numbered files that are not
-records. Drop the candidate.
 
 - **One directory**: use it, and note its format per the section below.
 - **Several**: name them and ask which. Do not guess.
