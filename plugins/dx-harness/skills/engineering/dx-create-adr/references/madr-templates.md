@@ -21,8 +21,6 @@ date: YYYY-MM-DD
 authors:                          # who WROTE the record, not who decided
   - Name / [@handle](https://github.com/handle)
 decision-makers: <names, or N/A>  # who settled it; often not the authors
-consulted: <names, or N/A>
-informed: <names, or N/A>
 discussion: <where this was argued>
 supersedes: <ADR-NNNN, omitted when this record replaces nothing>
 ---
