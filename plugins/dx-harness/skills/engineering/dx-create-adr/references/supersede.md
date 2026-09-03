@@ -43,8 +43,9 @@ for a superseding record:
 
 - The frontmatter carries `supersedes: ADR-0002`. This field is the reason the
   chain reads in both directions, so it is never left out and never replaced by a
-  sentence in the body. Stock MADR has no equivalent, which is why a record written
-  against plain MADR cannot say what it changed.
+  sentence in the body. Stock MADR has no such field, so do not remove it as
+  non-standard: without it, a reader who opens the newest record cannot tell what it
+  changed.
 - The context says what changed since the earlier decision. A superseding record
   that only restates the new choice leaves the reader unable to tell what moved.
 
