@@ -69,28 +69,27 @@ template records status as `**Status:**` and heads its outcome `## Decision`, an
 dropping those loses a real directory. No match means numbered files that are not
 records. Drop the candidate.
 
-- **One directory**: use it, and answer the format question below.
+- **One directory**: use it, and note its format per the section below.
 - **Several**: name them and ask which. Do not guess.
 - **None**: create `docs/adr/`, write the record into it, and say the directory is
-  new. Skip the format check.
+  new.
 
-### Format check
+### Note the format when it differs
 
-The record read above sets the convention.
+This skill writes MADR. It never adopts another template, because the rest of it
+depends on the shape: `supersede.md` marks a record replaced by editing the
+`status:` field in its frontmatter, and a record written in a template without
+frontmatter could never be superseded by the procedure that wrote it.
 
-If its first line is `---`, the directory is MADR and step 6 proceeds unchanged.
+The record read above tells you what the directory already uses. If its first line
+is not `---`, say so in the step 7 report, once, naming what follows:
 
-If it is not, the directory uses another template. Stop and ask, because writing
-MADR beside it leaves one listing with two conventions, and `supersede.md` edits a
-`status:` field those records do not have, so nothing this skill writes could ever
-supersede them:
+> `docs/adr/` holds 3 records in another template: they carry `**Status:**` rather
+> than YAML frontmatter. This record is MADR, so the directory now holds two
+> conventions, and superseding one of the older three is not something this skill
+> can do.
 
-> `docs/adr/` holds 3 records in a template that is not MADR: they carry
-> `**Status:**` rather than YAML frontmatter. Match the existing shape, or start
-> MADR here and accept two conventions in one directory?
-
-On "match the existing shape", follow the shape of the record you just read rather
-than `references/madr-templates.md`, and keep its field names exactly.
+Report it and continue. Do not ask, and do not change template.
 
 ## Step 3: Question a change with no architectural consequence
 
@@ -215,7 +214,8 @@ empty: a section with nothing to say gets `N/A` and a one-line reason.
 ## Step 7: Report
 
 1. The path and number of the record, its variant, and its status.
-2. Whether the directory was created on this run.
+2. Whether the directory was created on this run, and whether it already held
+   records in another template.
 3. Any numbering source that could not be checked, and what that risks.
 4. On a supersede, both files that changed and the chain they now form.
 
