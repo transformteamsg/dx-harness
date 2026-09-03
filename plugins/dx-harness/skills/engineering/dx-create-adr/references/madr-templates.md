@@ -4,10 +4,11 @@ Two variants of the MADR 4.0.0 template. Step 6 of `SKILL.md` chooses between th
 and fills one in. Copy the variant, replace every angle-bracket placeholder, and
 delete no headings: a section with nothing to say gets `N/A` and a one-line reason.
 
-The frontmatter below is MADR's, tightened with four fields the Transform house
+The frontmatter below is MADR's, tightened with three fields the Transform house
 template (`ADR_TEMPLATE.md` in `transformteamsg/design-documents`) carries and stock
-MADR does not. Each one closes a gap that costs a reader something real, so none of
-them is optional here.
+MADR does not: `authors`, `discussion`, and `supersedes`. Each closes a gap that
+costs a reader something real. This skill also makes MADR's own `status` and `date`
+required rather than optional.
 
 ## Frontmatter
 
