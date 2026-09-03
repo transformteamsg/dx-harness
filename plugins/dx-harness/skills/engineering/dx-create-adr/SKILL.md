@@ -36,56 +36,51 @@ now. It changes steps 4 to 6.
 
 ## Step 2: Locate the ADR directory
 
-Find the directory by filename shape, not by directory name.
+Find the directory by filename shape, not by directory name. Scan remote branches
+as well as the working tree: a repository's records can exist only on an unmerged
+branch, which is exactly when writing a second directory does the most damage.
 
 ```sh
-git ls-files \
+git fetch --quiet --all
+{ git ls-files; git log --remotes --name-only --pretty=format: --diff-filter=A; } \
   | grep -E '(^|/)[0-9]{4}-[^/]+\.md$' \
   | grep -vE '(^|/)[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
   | grep '/' \
   | sed 's|/[^/]*$||' | sort -u        # keep filter 2: a year is four digits too
 ```
 
-Confirm each candidate holds records, not just numbered files. Match any ADR
-format, not only MADR: a house template records status as `**Status:**` and heads
-its outcome `## Decision`, and dropping those loses a real directory.
+Step 5 reuses this fetch.
+
+Read each candidate's highest-numbered record once. That single read answers both
+questions below. A record living on a branch is not in the working tree, so fall
+back to the ref that added it:
 
 ```sh
-git ls-files '<candidate>/*.md' \
-  | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
-  | xargs grep -lE '^status:|^\*\*Status:\*\*|^## Decision'
+P=$( { git ls-files '<candidate>/*.md'; \
+       git log --remotes --name-only --pretty=format: --diff-filter=A -- '<candidate>/*.md'; } \
+     | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
+     | sort -u | tail -1 )
+cat "$P" 2>/dev/null || git show "$(git log --remotes --format=%H -1 -- "$P"):$P"
 ```
 
-Carry the date exclusion into every glob below as well. A bare
-`[0-9][0-9][0-9][0-9]-*.md` re-admits `2026-09-03-notes.md`, which discovery
-deliberately removed.
+**Is it an ADR directory?** Yes when that record matches `^status:`,
+`^\*\*Status:\*\*`, or `^## Decision`. Match any ADR format, not only MADR: a house
+template records status as `**Status:**` and heads its outcome `## Decision`, and
+dropping those loses a real directory. No match means numbered files that are not
+records. Drop the candidate.
 
-Judge on the output, not on `$?` alone if you add a pipe: `head` and friends own
-the exit status and report 0 on no matches. No output means not an ADR directory.
-Drop it.
-
-- **One directory**: use it, and run the format check below.
+- **One directory**: use it, and answer the format question below.
 - **Several**: name them and ask which. Do not guess.
 - **None**: create `docs/adr/`, write the record into it, and say the directory is
   new. Skip the format check.
 
 ### Format check
 
-An existing directory sets the convention. Read its highest-numbered record:
+The record read above sets the convention.
 
-```sh
-git ls-files '<dir>/*.md' \
-  | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
-  | sort | tail -1 | xargs head -20
-```
+If its first line is `---`, the directory is MADR and step 6 proceeds unchanged.
 
-Read one file, not many: `head` given several files prints a `==> name <==` banner
-before each, so the first line of the output is never the first line of a record.
-
-If that record opens with `---`, the directory is MADR and step 6 proceeds
-unchanged.
-
-If it does not, the directory uses another template. Stop and ask, because writing
+If it is not, the directory uses another template. Stop and ask, because writing
 MADR beside it leaves one listing with two conventions, and `supersede.md` edits a
 `status:` field those records do not have, so nothing this skill writes could ever
 supersede them:
@@ -166,7 +161,7 @@ Check three sources and take one above the highest number found in any of them.
 repository:
 
 ```sh
-git fetch --quiet --all
+# step 2 already fetched
 # not ls-tree: it takes ONE tree-ish, so many refs return empty at exit 0
 # --diff-filter=A: a number claimed by a since-deleted record is still claimed
 git log --remotes --name-only --pretty=format: --diff-filter=A -- '<dir>/*.md' \
