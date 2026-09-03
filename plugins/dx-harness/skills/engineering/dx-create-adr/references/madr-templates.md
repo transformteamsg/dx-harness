@@ -77,6 +77,12 @@ Chosen option: "<option>", because <the reason that decided it>.
 
 <What follows from this: what becomes easier, what becomes harder, and what a
 future change would have to undo.>
+
+## More Information
+
+<Links to the spike, the benchmark, or the issue. Write "N/A" if there is nothing
+to point at. The link to where the decision was argued belongs in the `discussion`
+frontmatter field, not only here.>
 ```
 
 ## Full
@@ -135,6 +141,28 @@ it, because an unenforced decision drifts and the record should admit that.>
 argued belongs in the `discussion` frontmatter field, not only here. Write "N/A" if
 there is nothing further to point at.>
 ```
+
+## Source material no heading covers
+
+A source may carry material MADR has no section for: a diagram, worked examples, a
+migration table. Do not drop it, and do not force it under a heading it does not
+belong to. Give it a named section of its own, immediately before `More
+Information`, collapsed:
+
+```markdown
+<details>
+<summary>Worked examples</summary>
+
+<the material>
+
+</details>
+```
+
+Keep the blank lines above and below the content. Without them the markdown inside
+does not render.
+
+Collapse it because a reader opens a record for the decision, not the appendix. The
+record stays scannable, and the material is one click away rather than lost.
 
 ## Writing the body
 
