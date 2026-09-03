@@ -25,6 +25,9 @@ Ask for each of these. Invent none of them.
 7. **Where the decision was argued.** A link to the RFC issue or thread. If there
    was none, say what happened instead, such as "settled in grooming; no RFC issue
    was raised". Never link a delivery ticket that does not hold the argument.
+8. **The date the decision was settled.** Use today's date when none is given. Do
+   not leave it blank and do not ask twice: a record with no date cannot be read as
+   current or historic. Say which date you used when you inferred it.
 
 If the person supplies only a conclusion, ask for the options before continuing.
 
