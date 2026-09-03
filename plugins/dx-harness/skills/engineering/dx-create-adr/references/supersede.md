@@ -41,9 +41,10 @@ step A with the live record, which will pass on the first check.
 Return to `SKILL.md` steps 5 and 6 for the number and the template. Two additions
 for a superseding record:
 
-- The `More Information` section names what it replaces: `Supersedes
-  [ADR-0002](0002-session-store.md).` A minimal-variant record has no such
-  section, so add the same line at the end of `Decision Outcome`.
+- The frontmatter carries `supersedes: ADR-0002`. This field is the reason the
+  chain reads in both directions, so it is never left out and never replaced by a
+  sentence in the body. Stock MADR has no equivalent, which is why a record written
+  against plain MADR cannot say what it changed.
 - The context says what changed since the earlier decision. A superseding record
   that only restates the new choice leaves the reader unable to tell what moved.
 
@@ -64,8 +65,9 @@ was kept rather than deleted.
 
 Before reporting, read both files back and confirm two things:
 
-- The replaced record's `status` names the new number.
-- The new record's body links to the replaced one.
+- The replaced record's `status` reads `superseded by ADR-NNNN`, naming the new
+  number.
+- The new record's `supersedes` frontmatter field names the replaced one.
 
 A link in only one direction is the failure this step exists to catch. A reader
 arriving at the old record needs to find the new one, and a reader arriving at the

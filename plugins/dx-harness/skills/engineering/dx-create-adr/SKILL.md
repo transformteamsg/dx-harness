@@ -28,9 +28,17 @@ Ask for what the record needs, and do not invent any of it:
    what lets a future reader judge whether the decision still applies.
 3. **The options considered**, including the ones turned down.
 4. **Why the chosen option won.**
-5. **The status**, either `proposed` or `accepted`. Ask rather than defaulting,
-   because a proposal recorded as accepted reads as settled to everyone who finds
-   it later.
+5. **The status.** `references/madr-templates.md` pins the five permitted values.
+   Ask rather than defaulting, because a proposal recorded as accepted reads as
+   settled to everyone who finds it later.
+6. **The authors**, meaning whoever wrote the record and anyone who shaped it. This
+   is not always the same as who decided, and a reader with a question needs the
+   writer.
+7. **Where the decision was argued.** A link to the RFC issue or thread. If there
+   was none, say what happened instead, such as "settled in grooming; no RFC issue
+   was raised". Record the plain fact rather than linking a delivery ticket that
+   does not hold the argument: a link that looks like a trail but leads nowhere is
+   worse than an honest sentence.
 
 If the person supplies only a conclusion, ask for the options before continuing. A
 record with one option hides the fact that no alternative was weighed, and that is
