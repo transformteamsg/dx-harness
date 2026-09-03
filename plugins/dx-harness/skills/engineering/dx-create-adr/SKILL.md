@@ -56,12 +56,9 @@ Confirm each candidate holds records rather than numbered files. Test every reco
 not only the newest: one unusual record must not condemn a directory. `git grep`
 reads from refs, so this covers records that exist only on a branch.
 
-Recognise any ADR format here. Recognising a directory is not adopting its template:
-a house-format record carries `**Status:**` and heads its outcome `## Decision`
-rather than carrying MADR frontmatter, and a pattern that only matches MADR drops a
-real directory, after which step 5 numbers against nothing and reuses a number.
-
 ```sh
+# match any ADR format, not only MADR: narrowing this drops a real directory,
+# and step 5 then numbers against nothing and reuses a number
 git grep -lE '^status:|^\*\*Status:\*\*|^## Decision' \
   $(git for-each-ref --format='%(refname)' refs/remotes) HEAD \
   -- '<candidate>/[0-9][0-9][0-9][0-9]-*.md' \
