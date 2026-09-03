@@ -48,8 +48,14 @@ format, not only MADR: a house template records status as `**Status:**` and head
 its outcome `## Decision`, and dropping those loses a real directory.
 
 ```sh
-grep -lE '^status:|^\*\*Status:\*\*|^## Decision' <candidate>/[0-9][0-9][0-9][0-9]-*.md
+git ls-files '<candidate>/*.md' \
+  | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
+  | xargs grep -lE '^status:|^\*\*Status:\*\*|^## Decision'
 ```
+
+Carry the date exclusion into every glob below as well. A bare
+`[0-9][0-9][0-9][0-9]-*.md` re-admits `2026-09-03-notes.md`, which discovery
+deliberately removed.
 
 Judge on the output, not on `$?` alone if you add a pipe: `head` and friends own
 the exit status and report 0 on no matches. No output means not an ADR directory.
@@ -65,10 +71,16 @@ Drop it.
 An existing directory sets the convention. Read its highest-numbered record:
 
 ```sh
-head -1 <dir>/[0-9][0-9][0-9][0-9]-*.md | tail -20
+git ls-files '<dir>/*.md' \
+  | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-' \
+  | sort | tail -1 | xargs head -20
 ```
 
-If it opens with `---`, the directory is MADR and step 6 proceeds unchanged.
+Read one file, not many: `head` given several files prints a `==> name <==` banner
+before each, so the first line of the output is never the first line of a record.
+
+If that record opens with `---`, the directory is MADR and step 6 proceeds
+unchanged.
 
 If it does not, the directory uses another template. Stop and ask, because writing
 MADR beside it leaves one listing with two conventions, and `supersede.md` edits a
@@ -107,7 +119,8 @@ Write the record on a yes. On a no, write nothing and say where the change belon
 Read every record in the directory, and say so when there are none:
 
 ```sh
-grep -l . <dir>/[0-9][0-9][0-9][0-9]-*.md 2>/dev/null | wc -l
+git ls-files '<dir>/*.md' \
+  | grep -E '/[0-9]{4}-[^/]+\.md$' | grep -vcE '/[0-9]{4}-[0-9]{2}-[0-9]{2}-'
 ```
 
 Read the title and status of each. Read the body only of those whose subject
