@@ -61,9 +61,6 @@ A candidate with no match is not an ADR directory. Drop it.
 - **None**: create `docs/adr/`, write the record into it, and say the directory is
   new.
 
-Write the record and nothing else. A README would duplicate rules this skill owns,
-in a repository this skill cannot revisit, and go stale the first time one changes.
-
 ## Step 3: Question a change with no architectural consequence
 
 Apply one test. Does the change do any of these?
