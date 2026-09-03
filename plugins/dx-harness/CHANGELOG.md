@@ -17,6 +17,7 @@
 - The implementation half reports a missing test rather than closing the gap itself, because a test written beside the code it checks is not the thing that was missing. Nothing is written into your repository to carry any of this: the record lives in a commit body.
 - The run names your test stack before it judges anything: the runner, the command that invokes it, where tests live, and how they are named. It takes the command from your continuous integration first, because that is the one that gates a merge, and it runs it once to check the stack is real. A repository with several runners gets all of them recorded, since a unit runner cannot settle a criterion about what someone sees.
 - A repository with no test runner is told so, not quietly given one. Every criterion becomes manual, the reason is stated once rather than per criterion, and adding a test setup is offered as separate work. Choosing a test framework decides how everyone there writes tests from then on, so it is not a gap for a skill to close mid-run.
+- A new skill, `dx-create-adr`, records an architecture decision as a numbered MADR file in your repository. It finds where your records already live, on unmerged branches as well as in the working tree, and asks before writing MADR into a directory that uses a different template. It never reuses a number, and it questions a change that has no architectural consequence rather than filing it ([#315](https://github.com/transformteamsg/dx-harness/issues/315)).
 
 ## 0.6.0 (2026-09-01)
 
