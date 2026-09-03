@@ -79,12 +79,14 @@ A candidate with no match is not an ADR directory. Drop it and carry on.
 - **Several**: name them and ask which one this record belongs in. Do not guess,
   because a record filed in the wrong directory is invisible to the people who
   need it.
-- **None**: create `docs/adr/` and write a README into it from
-  `references/adr-readme.md`. Tell the person the directory is new, so they know a
-  convention was established on their behalf and can move it before it spreads.
+- **None**: create `docs/adr/` and write the record into it. Tell the person the
+  directory is new, so they know a convention was established on their behalf and
+  can move it before it spreads.
 
-Write the README only on the run that creates the directory. A later run leaves it
-alone, because a team will have edited it.
+Seed the directory with the record and nothing else. A README explaining the format
+would be a second copy of rules this skill already holds, sitting in a repository
+this skill cannot revisit, so it goes stale the first time a rule here changes. The
+records themselves show the shape, and https://adr.github.io/ defines the format.
 
 ## Step 3: Question a change with no architectural consequence
 
@@ -213,8 +215,7 @@ a section with nothing to say gets `N/A` and a one-line reason.
 Say what now exists:
 
 1. The path and number of the record, its variant, and its status.
-2. Whether the directory was created on this run, and whether a README went with
-   it.
+2. Whether the directory was created on this run.
 3. Any numbering source that could not be checked, and what that risks.
 4. On a supersede, both files that changed and the chain they now form.
 
