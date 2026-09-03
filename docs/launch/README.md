@@ -7,7 +7,9 @@ Both are drafts. Nothing here is published.
 |---|---|
 | `blog.html` | The launch blog post, standalone HTML using the site tokens from `app/globals.css` |
 | `slack-post.md` | The `#dx-harness` announcement and the design team post, with a pre-post checklist |
-| `gto-design-blog.md` | Personal-voice article for the GTO design practice blog (contact: Mimi; publish mid-October) |
+| `gto-design-blog.md` | GTO design blog article, round-3 baseline: essay form, "What the agent didn't know" (contact: Mimi; publish mid-October) |
+| `gto-design-blog-a-not-design.md` | Direction A: "The part that isn't design" — a harness maker who won't call harness-making design; the however is the time that came back |
+| `gto-design-blog-b-craft.md` | Direction B: "The craft gets through" — designers finally control the front end, so craft reaches the user without a backlog or a prompt in the way |
 | `assets/harness-architecture.png` | Architecture sketch, embedded in the blog as image 2 |
 | `assets/builders.png` | Builders illustration (from the Desktop illo set, downscaled to 1024px), closes the blog |
 
