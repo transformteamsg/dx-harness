@@ -4,8 +4,8 @@ description: 'Use when a decision about a codebase should be recorded as an arch
 ---
 
 You are recording a decision about a codebase as an architecture decision record: a
-numbered file in the repository, written in the MADR format, never edited once
-accepted.
+numbered file in the repository, written in the MADR format, whose body is never
+edited once accepted.
 
 This skill runs in whatever repository invokes it. Detect the directory name, the
 tracker, and the network at each step. Assume none of them.
@@ -32,7 +32,8 @@ Ask for each of these. Invent none of them.
 If the person supplies only a conclusion, ask for the options before continuing.
 
 **If the ask is to supersede an existing record**, read `references/supersede.md`
-now. It changes steps 4 to 6.
+now. It adds a chain-walk check, extends step 6, and continues after step 6, before
+the report in step 7.
 
 ## Step 2: Locate the ADR directory
 
@@ -49,7 +50,7 @@ git fetch --quiet --all
   | sed 's|/[^/]*$||' | sort -u        # keep filter 2: a year is four digits too
 ```
 
-Step 5 reuses this fetch.
+Steps 4 and 5 reuse this fetch.
 
 Confirm each candidate holds records rather than numbered files. Test every record,
 not only the newest: one unusual record must not condemn a directory. `git grep`
@@ -69,9 +70,14 @@ git grep -lE '^status:|^\*\*Status:\*\*|^## Decision' \
 
 No output means numbered files that are not records. Drop the candidate.
 
-Then read the chosen directory's highest-numbered record, which the next section
-needs. A record on a branch is not in the working tree, so fall back to the ref that
-added it:
+- **One directory**: use it.
+- **Several**: name them and ask which. Do not guess.
+- **None**: create `docs/adr/`, write the record into it, and say the directory is
+  new.
+
+Once you settle on an existing directory, read its highest-numbered record, which
+the next section needs. A record on a branch is not in the working tree, so fall
+back to the ref that added it:
 
 ```sh
 P=$( { git ls-files '<dir>/*.md'; \
@@ -81,10 +87,7 @@ P=$( { git ls-files '<dir>/*.md'; \
 cat "$P" 2>/dev/null || git show "$(git log --remotes --format=%H -1 -- "$P"):$P"
 ```
 
-- **One directory**: use it, and note its format per the section below.
-- **Several**: name them and ask which. Do not guess.
-- **None**: create `docs/adr/`, write the record into it, and say the directory is
-  new.
+Note its format per the section below.
 
 ### Note the format when it differs
 
@@ -135,8 +138,8 @@ git ls-files '<dir>/*.md' \
 Read the title and status of each. Read the body only of those whose subject
 overlaps this decision.
 
-Records on unmerged branches are not in the working tree, and this check does not
-fetch them:
+Step 2's fetch means the listing below reaches records on unmerged branches, but
+they are not in the working tree, so this check names them without reading them:
 
 ```sh
 git log --remotes --name-only --pretty=format: --diff-filter=A -- '<dir>/*.md' \
