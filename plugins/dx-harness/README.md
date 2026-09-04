@@ -13,6 +13,7 @@ Engineering + design skills for agentic product development. Every skill is name
 | `/dx-harness:dx-create-task` | Creates a single-discipline slice of a story or chore, engineering or design, linked as a sub-issue. |
 | `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
 | `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
+| `/dx-harness:dx-create-adr` | Records an architecture decision as a numbered MADR file, seeding the ADR directory on first use. |
 | `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |
 | `/dx-harness:dx-implement-issue` | Implements a GitHub issue by number or pasted body. |
 | `/dx-harness:dx-create-pr` | Opens a pull request for the current branch, or updates an open one to match new commits. |

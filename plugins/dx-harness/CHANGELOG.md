@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- A new skill, `dx-create-adr`, records an architecture decision as a numbered MADR file in your repository. It finds where your records already live, on unmerged branches as well as in the working tree, and asks before writing MADR into a directory that uses a different template. It never reuses a number, and it questions a change that has no architectural consequence rather than filing it ([#315](https://github.com/transformteamsg/dx-harness/issues/315)).
+
 ## 0.6.0 (2026-09-01)
 
 - A new skill, `dx-create-pr`, opens your pull request and keeps its description matching the branch as you push. Every other skill now calls it, so each request the harness opens reads the same way, on GitHub and on GitLab alike ([#225](https://github.com/transformteamsg/dx-harness/pull/225), [#251](https://github.com/transformteamsg/dx-harness/pull/251)).
