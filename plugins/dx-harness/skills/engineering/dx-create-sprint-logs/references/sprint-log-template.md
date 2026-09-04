@@ -20,6 +20,7 @@ apply once the work items become tables.
 | Squad | The squad that held it |
 | Sprint goal | One sentence, copied from Sprint Planning |
 | Goal met | `Yes`, `No`, or `Partly`, then one clause saying which part |
+| Next holder | The squad that picks the workstream up, or `Unassigned` |
 
 ## Delivered
 
@@ -57,15 +58,6 @@ A risk that exists only in this log is not tracked.
 |---|---|---|
 | What goes wrong, and to whom, one clause | Link | Named person or squad |
 
-## Sign-off
-
-| Field | Entry |
-|---|---|
-| From | Squad and lead handing over |
-| To | Squad and lead receiving, or `Unassigned` |
-| Date | ISO 8601 |
-| Permanent link | Link to this log at a stable path |
-
 ---
 
 ## Field mapping
@@ -75,17 +67,17 @@ For anyone checking this against the source template.
 | Source field | Here |
 |---|---|
 | Log ID | Header, Log ID |
-| Date & Time | Header, Sprint. Sign-off, Date |
+| Date & Time | Header, Sprint |
 | Sprint / Iteration | Header, Sprint |
 | Handover Type | Header, Workstream |
-| From Team / Owner | Sign-off, From |
-| To Team / Owner | Sign-off, To |
+| From Team / Owner | Header, Squad |
+| To Team / Owner | Header, Next holder |
 | Work Items Transferred | Delivered, and Carried over |
 | Carry-Over Reason | Carried over, Reason |
 | Key Decisions | Decisions |
 | Impediments / Risks | Risks handed over |
-| Sign-off | Sign-off |
-| Permanent Audit Link | Sign-off, Permanent link |
+| Sign-off | **Dropped.** There is no formal sign-off process to record |
+| Permanent Audit Link | **Dropped.** The log's own path in the repository is the permanent link |
 
 ## Frontmatter
 

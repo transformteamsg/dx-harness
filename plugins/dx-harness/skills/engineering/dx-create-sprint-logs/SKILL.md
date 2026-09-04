@@ -21,7 +21,10 @@ document nobody reads at the moment it is needed most.
 
 The canonical structure is in
 [references/sprint-log-template.md](references/sprint-log-template.md). Read that
-file before you write or preview a log. Fill every field: a field with nothing in
+file before you write or preview a log. It has a header and four tables:
+delivered, carried over, decisions, and risks handed over. There is no sign-off
+table, because there is no formal sign-off process to record; the header's Next
+holder field carries the handover instead. Fill every field: a field with nothing in
 it takes `None`, which is a finished answer.
 
 One log per workstream. A squad holding two workstreams writes two logs.
@@ -107,9 +110,13 @@ Render the complete log in a markdown code block. Before showing it, apply the
 "Before you post it" checks in [House style](../../../procedures/house-style.md)
 and cut anything that fails them.
 
-Say plainly, in one line each:
+Then say the following in the conversation, one line each. **Say it. Never write
+it into the log, and never append it to the file under a heading or below a
+rule.** It is what you tell the author before they agree, not part of the record
+they are agreeing to.
 
 - Every row that has no link, and what needs creating to give it one.
+- Every passage you routed out, and where it went.
 - Every source you could not search.
 
 Then ask for confirmation.
@@ -117,7 +124,13 @@ Then ask for confirmation.
 ### Step 6: Write it
 
 Write the log where the product repository keeps them, following the naming its
-existing logs use. Where the repository has a frontmatter convention, follow it,
+existing logs use. **Write the tables and the header, and nothing else.** The
+Step 5 report stays in the conversation.
+
+**A sprint log names people, customers, defects, and unpatched vulnerabilities,
+so it belongs in the product repository and never in a public one.** Check the
+target repository's visibility before you write. If it is public, stop and ask
+where the log should go. Where the repository has a frontmatter convention, follow it,
 and never add a second schema beside one a check already enforces.
 
 If there are no existing logs to follow, ask where they should live rather than
@@ -128,7 +141,10 @@ choosing a path.
 - One log per workstream. Never merge two workstreams into one log.
 - Every row carries a link. A row with no link is a finding, reported in Step 5.
 - Every cell is 20 words or fewer.
-- The log has no prose sections: no background, no summary, no closing note.
+- The log has no prose sections: no background, no summary, no closing note, and
+  no appended report. The file holds the header and the tables.
+- The log goes in the product repository, never a public one. It names people,
+  customers, and unpatched vulnerabilities.
 - `None` is a finished answer for a field with nothing in it.
 - Committed-at-planning and raised-mid-sprint are recorded separately, because
   only the first is spillage against a commitment.
