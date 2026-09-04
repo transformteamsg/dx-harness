@@ -112,7 +112,8 @@ Source the diff from the forge's CLI. The branch is never checked out and no fil
 Write every `summary`, `failure_scenario`, and outcome line following [House
 style](../../../procedures/house-style.md). The structural format each comment
 type takes is fixed by the references below; house style governs the prose
-inside it.
+inside it. Run the lint that its Before you post it section names over each
+comment body before you post it.
 
 Every posted comment ends with this footer, `{model}` replaced by the current model ID (for example `claude-sonnet-4-6`):
 
