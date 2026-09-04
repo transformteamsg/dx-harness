@@ -5,8 +5,8 @@ takes `None`, which is a finished answer.
 
 Adapted from the [sprint handover audit logging template](https://ones.com/blog/sprint-handover-audit-logging-checklist-template/)
 by ones.com, which logs a single handover event. A sprint is a handover too: one
-squad hands a workstream to whoever holds it next, and the same twelve fields
-apply once the work items become tables.
+squad hands a workstream to whoever holds it next, and most of those fields apply
+once the work items become tables.
 
 ---
 
@@ -62,7 +62,7 @@ A risk that exists only in this log is not tracked.
 
 ## Field mapping
 
-For anyone checking this against the source template.
+The source fields this template keeps, and where each one lands.
 
 | Source field | Here |
 |---|---|
@@ -76,8 +76,6 @@ For anyone checking this against the source template.
 | Carry-Over Reason | Carried over, Reason |
 | Key Decisions | Decisions |
 | Impediments / Risks | Risks handed over |
-| Sign-off | **Dropped.** There is no formal sign-off process to record |
-| Permanent Audit Link | **Dropped.** The log's own path in the repository is the permanent link |
 
 ## Frontmatter
 
