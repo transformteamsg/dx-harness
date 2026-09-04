@@ -20,6 +20,7 @@ Engineering + design skills for agentic product development. Every skill is name
 | `/dx-harness:dx-git-hooks-setup` | Sets up or audits pre-commit / pre-push hooks (Husky or Lefthook). |
 | `/dx-harness:dx-update-npm-dependencies` | Audits and updates vulnerable JS/TS deps with a release cooldown. |
 | `/dx-harness:dx-house-style-setup` | Turns on the bundled house-style output style, at the scope you pick. |
+| `/dx-harness:dx-create-sprint-logs` | Writes a sprint log per workstream: what closed, what carried over, what transfers. |
 
 ## Design skills
 
