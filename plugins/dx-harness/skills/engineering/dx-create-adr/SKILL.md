@@ -16,18 +16,25 @@ Ask for each of these. Invent none of them.
 
 1. **The decision**, stated as an action: "use Postgres for the write model", not
    "database choice".
-2. **The problem that forced it.** What made the status quo untenable.
-3. **The options considered**, including the ones turned down.
-4. **Why the chosen option won.**
-5. **The status.** `references/madr-templates.md` pins the five permitted values.
+2. **The context, and the problem it forces.** Two things, not one: the background
+   a reader needs, and the constraint that makes the status quo untenable.
+3. **The requirements it must address**, functional and non-functional. Ask for both
+   by name. Latency, availability, cost, and security are the ones people leave out,
+   and they are usually what decided the choice.
+4. **The user journey it touches**, if any. Skip this where the decision reaches no
+   user-facing surface, which is most infrastructure decisions. Do not record `N/A`
+   for it.
+5. **The options considered**, including the ones turned down.
+6. **Why the chosen option won.**
+7. **The status.** `references/madr-templates.md` pins the five permitted values.
    Ask; do not default.
-6. **The authors**, meaning whoever wrote the record. Not necessarily who decided.
-7. **Where the decision was argued.** A link to the RFC issue or thread. If there
+8. **The authors**, meaning whoever wrote the record. Not necessarily who decided.
+9. **Where the decision was argued.** A link to the RFC issue or thread. If there
    was none, say what happened instead, such as "settled in grooming; no RFC issue
    was raised". Never link a delivery ticket that does not hold the argument.
-8. **The date the decision was settled.** Use today's date when none is given. Do
-   not leave it blank and do not ask twice: a record with no date cannot be read as
-   current or historic. Say which date you used when you inferred it.
+10. **The date the decision was settled.** Use today's date when none is given. Do
+    not leave it blank and do not ask twice: a record with no date cannot be read as
+    current or historic. Say which date you used when you inferred it.
 
 If the person supplies only a conclusion, ask for the options before continuing.
 
