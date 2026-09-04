@@ -14,23 +14,20 @@ copies.
 | --- | --- | --- |
 | [`sprint-logs-sample/`](../sprint-logs-sample/) | The originals, as merged | 7,275 |
 | [`sprint-logs-housestyle/`](../sprint-logs-housestyle/) | Prose edited to the house style, structure untouched | 7,234 |
-| `sprint-logs-new-template/` | Rewritten into the template | 3,191 |
+| `sprint-logs-new-template/` | Rewritten into the template | 2,245 |
 
 Read the three side by side. They isolate what each intervention does.
 
 ## The result
 
-**The house style cut 0.6%. The template cut 56%.**
+**The house style cut 0.6%. The template cut 69%.**
 
-| Log | Original | House style | Template | Log only |
-| --- | --- | --- | --- | --- |
-| FSBB | 1,170 | 1,164 | 694 | 536 |
-| MySEI | 4,292 | 4,264 | 1,594 | 1,203 |
-| TCI | 1,813 | 1,806 | 903 | 656 |
-| **Total** | **7,275** | **7,234** | **3,191** | **2,395** |
-
-"Log only" excludes the Step 5 report, which each file carries after a rule and
-which is not part of the written log. By that measure the cut is 67%.
+| Log | Original | House style | Template |
+| --- | --- | --- | --- |
+| FSBB | 1,170 | 1,164 | 491 |
+| MySEI | 4,292 | 4,264 | 1,143 |
+| TCI | 1,813 | 1,806 | 611 |
+| **Total** | **7,275** | **7,234** | **2,245** |
 
 This confirms what the earlier benchmarks found three times: **editing prose does
 not shorten an artifact. Deciding what does not belong in it does.** The house
@@ -44,13 +41,14 @@ Every passage of the originals reached one of four destinations.
 | Destination | What went there |
 | --- | --- |
 | A table row | Anything with a link: an issue, a PR, a merge request, a decision record |
-| Out, to an issue or a decision record | Reasoning, analysis, and argument. Each file's Step 5 report lists its own, eight passages in all |
+| Out, to an issue or a decision record | Reasoning, analysis, and argument: eight passages across the three logs |
 | Out, to the retrospective | Observations about how the squad worked, such as MySEI running closer to kanban than to a fixed commitment |
 | Dropped | The roster, the absences, and prose that restated a table |
 
-The rewrite does not move text, so these are not word counts. The 4,880 words the
-originals hold above the rewritten rows are compressed, routed, or dropped, and
-the Step 5 reports name every routed passage.
+The rewrite does not move text, so these are not word counts. The 5,030 words the
+originals hold above the rewritten rows are compressed, routed, or dropped. The
+skill names every routed passage in conversation, at Step 5, rather than in the
+log.
 
 The largest single move is MySEI's load test analysis, roughly 1,000 words:
 the measurement table, the saturated-thread diagnosis, four qualifications on
@@ -71,9 +69,9 @@ A row with no link is a finding. The rewrite surfaced 23.
 
 | Log | Rows | Rows with no link |
 | --- | --- | --- |
-| FSBB | 32 | 6 |
-| MySEI | 61 | 11 |
-| TCI | 38 | 6 |
+| FSBB | 28 | 6 |
+| MySEI | 57 | 11 |
+| TCI | 34 | 6 |
 
 These were all present in the originals as prose, and none was actionable there.
 The sharpest is MySEI's: **internal testing was committed at Sprint Planning,
@@ -97,8 +95,17 @@ before the template is used for real.
 3. **No reserve or planned distinction.** Delivered absorbs both. FSBB's entire
    sprint was reserve work, and TCI's largest item was, so the template loses a
    distinction those two logs are built on.
-4. **Sign-off has no receiver when nothing was handed over.** FSBB's To cell
-   reads `Unassigned`, which is accurate and also the whole finding.
+4. ~~**Sign-off has no receiver when nothing was handed over.**~~ Fixed. The
+   Sign-off table is gone, since there is no formal sign-off process to record.
+   The header's Next holder field carries the handover, and FSBB's reads
+   `Unassigned`, which is accurate and also the whole finding.
 
-Gaps 1 and 3 are worth fixing in the template. Gap 2 is worth arguing about. Gap
-4 is the template working.
+Gaps 1 and 3 are worth fixing in the template. Gap 2 is worth arguing about.
+
+## What review changed
+
+Read against the first version of these files if you reviewed them earlier.
+
+- **The Step 5 report is gone from all three logs.** It listed every row with no link, every routed passage, and every source that could not be searched. It was never meant to be written down: the skill says it in conversation before the author confirms. Chee Yang caught it in all three files.
+- **The Sign-off table is gone.** There is no formal sign-off process to record. The handover target survives as a `Next holder` field in the header.
+- Cells that said `No issue. See Finding 4.` now say `No issue`, since the findings they pointed at were in the report that is no longer there.

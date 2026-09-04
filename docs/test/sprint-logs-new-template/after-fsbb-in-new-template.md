@@ -62,6 +62,7 @@ stale_after: 2026-09-14
 | Squad | Charlie |
 | Sprint goal | None. FSBB held no assigned capacity this sprint. |
 | Goal met | Not applicable. All work came from the protected 20% reserve. |
+| Next holder | Unassigned |
 
 ## Delivered
 
@@ -84,44 +85,17 @@ stale_after: 2026-09-14
 
 | Decision | Record | Approver |
 |---|---|---|
-| Deploy by mirror, not by watcher. GitHub publishes an image and holds no GitLab credential. | **No record.** See Finding 1. | None. #67 is unreviewed. |
-| Promote to production by protected manual job, reusing the image tag dev runs. | **No record.** See Finding 1. | None. !650 is unreviewed. |
+| Deploy by mirror, not by watcher. GitHub publishes an image and holds no GitLab credential. | **No record** | None. #67 is unreviewed. |
+| Promote to production by protected manual job, reusing the image tag dev runs. | **No record** | None. !650 is unreviewed. |
 | Nothing decided on the pilot, the threat risk assessment, or the school wifi allowlist. | [4–17 Aug FSBB log](https://github.com/String-dxd/fsbb-calculator) | Not applicable |
 
 ## Risks handed over
 
 | Risk | Issue | Owner |
 |---|---|---|
-| The 4–17 Aug log cites the wrong merge request for the production stack. A reader concludes production was never deployed. | **No issue.** See Finding 2. | Unassigned |
+| The 4–17 Aug log cites the wrong merge request for the production stack. A reader concludes production was never deployed. | **No issue** | Unassigned |
 | Merging #67 and !650 without #68 replaces a working watcher with a schedule that does not exist. | [#68](https://github.com/String-dxd/fsbb-calculator/issues/68) | Yong Quan |
-| Production is gated to SEED CIDRs, not school wifi. A missed swap gives every pilot school a silent 404. | **No issue.** See Finding 3. | Unassigned |
+| Production is gated to SEED CIDRs, not school wifi. A missed swap gives every pilot school a silent 404. | **No issue** | Unassigned |
 | Pathway diversity has no analysis path. Telemetry accrues with nothing downstream to read it. | [#51](https://github.com/String-dxd/fsbb-calculator/issues/51) | Unassigned |
-| PDPA and IT Security sign-off is outstanding on minors' subject and grade data. | **No issue.** See Finding 4. | Unassigned |
-| The pilot date, the week of 12 October, appears in no repository. Treat it as unverified. | **No issue.** See Finding 5. | Unassigned |
-
-## Sign-off
-
-| Field | Entry |
-|---|---|
-| From | Squad Charlie, Chee Yang |
-| To | Unassigned |
-| Date | 2026-08-31 |
-| Permanent link | `sprint-logs/2026-08-31_sprint_log_fsbb.md` |
-
----
-
-## Step 5 report
-
-Not part of the log. This is what the skill says aloud before it asks for
-confirmation, per Step 5 of `dx-create-sprint-logs`.
-
-**Rows with no link.** Each one needs something written before the log is honest.
-
-1. Both deployment decisions have no decision record. Two weeks of design sit in a PR description. Write the record, then link it.
-2. The wrong-citation correction has no issue. Raise one against the 4–17 Aug log. Do not edit that log.
-3. The school wifi CIDR swap has no issue. It is a Terraform change in `https-listener-rules.hcl`, and it is now two sprints old.
-4. PDPA and IT Security sign-off has no issue. #64 feeds that review and does not conclude it.
-5. The pilot date has no issue and no repository record.
-
-**Sources not searched.** Darren's GitLab merge requests. His GitLab username is
-unknown, so GitLab evidence covers Chee Yang, Victor, Yong Quan, and Jerome only.
+| PDPA and IT Security sign-off is outstanding on minors' subject and grade data. | **No issue** | Unassigned |
+| The pilot date, the week of 12 October, appears in no repository. Treat it as unverified. | **No issue** | Unassigned |

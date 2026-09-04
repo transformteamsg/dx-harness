@@ -107,6 +107,7 @@ stale_after: 2026-09-14
 | Squad | Charlie |
 | Sprint goal | Term 4 dashboards ready before the 14 Sep go-live. |
 | Goal met | Partly. All four dashboards are on staging and under test. The hurtful behaviour tabs move to the next sprint. |
+| Next holder | Squad Charlie, Chee Yang |
 
 ## Delivered
 
@@ -134,53 +135,18 @@ stale_after: 2026-09-14
 
 | Decision | Record | Approver |
 |---|---|---|
-| Version-control the dashboards as Superset export bundles, synced by a purpose-built CLI. `preset-cli` and `sup` were rejected. | **No record.** See Finding 1. | Unrecorded |
+| Version-control the dashboards as Superset export bundles, synced by a purpose-built CLI. `preset-cli` and `sup` were rejected. | **No record** | Unrecorded |
 | `plans.py` stays dependency-free, so the operations that can destroy live dashboards stay testable offline. | [`DECISIONS.md`](https://github.com/transformteamsg/wellbeing-viz/blob/main/DECISIONS.md) | Chee Yang |
 | Sandbox dashboards are created published, not as drafts. | [`DECISIONS.md`](https://github.com/transformteamsg/wellbeing-viz/blob/main/DECISIONS.md) | Chee Yang |
-| Move #1 and #13 to backlog rather than carry them in the sprint. | **No record.** See Finding 2. | Unrecorded |
+| Move #1 and #13 to backlog rather than carry them in the sprint. | **No record** | Unrecorded |
 
 ## Risks handed over
 
 | Risk | Issue | Owner |
 |---|---|---|
-| Term 4 goes live on 14 Sep. The dashboards are on staging, under test, not signed off. | **No issue.** See Finding 3. | Squad Charlie |
+| Term 4 goes live on 14 Sep. The dashboards are on staging, under test, not signed off. | **No issue** | Squad Charlie |
 | The hurtful behaviour tabs are placeholders. A Year Head sees an empty tab with nothing to explain it. | [#1](https://github.com/transformteamsg/wellbeing-viz/issues/1) | Unassigned |
 | #1 blocks ten issues in the epic and has been set down in two consecutive sprints. | [#1](https://github.com/transformteamsg/wellbeing-viz/issues/1) | Unassigned |
-| #18, #19 and #21 closed before the CLI merged. Their changes exist only in Superset, not in git. | **No issue.** See Finding 4. | Unassigned |
-| #20, #22, #24, #25 and #26 are closed but still read `status: review`. A board will disagree with the repository. | **No issue.** See Finding 5. | Unassigned |
-| A change made in the Superset UI does not announce itself. The CLI makes drift detectable, not prevented. | **No issue.** See Finding 6. | Unassigned |
-
-## Sign-off
-
-| Field | Entry |
-|---|---|
-| From | Squad Charlie, Chee Yang |
-| To | Squad Charlie, Chee Yang |
-| Date | 2026-08-31 |
-| Permanent link | `sprint-logs/2026-08-31_sprint_log_tci.md` |
-
----
-
-## Step 5 report
-
-Not part of the log. This is what the skill says aloud before it asks for
-confirmation, per Step 5 of `dx-create-sprint-logs`.
-
-**Rows with no link.** Each one needs something written before the log is honest.
-
-1. The choice to build a CLI rather than use `preset-cli` or `sup` has no record. `DECISIONS.md` holds the decisions made inside the tool, not the decision to build it.
-2. Neither #1 nor #13 records why it was deprioritised, in either of the two sprints that set it down.
-3. Go-live readiness has no issue tracking sign-off against the 14 Sep date.
-4. The first week's Superset-only changes have no issue. Recovering them means reading the live dashboards.
-5. The five stale `status: review` labels have no issue.
-6. Superset drift detection has no issue and nothing runs on a schedule.
-
-**Content routed out of the log.** Three passages in the previous version have no
-issue, no PR, and no decision record. Under this skill they do not go in the log.
-
-- The dashboard facelift explored outside the sprint. Raise an issue or drop it, because a log entry cannot be assigned or scheduled.
-- The observation that reserve work took more than a fifth of the sprint. This belongs on the retrospective.
-- The description of how `supersetlib/` is layered. This belongs in the repository's own documentation, beside the code it describes.
-
-**Sources not searched.** Darren's GitLab merge requests. His GitLab username is
-unknown.
+| #18, #19 and #21 closed before the CLI merged. Their changes exist only in Superset, not in git. | **No issue** | Unassigned |
+| #20, #22, #24, #25 and #26 are closed but still read `status: review`. A board will disagree with the repository. | **No issue** | Unassigned |
+| A change made in the Superset UI does not announce itself. The CLI makes drift detectable, not prevented. | **No issue** | Unassigned |
