@@ -6,6 +6,8 @@
 - The style says how long an artifact should be, not only how it should read. A section with nothing to say takes `None` rather than filler, length comes from load-bearing content, and an artifact that runs long because its scope is too wide gets split rather than trimmed.
 - Words that certify their own claim are out: `real`, `genuine`, `honestly`, `actually`, `truly`. A bug is a bug. The exception is a contrast a reader needs, such as a confirmed finding against a plausible one.
 - A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
+- A new skill, `dx-create-sprint-logs`, writes a sprint log per workstream: what closed, what carried over, what was decided, and what risk transfers to whoever picks the work up next. Every row is a clause and a link.
+- The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
 
 ## 0.6.0 (2026-09-01)
 
