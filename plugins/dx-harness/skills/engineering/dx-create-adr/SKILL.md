@@ -12,6 +12,15 @@ tracker, and the network at each step. Assume none of them.
 
 ## Step 1: Gather the decision
 
+Settle the mode first: is the decision made?
+
+- **Made**: gather everything below and write the record in one run.
+- **Not made**: the person is scoping a decision, often before a spike. Gather items
+  1 to 5, 8, and 10, skip 6, set the status to `draft`, and read
+  `## Working on an open record` before writing anything.
+- **Neither, they are returning to a record already open**: go straight to
+  `## Working on an open record`.
+
 Ask for each of these. Invent none of them.
 
 1. **The decision**, stated as an action: "use Postgres for the write model", not
@@ -238,10 +247,43 @@ empty: a section with nothing to say gets `N/A` and a one-line reason.
 3. Any numbering source that could not be checked, and what that risks.
 4. On a supersede, both files that changed and the chain they now form.
 
+## Working on an open record
+
+A record whose status is `draft` or `proposed` is not finished, and its body may be
+edited. The rule against editing applies to an `accepted` record only.
+
+### Adding what a spike found
+
+Route each finding to the section that owns it, rather than appending everything to
+the end:
+
+| The finding | Goes to |
+| --- | --- |
+| An option nobody had considered | `Considered Options` |
+| Evidence for or against an option | `Pros and Cons of the Options` |
+| A constraint discovered on the way | `Decision Drivers` |
+| The spike, its branch, its numbers | `More Information` |
+| What was tried and what happened | a dated `Research log` entry |
+
+The status does not change. Say which sections you touched.
+
+### Promoting it
+
+Re-run step 4 before anything else. A spike takes weeks, and the directory can gain a
+record that contradicts this one while it runs.
+
+Then fill `Decision Outcome` with the chosen option and the reason it won, replacing
+the `Settled by` line, and set the status to `accepted` or `rejected`. Keep the
+research log.
+
+From that point the body is frozen and a change means superseding it, per
+`references/supersede.md`.
+
 ## Rules
 
 - Never edit the body of an accepted record. Supersede it instead, per
-  `references/supersede.md`.
+  `references/supersede.md`. A `draft` or `proposed` record is not accepted, so it is
+  edited in place.
 - Never reuse a number, including one freed by a rejected or deleted record.
 - One decision per record.
 - Write nothing while a question is open. Steps 3, 4, and 5 all stop and wait.

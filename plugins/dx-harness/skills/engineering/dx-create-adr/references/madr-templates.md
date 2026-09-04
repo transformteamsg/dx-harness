@@ -39,20 +39,57 @@ sentence.
 
 ### Status values
 
-Exactly these five. Never invent a sixth.
+Exactly these six. Never invent a seventh.
 
 | Status | Means |
 | --- | --- |
-| `proposed` | Written, not yet agreed. Use when the record itself is the thing under review. |
+| `draft` | Still being assembled. Not asking anyone for a decision yet. |
+| `proposed` | Complete, and asking for a decision. |
 | `accepted` | In force. |
 | `rejected` | Considered and turned down, kept so the reasoning is not repeated. |
 | `deprecated` | No longer relevant, and not replaced. |
 | `superseded by ADR-NNNN` | Replaced, with the replacement named. |
 
-Ask which one applies rather than defaulting. Guessing `accepted` on a proposal makes
-the record read as settled to everyone who finds it later. Where a house process
-treats an open RFC issue as the proposal, `proposed` will rarely be right: the record
-reaches the repository only once its RFC is accepted.
+`draft` is not a MADR status. It is here because `proposed` carries a request, and a
+record opened to scope a spike is not making one yet. Without the distinction a
+reviewer cannot tell whether a record wants their attention.
+
+Ask which one applies rather than defaulting. Guessing `accepted` on a record still
+under discussion makes it read as settled to everyone who finds it later.
+
+## While the decision is open
+
+A record can be opened before the decision is made, to scope what has to be settled
+and to collect what a spike finds. Two things change while its status is `draft` or
+`proposed`.
+
+**`Decision Outcome` says what will settle it**, rather than what was settled:
+
+```markdown
+## Decision Outcome
+
+Not yet decided. This record scopes the decision.
+
+Settled by: <the spike, benchmark, or data that will choose>
+```
+
+**A research log holds what was tried**, as a named collapsed section immediately
+before `More Information`, following the same shape as any other unheaded material:
+
+```markdown
+<details>
+<summary>Research log</summary>
+
+**2026-09-04** <what was tried, what happened, what it rules in or out>
+
+**2026-09-06** <the next entry, appended below the last>
+
+</details>
+```
+
+Keep the log when the record is accepted. The paths that failed are the reason it is
+worth keeping: they stop the next person spending a week ruling out what you already
+ruled out.
 
 ## Minimal
 
