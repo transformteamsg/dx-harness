@@ -65,7 +65,9 @@ paragraph. Most records are this shape.
 ## Context and Problem Statement
 
 <What forced a decision. Two to four sentences. State the constraint that made the
-status quo untenable, so a reader can tell whether it still holds.>
+status quo untenable, so a reader can tell whether it still holds. Name the
+requirements it had to meet, and the user journey it touches where it touches one:
+Minimal has no Decision Drivers section to hold them.>
 
 ## Considered Options
 
@@ -96,9 +98,16 @@ worth separating from the rationale.
 
 ## Context and Problem Statement
 
-<What forced a decision, and the constraint that made the status quo untenable.>
+<What forced a decision, and the constraint that made the status quo untenable.
+Name the user journey it touches where it touches one, because that is an input to
+the decision rather than a consequence of it. Omit the sentence where no user-facing
+surface is involved.>
 
 ## Decision Drivers
+
+The requirements the decision had to meet, functional and non-functional. Name the
+non-functional ones explicitly: latency, availability, cost, and security are the
+drivers most often left implicit and most often decisive.
 
 - <The thing that mattered most>
 - <The next thing>
