@@ -58,6 +58,8 @@ Branches take the type of the work, then a kebab-case summary:
 
 For example, `fix/container-build`, `docs/roadmap`, and `feat/aif-design-issue`. When a branch delivers one slice of a larger issue, name the parent: `split/205-audit-records-prebuild`.
 
+A release branch is the one exception to that shape. It takes `release/<version>`, as in `release/0.7.0`, because a release is not one of the types above. See [Cut a release](#cut-a-release).
+
 ## Open the pull request
 
 Every pull request links to an issue. File the issue first, then carry the link in the body: `Closes #NNN`, or `Part of #NNN` when the branch delivers one slice and the issue stays open. Nothing reaches `main` that no issue documents.
@@ -132,4 +134,16 @@ Skills are the canonical, tool-neutral source of the harness. The `.claude-plugi
 - **When you trim a skill, keep the "why" that changes what the rule does.** Cutting the explanation and leaving the bare instruction is usually the right call, and it makes a skill much easier to follow. Some of those clauses are quietly holding the rule up, though: they say when it applies and when it does not. `dx-code-review` lost one that read "because they are the cases worth raising precisely when they cannot be settled by reading", and the rule above it went from a conditional default to a blanket one, so a bug the review could prove got reported as a maybe. Before you delete a clause, take it out and ask whether the rule still behaves the same way at the edges. If the answer changes, it was never an explanation.
 - **Remember that an agent reads differently from you.** You skim past a "because" and get on with the instruction. An agent leans on it to settle the case nobody thought to write down. Keep that in mind when a skill looks too wordy: trim it, then go back and check that nothing moved that you did not mean to move.
 - Adding a skill folder needs no manifest change. The `skills` array in `plugin.json` scans both category directories.
-- Bump the `version` field in `plugins/dx-harness/.claude-plugin/plugin.json` when a change should reach installed users. Claude Code installs an update only when that version changes.
+- Leave the `version` field in `plugins/dx-harness/.claude-plugin/plugin.json` alone. Record what your change gives the user under the `## Unreleased` heading in `plugins/dx-harness/CHANGELOG.md`, and let the release carry the bump. See [Cut a release](#cut-a-release).
+
+## Cut a release
+
+A release is its own pull request, and it is the only pull request that bumps the plugin version. Branch it as `release/<version>`.
+
+The release pull request carries three things and nothing else:
+
+1. The `version` field in `plugins/dx-harness/.claude-plugin/plugin.json`, set to the new version.
+2. The `## Unreleased` heading in `plugins/dx-harness/CHANGELOG.md`, renamed to the version with the date it went out, as in `## 0.7.0 (2026-09-04)`.
+3. A fresh empty `## Unreleased` heading above it, ready for the next change.
+
+Nothing else belongs in it. A release that also fixes a skill cannot be reverted without reverting the fix, and the version then stops marking a set of changes anyone can name.
