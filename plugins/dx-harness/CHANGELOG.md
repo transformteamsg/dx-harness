@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.8.0 (2026-09-02)
+## Unreleased
 
 - A shared house style, `procedures/house-style.md`, now governs every artifact `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`, `dx-create-pr`, `dx-code-review`, and `dx-design-feedback` write. It draws on Orwell's six rules, the Google developer documentation style guide, and ASD-STE100, and it applies with no setup the moment any of those skills runs.
 - The style says how long an artifact should be, not only how it should read. A section with nothing to say takes `None` rather than filler, length comes from load-bearing content, and an artifact that runs long because its scope is too wide gets split rather than trimmed.
