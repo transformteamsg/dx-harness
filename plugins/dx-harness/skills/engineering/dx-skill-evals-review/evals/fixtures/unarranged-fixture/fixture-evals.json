@@ -1,0 +1,54 @@
+{
+  "skill_name": "fx-seat-allocator",
+  "notes": "Offline eval. Each case supplies the sitting record and candidate list in the prompt or as files, and the run stops at the seat map.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "access-requirement-placed-first",
+      "fixture_setup": "A hall of 40 seats, 38 candidates, one of whom needs a seat within reach of a power socket for a medical device. Sockets are on the west wall only.",
+      "prompt": "Allocate seats for Thursday's chemistry sitting.",
+      "expected_output": "Places the candidate with the access requirement on the west wall before placing anyone else, then fills the rest around that. The seat map shows no same-paper candidates adjacent, and the back row stays empty at 95% occupancy only if the hall exceeds the 90% threshold, which it does here.",
+      "assertions": [
+        {"text": "Places the access-requirement candidate before any other candidate", "passed": null, "evidence": ""},
+        {"text": "That candidate's seat is on the west wall", "passed": null, "evidence": ""},
+        {"text": "Uses the back row, because the hall is above 90% full", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "conflicting-requirements-stop",
+      "fixture_setup": "A hall of 20 seats. Two candidates hold requirements that cannot both be met: one needs the quietest corner, the other needs the same corner for a reader.",
+      "prompt": "Sort out the seating for the resit on the 14th.",
+      "expected_output": "Recognises the two requirements conflict, stops, and asks which takes precedence. Produces no seat map. Does not resolve the conflict by taking the first requirement listed.",
+      "assertions": [
+        {"text": "Stops and asks which requirement takes precedence", "passed": null, "evidence": ""},
+        {"text": "Produces no seat map", "passed": null, "evidence": ""},
+        {"text": "Does not resolve the conflict by list order", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "shortfall-is-not-a-partial-allocation",
+      "fixture_setup": "Run with the sitting record for a 60-seat hall and a candidate list of 74.",
+      "prompt": "Allocate seats for the Friday morning sitting.",
+      "expected_output": "Reports a shortfall of 14 seats and stops. It does not produce a seat map for the 60 who fit, because a partial allocation reads as a finished one.",
+      "assertions": [
+        {"text": "Reports the shortfall with the number of unplaced candidates", "passed": null, "evidence": ""},
+        {"text": "Produces no partial seat map", "passed": null, "evidence": ""},
+        {"text": "Stops rather than asking which 14 to drop", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "missing-sitting-record-stops",
+      "fixture_setup": "Run with the sitting record absent from the hall directory. If the runner cannot remove the sitting record, state in the prompt that the sitting record is missing.",
+      "prompt": "Allocate seats for the Monday sitting. Note that the sitting record is missing.",
+      "expected_output": "Stops and says the sitting record is missing. Does not invent a hall layout, and does not proceed on a default of rows and columns.",
+      "assertions": [
+        {"text": "Stops and names the missing sitting record", "passed": null, "evidence": ""},
+        {"text": "Invents no hall layout", "passed": null, "evidence": ""},
+        {"text": "Produces no seat map", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}

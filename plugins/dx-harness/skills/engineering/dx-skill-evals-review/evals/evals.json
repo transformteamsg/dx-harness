@@ -56,11 +56,12 @@
     {
       "id": 4,
       "name": "files-the-fixture-that-arranges-nothing",
-      "fixture_setup": "Supply a small suite, three or four evals, sound in every other respect. One eval carries `fixture_setup` reading: 'Run with the database unavailable. If the runner cannot stop the database, state in the prompt that the database is down.' Its prompt then states that the database is down.",
+      "fixture_setup": "Point the run at `fixtures/unarranged-fixture/fixture-evals.json` and the skill at `fixtures/unarranged-fixture/fixture-skill.md`. Three of its four evals are sound. Eval 3 carries a `fixture_setup` that tells the runner to state the missing sitting record in the prompt if it cannot remove the file, and the prompt duly states it.",
       "prompt": "Review this eval suite against the skill it tests.",
-      "expected_output": "Files the fixture as `fixture-not-arranged` at confidence 100, quoting the setup and the prompt together, and says what the eval measures until the fixture is real: obedience to a stated premise rather than behaviour under a genuinely absent database. It does not treat the presence of a `fixture_setup` field as evidence that a fixture exists.",
+      "expected_output": "Files eval 3 as `fixture-not-arranged` at confidence 100, quoting the setup and the prompt together, and says what the eval measures until the fixture is real: obedience to a stated premise rather than behaviour when the sitting record is genuinely absent. It does not treat the presence of a `fixture_setup` field as evidence that a fixture exists, and it does not file the same defect against the other three evals, whose setups describe conditions the prompt does not restate.",
       "assertions": [
-        {"text": "Files a `fixture-not-arranged` finding against that eval", "passed": null, "evidence": ""},
+        {"text": "Files a `fixture-not-arranged` finding against eval 3", "passed": null, "evidence": ""},
+        {"text": "Files no such finding against evals 0, 1 or 2", "passed": null, "evidence": ""},
         {"text": "Quotes the setup and the prompt together as evidence", "passed": null, "evidence": ""},
         {"text": "States what the eval measures in the meantime", "passed": null, "evidence": ""},
         {"text": "Does not report the suite as sound on the strength of the other evals", "passed": null, "evidence": ""}
@@ -69,11 +70,11 @@
     {
       "id": 5,
       "name": "gap-outranks-a-tidy-suite",
-      "fixture_setup": "Supply a skill whose central promise is that it carries a payload from one step to the next, plus a five-eval suite in which every eval is well written, falsifiable, and free of leakage, and not one of them tests that the payload survives.",
+      "fixture_setup": "Point the run at `fixtures/untested-promise/fixture-evals.json` and the skill at `fixtures/untested-promise/fixture-skill.md`. The skill promises that everything the reporter gave, including the symptom in their own words, the timing, the scale, what they tried, and anything out of scope, survives the handover. All five evals are well made, and not one supplies a payload rich enough for its loss to be visible.",
       "prompt": "Review this eval suite against the skill it tests.",
-      "expected_output": "Leads with the untested promise as an ADD, with a proposed prompt, and does not report the suite as sound because the evals present are well made. The gap outranks the absence of other findings. The proposed prompt uses subject matter the skill does not mention, so the proposal does not leak its own answer.",
+      "expected_output": "Leads with the untested handover promise as an ADD, with a proposed prompt, and does not report the suite as sound because the evals present are well made. The gap outranks the absence of other findings. The proposed prompt uses subject matter the skill does not mention, so the proposal does not leak its own answer.",
       "assertions": [
-        {"text": "Files the untested payload promise as an ADD", "passed": null, "evidence": ""},
+        {"text": "Files the untested handover promise as an ADD", "passed": null, "evidence": ""},
         {"text": "The ADD carries a usable prompt, not a description of one", "passed": null, "evidence": ""},
         {"text": "The proposed prompt uses subject matter the skill does not mention", "passed": null, "evidence": ""},
         {"text": "Does not conclude the suite is in good shape because its five evals are well made", "passed": null, "evidence": ""}
@@ -82,13 +83,13 @@
     {
       "id": 6,
       "name": "reviews-the-suite-not-the-skill",
-      "fixture_setup": "Supply a vague, under-specified skill together with a suite that tests it accurately: the evals match what the skill actually says, weaknesses and all.",
+      "fixture_setup": "Point the run at `fixtures/vague-skill/fixture-evals.json` and the skill at `fixtures/vague-skill/fixture-skill.md`. The skill is under-specified throughout, and the suite tests it faithfully. Its eval 3 rests on a rule the skill states with an exception and no way to tell which applies.",
       "prompt": "Review this eval suite against the skill it tests.",
-      "expected_output": "Keeps the two apart. It reports the suite as a fair test of the skill as written, and raises the skill's vagueness in `notes` rather than filing findings against the suite for faithfully testing a weak skill. The one thing it may file is an eval whose ground truth the skill never settles, and it labels that as a hole in the skill rather than a defect in the eval.",
+      "expected_output": "Keeps the two apart. It reports the suite as a fair test of the skill as written, and raises the skill's vagueness in `notes` rather than filing findings against the suite for faithfully testing a weak skill. It files eval 3, whose ground truth the skill never settles, and labels that as a hole in the skill rather than a defect in the eval.",
       "assertions": [
         {"text": "Does not file findings against the suite for the skill's vagueness", "passed": null, "evidence": ""},
         {"text": "Raises the skill's weakness in `notes` or as an explicit aside", "passed": null, "evidence": ""},
-        {"text": "Labels any unsettled ground truth as a hole in the skill, not a defect in the eval", "passed": null, "evidence": ""}
+        {"text": "Files eval 3 and labels it a hole in the skill, not a defect in the eval", "passed": null, "evidence": ""}
       ]
     },
     {

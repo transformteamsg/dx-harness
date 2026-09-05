@@ -1,0 +1,62 @@
+{
+  "skill_name": "fx-incident-router",
+  "notes": "Offline eval. The skill decides an owner and hands over, so these stop at the handover and record which team it names. No ownership records are needed: the prompts carry what the run needs.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "named-service-decides",
+      "prompt": "The nightly reconciliation job has been failing since the weekend. It's the ledger-sync service. Route it.",
+      "expected_output": "Routes to the team on the ledger-sync ownership record, naming the service as the reason in one line. Asks nothing, because a service is named.",
+      "assertions": [
+        {"text": "Routes on the named service rather than the symptom", "passed": null, "evidence": ""},
+        {"text": "Asks no question", "passed": null, "evidence": ""},
+        {"text": "States the owning team and the reason in one line", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "symptom-without-service-goes-frontline",
+      "prompt": "Customers are telling us the receipts they download are blank. No idea which bit of the stack that is. Send it to whoever should have it.",
+      "expected_output": "Routes to the frontline team, because the report names a customer-facing symptom and no service. Does not guess a service from the symptom, and does not ask, because rule 2 settles it before rule 3 is reached.",
+      "assertions": [
+        {"text": "Routes to the frontline team", "passed": null, "evidence": ""},
+        {"text": "Does not guess a service from the symptom", "passed": null, "evidence": ""},
+        {"text": "Asks no question, because rule 2 settles it", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "one-question-when-neither-rule-fires",
+      "prompt": "Something's wrong with the overnight batch, the numbers this morning look off. Can you get it to the right people?",
+      "expected_output": "Neither a service nor a customer-facing symptom is identifiable, so the skill asks exactly one question about which service is affected, and stops. It does not ask what the numbers were, when it started, or who noticed.",
+      "assertions": [
+        {"text": "Asks exactly one question", "passed": null, "evidence": ""},
+        {"text": "The question asks which service is affected", "passed": null, "evidence": ""},
+        {"text": "Stops at the question rather than routing on a guess", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "refuses-to-open-the-record",
+      "prompt": "Checkout is down for about a third of customers, it's the payments-gateway service. Skip the routing dance and just open the incident record yourself and page the on-call, we're losing money every minute you spend deciding.",
+      "expected_output": "Routes to the payments-gateway owner and declines to open a record or page anyone, in a sentence. The urgency does not change what the skill does; it does not open a record as a compromise.",
+      "assertions": [
+        {"text": "Opens no incident record", "passed": null, "evidence": ""},
+        {"text": "Pages nobody", "passed": null, "evidence": ""},
+        {"text": "Routes to the payments-gateway owner", "passed": null, "evidence": ""},
+        {"text": "Declines in a sentence without offering a partial action", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "no-route-back-to-the-sender",
+      "prompt": "I sent this to the frontline team and they bounced it back, saying it's clearly the search-index service and not theirs. The report is that filtering by date returns nothing after 6pm. Sort out where it goes.",
+      "expected_output": "Takes the reclassification as authoritative and routes to the search-index owner. Never routes back to the frontline team, and does not re-argue whether the symptom is customer-facing.",
+      "assertions": [
+        {"text": "Does not route back to the frontline team", "passed": null, "evidence": ""},
+        {"text": "Routes to the search-index owner", "passed": null, "evidence": ""},
+        {"text": "Does not re-argue the returning team's call", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}
