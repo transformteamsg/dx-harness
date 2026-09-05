@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Skill eval suite review findings",
+  "description": "Return format for every reviewer dispatched by dx-skill-evals-review.",
+  "type": "object",
+  "required": ["reviewer", "findings", "notes"],
+  "properties": {
+    "reviewer": {
+      "type": "string",
+      "enum": ["answer-leakage", "falsifiability", "ground-truth", "gap-hunter"]
+    },
+    "findings": {
+      "type": "array",
+      "description": "Empty when the reviewer found nothing. Never padded.",
+      "items": {
+        "type": "object",
+        "required": ["eval_id", "defect_class", "title", "evidence", "why_it_matters", "recommendation", "confidence"],
+        "properties": {
+          "eval_id": {
+            "type": ["integer", "null"],
+            "description": "The eval this concerns. Null for a suite-level finding, which is what every gap-hunter finding is."
+          },
+          "eval_name": { "type": "string" },
+          "defect_class": {
+            "type": "string",
+            "enum": [
+              "answer-in-the-skill",
+              "measures-the-model",
+              "cannot-fail",
+              "assertion-restates-another",
+              "unjudgeable-from-transcript",
+              "arguable-ground-truth",
+              "redundant-with-another-eval",
+              "fixture-not-arranged",
+              "untested-promise"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "The defect in 10 words or fewer."
+          },
+          "evidence": {
+            "type": "string",
+            "description": "A quote. For answer-in-the-skill, quote BOTH the eval prompt and the skill passage that answers it. A finding with no quote is not reportable."
+          },
+          "why_it_matters": {
+            "type": "string",
+            "description": "What a run that passes this eval fails to tell you."
+          },
+          "recommendation": {
+            "type": "string",
+            "enum": ["KEEP", "TRIM", "REWRITE", "MERGE", "CUT", "ADD"]
+          },
+          "proposed_fix": {
+            "type": "string",
+            "description": "For REWRITE and ADD, the prompt you propose. For MERGE, which eval survives and why. Omitted for CUT."
+          },
+          "confidence": {
+            "type": "integer",
+            "enum": [50, 75, 100],
+            "description": "100 provable by quoting two passages. 75 likely, a charitable reading could reconcile it. 50 advisory. Below 50, suppress the finding rather than emitting it."
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "What you could not assess, and why. Never a summary of the findings above."
+    }
+  }
+}
