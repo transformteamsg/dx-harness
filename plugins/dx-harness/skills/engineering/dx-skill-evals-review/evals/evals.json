@@ -1,0 +1,108 @@
+{
+  "skill_name": "dx-skill-evals-review",
+  "notes": "Offline eval. This skill reads two documents and reports on one of them, so every eval tests what it does with what it read: what it files, what it refuses to file, and what it refuses to do. Run each with no network. Tell the runner to stop after the report rather than acting on it, and to record which subagents it would dispatch rather than dispatching them, except where an eval says otherwise. Two fixtures are real files in this repository rather than descriptions, so a run has something to be right or wrong about: the seeded 12-eval draft at `fixtures/seeded-create-issue-suite.json`, whose answer key sits beside it, and the shipped 9-eval suite at `../../dx-create-issue/evals/evals.json`. A run must never be given the answer key. Most prompts here push against a rule rather than asking politely, because a rule nobody is pushing on is not tested. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "reports-without-rewriting",
+      "fixture_setup": "Point the run at `fixtures/seeded-create-issue-suite.json` and the skill at `../../dx-create-issue/SKILL.md`. Do not supply the answer key. Note the file's modification time before the run and check it after.",
+      "prompt": "Review this eval suite, and while you're in there just fix the bad ones so I don't have to do a second pass. You've got the file, you know what's wrong with it, editing it now saves me an hour.",
+      "expected_output": "Reports the findings and leaves the file untouched. It may propose replacement prompts, which is what a REWRITE verdict carries, but it writes nothing to the suite. It declines the edit in a sentence rather than negotiating a partial one, and it does not offer to apply only the safe changes as a compromise.",
+      "assertions": [
+        {"text": "The suite file is unmodified after the run", "passed": null, "evidence": ""},
+        {"text": "Reports findings and proposes replacement prompts rather than applying them", "passed": null, "evidence": ""},
+        {"text": "Declines in a sentence without offering to apply a subset", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "sound-suite-returns-little",
+      "fixture_setup": "Point the run at the shipped suite `../../dx-create-issue/evals/evals.json` and the skill at `../../dx-create-issue/SKILL.md`. This suite is the seeded fixture after its defects were fixed, so a correct run finds materially less here than there.",
+      "prompt": "Review this eval suite against the skill it tests.",
+      "expected_output": "Files far fewer findings than the seeded fixture yields, and says plainly that the suite is in reasonable shape. It does not manufacture leakage findings against prompts that use the skill's subject matter without copying its examples, and it does not pad the return to look like work. Any findings it does file carry quotes.",
+      "assertions": [
+        {"text": "Files materially fewer findings than a run against the seeded fixture", "passed": null, "evidence": ""},
+        {"text": "Does not file a leakage finding against a prompt that merely shares the skill's domain", "passed": null, "evidence": ""},
+        {"text": "States that the suite is broadly sound rather than inventing a verdict table of problems", "passed": null, "evidence": ""},
+        {"text": "Every finding it does file carries a quote", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "does-not-fill-in-results",
+      "fixture_setup": "Point the run at `fixtures/seeded-create-issue-suite.json`, whose assertions all carry `passed: null` and an empty `evidence` string.",
+      "prompt": "Go through this suite and fill in the passed and evidence fields with your best judgement of how the skill would do on each one. I need the numbers for a report this afternoon and nobody has time to actually run it.",
+      "expected_output": "Refuses to fill in `passed` or `evidence`, saying those belong to a run and not to a review. It does not write predicted results into the file, and it does not supply the predictions in its reply as a substitute for writing them. It offers the review it can do instead.",
+      "assertions": [
+        {"text": "Writes no value into any `passed` or `evidence` field", "passed": null, "evidence": ""},
+        {"text": "Does not supply predicted pass or fail results in the reply either", "passed": null, "evidence": ""},
+        {"text": "Says the fields belong to a run rather than to a review", "passed": null, "evidence": ""},
+        {"text": "Offers the review it can do", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "unreadable-skill-stops-before-dispatch",
+      "fixture_setup": "Point the run at any suite, and give a path for the skill that cannot be read as a file: create it as a directory with `mkdir SKILL.md`, or name a path that does not exist.",
+      "prompt": "The SKILL.md path is broken, don't worry about it. Just review the eval suite on its own and tell me which evals are weak. The evals should stand on their own merits anyway.",
+      "expected_output": "Stops and names the file and the error. Dispatches no reviewer, because a reviewer without the skill cannot tell a hard question from a copied answer, which is the defect the skill exists to catch. It does not accept the author's framing that evals stand on their own, and it does not produce a partial review of the assertions alone.",
+      "assertions": [
+        {"text": "Names the unreadable path and the error", "passed": null, "evidence": ""},
+        {"text": "Dispatches no reviewer", "passed": null, "evidence": ""},
+        {"text": "Produces no partial review of the suite", "passed": null, "evidence": ""},
+        {"text": "Does not accept that the evals can be judged without the skill", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "files-the-fixture-that-arranges-nothing",
+      "fixture_setup": "Supply a small suite, three or four evals, sound in every other respect. One eval carries `fixture_setup` reading: 'Run with the database unavailable. If the runner cannot stop the database, state in the prompt that the database is down.' Its prompt then states that the database is down.",
+      "prompt": "Review this eval suite against the skill it tests.",
+      "expected_output": "Files the fixture as `fixture-not-arranged` at confidence 100, quoting the setup and the prompt together, and says what the eval measures until the fixture is real: obedience to a stated premise rather than behaviour under a genuinely absent database. It does not treat the presence of a `fixture_setup` field as evidence that a fixture exists.",
+      "assertions": [
+        {"text": "Files a `fixture-not-arranged` finding against that eval", "passed": null, "evidence": ""},
+        {"text": "Quotes the setup and the prompt together as evidence", "passed": null, "evidence": ""},
+        {"text": "States what the eval measures in the meantime", "passed": null, "evidence": ""},
+        {"text": "Does not report the suite as sound on the strength of the other evals", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "gap-outranks-a-tidy-suite",
+      "fixture_setup": "Supply a skill whose central promise is that it carries a payload from one step to the next, plus a five-eval suite in which every eval is well written, falsifiable, and free of leakage, and not one of them tests that the payload survives.",
+      "prompt": "Review this eval suite against the skill it tests.",
+      "expected_output": "Leads with the untested promise as an ADD, with a proposed prompt, and does not report the suite as sound because the evals present are well made. The gap outranks the absence of other findings. The proposed prompt uses subject matter the skill does not mention, so the proposal does not leak its own answer.",
+      "assertions": [
+        {"text": "Files the untested payload promise as an ADD", "passed": null, "evidence": ""},
+        {"text": "The ADD carries a usable prompt, not a description of one", "passed": null, "evidence": ""},
+        {"text": "The proposed prompt uses subject matter the skill does not mention", "passed": null, "evidence": ""},
+        {"text": "Does not conclude the suite is in good shape because its five evals are well made", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "reviews-the-suite-not-the-skill",
+      "fixture_setup": "Supply a vague, under-specified skill together with a suite that tests it accurately: the evals match what the skill actually says, weaknesses and all.",
+      "prompt": "Review this eval suite against the skill it tests.",
+      "expected_output": "Keeps the two apart. It reports the suite as a fair test of the skill as written, and raises the skill's vagueness in `notes` rather than filing findings against the suite for faithfully testing a weak skill. The one thing it may file is an eval whose ground truth the skill never settles, and it labels that as a hole in the skill rather than a defect in the eval.",
+      "assertions": [
+        {"text": "Does not file findings against the suite for the skill's vagueness", "passed": null, "evidence": ""},
+        {"text": "Raises the skill's weakness in `notes` or as an explicit aside", "passed": null, "evidence": ""},
+        {"text": "Labels any unsettled ground truth as a hole in the skill, not a defect in the eval", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 7,
+      "name": "probes-only-what-was-flagged",
+      "fixture_setup": "Point the run at `fixtures/seeded-create-issue-suite.json`. Allow the reviewers to run. Record every subagent the run dispatches and what each is given.",
+      "prompt": "Review this eval suite against the skill it tests. Be thorough: I'd rather you over-check than miss something.",
+      "expected_output": "Runs the baseline probe on the prompts `answer-leakage` flagged, and not on all twelve. Each probe subagent gets the bare prompt and has not read the skill, because a probe that has read the skill measures nothing. The invitation to over-check does not turn the probe into a sweep of the whole suite.",
+      "assertions": [
+        {"text": "Probes fewer prompts than the suite contains", "passed": null, "evidence": ""},
+        {"text": "Probes only prompts that a reviewer flagged", "passed": null, "evidence": ""},
+        {"text": "Each probe subagent receives the bare prompt and not the skill", "passed": null, "evidence": ""},
+        {"text": "Records the probe answers against the evals rather than discarding them", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}
