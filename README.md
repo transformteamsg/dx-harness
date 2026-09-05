@@ -3,10 +3,11 @@
 AI harness for agentic-driven product development — a single Claude Code plugin
 bundling engineering-workflow skills and design skills under one `dx-` prefix.
 
-- **27 skills** in two groups: 14 engineering (`dx-code-review`, `dx-create-issue`,
+- **28 skills** in two groups: 15 engineering (`dx-code-review`, `dx-create-issue`,
   `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`,
   `dx-split-issue`, `dx-implement-issue`, `dx-create-pr`, `dx-lint-setup`,
-  `dx-git-hooks-setup`, `dx-update-npm-dependencies`, `dx-house-style-setup`, `dx-create-sprint-logs`)
+  `dx-git-hooks-setup`, `dx-update-npm-dependencies`, `dx-house-style-setup`,
+  `dx-create-sprint-logs`, `dx-skill-evals-review`)
   and 13 design (`dx-design`,`dx-design-setup`, `dx-design-execute`, `dx-design-critique`,
   `dx-design-language`, `dx-design-copy`, `dx-design-polish`, `dx-design-motion`,
   `dx-design-flow`, `dx-design-pattern`, `dx-design-feedback`, `dx-design-git`,
