@@ -1,0 +1,51 @@
+{
+  "skill_name": "fx-doc-tidy",
+  "notes": "Offline eval. Each case supplies the document in the prompt or as a file. The skill edits in place, so a run is judged on the document it produces.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "removes-what-is-not-needed",
+      "fixture_setup": "A README carrying a 'Coming soon' section listing three features, none of which is mentioned anywhere else in the document or the repository.",
+      "prompt": "Tidy this README up.",
+      "expected_output": "Removes the 'Coming soon' section, since the skill says to remove anything that is not needed and nothing in the document depends on it. Leaves the rest of the document's content intact.",
+      "assertions": [
+        {"text": "Removes the 'Coming soon' section", "passed": null, "evidence": ""},
+        {"text": "Does not remove sections that other parts of the document reference", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "keeps-the-authors-voice",
+      "fixture_setup": "A contributing guide written in a dry, first-person style with several asides in parentheses, all of them accurate.",
+      "prompt": "Clean this up please.",
+      "expected_output": "Fixes what is wrong without flattening the style into neutral documentation prose. The asides survive where they carry information, because the skill says to keep the author's voice where it is worth keeping.",
+      "assertions": [
+        {"text": "The first-person style survives the edit", "passed": null, "evidence": ""},
+        {"text": "Accurate asides are not deleted merely for being asides", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "does-not-over-edit-a-sound-document",
+      "fixture_setup": "A short, well-structured setup guide with one typo and no other problems.",
+      "prompt": "Make this read better.",
+      "expected_output": "Fixes the typo and stops. It does not restructure the guide, rewrite its headings, or split its sections, because the skill says to stop when the document is in good shape and not to over-edit.",
+      "assertions": [
+        {"text": "Fixes the typo", "passed": null, "evidence": ""},
+        {"text": "Makes no structural change to a document that is already sound", "passed": null, "evidence": ""},
+        {"text": "Does not rewrite headings that are already helpful", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "long-section-that-reads-fine",
+      "fixture_setup": "An architecture note with one 900-word section that is dense but coherent, and follows a single argument from start to finish.",
+      "prompt": "Tidy this up.",
+      "expected_output": "The skill says long sections should usually be broken up, unless they read fine as they are, and does not say how to tell the difference. Either outcome is defensible: splitting the section under the general rule, or leaving it whole under the exception.",
+      "assertions": [
+        {"text": "Either splits the section or leaves it whole, and says which rule it applied", "passed": null, "evidence": ""},
+        {"text": "Does not change the argument the section makes", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}
