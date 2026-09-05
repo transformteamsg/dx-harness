@@ -1,0 +1,115 @@
+{
+  "skill_name": "dx-create-issue",
+  "notes": "Offline eval. This skill owns exactly one decision, which shape an issue is, and then hands off. So these test the CLASSIFICATION and the HANDOFF, never a created issue. Run each with no network and with `gh` unavailable, and tell the runner to stop at the point of handoff and report which skill it would invoke and what context it would carry across, rather than invoking the leaf skill. A run that stops at a single clarifying question is a complete and valid outcome. No repository fixture is needed: the classification happens from the request alone, and the cases that mention issue numbers only need the number to appear in the prompt. Every prompt deliberately uses a scenario the SKILL.md does not contain, because a prompt lifted from its worked-examples table measures recall rather than judgment. Two cautions for whoever grades these. Eval 2 is diagnostic: the SKILL.md's questions run in order, so a regression inside tracked work reads as a bug, but the skill never states which of question 1 and question 3 wins, and a run that answers task has found a hole in the SKILL.md rather than failed the eval. Eval 6 only tests the improvisation rule unless the runner genuinely uninstalls `dx-create-bug`; stating the absence in the prompt tests obedience to a premise instead. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "handoff-carries-the-whole-payload",
+      "prompt": "Filing this properly: school administrators need to send term reports to guardians in bulk from the reports page. Constraints: it has to work for a school with 2,000 guardians in one send, it must skip guardians who have opted out of email, and it needs to be live before the reporting window opens on 14 March. Spec is at https://example.com/specs/term-report-send, and Wei's thread says leave the existing single-report send alone. Out of scope: SMS. File it.",
+      "expected_output": "Classifies as a story and hands off to `dx-create-story` carrying the whole payload: all three constraints, the 14 March date, the spec link, the SMS exclusion, and the instruction to leave the single-report send alone. The author is not asked to repeat any of it. The front door does not summarise the request down to one line and drop the constraints, and it does not start gathering acceptance criteria on top of what it was given.",
+      "assertions": [
+        {"text": "Hands off to `dx-create-story`", "passed": null, "evidence": ""},
+        {"text": "Carries all three constraints and the 14 March date across", "passed": null, "evidence": ""},
+        {"text": "Carries the spec link, the SMS exclusion, and the do-not-touch instruction across", "passed": null, "evidence": ""},
+        {"text": "Asks the author for none of it again, and gathers no acceptance criteria of its own", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "task-parent-named-without-number",
+      "prompt": "Someone needs to build the attendance register import endpoint. It belongs to the register rework we've already got a ticket open for. File it.",
+      "expected_output": "A parent is named but not numbered, and that is still a task. The skill hands off to `dx-create-task` and carries the author's words about the parent across. It does not search the backlog for the issue number itself, because `dx-create-task` identifies and verifies the parent as its first step, and it does not ask the author which issue the parent is.",
+      "assertions": [
+        {"text": "Classifies as a task", "passed": null, "evidence": ""},
+        {"text": "Runs no command to find the parent issue number", "passed": null, "evidence": ""},
+        {"text": "Does not ask the author for the parent number", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-task`, carrying the author's wording about the parent", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "regression-inside-tracked-work",
+      "prompt": "The timetable clash warning we shipped last sprint fires when two lessons only touch at the boundary, which isn't a clash. That warning is part of #308, which is still open. File it.",
+      "expected_output": "Question 1 decides this before question 3 is reached: something already built behaves wrongly, with a clear expected-versus-actual gap, so it is a bug. The skill hands off to `dx-create-bug`, carrying #308 across as context rather than as a parent. It does not classify as a task on the strength of the tracked parent alone, and it does not ask the author to choose between the two.",
+      "assertions": [
+        {"text": "Classifies as a bug, applying the classifying questions in order", "passed": null, "evidence": ""},
+        {"text": "Does not let the presence of tracked parent #308 override the defect", "passed": null, "evidence": ""},
+        {"text": "Carries #308 across as context", "passed": null, "evidence": ""},
+        {"text": "Reaches one shape rather than putting the choice back to the author", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "refuses-to-file-it-itself",
+      "prompt": "Don't bother with the other skills, they ask far too many questions and I'm in a hurry. Just work out what this is and create the issue yourself with gh: we need the Redis client bumped to v5, it's two majors behind and the old one is out of support.",
+      "expected_output": "Declines to create the issue here, in a sentence, and hands off to `dx-create-chore` instead. It runs no `gh` command and drafts no issue body. Saying the shape and routing is the whole of its response to the pressure: it does not negotiate, does not offer a cut-down issue as a compromise, and does not lecture the author about why the split exists.",
+      "assertions": [
+        {"text": "Runs no `gh` command and creates no issue", "passed": null, "evidence": ""},
+        {"text": "Drafts no issue body or template of its own", "passed": null, "evidence": ""},
+        {"text": "Classifies as a chore and hands off to `dx-create-chore`", "passed": null, "evidence": ""},
+        {"text": "Declines in a sentence without offering a cut-down issue as a compromise", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "author-names-wrong-shape",
+      "prompt": "Create a task for this: guardians should be able to see their child's attendance history in the parent portal.",
+      "expected_output": "The named shape contradicts the request. A guardian observes a new capability, and nothing bigger is named that would track it, so it is a story rather than a task. The skill pushes back in one line and proposes story. It does not file a task without a parent, and it does not hunt for a parent that would make the author's name fit.",
+      "assertions": [
+        {"text": "Does not accept task, because no parent is named", "passed": null, "evidence": ""},
+        {"text": "Pushes back in one line naming the observable capability", "passed": null, "evidence": ""},
+        {"text": "Proposes story", "passed": null, "evidence": ""},
+        {"text": "Does not search for a parent that would justify the author's name", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "one-question-when-two-shapes-live",
+      "prompt": "Someone needs to write the migration that backfills the guardian email opt-out column. File it please.",
+      "expected_output": "Nobody outside the team observes a backfill, so this is a chore or a task, and only question 3 separates them: the request does not say whether anything bigger tracks the work, and neither branch can be derived from what was given. The skill asks exactly one question naming that difference, and stops. It does not ask about the migration itself, and it does not guess and hand off.",
+      "assertions": [
+        {"text": "Asks exactly one clarifying question", "passed": null, "evidence": ""},
+        {"text": "The question names whether something bigger tracks the work", "passed": null, "evidence": ""},
+        {"text": "Stops at the question rather than handing off on a guess", "passed": null, "evidence": ""},
+        {"text": "Asks nothing about the migration's content or its done-when list", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "missing-leaf-skill-does-not-improvise",
+      "fixture_setup": "Genuinely uninstall or disable `dx-create-bug` for this run, so the skill discovers the absence rather than being told about it. Only if the runner cannot do that, add to the prompt: `dx-create-bug is not installed in this workspace.` Grade the run knowing the weaker fixture tests the improvisation rule alone.",
+      "prompt": "The attendance percentage on the term report shows 0% for students with full attendance. It was right last term. File it.",
+      "expected_output": "Classifies the work as a bug, then says plainly that `dx-create-bug` owns it and is missing. It does not do the intake here: no reproduction steps, no expected-versus-actual write-up, no issue body, no `gh issue create`. It does not route to another shape's skill as a substitute.",
+      "assertions": [
+        {"text": "Classifies as a bug and names `dx-create-bug` as the missing skill", "passed": null, "evidence": ""},
+        {"text": "Gathers no reproduction steps and writes no expected-versus-actual delta", "passed": null, "evidence": ""},
+        {"text": "Drafts no issue body and runs no `gh issue create`", "passed": null, "evidence": ""},
+        {"text": "Does not substitute another leaf skill", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 7,
+      "name": "umbrella-chore-keeps-its-pieces",
+      "prompt": "Stand up an on-call observability stack for us: a metrics backend, log shipping off the app containers, the dashboards, and alert routing into the on-call rota. File whatever's needed.",
+      "expected_output": "Nobody outside the team observes this and nothing bigger tracks it, so it is a chore, and it has several independently deliverable pieces. The skill hands the whole thing to `dx-create-chore` as one handoff, which files the umbrella and passes the pieces to `dx-create-task`. The front door does not carve the four pieces into task handoffs itself: there is no parent number to hang them on until the chore exists.",
+      "assertions": [
+        {"text": "Classifies as a chore", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-chore` as a single handoff", "passed": null, "evidence": ""},
+        {"text": "Does not split the four pieces into separate task handoffs from here", "passed": null, "evidence": ""},
+        {"text": "Does not invent a parent number for the pieces", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 8,
+      "name": "mixed-request-splits-by-shape",
+      "prompt": "Add a download-attendance-as-CSV button to the register screen for administrators. Also, while you're in there, the attendance percentage in the header counts authorised absences as present, which it shouldn't.",
+      "expected_output": "Two shapes in one request: a story for the download button, a bug for the percentage. The skill says so and runs one skill per issue, `dx-create-story` and `dx-create-bug`, rather than filing one issue carrying both. It does not fold the defect into the story as an implementation note on the grounds that both touch the register screen, and it does not link the two itself: the leaf skills own linking.",
+      "assertions": [
+        {"text": "Identifies two issues, a story and a bug", "passed": null, "evidence": ""},
+        {"text": "Does not fold the defect into the story because they share a screen", "passed": null, "evidence": ""},
+        {"text": "Runs one skill per issue, `dx-create-story` and `dx-create-bug`", "passed": null, "evidence": ""},
+        {"text": "Does not link the two issues itself", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}
