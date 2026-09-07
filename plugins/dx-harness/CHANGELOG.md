@@ -4,6 +4,11 @@
 
 - The plugin now ships a bundled output style, `dx-house-style`, which sets the writing rules for a whole session: explanations, plans, commit messages, and any response in the terminal. It is opt-in, so a repository that wants a different voice is unaffected.
 - A new skill, `dx-house-style-setup`, turns that style on at whichever scope you pick: this project for you, this project for everyone who clones it, or every project on your machine. It reads back the value Claude Code resolves rather than guessing at one.
+- Your tests now get written before your code. `dx-implement-issue` no longer writes both halves of a change: it reads the issue, plans, then runs `dx-write-tests` followed by `dx-write-implementation`. It previously wrote a criterion's production code, then that criterion's test, so every test was written already knowing the implementation it had to pass ([#316](https://github.com/transformteamsg/dx-harness/issues/316)).
+- The name and the trigger phrases are unchanged, so "implement issue 142" still reaches the same place. Two new skills sit behind it.
+- A criterion no test can settle is now recorded rather than faked. `dx-write-tests` judges each one against what your repository can actually run, and where it cannot write an honest test, for a visual change with no rendering test runner or a third-party system with no sandbox, it writes none and records the item as manual with the reason. It will not write an assertion that passes without exercising the behaviour, which was the quiet way a criterion used to get reported as covered.
+- Either half runs on its own. `dx-write-tests` leaves you a committed failing branch and names what continues; `dx-write-implementation` picks up a branch someone else left, reads what it has to satisfy out of the commit history, and works from there. The two halves need not happen in one sitting or by one person.
+- The implementation half reports a missing test rather than closing the gap itself, because a test written beside the code it checks is not the thing that was missing. Nothing is written into your repository to carry any of this: the record lives in a commit body.
 
 ## 0.6.0 (2026-09-01)
 
