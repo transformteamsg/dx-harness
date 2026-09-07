@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The plugin now ships a bundled output style, `dx-house-style`, which sets the writing rules for a whole session: explanations, plans, commit messages, and any response in the terminal. It is opt-in, so a repository that wants a different voice is unaffected.
+- A new skill, `dx-house-style-setup`, turns that style on at whichever scope you pick: this project for you, this project for everyone who clones it, or every project on your machine. It reads back the value Claude Code resolves rather than guessing at one.
+
 ## 0.6.0 (2026-09-01)
 
 - A new skill, `dx-create-pr`, opens your pull request and keeps its description matching the branch as you push. Every other skill now calls it, so each request the harness opens reads the same way, on GitHub and on GitLab alike ([#225](https://github.com/transformteamsg/dx-harness/pull/225), [#251](https://github.com/transformteamsg/dx-harness/pull/251)).
