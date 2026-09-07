@@ -60,11 +60,24 @@ If a reviewer fails or times out, carry on with the rest and name it in Coverage
 
 ### 3. Probe the baseline
 
-For every prompt `answer-leakage` flags, and only those, run one probe: dispatch a subagent that has **not** read the skill, give it the bare prompt, and record what it answers.
+For every prompt `answer-leakage` flags, and only those, run one probe: dispatch a subagent that has not read the skill, give it the bare prompt, and record what it answers along with everything it consulted to answer.
 
-This is the check that turns an opinion into evidence. If a model with no skill loaded produces the expected output anyway, the eval measures the model, and its verdict is CUT regardless of how well written it is.
+The point is to turn an opinion into evidence. If a model that never saw the skill produces the expected output anyway, the eval measures the model rather than the skill.
 
-Record the probe answer against the eval. A prompt that survives the probe keeps its place even when its wording resembles the skill.
+**A probe subagent is not blind by default, and an unblinded probe is worthless.** It usually keeps file-reading tools and an ambient roster of installed skills, either of which can carry it to the skill under test or to a sibling that states the same rule. Probes have reached expected answers that way without ever opening the skill, which reads in the record as leakage and is nothing of the kind. So:
+
+- Withhold the tools the probe does not need. Where the platform allows a tool list per dispatch, give it none: no file reads, no search, no skill invocation.
+- Tell it in the prompt to answer from the prompt alone, to consult nothing, and to name anything it did consult.
+- Require it to report its sources with its answer. A probe that will not say what it read has not returned a usable result.
+
+**Void any probe that reached the skill, a sibling skill, or the installed-skills roster.** A void probe is not a pass and not a fail: it is a missing measurement, and the eval keeps whatever verdict the reviewers reached without it. Never let a void probe stand as corroboration.
+
+Read the two directions differently, because they are not symmetric:
+
+- **The probe reproduced the expected output, and stayed blind.** Strong evidence. The eval measures the model, and its verdict is CUT however well written it is.
+- **The probe did not reproduce it.** Weak evidence, and it settles nothing on its own. One probe failing tells you this model missed this prompt once, not that the eval is sound. It removes a leakage finding's claim to certainty; it does not clear the prompt. A near lift whose probe came back clean stays a REWRITE.
+
+Record against each probed eval: the probe's answer, what it consulted, and whether it stayed blind. When no blind probe is achievable on the platform in hand, run none and say so in Coverage. A probe you cannot trust is worse than an absent one, because the record cannot tell them apart later.
 
 ### 4. Synthesise
 
@@ -90,7 +103,7 @@ Follow with:
 
 - **Gaps**, each with the prompt that would close it.
 - **Assertion count**, total against independently falsifiable, because that ratio is the suite's real size.
-- **Coverage**, naming any reviewer that failed and any prompt the baseline probe could not reach.
+- **Coverage**, naming any reviewer that failed, any prompt the baseline probe could not reach, and every probe that was voided for reaching the skill or the installed-skills roster. A CUT that rests on a probe says so, and names the probe's answer, so a later reader can tell a measured verdict from a judged one.
 - **Bottom line**: how many evals you would ship, and what a tighter suite looks like.
 
 Report the findings and stop. Applying them is the author's call, and a suite rewritten by its own reviewer has no reviewer.

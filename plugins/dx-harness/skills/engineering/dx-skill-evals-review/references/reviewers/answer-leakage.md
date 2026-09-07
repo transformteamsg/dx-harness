@@ -21,6 +21,8 @@ Ask: if I deleted this passage from the skill, would the eval get harder?
 
 Then ask the harder question: would a model with **no skill loaded at all** answer this correctly? You cannot run that probe yourself, but say so when you suspect it. Flag the eval with defect class `measures-the-model` and the orchestrator will run the probe. A prompt that any competent model answers cold measures nothing about the skill, however carefully it is written.
 
+Do not soften a near lift while waiting for the probe. Your finding stands on the two passages you quoted; the probe can strengthen it to a CUT but its absence does not weaken it, and a probe that comes back clean still leaves a REWRITE. Report what you found and let the orchestrator decide what the probe adds.
+
 ## What you do not flag
 
 - Shared vocabulary. A suite for an issue-filing skill will say "issue", "story", and "task". Domain words are not leakage.
