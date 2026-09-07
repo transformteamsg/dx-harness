@@ -133,7 +133,7 @@ function BeforePanel() {
           {/* dx-waive SLP-6 reason="quarantined anti-specimen: the before panel of the standards demo" */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-sm text-(--demo-slop-ink)">
-              Status: Draft saved just now
+              Status: Draft saved a moment ago
             </span>
             <Violation>SLP-6 flat hierarchy</Violation>
           </div>
@@ -188,13 +188,13 @@ function AfterPanel() {
         <div className="mt-3 border-t border-border pt-3">
           <p className="text-sm text-muted-foreground">Message</p>
           <p className="mt-1 max-w-[62ch] text-sm leading-normal text-foreground">
-            Term 3 report books go home this Friday. Please sign the acknowledgement
+            Term 3 report books go home this Friday. Sign the acknowledgement
             slip and return it with your child by Monday. If you would like to
             discuss the report, reply here and I will arrange a time.
           </p>
         </div>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-border pt-4">
-          <p className="text-xs text-muted-foreground">Draft · saved just now</p>
+          <p className="text-xs text-muted-foreground">Draft · saved a moment ago</p>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-muted-foreground">Save draft</span>
             <span className="rounded-md bg-tw-blue px-3.5 py-2 text-sm font-medium text-surface">
