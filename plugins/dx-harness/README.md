@@ -5,6 +5,11 @@ Engineering + design skills for agentic product development. Every skill is name
 
 ## Engineering skills
 
+`dx-implement-issue`, `dx-write-tests`, and `dx-write-implementation` share two
+procedures in `procedures/`: `issue-contract.md` reads an issue and turns it into a
+numbered contract, and `commit-discipline.md` holds the commit rules plus the
+coverage declaration that passes between the two halves.
+
 | Skill | What it does |
 |---|---|
 | `/dx-harness:dx-code-review` | Reviews code changes — inline PR comments or local branch review. |
@@ -14,7 +19,9 @@ Engineering + design skills for agentic product development. Every skill is name
 | `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
 | `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
 | `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |
-| `/dx-harness:dx-implement-issue` | Implements a GitHub issue by number or pasted body. |
+| `/dx-harness:dx-implement-issue` | Front door for building an issue: reads it, plans, then runs the two halves below in order. |
+| `/dx-harness:dx-write-tests` | Writes one failing test per contract item before any code exists, and records what automation cannot settle. |
+| `/dx-harness:dx-write-implementation` | Writes the code that satisfies those tests, and reports any contract item it found no test for. |
 | `/dx-harness:dx-create-pr` | Opens a pull request for the current branch, or updates an open one to match new commits. |
 | `/dx-harness:dx-lint-setup` | Sets up linting/formatting after detecting project types. |
 | `/dx-harness:dx-git-hooks-setup` | Sets up or audits pre-commit / pre-push hooks (Husky or Lefthook). |
