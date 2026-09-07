@@ -245,8 +245,13 @@ Read `references/madr-templates.md` for both variants and their shared frontmatt
 
 Say which you chose in one line, and change it if the person prefers the other.
 
+Write every section following [House style](../../../procedures/house-style.md): each
+option carries the evidence that decided it, not a summary of the conversation about
+it.
+
 Name the file `NNNN-title-with-dashes.md`. Fill every placeholder. Leave no heading
-empty: a section with nothing to say gets `N/A` and a one-line reason.
+empty: a section with nothing to say gets `N/A` and a one-line reason, MADR's
+convention in place of the style's `None`.
 
 ### Add what the source rarely carries
 
@@ -261,6 +266,12 @@ Draft each where it applies and show it rather than asking first.
   two where the procedure branches. Put no real release, incident, or person in it,
   and say the numbers are illustrative: an example built from the decision does not
   breach step 1, an invented past does.
+
+### Before you write it
+
+Apply the "Before you post it" checks in
+[House style](../../../procedures/house-style.md) to the drafted body and cut what
+fails them. Do the same for text you add to a record already open.
 
 ## Step 7: Report
 
