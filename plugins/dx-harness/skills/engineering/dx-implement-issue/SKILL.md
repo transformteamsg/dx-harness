@@ -51,7 +51,7 @@ Report:
 3. The instruction: run `/dx-harness:dx-split-issue $ARGUMENTS` to cut the issue into task sub-issues, then return to `/dx-harness:dx-implement-issue` on each slice. The parent stays open and tracks them
 
 This evaluation belongs here rather than in either half, because it decides whether
-the work should be built at all. Neither half can make that call from inside its own
+to build the work at all. Neither half can make that call from inside its own
 part of it.
 
 ## Step 3: Create the branch

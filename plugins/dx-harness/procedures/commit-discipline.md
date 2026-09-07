@@ -90,5 +90,7 @@ If no commit carries it, the test half never ran on this branch. That is a defin
 state, and each half says what to do about it in its own steps.
 
 The manual items are what a later run hands to the pull request body and to review.
-Pass them through in the words the test half wrote, and never rewrite or summarise
-them on the way.
+Carry each one across with its action, its expected result, and its reason intact.
+`dx-create-pr` owns the body and trims it to the house style, so a case can get
+shorter on the way. It must never lose one of those three parts, get replaced by a
+summary of the set, or be dropped.

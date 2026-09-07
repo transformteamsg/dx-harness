@@ -44,7 +44,7 @@ refer to an item by its number, and the coverage declaration in
 be stable across the whole run.
 
 An `## Also true when done` item on a task is a contract item too. It is a condition
-a reviewer confirms by looking, so it may end up recorded as manual rather than
+a reviewer confirms by looking, so it might end up recorded as manual rather than
 covered by a test.
 
 ## Step 4: Check the issue is ready

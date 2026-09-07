@@ -37,7 +37,7 @@ This is the check that keeps the split honest, and it runs before any code.
 | --- | --- |
 | Every contract item is covered or recorded as manual | Proceed to Step 4 |
 | A contract item appears in neither place | Report it as an uncovered item and ask whether to proceed without it. Do not write its test |
-| The declaration names an item the contract does not | Report it. The issue may have changed since the test half ran |
+| The declaration names an item the contract does not | Report it. The issue changed after the test half ran |
 
 Report an uncovered contract item. Never close the gap by writing the missing test
 yourself: the whole value of the split is that the tests were written without
@@ -66,7 +66,7 @@ Two limits hold throughout:
 
 The tests came from the contract, so they cover what someone observes. Your code has
 paths nobody named: an internal error branch, a boundary the happy path never
-reaches, a concurrent write. Add tests for the ones your implementation actually
+reaches, a concurrent write. Add tests for the ones your implementation
 introduced, following the repository's assertion conventions.
 
 Keep the line between this and Step 3 clear, because they look similar and are not:
