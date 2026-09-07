@@ -79,6 +79,10 @@ Read the two directions differently, because they are not symmetric:
 
 Record against each probed eval: the probe's answer, what it consulted, and whether it stayed blind. When no blind probe is achievable on the platform in hand, run none and say so in Coverage. A probe you cannot trust is worse than an absent one, because the record cannot tell them apart later.
 
+**Judge the disclosure against what the platform injects, not against what the probe says.** Where a harness puts repository instructions or a roster of installed skills into every subagent's context, no probe on it is blind, and one reporting that it consulted nothing is the least trustworthy of the set rather than the cleanest: its peers disclosed the same contamination and it did not. Void the whole set in that case. Counting the silent probe rewards non-disclosure and produces exactly the false corroboration this step exists to prevent.
+
+Check the platform once, before probing, by reading what a subagent receives. If repository instructions or an installed-skills roster ride along, probe nothing and record that fact, because it will hold for every later run on the same platform until the platform changes.
+
 ### 4. Synthesise
 
 Merge the four returns. Drop duplicates by eval id and defect class, keeping the finding with the strongest evidence.
