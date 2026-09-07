@@ -55,7 +55,7 @@ describe("skills documentation", () => {
       "utf8",
     );
 
-    expect(shippedNames).toHaveLength(26);
+    expect(shippedNames).toHaveLength(27);
     for (const name of shippedNames) {
       expect(skillsDoc, `${name} is shipped but missing from the Skills page`).toMatch(
         new RegExp(`${name}(?![\\w-])`),

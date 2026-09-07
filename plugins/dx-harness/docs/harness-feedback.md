@@ -24,7 +24,9 @@ feedback nit as a catalog change.
 - **Title marker:** `[harness-feedback] <summary>` — the marker makes the set findable
   and lets the helper (below) dedup.
 - **Body:** the ask + the source context — which skill / check / phase surfaced it, and
-  the evidence (quote it, link the run or record).
+  the evidence (quote it, link the run or record). Write it following
+  [House style](../procedures/house-style.md) (resolve relative to this doc, one
+  level up).
 - **Labels for triage** — one severity + one or more category:
   - severity: `L0-risk`, `high`, `med`, `low`
   - category: `a11y`, `tooling`, `standards`, `harness-ux`, `onboarding`
