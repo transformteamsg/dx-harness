@@ -13,7 +13,7 @@ Delivery work for a story is tracked separately, as `dx-create-task` issues link
 
 ## Issue template
 
-The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading.
+The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading. Write every section following [House style](../../../procedures/house-style.md): a story earns its length from its acceptance criteria, not from background a reader could get elsewhere.
 
 ## Attaching screenshots and recordings
 
@@ -136,7 +136,7 @@ Decide whether this story can be handed to an engineer without a designer in the
 
 ### Step 6: Preview and confirm
 
-Render the complete issue body in a markdown code block. If the Open Questions section is non-empty, call it out explicitly before asking for confirmation:
+Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block. If the Open Questions section is non-empty, call it out explicitly before asking for confirmation:
 
 > "This story has N open question(s) still unresolved: [list]. You can create it now and settle these before implementation begins, or answer them first. Proceed?"
 

@@ -17,7 +17,8 @@ run can read the surface's history and append to it.
 
 ## Comment formats
 
-Every comment opens with a typed heading, so agents can parse the history:
+Every comment opens with a typed heading, so agents can parse the history. Write
+every comment following [House style](house-style.md).
 
 - **Run record** — `## Run — <date> — <skill>`. It holds: the approved plan (or
   "explicit build ask — counted as approval"); the waivers granted this run (plain
