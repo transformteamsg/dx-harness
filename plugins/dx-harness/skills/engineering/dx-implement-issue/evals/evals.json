@@ -1,0 +1,215 @@
+{
+  "skill_name": "dx-implement-issue",
+  "notes": "Offline eval for the test/code split (#316). The suite lives on the router rather than on either half, because the baseline is the pre-change single skill, in which neither half exists: a suite under dx-write-tests could not run against it. Baseline is dx-implement-issue as it stood at 0c22082, before this branch. Run every case with no network and with a gh stub that serves the fixture issue from a local file, so nothing reaches GitHub. Never let a case open a pull request; tell the runner to record what it WOULD open. A run that stops at a question it must ask is a complete and valid outcome. Fixtures are described rather than committed, because each is a git repository and those do not travel well in version control. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "tests-committed-before-any-code",
+      "fixture_setup": "mkdir shop && cd shop && git init && npm init -y, add vitest as the test runner with a `test` script, commit a src/cart.js exporting `total(items)` that sums prices and ignores quantity, plus one passing tests/cart.test.js. Stub gh to serve issue 142, a story titled 'feat(`cart`): multiply price by quantity in the total' with two acceptance criteria: (1) a line with quantity 3 contributes three times its price, (2) a line with quantity 0 contributes nothing.",
+      "prompt": "Implement issue 142.",
+      "expected_output": "The run reads the issue, plans, creates a branch, and runs the test half first. Two failing tests are committed before any edit to src/cart.js. The commit that lands them carries a coverage declaration naming both criteria against the file:line of their tests. Only after that does src/cart.js change.",
+      "assertions": [
+        {
+          "text": "Commits at least one failing test before the first edit to src/cart.js",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The test-half commit body carries a coverage declaration naming both criteria",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Each declared criterion names the file:line of the test that covers it",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Reports that the failing state was deliberate rather than a problem it fixed",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Ends with the suite passing and does not open a pull request itself",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "implementation-half-works-only-against-declared-tests",
+      "fixture_setup": "The shop fixture from case 0, advanced to the state the test half leaves: two failing tests committed on branch feat/cart-quantity, the final commit body carrying a declaration that lists criteria 1 and 2 as covered with their file:line, and no manual section. src/cart.js is untouched. Stub gh to serve issue 142 as in case 0.",
+      "prompt": "The tests are already there. Write the code for 142.",
+      "expected_output": "The run recovers the declaration from the commit history, treats the two named tests as the work list, and edits src/cart.js until both pass. It adds no test for either criterion, and it does not edit either test.",
+      "assertions": [
+        {
+          "text": "Recovers the declaration from the commit history rather than asking for it",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names the two declared tests as the work list before editing any code",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not modify either existing test file",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Both declared tests pass at the end, and the pre-existing passing test still passes",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Any test it does add is reported separately as written after the code",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "test-half-alone-names-the-state-it-left",
+      "fixture_setup": "The shop fixture from case 0, on the default branch, with nothing implemented.",
+      "prompt": "Write the tests for 142 first. Don't write any implementation.",
+      "expected_output": "The test half runs alone. It does its own issue intake, writes and commits failing tests, and reports that the branch carries failing tests and no implementation, naming /dx-harness:dx-write-implementation 142 as what continues. It writes nothing into src/.",
+      "assertions": [
+        {
+          "text": "Runs the issue intake itself rather than reporting that a router must go first",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Leaves src/cart.js unchanged",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "States that the branch carries failing tests and no implementation",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names /dx-harness:dx-write-implementation as the command that continues",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not report the work as implemented or as ready for review",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "implementation-half-alone-with-no-declaration-stops",
+      "fixture_setup": "The shop fixture from case 0, on a fresh branch feat/cart-quantity with no commits beyond the default branch. No failing tests exist and no commit carries a declaration.",
+      "prompt": "Implement 142 against the tests on this branch.",
+      "expected_output": "The run finds no declaration and no failing tests. It stops, says there is nothing to implement against, and names /dx-harness:dx-write-tests 142 as what produces it. It writes neither a test nor production code.",
+      "assertions": [
+        {
+          "text": "Reports that no coverage declaration exists on the branch",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names /dx-harness:dx-write-tests as what produces one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Writes no test to fill the gap itself",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Leaves src/cart.js unchanged",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not fall through to implementing the issue from the issue body alone",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "unautomatable-criterion-recorded-not-faked",
+      "fixture_setup": "mkdir portal && cd portal && git init && npm init -y, add vitest only. No browser test runner, no jsdom, no snapshot tooling, and nothing in the repository renders a component in a test. Commit a src/invoice.js with an `isOverdue(invoice)` helper. Stub gh to serve issue 88, a story with two acceptance criteria: (1) an invoice past its due date reports as overdue, (2) the overdue badge is amber rather than grey.",
+      "prompt": "Implement issue 88.",
+      "expected_output": "Criterion 1 gets a failing unit test. Criterion 2 gets no test: the repository has no way to render or inspect a badge's colour, so it is recorded as manual with that as the reason. The declaration carries both, one under each heading, and the manual item reaches the pull request body it would open.",
+      "assertions": [
+        {
+          "text": "Criterion 1 is covered by a failing unit test before any implementation",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Criterion 2 gets no automated test at all",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Criterion 2 is recorded as manual with the absence of a rendering test runner as the reason",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "No assertion is written that passes without inspecting the badge colour",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The manual item appears in the run's report and in the pull request body it would open",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not install a test runner or add a dependency to make criterion 2 automatable",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "uncovered-contract-item-reported-not-written",
+      "fixture_setup": "The shop fixture, on branch feat/cart-quantity, with one failing test committed for criterion 1 and a declaration that lists criterion 1 as covered and says nothing at all about criterion 2, under neither heading. Stub gh to serve issue 142 with both criteria, as in case 0.",
+      "prompt": "Make these tests pass.",
+      "expected_output": "The run reconciles the declaration against the issue, finds criterion 2 in neither the covered nor the manual list, and reports it as an uncovered contract item. It asks whether to proceed without it. It does not write criterion 2's test.",
+      "assertions": [
+        {
+          "text": "Reconciles the declaration against the issue's criteria before writing code",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names criterion 2 as an uncovered contract item",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not write a test for criterion 2",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Says explicitly that it did not write the missing test, and why",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Asks whether to proceed rather than deciding for itself",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}
