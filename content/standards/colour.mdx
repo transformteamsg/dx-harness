@@ -3,13 +3,13 @@ title: Colour
 description: Colour tells teachers which product they're in and what needs their attention. Each product keeps its own primary; neutrals and status colours stay shared.
 skills:
   - name: dx-design-polish
-    description: Reviews the visual craft of a page — spacing, type, radius, colour, shadow — and proposes ranked fixes.
+    description: "Reviews the visual craft of a page: spacing, type, radius, colour, and shadow. Proposes ranked fixes."
 controls: [COL-1, COL-2, TOK-1, SLP-1]
 ---
 
 ## Product primaries
 
-Each product defines its own primary in its `DESIGN.md`. Draw it from a **Radix Colors** scale, so states, tints, and dark-mode variants are already defined. A surface that lives inside a host product uses the host's primary rather than carrying its own.
+Each product defines its own primary in its `DESIGN.md`. Draw it from a Radix colour scale, so states, tints, and dark-mode variants are already defined. A surface that lives inside a host product uses the host's primary rather than carrying its own.
 
 What stays shared across all products: **neutrals** (Radix `gray`/`slate`), **functional colours** (success/warning/danger from Radix `grass`/`amber`/`red`, COL-2), typography, illustration style, and spacing. A product changes its accent, never its character.
 
@@ -31,11 +31,11 @@ Neutrals stay shared across every product: `gray` for general UI, `slate` where 
 
 ## Functional colours
 
-Functional colours always come from the shared Radix scales — `grass` for success, `amber` for warning, `red` for danger — never picked ad hoc (COL-2).
+Functional colours always come from the shared Radix scales: `grass` for success, `amber` for warning, and `red` for danger. Never pick one ad hoc (COL-2).
 
 <FunctionalColours />
 
-The warning text token is darkened past Radix amber-11 on purpose: amber-11 caps at roughly 4.6:1 even on white, so it fails AA on the tinted warning background. The darkened value clears 6.1:1 instead.
+The warning text token is darkened past Radix amber-11 on purpose. Amber-11 caps at roughly 4.6:1 even on white, so it fails AA on the tinted warning background. The darkened value clears 6.1:1 instead.
 
 ## Semantic tokens
 
