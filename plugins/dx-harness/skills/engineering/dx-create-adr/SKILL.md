@@ -21,7 +21,14 @@ Settle the mode first: is the decision made?
 - **Neither, they are returning to a record already open**: go straight to
   `## Working on an open record`.
 
-Ask for each of these. Invent none of them.
+Take what they hand over first: a transcript, a thread, a doc, a paragraph. Fill
+every item below that it answers, then ask for the rest in one message, not ten.
+
+Derive from their material. Never supply what they did not give: a rationale, an
+option, a name. Say in one line what you derived and what is still missing.
+
+> From the transcript: the decision, three options, and the reason the first won.
+> Not in it: who settled it, and where it was argued.
 
 1. **The decision**, stated as an action: "use Postgres for the write model", not
    "database choice".
@@ -35,7 +42,7 @@ Ask for each of these. Invent none of them.
    for it.
 5. **The options considered**, including the ones turned down.
 6. **Why the chosen option won.**
-7. **The status.** `references/madr-templates.md` pins the five permitted values.
+7. **The status.** `references/madr-templates.md` pins the six permitted values.
    Ask; do not default.
 8. **The authors**, meaning whoever wrote the record. Not necessarily who decided.
 9. **Where the decision was argued.** A link to the RFC issue or thread. If there
@@ -45,7 +52,9 @@ Ask for each of these. Invent none of them.
     not leave it blank and do not ask twice: a record with no date cannot be read as
     current or historic. Say which date you used when you inferred it.
 
-If the person supplies only a conclusion, ask for the options before continuing.
+Items 1, 2, 5, and 6 carry the record: chase each until answered, except 6 in the
+not-made mode. If the person supplies only a conclusion, ask for the options before
+continuing. Ask items 7 to 10 together.
 
 **If the ask is to supersede an existing record**, read `references/supersede.md`
 now. It adds a chain-walk check, extends step 6, and continues after step 6, before
@@ -238,6 +247,20 @@ Say which you chose in one line, and change it if the person prefers the other.
 
 Name the file `NNNN-title-with-dashes.md`. Fill every placeholder. Leave no heading
 empty: a section with nothing to say gets `N/A` and a one-line reason.
+
+### Add what the source rarely carries
+
+Draft each where it applies and show it rather than asking first.
+`references/madr-templates.md` holds where each goes.
+
+- **A diagram**, where the decision is a flow, a topology, or a sequence: a release
+  pipeline, a request path, a state machine. Write mermaid. None for a choice between
+  two libraries.
+- **A worked example**, where the decision defines a procedure someone follows
+  afterwards: a versioning rule, a branching convention, a migration order. One, or
+  two where the procedure branches. Put no real release, incident, or person in it,
+  and say the numbers are illustrative: an example built from the decision does not
+  breach step 1, an invented past does.
 
 ## Step 7: Report
 

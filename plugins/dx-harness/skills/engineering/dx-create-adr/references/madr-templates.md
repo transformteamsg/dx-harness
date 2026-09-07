@@ -57,6 +57,11 @@ reviewer cannot tell whether a record wants their attention.
 Ask which one applies rather than defaulting. Guessing `accepted` on a record still
 under discussion makes it read as settled to everyone who finds it later.
 
+`accepted` and `Confirmation` answer different questions. `accepted` means the team is
+bound by the decision now; `Confirmation` says what would catch a drift from it. Where
+nothing does yet, say so in `Confirmation` and stay `accepted`. Where nobody is bound
+until a spike or a trial run lands, use `proposed`.
+
 ## While the decision is open
 
 A record can be opened before the decision is made, to scope what has to be settled
@@ -189,12 +194,44 @@ argued belongs in the `discussion` frontmatter field, not only here. Write "N/A"
 there is nothing further to point at.>
 ```
 
-## Source material no heading covers
+## An optional decision matrix
 
-A source may carry material MADR has no section for: a diagram, worked examples, a
-migration table. Do not drop it, and do not force it under a heading it does not
-belong to. Give it a named section of its own, immediately before `More
-Information`, collapsed:
+Four or more options and three or more `Decision Drivers`: add a matrix immediately
+before `Decision Outcome`. Options as rows, drivers as columns, cells a few words.
+
+```markdown
+| Option | Groups merges | Tag traces to commit | CI cost | Guards production |
+| --- | --- | --- | --- | --- |
+| Release PR from main | Yes | Yes | Low | Workflow condition |
+| Release PR plus RC branch | Yes | Yes | Low | Branch, structural |
+| Release on every merge | No | Yes | High | None |
+```
+
+It adds to `Consequences` and `Pros and Cons of the Options` and replaces neither.
+Those stay as lists: entries a clause or two long stop reflowing inside a table cell.
+
+## A diagram of the decided flow
+
+Where the decision is a flow, a topology, or a sequence, put the diagram in
+`Decision Outcome`, after the prose describing the shape. Not collapsed. Write
+mermaid, which GitHub and GitLab render inline. Labels a few words each.
+
+````markdown
+```mermaid
+flowchart LR
+    PR["pull request<br/>push pr-{n}-{sha}"] -- squash --> Main["main"]
+    Main --> RB["release/vX.Y.Z<br/>bump version"]
+    RB -- "titled release: vX.Y.Z" --> M["squash-merge"]
+    M --> T["tag, build, push to registry"]
+```
+````
+
+## Material no heading covers
+
+Anything else the record needs that MADR has no section for: worked examples, a
+migration table, a schema, the shape of a config file. Do not drop it, and do not
+force it under a heading it does not belong to. Give it a named section of its own,
+immediately before `More Information`, collapsed:
 
 ```markdown
 <details>
@@ -210,6 +247,16 @@ does not render.
 
 Collapse it because a reader opens a record for the decision, not the appendix. The
 record stays scannable, and the material is one click away rather than lost.
+
+### Worked examples
+
+Write one where the source carries none and the decision defines a procedure someone
+has to apply.
+
+Make it concrete: real commands, real filenames, real version numbers, and what each
+step produces. `0.3.1` to `0.4.0` teaches a versioning rule; `<old>` to `<new>` does
+not. Put no real release, incident, or person in it, and say the numbers are
+illustrative.
 
 ## Writing the body
 
