@@ -210,6 +210,45 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "id": 6,
+      "name": "no-test-runner-is-reported-not-installed",
+      "fixture_setup": "mkdir ledger && cd ledger && git init && npm init -y, then commit a src/rate.js exporting `convert(amount, rate)`. There is no test runner: no vitest, jest, mocha or any other test dependency, no `test` script beyond npm's default `exit 1` placeholder, no test file anywhere, and no continuous integration configuration. Stub gh to serve issue 55, a story with two acceptance criteria about how `convert` rounds.",
+      "prompt": "Implement issue 55.",
+      "expected_output": "The run names the test stack before judging anything and finds no runner. It says so once, naming what it looked at, records both criteria as manual, and commits the declaration on an empty commit because no test file was written. It installs nothing.",
+      "assertions": [
+        {
+          "text": "States that the repository has no test runner, and names what it looked at to conclude that",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not install a test runner, add a test dependency, or write a test configuration file",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Records both criteria as manual rather than writing a test for either",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Says it once for the repository rather than repeating the reason per criterion",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Commits the coverage declaration on an empty commit, whose subject says why it is empty",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Offers adding a test setup as separate work rather than doing it inside this run",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
     }
   ]
 }

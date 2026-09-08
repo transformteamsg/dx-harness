@@ -101,3 +101,49 @@ repository:
 
 Do not skip this step. An agent that skips exploration produces code that compiles
 but diverges from the patterns already in the repository.
+
+## Step 7: Name the test stack
+
+A contract item is testable only if something in this repository can run a test.
+Settle that before anyone judges an item or writes a line, because the answer
+decides both.
+
+Record four things, and say where each came from:
+
+| What | Where to look |
+| --- | --- |
+| The runner | The test dependencies in the package manifest, and the imports at the top of a test file already in the repository |
+| The command that runs it | The repository's continuous integration configuration first, because that command is the one that gates a merge. Its package scripts second. Its agent instructions third |
+| Where test files live | The paths of the tests already there: beside the source, or under a test directory |
+| The naming convention | The filenames of those same tests, such as `*.test.ts`, `*_test.go`, or `test_*.py` |
+
+Prefer what the repository does over what its documentation says. A `README` goes
+stale; a test file that runs in continuous integration does not.
+
+Then run the command once, before writing anything:
+
+- **It runs and the suite is green.** The stack is confirmed. Continue.
+- **It runs and something already fails.** Record which tests those are. A later step judges a new test by whether it fails, and it cannot tell your failure from one that was already there.
+- **It does not run at all**, for example because dependencies are not installed. Say so and stop. This is a setup problem, and a test you write against a command you never ran is a guess.
+
+### More than one runner
+
+Many repositories have two or three: a unit runner, a browser or component runner,
+and an end-to-end runner. Record each one with the command that invokes it, because
+they answer different questions. A criterion about what a user sees needs the runner
+that renders, and the unit runner cannot settle it however green it is.
+
+### When there is no runner at all
+
+Record it, and say what you looked at to reach that finding. Every contract item is
+manual in a repository that cannot run a test.
+
+Never install a runner, add a test dependency, or write a configuration file to
+close this gap. Choosing a test framework sets how everyone in that repository
+writes tests from then on, and that decision belongs to the people who work there.
+Offer to file it as its own piece of work instead.
+
+Do not decide the run's outcome here. This procedure reports the finding, and the
+skill that called it says what happens next. A chore in a repository with no tests
+is still buildable, so a blanket stop would refuse work that was never going to
+carry a test.

@@ -67,6 +67,16 @@ Recorded as manual, no automated test written:
 Contract: #142. Written by dx-write-tests. No implementation on this branch yet.
 ```
 
+When no test file was written at all, because every item is manual, the declaration
+still needs a commit to live in. Make an empty one:
+
+```bash
+git commit --allow-empty -F <the message file>
+```
+
+An empty commit reads oddly until you know why it is there, so its subject says so:
+`test(\`assignments\`): record every criterion as manual, no runner in this repository`.
+
 Three rules hold:
 
 - **Every contract item appears exactly once**, under one of the two headings, keyed by the number it has in the contract. An item under neither heading means the declaration is incomplete, and an item under both is a defect.

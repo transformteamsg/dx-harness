@@ -14,12 +14,13 @@ could not. `dx-write-implementation` reads that declaration and works against it
 ## Step 1: Get the contract
 
 **Called by `dx-implement-issue`**: it has already run the intake and hands you the
-numbered contract items, the shape, and the bound agent patterns. Use them. Do not
-re-derive them.
+numbered contract items, the shape, the bound agent patterns, and the test stack.
+Use them. Do not re-derive them.
 
 **Invoked alone**: run [../../../procedures/issue-contract.md](../../../procedures/issue-contract.md)
-yourself, all six steps. It settles the input, the shape, the numbered contract
-items, readiness, the agent patterns, and the code you are about to touch.
+yourself, all seven steps. It settles the input, the shape, the numbered contract
+items, readiness, the agent patterns, the code you are about to touch, and the test
+stack you are about to write against.
 
 Either way, stop if the contract is not ready. A readiness gap is a question for
 whoever wrote the issue, and writing tests against a guess produces tests that pass
@@ -37,11 +38,16 @@ You are about to commit. Run `git status` and `git branch --show-current`.
 Take the items in order. For each one, decide whether an automated test can settle
 it in this repository, and say which on what evidence.
 
-An item is automatable when a test can observe the thing the criterion names. Look
-at what the repository already tests before you decide, because the answer is a
-property of the repository and not of the criterion. A repository with a browser
-test runner can automate "the banner turns amber"; one with a unit runner only
-cannot.
+An item is automatable when one of the runners you recorded in Step 7 of the issue
+contract can observe the thing the criterion names. Name that runner as your
+evidence. The answer is a property of the repository, not of the criterion: a
+repository with a browser runner can automate "the banner turns amber", and one with
+a unit runner only cannot.
+
+A repository the contract found to have no runner at all makes every item manual.
+Say so once, rather than item by item, and do not add a runner to change the answer.
+Skip Steps 4 and 5, because there is nothing to write and nothing to run, and go to
+Step 6. It tells you how to commit a declaration when no test file exists.
 
 An item is not automatable when settling it needs a person to look, to judge, or to
 reach something the test environment does not have. The recurring cases:
@@ -74,8 +80,11 @@ it fails on the current code in the way the bug report describes.
 
 ## Step 5: Confirm each test fails for the right reason
 
-Run the suite and read each failure message. A test must fail because the behaviour
-is absent, not because the file does not compile.
+Run the command the issue contract recorded, and read each failure message. A test
+must fail because the behaviour is absent, not because the file does not compile.
+
+Ignore any failure the contract recorded as already present. Those tests were red
+before this run and say nothing about the criteria you are covering.
 
 | Failure | Verdict |
 | --- | --- |
@@ -123,6 +132,8 @@ and a report that reads as finished is how a red branch reaches review.
 ## Rules
 
 - Write tests only. No production code, beyond the minimum declaration a test needs to reach its assertion.
+- Name the runner before you judge an item. An automatability call with no runner behind it is a guess.
+- Never install a test runner or add a test dependency. That choice belongs to the people who work in the repository.
 - Every contract item ends up covered or recorded as manual. An item in neither place means the run is not finished.
 - Never write an assertion that passes without exercising the behaviour the criterion names.
 - Confirm each test fails on its assertion before committing, not on a compile error.

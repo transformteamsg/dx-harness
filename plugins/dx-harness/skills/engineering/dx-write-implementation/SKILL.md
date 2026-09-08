@@ -10,10 +10,11 @@ to change it by writing a test that fits the code you felt like writing.
 ## Step 1: Get the contract
 
 **Called by `dx-implement-issue`**: it has already run the intake and hands you the
-numbered contract items, the shape, and the bound agent patterns. Use them.
+numbered contract items, the shape, the bound agent patterns, and the test stack.
+Use them.
 
 **Invoked alone**: run [../../../procedures/issue-contract.md](../../../procedures/issue-contract.md)
-yourself, all six steps.
+yourself, all seven steps.
 
 ## Step 2: Read the coverage declaration
 
@@ -51,7 +52,7 @@ Take the covered items in the declaration's order. For each one:
 
 1. Read the test named in the declaration, and read it as the specification. It is what the criterion means, in this repository's terms
 2. Write the production code that makes it pass
-3. Run the suite. Confirm that test passes and that nothing that was passing now fails
+3. Run the command the issue contract recorded. Confirm that test passes, and that nothing that was passing now fails
 4. Commit, per [../../../procedures/commit-discipline.md](../../../procedures/commit-discipline.md)
 
 Follow the conventions in the repository's own agent instructions, and where they

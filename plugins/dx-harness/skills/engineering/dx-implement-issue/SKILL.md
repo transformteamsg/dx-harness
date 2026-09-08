@@ -17,8 +17,9 @@ reports mean something.
 ## Step 1: Read the issue and check it is ready
 
 Run [../../../procedures/issue-contract.md](../../../procedures/issue-contract.md),
-all six steps. It settles the input, the shape, the numbered contract items,
-readiness, the agent patterns that bind this session, and the code the work touches.
+all seven steps. It settles the input, the shape, the numbered contract items,
+readiness, the agent patterns that bind this session, the code the work touches, and
+the test stack both halves write against.
 
 You run this once. Both halves accept the result from you, so neither repeats it.
 
@@ -73,8 +74,8 @@ git checkout -b <branch-name>
 ## Step 4: Run the test half
 
 Run [../dx-write-tests/SKILL.md](../dx-write-tests/SKILL.md) and pass it the
-numbered contract items, the shape, and the bound agent patterns, so it does not
-repeat Step 1.
+numbered contract items, the shape, the bound agent patterns, and the test stack, so
+it does not repeat Step 1.
 
 It returns a branch whose tests fail on their assertions, and a coverage declaration
 in its final commit body naming which items it covered and which it recorded as
@@ -86,7 +87,7 @@ manual.
 ## Step 5: Run the implementation half
 
 Run [../dx-write-implementation/SKILL.md](../dx-write-implementation/SKILL.md) and
-pass it the same three things.
+pass it the same four things.
 
 It reads the declaration, implements against the named tests, adds tests for the
 paths its own code introduced, and runs the repository's checks.
