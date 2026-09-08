@@ -10,6 +10,7 @@
 - A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
 - A new skill, `dx-create-sprint-logs`, writes a sprint log per workstream: what closed, what carried over, what was decided, and what risk transfers to whoever picks the work up next. Every row is a clause and a link.
 - The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
+- The setup checklist's axe row can be run as written. Both of its commands take the plugin's own directory from a `PLUGIN_ROOT` you set, and they refuse to run when it is empty rather than installing into the repository you are checking ([#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 
 ## 0.6.0 (2026-09-01)
 
