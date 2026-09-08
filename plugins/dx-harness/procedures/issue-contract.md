@@ -23,15 +23,15 @@ wins, because it came later.
 
 ## Step 2: Read the shape
 
-The shape decides what you build against. The headings are authoritative, because
-they are what you read the contract out of. A shape label (`story`, `task`, `chore`,
+The shape decides what you build against. The headings are authoritative. A shape
+label (`story`, `task`, `chore`,
 or `bug`) and a `skill:dx-create-*` label confirm the reading. A pasted body carries
 neither, so never depend on them.
 
 | Heading present | Shape | The contract |
 | --- | --- | --- |
 | `## User story` | Story | The acceptance criteria. `## Open questions` and `## Out of scope` bound it |
-| `## Parent` | Task | The acceptance criteria, plus the optional `## Also true when done` checklist. Read the parent too with `gh issue view <parent>`, because a task only makes sense in the context of what it delivers |
+| `## Parent` | Task | The acceptance criteria, plus the optional `## Also true when done` checklist. Read the parent too with `gh issue view <parent>` |
 | `## What is changing` | Chore | The `## Done when` list. There are no Given-When-Then scenarios, and inventing them wastes the run |
 | `## Steps to reproduce` | Bug | The reproduction path plus the expected-versus-actual gap |
 
@@ -50,9 +50,7 @@ covered by a test.
 ## Step 4: Check the issue is ready
 
 An issue is ready when it says what must be observably true once the work is done.
-Judge that against the shape, and stop rather than filling a gap with a guess. A
-guess made here surfaces as a rejected pull request, which costs far more than the
-question.
+Judge that against the shape, and stop rather than filling a gap with a guess.
 
 - **Story or task**: at least one acceptance criteria scenario, written as observable behaviour rather than implementation. A task also needs its parent link.
 - **Chore**: done-when items a reviewer could confirm by looking. "The environment is set up" is not a finish line. "A deploy to staging succeeds and the health endpoint returns 200" is.
@@ -105,8 +103,7 @@ but diverges from the patterns already in the repository.
 ## Step 7: Name the test stack
 
 A contract item is testable only if something in this repository can run a test.
-Settle that before anyone judges an item or writes a line, because the answer
-decides both.
+Settle that before anyone judges an item or writes a line.
 
 Record four things, and say where each came from:
 
@@ -124,13 +121,12 @@ Then run the command once, before writing anything:
 
 - **It runs and the suite is green.** The stack is confirmed. Continue.
 - **It runs and something already fails.** Record which tests those are. A later step judges a new test by whether it fails, and it cannot tell your failure from one that was already there.
-- **It does not run at all**, for example because dependencies are not installed. Say so and stop. This is a setup problem, and a test you write against a command you never ran is a guess.
+- **It does not run at all**, for example because dependencies are not installed. Say so and stop. This is a setup problem.
 
 ### More than one runner
 
 Many repositories have two or three: a unit runner, a browser or component runner,
-and an end-to-end runner. Record each one with the command that invokes it, because
-they answer different questions. A criterion about what a user sees needs the runner
+and an end-to-end runner. Record each one with the command that invokes it. A criterion about what a user sees needs the runner
 that renders, and the unit runner cannot settle it however green it is.
 
 ### When there is no runner at all

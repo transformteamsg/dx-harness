@@ -8,11 +8,10 @@ decision about whether the issue is one change, and the pull request at the end.
 own no test writing and no code writing: those are two skills behind you, and they
 run in a fixed order.
 
-The order is the point. `dx-write-tests` runs first and leaves a branch whose tests
-fail for the reasons the issue states. `dx-write-implementation` runs second and
-works against those tests. A test written before the implementation exists cannot be
-shaped to fit code that already passes, and that is what makes the coverage this run
-reports mean something.
+`dx-write-tests` runs first and leaves a branch whose tests fail for the reasons the
+issue states. `dx-write-implementation` runs second and works against those tests. A
+test written before the implementation exists cannot be shaped to fit code that
+already passes.
 
 ## Step 1: Read the issue and check it is ready
 
@@ -51,10 +50,6 @@ Report:
 2. Which signal triggered the recommendation
 3. The instruction: run `/dx-harness:dx-split-issue $ARGUMENTS` to cut the issue into task sub-issues, then return to `/dx-harness:dx-implement-issue` on each slice. The parent stays open and tracks them
 
-This evaluation belongs here rather than in either half, because it decides whether
-to build the work at all. Neither half can make that call from inside its own
-part of it.
-
 ## Step 3: Create the branch
 
 Derive the branch name from the issue title, following the repository's own naming
@@ -92,8 +87,8 @@ pass it the same four things.
 It reads the declaration, implements against the named tests, adds tests for the
 paths its own code introduced, and runs the repository's checks.
 
-- **It reports a contract item with no test**: carry that forward. Do not send it back to write the test, because a test written after the code does not carry the property Step 4 exists to produce. Decide with the developer whether the item ships uncovered, is recorded as manual, or sends the run back to Step 4 for a fresh test.
-- **A check fails and it cannot fix it**: surface the failure and stop. Opening a pull request with a failing suite moves the work backwards, because the next person has to decide whether the failure is yours or theirs.
+- **It reports a contract item with no test**: carry that forward. Do not send it back to write the test. Decide with the developer whether the item ships uncovered, is recorded as manual, or sends the run back to Step 4 for a fresh test.
+- **A check fails and it cannot fix it**: surface the failure and stop.
 
 ## Step 6: Open a draft pull request
 
@@ -128,13 +123,11 @@ Either half runs alone, and someone will do that. The common cases:
 - **Tests first, code later or by someone else**: run `/dx-harness:dx-write-tests <issue>`. It leaves a committed red branch and names what continues.
 - **The tests already exist**: run `/dx-harness:dx-write-implementation <issue>`. It reads the declaration from the history, so it works on a branch someone else left days ago.
 
-Each half runs the intake itself when it is invoked directly. Nothing about this
-skill is required for either to work, and neither half needs a second copy of what
-it already read.
+Each half runs the intake itself when it is invoked directly.
 
 ## Rules
 
-- Run the halves in order. Tests first, always. An issue built code-first loses the only guarantee this split provides.
+- Run the halves in order. Tests first, always.
 - Own the intake once. Pass the contract to both halves rather than letting either repeat it.
 - The split evaluation runs before either half, and a signal stops the run.
 - Never write a test or a line of production code from here.

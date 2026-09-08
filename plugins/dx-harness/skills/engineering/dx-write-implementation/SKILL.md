@@ -4,8 +4,7 @@ description: 'Use when a branch already carries failing tests and someone wants 
 ---
 
 You write the production code that turns a red branch green. The tests are already
-written, so what you have to satisfy is settled before you start, and you do not get
-to change it by writing a test that fits the code you felt like writing.
+written, so what you have to satisfy is settled before you start.
 
 ## Step 1: Get the contract
 
@@ -27,12 +26,12 @@ Three states, and each has a defined answer:
 
 - **A declaration is present.** Use it as your work list. Go to Step 3.
 - **No commit carries a declaration, and the suite has failing tests anyway.** Somebody wrote tests without the test half. Say so, list the failing tests you found, and treat them as the work list. Note in your report that no declaration backs them, so the manual items are unknown.
-- **No declaration and no failing tests.** The test half never ran on this branch. Stop. Say that there is nothing to implement against, and that `/dx-harness:dx-write-tests <the same argument>` produces it. Do not write tests here to fill the gap, because a test you write next to code you are about to write is not a test of the contract.
+- **No declaration and no failing tests.** The test half never ran on this branch. Stop. Say that there is nothing to implement against, and that `/dx-harness:dx-write-tests <the same argument>` produces it. Do not write tests here to fill the gap.
 
 ## Step 3: Reconcile the declaration against the contract
 
 Compare the declaration's items against the numbered contract items from Step 1.
-This is the check that keeps the split honest, and it runs before any code.
+This check runs before any code.
 
 | What you find | What you do |
 | --- | --- |
@@ -41,10 +40,7 @@ This is the check that keeps the split honest, and it runs before any code.
 | The declaration names an item the contract does not | Report it. The issue changed after the test half ran |
 
 Report an uncovered contract item. Never close the gap by writing the missing test
-yourself: the whole value of the split is that the tests were written without
-knowledge of the implementation, and a test you add here does not have that
-property. Naming the gap costs a sentence. Hiding it costs a criterion nobody
-checked.
+yourself.
 
 ## Step 4: Implement against the tests
 
@@ -65,28 +61,24 @@ Two limits hold throughout:
 
 ## Step 5: Cover what the implementation revealed
 
-The tests came from the contract, so they cover what someone observes. Your code has
-paths nobody named: an internal error branch, a boundary the happy path never
-reaches, a concurrent write. Add tests for the ones your implementation
+Your code has paths nobody named: an internal error branch, a boundary the happy
+path never reaches, a concurrent write. Add tests for the ones your implementation
 introduced, following the repository's assertion conventions.
 
-Keep the line between this and Step 3 clear, because they look similar and are not:
+Keep the line between this and Step 3 clear:
 
 - **A path your code introduced** is yours to test. It did not exist when the test half ran.
 - **A contract item with no test** is not. That is Step 3's gap, and it gets reported.
 
 List every test you added here in your report, separately from the ones the test
-half wrote. A reader has to be able to tell which tests were written before the code
-and which after.
+half wrote.
 
 ## Step 6: Run the checks the repository runs
 
-Run what its continuous integration runs, so a green local run predicts a green
-pull request. The repository's agent instructions and its package scripts name them:
-usually a lint, a typecheck, and the test suite.
+Run what its continuous integration runs. The repository's agent instructions and
+its package scripts name them: usually a lint, a typecheck, and the test suite.
 
-All of them pass before you report. If one fails, fix it. The branch being green is
-what finishes this half, so a failing check means the half is not done.
+All of them pass before you report. If one fails, fix it.
 
 ## Step 7: Report
 
@@ -102,8 +94,7 @@ what finishes this half, so a failing check means the half is not done.
 pull request.
 
 **Invoked alone**: say that the branch is green and that
-`/dx-harness:dx-create-pr` opens the request. Do not open it yourself, because
-`dx-create-pr` owns the body, the draft state, and the platform difference.
+`/dx-harness:dx-create-pr` opens the request. Do not open it yourself.
 
 ## Rules
 
@@ -112,4 +103,4 @@ pull request.
 - Never edit a test to make it pass. A wrong test is a question, not a task.
 - A test you add covers a path your own implementation introduced, and your report says so.
 - Every commit leaves the suite passing, and the checks pass before you report.
-- Carry the manual items through unchanged. They are the half of the contract no test covers.
+- Carry the manual items through unchanged.

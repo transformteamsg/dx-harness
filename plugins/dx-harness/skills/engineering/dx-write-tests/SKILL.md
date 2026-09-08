@@ -3,9 +3,7 @@ name: dx-write-tests
 description: 'Use when someone wants the tests for an issue written before any implementation exists, for example "write the tests for 142 first", "give me a failing test per acceptance criterion", "red branch for this issue", or "TDD this issue". Writes one failing test per contract item, records the items automation cannot settle instead of faking an assertion, and commits the branch in that failing state with a coverage declaration. Runs alone, or as the first half of `dx-implement-issue`. Picked up by an engineer or a coding agent. The argument is either an issue number or a pasted markdown body, given as $ARGUMENTS'
 ---
 
-You write the tests and nothing else. No production code leaves this run, and that
-is the point: a test written before the implementation exists cannot be shaped to
-fit code that already passes.
+You write the tests and nothing else. No production code leaves this run.
 
 The run ends with a branch that builds, tests that fail for the reasons the issue
 states, and a written declaration of which contract items you covered and which you
@@ -23,8 +21,7 @@ items, readiness, the agent patterns, the code you are about to touch, and the t
 stack you are about to write against.
 
 Either way, stop if the contract is not ready. A readiness gap is a question for
-whoever wrote the issue, and writing tests against a guess produces tests that pass
-against the wrong behaviour.
+whoever wrote the issue.
 
 ## Step 2: Check the branch
 
@@ -46,8 +43,8 @@ a unit runner only cannot.
 
 A repository the contract found to have no runner at all makes every item manual.
 Say so once, rather than item by item, and do not add a runner to change the answer.
-Skip Steps 4 and 5, because there is nothing to write and nothing to run, and go to
-Step 6. It tells you how to commit a declaration when no test file exists.
+Skip Steps 4 and 5 and go to Step 6. It tells you how to commit a declaration when
+no test file exists.
 
 An item is not automatable when settling it needs a person to look, to judge, or to
 reach something the test environment does not have. The recurring cases:
@@ -63,8 +60,7 @@ carry it to Step 6.
 
 The one thing you must not do is write an assertion that passes without exercising
 the behaviour. A test that asserts a function was called, when the criterion is
-about what the user sees, reports coverage the run does not have. That is worse than
-the honest gap, because the gap is visible and the false pass is not.
+about what the user sees, reports coverage the run does not have.
 
 ## Step 4: Write one failing test per automatable item
 
@@ -108,26 +104,21 @@ Commit per [../../../procedures/commit-discipline.md](../../../procedures/commit
 One contract item, one commit, and the coverage declaration in the body of the final
 commit.
 
-The declaration is the handoff, so it has to be complete. Every contract item
-appears exactly once, either as covered with the `file:line` of its test, or as
+The declaration has to be complete. Every contract item appears exactly once, either as covered with the `file:line` of its test, or as
 manual with the reason automation could not settle it.
 
 ## Step 7: Report, and name what continues
 
-Say plainly what state the branch is in, because someone reading this later has to
-know that the failing tests are deliberate:
+Say plainly what state the branch is in:
 
 1. **Branch**: the branch name, and that it carries failing tests and no implementation
 2. **Covered**: each contract item with the test that covers it
 3. **Manual**: each item you could not automate, with the reason
 4. **Continue with**: `/dx-harness:dx-write-implementation <the same argument>`
 
-Report the manual items even when the person seems to want only the tests. They are
-the half of the contract no test will ever cover, and they are what the pull request
-body and the review both read later.
+Report the manual items even when the person seems to want only the tests.
 
-Never report the work as implemented. Nothing on this branch implements anything,
-and a report that reads as finished is how a red branch reaches review.
+Never report the work as implemented.
 
 ## Rules
 

@@ -48,9 +48,7 @@ at a glance.
 ## The coverage declaration
 
 `dx-write-tests` ends by declaring what it covered and what it could not. The
-declaration goes in the body of its final commit. Nothing is written to a new file,
-so nothing has to be cleaned out of the repository afterwards, and the record
-survives a session boundary because it is in the history.
+declaration goes in the body of its final commit, never into a new file.
 
 Write it in this shape:
 
@@ -93,8 +91,7 @@ git log --format='%H%n%B' origin/main..HEAD
 ```
 
 Look for the commit whose body carries `Written by dx-write-tests`. If more than one
-commit carries it, the newest wins, because a repeated test half means the earlier
-declaration was superseded.
+commit carries it, the newest wins.
 
 If no commit carries it, the test half never ran on this branch. That is a defined
 state, and each half says what to do about it in its own steps.
