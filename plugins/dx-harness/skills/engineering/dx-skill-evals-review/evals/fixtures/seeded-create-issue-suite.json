@@ -1,0 +1,163 @@
+{
+  "skill_name": "dx-create-issue",
+  "notes": "Offline eval. This skill owns exactly one decision, which shape an issue is, and then hands off. So these test the CLASSIFICATION and the HANDOFF, never a created issue. Run each with no network and with `gh` unavailable or disabled, and tell the runner to stop at the point of handoff and report which skill it would invoke and what context it would carry across, rather than invoking the leaf skill. A run that stops at a single clarifying question is a complete and valid outcome. No repository fixture is needed for any of these: the classification happens from the request alone, and the cases that mention issue numbers only need the number to appear in the prompt. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "story-not-bug-when-never-built",
+      "prompt": "Filtering by marking status doesn't work on the assignments list. Teachers can't see which ones still need marking. Can you raise a ticket for it?",
+      "expected_output": "The phrase \"doesn't work\" does not settle this. The skill recognises that no filter was ever built, so there is no expected-versus-actual gap in something already delivered, and classifies it as a story: a teacher observes a new capability and nothing bigger tracks it. States the shape and the reason in one line, then hands off to `dx-create-story`.",
+      "assertions": [
+        {"text": "Does not classify as a bug on the strength of \"doesn't work\"", "passed": null, "evidence": ""},
+        {"text": "Classifies as a story", "passed": null, "evidence": ""},
+        {"text": "Names the persona and the observable benefit as the reason", "passed": null, "evidence": ""},
+        {"text": "States shape and reason in one line before handing off", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-story`", "passed": null, "evidence": ""},
+        {"text": "Asks no intake questions of its own: no acceptance criteria, no done-when list", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 1,
+      "name": "task-parent-named-without-number",
+      "prompt": "Someone needs to build the filter API. It's part of the export work we've already got tracked. File it please.",
+      "expected_output": "A parent is named but not numbered, and that is still a task. The skill hands off to `dx-create-task` and carries the author's words about the parent across. It does not search the backlog for the issue number itself, because `dx-create-task` identifies and verifies the parent as its first step, and it does not ask which issue the parent is.",
+      "assertions": [
+        {"text": "Classifies as a task", "passed": null, "evidence": ""},
+        {"text": "Does not search the backlog for the parent issue number", "passed": null, "evidence": ""},
+        {"text": "Runs no `gh` command at all", "passed": null, "evidence": ""},
+        {"text": "Does not ask the author for the parent number", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-task`, carrying the author's wording about the parent", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "same-technology-different-shape",
+      "prompt": "Two things to file. One: provision the SQS queue that backs the submission uploads in #142. Two: provision an SQS queue to replace the nightly cron that reconciles balances, nothing bigger tracks that one and no user would ever notice it.",
+      "expected_output": "Two issues, not one. The identical technology decides nothing. The first is a task, because it is a slice of tracked story #142. The second is a chore, because nothing bigger tracks it and nobody outside the team observes the result. The skill says so and runs one skill per issue, `dx-create-task` then `dx-create-chore`, rather than flattening them into a single body.",
+      "assertions": [
+        {"text": "Splits the request into two issues", "passed": null, "evidence": ""},
+        {"text": "Classifies the first as a task and cites #142 as the parent", "passed": null, "evidence": ""},
+        {"text": "Classifies the second as a chore", "passed": null, "evidence": ""},
+        {"text": "Does not let the shared technology (a queue) decide either shape", "passed": null, "evidence": ""},
+        {"text": "Runs one skill per issue rather than flattening them into one", "passed": null, "evidence": ""},
+        {"text": "Does not invent a parent for the second so it can be filed as a task", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "author-names-wrong-shape",
+      "prompt": "Create a chore for this: teachers should be able to download the class marks as a CSV from the assignments page.",
+      "expected_output": "The named shape contradicts the request outright, so the skill pushes back in one line: a teacher observes a new capability, which makes it a story. It offers the correction and does not silently file a chore. The pushback is one sentence, not a quiz, and it does not lecture the author about the taxonomy.",
+      "assertions": [
+        {"text": "Recognises the request contradicts the named shape", "passed": null, "evidence": ""},
+        {"text": "Pushes back in one line naming the observable capability", "passed": null, "evidence": ""},
+        {"text": "Proposes story", "passed": null, "evidence": ""},
+        {"text": "Does not hand off to `dx-create-chore` regardless", "passed": null, "evidence": ""},
+        {"text": "Does not explain the four shapes at length", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "author-names-plausible-shape-is-taken",
+      "prompt": "Raise a chore to drop the dead feature-flag plumbing around the old marking screen. It's all behind a flag that's been off for a year.",
+      "expected_output": "The author named a shape and the request is consistent with it, so the skill takes it and routes. It does not re-derive the classification from first principles, does not question the call, and does not ask whether anything bigger tracks the work. Hands off to `dx-create-chore`.",
+      "assertions": [
+        {"text": "Takes the author's named shape", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-chore`", "passed": null, "evidence": ""},
+        {"text": "Asks no clarifying question, because only one shape is live", "passed": null, "evidence": ""},
+        {"text": "Does not re-argue the classification", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "one-question-when-two-shapes-live",
+      "prompt": "We need the empty state designed for the filtered assignments list. Can you file that?",
+      "expected_output": "Two shapes are genuinely live: a design slice of a tracked story is a task, and the same design work with nothing bigger tracking it is not. The skill asks exactly one question, naming the difference that decides it, something close to \"is this part of a tracked issue, or the whole of it?\", and stops there. It does not ask a second question, does not ask about acceptance criteria or visual states, and does not guess and hand off.",
+      "assertions": [
+        {"text": "Asks exactly one clarifying question", "passed": null, "evidence": ""},
+        {"text": "The question names the difference that decides the shape: whether something bigger tracks it", "passed": null, "evidence": ""},
+        {"text": "Does not ask about design detail, states, or acceptance criteria", "passed": null, "evidence": ""},
+        {"text": "Stops at the question rather than handing off on a guess", "passed": null, "evidence": ""},
+        {"text": "Does not treat \"design work\" as automatically a task", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 6,
+      "name": "no-question-when-request-answers-it",
+      "prompt": "Design the empty state for the filtered list, it's part of #142.",
+      "expected_output": "The request already says it is a slice of #142, so the shape is settled: a task, with no persona of its own. The skill asks nothing and hands off to `dx-create-task`, carrying #142 across as the parent.",
+      "assertions": [
+        {"text": "Asks no clarifying question", "passed": null, "evidence": ""},
+        {"text": "Classifies as a task", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-task` carrying #142 as the parent", "passed": null, "evidence": ""},
+        {"text": "Does not treat the design discipline as a reason to route elsewhere", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 7,
+      "name": "missing-leaf-skill-does-not-improvise",
+      "fixture_setup": "Run with `dx-create-bug` unavailable. If the runner cannot uninstall a skill, state in the prompt that `dx-create-bug` is not installed in this workspace.",
+      "prompt": "The mark total shows 0 on submissions that definitely have marks against them. It was fine last week. File it. Note that dx-create-bug is not installed in this workspace.",
+      "expected_output": "Classifies the work as a bug, then says plainly that `dx-create-bug` is the skill that owns it and that it is missing. It does not do the intake here: no reproduction steps are gathered, no expected-versus-actual is written up, no issue body is drafted, and no `gh issue create` is run. It does not route to a different shape's skill as a substitute.",
+      "assertions": [
+        {"text": "Classifies as a bug", "passed": null, "evidence": ""},
+        {"text": "Names `dx-create-bug` as the missing skill", "passed": null, "evidence": ""},
+        {"text": "Does not gather reproduction steps or an expected-versus-actual delta", "passed": null, "evidence": ""},
+        {"text": "Does not draft a generic issue body", "passed": null, "evidence": ""},
+        {"text": "Runs no `gh issue create`", "passed": null, "evidence": ""},
+        {"text": "Does not substitute another leaf skill", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 8,
+      "name": "no-bounce-back-to-the-sender",
+      "prompt": "I asked dx-create-story to file this and it sent the work back here, saying no real user benefits: we want to move the CI cache from the old runner image to the new one so builds stop timing out. Sort out where it goes.",
+      "expected_output": "Treats the redirect as authoritative. Classifies the work as a chore, because nobody outside the team observes it and nothing bigger tracks it, and hands off to `dx-create-chore`. It never routes back to `dx-create-story`, and it does not re-argue whether developers count as users.",
+      "assertions": [
+        {"text": "Does not route back to `dx-create-story`", "passed": null, "evidence": ""},
+        {"text": "Treats the leaf skill's redirect as authoritative rather than re-arguing it", "passed": null, "evidence": ""},
+        {"text": "Classifies as a chore", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-chore`", "passed": null, "evidence": ""},
+        {"text": "Carries the original wording and constraints across rather than making the author repeat them", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 9,
+      "name": "umbrella-chore-keeps-its-pieces",
+      "prompt": "Set up a staging environment for us: ECS service, its own database, an ALB in front, and the deploy pipeline pointed at it. File whatever's needed.",
+      "expected_output": "Infrastructure and environment work that nothing bigger tracks is a chore, and this one has several independently deliverable pieces. The skill classifies it as a chore and hands the whole thing to `dx-create-chore`, which files the umbrella and hands the pieces to `dx-create-task`. The front door does not carve the pieces into separate task handoffs itself, because there is no parent number to hang them on until the chore exists.",
+      "assertions": [
+        {"text": "Classifies as a chore", "passed": null, "evidence": ""},
+        {"text": "Hands off to `dx-create-chore` as one handoff", "passed": null, "evidence": ""},
+        {"text": "Does not split the pieces into separate task handoffs from here", "passed": null, "evidence": ""},
+        {"text": "Does not classify infrastructure work as a story for lack of a better fit", "passed": null, "evidence": ""},
+        {"text": "Creates no issue and runs no `gh` command", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 10,
+      "name": "shape-label-versus-skill-label",
+      "prompt": "How do I list just the chores in the backlog?",
+      "expected_output": "Answers with `gh issue list --label \"chore\"` and explains that label filters match exactly, so the query returns chores and never the `skill:dx-create-chore` label sitting alongside. Does not confuse the shape label with the `skill:dx-create-*` label, which records what wrote the issue rather than what kind of work it is. Answers the question and does not start an intake.",
+      "assertions": [
+        {"text": "Gives `gh issue list --label \"chore\"`", "passed": null, "evidence": ""},
+        {"text": "Explains that label filters match exactly, so `skill:dx-create-chore` is not returned", "passed": null, "evidence": ""},
+        {"text": "Distinguishes the shape label from the `skill:dx-create-*` label", "passed": null, "evidence": ""},
+        {"text": "Does not begin an issue intake", "passed": null, "evidence": ""}
+      ]
+    },
+    {
+      "id": 11,
+      "name": "mixed-request-splits-by-shape",
+      "prompt": "Add the CSV export button to the assignments page for teachers, and bump the marking SDK to v4 while you're in there since it's two majors behind.",
+      "expected_output": "Two shapes in one request: a story for the export button, a chore for the SDK bump. The skill says so and runs one skill per issue rather than filing a single issue that carries both. It does not treat the bump as an implementation detail of the story, and it does not link them itself: the leaf skills own linking.",
+      "assertions": [
+        {"text": "Identifies two issues, a story and a chore", "passed": null, "evidence": ""},
+        {"text": "Does not flatten the bump into the story", "passed": null, "evidence": ""},
+        {"text": "Runs `dx-create-story` and `dx-create-chore`, one per issue", "passed": null, "evidence": ""},
+        {"text": "Does not link the two issues itself", "passed": null, "evidence": ""},
+        {"text": "Writes no template, acceptance criteria, or issue body of its own", "passed": null, "evidence": ""}
+      ]
+    }
+  ]
+}

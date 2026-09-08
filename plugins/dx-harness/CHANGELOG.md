@@ -10,6 +10,8 @@
 - A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
 - A new skill, `dx-create-sprint-logs`, writes a sprint log per workstream: what closed, what carried over, what was decided, and what risk transfers to whoever picks the work up next. Every row is a clause and a link.
 - The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
+- A new skill, `dx-skill-evals-review`, tells you whether a skill's eval suite would ever fail. It reads the suite against the skill it tests and reports which evals earn their place: the prompts the skill already answers, the assertions no run could contradict, the expected outputs a reasonable model could argue with, and the promises the suite never tests at all. It reports and never edits your suite ([#336](https://github.com/transformteamsg/dx-harness/pull/336)).
+- `dx-create-issue` now ships with an eval suite, so a change to how it classifies work has something to fail against. Reviewing that suite is what the new skill was built for, and it found leakage in five of its nine prompts ([#336](https://github.com/transformteamsg/dx-harness/pull/336)).
 
 ## 0.6.0 (2026-09-01)
 
