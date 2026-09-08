@@ -1,7 +1,15 @@
 # Changelog
 
-## 0.6.1 (2026-09-01)
+## Unreleased
 
+- The plugin now ships a bundled output style, `dx-house-style`, which sets the writing rules for a whole session: explanations, plans, commit messages, and any response in the terminal. It is opt-in, so a repository that wants a different voice is unaffected.
+- A new skill, `dx-house-style-setup`, turns that style on at whichever scope you pick: this project for you, this project for everyone who clones it, or every project on your machine. It reads back the value Claude Code resolves rather than guessing at one.
+- A shared house style, `procedures/house-style.md`, now governs every artifact `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`, `dx-create-pr`, `dx-code-review`, and `dx-design-feedback` write. It draws on Orwell's six rules, the Google developer documentation style guide, and ASD-STE100, and it applies with no setup the moment any of those skills runs.
+- The style says how long an artifact should be, not only how it should read. A section with nothing to say takes `None` rather than filler, length comes from load-bearing content, and an artifact that runs long because its scope is too wide gets split rather than trimmed.
+- Words that certify their own claim are out: `real`, `genuine`, `honestly`, `actually`, `truly`. A bug is a bug. The exception is a contrast a reader needs, such as a confirmed finding against a plausible one.
+- A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
+- A new skill, `dx-create-sprint-logs`, writes a sprint log per workstream: what closed, what carried over, what was decided, and what risk transfers to whoever picks the work up next. Every row is a clause and a link.
+- The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
 - The setup checklist's axe row can be run as written. Both of its commands take the plugin's own directory from a `PLUGIN_ROOT` you set, and they refuse to run when it is empty rather than installing into the repository you are checking ([#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 
 ## 0.6.0 (2026-09-01)

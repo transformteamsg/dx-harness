@@ -15,7 +15,7 @@ Dependencies live outside the body: link blockers and dependents with GitHub's n
 
 ## Issue template
 
-The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading.
+The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading. Write every section following [House style](../../../procedures/house-style.md): the reproduction steps and the expected-versus-actual gap carry the report, not a narrative of how it was found.
 
 ## Attaching screenshots and recordings
 
@@ -71,7 +71,7 @@ gh issue list --state open --json number,title,body --limit 100
 
 ### Step 2: Preview and confirm
 
-Render the complete issue body in a markdown code block and ask for confirmation before creating it.
+Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block and ask for confirmation before creating it.
 
 If the Evidence section is `None available`, or the reproduction steps do not lead to a definite failure (for example, the author says it happens "sometimes"), call that out before creating:
 

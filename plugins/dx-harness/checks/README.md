@@ -42,8 +42,13 @@ below) so the three a11y layers read one file rather than three copies of it, an
 reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
 `l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
 `waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
-bodies. checklib has its own gate: `python3 checks/checklib.py --self-test` →
-`SELF-TEST OK (51 cases)`.
+bodies. `scoped_controls` parses a record's "Controls in scope" notation into the
+in-scope id set, shared by `audit-record.py` and `reaudit-scope.py`: ranges and
+slash lists expand, "out of scope" excludes its whole segment (and the bullets
+under an out-of-scope label), and an inline "N/A" excludes only the ids in its
+own clause, so exclusion wins without unchecking the in-scope controls named
+beside it. checklib has its own gate:
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (74 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -285,12 +290,20 @@ nothing uncovered" counts), a CMP-1-in-scope record carries exactly one fixed-fo
 CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 `| Control | Method | Evidence |` table — each method is `script` / `manual` /
 `unverified`, and a `manual` or `unverified` row must state its evidence/reason, so
-"verified manually" is an auditable claim rather than a prose blob). Exit 0 with
+"verified manually" is an auditable claim rather than a prose blob), the ledger has
+a row for **every control in "Controls in scope"** (the scope notation is parsed
+by `checklib.scoped_controls`: ranges and slash lists expand, and a control a
+record rules out with "N/A" or "out of scope" is not demanded back as scope;
+extra rows for reviewer-added
+findings are allowed; until the scope manifest ships the checked set is the full
+in-scope set, so a review that stops early fails here), and **no L0 control's
+ledger row is `unverified`** (L0 has no waiver, so it gets no quiet exit either —
+the same row on an L1/L2 control stays legal). Exit 0 with
 `OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
 failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
 hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (21 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (31 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
@@ -629,7 +642,7 @@ separately, and an L0 id refused).
 
 ## Reaudit scope (built)
 
-`python3 checks/reaudit-scope.py <CTL-ID>` (or `--category <name>`) — a **read-only query, not a gate**. When a control is added or tightened, already-shipped surfaces are silently out of date "until re-audited"; this answers "which decision records should I re-audit now that control X changed?" It reads two sources, both read-only: `standards/catalog.yaml` `meta.categories` (each control's category = `meta.categories[id.split("-")[0]]`) and the `## Controls in scope` sections of `docs/decisions/*.md` (skipping `TEMPLATE.md`). It reuses `audit-record.py`'s `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` to query a consumer repo's `docs/decisions/`; the category map always comes from the harness catalog.
+`python3 checks/reaudit-scope.py <CTL-ID>` (or `--category <name>`) — a **read-only query, not a gate**. When a control is added or tightened, already-shipped surfaces are silently out of date "until re-audited"; this answers "which decision records should I re-audit now that control X changed?" It reads two sources, both read-only: `standards/catalog.yaml` `meta.categories` (each control's category = `meta.categories[id.split("-")[0]]`) and the `## Controls in scope` sections of `docs/decisions/*.md` (skipping `TEMPLATE.md`, and reading each section with `checklib.scoped_controls`, so an N/A or out-of-scope mention does not count as scope). It reuses `audit-record.py`'s `split_sections` / `find_section` (imported by path, never rewritten). Accepts `--repo-root <path>` to query a consumer repo's `docs/decisions/`; the category map always comes from the harness catalog.
 
 **What it computes:**
 
@@ -644,7 +657,7 @@ separately, and an L0 id refused).
 
 ## Content lint (built — static subset)
 
-`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
+`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Skips generated files (a `.generated.` / `.gen.` name, or an `@generated` / `auto-generated` / `generated by` banner in the first five lines) and test files (a `.test.` / `.spec.` name, or a `tests`, `test`, `__tests__`, `__mocks__` or `e2e` parent directory): neither holds copy addressed to a user. Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
 **Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- dx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-5 device-verb list is read the same way from `cnt-5.md` (`<!-- dx-sync:cnt5-verbs -->`), the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- dx-sync:cnt6-openers -->`, `<!-- dx-sync:cnt6-filler -->`), and the CNT-13 spelling maps from `cnt-13.md` (`<!-- dx-sync:cnt13-usuk -->`, `<!-- dx-sync:cnt13-typos -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
 
@@ -676,7 +689,20 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 - CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
 - CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
 
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (87 cases)` (includes the `fixtures/content-lint/` pass/fail files, the runtime-coupling case, and the loud-fallback case).
+**L2 waiver behaviour:** `content-lint` honours an inline `dx-waive <CTL-ID> reason="..."`
+comment, which the "Waiver handling" rule above requires of every check. An **L2** control
+(CNT-3, CNT-5, CNT-6, CNT-13, SLP-9) is downgraded to `NOTE <file>:<line> [CTL-ID][waived]
+<found> — rationale waiver at the deviation site` and does not fail the run: an L2 waiver is
+`rationale`, so the reason at the site is the whole requirement. An **L1** control (CNT-1)
+prints `ERROR ... [CNT-1][waiver-claimed] ... — verify approver in decision record` and still
+exits 1, exactly as `token-audit` does. **L0** is untouched. Tiers are read from
+`standards/catalog.yaml` at runtime, so a tier that moves there moves here with no edit; a
+catalogue that cannot be read prints a NOTE and falls back to an embedded table, never
+silently. A marker covers its own line and the block it introduces — the following lines
+indented at least as far, stopping at the next marker or the first line indented less — which
+is how the markers are authored in `components/compare.tsx`.
+
+**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (119 cases)` (includes the `fixtures/content-lint/` pass/fail files, the runtime-coupling case, the loud-fallback case, the file-skip cases with their paired negatives, the regex-literal desync case, the bold-lead-in splitter case, the frontmatter cases, and one case per waiver tier).
 
 ## Type scan (built — static subset)
 
@@ -831,7 +857,7 @@ Planned for V1 (remaining):
 | ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
 | ~~`type-scan`~~ | ~~TYP-1..4, LAY-4, TYP-6~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt), and LAY-4 + TYP-6 (one measure rule, two ceilings, sourced from the catalog); font *weights*, the label-vs-body floor decision, px/% line-heights, and a *missing* measure cap still need rendered context |
 | `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
-| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
+| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built and wired (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
 | `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
 | `identity` | IDN-1, IDN-2 | Logo/lockup files resolve to the approved asset library and product icons to the approved icon family; no inline redraws |
 | `slop-scan` | SLP-1..3 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards |
@@ -856,11 +882,18 @@ scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 it reports zero findings over `app components lib`, where the repo's one real table
 (`components/foundations/token-table.tsx`) carries its `<th>` elements.
 
-`content-lint.py`, `contrast.py`, and `component-manifest.py` stay **manual** — each is
-on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason. Per the
-harness rule "never wire a failing check into the build," `content-lint` surfaces
-pre-existing long-sentence (CNT-3) and filler-word (CNT-6) prose in `content/` and is
-not wired until that content is fixed or waived. `contrast` is exempt for a different
+`content-lint.py` is **wired**: it runs in `check:python` over `app components content
+lib`, after its own self-test. Getting there took four scope fixes and one policy fix.
+Generated and test files are skipped; CNT-1's raw-code pattern no longer reads every
+three-letter acronym as an error code; a utility-class list in a module constant is no
+longer read as prose; a regex literal is masked, which stops a backtick inside one from
+opening a template literal that swallowed 219 lines of `lib/markdown-twin.ts`; and the
+sentence splitter now sees a terminator that sits inside markdown emphasis. The prose
+`content/` reported was then rewritten. The policy fix is the waiver handling below.
+
+`contrast.py` and `component-manifest.py` stay **manual** — each is
+on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason.
+`contrast` is exempt for a different
 reason since it became a token-pair check: it is **honest-inert** until a product
 declares `colour.pairs` in DESIGN.md, and this repo declares none, so it emits an
 operational ERROR that blocks for manual A11Y-1 verification. Build wiring is deferred
