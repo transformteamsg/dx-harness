@@ -22,6 +22,7 @@ Engineering + design skills for agentic product development. Every skill is name
 | `/dx-harness:dx-house-style-setup` | Turns on the bundled house-style output style, at the scope you pick. |
 | `/dx-harness:dx-create-sprint-logs` | Writes a sprint log per workstream: what closed, what carried over, what transfers. |
 | `/dx-harness:dx-trim-doc` | Makes a document shorter without changing what it does, and measures the trim against behaviour fixtures. |
+| `/dx-harness:dx-trim-leakage` | Finds and fixes prose that reads like a leaked session transcript instead of a fact stated from the repository's current state. |
 
 ## Design skills
 

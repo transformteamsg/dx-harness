@@ -17,6 +17,8 @@
 - The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
 - The house style lint's cut list catches `just`, `simply`, `easy`, `easily`, and `leverage`, and bare `please` rather than only the phrase `please note`. All seven words `CLAUDE.md` names were previously enforced for one: `in order to`.
 - `house-style.md`'s own cutting step keeps every condition, exception, or modal qualifier, and points at `dx-trim-doc`'s edge test rather than re-deriving it. The file also says not to bolt itself onto another skill's system prompt: a repository trial found that this makes output worse, not better.
+- A new skill, `dx-trim-leakage`, finds and fixes prose whose vantage is an authoring session, a chat thread, or an unmerged draft rather than the repository at `HEAD`: a dead reference to a plan or a discussion, PR- or session-vantage narration, change narration, reviewer-addressed justification, first-person session narration, and undated hedges.
+- The skill keeps a citation only where it resolves at `HEAD`: a GitHub issue or PR number, a decision-record path, or a design ticket. A `CHANGELOG` entry, a dated research record, and a decision record's Chosen approach, Rejected options, and Tradeoffs sections are exempt from the change-narration check, since narrating change is what those genres are for.
 
 ## 0.6.0 (2026-09-01)
 
