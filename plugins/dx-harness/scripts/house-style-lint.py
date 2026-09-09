@@ -110,6 +110,9 @@ WARN_TERMS = {
     "he": "fine where a person's stated pronoun is he",
     "him": "fine where a person's stated pronoun is him",
     "his": "fine where a person's stated pronoun is his",
+    "please": "fine as the verb meaning to satisfy, as in a phrase like hard to please",
+    "just": "fine in a temporal or moral sense, as in just before or a just outcome",
+    "leverage": "fine in the financial or mechanical sense, such as financial leverage",
 }
 
 
@@ -394,6 +397,12 @@ CASES = [
     ("Use for instance to open a list.", ["PRECISION"]),
     ("Pick neither A or B.", ["PRECISION"]),
     ("The allowlist covers and/or cases.", ["CUT"]),
+    ("Just click the button to continue.", ["CUT"]),
+    ("Simply restart the service to clear the cache.", ["CUT"]),
+    ("The setup is easy for a new contributor.", ["CUT"]),
+    ("You can easily configure the timeout.", ["CUT"]),
+    ("Please add a reproduction step.", ["CUT"]),
+    ("Leverage the shared cache to cut latency.", ["REPLACE"]),
     ("Run a sanity check on the output.", ["INCLUSIVE"]),
     ("Coverage rose to 40 % this week.", ["NUMBER"]),
     ("The threshold is .3 seconds.", ["NUMBER"]),
@@ -410,6 +419,12 @@ CASES = [
     ("See https://example.com/whitelist for the source.", []),
     ("> It is worth noting that this quotes a bad example.", []),
     ("| `utilise`, `utilisation` | `use` | Keep it for a resource quantity. |", []),
+    ("`just` is one of the words the table names.", []),
+    ("`simply` is one of the words the table names.", []),
+    ("`easy` is one of the words the table names.", []),
+    ("`easily` is one of the words the table names.", []),
+    ("> Please note this quotes a bad example.", []),
+    ("`leverage` is one of the words the table names.", []),
     ("The validator reads the catalogue entry, checks whether the required field "
      "is present, and then decides whether the temporary allowlist exempts this "
      "particular control from the rule.", ["LENGTH"]),
