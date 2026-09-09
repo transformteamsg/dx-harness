@@ -148,7 +148,8 @@ exceptions. These extend it:
 | `eventually`, `soon`, `in the future` | The same staleness risk. Give a date or a version, or cut it. |
 | `vice versa` | Write out both directions. Otherwise the reader reconstructs the reversed sentence. |
 | `real`, `genuine`, `genuinely`, `honestly`, `actually`, `truly` | Self-certifying: the noun already carries the claim. A bug is a bug. "Honestly" is worse than nothing, because it invites the reader to doubt every sentence you did not label. Keep one of these only where it marks a contrast the reader needs, such as a confirmed finding against a plausible one. |
-| `please note`, `at this time`, `let's` (in an instruction) | Filler. Cut the phrase and keep the instruction. |
+| `please`, `at this time`, `let's` (in an instruction) | Filler. Cut the phrase and keep the instruction. |
+| `just`, `simply`, `easy`, `easily` | Claims a step takes no effort, which this reader may not find true. Cut it; the instruction reads the same without it. |
 | `it is worth noting that`, `it should be noted`, `the fact that`, `needless to say` | Filler. The sentence loses nothing when you cut it. |
 | `in order to` | Write `to`. |
 
@@ -174,6 +175,7 @@ exceptions. These extend it:
 | `traditional` | `conventional`, or cut it | |
 | `could`, `would` (meaning possibility) | `can` | |
 | `shall` | `must` | Unless you write legal text. |
+| `leverage` (as a verb meaning use) | `use` | Reserve it for financial leverage or a mechanical lever's advantage. |
 
 ## Word choice: precision
 

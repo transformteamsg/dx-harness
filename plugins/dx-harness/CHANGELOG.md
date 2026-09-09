@@ -15,6 +15,8 @@
 - A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
 - A new skill, `dx-create-sprint-logs`, writes a sprint log per workstream: what closed, what carried over, what was decided, and what risk transfers to whoever picks the work up next. Every row is a clause and a link.
 - The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
+- The house style lint's cut list catches `just`, `simply`, `easy`, `easily`, and `leverage`, and bare `please` rather than only the phrase `please note`. All seven words `CLAUDE.md` names were previously enforced for one: `in order to`.
+- `house-style.md`'s own cutting step keeps every condition, exception, or modal qualifier, and points at `dx-trim-doc`'s edge test rather than re-deriving it. The file also says not to bolt itself onto another skill's system prompt: a repository trial found that this makes output worse, not better.
 
 ## 0.6.0 (2026-09-01)
 
