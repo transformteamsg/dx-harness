@@ -32,6 +32,8 @@ An executable document trimmed without fixtures is an unverified trim. That is a
 
 Check whether a clause that reads as a gloss adds a case. "Other personas who read or act on the same data, and what they see once this changes" reads as one item with a trailing gloss. The trailing clause is a second thing to look for. Cutting it narrows the step.
 
+Classify by what a sentence protects, not by where it sits. A condition placed in the opening paragraph is still a condition; position argues nothing about class.
+
 ## Workflow
 
 ### Step 1: Establish the mode and name the gates
