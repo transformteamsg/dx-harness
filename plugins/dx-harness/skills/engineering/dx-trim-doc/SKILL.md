@@ -7,6 +7,8 @@ You are trimming a document without changing what it does.
 
 Treat a sentence that reads as explanation as load-bearing until you have tested it. Such a sentence often says when a rule applies and when it does not. `CONTRIBUTING.md` records what happens when one goes. `dx-code-review` lost one clause: "because they are the cases worth raising precisely when they cannot be settled by reading". The rule above it then went from a conditional default to a blanket one. A bug the review could prove got reported as a maybe. Before you cut anything, read two rules in the Add a skill section of `CONTRIBUTING.md`: "When you trim a skill", and "Remember that an agent reads differently from you". That section is the authority; this skill is the procedure that enforces it.
 
+This skill protects behaviour, not resolvability. A passage can read correctly at `HEAD`, cost nothing extra in length, and still leak this session's own vantage: a dead plan citation, first-person narration of what you decided, an undated hedge. `dx-trim-leakage` catches that separately; it is not this skill's job to hunt it during a length trim.
+
 ## Two modes
 
 The mode decides how Step 5 verifies the trim. Settle it in Step 1.

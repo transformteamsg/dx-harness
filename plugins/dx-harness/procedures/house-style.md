@@ -163,6 +163,11 @@ Cut everything else that meets one of these tests:
 - It rehearses the reasoning that led to the conclusion. Keep the conclusion and the
   one piece of evidence that supports it. Cut the rest.
 
+Then check whether anything only resolves inside this session. A reference to a
+plan, a discussion, or a draft nobody else can see fails that check. So does
+first-person narration of what you decided, or an undated hedge with no owner.
+`dx-trim-leakage` names the full taxonomy and what survives.
+
 A table, a note, or an aside that stays accurate only until something else changes
 must say so. A coupling between two files, for example, breaks the moment someone
 edits one of them. Undated prose that is true only today reads as current long after
