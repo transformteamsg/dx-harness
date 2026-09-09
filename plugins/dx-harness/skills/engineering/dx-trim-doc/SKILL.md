@@ -1,6 +1,6 @@
 ---
 name: dx-trim-doc
-description: 'Use when a document is too long and someone wants it shorter without changing what it does: a `SKILL.md`, a shared procedure, a reference file, a decision record, a README, or `CONTEXT.md`. Triggers on "this skill is too long", "trim this doc", "compress this SKILL.md", "reduce the token cost of this skill", "tighten this reference", or a review comment that a file is verbose. Builds a behaviour baseline before cutting and re-runs it after, so a trim that changes what an agent does gets caught and reverted rather than shipped.'
+description: 'Use when a document is too long and someone wants it shorter without changing what it does: a `SKILL.md`, a shared procedure, a reference file, a step file a skill loads from its own directory, a decision record, a README, or `CONTEXT.md`. Triggers on "this skill is too long", "trim this doc", "compress this SKILL.md", "reduce the token cost of this skill", "tighten this reference", or a review comment that a file is verbose. Builds a behaviour baseline before cutting and re-runs it after, so a trim that changes what an agent does gets caught and reverted rather than shipped.'
 ---
 
 You are trimming a document without changing what it does.
@@ -15,7 +15,7 @@ The mode decides how Step 5 verifies the trim. Settle it in Step 1.
 
 | Mode | The document | Verification |
 |---|---|---|
-| Executable | An agent reads it and acts: a `SKILL.md`, a file under `procedures/`, a `references/` file that carries rules | Behaviour fixtures, run before and after |
+| Executable | An agent reads it and acts: a `SKILL.md`, a file under `procedures/`, a `references/` file that carries rules, or another file a `SKILL.md` loads from its own directory | Behaviour fixtures, run before and after |
 | Reference | A person reads it: a decision record, a research record, a README, `CONTEXT.md` | The edge test and the lint. No fixtures |
 
 An executable document trimmed without fixtures is an unverified trim. That is a valid outcome when no baseline is possible, but it must be labelled, never reported as verified.
@@ -120,5 +120,6 @@ Label the outcome exactly. A trim is **verified** when fixtures ran before and a
 - Do not set or accept a word budget. If the author names a target, say that the classification decides the number, and report what the split allows.
 - Do not count extracted words as trimmed. Extraction defers a cost; trimming removes one.
 - Trim the document you were asked to trim. Do not retrofit a file you are only passing through.
+- A structured test fixture, such as `evals/*.json`, is not this skill's target. Its assertions are load-bearing test data, not prose to compress.
 - Label an unverified trim as unverified, and name what to re-check by hand.
 - Report the classification split before cutting, so the author can stop you at the safe headroom.
