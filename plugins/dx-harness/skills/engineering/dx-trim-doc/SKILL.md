@@ -5,7 +5,7 @@ description: 'Use when a document is too long and someone wants it shorter witho
 
 You are trimming a document without changing what it does.
 
-Treat a sentence that reads as explanation as load-bearing until you have tested it. Such a sentence often says when a rule applies and when it does not. `CONTRIBUTING.md` records what happens when one goes. `dx-code-review` lost one clause: "because they are the cases worth raising precisely when they cannot be settled by reading". The rule above it then went from a conditional default to a blanket one. A bug the review could prove got reported as a maybe. Before you cut anything, read two rules in the Add a skill section of `CONTRIBUTING.md`: "When you trim a skill", and "Remember that an agent reads differently from you". That section is the authority; this skill is the procedure that enforces it.
+A sentence that looks like decorative explanation can still be the reason a rule works. `CONTRIBUTING.md` records what happens when one goes missing: `dx-code-review` lost one clause, "because they are the cases worth raising precisely when they cannot be settled by reading", and the rule above it went from a conditional default to a blanket one, so a bug the review could prove got reported as a maybe. Before you cut anything, read two rules in the Add a skill section of `CONTRIBUTING.md`: "When you trim a skill", and "Remember that an agent reads differently from you". That section is the authority; this skill is the procedure that enforces it.
 
 This skill protects behaviour, not resolvability. A passage can read correctly at `HEAD`, cost nothing extra in length, and still leak this session's own vantage: a dead plan citation, first-person narration of what you decided, an undated hedge. `dx-trim-leakage` catches that separately; it is not this skill's job to hunt it during a length trim.
 
@@ -122,6 +122,6 @@ Label the outcome exactly. A trim is **verified** when fixtures ran before and a
 - Do not set or accept a word budget. If the author names a target, say that the classification decides the number, and report what the split allows.
 - Do not count extracted words as trimmed. Extraction defers a cost; trimming removes one.
 - Trim the document you were asked to trim. Do not retrofit a file you are only passing through.
-- A structured test fixture, such as `evals/*.json`, is not this skill's target. Its assertions are load-bearing test data, not prose to compress.
+- A structured test fixture, such as `evals/*.json`, is not this skill's target. Its assertions verify behaviour; they are not prose to compress.
 - Label an unverified trim as unverified, and name what to re-check by hand.
 - Report the classification split before cutting, so the author can stop you at the safe headroom.
