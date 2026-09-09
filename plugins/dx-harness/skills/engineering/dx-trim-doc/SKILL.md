@@ -38,10 +38,10 @@ Classify by what a sentence protects, not by where it sits. A condition placed i
 
 ### Step 1: Establish the mode and name the gates
 
-Read the whole document first. Then settle two things.
+Read in two passes, and settle one thing in each.
 
-1. **The mode**, from the table above.
-2. **The gates**: every judgment call the document tells a reader to make against an ambiguous or wrong input. Step 2 builds one fixture per gate.
+1. **The mode**, from a structural pass: the frontmatter, the headings, and who the document addresses. The table above decides it. Structure alone cannot settle a `references/` file that may or may not carry rules, so read its body before you call it Reference. Default to Executable while the mode is open, because the two errors do not cost the same: a wrong Executable call builds fixtures you did not need, and a wrong Reference call ships an unverified trim as a finished one.
+2. **The gates**, at the depth the mode sets. In Executable mode, read the whole document and name every judgment call it tells a reader to make against an ambiguous or wrong input, because Step 2 builds one fixture per gate. In Reference mode there are no fixtures to feed, so confirm the count rather than listing them. Record the word count either way, and leave the sentence-by-sentence read to Step 3.
 
 State both back before continuing:
 
