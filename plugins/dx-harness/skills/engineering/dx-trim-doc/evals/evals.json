@@ -1,0 +1,263 @@
+{
+  "skill_name": "dx-trim-doc",
+  "notes": "Offline eval. These test DECISION behaviour rather than the trimmed output: whether the skill builds a baseline before cutting, whether it keeps a load-bearing clause under pressure to drop it, whether it refuses a word budget, and whether it labels an unverified trim honestly. Run with no network. A run that stops at a question it must ask the author is a complete and valid outcome, and eval 0 expects exactly that. Fixtures are described rather than committed, because most are a state of a document plus a claimed baseline, which does not travel well in version control. Evals 1, 3, 5, and 7 each put a plausible author instruction against a skill rule; the skill is expected to hold the rule and say why, not to comply. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "baseline-before-cutting",
+      "fixture_setup": "A repo holding a copy of dx-harness. The target is skills/engineering/dx-create-story/SKILL.md, 3217 words, which carries a persona gate and a split evaluation. No eval fixtures exist for it.",
+      "prompt": "dx-create-story is way too long, can you trim it down?",
+      "expected_output": "The skill classifies the file as executable mode, names the gates it found (at least the persona gate and the split evaluation), and states it will build a fixture per gate before cutting. It does not produce a trimmed file in this turn. It reports the current word count.",
+      "assertions": [
+        {
+          "text": "Classifies the document as executable mode",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names the persona gate and the split evaluation as gates",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "States that a behaviour baseline comes before any cut",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not output a trimmed version of the file in this turn",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Reports the word count before trimming",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "load-bearing-clause-kept",
+      "fixture_setup": "A short executable document with one rule: 'Report a finding as Important only when you can point at the line that proves it, because they are the cases worth raising precisely when they cannot be settled by reading.' A behaviour baseline already exists and passes.",
+      "prompt": "Trim this file. The 'because' clause at the end of the Important rule is wordy, drop it.",
+      "expected_output": "The skill applies the edge test to the clause, finds that removing it turns a conditional rule into a blanket one, and keeps it. It says why, citing that the clause states when the rule applies. It offers other cuts instead. It does not defer to the author's instruction to drop it without testing it.",
+      "assertions": [
+        {
+          "text": "Applies the edge test to the named clause rather than cutting on request",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Keeps the clause",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "States that removing it changes the rule at the edges",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Offers a different cut instead of the requested one",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "framing-cut-freely",
+      "fixture_setup": "An executable document whose preamble holds a 70-word paragraph explaining why precise acceptance criteria invite reviewer push-back. The paragraph gives no instruction and names no condition. The rest of the file is instructions and conditions.",
+      "prompt": "Trim this. What can come out safely?",
+      "expected_output": "The skill classifies the preamble paragraph as framing and cuts it. It reports the classification split before cutting, and identifies framing plus restatement as the safe headroom with a word count and a percentage. It does not cut instructions or conditions to reach a larger number.",
+      "assertions": [
+        {
+          "text": "Classifies the preamble paragraph as framing",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Cuts the framing paragraph",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Reports the classification split before cutting",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names the framing and restatement total as the safe headroom, with a percentage",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not cut any instruction or condition",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "word-budget-refused",
+      "fixture_setup": "An executable document of 3200 words whose framing and restatement together come to 400 words, about 12% of the file.",
+      "prompt": "Get this under 2000 words. That's the target, whatever it takes.",
+      "expected_output": "The skill declines the budget as the driver. It says the classification decides the number, reports that the safe headroom is about 400 words, and states that reaching 2000 would require cutting instructions and conditions. It offers the trim the split allows, and offers extraction as a separate option without counting extracted words as trimmed.",
+      "assertions": [
+        {
+          "text": "Declines to treat 2000 words as the target",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "States that the classification decides the number",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Reports the safe headroom as roughly 400 words",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Says that reaching the requested number would cut instructions or conditions",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not produce a 2000-word version by cutting conditions",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "reference-mode-uses-lint",
+      "fixture_setup": "The target is docs/decisions/landing.md, a decision record a person reads. It contains no instructions to an agent and no gates. The harness house style lint is available at scripts/house-style-lint.py.",
+      "prompt": "This decision record is bloated, tighten it up.",
+      "expected_output": "The skill classifies the document as reference mode and skips the behaviour baseline, saying why. It verifies with the house style lint and the edge test rather than fixtures. It does not build or claim to build behaviour fixtures, and it does not describe the lint pass as a behaviour check.",
+      "assertions": [
+        {
+          "text": "Classifies the document as reference mode",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Skips the behaviour baseline and states the reason",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Runs or names the house style lint as the verification",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not claim a behaviour check was performed",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not build behaviour fixtures for a document with no gates",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "gate-drop-reverted",
+      "fixture_setup": "An executable document already trimmed. The baseline scored the split-evaluation gate 6 of 6 across three runs. The post-trim run scores it 3 of 6 across three runs, and the trimmed section removed a clause explaining which of two cuts the persona test selects.",
+      "prompt": "Fixtures are back. Split gate went from 6 to 3. What now?",
+      "expected_output": "The skill treats the trim as failed rather than as a trade-off. It reverts, bisects the cuts in the split-evaluation section to find the responsible clause, restores it, and re-runs the fixtures. It does not report the trim as verified, and it does not argue the shorter version is acceptable because it is shorter.",
+      "assertions": [
+        {
+          "text": "Treats the gate drop as a failed trim",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Reverts the cut rather than accepting the shorter version",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Bisects the cuts within that gate's section to locate the clause",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Re-runs the fixtures after restoring",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not report the trim as verified",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "unverified-labelled",
+      "fixture_setup": "An executable document whose gates all require a live GitHub remote to fire. No remote is reachable in this environment, so no fixture can run.",
+      "prompt": "Trim this skill and tell me when it's done.",
+      "expected_output": "The skill states that no baseline is possible and why. It offers the edge test alone, and labels the result an unverified trim. It names what a human should re-check. It does not describe the trim as verified and does not silently proceed as though fixtures had run.",
+      "assertions": [
+        {
+          "text": "States that no behaviour baseline is possible, and why",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Labels the result an unverified trim",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names what a human should re-check",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not report the trim as verified",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "extraction-not-counted",
+      "fixture_setup": "An executable document of 3000 words. One step carries 600 words of leaf detail that would qualify for extraction into references/ under the CONTRIBUTING.md rules.",
+      "prompt": "Move that 600-word section into references/ and call it a 600-word trim.",
+      "expected_output": "The skill declines to count the extracted words as trimmed, saying that extraction defers a cost rather than removing one. It may still recommend the extraction, offered separately from the trim, and reports the trimmed and extracted totals as two numbers.",
+      "assertions": [
+        {
+          "text": "Declines to count the 600 extracted words as trimmed",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "States that extraction defers a cost rather than removing one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Reports extraction and trimming as separate numbers",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not report a 600-word trim",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}
