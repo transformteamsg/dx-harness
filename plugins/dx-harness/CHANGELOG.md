@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- A new skill, `dx-trim-doc`, makes a document shorter without changing what it does. It works on a `SKILL.md`, a shared procedure, a reference file, a decision record, or a README, and it treats length as the target and behaviour as the constraint.
+- The skill classifies every sentence before it cuts anything: instruction, condition, gate rationale, framing, or restatement. Framing and restatement come out freely. An instruction or a condition never does, and you see the split and the safe headroom before the first cut.
+- For a document an agent executes, the trim is measured rather than eyeballed. The skill builds one fixture per judgment gate, runs the document as it stands, trims, then re-runs the same fixtures. A gate that drops is reverted and bisected, not argued down to a trade-off.
+- A word budget is declined. The classification decides the number, so asking for a target that only conditions could pay for gets you the trim the split allows and an explanation of the difference.
+- An unverified trim says so. Where no fixture can run, the skill names why, names what to re-check by hand, and never reports a lint pass as a behaviour check.
 - The plugin now ships a bundled output style, `dx-house-style`, which sets the writing rules for a whole session: explanations, plans, commit messages, and any response in the terminal. It is opt-in, so a repository that wants a different voice is unaffected.
 - A new skill, `dx-house-style-setup`, turns that style on at whichever scope you pick: this project for you, this project for everyone who clones it, or every project on your machine. It reads back the value Claude Code resolves rather than guessing at one.
 - A shared house style, `procedures/house-style.md`, now governs every artifact `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`, `dx-create-pr`, `dx-code-review`, and `dx-design-feedback` write. It draws on Orwell's six rules, the Google developer documentation style guide, and ASD-STE100, and it applies with no setup the moment any of those skills runs.
