@@ -25,11 +25,12 @@ host, and naming this machine's would misdescribe what the container ships.
 brand's ink style. Derivative artwork carries the same notice as the
 original; the Lucide license is reproduced with the ISC packages below.
 
-## Packages (193 across 10 licenses)
+## Packages (197 across 10 licenses)
 
 ### MIT
 
 - [decode-named-character-reference 1.3.0](https://github.com/wooorm/decode-named-character-reference)
+- [estree-util-scope 1.0.1](https://github.com/syntax-tree/estree-util-scope)
 - [hast-util-to-estree 3.1.3](https://github.com/syntax-tree/hast-util-to-estree)
 - [hast-util-to-jsx-runtime 2.3.6](https://github.com/syntax-tree/hast-util-to-jsx-runtime)
 - [markdown-table 3.0.4](https://github.com/wooorm/markdown-table)
@@ -98,7 +99,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 - [estree-util-attach-comments 3.0.0](https://github.com/syntax-tree/estree-util-attach-comments)
 - [estree-util-build-jsx 3.0.1](https://github.com/syntax-tree/estree-util-build-jsx)
 - [estree-util-is-identifier-name 3.0.0](https://github.com/syntax-tree/estree-util-is-identifier-name)
-- [estree-util-scope 1.0.0](https://github.com/syntax-tree/estree-util-scope)
 - [mdast-util-gfm-autolink-literal 2.0.1](https://github.com/syntax-tree/mdast-util-gfm-autolink-literal)
 - [mdast-util-gfm-strikethrough 2.0.0](https://github.com/syntax-tree/mdast-util-gfm-strikethrough)
 - [mdast-util-gfm-table 2.0.0](https://github.com/syntax-tree/mdast-util-gfm-table)
@@ -183,6 +183,43 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
+- [@types/debug 4.1.13](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/estree 1.0.9](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/estree-jsx 1.0.5](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/hast 3.0.5](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/mdast 4.0.4](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/mdx 2.0.14](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/ms 2.1.0](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/node 22.20.1](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/react 19.2.18](https://github.com/DefinitelyTyped/DefinitelyTyped)
+- [@types/unist 2.0.11, 3.0.3](https://github.com/DefinitelyTyped/DefinitelyTyped)
+
+```
+MIT License
+
+    Copyright (c) Microsoft Corporation.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
+```
+
+### MIT
+
 - [bail 2.0.2](https://github.com/wooorm/bail)
 - [ccount 2.0.1](https://github.com/wooorm/ccount)
 - [character-entities 2.0.2](https://github.com/wooorm/character-entities)
@@ -221,42 +258,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- [@types/debug 4.1.13](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/estree 1.0.9](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/estree-jsx 1.0.5](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/hast 3.0.4](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/mdast 4.0.4](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/mdx 2.0.14](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/ms 2.1.0](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/react 19.2.17](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [@types/unist 2.0.11, 3.0.3](https://github.com/DefinitelyTyped/DefinitelyTyped)
-
-```
-MIT License
-
-    Copyright (c) Microsoft Corporation.
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE
-```
-
-### MIT
-
 - [recma-build-jsx 1.0.0](https://github.com/mdx-js/recma/tree/main/packages/recma-build-jsx)
 - [recma-jsx 1.0.1](https://github.com/mdx-js/recma/tree/main/packages/recma-jsx)
 - [recma-parse 1.0.0](https://github.com/mdx-js/recma/tree/main/packages/recma-parse)
@@ -289,10 +290,10 @@ THE SOFTWARE.
 
 ### MIT
 
-- [@floating-ui/core 1.7.5](https://github.com/floating-ui/floating-ui)
-- [@floating-ui/dom 1.7.6](https://github.com/floating-ui/floating-ui)
-- [@floating-ui/react-dom 2.1.8](https://github.com/floating-ui/floating-ui)
-- [@floating-ui/utils 0.2.11](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/core 1.8.0](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/dom 1.8.0](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/react-dom 2.1.9](https://github.com/floating-ui/floating-ui)
+- [@floating-ui/utils 0.2.12](https://github.com/floating-ui/floating-ui)
 
 ```
 MIT License
@@ -351,8 +352,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- [react 19.2.7](https://github.com/facebook/react)
-- [react-dom 19.2.7](https://github.com/facebook/react)
+- [react 19.2.8](https://github.com/react/react)
+- [react-dom 19.2.8](https://github.com/react/react)
 - [scheduler 0.27.0](https://github.com/facebook/react)
 - [use-sync-external-store 1.6.0](https://github.com/facebook/react)
 
@@ -413,8 +414,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- [@next/env 15.5.19](https://github.com/vercel/next.js)
-- [@next/swc-{platform} 15.5.19](https://github.com/vercel/next.js)
+- [@next/env 15.5.25](https://github.com/vercel/next.js)
+- [@next/swc-{platform} 15.5.25](https://github.com/vercel/next.js)
 - [client-only 0.0.1](https://reactjs.org/)
 
 _No license file ships with this package._
@@ -470,9 +471,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- [motion 12.40.0](https://github.com/motiondivision/motion)
-- [motion-dom 12.40.0](https://github.com/motiondivision/motion)
-- [motion-utils 12.39.0](https://github.com/motiondivision/motion)
+- [motion 13.2.0](https://github.com/motiondivision/motion)
+- [motion-dom 13.2.0](https://github.com/motiondivision/motion)
+- [motion-utils 13.0.0](https://github.com/motiondivision/motion)
 
 ```
 The MIT License (MIT)
@@ -500,8 +501,8 @@ SOFTWARE.
 
 ### Apache-2.0
 
-- [@img/sharp-{platform} 0.34.5](https://github.com/lovell/sharp)
-- [sharp 0.34.5](https://github.com/lovell/sharp)
+- [@img/sharp-{platform} 0.35.4](https://github.com/lovell/sharp)
+- [sharp 0.35.4](https://github.com/lovell/sharp)
 
 ```
 Apache License
@@ -734,8 +735,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### MIT
 
-- [@base-ui/react 1.6.0](https://github.com/mui/base-ui)
-- [@base-ui/utils 0.3.1](https://github.com/mui/base-ui)
+- [@base-ui/react 1.7.0](https://github.com/mui/base-ui)
+- [@base-ui/utils 0.3.2](https://github.com/mui/base-ui)
 
 ```
 MIT License
@@ -789,6 +790,23 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### MIT
+
+- [has-flag 4.0.0](https://github.com/sindresorhus/has-flag)
+- [supports-color 7.2.0](https://github.com/chalk/supports-color)
+
+```
+MIT License
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 ### MIT
@@ -1572,7 +1590,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ### CC-BY-4.0
 
-- [caniuse-lite 1.0.30001797](https://github.com/browserslist/caniuse-lite)
+- [caniuse-lite 1.0.30001810](https://github.com/browserslist/caniuse-lite)
 
 ```
 Attribution 4.0 International
@@ -1974,7 +1992,7 @@ Creative Commons may be contacted at creativecommons.org.
 
 ### ISC
 
-- [@ungap/structured-clone 1.3.1](https://github.com/ungap/structured-clone)
+- [@ungap/structured-clone 1.4.0](https://github.com/ungap/structured-clone)
 
 ```
 ISC License
@@ -2040,7 +2058,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ### ISC
 
-- [semver 7.8.4](https://github.com/npm/node-semver)
+- [semver 7.8.5](https://github.com/npm/node-semver)
 
 ```
 The ISC License
@@ -2082,7 +2100,7 @@ THIS SOFTWARE.
 
 ### LGPL-3.0-or-later
 
-- [@img/sharp-libvips-{platform} 1.2.4](https://github.com/lovell/sharp-libvips)
+- [@img/sharp-libvips-{platform} 1.3.3](https://github.com/lovell/sharp-libvips)
 
 _No license file ships with this package._
 
@@ -2261,7 +2279,7 @@ SOFTWARE.
 
 ### MIT
 
-- [acorn 8.16.0](https://github.com/acornjs/acorn)
+- [acorn 8.18.0](https://github.com/acornjs/acorn)
 
 ```
 MIT License
@@ -2565,7 +2583,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- [framer-motion 12.40.0](https://github.com/motiondivision/motion/)
+- [framer-motion 13.2.0](https://github.com/motiondivision/motion/)
 
 ```
 The MIT License (MIT)
@@ -2722,7 +2740,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- [js-yaml 3.14.2](https://github.com/nodeca/js-yaml)
+- [js-yaml 3.15.2](https://github.com/nodeca/js-yaml)
 
 ```
 (The MIT License)
@@ -2836,7 +2854,7 @@ SOFTWARE.
 
 ### MIT
 
-- [nanoid 3.3.12](https://github.com/ai/nanoid)
+- [nanoid 3.3.18](https://github.com/ai/nanoid)
 
 ```
 The MIT License (MIT)
@@ -2863,7 +2881,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### MIT
 
-- [next 15.5.19](https://github.com/vercel/next.js)
+- [next 15.5.25](https://github.com/vercel/next.js)
 
 ```
 The MIT License (MIT)
@@ -2891,12 +2909,12 @@ SOFTWARE.
 
 ### MIT
 
-- [postcss 8.4.31](https://github.com/postcss/postcss)
+- [postcss 8.5.23](https://github.com/postcss/postcss)
 
 ```
 The MIT License (MIT)
 
-Copyright 2013 Andrey Sitnik <andrey@sitnik.ru>
+Copyright 2013 Andrey Sitnik <andrey@sitnik.es>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -2946,7 +2964,7 @@ THE SOFTWARE.
 
 ### MIT
 
-- [reselect 5.2.0](https://github.com/reduxjs/reselect)
+- [reselect 5.3.0](https://github.com/reduxjs/reselect)
 
 ```
 The MIT License (MIT)
@@ -3178,6 +3196,34 @@ THE SOFTWARE.
 MIT License
 
 Copyright (c) 2025 Wombosvideo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### MIT
+
+- [undici-types 6.21.0](https://github.com/nodejs/undici)
+
+```
+MIT License
+
+Copyright (c) Matteo Collina and Undici contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -3639,7 +3685,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 ### OFL-1.1
 
-- [@fontsource-variable/inter 5.2.8](https://github.com/fontsource/font-files)
+- [@fontsource-variable/inter 5.3.0](https://github.com/fontsource/font-files)
 
 ```
 Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) Inter-Italic[opsz,wght].ttf: Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
@@ -3739,7 +3785,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 ### OFL-1.1
 
-- [@fontsource-variable/plus-jakarta-sans 5.2.8](https://github.com/fontsource/font-files)
+- [@fontsource-variable/plus-jakarta-sans 5.3.0](https://github.com/fontsource/font-files)
 
 ```
 Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans) PlusJakartaSans-Italic[wght].ttf: Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans)

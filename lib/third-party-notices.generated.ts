@@ -22,7 +22,7 @@ export type NoticeGroup = {
 };
 
 export const noticeSummary = {
-  packageCount: 193,
+  packageCount: 197,
   licenseCount: 10,
   licenseIds: ["0BSD","Apache-2.0","BSD-2-Clause","BSD-3-Clause","CC-BY-4.0","ISC","LGPL-3.0-or-later","MIT","MPL-2.0","OFL-1.1"],
 };
@@ -37,6 +37,13 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "version": "1.3.0",
         "homepage": "https://github.com/wooorm/decode-named-character-reference#readme",
         "source": "https://github.com/wooorm/decode-named-character-reference",
+        "hostDependent": false
+      },
+      {
+        "name": "estree-util-scope",
+        "version": "1.0.1",
+        "homepage": "https://github.com/syntax-tree/estree-util-scope#readme",
+        "source": "https://github.com/syntax-tree/estree-util-scope",
         "hostDependent": false
       },
       {
@@ -326,13 +333,6 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "hostDependent": false
       },
       {
-        "name": "estree-util-scope",
-        "version": "1.0.0",
-        "homepage": "https://github.com/syntax-tree/estree-util-scope#readme",
-        "source": "https://github.com/syntax-tree/estree-util-scope",
-        "hostDependent": false
-      },
-      {
         "name": "mdast-util-gfm-autolink-literal",
         "version": "2.0.1",
         "homepage": "https://github.com/syntax-tree/mdast-util-gfm-autolink-literal#readme",
@@ -538,6 +538,82 @@ export const thirdPartyNotices: NoticeGroup[] = [
   },
   {
     "license": "MIT",
+    "text": "MIT License\n\n    Copyright (c) Microsoft Corporation.\n\n    Permission is hereby granted, free of charge, to any person obtaining a copy\n    of this software and associated documentation files (the \"Software\"), to deal\n    in the Software without restriction, including without limitation the rights\n    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n    copies of the Software, and to permit persons to whom the Software is\n    furnished to do so, subject to the following conditions:\n\n    The above copyright notice and this permission notice shall be included in all\n    copies or substantial portions of the Software.\n\n    THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n    SOFTWARE",
+    "packages": [
+      {
+        "name": "@types/debug",
+        "version": "4.1.13",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/debug",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/estree",
+        "version": "1.0.9",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/estree-jsx",
+        "version": "1.0.5",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree-jsx",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/hast",
+        "version": "3.0.5",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/hast",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/mdast",
+        "version": "4.0.4",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdast",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/mdx",
+        "version": "2.0.14",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdx",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/ms",
+        "version": "2.1.0",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/ms",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/node",
+        "version": "22.20.1",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/react",
+        "version": "19.2.18",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      },
+      {
+        "name": "@types/unist",
+        "version": "2.0.11, 3.0.3",
+        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/unist",
+        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+        "hostDependent": false
+      }
+    ]
+  },
+  {
+    "license": "MIT",
     "text": "(The MIT License)\n\nCopyright (c) 2015 Titus Wormer <tituswormer@gmail.com>\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n'Software'), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be\nincluded in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "packages": [
       {
@@ -614,75 +690,6 @@ export const thirdPartyNotices: NoticeGroup[] = [
   },
   {
     "license": "MIT",
-    "text": "MIT License\n\n    Copyright (c) Microsoft Corporation.\n\n    Permission is hereby granted, free of charge, to any person obtaining a copy\n    of this software and associated documentation files (the \"Software\"), to deal\n    in the Software without restriction, including without limitation the rights\n    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n    copies of the Software, and to permit persons to whom the Software is\n    furnished to do so, subject to the following conditions:\n\n    The above copyright notice and this permission notice shall be included in all\n    copies or substantial portions of the Software.\n\n    THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n    SOFTWARE",
-    "packages": [
-      {
-        "name": "@types/debug",
-        "version": "4.1.13",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/debug",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/estree",
-        "version": "1.0.9",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/estree-jsx",
-        "version": "1.0.5",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree-jsx",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/hast",
-        "version": "3.0.4",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/hast",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/mdast",
-        "version": "4.0.4",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdast",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/mdx",
-        "version": "2.0.14",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/mdx",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/ms",
-        "version": "2.1.0",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/ms",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/react",
-        "version": "19.2.17",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      },
-      {
-        "name": "@types/unist",
-        "version": "2.0.11, 3.0.3",
-        "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/unist",
-        "source": "https://github.com/DefinitelyTyped/DefinitelyTyped",
-        "hostDependent": false
-      }
-    ]
-  },
-  {
-    "license": "MIT",
     "text": "(The MIT License)\n\nCopyright (c) Titus Wormer\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.",
     "packages": [
       {
@@ -728,28 +735,28 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@floating-ui/core",
-        "version": "1.7.5",
+        "version": "1.8.0",
         "homepage": "https://floating-ui.com",
         "source": "https://github.com/floating-ui/floating-ui",
         "hostDependent": false
       },
       {
         "name": "@floating-ui/dom",
-        "version": "1.7.6",
+        "version": "1.8.0",
         "homepage": "https://floating-ui.com",
         "source": "https://github.com/floating-ui/floating-ui",
         "hostDependent": false
       },
       {
         "name": "@floating-ui/react-dom",
-        "version": "2.1.8",
+        "version": "2.1.9",
         "homepage": "https://floating-ui.com/docs/react-dom",
         "source": "https://github.com/floating-ui/floating-ui",
         "hostDependent": false
       },
       {
         "name": "@floating-ui/utils",
-        "version": "0.2.11",
+        "version": "0.2.12",
         "homepage": "https://floating-ui.com",
         "source": "https://github.com/floating-ui/floating-ui",
         "hostDependent": false
@@ -796,16 +803,16 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "react",
-        "version": "19.2.7",
+        "version": "19.2.8",
         "homepage": "https://react.dev/",
-        "source": "https://github.com/facebook/react",
+        "source": "https://github.com/react/react",
         "hostDependent": false
       },
       {
         "name": "react-dom",
-        "version": "19.2.7",
+        "version": "19.2.8",
         "homepage": "https://react.dev/",
-        "source": "https://github.com/facebook/react",
+        "source": "https://github.com/react/react",
         "hostDependent": false
       },
       {
@@ -857,14 +864,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@next/env",
-        "version": "15.5.19",
+        "version": "15.5.25",
         "homepage": "https://github.com/vercel/next.js#readme",
         "source": "https://github.com/vercel/next.js",
         "hostDependent": false
       },
       {
         "name": "@next/swc-{platform}",
-        "version": "15.5.19",
+        "version": "15.5.25",
         "homepage": "https://github.com/vercel/next.js#readme",
         "source": "https://github.com/vercel/next.js",
         "hostDependent": true
@@ -938,21 +945,21 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "motion",
-        "version": "12.40.0",
+        "version": "13.2.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
         "source": "https://github.com/motiondivision/motion",
         "hostDependent": false
       },
       {
         "name": "motion-dom",
-        "version": "12.40.0",
+        "version": "13.2.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
         "source": "https://github.com/motiondivision/motion",
         "hostDependent": false
       },
       {
         "name": "motion-utils",
-        "version": "12.39.0",
+        "version": "13.0.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
         "source": "https://github.com/motiondivision/motion",
         "hostDependent": false
@@ -965,14 +972,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@img/sharp-{platform}",
-        "version": "0.34.5",
+        "version": "0.35.4",
         "homepage": "https://sharp.pixelplumbing.com",
         "source": "https://github.com/lovell/sharp",
         "hostDependent": true
       },
       {
         "name": "sharp",
-        "version": "0.34.5",
+        "version": "0.35.4",
         "homepage": "https://sharp.pixelplumbing.com",
         "source": "https://github.com/lovell/sharp",
         "hostDependent": false
@@ -1005,14 +1012,14 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@base-ui/react",
-        "version": "1.6.0",
+        "version": "1.7.0",
         "homepage": "https://base-ui.com",
         "source": "https://github.com/mui/base-ui",
         "hostDependent": false
       },
       {
         "name": "@base-ui/utils",
-        "version": "0.3.1",
+        "version": "0.3.2",
         "homepage": "https://github.com/mui/base-ui#readme",
         "source": "https://github.com/mui/base-ui",
         "hostDependent": false
@@ -1035,6 +1042,26 @@ export const thirdPartyNotices: NoticeGroup[] = [
         "version": "2.0.0",
         "homepage": "https://github.com/syntax-tree/estree-util-to-js#readme",
         "source": "https://github.com/syntax-tree/estree-util-to-js",
+        "hostDependent": false
+      }
+    ]
+  },
+  {
+    "license": "MIT",
+    "text": "MIT License\n\nCopyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+    "packages": [
+      {
+        "name": "has-flag",
+        "version": "4.0.0",
+        "homepage": "https://github.com/sindresorhus/has-flag#readme",
+        "source": "https://github.com/sindresorhus/has-flag",
+        "hostDependent": false
+      },
+      {
+        "name": "supports-color",
+        "version": "7.2.0",
+        "homepage": "https://github.com/chalk/supports-color#readme",
+        "source": "https://github.com/chalk/supports-color",
         "hostDependent": false
       }
     ]
@@ -1183,7 +1210,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "caniuse-lite",
-        "version": "1.0.30001797",
+        "version": "1.0.30001810",
         "homepage": "https://github.com/browserslist/caniuse-lite#readme",
         "source": "https://github.com/browserslist/caniuse-lite",
         "hostDependent": false
@@ -1196,7 +1223,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@ungap/structured-clone",
-        "version": "1.3.1",
+        "version": "1.4.0",
         "homepage": "https://github.com/ungap/structured-clone#readme",
         "source": "https://github.com/ungap/structured-clone",
         "hostDependent": false
@@ -1235,7 +1262,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "semver",
-        "version": "7.8.4",
+        "version": "7.8.5",
         "homepage": "https://github.com/npm/node-semver#readme",
         "source": "https://github.com/npm/node-semver",
         "hostDependent": false
@@ -1261,7 +1288,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@img/sharp-libvips-{platform}",
-        "version": "1.2.4",
+        "version": "1.3.3",
         "homepage": "https://sharp.pixelplumbing.com",
         "source": "https://github.com/lovell/sharp-libvips",
         "hostDependent": true
@@ -1326,7 +1353,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "acorn",
-        "version": "8.16.0",
+        "version": "8.18.0",
         "homepage": "https://github.com/acornjs/acorn",
         "source": "https://github.com/acornjs/acorn",
         "hostDependent": false
@@ -1482,7 +1509,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "framer-motion",
-        "version": "12.40.0",
+        "version": "13.2.0",
         "homepage": "https://github.com/motiondivision/motion#readme",
         "source": "https://github.com/motiondivision/motion/",
         "hostDependent": false
@@ -1560,7 +1587,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "js-yaml",
-        "version": "3.14.2",
+        "version": "3.15.2",
         "homepage": "https://github.com/nodeca/js-yaml",
         "source": "https://github.com/nodeca/js-yaml",
         "hostDependent": false
@@ -1612,7 +1639,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "nanoid",
-        "version": "3.3.12",
+        "version": "3.3.18",
         "homepage": "https://github.com/ai/nanoid#readme",
         "source": "https://github.com/ai/nanoid",
         "hostDependent": false
@@ -1625,7 +1652,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "next",
-        "version": "15.5.19",
+        "version": "15.5.25",
         "homepage": "https://nextjs.org",
         "source": "https://github.com/vercel/next.js",
         "hostDependent": false
@@ -1634,11 +1661,11 @@ export const thirdPartyNotices: NoticeGroup[] = [
   },
   {
     "license": "MIT",
-    "text": "The MIT License (MIT)\n\nCopyright 2013 Andrey Sitnik <andrey@sitnik.ru>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+    "text": "The MIT License (MIT)\n\nCopyright 2013 Andrey Sitnik <andrey@sitnik.es>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "packages": [
       {
         "name": "postcss",
-        "version": "8.4.31",
+        "version": "8.5.23",
         "homepage": "https://postcss.org/",
         "source": "https://github.com/postcss/postcss",
         "hostDependent": false
@@ -1664,7 +1691,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "reselect",
-        "version": "5.2.0",
+        "version": "5.3.0",
         "homepage": "https://github.com/reduxjs/reselect#readme",
         "source": "https://github.com/reduxjs/reselect",
         "hostDependent": false
@@ -1777,6 +1804,19 @@ export const thirdPartyNotices: NoticeGroup[] = [
   },
   {
     "license": "MIT",
+    "text": "MIT License\n\nCopyright (c) Matteo Collina and Undici contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
+    "packages": [
+      {
+        "name": "undici-types",
+        "version": "6.21.0",
+        "homepage": "https://undici.nodejs.org",
+        "source": "https://github.com/nodejs/undici",
+        "hostDependent": false
+      }
+    ]
+  },
+  {
+    "license": "MIT",
     "text": "(The MIT license)\n\nCopyright (c) 2015 Titus Wormer <tituswormer@gmail.com>\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n'Software'), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be\nincluded in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
     "packages": [
       {
@@ -1820,7 +1860,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@fontsource-variable/inter",
-        "version": "5.2.8",
+        "version": "5.3.0",
         "homepage": "https://fontsource.org/fonts/inter",
         "source": "https://github.com/fontsource/font-files",
         "hostDependent": false
@@ -1833,7 +1873,7 @@ export const thirdPartyNotices: NoticeGroup[] = [
     "packages": [
       {
         "name": "@fontsource-variable/plus-jakarta-sans",
-        "version": "5.2.8",
+        "version": "5.3.0",
         "homepage": "https://fontsource.org/fonts/plus-jakarta-sans",
         "source": "https://github.com/fontsource/font-files",
         "hostDependent": false
