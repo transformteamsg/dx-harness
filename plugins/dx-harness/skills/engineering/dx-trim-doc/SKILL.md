@@ -34,6 +34,8 @@ Check whether a clause that reads as a gloss adds a case. "Other personas who re
 
 Classify by what a sentence protects, not by where it sits. A condition placed in the opening paragraph is still a condition; position argues nothing about class.
 
+Position argues nothing about class. It does decide which copy of a restatement a run acts on. `dx-create-story` stated its unhappy-path rule twice: once in Step 1's criteria list, once in the Rules section. Two of three baseline runs quoted the Rules copy. None quoted the Step 1 copy. Folding the Rules wording into Step 1 and cutting the bullet dropped the gate, with every word of the rule still in the file. The Step 2 transcripts hold the answer. Search them for both copies, and keep the one the runs quote. Where they quote neither, cut either and name the choice in Step 6 as untested.
+
 ## Workflow
 
 ### Step 1: Establish the mode and name the gates
