@@ -1,6 +1,6 @@
 # Executable path
 
-Step 1 settled the mode and named the gates. Five steps remain, and they run in order. The Sentence classes table in `SKILL.md` decides every classification below.
+Step 1 settled the mode and named the gates. Six steps remain, and they run in order. The Sentence classes table in `SKILL.md` decides every classification below.
 
 The Reference path shares Steps 3, 4 and 6 with this file. An edit to any of those three belongs in `reference-path.md` too.
 
@@ -33,7 +33,7 @@ Keep gate rationale where the gate resolves ambiguity, because that is the case 
 
 Do not set a word budget. Compress by class, then measure what you got. Where the author names a target, say that the classification decides the number, and report what the split allows.
 
-Do not count an extraction as a trim. Moving a step's detail into `references/` defers a cost rather than removing one, and `CONTRIBUTING.md` sets the rules for when it is worth doing. Offer it separately.
+Do not count an extraction as a trim. Moving a step's detail into `references/` defers a cost rather than removing one, and `CONTRIBUTING.md` sets the rules for when it is worth doing. Offer it separately: Step 7 decides whether it is worth offering at all.
 
 ## Step 5: Verify
 
@@ -57,3 +57,13 @@ Give the author four things and nothing else.
 4. Every cut you reverted, and the clause that caused it.
 
 Label the outcome exactly. A trim is **verified** when fixtures ran before and after and every gate held. It is **unverified** otherwise, and an unverified trim names what to re-check by hand. Never report an unverified trim as verified, and never describe a lint pass as a behaviour check.
+
+## Step 7: Offer a progressive-disclosure split, separately
+
+The trim is reported. This step asks a different question: does the document make every run read material only some runs need?
+
+Skip it unless the document loads whole. A `SKILL.md` does. A `references/` file already loads on demand, so a split wins nothing there.
+
+Where it applies, read [references/progressive-disclosure.md](references/progressive-disclosure.md) and follow it. It covers how to find the branch, how to measure each side, which split shapes are sound, and how to state the trade.
+
+The output is a recommendation the author can decline. Never apply a split inside a trim.
