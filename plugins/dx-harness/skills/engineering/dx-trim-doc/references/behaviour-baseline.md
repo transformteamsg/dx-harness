@@ -59,6 +59,8 @@ Both of these produced wrong numbers in the trial this file comes from. Check fo
 
 **A final-message capture is not a transcript.** A runner that returns only the agent's last message hides every earlier turn. Verbosity measured that way is wrong, and a gate satisfied in an earlier turn scores as failed. Capture the streamed turns instead, and concatenate every assistant message.
 
+**An output file exists from the first streamed line.** Counting files tells you how many runs started, not how many finished. A run still streaming reads as one that produced no `result` line. Score a run only once no runner process remains. Treat a missing `result` line as "not finished yet", not as a failure.
+
 ## 6. When no baseline is possible
 
 Say so, and say why. Three usual reasons: the document has no gates, the fixtures would need a live remote, or the document is reference prose nobody executes.
@@ -76,6 +78,7 @@ diff -rq arms/before arms/after   # expect exactly one differing file
 # One run: stream every turn, keep the document under test loaded
 printf '%s' "$FIXTURE" | claude -p \
   --plugin-dir arms/before \
+  --add-dir arms/before \
   --model <one model, both arms> \
   --output-format stream-json --verbose \
   --append-system-prompt "$CONDITIONS" \
@@ -83,3 +86,5 @@ printf '%s' "$FIXTURE" | claude -p \
 ```
 
 Read the streamed lines. Each `assistant` line carries one turn's text. The final `result` line carries the turn count, the cost, and the error fields from section 5. Pass the prompt on standard input: a variadic option such as `--disallowedTools` otherwise swallows a positional prompt.
+
+`--add-dir` lets the run read the sibling files the document points to. Without it, a read outside the working directory is denied. The run then invents a substitute for the file, or stops to ask for access. A gate whose fixture needs that file cannot be scored at all. In the `dx-create-story` trial this voided one gate in every arm and aborted four runs. Pass it to both arms. Check an early transcript for a denied read before you run the full set.
