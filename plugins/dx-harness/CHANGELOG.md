@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- A new skill, `dx-trim-doc`, makes a document shorter without changing what it does. It works on a `SKILL.md`, a shared procedure, a reference file, a decision record, or a README, and it treats length as the target and behaviour as the constraint.
+- The skill classifies every sentence before it cuts anything: instruction, condition, gate rationale, framing, or restatement. Framing and restatement come out freely. An instruction or a condition never does, and you see the split and the safe headroom before the first cut.
+- For a document an agent executes, the trim is measured rather than eyeballed. The skill builds one fixture per judgment gate, runs the document as it stands, trims, then re-runs the same fixtures. A gate that drops is reverted and bisected, not argued down to a trade-off.
+- A word budget is declined. The classification decides the number, so asking for a target that only conditions could pay for gets you the trim the split allows and an explanation of the difference.
+- An unverified trim says so. Where no fixture can run, the skill names why, names what to re-check by hand, and never reports a lint pass as a behaviour check.
+- Cutting one of two copies of a rule now consults the evidence rather than taste. Two copies look interchangeable and are not: whichever one the runs quote is the one doing the work, so the skill searches the baseline transcripts for both and keeps that one. A trim can otherwise leave every word of a rule in the file and still lose the behaviour it protected.
+- The baseline method grants the run read access to the document's own sibling files. Without it a reference the document points to is denied, and a gate that depends on that file cannot be scored at all.
 - The plugin now ships a bundled output style, `dx-house-style`, which sets the writing rules for a whole session: explanations, plans, commit messages, and any response in the terminal. It is opt-in, so a repository that wants a different voice is unaffected.
 - A new skill, `dx-house-style-setup`, turns that style on at whichever scope you pick: this project for you, this project for everyone who clones it, or every project on your machine. It reads back the value Claude Code resolves rather than guessing at one.
 - A shared house style, `procedures/house-style.md`, now governs every artifact `dx-create-story`, `dx-create-task`, `dx-create-chore`, `dx-create-bug`, `dx-create-pr`, `dx-code-review`, and `dx-design-feedback` write. It draws on Orwell's six rules, the Google developer documentation style guide, and ASD-STE100, and it applies with no setup the moment any of those skills runs.
@@ -10,6 +17,10 @@
 - A code review no longer stops looking once an angle reaches six candidates. It raises everything it finds and trims afterwards, so the cap bounds what gets posted rather than what gets examined. Posted volume is unchanged.
 - A new skill, `dx-create-sprint-logs`, writes a sprint log per workstream: what closed, what carried over, what was decided, and what risk transfers to whoever picks the work up next. Every row is a clause and a link.
 - The log is a record, not an account. Reasoning belongs in the issue or the decision record, and the log points at it. A row with no link is treated as a finding: the decision nobody wrote down, or the risk nobody raised.
+- The house style lint's cut list catches `just`, `simply`, `easy`, `easily`, and `leverage`, and bare `please` rather than only the phrase `please note`. All seven words `CLAUDE.md` names were previously enforced for one: `in order to`.
+- `house-style.md`'s own cutting step keeps every condition, exception, or modal qualifier, and points at `dx-trim-doc`'s edge test rather than re-deriving it. The file also says not to bolt itself onto another skill's system prompt: a repository trial found that this makes output worse, not better.
+- A new skill, `dx-trim-leakage`, finds and fixes prose whose vantage is an authoring session, a chat thread, or an unmerged draft rather than the repository at `HEAD`: a dead reference to a plan or a discussion, PR- or session-vantage narration, change narration, reviewer-addressed justification, first-person session narration, and undated hedges.
+- The skill keeps a citation only where it resolves at `HEAD`: a GitHub issue or PR number, a decision-record path, or a design ticket. A `CHANGELOG` entry, a dated research record, and a decision record's Chosen approach, Rejected options, and Tradeoffs sections are exempt from the change-narration check, since narrating change is what those genres are for.
 
 ## 0.6.0 (2026-09-01)
 
