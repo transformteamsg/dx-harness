@@ -1,6 +1,6 @@
 # Reference path
 
-Step 1 settled the mode and named the gates. Step 2 does not apply here: a person reads this document, so there are no behaviour fixtures to build. Four steps remain, and they run in order. The Sentence classes table in `SKILL.md` decides every classification below.
+Step 1 settled the mode and named the gates. Step 2 does not apply here: a person reads this document, so there are no behaviour fixtures to build. Five steps remain, and they run in order. The Sentence classes table in `SKILL.md` decides every classification below.
 
 Every trim on this path is unverified, because verified means fixtures ran before and after. Step 6 says how to label it.
 
@@ -27,7 +27,7 @@ Keep gate rationale where the gate resolves ambiguity, because that is the case 
 
 Do not set a word budget. Compress by class, then measure what you got. Where the author names a target, say that the classification decides the number, and report what the split allows.
 
-Do not count an extraction as a trim. Moving a step's detail into `references/` defers a cost rather than removing one, and `CONTRIBUTING.md` sets the rules for when it is worth doing. Offer it separately.
+Do not count an extraction as a trim. Moving a step's detail into `references/` defers a cost rather than removing one, and `CONTRIBUTING.md` sets the rules for when it is worth doing. Offer it separately: Step 7 decides whether it is worth offering at all.
 
 ## Step 5: Verify
 
@@ -51,3 +51,9 @@ Give the author four things and nothing else.
 4. Every cut you reverted, and the clause that caused it.
 
 Label the outcome exactly. This trim is **unverified**, and an unverified trim names what to re-check by hand. Never report it as verified, and never describe a lint pass as a behaviour check.
+
+## Step 7: No progressive-disclosure split to offer
+
+A person reads this document and reads the parts they want. Nothing loads it conditionally, so splitting it by branch saves no reader anything. Say that if the author asks for one, rather than measuring a saving that is not there.
+
+Navigation is a separate concern: headings and a summary help a person find their way, and this skill trims rather than restructures.
