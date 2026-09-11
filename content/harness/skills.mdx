@@ -44,7 +44,9 @@ repository gates healthy.
 | File a chore: maintenance, config, tooling, infrastructure, nothing a user sees | `/dx-harness:dx-create-chore` |
 | File a bug with reproduction steps and an expected-versus-actual delta | `/dx-harness:dx-create-bug` |
 | Cut an issue that turned out too big into task sub-issues | `/dx-harness:dx-split-issue` |
-| Implement an issue and open its pull request | `/dx-harness:dx-implement-issue` |
+| Implement an issue end to end: tests, then code, then its pull request | `/dx-harness:dx-implement-issue` |
+| Write a failing test for each acceptance criterion, before any code exists | `/dx-harness:dx-write-tests` |
+| Write the code that satisfies failing tests already on the branch | `/dx-harness:dx-write-implementation` |
 | Open a pull request, or update one to match new commits | `/dx-harness:dx-create-pr` |
 | Review a pull request or local branch across seven angles | `/dx-harness:dx-code-review` |
 | Configure linting and formatting | `/dx-harness:dx-lint-setup` |
@@ -70,6 +72,25 @@ When an issue turns out too big to deliver in one pull request,
 belong together is the real work. `dx-split-issue` proposes that cut, then hands
 each confirmed slice to `dx-create-task`. The parent stays open and tracks the
 slices as sub-issues.
+
+### Tests before code
+
+`dx-implement-issue` writes nothing itself. It reads the issue, plans, and then
+runs two skills in a fixed order: `dx-write-tests`, then
+`dx-write-implementation`.
+
+The order is what you get out of it. `dx-write-tests` leaves a committed branch
+whose tests fail for the reasons the issue states, and `dx-write-implementation`
+writes code against those tests. A test written before the code cannot be shaped
+to fit code that already passes.
+
+Where your repository cannot settle a criterion with a test, `dx-write-tests`
+writes none and records the criterion as manual with the reason. You get an
+honest gap instead of an assertion that passes without checking anything.
+
+Run either skill on its own. `dx-write-tests` hands you a failing branch and
+names what continues. `dx-write-implementation` picks up a branch someone else
+left, so the two halves need not happen in one sitting or by one person.
 
 ## The front door
 

@@ -103,7 +103,7 @@ Issues live as GitHub issues on `transformteamsg/dx-harness` and are managed wit
 - **File one** with the `/dx-harness:dx-create-*` skills. They ask for the sections their issue shape needs, then create the issue with a label that records which skill wrote it.
 - **Link related work** through GitHub's own relationships rather than prose in the body. Use the Relationships panel for blocked by and blocks, and sub-issues for the slices of a larger piece. Links written into the body go stale as issues close; native relationships do not.
 - **Triage** with the label vocabulary in `docs/agents/triage-labels.md`: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`.
-- **Implement one** with `/dx-harness:dx-implement-issue`, which reads the issue, plans against its acceptance criteria, and opens a draft pull request.
+- **Implement one** with `/dx-harness:dx-implement-issue`, which reads the issue, plans against its acceptance criteria, and opens a draft pull request. It writes nothing itself: `dx-write-tests` writes a failing test per contract item, then `dx-write-implementation` writes the code that satisfies them. Run either half alone when you want only that half, and each says what state it left the branch in.
 
 An issue is ready to pick up when it says what must be observably true once the work is done. If it does not, ask rather than guess. A guess costs a rejected pull request; a question costs a comment.
 

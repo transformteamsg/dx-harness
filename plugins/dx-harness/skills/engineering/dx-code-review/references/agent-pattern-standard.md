@@ -2,7 +2,7 @@
 
 > The patterns every repository using `dx-code-review` is held to. Shipped with the plugin, edited only here, and never copied into a consuming repository.
 >
-> `dx-code-review` and `dx-implement-issue` read this as the underlay beneath a repository's own `review/agent-patterns.md`, which holds only the patterns that repository has observed. Where both carry the same `AP-NNN`, the repository's row wins: it is the one with local counts and status, and it is how a repository suppresses a pattern that is wrong for it.
+> `dx-code-review` reads this directly, and the implement skills read it through `procedures/issue-contract.md`, as the underlay beneath a repository's own `review/agent-patterns.md`, which holds only the patterns that repository has observed. Where both carry the same `AP-NNN`, the repository's row wins: it is the one with local counts and status, and it is how a repository suppresses a pattern that is wrong for it.
 >
 > The six right-hand columns stay empty here. `Concrete example`, `First seen`, `Severity`, `Confirmed by`, `Rejected by`, and `Status` are per repository and are filled in by that repository's overlay, never in this file.
 >
