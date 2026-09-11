@@ -169,6 +169,7 @@ None granted this run.
   | A11Y-7 | manual | reviewer: rewritten figure `aria-label` names the orchestrator, both passes, catalog + DESIGN.md, approval, build, review, and the screen |
   | A11Y-8 | manual | reviewer: `aria-current="step"` count exactly 1 in every sampled state, tracks the highlight |
   | COL-1 / CMP-5 | manual | one filled action on the page (hero); the drawn Save block is `aria-hidden` inside `role="img"`, not focusable |
+  | CMP-1 | manual | asserted, no manifest — the verdict line above records it. The reviewer inspected the product codebase directly, and noted the replay stays a raw `<button>` although `components/ui/button.tsx` ships a Base UI Button that covers the need — a pre-existing site-wide convention |
   | CMP-7 | manual | reviewer: replay resting style matches the site's shared secondary-control pattern (five sibling call sites cited) |
   | SLP-4 | manual | reviewer: run panel and screen are siblings, not nested cards; indent block is border-l only |
   | SLP-8 / MOT-1 | manual | reviewer frame-traces: all transitions on `--motion-*`/`--ease-*` tokens; autoplay settles 3.98–4.02s, inside the 5s boundary; no `animate-*` utilities |

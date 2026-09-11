@@ -175,7 +175,7 @@ existing component part of this surface's review scope.
 
   | Control | Method | Evidence |
   |---------|--------|----------|
-  | `TOK-1` | script | `checks/token-audit.py` over `app components lib` — clean. Self-test OK (29 cases). |
+  | `TOK-1..3` | script | `checks/token-audit.py` over `app components lib` — clean. Self-test OK (29 cases). One run covers all three: the palette half (TOK-1), the spacing scale (TOK-2), and the radius scale (TOK-3). |
   | `TYP-1`, `TYP-4` | script | `checks/type-scan.py` over `app components` — clean. Self-test OK (46 cases). |
   | `TYP-2`, `TYP-3` | manual | **The script cannot cover these.** `type-scan.py` reads declarations, so it passed an earlier `text-[0.9em]` that rendered 10.8px. Now measured in the production DOM: smallest rendered size **12.00px**, and every size on the page is 12/14/16/18/20/30/36/48/60 — all on the Tailwind scale. |
   | `A11Y-1` (static half) | script | `checks/a11y-static.py` over `app components` — clean. |
@@ -184,6 +184,7 @@ existing component part of this surface's review scope.
   | `A11Y-4` | manual | **The e2e does not cover this route** — `tests/site-contract.spec.ts:60-102` measures targets on `/harness/loop` and `/standards/catalog` only, never `/`. Measured by hand at 320/360/390/1440: 13 of 14 controls at 44px. Two exceptions, both pre-existing: the inline `catalog` link inside the reused demo at 42×15px, and the skip link at 38px tall when focused. |
   | `A11Y-7` | script | Site-contract e2e: exactly one `main` landmark on `/`. Sections use `h1`/`h2`/`h3` in order; the four parts, the stages and the skills are real lists. |
   | `A11Y-2` | script | Scripted tab walk at 1440: 14 focusable elements in visual order — skip link, logo, 3 nav links, 2 hero CTAs, the compare divider, the catalog link inside the demo, see-all, close CTA, 3 footer links. All settle on the site's `solid 2px` `#0064ff` ring. **Correction:** an earlier draft of this record claimed the compare divider keeps the browser's default ring. It does not. The `opacity-0` input's UA ring is invisible by construction; the visible handle carries `peer-focus-visible:outline-2 outline-offset-2 outline-(--color-tw-blue)`, and `--ring` and `--tw-blue` are the same value. The reviewer captured the focused frame to prove it. |
+  | `CMP-1` | manual | Asserted, no manifest — the verdict line above records it. No `.dx/component-manifest.json` exists, so `controls/cmp-1.md`'s v0-limit procedure applies and components were inspected in the codebase directly. |
   | `CMP-5` | script | Counted every `a`/`button` with a non-white opaque background: exactly one — the hero **Quick start** at `rgb(0, 100, 255)`. The close CTA is outline-on-`--surface`; every other action is a link. |
   | `SLP-6` | script | Measured computed `font-size` in the browser: section heading 30px over card heading 18px = **1.67×**; card heading 18px over body 14px = **1.29×**; `h1` 60px over the 20px standfirst = **3.00×**. All clear the 1.25× floor. |
   | `SLP-3` | manual | No radiused container carries a side border ≥3px; the page's cells are 1px right/bottom hairlines. |
@@ -191,7 +192,7 @@ existing component part of this surface's review scope.
   | `SLP-5` | manual | No icon-tile-above-heading shape; no icons in the grids at all. The two grids are frame cells with distinct content, not a repeated feature-card template. |
   | `LAY-4` | manual | Every running-text block is capped in `ch` (46ch hero, 52ch cards, 62ch stages, 58ch section support). Nothing is full-bleed and nothing exceeds 80ch. |
   | `SLP-9` | manual | Copy is PR 83's, unchanged. The one edit was case, not words (see Ratchet). |
-  | `TYP-6`, `LAY-6`, `LAY-7`, `COL-1` (judgment half), `CMP-7` | unverified | Judgment controls — for the `dx-design-review` agent, not self-assessment. |
+  | `TYP-6`, `SLP-7`, `LAY-6`, `LAY-7`, `COL-1` (judgment half), `CMP-7` | unverified | Judgment controls — for the `dx-design-review` agent, not self-assessment. |
 - **Evaluator verdict:** **fail** (round 1). Pasted verbatim below, in full, per
   `procedures/design-review.md` — a summary in its place is a defect. Six blocking
   findings: four were the builder's and are fixed and re-measured (see "Fix re-check");
