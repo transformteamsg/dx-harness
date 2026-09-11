@@ -45,7 +45,8 @@ option, a name. Say in one line what you derived and what is still missing.
 7. **The status.** `references/madr-templates.md` pins the six permitted values.
    Ask; do not default.
 8. **The authors**, meaning whoever wrote the record. Not necessarily who decided.
-9. **Where the decision was argued.** A link to the RFC issue or thread. If there
+9. **Where the decision was argued.** A link to whatever holds the reasoning: an
+   RFC issue, a thread, meeting notes, a transcript, or a commented doc. If there
    was none, say what happened instead, such as "settled in grooming; no RFC issue
    was raised". Never link a delivery ticket that does not hold the argument.
 10. **The date the decision was settled.** Use today's date when none is given. Do
