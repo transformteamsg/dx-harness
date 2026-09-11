@@ -6,14 +6,16 @@ delete no headings: a section with nothing to say gets `N/A` and a one-line reas
 
 The frontmatter below is MADR's, tightened with three fields the Transform house
 template (`ADR_TEMPLATE.md` in `transformteamsg/design-documents`) carries and stock
-MADR does not: `authors`, `discussion`, and `supersedes`. Each closes a gap that
-costs a reader something real. This skill also makes MADR's own `status` and `date`
-required rather than optional.
+MADR does not: `authors`, `discussed-in`, and `supersedes`. Each closes a gap that
+costs a reader something real. The house template writes these as body labels, so
+the names here are the frontmatter form of them: its `Author(s)` is `authors`, and
+its `Discussion` is `discussed-in`. This skill also makes MADR's own `status` and
+`date` required rather than optional.
 
 ## Frontmatter
 
 Both variants share this block. MADR treats every field as optional; this skill does
-not. `status`, `date`, `authors`, and `discussion` are required on every record.
+not. `status`, `date`, `authors`, and `discussed-in` are required on every record.
 
 ```yaml
 ---
@@ -22,7 +24,7 @@ date: YYYY-MM-DD
 authors:                          # who WROTE the record, not who decided
   - Name / [@handle](https://github.com/handle)
 decision-makers: <names, or N/A>  # who settled it; often not the authors
-discussion: <where this was argued>
+discussed-in: <link or sentence>  # RFC, thread, notes, transcript
 supersedes: <ADR-NNNN, omitted when this record replaces nothing>
 ---
 ```
@@ -31,11 +33,19 @@ supersedes: <ADR-NNNN, omitted when this record replaces nothing>
 separately. A record is often written up by one person after a group settled it, and
 a reader with a question needs the writer rather than the room.
 
-Fill `discussion` even when no RFC was raised: write what happened instead, such as
+`discussed-in` takes any record of the argument, not only an RFC issue. A Slack or
+GitHub thread, meeting notes, a transcript, or a commented doc all qualify. Link
+whichever one holds the reasoning.
+
+Fill it even when none of those exists: write what happened instead, such as
 `settled in grooming on 2026-09-03; no RFC issue was raised`. Never reach for the
 nearest issue to have something to link. A delivery ticket that does not hold the
 argument looks like a trail and leads nowhere, which is worse than the plain
 sentence.
+
+Where notes or a transcript have no durable link, put them in the record instead.
+Use a collapsed `Discussion notes` section, per `## Material no heading covers`.
+Set the field to `see Discussion notes`.
 
 ### Status values
 
@@ -126,7 +136,7 @@ future change would have to undo.>
 ## More Information
 
 <Links to the spike, the benchmark, or the issue. Write "N/A" if there is nothing
-to point at. The link to where the decision was argued belongs in the `discussion`
+to point at. The link to where the decision was argued belongs in the `discussed-in`
 frontmatter field, not only here.>
 ```
 
@@ -190,7 +200,7 @@ it, because an unenforced decision drifts and the record should admit that.>
 ## More Information
 
 <Links to the spike, the benchmark, or the issue. The link to where the decision was
-argued belongs in the `discussion` frontmatter field, not only here. Write "N/A" if
+argued belongs in the `discussed-in` frontmatter field, not only here. Write "N/A" if
 there is nothing further to point at.>
 ```
 
