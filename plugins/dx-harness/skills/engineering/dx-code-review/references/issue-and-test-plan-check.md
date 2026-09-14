@@ -1,6 +1,6 @@
 # Issue and test plan check
 
-Run as analysis step 1, before the review angles. Confirm the change is validated against the issue it addresses, and that the tests match what the pull request promised. The four issue shapes state that contract under different headings, so step 4 reads the shape first.
+Run as analysis step 1, before the review angles.
 
 **"PR" below means the request on either forge.** The commands are GitHub's; the GitLab equivalent for each is in the command map of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). Report to the developer in their platform's vocabulary.
 
@@ -26,19 +26,19 @@ Run as analysis step 1, before the review angles. Confirm the change is validate
 
    For each contract item across all linked issues, check whether the test plan describes exercising it (semantic match, not exact wording).
    - All covered → continue to step 5.
-   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5. Never pass this gate silently.
+   - **No contract at all** (the issue matches no shape, or its contract section is empty): print "#NNN carries no checkable contract, so the coverage check has nothing to run against" and continue to step 5.
    - Any uncovered → ask the reviewer:
      > "The test plan doesn't cover these contract items: <list>. Continue the review anyway?"
      - No → stop the review here; the reviewer should update the PR's test plan first.
      - Yes → continue to step 5, carrying the uncovered items forward to step 6 alongside the test plan's own scenarios.
-5. **Read the coverage declaration.** A branch that `dx-write-tests` produced carries one in a commit body, and it records each contract item as covered by a test or as manual with a reason. Read it from the request, because this review checks out no branch. The command, the shape, and the rule for which commit wins are in [../../../../procedures/commit-discipline.md](../../../../procedures/commit-discipline.md) § Reading the declaration back.
+5. **Read the coverage declaration.** Read it from the request, because this review checks out no branch. The command, the shape, and the rule for which commit wins are in [../../../../procedures/commit-discipline.md](../../../../procedures/commit-discipline.md) § Reading the declaration back.
    - **No commit carries one** → record that this branch has no declaration and continue to step 6. A branch that no harness skill produced carries none, so the absence is normal and never a finding.
-   - **A commit carries one** → record every item it lists as manual, with the reason it gives. Step 6 reads that list.
+   - **A commit carries one** → record every item it lists as manual, with the reason it gives.
 6. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
    - All covered → done, continue to the review angles.
    - Any scenario with no automated test: the declaration from step 5 decides what happens next.
      - **Answered**: the declaration records the scenario as manual, and the request body names that scenario where a reviewer reads it, such as its test plan or its Manual verification section. File no finding, add no Reviewer To-Do bullet, and count the scenario for the summary's Declared manual line.
-     - **Anything else**: file the finding below. Three states reach it: the branch carries no declaration, the declaration records the scenario under neither heading, or the declaration records it as manual while the request body names it nowhere. In the second state, say the declaration is incomplete. In the third, say the case reached no reviewer, because a declaration sits in a commit body.
+     - **Anything else**: file the finding below. Where the declaration omits the scenario from both headings, say it is incomplete. Where it records the scenario as manual and the request body names it nowhere, say the case reached no reviewer, because a declaration sits in a commit body.
 
      The finding has two parts:
      - A 🔴 **Important** finding — "Missing automated test for: <scenario>" — filed alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (analysis steps 3–4) and goes straight into the final findings list.
