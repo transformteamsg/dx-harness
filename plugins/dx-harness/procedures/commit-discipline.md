@@ -96,6 +96,21 @@ commit carries it, the newest wins.
 If no commit carries it, the test half never ran on this branch. That is a defined
 state, and each half says what to do about it in its own steps.
 
+### From a pull request, with no branch checked out
+
+`dx-code-review` reads the declaration too, and it checks out nothing and writes no
+file. It takes the commit bodies from the forge instead:
+
+```bash
+gh pr view <n> --repo <o>/<r> --json commits
+```
+
+Read `messageBody` on each commit and apply the same rule: the newest one that
+carries `Written by dx-write-tests` wins. The GitLab equivalent is the
+`Read its commit bodies` row of the command map in
+[pr-mechanics.md](pr-mechanics.md), and it returns one `message` field per commit
+rather than a separate headline and body.
+
 The manual items are what a later run hands to the pull request body and to review.
 Carry each one across with its action, its expected result, and its reason intact.
 `dx-create-pr` owns the body and trims it to the house style, so a case can get
