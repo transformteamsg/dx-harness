@@ -254,19 +254,21 @@ Name the file `NNNN-title-with-dashes.md`. Fill every placeholder. Leave no head
 empty: a section with nothing to say gets `N/A` and a one-line reason, MADR's
 convention in place of the style's `None`.
 
-### Add what the source rarely carries
+### Draft a diagram or a worked example
 
-Draft each where it applies and show it rather than asking first.
-`references/madr-templates.md` holds where each goes.
+Draft each where its condition below applies. Show the result rather than asking
+permission first. `references/madr-templates.md` says where each one goes.
 
 - **A diagram**, where the decision is a flow, a topology, or a sequence: a release
-  pipeline, a request path, a state machine. Write mermaid. None for a choice between
-  two libraries.
+  pipeline, a request path, a state machine. Write mermaid. Draw none for a choice
+  between two libraries.
 - **A worked example**, where the decision defines a procedure someone follows
-  afterwards: a versioning rule, a branching convention, a migration order. One, or
-  two where the procedure branches. Put no real release, incident, or person in it,
-  and say the numbers are illustrative: an example built from the decision does not
-  breach step 1, an invented past does.
+  afterwards: a versioning rule, a branching convention, a migration order. Write
+  one, or two where the procedure branches.
+
+Step 1's rule against supplying what nobody gave does not cover a worked example.
+Mark the example as hypothetical. Take no release, incident, or person from the
+repository's own history.
 
 ### Before you write it
 
