@@ -36,6 +36,10 @@ Run as analysis step 1, before the review angles. Confirm the change is validate
    - **A commit carries one** → record every item it lists as manual, with the reason it gives. Step 6 reads that list.
 6. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
    - All covered → done, continue to the review angles.
-   - Any scenario with no automated test:
-     - File it directly as a 🔴 **Important** finding — "Missing automated test for: <scenario>" — alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (analysis steps 3–4) and goes straight into the final findings list.
-     - Add the same scenario to the **Reviewer To-Do** list — "Manually test: <scenario>" — printed with the review summary (see Rules). This step is the list's only source.
+   - Any scenario with no automated test: the declaration from step 5 decides what happens next.
+     - **Answered**: the declaration records the scenario as manual, and the request body names that scenario where a reviewer reads it, such as its test plan or its Manual verification section. File no finding, add no Reviewer To-Do bullet, and count the scenario for the summary's Declared manual line.
+     - **Anything else**: file the finding below. Three states reach it: the branch carries no declaration, the declaration records the scenario under neither heading, or the declaration records it as manual while the request body names it nowhere. In the second state, say the declaration is incomplete. In the third, say the case reached no reviewer, because a declaration sits in a commit body.
+
+     The finding has two parts:
+     - A 🔴 **Important** finding — "Missing automated test for: <scenario>" — filed alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (analysis steps 3–4) and goes straight into the final findings list.
+     - A bullet on the **Reviewer To-Do** list — "Manually test: <scenario>" — printed with the review summary (see Rules). Nothing else adds a bullet to that list.
