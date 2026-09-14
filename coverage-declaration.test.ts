@@ -73,3 +73,19 @@ describe("the Reviewer To-Do list names both of its sources", () => {
     expect(todoRule).toContain("declaration");
   });
 });
+
+describe("the summary reports what the declaration answered", () => {
+  const summary = read(`${REVIEW}/references/summary-format.md`);
+
+  it("carries a Declared manual line", () => {
+    expect(summary).toContain("**Declared manual:**");
+  });
+
+  it("governs that line by the same non-empty rule as the others", () => {
+    const rule =
+      summary
+        .split("\n")
+        .find((line) => line.includes("only when they are non-empty")) ?? "";
+    expect(rule).toContain("Declared manual");
+  });
+});
