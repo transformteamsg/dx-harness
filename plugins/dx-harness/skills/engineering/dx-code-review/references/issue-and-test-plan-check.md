@@ -30,8 +30,11 @@ Run as analysis step 1, before the review angles. Confirm the change is validate
    - Any uncovered → ask the reviewer:
      > "The test plan doesn't cover these contract items: <list>. Continue the review anyway?"
      - No → stop the review here; the reviewer should update the PR's test plan first.
-     - Yes → continue to step 5, carrying the uncovered items into it alongside the test plan's own scenarios.
-5. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
+     - Yes → continue to step 5, carrying the uncovered items forward to step 6 alongside the test plan's own scenarios.
+5. **Read the coverage declaration.** A branch that `dx-write-tests` produced carries one in a commit body, and it records each contract item as covered by a test or as manual with a reason. Read it from the request, because this review checks out no branch. The command, the shape, and the rule for which commit wins are in [../../../../procedures/commit-discipline.md](../../../../procedures/commit-discipline.md) § Reading the declaration back.
+   - **No commit carries one** → record that this branch has no declaration and continue to step 6. A branch that no harness skill produced carries none, so the absence is normal and never a finding.
+   - **A commit carries one** → record every item it lists as manual, with the reason it gives. Step 6 reads that list.
+6. **Check automated tests correspond to the test plan.** Look at the diff for test files added or modified. For each scenario from the test plan (plus any uncovered contract items carried from step 4), check whether an automated test exercises it.
    - All covered → done, continue to the review angles.
    - Any scenario with no automated test:
      - File it directly as a 🔴 **Important** finding — "Missing automated test for: <scenario>" — alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips dedup/verify (analysis steps 3–4) and goes straight into the final findings list.
