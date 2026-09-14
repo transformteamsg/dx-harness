@@ -56,9 +56,7 @@ describe("the Reviewer To-Do list names both of its sources", () => {
 
   /* The rule bullet in SKILL.md's Rules section, read on its own so the
      assertion cannot be satisfied by a mention somewhere else in the file. */
-  const todoRule =
-    skill.split("\n").find((line) => line.startsWith("**Reviewer To-Do:**")) ??
-    "";
+  const todoRule = skill.split("\n").find((line) => line.startsWith("**Reviewer To-Do:**")) ?? "";
 
   it("SKILL.md carries the rule bullet", () => {
     expect(todoRule).not.toBe("");
@@ -82,19 +80,14 @@ describe("the summary reports what the declaration answered", () => {
   });
 
   it("governs that line by the same non-empty rule as the others", () => {
-    const rule =
-      summary
-        .split("\n")
-        .find((line) => line.includes("only when they are non-empty")) ?? "";
+    const rule = summary.split("\n").find((line) => line.includes("only when they are non-empty")) ?? "";
     expect(rule).toContain("Declared manual");
   });
 });
 
 describe("the eval suite covers both declaration states", () => {
   const suite = JSON.parse(read(`${REVIEW}/evals/evals.json`));
-  const names: string[] = suite.evals.map(
-    (evalCase: { name: string }) => evalCase.name,
-  );
+  const names: string[] = suite.evals.map((evalCase: { name: string }) => evalCase.name);
 
   it("has a case for a declaration that answers a scenario", () => {
     expect(names).toContain("declaration-answers-scenario");
@@ -109,10 +102,7 @@ describe("the eval suite covers both declaration states", () => {
       expect(evalCase.fixture_setup, `case ${evalCase.name}`).toBeTruthy();
       expect(evalCase.prompt, `case ${evalCase.name}`).toBeTruthy();
       expect(evalCase.expected_output, `case ${evalCase.name}`).toBeTruthy();
-      expect(
-        evalCase.assertions.length,
-        `case ${evalCase.name}`,
-      ).toBeGreaterThan(0);
+      expect(evalCase.assertions.length, `case ${evalCase.name}`).toBeGreaterThan(0);
     }
   });
 
