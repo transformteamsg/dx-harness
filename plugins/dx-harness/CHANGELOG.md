@@ -3,7 +3,8 @@
 ## Unreleased
 
 - A new skill, `dx-trim-doc`, makes a document shorter without changing what it does. It works on a `SKILL.md`, a shared procedure, a reference file, a decision record, or a README, and it treats length as the target and behaviour as the constraint.
-- The skill classifies every sentence before it cuts anything: instruction, condition, gate rationale, framing, or restatement. Framing and restatement come out freely. An instruction or a condition never does, and you see the split and the safe headroom before the first cut.
+- The skill classifies every sentence before it cuts anything: instruction, condition, gate rationale, framing, illustration, or restatement. Framing, illustration, and restatement come out freely. An instruction or a condition never does, and you see the split and the safe headroom before the first cut.
+- A worked example that narrates a past incident now has a class of its own. Such an example assumes context a future reader lacks, so the skill cuts the narrative, keeps the rule, and cites whichever document records the case. An example that calibrates a judgment call stays, because that one is gate rationale.
 - For a document an agent executes, the trim is measured rather than eyeballed. The skill builds one fixture per judgment gate, runs the document as it stands, trims, then re-runs the same fixtures. A gate that drops is reverted and bisected, not argued down to a trade-off.
 - A word budget is declined. The classification decides the number, so asking for a target that only conditions could pay for gets you the trim the split allows and an explanation of the difference.
 - An unverified trim says so. Where no fixture can run, the skill names why, names what to re-check by hand, and never reports a lint pass as a behaviour check.

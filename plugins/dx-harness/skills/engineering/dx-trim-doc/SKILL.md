@@ -5,7 +5,7 @@ description: 'Use when a document is too long and someone wants it shorter witho
 
 You are trimming a document without changing what it does.
 
-A sentence that looks like decorative explanation can still be the reason a rule works. `CONTRIBUTING.md` records what happens when one goes missing: `dx-code-review` lost one clause, "because they are the cases worth raising precisely when they cannot be settled by reading", and the rule above it went from a conditional default to a blanket one, so a bug the review could prove got reported as a maybe. Before you cut anything, read two rules in the Add a skill section of `CONTRIBUTING.md`: "When you trim a skill", and "Remember that an agent reads differently from you". That section is the authority; this skill is the procedure that enforces it.
+A sentence that looks like decorative explanation can still be the reason a rule works. Before you cut anything, read two rules in the Add a skill section of `CONTRIBUTING.md`: "When you trim a skill", and "Remember that an agent reads differently from you". That section is the authority; this skill is the procedure that enforces it.
 
 This skill protects behaviour, not resolvability. A passage can read correctly at `HEAD`, cost nothing extra in length, and still leak this session's own vantage: a dead plan citation, first-person narration of what you decided, an undated hedge. `dx-trim-leakage` catches that separately; it is not this skill's job to hunt it during a length trim.
 
@@ -28,13 +28,16 @@ An executable document trimmed without fixtures is an unverified trim. That is a
 | Condition | Adds a case, an exception, or a limit that changes what the reader does | Never |
 | Gate rationale | Says why a judgment call resolves one way | Only when the rule is mechanical. See Step 4 |
 | Framing | Says why the work matters, who reads the output, or why the document is arranged as it is | Cut |
+| Illustration | Narrates a past case or incident as evidence for a rule the document already states | Cut, and keep the rule |
 | Restatement | Stated in full elsewhere in the same file | Cut, and keep one |
+
+An example that calibrates a judgment call is gate rationale, not illustration. To tell them apart, take the example out and ask whether a reader can still make the call. Where they cannot, it is gate rationale and stays. Where another document records the case, cite that document instead of the narrative.
 
 Check whether a clause that reads as a gloss adds a case. "Other personas who read or act on the same data, and what they see once this changes" reads as one item with a trailing gloss. The trailing clause is a second thing to look for. Cutting it narrows the step.
 
-Classify by what a sentence protects, not by where it sits. A condition placed in the opening paragraph is still a condition; position argues nothing about class.
+Classify by what a sentence protects, not by where it sits. A condition placed in the opening paragraph is still a condition.
 
-Position argues nothing about class. It does decide which copy of a restatement a run acts on. `dx-create-story` stated its unhappy-path rule twice: once in Step 1's criteria list, once in the Rules section. Two of three baseline runs quoted the Rules copy. None quoted the Step 1 copy. Folding the Rules wording into Step 1 and cutting the bullet dropped the gate, with every word of the rule still in the file. The Step 2 transcripts hold the answer. Search them for both copies, and keep the one the runs quote. Where they quote neither, cut either and name the choice in Step 6 as untested.
+Position argues nothing about class. It does decide which copy of a restatement a run acts on. Search the Step 2 transcripts for both copies, and keep the one the runs quote. Where they quote neither, cut either and name the choice in Step 6 as untested.
 
 ## Workflow
 

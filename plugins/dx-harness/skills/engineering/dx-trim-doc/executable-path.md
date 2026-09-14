@@ -16,13 +16,13 @@ If a baseline is not possible, say why, offer to continue on the edge test alone
 
 Walk the document and assign every sentence one class from the Sentence classes table. Report the split before you cut:
 
-> "N sentences: N instruction, N condition, N gate rationale, N framing, N restatement. Framing and restatement come to N words, which is N% of the file."
+> "N sentences: N instruction, N condition, N gate rationale, N framing, N illustration, N restatement. Framing, illustration, and restatement come to N words, which is N% of the file."
 
 That percentage is the safe headroom. Cutting past it takes words from gate rationale.
 
 ## Step 4: Trim
 
-Cut framing and restatement freely. They carry no behaviour.
+Cut framing, illustration, and restatement freely. They carry no behaviour.
 
 For every other candidate, apply the edge test from `CONTRIBUTING.md`. Remove the clause, then construct an input where the rule is ambiguous, and ask whether your answer changes. If it changes, the clause was a condition. Put it back.
 
