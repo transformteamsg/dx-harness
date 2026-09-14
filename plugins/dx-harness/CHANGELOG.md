@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.0 (2026-09-14)
+
 - A new skill, `dx-trim-doc`, makes a document shorter without changing what it does. It works on a `SKILL.md`, a shared procedure, a reference file, a decision record, or a README, and it treats length as the target and behaviour as the constraint.
 - The skill classifies every sentence before it cuts anything: instruction, condition, gate rationale, framing, illustration, or restatement. Framing, illustration, and restatement come out freely. An instruction or a condition never does, and you see the split and the safe headroom before the first cut.
 - A worked example that narrates a past incident now has a class of its own. Such an example assumes context a future reader lacks, so the skill cuts the narrative, keeps the rule, and cites whichever document records the case. An example that calibrates a judgment call stays, because that one is gate rationale.
