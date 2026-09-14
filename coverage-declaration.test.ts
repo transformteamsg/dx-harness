@@ -49,3 +49,27 @@ describe("the declaration's shape has one home", () => {
     }
   });
 });
+
+describe("the Reviewer To-Do list names both of its sources", () => {
+  const check = read(`${REVIEW}/references/issue-and-test-plan-check.md`);
+  const skill = read(`${REVIEW}/SKILL.md`);
+
+  /* The rule bullet in SKILL.md's Rules section, read on its own so the
+     assertion cannot be satisfied by a mention somewhere else in the file. */
+  const todoRule =
+    skill.split("\n").find((line) => line.startsWith("**Reviewer To-Do:**")) ??
+    "";
+
+  it("SKILL.md carries the rule bullet", () => {
+    expect(todoRule).not.toBe("");
+  });
+
+  it("neither file claims a single source", () => {
+    expect(todoRule).not.toContain("only source");
+    expect(check).not.toContain("only source");
+  });
+
+  it("the rule names the coverage declaration", () => {
+    expect(todoRule).toContain("declaration");
+  });
+});
