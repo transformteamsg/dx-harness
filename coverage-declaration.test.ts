@@ -89,3 +89,35 @@ describe("the summary reports what the declaration answered", () => {
     expect(rule).toContain("Declared manual");
   });
 });
+
+describe("the eval suite covers both declaration states", () => {
+  const suite = JSON.parse(read(`${REVIEW}/evals/evals.json`));
+  const names: string[] = suite.evals.map(
+    (evalCase: { name: string }) => evalCase.name,
+  );
+
+  it("has a case for a declaration that answers a scenario", () => {
+    expect(names).toContain("declaration-answers-scenario");
+  });
+
+  it("has a case for a branch that carries no declaration", () => {
+    expect(names).toContain("no-declaration-keeps-todo");
+  });
+
+  it("gives every case the four fields a reader grades it by", () => {
+    for (const evalCase of suite.evals) {
+      expect(evalCase.fixture_setup, `case ${evalCase.name}`).toBeTruthy();
+      expect(evalCase.prompt, `case ${evalCase.name}`).toBeTruthy();
+      expect(evalCase.expected_output, `case ${evalCase.name}`).toBeTruthy();
+      expect(
+        evalCase.assertions.length,
+        `case ${evalCase.name}`,
+      ).toBeGreaterThan(0);
+    }
+  });
+
+  it("gives every case a unique id", () => {
+    const ids = suite.evals.map((evalCase: { id: number }) => evalCase.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});
