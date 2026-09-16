@@ -2,9 +2,7 @@
 
 ## Unreleased
 
-- A code review no longer reports a test that your implementation run had already declared impossible to automate. `dx-code-review` reads the coverage declaration out of the branch's commit history, and where it records a criterion as manual and your request body already names that case, the review files no finding and adds no reviewer to-do for it. The same criterion used to come back as an Important finding against the branch that declared it ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
-- The declaration is read from the request, not from a checkout, because a review never touches a working tree. A branch that none of these skills produced carries no declaration, and that is not a finding: the review behaves exactly as it did before. A criterion recorded as manual that your request body names nowhere is still reported, because a commit body reaches no reviewer.
-- The review summary says how many cases the declaration answered, so a quiet check reads as a check that ran rather than one that found nothing.
+- `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
 
 ## 0.7.0 (2026-09-14)
 
