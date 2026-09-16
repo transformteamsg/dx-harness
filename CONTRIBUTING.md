@@ -141,6 +141,9 @@ Skills are the canonical, tool-neutral source of the harness. The `.claude-plugi
 - **Check a metaphor against your own taxonomy before you reach for it.** A word like `load-bearing` or `guardrail` can drift from the precise term a table two paragraphs later already names. `dx-trim-doc` opened by asking a reader to protect "a sentence that reads as explanation", then defined a Sentence classes table where one explanatory class, Framing, is cut freely: the metaphor's scope was wider than the class it stood in for. Where the skill already defines the term, use it instead of the metaphor. Where it does not yet, that gap is the sign the taxonomy is missing a case, not a reason to reach for a synonym.
 - Adding a skill folder needs no manifest change. The `skills` array in `plugin.json` scans both category directories.
 - Leave the `version` field in `plugins/dx-harness/.claude-plugin/plugin.json` alone. Record what your change gives the user under the `## Unreleased` heading in `plugins/dx-harness/CHANGELOG.md`, and let the release carry the bump. See [Cut a release](#cut-a-release).
+- Give each change one line in `plugins/dx-harness/CHANGELOG.md`, written as one sentence, and cite the pull request or the issue in it. A pull request that delivers three changes gets three lines; one change never gets three. It holds in every section, not only `## Unreleased`. Where one sentence will not hold the change, record the part a user acts on and leave the rest to the pull request.
+- Open each changelog line with a summary of five words or fewer, bolded, then a colon. The rest of the sentence says what the change gives the user.
+- Group the lines of a version under `### Added`, `### Changed`, `### Deprecated`, `### Removed`, `### Fixed`, or `### Security`, in that order, and omit a heading with no lines under it. Leave `## Unreleased` with no headings until it has a line.
 
 ## Cut a release
 

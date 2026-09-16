@@ -2,7 +2,7 @@
 
 AI harness for agentic-driven product development (the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`) plus the TFX Design Standard website (TransformX, Teacher & School portfolio). The website runs on Next.js 15 App Router, Tailwind v4, MDX content, and a YAML control catalogue. The package manager is pnpm.
 
-This site must pass its own standard. Before changing UI, read [plugins/dx-harness/standards/catalog.yaml](plugins/dx-harness/standards/catalog.yaml), especially the SLP (anti-slop) controls. The catalogue is the single source of truth, and the site reads it directly.
+This site must pass its own standard. Before changing UI, read [plugins/dx-harness/standards/catalog.yaml](plugins/dx-harness/standards/catalog.yaml), especially the SLP (anti-slop) controls. The site reads the catalogue directly.
 
 ## Design constraints
 
@@ -15,15 +15,15 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - Content lives in `content/`, not in components. Page chrome lives in `components/`. Don't hardcode standard content into TSX.
 - Copy: second person, active voice, sentence case, plain language. Error messages say what happened and what to do next.
 - The standards catalogue controls govern product code and user-facing copy: components, UI strings, and `content/`. They do not govern technical documents, whose rules are in the next section. When editing prose in `content/`, apply SLP-9 (AI-writing tells). The canonical lists and calibration live in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-design-copy skill.
-- Spelling is Commonwealth English in all prose: UI copy, `content/`, and docs. Write `colour`, `behaviour`, `catalogue`, `organise`, `prioritise`, `centre`, and `-ise` rather than `-ize`. Identifiers keep the spelling they already have, such as `catalog.yaml` and the CSS `color` property. The one settled exception in prose is `judgment`, which is what `docs/` already uses.
-- Published docs intentionally have no `settled`/`proposed` status axis. Keep unresolved proposals in decision records or issues and label them there; don't add status frontmatter or badges to published pages.
+- Spelling is Commonwealth English in all prose: UI copy, `content/`, and docs. Write `colour`, `behaviour`, `catalogue`, `organise`, `prioritise`, `centre`, and `-ise` rather than `-ize`. Identifiers keep the spelling they already have, such as `catalog.yaml` and the CSS `color` property. The one settled exception in prose is `judgment`.
+- Don't add a `settled`/`proposed` status axis to a published page: no status frontmatter, no badges. Keep an unresolved proposal in a decision record or an issue, and label it there.
 
 ## Technical documents
 
-- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, GitHub issue bodies, PR descriptions, and the plugin's `SKILL.md` files follows the [Google developer documentation style guide](https://developers.google.com/style). It is the only authority for these documents. The catalogue controls do not apply: `CNT-3`'s 25-word sentence limit and the rest were written for UI strings, and enforcing them on instructional prose is the wrong bar.
+- Prose in `docs/`, `CONTEXT.md`, decision records, READMEs, GitHub issue bodies, PR descriptions, and the plugin's `SKILL.md` files follows the [Google developer documentation style guide](https://developers.google.com/style). It is the only authority for these documents, and the catalogue controls do not apply.
 - Issue bodies, PR descriptions, decision records, and code review comments carry a stricter concision bar on top of Google's mechanics: the [house style](plugins/dx-harness/procedures/house-style.md), carried by the `dx-create-issue` family and the `dx-create-pr` skill. It does not apply to UI copy, which SLP-9 already governs.
-- In a `SKILL.md` or a shared procedure, state the rule and the condition it applies under, never the argument for it. Keep a clause only where removing it changes what the rule does at an edge; CONTRIBUTING states the same test from the trimming side.
-- Second person, active voice, present tense. Google permits `will` to mark an action that happens later, so present tense is the default rather than a ban.
+- In a document that states rules a reader follows, such as a `SKILL.md`, a shared procedure, this file, or CONTRIBUTING, state the rule and the condition it applies under, never the argument for it. A decision record and a standards control are excepted. Keep a clause only where removing it changes what the rule does at an edge; CONTRIBUTING states the same test from the trimming side.
+- Second person, active voice, present tense. Google permits `will` to mark an action that happens later.
 - Sentence case for headings and titles. Serial commas. Code-related text in code font, UI elements in bold.
 - Em dashes take no space before or after. For separating an item from its description, use a colon or a period instead.
 - Do not use `e.g.` or `i.e.` Write "for example" and "that is".
@@ -32,8 +32,8 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - Spell out an abbreviation on first use.
 - Write for a global audience: short sentences, and no idioms, colloquialisms, or slang.
 - Use descriptive link text, never "here" or "this link".
-- Where Google collides with `CONTEXT.md`, the vocabulary there wins: it names the terms this repo avoids.
-- One deliberate deviation, and only one: spelling stays Commonwealth English per Content and copy. Google is US English and this repo is not, so a Commonwealth spelling you find here is not a mistake to correct.
+- Where Google collides with `CONTEXT.md`, the vocabulary there wins.
+- One deliberate deviation, and only one: spelling stays Commonwealth English per Content and copy. A Commonwealth spelling here is not a mistake to correct.
 - Apply this to documents you write or substantially revise. Don't retrofit files you are only passing through; a retrospective sweep is its own piece of work.
 
 ## Contributing
