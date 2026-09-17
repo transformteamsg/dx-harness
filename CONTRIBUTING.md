@@ -120,6 +120,7 @@ Apply these to documents you write or substantially revise. Do not retrofit a fi
 
 Skills are the canonical, tool-neutral source of the harness. The `.claude-plugin` manifests are a Claude-specific adapter over them.
 
+- **Write the prose to [Skill prose](plugins/dx-harness/procedures/skill-prose.md).** It holds the rules for a `SKILL.md`, the structure to follow, and how to verify a skill by running it. 
 - Add a skill under `plugins/dx-harness/skills/engineering/` or `plugins/dx-harness/skills/design/` as `dx-<skill-name>/SKILL.md`. Keep each skill one level deep inside its category folder, and never place a skill directly under `skills/`.
 - `SKILL.md` frontmatter needs a `name:` matching the folder, so it carries the `dx-` prefix too, and a trigger-rich `description:`. The description is what decides whether the skill fires, so write the phrases a person would actually say.
 - Quote a `description:` that contains a colon followed by a space, or a space followed by `#`. Unquoted, YAML reads the first as a nested mapping and fails to parse, and the second as a comment, which silently truncates the description and quietly degrades what the skill triggers on. Single quotes are the house style; double an apostrophe inside them.
