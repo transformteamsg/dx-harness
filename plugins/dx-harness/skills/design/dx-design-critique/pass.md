@@ -52,8 +52,9 @@ A pass keeps two entries:
    the ranked findings to the caller, which merges them and runs the one plan approval.
 5. **Hand off; never build.** Hand the accepted findings to `dx-design-execute` as a
    specified-change run in `return-to-caller` mode: the handoff carries the mode
-   token and the accepted findings. The token makes execute skip its own intent
-   interview; the person already accepted each finding in
+   token, the surface (its route path or flow name), and the accepted findings. The
+   token makes execute skip its own intent
+   interview, so name the surface in the handoff; execute cannot ask for it. The person already accepted each finding in
    step 4, and that acceptance is the approval context execute works from. Execute
    owns plan approval, implement, design review, and verify, through
    `../../../procedures/plan-approval.md`, `../../../procedures/implement.md`, and

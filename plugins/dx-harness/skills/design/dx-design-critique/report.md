@@ -90,14 +90,18 @@ Do not restructure or reorder it.
   removed finding leaves a gap, never a renumber, so circulated references keep
   working.
 - New findings on a re-run take fresh numbers after the highest number ever used.
+  Read that number off the previous report for this surface, which section 6 places
+  where a re-run can find it. No previous report means this is the first run, so
+  numbering starts at 1.
 
 ## 6. Publish
 
-Publish the HTML as an artifact. On every re-run for the same surface, republish
-to the same artifact URL with a version label; a new URL is a defect. If artifact
-publishing is unavailable, fall back to writing the self-contained HTML to a local
-file and opening it in the browser; say so, and give the file path instead of a
-URL.
+Publish the HTML as an artifact, at a location derived from the surface so that a
+re-run for the same surface resolves to it without a record to consult. On every
+re-run, republish there with a version label; a new location is a defect. If
+artifact publishing is unavailable, fall back to writing the self-contained HTML to
+a local file, named from the same surface, and opening it in the browser; say so,
+and give the file path instead of a URL.
 
 Then give the report URL (or the fallback file path) in the conversation and stop.
 Approval happens in the conversation: the human replies with S-numbers, and each

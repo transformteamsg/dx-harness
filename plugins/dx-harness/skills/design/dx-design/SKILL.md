@@ -150,7 +150,9 @@ answer, off-menu, and you never build in response to one.
   website link, per catalogue-mechanics.
 - **Offer exactly one next step**, the one that fits:
   - Record the approved waiver in the surface's decision record
-    (`docs/decisions/<page>.md` in the product repo).
+    (`docs/decisions/<page>.md` in the product repo). Seed the record from
+    `docs/decisions/TEMPLATE.md` where it does not exist yet, the way
+    dx-design-execute seeds it at the plan gate.
   - Promote a repeated waiver into DESIGN.md's Overrides.
   - Start a rule proposal (`../../../procedures/rule-proposal.md`).
 - **Act only on an explicit yes.** Silence, hedging, or a new question is not consent;

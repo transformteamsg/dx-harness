@@ -44,7 +44,8 @@ Design skills file issues, so confirm the tracker is reachable:
 3. **No doc: detect GitHub.** A GitHub tracker is present when
    `gh auth status` exits 0 and `gh repo view --json nameWithOwner` resolves
    the current repo. A missing tracker is not a failure: report what the two
-   commands returned and move on.
+   commands returned, and say that dx-design-language will append its deferred
+   sections and fix-todos to `docs/design-todos.md` instead.
 
 ## Set up commit signing (once per machine)
 
