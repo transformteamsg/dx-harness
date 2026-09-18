@@ -147,7 +147,7 @@ Before upgrading or overriding, confirm the patched version is actually publishe
 
 Pick the **lowest** published version that satisfies the **Patched versions** requirement from the audit report. Prefer a patch/minor bump over a major version change.
 
-**Then check its publish date** with the **Check a version's publish date** command and apply the 7-day cooldown from the Overview. `npm view <pkg> time --json` returns a `version → ISO-timestamp` map; this command works regardless of package manager because npm ships with Node and reads the same registry. Find your candidate version's timestamp and confirm it is **at least 7 days old**:
+**Then check its publish date** with the **Check a version's publish date** command and apply the 7-day cooldown from the Overview. `npm view <pkg> time --json` returns a `version → ISO-timestamp` map, and works regardless of package manager. Find your candidate version's timestamp and confirm it is **at least 7 days old**:
 
 ```bash
 npm view <pkg> time --json     # look up your candidate version's date in the output
@@ -174,7 +174,7 @@ For npm, Yarn, and Bun, there's no equally universal native setting — rely on 
 Before escalating anything, deal with the overrides / `resolutions` already in `package.json`. Do this first for two reasons:
 
 - **An override forces its pinned version across the whole tree.** If a flagged package sits under an existing override, no amount of updating or parent-upgrading will change what resolves — the override wins. Escalating against it is wasted effort; you must fix the override itself.
-- **Overrides accumulate and rot.** A parent may since have shipped a fix, making the override redundant. Escalating on top of stale overrides just adds more cruft to reason about later.
+- **Overrides accumulate and rot.** A parent may since have shipped a fix, making the override redundant.
 
 **Important:** the **Show dependency chain** command with an override in place always shows the *overridden* version — it cannot tell you whether the override is still needed. You must remove the override and reinstall to see natural resolution.
 
@@ -197,7 +197,7 @@ Run **Update one (within range)**. If a major bump is required, use **Install an
 
 ### C. Transitive — try updating everything first
 
-Run **Update all (within ranges)**, then **Audit** again. This pulls transitive deps to the newest version allowed by their parents' declared ranges, and often resolves the vulnerability with no further action.
+Run **Update all (within ranges)**, then **Audit** again.
 
 **If the audit still reports the vulnerability**, check whether the installed version actually changed — an update may have bumped a parent but left the transitive entry stale in the lockfile. Run the **Show dependency chain** command to confirm which version is actually installed.
 
@@ -258,7 +258,7 @@ Then run the package manager's plain install command (`npm install` / `pnpm inst
 
 **Confirm the forced version is actually compatible.** Because an override bypasses the resolver's normal range-checking, it can install a version a parent never declared support for. A clean audit does *not* mean the tree is sound. Check for the signals that the forced version doesn't fit:
 
-- **Peer-dependency warnings or `ERESOLVE` errors in the install output** — don't dismiss them. An override that provokes these is forcing a version some parent explicitly disagrees with.
+- **Peer-dependency warnings or `ERESOLVE` errors in the install output** — don't dismiss them.
 - **`npm ls <pkg>`** (or the PM equivalent from **Show dependency chain**) flagging the forced version as `invalid` or `unmet peer`.
 - The **test suite** (Step 6) remains the backstop for behavioural breaks the install step can't surface.
 
@@ -270,7 +270,7 @@ Document in the PR description why the override was necessary, what prevents a p
 
 Run **Audit** one more time. All vulnerabilities must be resolved. If any remain, document them with a reason (e.g., no upstream fix exists yet).
 
-**If you upgraded a parent this cycle, re-check any override you kept in Step 4A** — the upgrade may have made it redundant. Remove it, reinstall, and audit; if clean, leave it removed. This catches overrides that only became stale *because* of the upgrades you just did (which the up-front reconciliation couldn't have known about).
+**If you upgraded a parent this cycle, re-check any override you kept in Step 4A** — the upgrade may have made it redundant. Remove it, reinstall, and audit; if clean, leave it removed.
 
 ## Step 6: Run the Test Suite
 
@@ -295,7 +295,7 @@ Once the audit is clean and tests pass, offer to ship the changes — don't forc
 
 > "Want me to commit these dependency updates to a feature branch, push, and open a PR?"
 
-If the user would rather review and push themselves, skip this — but ask them to add the `skill:update-npm-dependencies` label and the `*🤖 Generated with update-npm-dependencies*` footer when they open the PR. The label makes usage queryable with `gh pr list --label "skill:update-npm-dependencies"`.
+If the user would rather review and push themselves, skip this — but ask them to add the `skill:update-npm-dependencies` label and the `*🤖 Generated with update-npm-dependencies*` footer when they open the PR.
 
 If yes, run the full flow:
 
@@ -348,16 +348,7 @@ If yes, run the full flow:
 
 | Mistake                                            | Correct approach                                                                       |
 | -------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Running an audit before detecting the PM           | Do Step 0 first — the wrong command errors or no-ops; a non-JS repo should abort early |
 | Jumping to overrides for transitive vulns          | Always try the update-all step first — it often resolves without overrides             |
 | Using `audit --fix` (or `npm audit fix`) blindly   | It can silently introduce breaking major-version bumps; fix manually                   |
-| Skipping the dependency-chain check                | Without knowing the chain, you risk updating the wrong package                         |
-| Forgetting the final audit                         | Always re-run audit — a fix for one vuln can reveal others                             |
-| Skipping tests after the update                    | A clean audit doesn't mean nothing broke — run the full test suite before committing   |
 | Adding transitive deps as direct devDependencies   | Use overrides/`resolutions` instead; don't pollute devDependencies                     |
-| Using a range (`^` or `>=`) in an override         | Pin the *exact* patched version — a range widens the blast radius and lets a future patch install with no 7-day cooldown |
-| Putting `overrides` where the PM expects `resolutions` (or vice versa) | Match the field to the package manager — npm/Bun use `overrides`, pnpm uses `pnpm.overrides`, Yarn uses `resolutions` |
 | Leaving overrides in place permanently             | Check after each upgrade cycle whether the parent now resolves safely on its own       |
-| Overriding before confirming a safe version exists | Check published versions / dist-tags first to confirm the patched release exists       |
-| Assuming a clean audit means the override tree is sound | An override skips range-checking — also check install output for `ERESOLVE` / peer warnings and `npm ls` for `invalid` markers; if safe + compatible is impossible, ask a human |
-| Installing a version published in the last 7 days  | Apply the cooldown — prefer the oldest patched release; if only a fresh version fixes it, ask a human before installing |

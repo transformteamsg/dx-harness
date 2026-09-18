@@ -17,9 +17,6 @@ here. Intent and diverge live in this file; the back half of the run (plan appro
 implement, design review, rule proposal) is shared procedure, loaded from
 `../../../procedures/` and never restated here.
 
-The harness's one promise: **intent without loss**. What the builder means is written
-down as a contract in Phase 1; every later phase is graded against that contract;
-drift from it is a defect.
 
 <!-- dx-sync:L0 source=catalog -->
 **Non-negotiables (L0), binding even outside the loop:** AA contrast (A11Y-1); keyboard
@@ -27,9 +24,7 @@ reach with visible focus (A11Y-2); a visible label on every field (A11Y-3); dest
 actions show consequences and offer undo or confirm (CMP-2).
 <!-- /dx-sync:L0 -->
 These never bend — if one
-seems impossible, that is a blocking question for the user, not a judgment call. (The
-catalog carries the rest; these four are restated here because this SKILL.md travels in
-the plugin while the harness's CLAUDE.md does not.)
+seems impossible, that is a blocking question for the user, not a judgment call.
 
 **Load first:** the control catalog at `standards/catalog.yaml`. **Locating it:** the
 catalog ships with this harness, not with the product repo — resolve it relative to
@@ -49,7 +44,7 @@ back half of the run lives beside it: `../../../procedures/plan-approval.md`,
 `../../../procedures/implement.md`, `../../../procedures/design-review.md`,
 `../../../procedures/rule-proposal.md`, and `../../../procedures/design-tickets.md`.
 
-**The stack** (deliberately boring, AI-legible): Base UI components, Radix Colors
+**The stack**: Base UI components, Radix Colors
 scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
 display, Inter (400/500/600) for body/UI. Each product anchors primary actions and
 brand moments in its **own** primary (Teacher Workspace → Teacher & School Blue
@@ -61,8 +56,7 @@ coarse, weigh trade-offs against Apple's HIG design principles (Purpose, Agency,
 Responsibility, Familiarity, Flexibility, Simplicity, Craft, Delight —
 developer.apple.com/design/human-interface-guidelines/design-principles). A
 reference point like SGDS and GOV.UK, never a checkable standard: principles settle
-trade-offs; they are not used to "check" work. The phase notes below name the ones
-that recur in this portfolio.
+trade-offs; they are not used to "check" work.
 
 <!-- dx-sync:lay-controls -->
 **Layout controls.** Layout has seven controls: LAY-1 (the product's declared
@@ -133,16 +127,13 @@ scoped named change (a restyle, an "improve / polish this", or a catalog
 re-audit), the evaluate step belongs to the `critique` skill — **invoke
 `critique` first** and continue here once the user approves its suggestions. Do
 not propose changes before the current state has been captured and judged. The
-critique captures the live page, runs a structured layout read (against the
-pattern inventory, `../../../standards/layout-patterns.md`), grades it against the in-scope catalog
-controls and the product's essence, and returns ranked suggestions whose "what
-underperforms" list sets the scope of the polish; the procedure lives in
-`../dx-design-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
+critique returns ranked suggestions whose "what underperforms" list sets the scope
+of the polish; the procedure lives in `../dx-design-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
 has to pass its controls, it only means don't restyle a deliberate choice.
 
 ## A flow is not a stack of pages
 
-The page is the unit of evidence, but the design is the journey. When the surface is
+When the surface is
 a flow — or a single page hosts a multi-step interaction — design the journey, not
 just each screen:
 
@@ -179,9 +170,7 @@ A request like "apply the standards", "improve this", "polish it", or "make it
 better" names *no dimension of change* — and you cannot infer one, so do not try.
 "Apply the standards" in particular reads by default as a **compliance + anti-slop
 pass**: on a surface that is already decent, that can finish with the visuals looking
-almost unchanged. That is exactly what disappointed the Glow pilot — the builder
-wanted a brand-forward visual redesign, said "apply the standards", and got a run that
-tightened UX the surface had mostly got right already. The fix is not to guess bigger;
+almost unchanged. The fix is not to guess bigger;
 it is to **ask**. When the request is open-ended, use a structured `AskUserQuestion`
 to pin down which **dimension(s)** are in scope:
 
@@ -205,11 +194,9 @@ dimension the builder wanted, not the one the phrase defaulted to.
 
 Establish the rest, asking the user only what you cannot infer:
 
-> For an **existing** surface, run "Existing surfaces: critique before you polish"
-> (above) before writing the contract — the contract's done-criteria should target the
-> critique's findings *through the dimensions chosen above*, not a blanket redesign and
-> not a compliance-only pass when the builder asked for more. ("Critique the current
-> state first".)
+> For an **existing** surface, the contract's done-criteria target the critique's
+> findings *through the dimensions chosen above*, not a blanket redesign and not a
+> compliance-only pass when the builder asked for more.
 
 1. **Purpose**: what must the teacher accomplish on this page? One sentence. Apply
    the one test: *does this help teachers work faster with less stress?* If not,
@@ -251,8 +238,7 @@ Establish the rest, asking the user only what you cannot infer:
    each interactive control, name the states to exercise later: open, keyboard-tab
    (focus visible?), screen-read (role + accessible name + state?). This is the
    list Phase 5 checks off and the evaluator independently verifies — coverage is
-   a provable checklist, not a vibe. (For an existing surface, build this during
-   "Existing surfaces: critique before you polish".)
+   a provable checklist, not a vibe.
 
 Output: the sprint contract, shown to the user.
 
@@ -307,8 +293,7 @@ explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does
 a known page template for its type?), LAY-5 (does its density fit the task?), LAY-6
 (do shared edges align?), and LAY-7 (one primary focal region; does the visual reading
 order match the task's priority order — the squint test) — design to them now, not as
-a cleanup pass. When diverging on an existing surface, the critique's layout
-suggestions seed the options.
+a cleanup pass.
 
 Output: the rendered direction pages plus their summaries, with a recommendation.
 The user picks; the pick becomes the contract above.
@@ -324,8 +309,7 @@ the approved plan is recorded. The grilling procedure its stage 2 runs is
 when the payload carries an approval; without one, return the plan to the caller
 per "Two ways in" above, and never stop twice in one run.
 
-What the plan itself covers is this skill's job. Expand the chosen direction into a
-plan:
+Expand the chosen direction into a plan:
 
 - Page/step structure and the component for each region.
 - Tokens/patterns used; any **missing component** surfaced explicitly with options
@@ -348,8 +332,7 @@ plan:
   pages" — interruption, partial completion, resume — each with what happens to the
   teacher's work. A plan that covers the steps but not the journey between them is
   incomplete.
-- **Tradeoffs, named**: what this design sacrifices and why that's acceptable. A plan
-  without a tradeoffs section is incomplete.
+- **Tradeoffs, named**: what this design sacrifices and why that's acceptable.
 - **Plan summary table**: end the plan with a compact table the reader can scan in one
   pass — one row per plan dimension (structure; components; interaction & motion; async
   states + each one's A11Y-11 channel; controls in scope; waivers; tradeoffs; evidence

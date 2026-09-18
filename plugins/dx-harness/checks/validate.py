@@ -583,7 +583,6 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
 # run in neither prebuild nor CI, with a one-line honest reason each. Keep this
 # in sync with the "Wiring status" prose in checks/README.md.
 WIRING_EXEMPT = {
-    "checks/content-lint.py": "pre-existing CNT-3/CNT-6/SLP-9 findings in content/ — wire after cleanup",
     "checks/contrast.py": "blocks for manual A11Y-1 verification until a product declares colour.pairs; build wiring is deferred to the catalogue recount",
     "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
 }
