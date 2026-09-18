@@ -1,17 +1,16 @@
 # Definition of done (shared procedure)
 
-This is the shared home for what must be true before a piece of code ships.
-`dx-implement-issue` applies it before a pull request opens, and `dx-create-pr`
-answers to it in the test plan and the manual verification it writes.
+`dx-implement-issue` applies this procedure before a pull request opens, and
+`dx-create-pr` answers to it in the test plan and the manual verification it
+writes.
 
 Every item here is something a change to code makes true. An item that waits on a
-machine, on a schedule, or on another person is not one of them, and none appears
-below.
+machine, on a schedule, or on another person is not one of them.
 
 ## The items
 
-Each item carries the evidence a reader checks it by. That evidence is on the
-branch or in its output, so nobody has to take the author's word for an item.
+The evidence for an item is on the branch or in its output, so nobody has to take
+the author's word for an item.
 
 | ID | Item | How you check it |
 | --- | --- | --- |
@@ -48,9 +47,7 @@ Definition of done, contract #142:
   DoD-7 not applicable: the branch adds no dependency
 ```
 
-Three rules hold:
-
-- **Name every item.** An item left out of the report reads as satisfied.
+- **Name every item.**
 - **Give the evidence, not the verdict.** Name the test, the file, the command output, or the commit that a reader looks at.
 - **Mark an item the change does not reach as not applicable, and say why.** A branch that adds no dependency has nothing to state a reason for.
 

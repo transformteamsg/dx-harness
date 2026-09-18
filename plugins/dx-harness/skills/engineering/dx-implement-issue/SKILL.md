@@ -93,11 +93,10 @@ paths its own code introduced, and runs the repository's checks.
 ## Step 6: Check the definition of done
 
 Run [../../../procedures/definition-of-done.md](../../../procedures/definition-of-done.md)
-against the branch the two halves left. It holds the items, the evidence each one
-is checked by, and the shape of the block you report.
+against the branch the two halves left.
 
-Write that block now, before the pull request step, and take the evidence from the
-branch rather than from what either half said it did.
+Write its report block now, before the pull request step, and take the evidence
+from the branch rather than from what either half said it did.
 
 - **Every item is satisfied, or marked not applicable with a reason**: go to Step 7.
 - **An item is unsatisfied**: stop. Name the item and why, and open no pull request. Say what would close the gap, and leave the choice to the developer.
