@@ -9,6 +9,12 @@ This is the canonical copy. The repository's output style,
 for a whole session rather than one artifact. Change this file first, then carry
 the change across.
 
+Never append this file, or its output-style copies, to a different skill's
+system prompt as a bolt-on quality lever. A repository trial found that this
+makes output worse, not better. To make a skill read like house style, trim
+its own `SKILL.md` with `dx-trim-doc` instead of grafting this file on top of
+it.
+
 Every rule here is a default, not a ban on judgment. A short word that confuses a
 reader who does not know the codebase is worse than a long word that does not.
 
@@ -139,15 +145,28 @@ EOF
 vendors it. Fix every `ERROR`. A `WARN` names a term that is correct in some
 clauses, so judge that one and move on.
 
-Then read the draft once as the person who acts on it. Cut anything that meets one
-of these tests:
+Then read the draft once as the person who acts on it. Two things survive every
+cut: an instruction, and a condition that adds a case, an exception, or a limit
+and changes what the reader does. Test a candidate clause by removing it,
+inventing a case where the rule is ambiguous, and checking whether your answer
+changes. If it does, restore the clause; see `dx-trim-doc`'s edge test for the
+full mechanism.
+
+Cut everything else that meets one of these tests:
 
 - It restates a heading, a parent issue, or another section of the same body.
-- It explains why a rule matters, when the rule alone tells the reader what to do.
+- It gives a rule's rationale, and the rule reads the same without it. Keep the
+  rationale only where the rule resolves ambiguity: there, the rationale is the
+  rule.
 - It hedges without narrowing anything: `generally`, `in most cases`, or
   `it should be noted`.
 - It rehearses the reasoning that led to the conclusion. Keep the conclusion and the
   one piece of evidence that supports it. Cut the rest.
+
+Then check whether anything only resolves inside this session. A reference to a
+plan, a discussion, or a draft nobody else can see fails that check. So does
+first-person narration of what you decided, or an undated hedge with no owner.
+`dx-trim-leakage` names the full taxonomy and what survives.
 
 A table, a note, or an aside that stays accurate only until something else changes
 must say so. A coupling between two files, for example, breaks the moment someone

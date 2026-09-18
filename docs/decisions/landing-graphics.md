@@ -145,6 +145,7 @@ None granted this run — the build removes deviations rather than adding them.
   | A11Y-7 | manual | sections keep h2/h3 hierarchy; stage headings moved inside buttons as styled spans (buttons allow phrasing content only) — noted for the reviewer |
   | SLP-9 (lint half) | script | `checks/content-lint.py` clean on changed files (one pre-existing CNT-3 hit in `blueprint.tsx:33`, untouched) |
   | LAY-2 | script | e2e overflow suite at 320/360 on `/` passed |
+  | CMP-1 | manual | asserted, no manifest — the verdict line above records it. Reviewed the product codebase directly: neither Base UI nor shadcn ships a stepper or a narrative-figure component, and the new work is native `<ol>/<li>/<button>/<a>` plus bespoke SVG |
   | CMP-5 | manual | hero keeps the page's only filled primary; replay is an outline button; result-screen lime block is drawing, not a control |
   | MOT-1 / MOT-2 / SLP-8 | manual | after the round-1 fix: every duration AND delay resolves to a `--motion-*` token (three `--motion-beat-*` added); no `animate-*` utility remains; figure choreography uses `--motion-story` (narrative surface); no bounce/elastic anywhere |
   | SLP-5/6/11, LAY-3/5/6/7, COL-1, CMP-7, TYP-4, SLP-9 (evaluator half) | manual | graded by the dx-design-review agent — verdict below |

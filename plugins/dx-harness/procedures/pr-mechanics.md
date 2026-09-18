@@ -75,6 +75,7 @@ while GitLab pins a discussion to a position.
 | --- | --- | --- |
 | Read the request | `gh pr view <n> --repo <o>/<r> --json ...` | `glab mr view <n> --repo <o>/<r>` |
 | Read its diff | `gh pr diff <n> --repo <o>/<r>` | `glab mr diff <n> --repo <o>/<r>` |
+| Read its commit bodies | `gh pr view <n> --repo <o>/<r> --json commits` | `glab api projects/:id/merge_requests/:iid/commits` |
 | Read existing threads | `gh api graphql` on `reviewThreads` | `glab api projects/:id/merge_requests/:iid/discussions` |
 | Post everything at once | `POST .../pulls/<n>/reviews` with a `comments` array | no equivalent: post each discussion, then one note |
 | Post one inline comment | part of the review payload | `POST .../merge_requests/:iid/discussions` with `position` |

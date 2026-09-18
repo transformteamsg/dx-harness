@@ -333,6 +333,7 @@ VERIFICATION LEDGER (one row per in-scope control):
 | SLP-6 | manual | measured computed sizes: 30 → 20 → 14 px = 1.5× then 1.43×, both above 1.25; the 12 px eyebrow is a label distinguished by colour and weight, not a hierarchy step |
 | SLP-7 | manual | read the spacing: `mt-3`/`mt-4`/`mt-2` inside the text block against `py-10`/`sm:py-12` between rows — related items are grouped tighter than unrelated ones, no single value used uniformly |
 | SLP-8 | manual | the only easing on the surface is the default ease of `transition-colors`; no bounce, elastic, or overshoot (the `ff-*` block that held the story easing was deleted) |
+| SLP-9 | script | `content-lint.py` (SLP-9 lint half) clean on the TSX and the MDX, exit 0; the copy is carried from `HEAD`, not generated (eyebrow / claim / what / why are character-identical for the three retained rows). Structural read finds no forced triads and no significance inflation; the one em dash per row is the "Why it matters" separator, not a chain |
 | SLP-11 | manual | inspected each container: no border+radius+background box anywhere; grouping is done by hairline seams and whitespace |
 | LAY-2 | manual | resized to 320×900 and read the layout: `scrollWidth = 320`, single column, illustration→text order in each row, all three controls present at 44 px |
 | LAY-3 | manual | matched the surface to the marketing-landing band pattern used by the page's other sections (section head + full-bleed two-column band) |

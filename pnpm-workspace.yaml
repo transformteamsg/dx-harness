@@ -1,3 +1,15 @@
 allowBuilds:
   sharp: true
   unrs-resolver: true
+
+# Refuse any release younger than 7 days, in minutes. A supply-chain attack
+# usually arrives as a brand-new patch of a popular package, so let releases age
+# before this project trusts them.
+minimumReleaseAge: 10080
+
+# next pins postcss 8.4.31 exactly, so no update or parent upgrade reaches the
+# fix. Pinned exact, not a range: an override applies tree-wide, and a range
+# would adopt a future patch with no cooldown. Remove it once next ships a
+# postcss range that admits 8.5.23 or later.
+overrides:
+  postcss: 8.5.23

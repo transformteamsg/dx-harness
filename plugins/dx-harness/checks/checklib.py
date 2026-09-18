@@ -842,11 +842,17 @@ _SCOPE_BULLET_RE = re.compile(r"^\s*[-*]\s")
 _SCOPE_SEGMENT_START_RE = re.compile(r"^\s*(?:[-*]\s|\*\*)")
 
 
-def _scope_ids_in(text):
+def control_ids_in(text):
     """Every control id named in `text`, with ranges (`TOK-1..3`) and slash
     lists (`CNT-2/4/7`) expanded to every member. A reversed range is read as
     its span, not as empty: a typo must widen the checked set, never silently
-    shrink it."""
+    shrink it.
+
+    Public because a record writes the same notation on both sides of an
+    audit: a "Controls in scope" section and a verification-ledger row both
+    say `TOK-1..3`. Any check comparing the two must read them with this one
+    parser, or a row that covers three controls registers as covering one.
+    """
     ids = set()
     for prefix, numbers in _SCOPE_TOKEN_RE.findall(text):
         for part in numbers.split("/"):
@@ -877,7 +883,7 @@ def _adjacent_ids(text, stop):
             match = m
         if match is None or _SCOPE_RUN_BREAK_RE.search(text[match.end():pos]):
             return ids
-        ids |= _scope_ids_in(match.group(0))
+        ids |= control_ids_in(match.group(0))
         pos = match.start()
 
 
@@ -927,21 +933,21 @@ def scoped_controls(section_body, tiers=None):
     label_open = False
     for text, is_bullet in segments:
         if is_bullet and label_open:
-            excluded |= _scope_ids_in(text)
+            excluded |= control_ids_in(text)
             continue
         if not is_bullet:
             label_open = False
         if text.startswith("**") and _SCOPE_OUT_RE.search(text):
-            excluded |= _scope_ids_in(text)  # a label excludes its block
+            excluded |= control_ids_in(text)  # a label excludes its block
             label_open = True
             continue
         for sentence in _SCOPE_SENTENCE_SPLIT_RE.split(text):
             if _SCOPE_OUT_RE.search(sentence):
-                excluded |= _scope_ids_in(sentence)
+                excluded |= control_ids_in(sentence)
                 continue
             for marker in _SCOPE_NA_RE.finditer(sentence):
                 excluded |= _adjacent_ids(sentence, marker.start())
-            included |= _scope_ids_in(sentence)
+            included |= control_ids_in(sentence)
 
     ids = included - excluded
     tiers = catalog_tiers() if tiers is None else tiers

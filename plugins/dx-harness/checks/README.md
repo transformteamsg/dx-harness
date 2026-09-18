@@ -294,16 +294,19 @@ CMP-1 verdict line, and the Verify verdict carries a **verification ledger** (a
 a row for **every control in "Controls in scope"** (the scope notation is parsed
 by `checklib.scoped_controls`: ranges and slash lists expand, and a control a
 record rules out with "N/A" or "out of scope" is not demanded back as scope;
-extra rows for reviewer-added
+**a ledger row is read with the same notation**, through
+`checklib.control_ids_in`, so a `TOK-1..3` or `SLP-5/6/11` row covers every
+control it names rather than only the first; extra rows for reviewer-added
 findings are allowed; until the scope manifest ships the checked set is the full
 in-scope set, so a review that stops early fails here), and **no L0 control's
 ledger row is `unverified`** (L0 has no waiver, so it gets no quiet exit either —
-the same row on an L1/L2 control stays legal). Exit 0 with
+the same row on an L1/L2 control stays legal; a grouped row expands here too, so
+`CMP-1..2` cannot hide the L0 behind the L1). Exit 0 with
 `OK: N records audited` on pass; exit 1 with `ERROR <file>: <message>` lines on
 failure. This is the record-audit layer of the eval workflow (`evals/README.md`);
 hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
-**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (31 cases)`.
+**Self-test:** `python3 checks/audit-record.py --self-test` → `SELF-TEST OK (33 cases)`.
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 

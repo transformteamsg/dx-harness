@@ -313,7 +313,7 @@ VERIFICATION LEDGER:
 | COL-1   | manual | read the component — no new colour; hero CTA still `bg-primary` (lime); ground is neutral only |
 | COL-2   | script | `checks/token-audit.py` + `checks/contrast.py` exit 0 — no functional success/warning/danger colour introduced |
 | CMP-1   | manual | product codebase read (no `.dx/`, no manifest) — no Base UI component covers a decorative drafting layer; `SheetGround` is presentational SVG/CSS |
-| CMP-2   | unverified | n/a — no destructive action on either route |
+| CMP-2   | manual | enumerated every interactive element on both routes (`a[href]`, `button`, `summary`, `video[controls]`, `[tabindex]`) — see "Inertness" above. None deletes, overwrites, or otherwise destroys anything: the set is links, the postcard's play/pause controls, and the skip link. With no destructive action on the surface, the consequence-and-undo requirement has nothing to attach to, so the control is satisfied rather than skipped |
 | CMP-3   | unverified | n/a — no async transaction |
 | CMP-4   | unverified | n/a — no empty-state view |
 | CMP-5   | manual | counted filled actions in the rendered frame: one (`bg-primary` hero "Quick start"); closing CTA outlined |

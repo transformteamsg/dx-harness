@@ -187,6 +187,7 @@ Treat round 1's grades as a floor, not the final state — not re-graded.
 | TOK-1 / TOK-2 | script | `token-audit.py` clean on `harness-run.tsx` today (exit 0) |
 | TYP-1 / TYP-2 / TYP-3 | script | `type-scan.py` clean on `harness-run.tsx` today (exit 0) |
 | COL-1 | manual | active stage uses `--site-accent-text` on `--site-accent-wash` per code; consistent with declared site accent |
+| CMP-1 | manual | asserted, no manifest — the verdict line above records it. No `.dx/component-manifest.json` exists in this repo (only `.dx/design.json`, design tokens, added later and unrelated), so `controls/cmp-1.md`'s v0-limit procedure applies |
 | CMP-5 | manual | stage buttons are equal-weight selection controls, no filled-primary style; replay is a distinct secondary action |
 | CMP-7 | manual | code-documented resting affordance on every stage (hairline rule + hover wash inactive, lime step-up active) — verified present in rendered DOM today |
 | SLP-4 | unverified | no nested-card check run |
@@ -196,7 +197,7 @@ Treat round 1's grades as a floor, not the final state — not re-graded.
 | MOT-3 | manual | verified live: `transition-property: none` under reduced motion — state change (`aria-current`, label) still occurs with no animation |
 | LAY-2 | script | Playwright probe today: no document overflow at 320px/360px |
 | LAY-5 / LAY-6 | manual | historical pixel measurements in this record (symmetric 203.25/203.25 blank space, ink-density percentages); not independently re-measured pixel-by-pixel today |
-| A11Y-1 | unverified | `DESIGN.md`'s 15 declared pairs do not include `--site-accent-text` on `--site-accent-wash`, the actual pairing rendered on the active stage — `contrast.py` cannot verify an undeclared pairing |
+| A11Y-1 | manual | `DESIGN.md`'s 15 declared pairs do not include `--site-accent-text` on `--site-accent-wash`, the actual pairing rendered on the active stage, so `contrast.py` cannot reach it. Measured by hand instead: `--site-accent-wash` resolves to `#fafef4` (`color-mix(in oklab, #bdee63 8%, #ffffff)`) and `--site-accent-text` is `#587828`, giving **4.97:1** — clears AA for normal text (4.5:1). Declaring the pair in `DESIGN.md` would make this scripted; see Ratchet |
 | A11Y-2 | script | `a11y-eslint.py` clean today (covers keyboard-reachability + visible focus); live-verified: focus-visible outline present |
 | A11Y-3 | script | `a11y-eslint.py` clean today — no form fields in this component |
 | A11Y-4 | manual | live-verified: stage buttons measure 373×163px at 375px viewport, far over the 44px mobile floor |

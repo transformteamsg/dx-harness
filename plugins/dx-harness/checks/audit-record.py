@@ -17,10 +17,13 @@ design-ui loop and the TEMPLATE.md structure:
      Evidence | table); each method is script / manual / unverified, and a
      manual or unverified row states its evidence/reason.
  11. The ledger has a row for every control in "Controls in scope". Extra
-     rows (reviewer-added findings) are allowed.
+     rows (reviewer-added findings) are allowed. Both sides are read with
+     checklib.control_ids_in, so a `TOK-1..3` or `SLP-5/6/11` row covers
+     every control it names.
  12. No ledger row on an L0 control has the method `unverified` — L0 has
      no waiver, so it gets no quiet exit either. L1/L2 rows may stay
-     unverified (with a reason, which assertion 10 enforces).
+     unverified (with a reason, which assertion 10 enforces). Range and
+     slash rows expand here too, so a grouped row cannot hide an L0.
 
 Usage:
   python3 checks/audit-record.py [record.md ...]   # default: all
@@ -115,7 +118,6 @@ NUMBERED_ITEM_RE = re.compile(r"^\s*\d+\.\s+\S")
 VERDICT_LINE_RE = re.compile(r"^\s*VERDICT:", re.MULTILINE)
 RUN_TYPE_RE = re.compile(r"\*\*Run type:\*\*")
 DOCS_PATH_RE = re.compile(r"docs/[A-Za-z0-9_./-]+")
-CONTROL_ID_RE = re.compile(r"[A-Z][A-Z0-9]*-\d+")
 TABLE_SEPARATOR_CELL_RE = re.compile(r"^:?-{2,}:?$")
 
 
@@ -360,7 +362,11 @@ def audit_record(text, name, repo_root):
                 evidence = row[evidence_idx] if len(row) > evidence_idx else ""
                 if not control and not method:
                     continue  # empty placeholder row
-                ledger_controls.update(CONTROL_ID_RE.findall(control))
+                # Read the cell with the same parser the scope section gets:
+                # a record writes `TOK-1..3` and `SLP-5/6/11` on both sides,
+                # so a row covering three controls must register as three.
+                row_controls = checklib.control_ids_in(control)
+                ledger_controls.update(row_controls)
                 m = method.strip().lower()
                 if m not in valid_methods:
                     messages.append(
@@ -384,7 +390,7 @@ def audit_record(text, name, repo_root):
                 # (catalog_tiers returns {}), so this never crashes and
                 # never guesses a tier.
                 if m == "unverified":
-                    for control_id in CONTROL_ID_RE.findall(control):
+                    for control_id in sorted(row_controls):
                         if tiers.get(control_id) == "L0":
                             messages.append(
                                 f"ledger row '{control_id}' is 'unverified' "
@@ -883,6 +889,35 @@ def run_self_test():
             "A11Y-1, A11Y-2, TOK-1..2, CMP-3.",
         ),
         "control TOK-2 is in scope but has no verification-ledger row",
+    )
+
+    # Case 28 (assertion 11): a record writes the same notation on both sides,
+    # so a grouped ledger row covers every control it names. Reading the row
+    # with a plain id regex would see only TOK-1 and demand TOK-2 back.
+    assert_passes(
+        "grouped ledger row covers every control it names",
+        PASSING_RECORD.replace(
+            "A11Y-1, A11Y-2, TOK-1, CMP-3.",
+            "A11Y-1, A11Y-2, TOK-1..3, CMP-3.",
+        ).replace(
+            "| TOK-1 | script | `checks/token-audit.py` clean (exit 0) |",
+            "| TOK-1..3 | script | `checks/token-audit.py` clean (exit 0) |",
+        ),
+    )
+
+    # Case 29 (assertion 12): a grouped row cannot hide an L0 behind a member
+    # that is not first. CMP-1 is L1 and CMP-2 is L0, so `CMP-1..2` must be
+    # read to the end — stopping at CMP-1 would let the L0 pass unverified.
+    assert_fails(
+        "grouped unverified row still catches an L0 member",
+        PASSING_RECORD.replace(
+            "| A11Y-4 | unverified | needs computed layout "
+            "— flag for a human |",
+            "| A11Y-4 | unverified | needs computed layout "
+            "— flag for a human |\n"
+            "| CMP-1..2 | unverified | ran out of time |",
+        ),
+        "ledger row 'CMP-2' is 'unverified' on an L0 control",
     )
 
     checklib.report_self_test(failures, case_count)

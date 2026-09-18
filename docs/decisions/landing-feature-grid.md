@@ -182,7 +182,7 @@ QUALITY GRADES:
 | MOT-3 | manual | flip emphasises only — accessibility tree and content unaffected by motion state (per the run's own accessibility framing) |
 | LAY-2 | script | part of the nine-gate run; no overflow finding raised across 3 rounds |
 | LAY-5 / LAY-6 | manual | upgraded to clean passes in round 2 — height-fill spread narrowed 28.2→9.5 points, content centres within ±6 units of 180; ink-centroid method adopted round 3 for symmetric vs directional compositions |
-| A11Y-1 | unverified | applies to card chrome, not this run's `aria-hidden` decorative figures; not independently measured here |
+| A11Y-1 | manual | the run redrew four `aria-hidden` decorative figures and changed no card copy or colour, so it added and altered no text/background pairing — A11Y-1's obligation sits on the card chrome, which this run did not touch. The chrome drew only on the token pairs `DESIGN.md` declares, and `contrast.py --tokens app/globals.css` grades those clean (exit 0). Reasoned from the run's own diff rather than re-measured on the live page, because the 2×2 grid this record covers was later replaced by the feature rows (`landing-feature-rows.md`) |
 | A11Y-5 | manual | round-3 regression sweep: "reduced-motion and keyboard-focus states resolving fully" |
 | A11Y-7 | unverified | not independently measured in this run; figures are `aria-hidden` decorative content, structure belongs to the card chrome outside this run's scope |
 
