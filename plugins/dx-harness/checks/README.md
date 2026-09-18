@@ -233,9 +233,9 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 `python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, a `gap:` reason on every `deterministic`/`hybrid` control that is effectively manual (or a temporary entry on the shrink-only `GAP_GRANDFATHERED` allowance list in `validate.py`), and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs in prebuild or CI (or is on the `WIRING_EXEMPT` allowlist below); where the site holds its check list in a runner rather than in the `package.json` command, the scan follows a `node scripts/…` or `python3 scripts/…` invocation one level and reads the check paths there. A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (111 cases)`.
+**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (113 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -879,14 +879,13 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (full suite). L0 failures block; L1 failures loop the agent back to implement.
 
 Wiring status (plan 069): `package.json` prebuild and `.github/workflows/ci.yml` both
-run the same Python gate: `validate.py --self-test`, `validate.py`,
-`checklib.py --self-test`, `token-audit.py --self-test`, `type-scan.py --self-test`,
-`structure-scan.py --self-test`, `token-audit.py` over `app components lib`,
-`a11y-static.py`, `type-scan.py` over `app components`, and `structure-scan.py` over
-`app components lib`. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
-the checks layer reaches ast-grep with `subprocess`; the three `--self-test` runs are
-what put the ast-grep provisioning contract and the `fixtures/parity/` corpus in the
-gate rather than leaving them to a dev machine.
+run the same Python gate, the site's `check:python` script. Which checks it runs, with
+which arguments and in which order, is one list in the site's runner — in this
+repository, `scripts/run-python-checks.mjs`, which `check:python` invokes and
+`[WIRING-SYNC]` reads. CI adds an `Install ast-grep` step beside `Install PyYAML`, because
+the checks layer reaches ast-grep with `subprocess`; the `--self-test` run of each
+ast-grep-backed check is what puts the ast-grep provisioning contract and the
+`fixtures/parity/` corpus in the gate rather than leaving them to a dev machine.
 `type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged). `structure-scan` was wired in on the same rule:
