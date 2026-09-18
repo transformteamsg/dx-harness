@@ -20,13 +20,10 @@ Work the table top to bottom: run the check; if it passes, move on; if not,
 offer the install, run it (or hand it to the user where marked), and re-run
 the check. Then continue with the tracker and commit-signing steps below.
 
-Both axe-row commands read `PLUGIN_ROOT`: the plugin's own installation
-directory, which `SKILL.md` names before you reach this checklist. Assign it
-at the front of the same command, as `PLUGIN_ROOT="/the/path"; ...`, because
-shell state does not carry from one call to the next. Left unset, the `:?`
-guard aborts with that message and a non-zero exit, and installs nothing. The
-guard is load-bearing: `npm install --prefix` given an empty or made-up value
-writes into the repository being checked instead of the plugin.
+Both axe-row commands read `PLUGIN_ROOT`, the plugin's own installation
+directory, which `SKILL.md` names. Assign it at the front of the same
+command, as `PLUGIN_ROOT="/the/path"; ...`. Unset or empty, the `:?` guard
+aborts with its message and a non-zero exit, and installs nothing.
 
 | Tool | Why the harness needs it | Check (exit 0 = present) | Install |
 |---|---|---|---|
