@@ -245,6 +245,74 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "id": 6,
+      "name": "declaration-answers-scenario",
+      "fixture_setup": "No repository needed. The prompt supplies the request's commit bodies, its body, its linked issue, and its diff inline. The issue carries three acceptance criteria. One commit body holds a coverage declaration that records criteria 1 and 2 as covered and criterion 3 as manual, with the reason that the repository has no rendering runner. The request body names criterion 3 under Manual verification. The diff adds tests for criteria 1 and 2 only.",
+      "prompt": "Here is the pull request, its commit bodies, its linked issue, and its diff. Run the issue and test plan check on it. Tell me every finding you would file, every Reviewer To-Do bullet you would print, and what the summary would carry.",
+      "expected_output": "The check reads the declaration out of the commit bodies the prompt supplied, rather than asking for a checkout. Criterion 3 files no missing-test finding and gets no Reviewer To-Do bullet, because the declaration records it as manual and the request body names it under Manual verification. The summary carries a Declared manual line counting one scenario. Criteria 1 and 2 raise nothing, because the diff tests both.",
+      "assertions": [
+        {
+          "text": "Reads the declaration from the request's commit bodies, not from a checked-out branch",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Files no missing-test finding for criterion 3",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Adds no Reviewer To-Do bullet for criterion 3",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The summary carries a Declared manual line counting 1 scenario",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Criteria 1 and 2 raise nothing from this check",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "no-declaration-keeps-todo",
+      "fixture_setup": "No repository needed. The prompt supplies the request's commit bodies, its body, its linked issue, and its diff inline. No commit body carries a declaration, because no harness skill produced this branch. The issue carries three acceptance criteria and the diff adds tests for two of them.",
+      "prompt": "Here is the pull request, its commit bodies, its linked issue, and its diff. Run the issue and test plan check on it. Tell me every finding you would file, every Reviewer To-Do bullet you would print, and what the summary would carry.",
+      "expected_output": "The check finds no declaration, records that, and continues. The untested criterion files a red Important finding and gets a Reviewer To-Do bullet, exactly as it did before the declaration step existed. The absence of a declaration is not reported as a finding, and no Declared manual line prints, because its count is zero.",
+      "assertions": [
+        {
+          "text": "Records that the branch carries no declaration and continues",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Files a red Important finding for the untested criterion",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Adds a Reviewer To-Do bullet for the same criterion",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Files no finding about the missing declaration",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Prints no Declared manual line, because the count is zero",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
     }
   ]
 }
