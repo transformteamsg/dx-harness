@@ -7,20 +7,24 @@ Rules (full spec: the harness's docs/DESIGN-CONTEXT.md):
   - The Control Catalogue is always the rulebook. Never restate a control here: cite
     ids and state this product's own decisions.
   - Delete any section that does not differ from the portfolio default (absent =
-    portfolio default; a repo with no DESIGN.md at all is a valid state).
+    portfolio default; a repo with no DESIGN.md at all is a valid state). Essence is
+    the exception: there is no default essence to inherit, so write your own or
+    leave it out knowing your product declares none.
   - `- key: value` bullets become machine-readable json; prose stays prose; a section
     with both keeps both.
   - Precedence: the catalogue governs portfolio rules; code governs implemented
     primitives; DESIGN.md carries this product's decisions and deviations.
 Filled below with Teacher Workspace examples. Replace the values with your product's,
-or delete the section if this product matches the portfolio default.
+or delete the section if this product matches the portfolio default. Essence has no
+default to match: replace it or delete it knowing your product declares none.
 -->
 
 # DESIGN.md - Teacher Workspace
 
 ## Essence
 <!-- One or two sentences: what this product should feel like, and which instinct
-     wins when two good options compete. -->
+     wins when two good options compete. Replace this: the example below is the
+     Teacher & School portfolio's own essence, not a default you inherit. -->
 Kind Utility: useful first, kind at the surface. Calm tools for busy teachers,
 never playful at the cost of clarity. When unsure, choose the quieter option.
 

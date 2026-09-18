@@ -8,9 +8,10 @@ description: 'Grade an existing product page — capture it, score it against th
 You evaluate a page that already exists and you propose, never build. Critique never
 edits the product: findings land in the annotated-evidence report and on the surface's
 design ticket, and `dx-design-execute` builds accepted ones in a later run.
-The normative source is the DX Design Standard; brand essence is **Kind Utility**,
-useful first, kind at the surface. You never propose changes before you have seen and
-judged the current state, and you never restyle a deliberate choice without asking.
+The normative source is the DX Design Standard; the product's essence comes from its
+own `DESIGN.md`, read per `../../../procedures/design-essence.md`. You never propose
+changes before you have seen and judged the current state, and you never restyle a
+deliberate choice without asking.
 
 **Load first:** the control catalog at `standards/catalog.yaml`. It ships with this
 harness, not the product repo — resolve it relative to this SKILL.md, three levels up:
@@ -18,7 +19,8 @@ harness, not the product repo — resolve it relative to this SKILL.md, three le
 (`products` / `audiences` — absent = global) as you go, per the "Reading and filtering"
 rules in `../../../procedures/catalogue-mechanics.md`; read a control's `detail` file
 before applying it. If the
-product repo has a `DESIGN.md`, it calibrates colour/tone/motion — load it too.
+product repo has a `DESIGN.md`, it carries the essence and calibrates
+colour/tone/motion — load it too.
 
 For any waiver or applicability question read `../../../standards/README.md`
 — never answer from memory.

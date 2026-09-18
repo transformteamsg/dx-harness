@@ -55,9 +55,18 @@ why this role exists separately.
    the instance you are grading; outside that scope the catalogue text binds. An
    override never touches an L0 control; treat an entry that names one as a defect
    to flag, never a rule to apply.
+7. The **product's essence** — one or two sentences on what this product should feel
+   like — from the `## Essence` section of `DESIGN.md` at the product repo root. Read
+   it yourself, the same way as the overrides and for the same reason, per
+   `../procedures/design-essence.md`. You are already opening `.dx/design.json` for
+   the overrides and it projects this section too, but `DESIGN.md` is the authority:
+   where the two disagree the projection is the stale one. A repo that declares no
+   essence is a valid state, not a defect: say so and grade without it. Never grade
+   against another product's essence, and never supply one.
 
 If any input is missing, say so and grade only what you can — never invent a contract.
-The standing overrides are the one exception: fetch them yourself as described above.
+The standing overrides and the essence are the exceptions: fetch them yourself as
+described above.
 
 **independently enumerate the surface's interactive controls** — from the
 component inventory **and** from reading the route's code (you have Read/Grep/
@@ -219,8 +228,9 @@ reference lens (a judgment aid, not a checkable standard):
 
 - **Design quality** — hierarchy, spacing rhythm, alignment; does the page read in
   the order the task needs? Is hierarchy doing its job (HIG: Simplicity) — does the
-  teacher know where they are and what comes next? Does it carry Kind Utility —
-  approachable, frictionless, safe, reliable — or does it merely pass the controls?
+  teacher know where they are and what comes next? Does it carry the product's own
+  essence (input 7) or does it merely pass the controls? Where the repo declares no
+  essence, say so and grade this criterion on hierarchy, spacing, and task fit alone.
 - **Originality** — appropriate distinctiveness. For professional daily-use tools
   this is inverted from consumer work: flag *unwarranted* novelty (a custom pattern
   where a stack component exists is a finding) as readily as generic slop. Slop is

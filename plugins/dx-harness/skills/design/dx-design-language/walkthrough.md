@@ -31,7 +31,10 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
 - **Interview** for Essence, Voice & Tone, and Guardrails. These cannot be mined;
   ask, listen, and draft in the person's words.
 - **Skip** = portfolio default, said out loud: "Skipping Motion: portfolio defaults
-  now apply to motion." The assembled file then has no such section.
+  now apply to motion." The assembled file then has no such section. Essence is the
+  exception, and the only one: nothing defaults it, so say what skipping actually
+  means — "Skipping Essence: this product declares none, and no default stands in"
+  (`../../../procedures/design-essence.md`).
 - **Defer** = one tracker issue for that section: title `DESIGN.md: <section>`,
   label `design-language-todo`, body carrying the section's guiding questions below
   (`../../../procedures/design-tickets.md` §Related issues; with no tracker, append
@@ -44,7 +47,9 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
 ## The ten sections, in order
 
 1. **Essence** (interview). What should this product feel like, in one sentence?
-   When two good options compete, which instinct wins?
+   When two good options compete, which instinct wins? The one section with no
+   portfolio default behind it, so skipping it is a decision to declare none, not an
+   inheritance.
 2. **Colour** (mine, then confirm). What is the one primary? Where does functional
    colour come from (accent vs the scales)? Cites COL-1, COL-2.
 3. **Typography** (mine, then confirm). One family or two? Base size and leading?

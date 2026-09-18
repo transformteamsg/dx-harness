@@ -97,7 +97,7 @@ exception can be judged on the spot.
 - Any cut that hurts clarity or readability — the exception is part of the rule,
   not a waiver.
 - "Please" softening a sensitive or destructive moment; kindness is doing work
-  there (Kind Utility).
+  there.
 - "That" as a relative pronoun the sentence needs to parse ("the class that meets
   on Mondays").
 - "It is" / "This is" openers carrying real weight ("This is permanent." in a

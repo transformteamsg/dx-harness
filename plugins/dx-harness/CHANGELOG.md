@@ -5,9 +5,12 @@
 ### Changed
 
 - **Declared-manual criteria not re-reported**: `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
+- **Essence read from `DESIGN.md`**: the design skills and the design reviewer take a product's brand essence from its own `DESIGN.md` rather than the Teacher & School portfolio's, and a product that declares none is asked for one instead of given that portfolio's by default ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+- **CNT-14 grades named voice attributes**: the control grades the voice attributes it lists instead of requiring copy to embody a brand essence, and the seven other controls that cited that essence keep the behaviour they had, with only the rationale reworded ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
 
 ### Fixed
 
+- **Locator check gates the build**: `checks/skill-locators.py` runs in the check gate, walks `agents/` and `procedures/` as well as `skills/`, and resolves a locator at any depth rather than the three-level `../../../` form alone ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 
 ## 0.7.0 (2026-09-14)

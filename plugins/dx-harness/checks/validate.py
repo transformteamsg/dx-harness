@@ -582,6 +582,11 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
 # [WIRING-SYNC] scripts claimed as enforced:script|partial that are allowed to
 # run in neither prebuild nor CI, with a one-line honest reason each. Keep this
 # in sync with the "Wiring status" prose in checks/README.md.
+# A gate runner a package.json script invokes by path: `node scripts/x.mjs` or
+# `python3 scripts/x.py`. Its text carries the check names the command itself no
+# longer spells out.
+RUNNER_RE = re.compile(r"(?:node|python3) (scripts/[A-Za-z0-9._/-]+\.(?:mjs|cjs|js|py))")
+
 WIRING_EXEMPT = {
     "checks/contrast.py": "blocks for manual A11Y-1 verification until a product declares colour.pairs; build wiring is deferred to the catalogue recount",
     "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
@@ -592,10 +597,17 @@ def wiring_parity_errors(repo_root, catalog_by_id):
     """
     [WIRING-SYNC] Every control claiming enforced:script|partial via a
     script: field must have that script actually running somewhere
-    (package.json prebuild, or .github/workflows/ci.yml) — unless it is on
+    (package.json prebuild, .github/workflows/ci.yml, or a runner under the
+    site's scripts/ that a package.json script invokes) — unless it is on
     the WIRING_EXEMPT list with a documented reason. Catches the class of
     drift where a catalog control claims automated enforcement that no
     automation delivers.
+
+    A site may keep its gate's check list in a runner rather than in the
+    package.json command, so the scan follows a `node scripts/…` or
+    `python3 scripts/…` invocation one level and reads that file too. Only
+    scripts/ is followed: a check script's own prose naming a sibling check is
+    not evidence that the sibling runs.
 
     `repo_root` is this validator's own root (the plugin directory);
     package.json and ci.yml live at the consuming site's repo root, found by
@@ -625,10 +637,18 @@ def wiring_parity_errors(repo_root, catalog_by_id):
     top_root = find_site_root(repo_root)
     if top_root is None:
         return errors
+    pkg_path = os.path.join(top_root, "package.json")
     consumer_paths = [
-        os.path.join(top_root, "package.json"),
+        pkg_path,
         os.path.join(top_root, ".github", "workflows", "ci.yml"),
     ]
+    if os.path.isfile(pkg_path):
+        with open(pkg_path) as fh:
+            pkg_text = fh.read()
+        consumer_paths += [
+            os.path.join(top_root, rel)
+            for rel in sorted(set(RUNNER_RE.findall(pkg_text)))
+        ]
     running = set()
     any_consumer_found = False
     for cpath in consumer_paths:
@@ -2193,7 +2213,26 @@ def run_self_test():
         assert_clean("wiring-sync claimed+running",
                      wiring_parity_errors(harness_dir, control_wired))
 
+        # Case: claimed + running through a runner package.json invokes → clean.
+        # The check name lives in the runner, not in the command.
+        runner_dir = os.path.join(wiring_tmp, "scripts")
+        os.makedirs(runner_dir, exist_ok=True)
+        runner_path = os.path.join(runner_dir, "run-gate.mjs")
+        with open(runner_path, "w") as fh:
+            fh.write('export const CHECKS = ["harness/checks/widget-scan.py"];\n')
+        with open(pkg_path, "w") as fh:
+            fh.write('{"scripts": {"prebuild": "node scripts/run-gate.mjs"}}')
+        assert_clean("wiring-sync claimed+running via runner",
+                     wiring_parity_errors(harness_dir, control_wired))
+
+        # Case: the name sits in a scripts/ file nothing invokes → still fires.
+        with open(pkg_path, "w") as fh:
+            fh.write('{"scripts": {"prebuild": "echo nothing"}}')
+        assert_error("wiring-sync claimed+uninvoked runner",
+                     wiring_parity_errors(harness_dir, control_wired), "[WIRING-SYNC]")
+
         # Case: claimed but wired nowhere, not exempted → fires.
+        os.remove(runner_path)
         with open(pkg_path, "w") as fh:
             fh.write('{"scripts": {"prebuild": "echo nothing"}}')
         assert_error("wiring-sync claimed+unwired+unexempted",

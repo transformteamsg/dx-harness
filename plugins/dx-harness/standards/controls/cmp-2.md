@@ -21,8 +21,8 @@ is reversible; confirm with plain consequences where it is not.
 
 ## Rationale
 
-This is the "Safe" quality of Kind Utility made checkable: confidence to explore
-without fear, forgiving interfaces, clear consequences before destructive actions.
+This makes safety checkable: confidence to explore without fear, forgiving
+interfaces, clear consequences before destructive actions.
 A teacher who loses casework or a term's marks to a misclick loses trust in the whole
 portfolio. That is why it is L0 — never waivable.
 
