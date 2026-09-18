@@ -35,12 +35,27 @@ const OUTSIDE_A_CODE_CHANGE = [
   "sign off",
 ];
 
+/* What a restatement of the contributing guide would look like. The guide names
+   the commands and holds the rule that the checks pass before a request leaves
+   draft, so a second copy of either is the drift this guards against. */
+const OWNED_BY_CONTRIBUTING = ["pnpm", "npm run", "yarn", "draft"];
+
 describe("the template stays inside what a code change controls", () => {
   it("names nothing outside it", () => {
     const procedure = read(PROCEDURE);
     expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
     for (const term of OUTSIDE_A_CODE_CHANGE) {
       expect(procedure.toLowerCase(), `${PROCEDURE} names "${term}"`).not.toContain(term);
+    }
+  });
+});
+
+describe("a rule the contributing guide already states has one home", () => {
+  it("references the guide, and restates nothing it owns", () => {
+    const procedure = read(PROCEDURE);
+    expect(procedure, `${PROCEDURE} is missing or empty`).toContain("CONTRIBUTING.md");
+    for (const term of OWNED_BY_CONTRIBUTING) {
+      expect(procedure.toLowerCase(), `${PROCEDURE} restates "${term}"`).not.toContain(term);
     }
   });
 });
