@@ -40,6 +40,35 @@ const OUTSIDE_A_CODE_CHANGE = [
    draft, so a second copy of either is the drift this guards against. */
 const OWNED_BY_CONTRIBUTING = ["pnpm", "npm run", "yarn", "draft"];
 
+/* The two skills #317 names as consumers. `dx-write-implementation` is not one
+   of them: it hands its branch on, and the request opens through dx-create-pr,
+   which applies the procedure there. */
+const ROUTER = `${HARNESS}/skills/engineering/dx-implement-issue/SKILL.md`;
+const PULL_REQUEST = `${HARNESS}/skills/engineering/dx-create-pr/SKILL.md`;
+
+/* The seven items, from the in-scope list in #310. Each one is a literal here
+   and a row in the procedure, so the row assertions read one source and the
+   file reads another. */
+const ITEMS = [
+  { id: "DoD-1", text: "covered by a test or by a written manual case" },
+  { id: "DoD-2", text: "boundaries, error paths and concurrent writes" },
+  { id: "DoD-3", text: "the repository's own checks pass" },
+  { id: "DoD-4", text: "the diff touches only what the issue names" },
+  { id: "DoD-5", text: "one contract item per commit" },
+  { id: "DoD-6", text: "documentation and comments the change made wrong" },
+  { id: "DoD-7", text: "every new dependency has a stated reason" },
+];
+
+/* One section of a skill file, from its heading to the next heading at the same
+   level. */
+function section(body: string, heading: string) {
+  const start = body.indexOf(heading);
+  if (start === -1) return "";
+  const rest = body.slice(start + heading.length);
+  const end = rest.indexOf("\n### ");
+  return end === -1 ? rest : rest.slice(0, end);
+}
+
 describe("the template stays inside what a code change controls", () => {
   it("names nothing outside it", () => {
     const procedure = read(PROCEDURE);
@@ -56,6 +85,31 @@ describe("a rule the contributing guide already states has one home", () => {
     expect(procedure, `${PROCEDURE} is missing or empty`).toContain("CONTRIBUTING.md");
     for (const term of OWNED_BY_CONTRIBUTING) {
       expect(procedure.toLowerCase(), `${PROCEDURE} restates "${term}"`).not.toContain(term);
+    }
+  });
+});
+
+describe("the skills that consume the definition of done reference it", () => {
+  it("the router names the procedure", () => {
+    expect(read(ROUTER), `${ROUTER} does not name the procedure`).toContain(
+      "definition-of-done.md",
+    );
+  });
+
+  it("dx-create-pr names it where its test plan sits", () => {
+    const body = read(PULL_REQUEST);
+    const step = section(body, "### Step 4: Write the body");
+    expect(step.length, `${PULL_REQUEST} has no Step 4 section`).toBeGreaterThan(0);
+    expect(step, "Step 4 does not name the procedure").toContain("definition-of-done.md");
+  });
+
+  it("neither skill restates the item list", () => {
+    for (const consumer of [ROUTER, PULL_REQUEST]) {
+      const body = read(consumer);
+      expect(body.length, `${consumer} is missing or empty`).toBeGreaterThan(0);
+      for (const item of ITEMS) {
+        expect(body, `${consumer} restates "${item.text}"`).not.toContain(item.text);
+      }
     }
   });
 });
