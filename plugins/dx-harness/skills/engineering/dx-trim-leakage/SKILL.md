@@ -54,9 +54,9 @@ against it before touching anything.
    change-narration and review-choreography classes: narrating the change is what
    those genres are for.
 4. **Fix owner-first.** Restate the surviving fact in place. Where a real durable
-   owner exists, such as a GitHub issue or PR number, a decision record's path, or a
-   design ticket a design skill already tracks, cite that owner instead of the dead
-   reference. Where none exists, state the fact and drop the citation.
+   owner exists, such as a GitHub issue or PR number or a decision record's path,
+   cite that owner instead of the dead reference. Where none exists, state the fact
+   and drop the citation.
 5. **Verify.** Re-run the search expecting only sanctioned keeps. Confirm every
    remaining citation resolves: an issue or PR number opens with
    `gh issue view`/`gh pr view`, a decision-record path exists on disk.

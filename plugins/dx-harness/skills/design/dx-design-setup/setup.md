@@ -1,9 +1,9 @@
 # Harness setup checklist
 
-Check, install, and verify the tools the harness relies on, wire the
-design-ticket tracker, and set up commit signing. Everything here is
-per-person, per-machine. Repo-level adoption (stack, component manifest,
-record locations, the named L1 approver) lives in the team onboarding guide
+Check, install, and verify the tools the harness relies on, confirm the
+issue tracker, and set up commit signing. Everything here is per-person,
+per-machine. Repo-level adoption (stack, component manifest, record
+locations, the named L1 approver) lives in the team onboarding guide
 (`../../../docs/ONBOARDING.md`, relative to this file; it ships with the
 plugin).
 
@@ -24,53 +24,27 @@ the check. Then continue with the tracker and commit-signing steps below.
 |---|---|---|---|
 | `agent-browser` CLI | First-preference screenshot capture in the design loop's critique and verify phases | `agent-browser --help` | `npm i -g agent-browser && agent-browser install` (the second command downloads its Chromium; needs Node 18+) |
 | agent-browser skill | Teaches the agent the CLI's full command set (recommended; the CLI alone is enough for capture) | ask the user: `/plugin list` shows `agent-browser` | the user types `/plugin marketplace add vercel-labs/agent-browser`, then `/plugin install agent-browser@agent-browser`, then `/reload-plugins` — Claude Code commands, not shell |
-| `gh` CLI, authenticated | The `feedback` skill files issues through `scripts/file-feedback-issue.py` | `gh auth status` | `brew install gh`, then the user runs `gh auth login` themselves (interactive — never run it for them) |
+| `gh` CLI, authenticated | The `feedback` skill files issues through `scripts/file-feedback-issue.py`, and dx-design-language files deferred sections and fix-todos | `gh auth status` | `brew install gh`, then the user runs `gh auth login` themselves (interactive — never run it for them) |
 | Python 3 + PyYAML | The `checks/*.py` scripts import `yaml` | `python3 -c "import yaml"` | `python3 -m pip install --user pyyaml` |
 | Pillow | The critique report step crops and annotates screenshots | `python3 -c "import PIL"` | `python3 -m pip install --user Pillow` |
 | axe on Playwright (harness-side) | The rendered check drives axe against the page already open in the capture session | `node -e "require('node:module').createRequire('<plugin dir>/').resolve('@axe-core/playwright')"` — substitute the plugin's own directory (the same `<plugin dir>` as the Install command) | `npm install --prefix <plugin dir>` — installs into the plugin's own `node_modules` only; nothing is installed into the repo being checked. Missing is not a failure: the rendered check says it did not run and sends its controls to manual verification |
 | `dx-harness` plugin (product repos only) | The harness itself; skills load from the installed `dx-harness` plugin, same as any product repo | ask the user: `/plugin list` shows `dx-harness` | the two commands in the README Install section (`../../../README.md`) |
 
-## Wire the design-ticket tracker
+## Confirm the issue tracker
 
-Design work is recorded on one long-lived ticket per surface (a page or a
-flow). Wire the conventions once:
+Design skills file issues, so confirm the tracker is reachable:
 
 1. **Confirm a repo checkout.** Run `git rev-parse --show-toplevel`. If it
    fails, setup is running outside a repo: skip this whole section, say so,
-   and continue with commit signing. Never create the fallback directory
-   outside a checkout.
+   and continue with commit signing.
 2. **Follow the repo's issue-tracker doc where one exists.** In this repo
    that is `docs/agents/issue-tracker.md`. The doc wins, even when it names
    a tracker other than GitHub: follow its workflow and skip the GitHub
    probe below.
 3. **No doc: detect GitHub.** A GitHub tracker is present when
    `gh auth status` exits 0 and `gh repo view --json nameWithOwner` resolves
-   the current repo.
-4. **Tracker present: create the label idempotently.**
-
-   ```sh
-   gh label list --limit 200 --json name --jq '.[].name' | grep -qx design ||
-     gh label create design --description "Design ticket, one long-lived issue per surface" --color 5319e7
-   ```
-
-   An existing label is success, not an error. Anything else that makes the
-   command fail (issues disabled, a token that cannot manage labels, the API
-   down) is a real failure: report the error, do not claim the tracker is
-   wired, and use the local-markdown fallback in the next step instead.
-   Once the label verifiably exists, state the conventions
-   setup has wired: one long-lived issue per surface; title
-   `Design: <surface>`, where `<surface>` is the route path (`/marks`) or the
-   flow name; label `design`; runs find the ticket by label plus title match;
-   the first run that touches a surface creates it.
-5. **No tracker: set up the local-markdown fallback.** A missing tracker is
-   not a failure. Create `docs/design-tickets/` and say plainly that the
-   fallback is active and why: runs will append typed blocks to
-   `docs/design-tickets/<surface-slug>.md`, and deferred sections and
-   fix-todos go to `docs/design-tickets/TODO.md`.
-
-The canonical conventions doc is `../../../procedures/design-tickets.md`;
-follow it where it ships with this plugin build. The facts above stand on
-their own either way.
+   the current repo. A missing tracker is not a failure: report what the two
+   commands returned and move on.
 
 ## Set up commit signing (once per machine)
 

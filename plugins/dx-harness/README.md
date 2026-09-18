@@ -38,7 +38,7 @@ The design skills orchestrate the DX design loop against a **70-control** standa
 catalog (`standards/`), with deterministic `checks/` and a generator/evaluator split
 (`agents/dx-design-review.md`). Start with `/dx-harness:dx-design` for orientation and routing.
 The shared run procedures (plan approval, implement, design review, rule proposal,
-catalogue mechanics, design tickets) live in `procedures/`; rule and waiver questions go
+catalogue mechanics) live in `procedures/`; rule and waiver questions go
 to `/dx-harness:dx-design`, which reads `standards/README.md` and
 `procedures/catalogue-mechanics.md` before answering.
 

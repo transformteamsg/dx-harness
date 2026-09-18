@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Removed
+
+- **Design tickets removed**: a design run keeps its findings in the conversation and puts the approved plan, the granted waivers, and the design review verdict in its decision record, rather than in a long-lived tracker issue per surface ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
+
 ## 0.7.0 (2026-09-14)
 
 ### Added

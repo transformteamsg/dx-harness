@@ -96,10 +96,9 @@ Do not restructure or reorder it.
 Publish the HTML as an artifact. On every re-run for the same surface, republish
 to the same artifact URL with a version label; a new URL is a defect. If artifact
 publishing is unavailable, fall back to writing the self-contained HTML to a local
-file and opening it in the browser; say so in the Findings comment and link the
-file path instead of a URL.
+file and opening it in the browser; say so, and give the file path instead of a
+URL.
 
-Then link the report URL (or the fallback file path) from the Findings comment on
-the surface's design ticket (`../../../procedures/design-tickets.md`) and stop.
-Approval happens on the ticket: the human replies with S-numbers, and each
+Then give the report URL (or the fallback file path) in the conversation and stop.
+Approval happens in the conversation: the human replies with S-numbers, and each
 approved S# marks the F-findings it fixes as `accepted` for `dx-design-execute`.

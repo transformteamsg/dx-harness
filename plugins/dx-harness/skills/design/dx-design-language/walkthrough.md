@@ -17,8 +17,7 @@ When sources disagree, the person makes a **source-of-truth election**: code win
 Figma wins, or a hybrid split per part. The election guides elicitation only; code
 stays the runtime authority. Where the elected source beats shipped code, file a
 fix-todo: title `Design fix: <what>`, label `design-fix-todo`, body citing the
-elected source and the code it beats (`../../../procedures/design-tickets.md`; with
-no tracker, append to `docs/design-tickets/TODO.md`). You never write product code.
+elected source and the code it beats. You never write product code.
 
 ## Per-section mechanics
 
@@ -32,11 +31,9 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
   ask, listen, and draft in the person's words.
 - **Skip** = portfolio default, said out loud: "Skipping Motion: portfolio defaults
   now apply to motion." The assembled file then has no such section.
-- **Defer** = one tracker issue for that section: title `DESIGN.md: <section>`,
-  label `design-language-todo`, body carrying the section's guiding questions below
-  (`../../../procedures/design-tickets.md` §Related issues; with no tracker, append
-  to `docs/design-tickets/TODO.md`). The assembled file has no such section until
-  the issue is resolved.
+- **Defer** = one issue for that section: title `DESIGN.md: <section>`, label
+  `design-language-todo`, body carrying that section's guiding questions from the
+  list below. The assembled file has no such section until the issue is resolved.
 - Keep every section in the DESIGN.md rules: values and decisions with control ids
   cited, never a restated rule. Layout system bullets are machine-read; keep them
   exact (`- key: value`).
