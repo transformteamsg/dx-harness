@@ -11,6 +11,7 @@
 ### Fixed
 
 - **Locator check gates the build**: `checks/skill-locators.py` runs in the check gate, walks `agents/` and `procedures/` as well as `skills/`, and resolves a locator at any depth rather than the three-level `../../../` form alone ([#306](https://github.com/transformteamsg/dx-harness/issues/306)).
+- **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 
 ## 0.7.0 (2026-09-14)
 
