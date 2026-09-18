@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- **Code-level definition of done**: `procedures/definition-of-done.md` states the seven things a code change must make true and the evidence each is checked by, `dx-implement-issue` reports against every item before it opens a request and stops on an unsatisfied one, and `dx-create-pr` reads it instead of setting a second standard for coverage ([#317](https://github.com/transformteamsg/dx-harness/issues/317)).
+
 ### Changed
 
 - **Declared-manual criteria not re-reported**: `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
