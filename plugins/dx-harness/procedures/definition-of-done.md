@@ -8,6 +8,16 @@ Every item here is something a change to code makes true. An item that waits on 
 machine, on a schedule, or on another person is not one of them, and none appears
 below.
 
+## What the contributing guide owns
+
+`CONTRIBUTING.md`, in the repository you are working in, states which checks run
+and what a pull request carries. Two items point at it rather than carrying a
+second copy of either list, so a correction there reaches this procedure with no
+edit here.
+
+Where the repository has no such file, take the checks from its continuous
+integration configuration, because that is the set which gates a merge.
+
 ## Report against every item
 
 State the result item by item, in the report that ends the run:
