@@ -90,7 +90,19 @@ paths its own code introduced, and runs the repository's checks.
 - **It reports a contract item with no test**: carry that forward. Do not send it back to write the test. Decide with the developer whether the item ships uncovered, is recorded as manual, or sends the run back to Step 4 for a fresh test.
 - **A check fails and it cannot fix it**: surface the failure and stop.
 
-## Step 6: Open a draft pull request
+## Step 6: Check the definition of done
+
+Run [../../../procedures/definition-of-done.md](../../../procedures/definition-of-done.md)
+against the branch the two halves left. It holds the items, the evidence each one
+is checked by, and the shape of the block you report.
+
+Write that block now, before the pull request step, and take the evidence from the
+branch rather than from what either half said it did.
+
+- **Every item is satisfied, or marked not applicable with a reason**: go to Step 7.
+- **An item is unsatisfied**: stop. Name the item and why, and open no pull request. Say what would close the gap, and leave the choice to the developer.
+
+## Step 7: Open a draft pull request
 
 Do not open it from here. `dx-create-pr` owns pull request creation, including the
 body template, the draft state, the difference between a pull request and a GitLab
@@ -104,17 +116,18 @@ merge request, and the check for a request already open on the branch. Run
 
 Do not write a body template here. A second template is how the two drift apart.
 
-- **The request opens**: go to Step 7.
+- **The request opens**: go to Step 8.
 - **`dx-create-pr` stops on an error**: surface that error and stop. Do not fall back to opening the request yourself.
 
-## Step 7: Report
+## Step 8: Report
 
 1. **Branch**: the branch name
 2. **Files changed**: each file, and what changed
 3. **Contract coverage**: each contract item, the test that covers it, and that it passes. On a task, each `Also true when done` item too, with how you checked it
 4. **Uncovered**: any contract item neither half covered, and what you agreed to do about it
 5. **Manual verification**: the manual items from the declaration, as what the developer walks through before marking the request ready. Name the repository's own dev command, taken from its scripts, rather than assuming one
-6. **Pull request**: the draft request URL
+6. **Definition of done**: the block from Step 6, unchanged
+7. **Pull request**: the draft request URL
 
 ## Running the halves yourself
 
@@ -130,6 +143,7 @@ Each half runs the intake itself when it is invoked directly.
 - Run the halves in order. Tests first, always.
 - Own the intake once. Pass the contract to both halves rather than letting either repeat it.
 - The split evaluation runs before either half, and a signal stops the run.
+- The definition of done is checked before the pull request step, and an unsatisfied item stops the run there.
 - Never write a test or a line of production code from here.
 - Carry an uncovered contract item into the report and the pull request. Do not resolve it by writing the test after the code.
 - Carry the manual items through in the test half's own words, and never report manual verification as done because the suite passed.
