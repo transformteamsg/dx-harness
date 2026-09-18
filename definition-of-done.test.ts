@@ -138,6 +138,56 @@ describe("the skills that consume the definition of done reference it", () => {
   });
 });
 
+/* Written after the implementation, for two paths it introduced. A gate that
+   runs after the request opens is no gate, and a renumbered step sequence breaks
+   silently. */
+describe("the router checks the definition of done before it opens a request", () => {
+  const router = read(ROUTER);
+
+  it("puts the gate step before the pull request step", () => {
+    const gate = router.indexOf("## Step 6: Check the definition of done");
+    const request = router.indexOf("## Step 7: Open a draft pull request");
+    expect(gate, "the router has no definition-of-done step").toBeGreaterThan(-1);
+    expect(request, "the router has no pull request step").toBeGreaterThan(-1);
+    expect(gate).toBeLessThan(request);
+  });
+
+  it("numbers its steps in one unbroken sequence", () => {
+    /* Only the count comes from the file. The expected values are generated,
+       so a duplicated or skipped number fails this. */
+    const numbers = [...router.matchAll(/^## Step (\d+):/gm)].map((match) => Number(match[1]));
+    expect(numbers.length, "the router has no numbered steps").toBeGreaterThan(0);
+    expect(numbers).toEqual(numbers.map((_, index) => index + 1));
+  });
+});
+
+/* Also written after the implementation. The two run behaviours in #317 cannot
+   be executed here, so the eval cases are what a reader grades them by. These
+   guard the cases against silent deletion. */
+describe("the eval suite covers the two run behaviours", () => {
+  const suite = JSON.parse(
+    read(`${HARNESS}/skills/engineering/dx-implement-issue/evals/evals.json`),
+  );
+  const cases: { name: string; fixture_setup: string; prompt: string; expected_output: string; assertions: unknown[] }[] =
+    suite.evals;
+
+  const RUN_BEHAVIOURS = [
+    "definition-of-done-reported-per-item",
+    "unsatisfied-definition-of-done-stops-before-a-request",
+  ];
+
+  for (const name of RUN_BEHAVIOURS) {
+    it(`carries the ${name} case, gradable`, () => {
+      const graded = cases.find((evalCase) => evalCase.name === name);
+      expect(graded, `no case named ${name}`).toBeTruthy();
+      expect(graded!.fixture_setup, `${name} has no fixture`).toBeTruthy();
+      expect(graded!.prompt, `${name} has no prompt`).toBeTruthy();
+      expect(graded!.expected_output, `${name} has no expected output`).toBeTruthy();
+      expect(graded!.assertions.length, `${name} has no assertions`).toBeGreaterThan(0);
+    });
+  }
+});
+
 describe("every item names the evidence a reader checks it by", () => {
   const table = rows(read(PROCEDURE));
 
