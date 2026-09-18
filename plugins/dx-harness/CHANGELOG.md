@@ -2,9 +2,17 @@
 
 ## Unreleased
 
+### Changed
+
+- **Declared-manual criteria not re-reported**: `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
+
 ### Removed
 
 - **Design tickets removed**: a design run keeps its findings in the conversation and puts the approved plan, the granted waivers, and the design review verdict in its decision record, rather than in a long-lived tracker issue per surface ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
+
+### Fixed
+
+- **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 
 ## 0.7.0 (2026-09-14)
 
