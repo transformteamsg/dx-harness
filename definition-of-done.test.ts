@@ -59,6 +59,30 @@ const ITEMS = [
   { id: "DoD-7", text: "every new dependency has a stated reason" },
 ];
 
+/* An item resting on the author's word rather than on the branch. A reviewer
+   cannot check any of these by looking, so an evidence cell carrying one gives
+   the item back to whoever wrote it. */
+const SELF_ATTESTATION = [
+  "you believe",
+  "you are satisfied",
+  "state that you",
+  "confirm that you",
+  "in your judgement",
+];
+
+/* The item rows of the procedure's table, as cells. */
+function rows(procedure: string) {
+  return procedure
+    .split("\n")
+    .filter((line) => line.startsWith("| DoD-"))
+    .map((line) =>
+      line
+        .split("|")
+        .slice(1, -1)
+        .map((cell) => cell.trim()),
+    );
+}
+
 /* One section of a skill file, from its heading to the next heading at the same
    level. */
 function section(body: string, heading: string) {
@@ -112,4 +136,27 @@ describe("the skills that consume the definition of done reference it", () => {
       }
     }
   });
+});
+
+describe("every item names the evidence a reader checks it by", () => {
+  const table = rows(read(PROCEDURE));
+
+  it("carries a row for each of the seven items, in order", () => {
+    expect(table.map((row) => row[0])).toEqual(ITEMS.map((item) => item.id));
+  });
+
+  for (const item of ITEMS) {
+    it(`${item.id} names its item and how it is checked`, () => {
+      const row = table.find((cells) => cells[0] === item.id) ?? [];
+      expect(row.length, `${item.id} has no row of three cells`).toBe(3);
+      expect(row[1], `${item.id} does not name its item`).toContain(item.text);
+      expect(row[2].length, `${item.id} names no evidence`).toBeGreaterThan(0);
+      for (const phrase of SELF_ATTESTATION) {
+        expect(
+          row[2].toLowerCase(),
+          `${item.id} rests on the author's word: "${phrase}"`,
+        ).not.toContain(phrase);
+      }
+    });
+  }
 });
