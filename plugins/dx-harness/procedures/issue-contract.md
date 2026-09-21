@@ -52,12 +52,8 @@ covered by a test.
 ## Step 4: Name the surfaces the work touches
 
 Run [surface-assessment.md](surface-assessment.md) against the items you just
-numbered. It holds the four values, how to derive one from the criteria, and what
-to do when the criteria do not say.
-
-It runs here, before the code is read, because the assessment bounds which code
-the run explores. Derived after that, it could only describe exploration that had
-already happened.
+numbered. Run it here, before the code is read, because the assessment bounds
+which code the run explores.
 
 Record the value and the per-item breakdown. Both halves receive it from whoever
 ran this procedure, so neither derives it again.

@@ -1,8 +1,7 @@
 # Surface assessment (shared procedure)
 
-This is the shared home for deciding which surfaces an issue's work touches.
-[issue-contract.md](issue-contract.md) runs it, and the result travels with the
-rest of the contract, so neither half derives it again.
+[issue-contract.md](issue-contract.md) runs this to decide which surfaces an
+issue's work touches.
 
 ## The values
 
@@ -26,8 +25,7 @@ observable. The surface that has to change before a reader observes it is the
 surface that item touches. The issue's assessment is the union of its items.
 
 Derive it from the criteria, not from the issue's title, its labels, or the
-directory names in the repository. A title names a screen whose whole change is a
-query. A label records who filed the issue rather than what the work touches.
+directory names in the repository.
 
 Two readings settle most items:
 
@@ -43,8 +41,6 @@ Surface assessment, contract #142: both
 ```
 
 ## What the assessment changes
-
-The assessment bounds the work before any of it starts.
 
 - **`frontend`**: plan no backend work, and leave the data and service layers alone. Say what the run would have needed from the backend if the criteria had implied any, so the next reader tells a deliberate boundary from an oversight.
 - **`backend`**: plan no frontend work, and say the same thing in the other direction.
@@ -65,11 +61,10 @@ exists is worth naming as what is done rather than as what was asked for.
 ## When the criteria do not say
 
 Some criteria name an outcome without naming a surface. "The report is faster"
-and "a teacher finds last term's marks" each read on one surface or on two,
-depending on facts the issue does not carry.
+reads on one surface or on two, depending on facts the issue does not carry.
 
 Name what is ambiguous, give the readings you can see, and ask. Put the item
-number in front of it, so the answer comes back in one line:
+number in front of it:
 
 > "Criterion 2, 'the report is faster', reads two ways. As a frontend item it is
 > the rendering of rows already fetched. As a backend item it is the query behind
