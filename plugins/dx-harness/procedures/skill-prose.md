@@ -226,7 +226,7 @@ case it might capture by mistake.
 
 ## Defects in the reference file
 
-`skills/engineering/dx-create-issue/SKILL-update.md` is the worked conversion.
+`skills/engineering/dx-create-issue/SKILL.md` is the worked conversion.
 Three things in it are noise rather than standard, so do not copy them:
 
 - Its table of contents lists Steps 1 to 4b and omits Step 5 and Rules.
