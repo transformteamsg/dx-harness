@@ -9,11 +9,11 @@ written, so what you have to satisfy is settled before you start.
 ## Step 1: Get the contract
 
 **Called by `dx-implement-issue`**: it has already run the intake and hands you the
-numbered contract items, the shape, the bound agent patterns, and the test stack.
-Use them.
+numbered contract items, the shape, the surface assessment, the bound agent
+patterns, and the test stack. Use them.
 
 **Invoked alone**: run [../../../procedures/issue-contract.md](../../../procedures/issue-contract.md)
-yourself, all seven steps.
+yourself, all eight steps.
 
 ## Step 2: Read the coverage declaration
 

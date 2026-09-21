@@ -12,13 +12,13 @@ could not. `dx-write-implementation` reads that declaration and works against it
 ## Step 1: Get the contract
 
 **Called by `dx-implement-issue`**: it has already run the intake and hands you the
-numbered contract items, the shape, the bound agent patterns, and the test stack.
-Use them. Do not re-derive them.
+numbered contract items, the shape, the surface assessment, the bound agent
+patterns, and the test stack. Use them. Do not re-derive them.
 
 **Invoked alone**: run [../../../procedures/issue-contract.md](../../../procedures/issue-contract.md)
-yourself, all seven steps. It settles the input, the shape, the numbered contract
-items, readiness, the agent patterns, the code you are about to touch, and the test
-stack you are about to write against.
+yourself, all eight steps. It settles the input, the shape, the numbered contract
+items, the surfaces the work touches, readiness, the agent patterns, the code you
+are about to touch, and the test stack you are about to write against.
 
 Either way, stop if the contract is not ready. A readiness gap is a question for
 whoever wrote the issue.
@@ -35,7 +35,7 @@ You are about to commit. Run `git status` and `git branch --show-current`.
 Take the items in order. For each one, decide whether an automated test can settle
 it in this repository, and say which on what evidence.
 
-An item is automatable when one of the runners you recorded in Step 7 of the issue
+An item is automatable when one of the runners you recorded in Step 8 of the issue
 contract can observe the thing the criterion names. Name that runner as your
 evidence. The answer is a property of the repository, not of the criterion: a
 repository with a browser runner can automate "the banner turns amber", and one with
