@@ -34,11 +34,8 @@ item sits on which surface. Then, for each numbered contract item, state:
 - Which files are affected
 - What the corresponding test will assert
 
-A `frontend` plan names no backend file and no backend change, and it says what
-the run would have needed from the backend if the criteria had implied any. A
-`both` plan takes one of the two outcomes
-[../../../procedures/surface-assessment.md](../../../procedures/surface-assessment.md)
-permits, and never leaves one surface unplanned.
+Plan only what the assessment's value permits, per
+[../../../procedures/surface-assessment.md](../../../procedures/surface-assessment.md).
 
 State the plan before either half runs. If a half deviates from it, say why.
 

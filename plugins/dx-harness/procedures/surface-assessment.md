@@ -14,9 +14,8 @@ The assessment takes one of four values and nothing else:
 | `both` | One of each, where the criteria need both to be observable |
 | `neither` | No product surface: tooling, a check, a shared procedure, or documentation |
 
-`neither` is a real answer. A dependency bump and a change to this file both take
-it, and forcing either into `frontend` or `backend` makes the assessment state
-something false.
+`neither` is a real answer. Forcing work that touches no product surface into
+`frontend` or `backend` makes the assessment state something false.
 
 ## How to derive it
 
@@ -35,9 +34,8 @@ Two readings settle most items:
 State the assessment once, with the item numbers behind it:
 
 ```
-Surface assessment, contract #142: both
-  1 the overdue badge turns amber -> frontend
-  2 an invoice past its due date reports as overdue -> backend
+Surface assessment, contract #<issue>: <value>
+  <item number> <what the criterion makes observable> -> <value>
 ```
 
 ## What the assessment changes
@@ -60,15 +58,14 @@ exists is worth naming as what is done rather than as what was asked for.
 
 ## When the criteria do not say
 
-Some criteria name an outcome without naming a surface. "The report is faster"
-reads on one surface or on two, depending on facts the issue does not carry.
+Some criteria name an outcome without naming a surface, because the reading turns
+on facts the issue does not carry.
 
 Name what is ambiguous, give the readings you can see, and ask. Put the item
-number in front of it:
+number in front, name each reading as a surface, and end on the question:
 
-> "Criterion 2, 'the report is faster', reads two ways. As a frontend item it is
-> the rendering of rows already fetched. As a backend item it is the query behind
-> them. Which is it?"
+> "Criterion <n>, '<the criterion>', reads two ways. As a frontend item it is
+> <reading>. As a backend item it is <reading>. Which is it?"
 
 Stop there. One surface can make it observable under one reading and not under
 the other, so a run that picks a reading builds against a criterion nobody
