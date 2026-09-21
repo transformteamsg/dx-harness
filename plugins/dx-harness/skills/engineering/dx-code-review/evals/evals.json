@@ -313,6 +313,84 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "id": 8,
+      "name": "cap-runs-before-verification",
+      "fixture_setup": "No repository needed. The prompt supplies the raw candidate list the angles returned: 40 nit candidates across six angles and 4 Important candidates, of which 12 nits cite a `file:line` and the rest cite nothing. The request carries no review thread at all, and its repository has no `review/agent-patterns.md`.",
+      "prompt": "Here are the raw candidates from the angles for PR 12, which carries no existing review thread. Walk the analysis from the dedup step onward and tell me, in order, which candidates you verify, which you hold back, and what the summary's Held back line says. Verify nothing you would not post, and post nothing.",
+      "expected_output": "Volume control runs before the verification pass, so the run verifies 9 candidates rather than 44: the 4 Important candidates, which the cap never counts, and the 5 nits the ranking keeps. The ranking puts a nit that cites a `file:line` ahead of one that cites nothing, then diff order, because no candidate carries a CONFIRMED or PLAUSIBLE label yet. The Held back line reports the other 35 nits. Nothing is posted.",
+      "assertions": [
+        {
+          "text": "Applies the nit cap before the verification pass, not after it",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Verifies all 4 Important candidates",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Verifies 5 nits rather than 40",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Ranks a nit that cites a `file:line` above one that cites nothing, rather than ranking on a label it does not have yet",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The Held back line reports 35 nits",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Caps no Important candidate",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts nothing, because the prompt disabled posting",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "manifest-check-gated-by-the-suggestion",
+      "fixture_setup": "No repository needed. The prompt supplies three findings the cap kept, each with its suggestion. F1's suggestion renames a variable in the file's own idiom. F2's suggestion calls `lodash.groupBy`. F3's suggestion runs a `jq` command. The prompt states that the repository has a `package.json` and that it pins lodash at 4.17.20.",
+      "prompt": "Here are three findings the cap kept, with their suggestions. Run the verification pass on each and tell me which parts of it you ran for each finding, and why.",
+      "expected_output": "F1 skips the manifest check, because its suggestion names no library, no library API, and no shell command, and its body posts as it stands. F2 runs the check against `package.json` and settles `lodash.groupBy` against the pinned 4.17.20. F3 runs the check because its suggestion carries a shell command. Each finding is handled in one pass, rather than one walk of the list per part.",
+      "assertions": [
+        {
+          "text": "F1 skips the manifest check",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "F1's body is unchanged by the skipped check",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "F2 runs the check against `package.json` and names the pinned version",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "F3 runs the check because its suggestion carries a shell command",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Labels, checks, and classifies each finding in one pass rather than three walks of the list",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
     }
   ]
 }

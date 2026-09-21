@@ -1,6 +1,6 @@
 # Inline comment format
 
-Used by the review sequence (step 8) in `SKILL.md`. **The commands here are GitHub's.** On GitLab, take each from the reviewing section of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). The body format below is the same on both. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
+Used by the review sequence (step 7) in `SKILL.md`. **The commands here are GitHub's.** On GitLab, take each from the reviewing section of [../../../../procedures/pr-mechanics.md](../../../../procedures/pr-mechanics.md). The body format below is the same on both. All values are already available from steps 1–2: `{owner}` and `{repo}` from step 1, which takes them from the pull request rather than the working directory, PR number from step 1, and `{head_sha}` from the `headRefOid` field in the `gh pr view` response.
 
 ## Saying whether it was verified
 
@@ -17,7 +17,7 @@ A 🟡 Nit or 🟣 Pre-existing comment carries `(not blocking)` on its first li
 
 ## The recurring-pattern line
 
-Include it only on a finding that analysis step 7 tagged `[AI-PATTERN]`, and omit the line entirely otherwise. Never print it empty.
+Include it only on a finding that analysis step 5 tagged `[AI-PATTERN]`, and omit the line entirely otherwise. Never print it empty.
 
 It carries the row's ID, `Pattern name`, `Confirmed by` count, and `Prevention` cell. The count matters to the author: seen once is a coincidence, seen five times is a habit.
 
@@ -54,7 +54,7 @@ BODY="**[Severity] One-sentence summary**  <!-- 🟡 and 🟣 append: (not block
 *🤖 dx-code-review · {model}*
 👍 helpful / 👎 not helpful"
 
-Post every finding in **one review**, not one comment at a time. Use the reviews endpoint with a single `comments` array; the comments endpoint notifies the author once per call. The threads it creates are ordinary review threads, so the deduplication in step 6 and the resolution in step 7 apply to them unchanged.
+Post every finding in **one review**, not one comment at a time. Use the reviews endpoint with a single `comments` array; the comments endpoint notifies the author once per call. The threads it creates are ordinary review threads, so the deduplication in analysis step 3 and the resolution in sequence step 6 apply to them unchanged.
 
 Build the array, one entry per finding, then post it:
 

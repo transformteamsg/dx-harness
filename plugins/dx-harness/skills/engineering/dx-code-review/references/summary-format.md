@@ -3,7 +3,7 @@
 Used by the last step of the review sequence in `SKILL.md`, after everything that survives has been posted. Three outcomes, and each prints something different. Pick the one that matches and follow it exactly.
 
 - **Every changed path was skipped by `REVIEW.md`**: post no review and no LGTM. Print `Review skipped — every changed path matched a skip rule in REVIEW.md.` and name the rules. A review that looked at nothing is not a review that found nothing, and LGTM would say it was.
-- **No new findings and no open skill threads remaining** (all were resolved in step 7): post the following as a PR comment, then print `Review complete — LGTM posted to PR #{number}.`
+- **No new findings and no open skill threads remaining** (all were resolved in step 6): post the following as a PR comment, then print `Review complete — LGTM posted to PR #{number}.`
   ```
   LGTM 👍
 
