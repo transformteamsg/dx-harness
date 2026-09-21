@@ -15,6 +15,8 @@ const HARNESS = "plugins/dx-harness";
 const PROCEDURE = `${HARNESS}/procedures/surface-assessment.md`;
 const CONTRACT = `${HARNESS}/procedures/issue-contract.md`;
 const ROUTER = `${HARNESS}/skills/engineering/dx-implement-issue/SKILL.md`;
+const TEST_HALF = `${HARNESS}/skills/engineering/dx-write-tests/SKILL.md`;
+const CODE_HALF = `${HARNESS}/skills/engineering/dx-write-implementation/SKILL.md`;
 
 /* A tolerant read, because the implementation half creates the procedure. A
    missing file reads as empty and fails an assertion, rather than throwing
@@ -186,6 +188,36 @@ describe("ambiguity is a question, not a reading", () => {
         ambiguous.toLowerCase(),
         `the ambiguous case licenses a guess: "${guess}"`,
       ).not.toContain(guess);
+    }
+  });
+});
+
+/* Contract item 5: recorded once and reused. The contract runs once per session,
+   so the assessment travels with the other things the router passes down rather
+   than being derived again in either half. */
+describe("the assessment travels rather than being re-derived", () => {
+  for (const half of [TEST_HALF, CODE_HALF]) {
+    it(`${half} receives it from the router`, () => {
+      const body = read(half);
+      expect(body.length, `${half} is missing or empty`).toBeGreaterThan(0);
+      const step = section(body, "## Step 1: Get the contract");
+      expect(step.length, `${half} has no Step 1 section`).toBeGreaterThan(0);
+      expect(step.toLowerCase(), `${half} does not receive the assessment`).toContain(TERM);
+    });
+  }
+
+  it("the router passes down one list, and its count is current", () => {
+    const router = read(ROUTER);
+    expect(router.length, `${ROUTER} is missing or empty`).toBeGreaterThan(0);
+    expect(router, `${ROUTER} still passes down four things`).not.toContain("four things");
+  });
+
+  it("the halves run the contract in full when invoked alone", () => {
+    /* The step count is stated in prose in both halves and in the router. An
+       inserted step makes a stale count a lie about how much of the contract
+       gets run. */
+    for (const consumer of [ROUTER, TEST_HALF, CODE_HALF]) {
+      expect(read(consumer), `${consumer} still says seven steps`).not.toContain("seven steps");
     }
   });
 });
