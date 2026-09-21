@@ -14,6 +14,7 @@
 - **Split offered before intake**: a request naming two capabilities reaches the split question first, so the author no longer answers six questions about a story that is then cut in half ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Criteria format picked per scenario**: a scenario a test runner can assert takes Given-When-Then, one only a person can confirm takes a checklist line, and one story carries both ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Contents list dropped**: a `SKILL.md` carries no table of contents, because the whole file is in context before an agent acts and a second copy of the step names goes stale on a renumber ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Attachment guidance extracted**: `dx-create-story` keeps its screenshot and recording rules in `references/attachments.md`, which a run opens only where the author has a file to upload ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ### Fixed
 

@@ -10,6 +10,12 @@ Use this skill when you hear:
 - "raise a story"
 - "As a [persona], I want"
 
+Write the issue so whoever delivers it can act on it without coming back with questions. Do not write it for an agent in particular.
+
+The canonical structure is [references/issue-template.md](references/issue-template.md). Read it before you construct or preview a body. Fill every section: where there is nothing to say, write `N/A` or `None` rather than deleting the heading. Write every section to [House style](../../../procedures/house-style.md).
+
+This skill creates one story, or two where Step 4 splits one. It never creates a task.
+
 ## 1. Settle the persona gate
 Settle who benefits before you gather anything else.
 
@@ -52,7 +58,7 @@ Ask for each field below. Do not invent an answer: ask where the author has not 
 
    A scenario that describes implementation rather than observable behaviour goes back to the author. Step 3 adds to what the author gives here, so do not ask them to produce every failure and boundary unaided.
 5. **Out of scope**: at least one explicit exclusion. Where the author names none, ask them to confirm nothing adjacent is in scope.
-6. **Design assets**: Figma links, screenshots, or a prototype. A link needs only pasting; a screenshot or a recording follows [Attach a screenshot or a recording](#attach-a-screenshot-or-a-recording). Where none exist, offer a Mermaid diagram of the described flow: a state diagram for a multi-step form, a sequence diagram for actor interactions.
+6. **Design assets**: Figma links, screenshots, or a prototype. A link needs only pasting. For a screenshot or a recording, read [references/attachments.md](references/attachments.md). Where none exist, offer a Mermaid diagram of the described flow: a state diagram for a multi-step form, a sequence diagram for actor interactions.
 
 ## 3. Read the code for missed edge cases
 Read the code behind the scope and surface cases the author's criteria do not cover, so the story ships with the edges they would otherwise find in QA.
@@ -210,15 +216,6 @@ gh api graphql -f query='mutation($issue:ID!,$blocker:ID!){addBlockedBy(input:{i
 ```
 
 Then tell the author that delivery work is tracked as `dx-create-task` issues linked back to this one as native sub-issues, not as sections inside it.
-
-## Attach a screenshot or a recording
-An image or a recording belongs on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in the web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body.
-
-`gh` cannot attach a binary, so this step stays manual. Say so, rather than leaving the author to find out when the link does not resolve.
-
-Never commit a file so that an issue can link to it, because deleting it later does not shrink the history. Where you are the one holding the file, hand it to the author to upload.
-
-Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. Where the GIF is unreadable at that size, trim the recording to the seconds that matter rather than raising the resolution.
 
 ## Rules
 - Every story carries at least one happy path and at least one unhappy path. An edge case does not stand in for an unhappy path: an empty list is a boundary, a refused action is a failure, and a reader needs both
