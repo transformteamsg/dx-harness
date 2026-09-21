@@ -99,7 +99,7 @@ Write its report block now, before the pull request step, and take the evidence
 from the branch rather than from what either half said it did.
 
 - **Every item is satisfied, or marked not applicable with a reason**: go to Step 7.
-- **An item is unsatisfied**: stop. Name the item and why, and open no pull request. Say what would close the gap, and leave the choice to the developer.
+- **An item is unsatisfied**: stop. Name the item and why, and open no pull request. Say what would close the gap, and leave the choice to a person, even where you are doing the development work.
 
 ## Step 7: Open a draft pull request
 

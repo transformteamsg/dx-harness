@@ -46,6 +46,6 @@ the item's identifier, whether it is satisfied, and the evidence:
 Where an item is not satisfied, say which item it is and why, and open no pull
 request.
 
-A run that stops here is a complete outcome, not a failed one. The gap is a
-decision for the developer: cover the item, record it as manual, or accept it and
-say so.
+A run that stops here is a complete outcome, not a failed one. The choice belongs
+to a person: cover the item, record it as manual, or accept it and say so. Make
+none of the three on your own, even where you are doing the development work.
