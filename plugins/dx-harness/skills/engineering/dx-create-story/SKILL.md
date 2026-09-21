@@ -1,203 +1,247 @@
 ---
 name: dx-create-story
-description: 'Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for whoever delivers it: an engineer, a designer, a product manager, or a coding agent.'
+description: 'Use when you need to create a well-structured GitHub issue for user-facing feature or capability work, the "As a [user persona], I want..." story shape, for whoever delivers it: an engineer, a designer, a product manager, or a coding agent. Triggers on "create a story", "file a story for this", "raise a story", and a request that already opens "As a [persona], I want". Not for a slice of an existing parent, which is `dx-create-task`, and not for work no one outside the team observes, which is also `dx-create-task`.'
 ---
 
-You are a product manager helping create a well-structured GitHub issue for a user-facing story: work described from the perspective of who benefits from it. Write it so whoever delivers it, an engineer, a designer, a product manager, or a coding agent, can act on it without coming back with questions.
+# Trigger phrases
+Use this skill when you hear:
+- "create a story"
+- "file a story"
+- "raise a story"
+- "As a [persona], I want"
 
-Do not write it for an agent in particular. A person brings judgment an agent does not, and says the criteria are wrong or this is two stories before building anything. Precise criteria invite that push-back early; vague criteria postpone it until review.
+## Table of contents
+- [1. Settle the persona gate](#1-settle-the-persona-gate)
+- [2. Gather the story](#2-gather-the-story)
+- [3. Read the code for missed edge cases](#3-read-the-code-for-missed-edge-cases)
+- [4. Evaluate for split](#4-evaluate-for-split)
+- [5. Identify dependencies from the backlog](#5-identify-dependencies-from-the-backlog)
+- [6. Triage the design need](#6-triage-the-design-need)
+- [7. Preview and confirm](#7-preview-and-confirm)
+- [8. Create the issue](#8-create-the-issue)
+- [Attach a screenshot or a recording](#attach-a-screenshot-or-a-recording)
+- [Rules](#rules)
 
-Dependencies live outside the body: link blockers and dependents with GitHub's native issue relationships (the "Relationships" panel: blocked by / blocks), so the links stay accurate as issues move and close.
+Write the issue so whoever delivers it can act on it without coming back with questions. Do not write it for an agent in particular.
 
-This skill produces the story only; it does not create tasks.
+The canonical structure is [references/issue-template.md](references/issue-template.md). Read it before you construct or preview a body. Fill every section: where there is nothing to say, write `N/A` or `None` rather than deleting the heading. Write every section to [House style](../../../procedures/house-style.md).
 
-## Issue template
+This skill creates one story, or two where Step 4 splits one. It never creates a task.
 
-The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading. Write every section following [House style](../../../procedures/house-style.md): a story earns its length from its acceptance criteria, not from background a reader could get elsewhere.
+## 1. Settle the persona gate
+Settle who benefits before you gather anything else.
 
-## Attaching screenshots and recordings
+Where the request already names the persona and the capability, take the matching bullet without asking. Otherwise ask:
 
-Images and recordings belong on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in GitHub's web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body. `gh` cannot attach binaries, so this step stays manual: say so rather than leaving the author to find out when the link does not resolve.
+```
+Who needs this, what do they get, and why does it help them?
+Format: As a [user persona], I want [capability], so that [benefit].
+```
 
-Never commit one so that an issue can link to it, because deleting it later does not shrink the history. This applies to a coding agent at least as much as to a person: if you are the one holding the file, hand it to the author to upload instead of writing it into the working tree.
+Check these in order and take the first that fits.
 
-Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. If the GIF is unreadable at that size, trim the recording to the few seconds that matter rather than raising the resolution.
+- Names two capabilities a user would ask for separately ("bulk-upload marks, and also export the roster") -> Step 4 now, before you gather the rest
+- Names only the team, the system, or the codebase ("rotate the signing keys", "bump pnpm to 10", "migrate the queue") -> say so, point the author at `dx-create-task`, and stop
+- Names someone outside the team, and what they get ("so parents can see attendance", "As a teacher, I can publish to one class") -> Step 2
 
-## Workflow
+The persona is whoever uses the product. Never invent one to make technical work fit the shape.
 
-### Step 1: Gather the story
+Where the gate stops the run, do not gather the remaining fields and do not read the code. Offer the code read for the task issue instead.
 
-Ask for the following. Do not invent answers: ask if the user has not provided them.
+## 2. Gather the story
+Ask for each field below. Do not invent an answer: ask where the author has not given one.
 
-1. **Scope**: what part of the product does this touch (for example `dashboard`, `login`, or `profile`)? This becomes the backticked scope in the title.
-2. **User story**: who needs what, and why? Format: "As a [user persona], I want [capability], so that [benefit]." The persona is whoever actually uses the product. Do not invent one to fit technical work: if no real user benefits, this is probably a `dx-create-task`, not a story.
-3. **Background**: what problem does this solve? How often does it affect users? Are there links to specs, Slack threads, or recordings?
-4. **Open questions**: is anything about these requirements still unclear or undecided (an ambiguous edge case, a policy nobody has settled, a dependency on someone else's decision)? Capture these rather than guessing or blocking creation on an answer now. If genuinely nothing is unresolved, record "None."
-5. **Acceptance criteria**: Given-When-Then scenarios, named outcome-first, for example "Assignment is created" rather than "Create assignment". Three kinds, and the first two are both required:
-
+1. **Scope**: which part of the product this touches (`dashboard`, `login`, `profile`). This becomes the backticked scope in the title.
+2. **Background**: the problem this solves, how often it affects users, and links to specs, threads, or recordings.
+3. **Open questions**: anything about these requirements still unclear or undecided, such as an ambiguous edge case, an unsettled policy, or a dependency on someone else's decision. Record these rather than guessing. Where nothing is unresolved, record `None`.
+4. **Acceptance criteria**: three kinds of scenario, named outcome-first ("Assignment is created", not "Create assignment").
    - **Happy path**: the action succeeds. At least one.
    - **Unhappy path**: the action is refused or fails, and the scenario says what the user sees instead and what state they are left in. At least one, always. Rejected input, a permission denial, a timeout, and a repeated submission are the usual candidates.
-   - **Edge case**: a boundary the happy path never reaches, such as an empty list, a single item, or a value at its limit. One scenario per case that matters.
+   - **Edge case**: a boundary the happy path never reaches, such as an empty list, a single item, or a value at its limit. One per case that matters.
 
-   An unhappy path and an edge case are not the same thing: an empty list is a boundary, a refused action is a failure, and a story needs both. Folding them together usually loses the unhappy path. Push back if scenarios describe implementation rather than observable behaviour. Step 2 adds to what the author supplies here, so do not ask them to produce every failure and boundary unaided.
-6. **Out of scope**: at least one explicit exclusion. If none exist, ask the user to confirm nothing adjacent is in scope.
-7. **Design assets**: Figma links, screenshots, or a vibe-coded prototype. A link needs nothing more than pasting; a screenshot or a recording follows Attaching screenshots and recordings above. If none are available, offer to produce a Mermaid diagram based on the described flow. State diagrams suit multi-step forms; sequence diagrams suit actor interactions.
+   An unhappy path and an edge case are not the same thing: an empty list is a boundary, a refused action is a failure, and a story needs both.
 
-Item 2 is a gate, not only a field. Settle it before gathering the rest: if nobody who actually uses the product benefits, this is not a story. Say so, point the author at `dx-create-task`, and stop. Do not collect the remaining items and do not continue to Step 2, because reading the code is wasted when there will be no acceptance criteria, and it buries the recommendation under work the author did not ask for. If the code reading would help the task issue instead, offer it rather than doing it unasked.
+   Pick the format per scenario:
 
-### Step 2: Read the code for missed edge cases
+   - A test runner can assert the outcome -> `### <outcome-first name>` with **Given**, **When**, and **Then** bullets
+   - Only a person looking at the screen can confirm the outcome -> a `- [ ]` checklist line under the heading
 
-Read the code behind the scope and surface cases the author's criteria do not cover yet, so the story ships with the edges they would otherwise find in QA or production.
+   One story carries both formats where its scenarios differ. One scenario takes one format, never both.
 
-The scope from Step 1 is the handle: search the repository for the screen, component, or route it names, then read what that code does today. Look for:
+   A scenario that describes implementation rather than observable behaviour goes back to the author. Step 3 adds to what the author gives here, so do not ask them to produce every failure and boundary unaided.
+5. **Out of scope**: at least one explicit exclusion. Where the author names none, ask them to confirm nothing adjacent is in scope.
+6. **Design assets**: Figma links, screenshots, or a prototype. A link needs only pasting; a screenshot or a recording follows [Attach a screenshot or a recording](#attach-a-screenshot-or-a-recording). Where none exist, offer a Mermaid diagram of the described flow: a state diagram for a multi-step form, a sequence diagram for actor interactions.
+
+## 3. Read the code for missed edge cases
+Read the code behind the scope and surface cases the author's criteria do not cover, so the story ships with the edges they would otherwise find in QA.
+
+Search the repository for the screen, component, or route the scope names, then read what that code does today. Look for:
 
 - **States the flow can start in**: empty, partially filled, stale, already completed, or mid-way through a previous attempt
 - **Ways the action can fail**: validation rejections, permission denials, timeouts, duplicate or concurrent submissions
 - **Who else is affected**: other personas who read or act on the same data, and what they see once this changes
 - **What exists today**: current behaviour this story would replace, especially behaviour another feature relies on
 
-Report every finding as something a person experiences, never as implementation. "A teacher who double-clicks submit sends the same assignment twice" is a candidate scenario; "the submit handler has no idempotency key" is not. If a finding can only be stated in implementation terms, it belongs in a `dx-create-task` issue, not in this story.
+Report every finding as something a person experiences. "A teacher who double-clicks submit sends the same assignment twice" is a candidate scenario; "the submit handler has no idempotency key" is not. A finding that can only be stated in implementation terms belongs in a `dx-create-task` issue.
 
-Present the findings and let the author decide:
+```
+Reading the code behind `<scope>`, I found **<number>** cases the criteria do not cover yet:
 
-> "Reading the code behind `<scope>`, I found N cases the criteria do not cover yet:
->
-> - <what a person would experience>: <what happens today>
->
-> Which of these should become acceptance criteria? Any you would rather put out of scope, or record as an open question?"
+- **<what a person would experience>**: <what happens today>
 
-Write confirmed cases into the acceptance criteria as Given-When-Then scenarios. Put dismissed ones in out of scope, or in open questions if the answer is genuinely undecided. Never add a scenario the author has not confirmed.
+Which of these should become acceptance criteria? Any you would rather put out of scope, or record as an open question?
+```
 
-If the code is not available (no repository to hand, or the scope is not built yet), say so and move on rather than guessing at findings.
+A confirmed case becomes an acceptance criterion. A dismissed one goes to out of scope, or to open questions where the answer is undecided. Never add a scenario the author has not confirmed.
 
-### Step 3: Evaluate for split
+Where the code is not available, say so and go to Step 4 rather than guessing at findings.
 
-After the acceptance criteria are settled, evaluate them before continuing. Check for these signals:
+## 4. Evaluate for split
+Check for these signals in the criteria, or in the request itself where Step 1 sent you straight here.
 
-- **Multiple actors**: scenarios describe actions by different roles with no shared outcome
-- **Unrelated starting states**: scenarios have Givens that describe completely different parts of the system
-- **Multiple unrelated outcomes**: the scenarios deliver two capabilities a user would ask for separately, rather than one capability plus its edge cases
+- Step 1 sent you here -> the split question below
+- Different roles act, with no shared outcome -> the split question below
+- The Givens describe completely different parts of the system -> the split question below
+- Two capabilities a user would ask for separately, rather than one capability plus its edge cases -> the split question below
+- None of the above -> Step 5
 
-Judge the signals on the capability, not on the count of scenarios. An edge case added in Step 2 does not justify a split on its own, even when it names a second persona or a different starting state: if it is the same capability seen from another angle, it belongs in this story.
+An edge case added in Step 3 does not justify a split on its own, even where it names a second persona or a different starting state. The same capability seen from another angle belongs in this story.
 
-If any signal is present, pause and offer both cuts, because there are two and they are not interchangeable:
+```
+These scenarios cover two things, **<A>** and **<B>**, which is more than one pull request can deliver safely. Two ways to cut it:
 
-> "These scenarios cover two things, [A] and [B], which is more than one PR can deliver safely. Two ways to cut it:
->
-> - **Two stories**, if [A] and [B] are capabilities someone would ask for separately. Each carries its own persona, benefit, and criteria.
-> - **One story delivered as tasks**, if this is one capability that is too large for a single PR rather than two capabilities. The criteria all stay on this story, and `dx-create-task` files the slices as sub-issues so progress tracks here.
->
-> Which fits?"
+- **Two stories**, if <A> and <B> are capabilities someone would ask for separately. Each carries its own persona, benefit, and criteria.
+- **One story delivered as tasks**, if this is one capability too large for a single pull request. The criteria all stay on this story, and `dx-create-task` files the slices as sub-issues so progress tracks here.
 
-The test that decides it: can each half be written as "As a [persona], I want [capability], so that [benefit]" without inventing a persona to make it fit? If both halves survive that, they are two stories. If one half only makes sense as a means to the other, the whole thing is one story and the halves are tasks. Recommend the cut this test points to rather than leaving the author to weigh it cold, and defer if they disagree: they know the backlog.
+Which fits?
+```
 
-Either cut has to fall on a clean seam. Each piece must be independently reviewable, and no single acceptance criterion may end up half in one piece and half in the other. A seam running through a criterion is the wrong seam: move the whole criterion to one side, or cut somewhere else.
+The test that decides it: each half can be written as "As a [persona], I want [capability], so that [benefit]" without inventing a persona. Where both halves survive that, they are two stories. Where one half only makes sense as a means to the other, the whole is one story and the halves are tasks. Recommend the cut the test points to, and defer where the author disagrees.
 
-- **If the user chooses two stories**: complete Steps 1 and 2 for each capability separately and create them as two issues. Run Steps 5 and 6 once per issue, then link them with GitHub's blocked-by / blocks relationship if one depends on the other.
-- **If the user chooses tasks**: keep one issue and carry all the criteria on it. Note in out of scope that delivery is split into tasks, and hand the slices to `dx-create-task` after Step 7. Do not create the tasks here: `dx-create-task` verifies the parent and gathers criteria per slice, and it cannot verify a parent that does not exist yet.
-- **If the user wants it left as one undivided issue**: note that explicitly in the out of scope section and continue.
+Either cut falls on a clean seam. Each piece is independently reviewable, and no single acceptance criterion ends up half in one piece and half in the other. A seam running through a criterion is the wrong seam: move the whole criterion to one side, or cut elsewhere.
 
-### Step 4: Identify dependencies from the backlog
+- Two stories -> run Steps 2 and 3 for each capability, then Steps 5 to 8 once per issue, then link them as blocked-by where one depends on the other
+- Tasks -> keep one issue carrying all the criteria, note in out of scope that delivery is split into tasks, and hand the slices to `dx-create-task` after Step 8
+- Left undivided -> note that in out of scope and go to Step 5
 
-After the split evaluation, attempt to fetch open issues to surface likely blockers or dependents.
+Where you arrived here from Step 1, run Steps 2 and 3 for the cut the author picked before you go on to Step 5.
+
+Do not create the tasks here. `dx-create-task` verifies the parent, and it cannot verify a parent that does not exist yet.
+
+## 5. Identify dependencies from the backlog
+Fetch the open issues to surface likely blockers and dependents.
 
 ```sh
 gh issue list --state open --json number,title,body --limit 100
 ```
 
-- **If the command succeeds**: read the titles and bodies. Compare each against the new story's scope, user story, and acceptance criteria. For any issue whose title or body looks potentially related, fetch its comments for additional context, as blocking relationships and dependencies are often mentioned in discussion rather than the issue body:
+- The command succeeds -> read the titles and bodies, and compare each against the new story's scope, user story, and criteria
+- The command fails with "command not found" or "'gh' is not recognized" -> ask the author to name any blocking or dependent issues, or confirm `None`, then go to Step 6
+- The command fails any other way -> surface the real error and stop
 
-  ```
-  gh issue view <number> --json comments --jq '.comments[].body'
-  ```
+For an issue that looks related, fetch its comments, because a blocking relationship is often mentioned in discussion rather than in the body.
 
-  Flag an issue as a likely **blocker** if it must be completed before this story can work correctly. Flag an issue as a likely **dependent** if this new story would unblock or enable it. Present findings before asking anything:
+```sh
+gh issue view <number> --json comments --jq '.comments[].body'
+```
 
-  > "I found these potentially related open issues:
-  >
-  > Possible blockers (this story may depend on them):
-  >
-  > - #NNN: title
-  >
-  > Possible dependents (they may depend on this story):
-  >
-  > - #NNN: title
-  >
-  > Are any of these actual dependencies, or are they unrelated?"
+An issue is a likely **blocker** where it must be completed before this story can work correctly, and a likely **dependent** where this story would unblock it.
 
-  Let the author confirm or dismiss each suggestion. Use the confirmed ones to link as GitHub relationships in Step 7. If no related issues are found, proceed without prompting: do not ask the author to confirm a null result.
+```
+I found these potentially related open issues:
 
-- **If the command fails with "command not found" or "'gh' is not recognized"**: skip the automated scan. Ask the author to identify any blocking or dependent issues manually, or confirm "none".
-- **If the command fails for any other reason**: surface the real error and stop.
+Possible blockers (this story may depend on them):
 
-### Step 5: Design-need triage
+- #<number>: <title>
 
-Decide whether this story can be handed to an engineer without a designer in the loop, or should be routed to one *before* implementation starts. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md` (the canonical copy — do not duplicate it here) and judge each acceptance-criteria scenario against it. If any scenario is "strongly recommended": note it now, so Step 7 can write a "Design routing: needs designer input before an engineer starts" line into the Design assets section and apply the `needs-design-review` label. If every scenario "can defer", no line or label is needed — the default is silent. Skip this step entirely when Design assets is `N/A` (no user-facing surface).
+Possible dependents (they may depend on this story):
 
-### Step 6: Preview and confirm
+- #<number>: <title>
 
-Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block. If the Open Questions section is non-empty, call it out explicitly before asking for confirmation:
+Are any of these actual dependencies, or are they unrelated?
+```
 
-> "This story has N open question(s) still unresolved: [list]. You can create it now and settle these before implementation begins, or answer them first. Proceed?"
+Let the author confirm or dismiss each one, and carry the confirmed ones to Step 8. Where the scan finds nothing related, go to Step 6 without prompting: do not ask the author to confirm a null result.
 
-Ask for confirmation before creating the issue either way.
+## 6. Triage the design need
+Decide whether this story can go to an engineer, or needs a designer before implementation starts. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md`, the canonical copy, and judge each scenario against it.
 
-### Step 7: Create the issue
+- Design assets is `N/A`, because the story has no user-facing surface -> Step 7
+- The surface is user-facing but no assets exist yet -> judge the scenarios against the table anyway, because the absence of assets is itself a reason a designer may be needed
+- Any scenario is "strongly recommended" -> note it, so Step 8 writes a "Design routing: needs designer input before an engineer starts" line into Design assets and applies the `needs-design-review` label
+- Every scenario "can defer" -> Step 7 with no line and no label
 
-The title must follow the commit convention from CLAUDE.md: `feat(<scope>): <short description>` using backticks around the scope.
+Where the routing table cannot be read, say so and treat the story as "can defer" rather than guessing at the table's contents.
+
+## 7. Preview and confirm
+Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete body in a markdown code block.
+
+- Open questions is non-empty -> the callout below, then ask for confirmation
+- Open questions is `None` -> ask for confirmation
+
+```
+This story has **<number>** open question(s) still unresolved: <list>. You can create it now and settle these before implementation begins, or answer them first. Proceed?
+```
+
+## 8. Create the issue
+The title follows the commit convention: `feat(<scope>): <short description>`, with backticks around the scope.
 
 Write the confirmed body to a temp file and create the issue with `--body-file`, never an inline `--body`.
 
-Ensure both labels exist, the shape label and the usage-tracking label. If Step 5 flagged design routing, also ensure the routing label exists:
+Ensure the shape label and the usage-tracking label exist, plus the routing label where Step 6 flagged design routing.
 
 ```sh
 gh label create "skill:dx-create-story" --color ededed --description "Created with the dx-create-story skill" 2>/dev/null || true
 gh label create "story" --color 0e8a16 --description "A capability someone outside the team observes" 2>/dev/null || true
 
-# Only if Step 5 flagged design routing:
+# Only where Step 6 flagged design routing:
 gh label create "needs-design-review" --color d4c5f9 --description "Flagged at creation: route to a designer before an engineer starts building" 2>/dev/null || true
 ```
 
-Then create the issue once, adding `--label "needs-design-review"` only if Step 5 flagged design routing:
+Then create the issue once. The shape label answers what kind of work this is, and the skill label answers what wrote the issue.
 
 ```sh
 gh issue create --title "<title>" --body-file /tmp/issue-body.md --label "story" --label "skill:dx-create-story"
-# If Step 5 flagged design routing, add: --label "needs-design-review"
+# Where Step 6 flagged design routing, add: --label "needs-design-review"
 ```
 
-Set both: the shape label answers what kind of work this is, and the skill label answers what wrote the issue.
-
-If `gh issue create` fails because a label does not exist, the repository probably already carries it under different casing (`Task` and `Feature` predate this vocabulary in some repos). List the labels and reuse the one that matches, rather than creating a near-duplicate:
+- Creation fails because a label does not exist -> list the labels and reuse the one that matches, rather than creating a near-duplicate
+- Label creation is refused because the token cannot write labels -> create the issue without labels, print the URL, and name the two labels someone with write access should add
+- The command fails with "command not found" or "'gh' is not recognized" -> render the title and body as markdown, and tell the author to create the issue through the web interface
+- The command fails any other way -> surface the real error and stop
 
 ```sh
 gh label list --limit 200 --json name --jq '.[].name' | grep -ix "story"
 ```
 
-If label creation is refused outright because the token cannot write labels, create the issue without labels, print the URL, and say which two labels someone with write access should add.
+On success, print the issue URL, then link each dependency confirmed in Step 5. Resolve each issue number to its node ID first, then call the mutation.
 
-- **If the command succeeds**: print the issue URL. Then link any dependencies confirmed in Step 4 as GitHub relationships using the GraphQL `addBlockedBy` mutation. Resolve each issue number to its node ID first, then call the mutation:
+```sh
+# Resolve an issue number to its node ID
+gh issue view <number> --json id --jq .id
 
-  ```sh
-  # Resolve an issue number to its node ID
-  gh issue view <number> --json id --jq .id
+# This issue is BLOCKED BY #NNN
+gh api graphql -f query='mutation($issue:ID!,$blocker:ID!){addBlockedBy(input:{issueId:$issue,blockingIssueId:$blocker}){clientMutationId}}' -f issue=<this-issue-id> -f blocker=<blocker-id>
 
-  # This issue is BLOCKED BY #NNN
-  gh api graphql -f query='mutation($issue:ID!,$blocker:ID!){addBlockedBy(input:{issueId:$issue,blockingIssueId:$blocker}){clientMutationId}}' -f issue=<this-issue-id> -f blocker=<blocker-id>
+# This issue BLOCKS #NNN (set the relationship on the dependent)
+gh api graphql -f query='mutation($issue:ID!,$blocker:ID!){addBlockedBy(input:{issueId:$issue,blockingIssueId:$blocker}){clientMutationId}}' -f issue=<dependent-id> -f blocker=<this-issue-id>
+```
 
-  # This issue BLOCKS #NNN (set the relationship on the dependent)
-  gh api graphql -f query='mutation($issue:ID!,$blocker:ID!){addBlockedBy(input:{issueId:$issue,blockingIssueId:$blocker}){clientMutationId}}' -f issue=<dependent-id> -f blocker=<this-issue-id>
-  ```
+Then tell the author that delivery work is tracked as `dx-create-task` issues linked back to this one as native sub-issues, not as sections inside it.
 
-  If no dependencies were confirmed, skip this.
+## Attach a screenshot or a recording
+An image or a recording belongs on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in the web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body.
 
-  Remind the user: delivery work for this story is tracked as `dx-create-task` issues linked back to it (via GitHub's native sub-issue relationship, the `addSubIssue` mutation), not as sections within this issue. Break the story into tasks with `dx-create-task` when ready to start implementation, so progress shows automatically against this story.
-- **If the command fails with "command not found" or "'gh' is not recognized"**: render the issue title and body as markdown and instruct the user to create the issue manually via the GitHub web interface.
-- **If the command fails for any other reason**: surface the real error and stop.
+`gh` cannot attach a binary, so this step stays manual. Say so, rather than leaving the author to find out when the link does not resolve.
+
+Never commit a file so that an issue can link to it, because deleting it later does not shrink the history. Where you are the one holding the file, hand it to the author to upload.
+
+Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. Where the GIF is unreadable at that size, trim the recording to the seconds that matter rather than raising the resolution.
 
 ## Rules
-
-- Every story carries at least one happy path and at least one unhappy path. An edge case does not stand in for an unhappy path: an empty list is a boundary, a refused action is a failure, and a reader needs both.
-- An edge case found by reading the code must be restated as an experience before it is offered to the author.
-- Pick one term per concept and use it consistently across all scenarios, for example always "customer" and never mixing in "user".
-- Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
-- The PR that implements this issue (or the task issues delivering it) will squash-merge using its title as the commit message, so titles must be valid commit messages.
+- Every story carries at least one happy path and at least one unhappy path. An edge case does not stand in for an unhappy path: an empty list is a boundary, a refused action is a failure, and a reader needs both
+- An edge case found by reading the code is restated as an experience before it is offered to the author
+- Link a blocker or a dependent with GitHub's Relationships panel, never as a line in the body, so the link stays accurate as issues move and close
+- Pick one term per concept and hold it across every scenario, so always "customer" and never "user" alongside it
+- Do not use an em dash in the title or the body. Use a colon, parentheses, or separate sentences
+- The pull request that implements this issue squash-merges using its title as the commit message, so the title must be a valid commit message
