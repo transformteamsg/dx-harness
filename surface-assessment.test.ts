@@ -155,3 +155,37 @@ describe("both surfaces get two outcomes and no third", () => {
     );
   });
 });
+
+/* Contract item 4: an ambiguous issue is asked about, not guessed. */
+describe("ambiguity is a question, not a reading", () => {
+  const ambiguous = section(read(PROCEDURE), "## When the criteria do not say");
+
+  it("has a section for it", () => {
+    expect(
+      ambiguous.length,
+      `${PROCEDURE} has no section for criteria that do not say`,
+    ).toBeGreaterThan(0);
+  });
+
+  it("names what is ambiguous and asks", () => {
+    expect(ambiguous, "the ambiguous case does not require a question").toMatch(/ask/i);
+  });
+
+  /* The failure mode is not silence: it is a run that picks the likelier reading
+     and builds on it. Each of these phrases would license exactly that. */
+  it("offers no reading to proceed on", () => {
+    expect(ambiguous.length, `${PROCEDURE} has no ambiguous section to check`).toBeGreaterThan(0);
+    for (const guess of [
+      "assume",
+      "default to frontend",
+      "default to backend",
+      "the more likely",
+      "most issues",
+    ]) {
+      expect(
+        ambiguous.toLowerCase(),
+        `the ambiguous case licenses a guess: "${guess}"`,
+      ).not.toContain(guess);
+    }
+  });
+});
