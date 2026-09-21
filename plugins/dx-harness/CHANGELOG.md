@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Surface assessment on an issue**: `procedures/surface-assessment.md` decides whether an issue's work touches the frontend, the backend, both, or neither, the issue contract derives it before the code is read so it bounds what a run explores, and `dx-implement-issue` plans within it and states it in the report and in the request body ([#318](https://github.com/transformteamsg/dx-harness/issues/318)).
 - **Code-level definition of done**: `procedures/definition-of-done.md` states the seven things a code change must make true and the evidence each is checked by, `dx-implement-issue` reports against every item before it opens a request and stops on an unsatisfied one, and `dx-create-pr` reads it instead of setting a second standard for coverage ([#317](https://github.com/transformteamsg/dx-harness/issues/317)).
 - **New skill `dx-create-skill`**: it writes a `SKILL.md` from an interview or converts an existing one to the skill prose standard, baselining a conversion before it changes a line and verifying the result by running it in isolated sessions ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
