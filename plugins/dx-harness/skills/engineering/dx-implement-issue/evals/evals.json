@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-implement-issue",
-  "notes": "Offline eval for the test/code split (#316). The suite lives on the router rather than on either half, because the baseline is the pre-change single skill, in which neither half exists: a suite under dx-write-tests could not run against it. Baseline is dx-implement-issue as it stood at 0c22082, before this branch. Run every case with no network and with a gh stub that serves the fixture issue from a local file, so nothing reaches GitHub. Never let a case open a pull request; tell the runner to record what it WOULD open. A run that stops at a question it must ask is a complete and valid outcome. Fixtures are described rather than committed, because each is a git repository and those do not travel well in version control. Assertions carry passed=null until a run fills them in.",
+  "notes": "Offline eval for the test/code split (#316). The suite lives on the router rather than on either half, because the baseline is the pre-change single skill, in which neither half exists: a suite under dx-write-tests could not run against it. Baseline is dx-implement-issue as it stood at 0c22082, before this branch. Run every case with no network and with a gh stub that serves the fixture issue from a local file, so nothing reaches GitHub. Never let a case open a pull request; tell the runner to record what it WOULD open. A run that stops at a question it must ask is a complete and valid outcome. Fixtures are described rather than committed, because each is a git repository and those do not travel well in version control. Assertions carry passed=null until a run fills them in. Cases 7 and 8 come from #317 and carry a different baseline: dx-implement-issue as it stood at 071c3a2, before the definition of done existed, where a run reported coverage but never reported against a finish line.",
   "evals": [
     {
       "id": 0,
@@ -245,6 +245,69 @@
         },
         {
           "text": "Offers adding a test setup as separate work rather than doing it inside this run",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "definition-of-done-reported-per-item",
+      "fixture_setup": "mkdir ledger && cd ledger && git init && npm init -y, add vitest with a `test` script, a `lint` script that exits 0, and a CONTRIBUTING.md whose Pass the checks section names both. Commit a src/balance.js exporting `balance(entries)` that sums credits and ignores debits, plus one passing tests/balance.test.js. Stub gh to serve issue 71, a story titled 'feat(`ledger`): subtract debits from the balance' with two acceptance criteria: (1) a debit reduces the balance by its amount, (2) a ledger of one credit and one equal debit balances to zero. Both are automatable with the runner present, so no criterion is manual.",
+      "prompt": "Implement issue 71.",
+      "expected_output": "The run reaches its checks and reports against the definition of done before it would open a request. The report carries one line per item, DoD-1 to DoD-7, each with whether the item is satisfied and the evidence for it: the coverage declaration for DoD-1, the test files for DoD-2, the lint and test output for DoD-3, the diff for DoD-4, the commit subjects for DoD-5, the touched documents for DoD-6. DoD-7 is marked not applicable, because the branch adds no dependency.",
+      "assertions": [
+        {
+          "text": "The report names every item from DoD-1 to DoD-7, with none left out",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Each item carries whether it is satisfied, not only the item text",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Each satisfied item names evidence on the branch or in its output, rather than asserting the item",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "DoD-7 is marked not applicable with the reason that no dependency was added",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "DoD-3's evidence is the output of the commands CONTRIBUTING.md names, not a restated list of them",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "unsatisfied-definition-of-done-stops-before-a-request",
+      "fixture_setup": "The ledger fixture from case 7, with one change to the issue: stub gh to serve issue 72, whose acceptance criteria are (1) a debit reduces the balance by its amount and (2) the balance renders in red when negative. The repository has vitest and nothing that renders, so criterion 2 cannot be automated. Tell the runner that the developer, if asked, declines to write a manual case for criterion 2.",
+      "prompt": "Implement issue 72.",
+      "expected_output": "Criterion 1 is covered and criterion 2 has neither a test nor a written manual case, so DoD-1 is unsatisfied. The run says which item is unsatisfied and why, opens no request, and names what would close the gap: a manual case for criterion 2, or a decision to accept it uncovered. It does not report the work as complete, and it does not treat the passing suite as an answer.",
+      "assertions": [
+        {
+          "text": "Reports DoD-1 as unsatisfied, naming criterion 2 as the gap",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Opens no pull request, and records that it would not open one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names what would close the gap and leaves the choice to a person, rather than choosing for them",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not treat the green suite or the other six items as making the run complete",
           "passed": null,
           "evidence": ""
         }
