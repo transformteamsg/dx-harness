@@ -17,6 +17,7 @@ const CONTRACT = `${HARNESS}/procedures/issue-contract.md`;
 const ROUTER = `${HARNESS}/skills/engineering/dx-implement-issue/SKILL.md`;
 const TEST_HALF = `${HARNESS}/skills/engineering/dx-write-tests/SKILL.md`;
 const CODE_HALF = `${HARNESS}/skills/engineering/dx-write-implementation/SKILL.md`;
+const DESIGN_IMPLEMENT = `${HARNESS}/procedures/implement.md`;
 
 /* A tolerant read, because the implementation half creates the procedure. A
    missing file reads as empty and fails an assertion, rather than throwing
@@ -38,6 +39,15 @@ const VALUES = ["frontend", "backend", "both", "neither"];
    "surface" would match the verb, which these files already use for reporting an
    error, so the term is what the assertions look for. */
 const TERM = "surface assessment";
+
+/* The rule for deriving the value from acceptance criteria, as phrases only the
+   procedure may carry. A consumer that restates one of these is the drift this
+   guards against: the same judgment call would then have two homes that can
+   disagree. */
+const DERIVATION = [
+  "what the criterion makes observable",
+  "one surface can make it observable",
+];
 
 /* One section of a markdown file, from its heading to the next heading at the
    same level. */
@@ -218,6 +228,37 @@ describe("the assessment travels rather than being re-derived", () => {
        gets run. */
     for (const consumer of [ROUTER, TEST_HALF, CODE_HALF]) {
       expect(read(consumer), `${consumer} still says seven steps`).not.toContain("seven steps");
+    }
+  });
+});
+
+/* Contract item 7: no rule ends up in two places. The design loop's implement
+   procedure keeps its own rules, which #318 puts out of scope, so the boundary
+   is asserted in both directions. */
+describe("the rule has one home", () => {
+  it("no consumer restates the derivation rule", () => {
+    for (const consumer of [CONTRACT, ROUTER, TEST_HALF, CODE_HALF]) {
+      const body = read(consumer);
+      expect(body.length, `${consumer} is missing or empty`).toBeGreaterThan(0);
+      for (const phrase of DERIVATION) {
+        expect(body, `${consumer} restates "${phrase}"`).not.toContain(phrase);
+      }
+    }
+  });
+
+  it("the design loop's procedure is left to its own rules", () => {
+    const design = read(DESIGN_IMPLEMENT);
+    expect(design.length, `${DESIGN_IMPLEMENT} is missing or empty`).toBeGreaterThan(0);
+    expect(design, `${DESIGN_IMPLEMENT} was made a consumer`).not.toContain(
+      "surface-assessment.md",
+    );
+  });
+
+  it("the procedure restates none of the design loop's constraints", () => {
+    const procedure = read(PROCEDURE);
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    for (const term of ["catalog.yaml", "CMP-", "TOK-", "A11Y-", "SLP-"]) {
+      expect(procedure, `${PROCEDURE} restates the design loop's "${term}"`).not.toContain(term);
     }
   });
 });
