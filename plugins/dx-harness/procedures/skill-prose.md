@@ -155,9 +155,6 @@ description: '<when to use it, the phrases a person says, and what it does>'
 Use this skill when you hear:
 - "<bare phrase>"
 
-## Table of contents
-- [<n>. <step name>](#<anchor>)
-
 ## <n>. <step name>
 <one imperative line: what this step does>
 
@@ -179,8 +176,9 @@ Options:
 - <only what no step covers>
 ```
 
-A table of contents earns its place only where it lists every section. For a
-short file the numbered headings already do the job.
+Do not add a table of contents. The whole file is in context before the agent
+acts, so there is nothing to navigate to, and a second copy of the step names
+goes stale the first time a step is renumbered.
 
 ### Step numbering
 
@@ -227,9 +225,8 @@ case it might capture by mistake.
 ## Defects in the reference file
 
 `skills/engineering/dx-create-issue/SKILL.md` is the worked conversion.
-Three things in it are noise rather than standard, so do not copy them:
+Two things in it are noise rather than standard, so do not copy them:
 
-- Its table of contents lists Steps 1 to 4b and omits Step 5 and Rules.
 - `### Guiding Questions` and `### Guiding Question Options` are title case.
 - The Step 5 table headers, `Issue Type` and `Skill Name`, are title case.
 

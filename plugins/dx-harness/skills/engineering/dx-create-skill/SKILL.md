@@ -11,17 +11,6 @@ Use this skill when you hear:
 - "convert this SKILL.md"
 - "I want Claude doing this the same way every time"
 
-## Table of contents
-- [1. Read the standard and settle the mode](#1-read-the-standard-and-settle-the-mode)
-- [2. Interview for a new skill](#2-interview-for-a-new-skill)
-- [3. Baseline the skill you are converting](#3-baseline-the-skill-you-are-converting)
-- [4. Place the file and write the frontmatter](#4-place-the-file-and-write-the-frontmatter)
-- [5. Write the steps](#5-write-the-steps)
-- [6. Run the skill and compare](#6-run-the-skill-and-compare)
-- [7. Fix a rule two runs read differently](#7-fix-a-rule-two-runs-read-differently)
-- [8. Record the change](#8-record-the-change)
-- [Rules](#rules)
-
 ## 1. Read the standard and settle the mode
 Read `../../../procedures/skill-prose.md` end to end first. It holds the rules, the structure, and the verification method that Step 6 runs.
 

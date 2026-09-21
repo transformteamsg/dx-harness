@@ -10,28 +10,10 @@ Use this skill when you hear:
 - "raise a story"
 - "As a [persona], I want"
 
-## Table of contents
-- [1. Settle the persona gate](#1-settle-the-persona-gate)
-- [2. Gather the story](#2-gather-the-story)
-- [3. Read the code for missed edge cases](#3-read-the-code-for-missed-edge-cases)
-- [4. Evaluate for split](#4-evaluate-for-split)
-- [5. Identify dependencies from the backlog](#5-identify-dependencies-from-the-backlog)
-- [6. Triage the design need](#6-triage-the-design-need)
-- [7. Preview and confirm](#7-preview-and-confirm)
-- [8. Create the issue](#8-create-the-issue)
-- [Attach a screenshot or a recording](#attach-a-screenshot-or-a-recording)
-- [Rules](#rules)
-
-Write the issue so whoever delivers it can act on it without coming back with questions. Do not write it for an agent in particular.
-
-The canonical structure is [references/issue-template.md](references/issue-template.md). Read it before you construct or preview a body. Fill every section: where there is nothing to say, write `N/A` or `None` rather than deleting the heading. Write every section to [House style](../../../procedures/house-style.md).
-
-This skill creates one story, or two where Step 4 splits one. It never creates a task.
-
 ## 1. Settle the persona gate
 Settle who benefits before you gather anything else.
 
-Where the request already names the persona and the capability, take the matching bullet without asking. Otherwise ask:
+Where the request answers the bullets below on its own, take the matching bullet without asking. Otherwise ask:
 
 ```
 Who needs this, what do they get, and why does it help them?

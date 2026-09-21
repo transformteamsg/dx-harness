@@ -13,11 +13,13 @@
 - **Story skill rewritten**: `dx-create-story` is eight numbered steps with every branch ending at a named destination, and its persona gate sits at Step 1 stated once instead of twice with different force ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Split offered before intake**: a request naming two capabilities reaches the split question first, so the author no longer answers six questions about a story that is then cut in half ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Criteria format picked per scenario**: a scenario a test runner can assert takes Given-When-Then, one only a person can confirm takes a checklist line, and one story carries both ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Contents list dropped**: a `SKILL.md` carries no table of contents, because the whole file is in context before an agent acts and a second copy of the step names goes stale on a renumber ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ### Fixed
 
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 - **Story template repaired**: it no longer offers two acceptance-criteria formats with no rule for choosing, and its Open questions line no longer runs two words together ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Stray bracket in `dx-create-issue`**: its first step heading no longer carries a bracket that broke it as a heading ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 ## 0.7.0 (2026-09-14)
 
 ### Added
