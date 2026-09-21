@@ -176,10 +176,6 @@ Options:
 - <only what no step covers>
 ```
 
-Do not add a table of contents. The whole file is in context before the agent
-acts, so there is nothing to navigate to, and a second copy of the step names
-goes stale the first time a step is renumbered.
-
 ### Step numbering
 
 Whole numbers for a sequence. Letter suffixes for branches off one point, as in

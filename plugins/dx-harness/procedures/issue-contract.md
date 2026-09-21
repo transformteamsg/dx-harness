@@ -23,7 +23,9 @@ wins, because it came later.
 
 ## Step 2: Read the shape
 
-The shape decides what you build against. The headings are authoritative. A shape
+The shape decides what you build against. The headings are authoritative. A
+heading may carry a leading emoji, as the story template's do, so match on the
+heading text and ignore anything before it. A shape
 label (`story`, `task`, `chore`,
 or `bug`) and a `skill:dx-create-*` label confirm the reading. A pasted body carries
 neither, so never depend on them.
