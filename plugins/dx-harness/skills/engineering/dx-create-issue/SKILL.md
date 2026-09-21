@@ -35,7 +35,7 @@ Options:
 ## 2. Guide issue type selection
 Use AskUserQuestion for each [guiding question](#guiding-questions). For each, use options in [guiding question options](#guiding-question-options).
 
-### Guiding Questions
+### Guiding questions
 
 Q1: If yes, go to Step 4a with 'Bug' selected.
 ```
@@ -66,7 +66,7 @@ Examples:
 - security audits
 ```
 
-### Guiding Question Options
+### Guiding question options
 ```
 - Yes
 - No
@@ -127,7 +127,7 @@ Options:
 
 ## 5. Load skills for execution
 Load the selected skill. Run one skill per confirmed issue.
-| Issue Type | Skill Name |
+| Issue type | Skill name |
 | ---------- | ---------- |
 | Story | dx-create-story |
 | Task | dx-create-task |

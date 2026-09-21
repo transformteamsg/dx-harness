@@ -214,17 +214,9 @@ Two method rules:
   run is not evidence of determinism.
 
 Each rule you add buys reliable resolution for its own class of request and risks
-claiming an adjacent one. Three rounds of defects in the worked conversion were
-all that same failure, so test each new rule against the case it targets and the
-case it might capture by mistake.
-
-## Defects in the reference file
-
-`skills/engineering/dx-create-issue/SKILL.md` is the worked conversion.
-Two things in it are noise rather than standard, so do not copy them:
-
-- `### Guiding Questions` and `### Guiding Question Options` are title case.
-- The Step 5 table headers, `Issue Type` and `Skill Name`, are title case.
+claiming an adjacent one. Three rounds of defects in the first file converted to
+this standard were all that same failure, so test each new rule against the case
+it targets and the case it might capture by mistake.
 
 ## Path resolution
 

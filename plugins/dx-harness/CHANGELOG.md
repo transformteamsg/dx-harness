@@ -21,6 +21,8 @@
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 - **Story template repaired**: it no longer offers two acceptance-criteria formats with no rule for choosing, and its Open questions line no longer runs two words together ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Stray bracket in `dx-create-issue`**: its first step heading no longer carries a bracket that broke it as a heading ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Shape label corroborates only**: `dx-split-issue` reads a story from its heading, and treats a `story` or `skill:dx-create-story` label as confirmation where one is present rather than a second requirement ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Sentence case in `dx-create-issue`**: its two guiding-question headings and its Step 5 table headers follow the standard, so the skill prose standard no longer documents them as defects to work around ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Emoji headings read correctly**: `dx-create-task`, `dx-split-issue`, and `dx-code-review` match a story on its heading text and ignore a leading emoji ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ## 0.7.0 (2026-09-14)
