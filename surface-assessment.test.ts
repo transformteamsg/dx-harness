@@ -132,3 +132,26 @@ describe("the assessment is derived before it is acted on", () => {
     expect(plan.toLowerCase(), "the plan step does not name the assessment").toContain(TERM);
   });
 });
+
+/* Contract item 3: an issue needing both surfaces is not silently split. */
+describe("both surfaces get two outcomes and no third", () => {
+  const both = section(read(PROCEDURE), "## When the work touches both");
+
+  it("has a section for it", () => {
+    expect(both.length, `${PROCEDURE} has no section for work touching both`).toBeGreaterThan(0);
+  });
+
+  it("permits sequencing within one branch", () => {
+    expect(both, "the both case does not permit sequencing in one branch").toMatch(/one branch/i);
+  });
+
+  it("permits stopping to ask", () => {
+    expect(both, "the both case does not permit stopping to ask").toMatch(/ask/i);
+  });
+
+  it("forbids reporting a criterion met on one surface", () => {
+    expect(both, "the both case does not forbid the half delivery").toMatch(
+      /never report .*(criterion|item).*met/i,
+    );
+  });
+});
