@@ -34,20 +34,10 @@ integration configuration, because that is the set which gates a merge.
 
 ## Report against every item
 
-State the result item by item, in the report that ends the run:
+State the result item by item, in the report that ends the run. Each line carries
+the item's identifier, whether it is satisfied, and the evidence:
 
-```
-Definition of done, contract #142:
-  DoD-1 satisfied: criteria 1 and 2 by tests/due-date.test.ts, criterion 3 by the manual case below
-  DoD-2 satisfied: the boundary and the error path at tests/due-date.test.ts:44
-  DoD-3 satisfied: lint, typecheck, and the suite pass
-  DoD-4 satisfied: the diff reaches src/invoice.js and its test only
-  DoD-5 satisfied: three commits, and each leaves the suite passing
-  DoD-6 satisfied: no document states the old behaviour
-  DoD-7 not applicable: the branch adds no dependency
-```
-
-- **Name every item.**
+- **Name every item, DoD-1 to DoD-7.**
 - **Give the evidence, not the verdict.** Name the test, the file, the command output, or the commit that a reader looks at.
 - **Mark an item the change does not reach as not applicable, and say why.** A branch that adds no dependency has nothing to state a reason for.
 
