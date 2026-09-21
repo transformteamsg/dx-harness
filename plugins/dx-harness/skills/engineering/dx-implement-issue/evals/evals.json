@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-implement-issue",
-  "notes": "Offline eval for the test/code split (#316). The suite lives on the router rather than on either half, because the baseline is the pre-change single skill, in which neither half exists: a suite under dx-write-tests could not run against it. Baseline is dx-implement-issue as it stood at 0c22082, before this branch. Run every case with no network and with a gh stub that serves the fixture issue from a local file, so nothing reaches GitHub. Never let a case open a pull request; tell the runner to record what it WOULD open. A run that stops at a question it must ask is a complete and valid outcome. Fixtures are described rather than committed, because each is a git repository and those do not travel well in version control. Assertions carry passed=null until a run fills them in. Cases 7 and 8 come from #317 and carry a different baseline: dx-implement-issue as it stood at 071c3a2, before the definition of done existed, where a run reported coverage but never reported against a finish line.",
+  "notes": "Offline eval for the test/code split (#316). The suite lives on the router rather than on either half, because the baseline is the pre-change single skill, in which neither half exists: a suite under dx-write-tests could not run against it. Baseline is dx-implement-issue as it stood at 0c22082, before this branch. Run every case with no network and with a gh stub that serves the fixture issue from a local file, so nothing reaches GitHub. Never let a case open a pull request; tell the runner to record what it WOULD open. A run that stops at a question it must ask is a complete and valid outcome. Fixtures are described rather than committed, because each is a git repository and those do not travel well in version control. Assertions carry passed=null until a run fills them in. Cases 7 and 8 come from #317 and carry a different baseline: dx-implement-issue as it stood at 071c3a2, before the definition of done existed, where a run reported coverage but never reported against a finish line. Cases 9 to 12 come from #318 and carry a third baseline: dx-implement-issue as it stood at a705613, before the surface assessment existed, where a run read whatever code it wanted and never said which surfaces the issue touched.",
   "evals": [
     {
       "id": 0,
@@ -308,6 +308,147 @@
         },
         {
           "text": "Does not treat the green suite or the other six items as making the run complete",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "surface-assessment-stated-in-report-and-request",
+      "fixture_setup": "The ledger fixture from case 7, with one change to the issue: stub gh to serve issue 73, a story titled 'feat(`ledger`): report an entry as reconciled' with two acceptance criteria: (1) an entry matched to a statement line reports as reconciled, (2) a reconciled entry shows a tick beside its amount. The repository has vitest and a component runner that renders, so both criteria are automatable.",
+      "prompt": "Implement issue 73.",
+      "expected_output": "The run derives the assessment during the intake, before it reads any source file, and states it as `both` with criterion 1 on the backend and criterion 2 on the frontend. The value and the per-item breakdown appear in the plan, in the final report, and in a section headed `Surfaces` in the pull request body it would open.",
+      "assertions": [
+        {
+          "text": "States one of frontend, backend, both, or neither, and no other value",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Derives it from the acceptance criteria rather than from the issue title or the repository's directory names",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names which criterion sits on which surface, by criterion number",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "States the assessment in the plan before it reads the source files it will change",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The pull request body it would open carries the assessment under a section headed Surfaces",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Neither half re-derives the assessment after the router passed it down",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "frontend-only-plans-no-backend-work",
+      "fixture_setup": "mkdir portal && cd portal && git init && npm init -y, add vitest and a component runner that renders. Commit a src/db/schema.sql, a src/api/invoices.js serving a list endpoint, and a src/ui/InvoiceRow.jsx that renders an amount and a due date. Stub gh to serve issue 90, a story titled 'feat(`invoices`): show the due date beside the amount' with one acceptance criterion: the due date already in the response renders beside the amount. The response carries the field, so no backend change is needed.",
+      "prompt": "Implement issue 90.",
+      "expected_output": "The run assesses the single criterion as `frontend`. It plans and changes src/ui/InvoiceRow.jsx only. The schema and the endpoint are named as deliberately untouched rather than silently skipped, and the run says the criterion needed nothing from the backend because the field was already in the response.",
+      "assertions": [
+        {
+          "text": "States the assessment as frontend",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Plans no change to src/db/schema.sql or src/api/invoices.js",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Leaves both of those files unchanged in the diff",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Says what the run would have needed from the backend, so the boundary reads as deliberate",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not extend the schema or the endpoint with a field no criterion asked for",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "both-surfaces-not-silently-half-delivered",
+      "fixture_setup": "The portal fixture from case 10, with one change to the issue: stub gh to serve issue 91, whose single acceptance criterion is that an invoice past its due date shows an amber overdue badge. Nothing in the response says whether an invoice is overdue, so the criterion needs a backend rule and a frontend badge. Tell the runner that the schema file is read-only and any write to it fails.",
+      "prompt": "Implement issue 91.",
+      "expected_output": "The run assesses the criterion as `both` and says so in the plan. It takes one of the two permitted outcomes: either it sequences the backend rule before the badge in one branch, or it stops and names the split, because the schema is blocked. Whichever it takes, it never reports the criterion as met on the strength of the badge alone.",
+      "assertions": [
+        {
+          "text": "States the assessment as both, in the plan, before either half runs",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Takes either the sequenced outcome or the stop-and-ask outcome, and names which",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not report the criterion as met when only the frontend half exists",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Where it stops, it names the split it would make and leaves the choice to the developer",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names the half it did build as what is done, rather than as what the issue asked for",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "ambiguous-surfaces-asked-about",
+      "fixture_setup": "The portal fixture from case 10, with one change to the issue: stub gh to serve issue 92, a story whose single acceptance criterion is 'the invoice list is faster'. The criterion reads as a frontend item, the rendering of rows already fetched, or as a backend item, the query behind them, and nothing in the body or the comments settles which.",
+      "prompt": "Implement issue 92.",
+      "expected_output": "The run finds the criterion ambiguous on surface. It names the item number, gives both readings, and asks which one is meant. It writes no test and no production code, and it picks neither reading to proceed on.",
+      "assertions": [
+        {
+          "text": "Names criterion 1 as ambiguous on which surface it touches",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Gives both readings, the rendering and the query, rather than only one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Asks which reading is meant instead of choosing the more likely one",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Writes no test and no production code before the answer comes back",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not fall back to assessing it as both to avoid asking",
           "passed": null,
           "evidence": ""
         }

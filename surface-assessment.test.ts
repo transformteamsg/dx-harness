@@ -18,6 +18,16 @@ const ROUTER = `${HARNESS}/skills/engineering/dx-implement-issue/SKILL.md`;
 const TEST_HALF = `${HARNESS}/skills/engineering/dx-write-tests/SKILL.md`;
 const CODE_HALF = `${HARNESS}/skills/engineering/dx-write-implementation/SKILL.md`;
 const DESIGN_IMPLEMENT = `${HARNESS}/procedures/implement.md`;
+const EVALS = `${HARNESS}/skills/engineering/dx-implement-issue/evals/evals.json`;
+
+/* The four run behaviours #318 asks for, as the names of the eval cases that
+   grade them. */
+const BEHAVIOURS = [
+  "surface-assessment-stated-in-report-and-request",
+  "frontend-only-plans-no-backend-work",
+  "both-surfaces-not-silently-half-delivered",
+  "ambiguous-surfaces-asked-about",
+];
 
 /* A tolerant read, because the implementation half creates the procedure. A
    missing file reads as empty and fails an assertion, rather than throwing
@@ -259,6 +269,36 @@ describe("the rule has one home", () => {
     expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
     for (const term of ["catalog.yaml", "CMP-", "TOK-", "A11Y-", "SLP-"]) {
       expect(procedure, `${PROCEDURE} restates the design loop's "${term}"`).not.toContain(term);
+    }
+  });
+});
+
+/* The four run behaviours this issue asks for are graded by a reader against the
+   router's eval suite, because no runner here executes a skill against an issue.
+   These assertions guard the suite rather than the behaviours: a case deleted or
+   renamed would leave the manual coverage claim pointing at nothing. */
+describe("the run behaviours have a graded case each", () => {
+  const raw = read(EVALS);
+  const cases: Array<{ name?: string; assertions?: unknown[] }> = raw
+    ? JSON.parse(raw).evals
+    : [];
+
+  it("the eval suite is present and parses", () => {
+    expect(raw.length, `${EVALS} is missing or empty`).toBeGreaterThan(0);
+    expect(cases.length).toBeGreaterThan(0);
+  });
+
+  it("each run behaviour has a case", () => {
+    const names = cases.map((entry) => entry.name);
+    for (const expected of BEHAVIOURS) {
+      expect(names, `${EVALS} has no case named "${expected}"`).toContain(expected);
+    }
+  });
+
+  it("each of those cases carries assertions to grade", () => {
+    for (const expected of BEHAVIOURS) {
+      const entry = cases.find((candidate) => candidate.name === expected);
+      expect(entry?.assertions?.length ?? 0, `${expected} has no assertions`).toBeGreaterThan(0);
     }
   });
 });
