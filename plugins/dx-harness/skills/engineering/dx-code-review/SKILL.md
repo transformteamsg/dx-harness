@@ -192,7 +192,7 @@ The second line goes on an inline finding only, and the summary comment omits it
       }
     }' -f threadId="{thread_id}"
     ```
-7. **Post once.** Post every finding that survived analysis steps 4 and 5, and hold nothing back here: step 4 owns the cap and the re-review rule. Where a run reaches this step with findings that never passed step 4, such as an analysis handed to it from outside, apply step 4 before posting.
+7. **Post once.** Post every finding that no analysis step dropped, and hold nothing back here: step 4 owns the cap and the re-review rule. A finding that skips step 5, such as the issue and test plan check's missing-test finding, still posts. Where a run reaches this step with findings that never passed step 4, such as an analysis handed to it from outside, apply step 4 before posting.
 
    Post them as a **single review**, not one comment per finding: [references/inline-comment-format.md](references/inline-comment-format.md) for the `gh api` invocation and its fallback.
 8. Print the outcome and summary per [references/summary-format.md](references/summary-format.md). Three outcomes: every path skipped, nothing found, findings posted.
