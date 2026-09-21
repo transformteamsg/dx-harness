@@ -39,12 +39,12 @@ the item's identifier, whether it is satisfied, and the evidence:
 
 - **Name every item, DoD-1 to DoD-7.**
 - **Give the evidence, not the verdict.** Name the test, the file, the command output, or the commit that a reader looks at.
-- **Mark an item the change does not reach as not applicable, and say why.** A branch that adds no dependency has nothing to state a reason for.
+- **Mark an item the change does not reach as not applicable, and say why.**
 
 ## An unsatisfied item stops the run
 
 Where an item is not satisfied, say which item it is and why, and open no pull
-request. A criterion with no test and no manual case is the recurring case.
+request.
 
 A run that stops here is a complete outcome, not a failed one. The gap is a
 decision for the developer: cover the item, record it as manual, or accept it and
