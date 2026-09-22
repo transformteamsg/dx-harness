@@ -65,7 +65,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 3. Deduplicate, against the rest of the candidates and against the request:
    - **Within the candidate list** — same defect at the same location, keep one.
    - **Against the All open threads set** from sequence step 3 — where a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, drop the candidate.
-4. **Apply volume control here, before any candidate is verified.** Step 5 is the expensive stage, so a candidate that cannot post must not reach it.
+4. **Apply volume control before verification.** No candidate reaches step 5 unless it can still post.
    - **Never cap Important or Pre-existing.** Every one reaches step 5, and every one that survives it posts.
    - **Drop every candidate whose pattern the overlay suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only a row marked suppressed in the reviewed repository's `review/agent-patterns.md` suppresses a pattern, so a request with no overlay drops nothing here.
    - **On a re-review (Any skill thread non-empty), hold back every nit.** Verify none of them, because sequence step 7 posts none. Carry the count to the summary.
