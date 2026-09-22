@@ -98,7 +98,11 @@ Where a fix puts a test prompt's own wording into the file as an example, that p
 Report each round: the rule you changed, and what the runs did after it. Return to Step 6.
 
 ## 8. Record the change
-Give the change one line under `## Unreleased` in the plugin's `CHANGELOG.md`, in the voice of the lines above it, and cite the issue or the pull request.
+Give the change one line under `## Unreleased` in the plugin's `CHANGELOG.md`, in the voice of the lines above it, and cite the issue or the pull request. Read that section alone, never the whole file:
+
+```sh
+sed -n '/^## Unreleased/,/^## [0-9]/p' <harness>/CHANGELOG.md
+```
 
 Leave the `version` field in the plugin manifest alone. A new skill folder needs no manifest change, because the `skills` array scans both category folders.
 

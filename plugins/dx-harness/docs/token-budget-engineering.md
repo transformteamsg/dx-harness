@@ -200,9 +200,10 @@ The list is ordered by saving per unit of work.
    The 1,000-token projection added three section sizes and ignored the header, the scope
    list, and the connective prose. Cutting to 1,000 would have meant dropping a section
    the measurement said to keep.
-3. **Stop `dx-create-skill` reading the whole changelog**. It needs the current release
-   section, not the history. Point it at the `Unreleased` heading, or have it query the
-   file through a script. Expected saving is 3,979 tokens, and it grows with every release.
+3. **Stop `dx-create-skill` reading the whole changelog**. Done. Step 8 now reads the
+   `Unreleased` section through `sed` rather than opening the file. That section holds 930
+   tokens against the file's 3,979, so the measured saving is 3,049 tokens. The read no
+   longer grows with each release.
 4. **Split the three large tool-branching skills**. Move the per-tool sections of
    `dx-git-hooks-setup`, `dx-update-npm-dependencies`, and `dx-lint-setup` into references.
    A run then loads the branch it chose. Expected saving is 2,000 to 4,000 tokens per run.
