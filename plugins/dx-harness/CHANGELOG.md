@@ -5,14 +5,25 @@
 ### Added
 
 - **Code-level definition of done**: `procedures/definition-of-done.md` states the seven things a code change must make true and the evidence each is checked by, `dx-implement-issue` reports against every item before it opens a request and stops on an unsatisfied one, and `dx-create-pr` reads it instead of setting a second standard for coverage ([#317](https://github.com/transformteamsg/dx-harness/issues/317)).
+- **New skill `dx-create-skill`**: it writes a `SKILL.md` from an interview or converts an existing one to the skill prose standard, baselining a conversion before it changes a line and verifying the result by running it in isolated sessions ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ### Changed
 
 - **Declared-manual criteria not re-reported**: `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
+- **Story skill rewritten**: `dx-create-story` is eight numbered steps with every branch ending at a named destination, and its persona gate sits at Step 1 stated once instead of twice with different force ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Split offered before intake**: a request naming two capabilities reaches the split question first, so the author no longer answers six questions about a story that is then cut in half ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Criteria format picked per scenario**: a scenario a test runner can assert takes Given-When-Then, one only a person can confirm takes a checklist line, and one story carries both ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Contents list dropped**: a `SKILL.md` carries no table of contents, because the whole file is in context before an agent acts and a second copy of the step names goes stale on a renumber ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Attachment guidance extracted**: `dx-create-story` keeps its screenshot and recording rules in `references/attachments.md`, which a run opens only where the author has a file to upload ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ### Fixed
 
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
+- **Story template repaired**: it no longer offers two acceptance-criteria formats with no rule for choosing, and its Open questions line no longer runs two words together ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Stray bracket in `dx-create-issue`**: its first step heading no longer carries a bracket that broke it as a heading ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Shape label corroborates only**: `dx-split-issue` reads a story from its heading, and treats a `story` or `skill:dx-create-story` label as confirmation where one is present rather than a second requirement ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Sentence case in `dx-create-issue`**: its two guiding-question headings and its Step 5 table headers follow the standard, so the skill prose standard no longer documents them as defects to work around ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Emoji headings read correctly**: `dx-create-task`, `dx-split-issue`, and `dx-code-review` match a story on its heading text and ignore a leading emoji ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ## 0.7.0 (2026-09-14)
 

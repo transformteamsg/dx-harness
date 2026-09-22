@@ -19,7 +19,7 @@ Run as analysis step 1, before the review angles.
 
    | Shape | Heading that identifies it | Its contract |
    | --- | --- | --- |
-   | Story | `## User story` | Each Given-When-Then scenario under `## Acceptance criteria` |
+   | Story | a `User story` heading, emoji optional | Each Given-When-Then scenario under `## Acceptance criteria` |
    | Task | `## Parent` | Each scenario under `## Acceptance criteria`, plus each item in the optional `### Also true when done` checklist |
    | Chore | `## What is changing` | Each item under `## Done when` |
    | Bug | `## Steps to reproduce` | The reproduction path, plus the gap between `## Expected behaviour` and `## Actual behaviour` |

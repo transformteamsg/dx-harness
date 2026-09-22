@@ -1,16 +1,18 @@
-## User story
+## 👤 User story
 
 As a [user persona], I want [capability], so that [benefit].
 
-## Background
+## 📖 Background
 
 <problem this solves, how often it affects users, links to specs / Slack threads / recordings>
 
-## Open questions
+## 💭 Open questions
 
 - <anything unclear or undecided about these requirements; resolve before implementation begins, or write "None">
 
-## Acceptance criteria
+## ✅ Acceptance criteria
+
+<One heading per scenario, named outcome-first. Within a heading, use Given–When–Then where a test runner can assert the outcome, and a checklist where only a person looking at the screen can confirm it. A story can carry both forms.>
 
 ### <Outcome-first scenario name (happy path)>
 
@@ -30,11 +32,15 @@ As a [user persona], I want [capability], so that [benefit].
 - **When** <action>
 - **Then** <observable outcome>
 
-## Out of scope
+### <Outcome-first scenario name (confirmed by looking, not by a test runner)>
+
+- [ ] <observable outcome a person confirms on the screen>
+
+## 🚧 Out of scope
 
 - <explicit exclusion>
 
-## Design assets
+## 🎨 Design assets
 
 <Figma links, screenshots, a vibe-coded prototype, a Mermaid diagram, or N/A>
 
