@@ -65,7 +65,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 3. Deduplicate, against the rest of the candidates and against the request:
    - **Within the candidate list** — same defect at the same location, keep one.
    - **Against the All open threads set** from sequence step 3 — where a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, drop the candidate.
-4. **Apply volume control before verification.** No candidate reaches step 5 unless it can still post.
+4. **Decide how many findings can post, before verification.** No candidate reaches step 5 unless it can still post.
    - **Never cap Important or Pre-existing.** Every one reaches step 5, and every one that survives it posts.
    - **Drop every candidate whose pattern the overlay suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only a row marked suppressed in the reviewed repository's `review/agent-patterns.md` suppresses a pattern, so a request with no overlay drops nothing here.
    - **On a re-review (Any skill thread non-empty), hold back every nit.** Verify none of them, because sequence step 7 posts none. Carry the count to the summary.
@@ -182,7 +182,7 @@ The second line goes on an inline finding only, and the summary comment omits it
    gh api "repos/{owner}/{repo}/contents/review/agent-patterns.md?ref={head_sha}" -q '.content' | base64 -d
    ```
    A 404 means no overlay, which is the ordinary case: match against the shipped standard alone. **Never read `review/agent-patterns.md` from disk.**
-5. Run the analysis (above) on the diff from step 4. The analysis deduplicates against the threads from step 3, applies volume control, and verifies only what can still post.
+5. Run the analysis (above) on the diff from step 4. The analysis deduplicates against the threads from step 3, then verifies only the candidates that can still post.
 6. Resolve addressed conversations. For each **open skill thread** the current diff has addressed:
     ```bash
     gh api graphql -f query='
@@ -213,7 +213,7 @@ The second line goes on an inline finding only, and the summary comment omits it
 
 **What looks good:** always include. Specifics only, 2–4 bullets
 
-**Scope:** volume control runs at analysis step 4, ahead of verification, and counts nits only. Every Important and Pre-existing candidate is verified, and every confirmed or plausible finding that survives verification posts
+**Scope:** analysis step 4 decides how many findings can post, ahead of verification, and its cap counts nits only. Every Important and Pre-existing candidate is verified unless the overlay suppresses its pattern, and every confirmed or plausible finding that survives verification posts
 
 **Repository instructions:** only the root `REVIEW.md` is read. A finding from one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
 
