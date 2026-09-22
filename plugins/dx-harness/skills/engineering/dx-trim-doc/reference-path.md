@@ -31,13 +31,8 @@ Do not count an extraction as a trim. Moving a step's detail into `references/` 
 
 ## Step 5: Verify
 
-Run the house style lint, and read every cut back against the edge test.
-
-```sh
-python3 <harness>/scripts/house-style-lint.py <the trimmed file>
-```
-
-Fix every `ERROR` and judge each `WARN`. A trim that introduces a lint error has traded length for quality.
+Read every cut back against the edge test, then check the result against
+`procedures/house-style.md`. A trim that trades length for quality is not a trim.
 
 Then walk the diff and name every cut by its class. Restore any cut you cannot name.
 

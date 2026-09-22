@@ -4,28 +4,21 @@ This file sets the concision standard for prose that a human reads once, then ac
 on. It covers issue bodies, pull and merge request descriptions, decision records,
 and code review comments. A skill that writes one of these follows this file.
 
-This is the canonical copy. The repository's output style,
-`.claude/output-styles/house-style.md`, carries the same rules in a shorter form
-for a whole session rather than one artifact. Change this file first, then carry
-the change across.
+The mechanics sit elsewhere. The Technical documents section of `CLAUDE.md` puts these
+artifacts under the Google developer documentation style guide. That guide settles
+capitalisation, punctuation, numbers, headings, spelling, and the word list. This file
+adds what it leaves out: a concision bar, an evidence bar, and a test for length.
 
-Never append this file, or its output-style copies, to a different skill's
-system prompt as a bolt-on quality lever. A repository trial found that this
-makes output worse, not better. To make a skill read like house style, trim
-its own `SKILL.md` with `dx-trim-doc` instead of grafting this file on top of
-it.
+This is the canonical copy. The repository's output style,
+`.claude/output-styles/house-style.md`, carries the same rules in shorter form for a
+whole session rather than one artifact. Change this file first, then carry it across.
+
+Never append this file, or an output-style copy of it, to a skill's system prompt as a
+bolt-on quality lever. A repository trial found that this makes output worse. To make
+a skill read like house style, trim its own `SKILL.md` with `dx-trim-doc` instead.
 
 Every rule here is a default, not a ban on judgment. A short word that confuses a
 reader who does not know the codebase is worse than a long word that does not.
-
-Two files carry the rest of the standard:
-
-- [House style mechanics](house-style-mechanics.md) holds Google's formatting rules:
-  capitalisation, punctuation, numbers, lists, headings, code, and UI. Read it when
-  the artifact carries a command, a placeholder, a UI element name, a number, or a
-  table.
-- `scripts/house-style-lint.py` enforces the four closed word lists, so you never
-  need to read them. Before you post it names the command.
 
 ## Scope
 
@@ -33,38 +26,24 @@ This file does not govern:
 
 - **Product UI copy.** SLP-9 governs the text a product's own users read, and the
   `dx-design-copy` skill carries it.
-- **Published technical documents.** `docs/`, `CONTEXT.md`, and READMEs follow the
-  Google developer documentation style guide, which the Technical documents section
-  of `CLAUDE.md` names. That guide sets the mechanics. This file adds a stricter
-  concision bar, for the short artifacts named above.
+- **Published technical documents.** `docs/`, `CONTEXT.md`, and READMEs take Google's
+  mechanics without this concision bar.
 - **Code and code comments.** `CLAUDE.md` already sets the default to no comments.
 
-## Word choice: general tests
+## Word choice
 
-The lint enforces four closed word lists. Apply these tests to a word that no list
-names:
+`CLAUDE.md` names the terms that add nothing. Apply these tests to a word it leaves
+out:
 
-- Prefer the short word. Write `use`, not `utilise`; `help`, not `facilitate`;
-  `start`, not `commence`.
-- Cut a figure of speech that you are used to seeing in print. An issue does not need
-  a "north star" or a "single source of truth". Name the thing it means.
-- Define a coined term where it outlives the issue, or use the plain phrase. A term
-  invented for one issue ("honest-inert", "anchor") is jargon until you define it
-  somewhere durable.
-
-## Voice, tense, and person
-
-- Use the passive only to emphasise the object, or when the actor does not matter:
-  "The file is saved."
-- Do not hedge a present-tense fact with `would`. Write `the server removes you`,
-  not `the server would then remove you`.
-- Never describe an unreleased capability as though it already exists.
-- Keep an instruction imperative. `you` is implied: "Click **Submit**", not "You
-  click Submit".
-- Use the third person for what software or another person does. Use the second
-  person only to instruct the reader.
-- `we` and `our` name the author, and only with a clear antecedent such as a named
-  team. Decide once who `you` addresses, then hold it for the whole artifact.
+- Prefer the short word. Write `use`, not `utilise`; `help`, not `facilitate`.
+- Cut a word that dates the sentence: `currently`, `now`, `existing`, `soon`. Give a
+  date or a version instead. Keep one only where it contrasts with a named earlier
+  state.
+- Cut a word that certifies your own claim: `real`, `actually`, `truly`. The noun
+  already carries it.
+- Cut a figure of speech you are used to seeing in print. An issue does not need a
+  "north star". Name the thing it means.
+- Define a coined term where it outlives the issue, or use the plain phrase.
 
 ## Claims and evidence
 
@@ -73,6 +52,7 @@ names:
 - A security or reliability claim says that a feature "helps with" or "is designed
   for" its goal, never that it "prevents" or "guarantees" it. One incident disproves
   the stronger claim.
+- Never describe an unreleased capability as though it already exists.
 - Never copy third-party text, code, or images word for word. Paraphrase, and link to
   the source.
 
@@ -81,7 +61,6 @@ names:
 From the Simplified Technical English specification, the parts that Google leaves
 out:
 
-- Keep an instruction to 20 words or fewer, and a descriptive sentence to 25.
 - Put one instruction in one sentence. Write a numbered step for each action in a
   sequence, rather than one sentence that joins them with "and".
 - Use a verb in its infinitive, imperative, simple past, or past participle form. An
@@ -89,26 +68,13 @@ out:
   Never use one to compress a clause: write "the file that fails the check", not "the
   file failing the check".
 - State a warning or a constraint before the step it applies to, never after.
-
-## Sentence and paragraph mechanics
-
-- **Context before instruction.** State the condition or the goal before the action.
-  Write "To delete the document, click **Delete**", not "Click **Delete** if you want
-  to delete the document."
-- **No anthropomorphism.** Software has no senses and no intent. Write "the script
-  detects the change", not "the script sees the change".
-- **Contractions are fine for negation.** A reader misreads `isn't`, `don't`, and
-  `can't` less often than a bare "not". Never invent one (`guides're`) or stack three
-  words into one (`mightn't've`).
-- **A paragraph holds one idea in six sentences at most**, and opens with its most
+- Use one term per concept, spelled and capitalised the same way throughout. Never
+  stack more than two nouns as a modifier.
+- Hold a paragraph to one idea in six sentences at most, and open it with the most
   important point. A reader who scans an issue does not read every word.
-- **Left-align, and use no manual line breaks inside a paragraph.** They render
-  inconsistently at different widths.
-- **One term per concept.** Use the same word, spelled and capitalised the same way,
-  through the whole artifact. Never stack more than two nouns as a modifier:
-  "cloud-native pipeline", not "hybrid cloud-native DevSecOps pipeline".
-- **Name the object of a reference, not the filename alone**: "the `example.yaml`
-  file", not "`example.yaml`".
+
+No word cap applies to a sentence here. A mechanical cap fires hardest on the
+technical prose that needs the words.
 
 ## How long
 
@@ -132,20 +98,7 @@ lines.
 
 ## Before you post it
 
-Run the lint first. It decides what a closed list can decide, and it exits 1 if any
-`ERROR` line stands.
-
-```bash
-python3 <harness>/scripts/house-style-lint.py <<'EOF'
-<the drafted body>
-EOF
-```
-
-`<harness>` is the plugin directory, `plugins/dx-harness/` where a repository
-vendors it. Fix every `ERROR`. A `WARN` names a term that is correct in some
-clauses, so judge that one and move on.
-
-Then read the draft once as the person who acts on it. Two things survive every
+Read the draft once as the person who acts on it. Two things survive every
 cut: an instruction, and a condition that adds a case, an exception, or a limit
 and changes what the reader does. Test a candidate clause by removing it,
 inventing a case where the rule is ambiguous, and checking whether your answer
@@ -168,10 +121,8 @@ plan, a discussion, or a draft nobody else can see fails that check. So does
 first-person narration of what you decided, or an undated hedge with no owner.
 `dx-trim-leakage` names the full taxonomy and what survives.
 
-A table, a note, or an aside that stays accurate only until something else changes
-must say so. A coupling between two files, for example, breaks the moment someone
-edits one of them. Undated prose that is true only today reads as current long after
-it goes stale.
+A note that stays accurate only until something else changes must say so. A coupling
+between two files breaks the moment someone edits one of them.
 
 ## A worked example
 
@@ -193,12 +144,5 @@ Nothing in the first version is wrong. The second says all of it.
 
 ## Path resolution
 
-This procedure ships with the harness plugin, not the product repository. Both files
-sit in `procedures/`, so the same locator reaches either one.
-
-- From a procedure doc in `procedures/`: this file, directly.
-- From a skill directory (`skills/engineering/<dir>/SKILL.md` or
-  `skills/design/<dir>/SKILL.md`): three levels up,
-  `../../../procedures/house-style.md`.
-- From `docs/harness-feedback.md`: one level up, `../procedures/house-style.md`.
-- The lint sits at `../../../scripts/house-style-lint.py` from a skill directory.
+This procedure ships with the harness plugin, not the product repository. From a
+skill directory, it sits three levels up at `../../../procedures/house-style.md`.
