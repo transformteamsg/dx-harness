@@ -184,7 +184,7 @@ sample without score tables would shift it a long way.
 
 ## What to change
 
-The list is ordered by saving per unit of work.
+The list is ordered by saving per unit of work. Items 1 to 3 are [#379](https://github.com/transformteamsg/dx-harness/issues/379), item 4 is [#346](https://github.com/transformteamsg/dx-harness/issues/346), and item 5 is [#380](https://github.com/transformteamsg/dx-harness/issues/380).
 
 1. **Delete the lint and `house-style-mechanics.md`**. Done. The tables existed to feed
    the lint, and the lint returned about one unambiguous finding per artifact. Both files
@@ -207,9 +207,12 @@ The list is ordered by saving per unit of work.
 4. **Split the three large tool-branching skills**. Move the per-tool sections of
    `dx-git-hooks-setup`, `dx-update-npm-dependencies`, and `dx-lint-setup` into references.
    A run then loads the branch it chose. Expected saving is 2,000 to 4,000 tokens per run.
-5. **Move the shared part of `issue-intake.md` into a procedure**. `dx-create-story` and
-   `dx-create-task` read 2,203 tokens from `skills/design/`, so the owning team is not the
-   reading team. A procedure both clusters own removes the cross-directory read.
+   All three read no references, so the whole `SKILL.md` loads on every trigger. #346
+   already tracks them by word count, and carries these token figures as a comment.
+5. **Extract the reviewer-routing table into a procedure**. `dx-create-story` and
+   `dx-create-task` read all 2,203 tokens of `skills/design/dx-design/issue-intake.md` to
+   reach one 287-token table. A procedure all three skills read saves 1,916 tokens per run
+   and removes the cross-directory read.
 6. **Re-measure after each change**. Rebuild this table before you trim anything else.
    The ranking, not the absolute figure, tells you where to work.
 
@@ -224,8 +227,8 @@ lint left to catch them.
 by 10 design skills. Any change to it lands on both teams.
 
 `dx-create-story` and `dx-create-task` read
-`skills/design/dx-design/issue-intake.md` (2,203) at depth 1. The design team owns the
-directory. Item 5 above proposes moving the shared part out.
+`skills/design/dx-design/issue-intake.md` (2,203) at depth 1, for one 287-token table.
+The design team owns the directory. Item 5 above extracts the table into a procedure.
 
 Three design-owned files reach this cluster through `dx-create-skill` alone, all at depth
 2: `standards/README.md` (2,700), `procedures/catalogue-mechanics.md` (816), and
