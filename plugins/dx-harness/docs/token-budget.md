@@ -76,9 +76,9 @@ other team, so raise it with them first.
 | `procedures/catalogue-mechanics.md` | 816 | 12 | 1 |
 | `procedures/rule-proposal.md` | 382 | 10 | 1 |
 
-The engineering document proposes cutting `procedures/house-style.md` to about 1,000
-tokens, and deleting `procedures/house-style-mechanics.md` with the lint that reads it.
-Both clusters carry the parent file, so that decision belongs to both teams.
+`procedures/house-style.md` now holds 1,704 tokens, and
+`procedures/house-style-mechanics.md` is deleted with the lint that read it. The tables
+above predate that change, so rebuild them before you trim anything else.
 
 Two reads cross the directory boundary at depth 1, where the owning team is not the
 reading team:

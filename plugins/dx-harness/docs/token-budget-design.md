@@ -200,11 +200,11 @@ Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
 `procedures/design-tickets.md`. The engineering team owns that file, and nine of their
 skills read it at depth 1. Raise any change to it with them.
 
-That team proposes cutting it to about 1,000 tokens and deleting
-`procedures/house-style-mechanics.md` and `scripts/house-style-lint.py` outright, on a
-measured lint yield of about one unambiguous finding per artifact. See
-[the engineering document](token-budget-engineering.md). The design cluster does not
-read the mechanics file, so it gains about 1,400 tokens on the 10 paths that reach the
+That team has now cut it to 1,704 tokens and deleted
+`procedures/house-style-mechanics.md` and `scripts/house-style-lint.py`, on a measured
+lint yield of about one unambiguous finding per artifact. See
+[the engineering document](token-budget-engineering.md). The design cluster never read
+the mechanics file, so it gains 688 tokens on each of the 10 paths that reach the
 parent.
 
 `skills/design/dx-design/issue-intake.md` (2,203) sits in this cluster's directory, but

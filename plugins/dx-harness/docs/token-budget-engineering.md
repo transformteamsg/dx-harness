@@ -151,10 +151,13 @@ similar bodies. Each then reads `house-style.md` and one small template.
 `dx-code-review` at 21,547 tokens, costs less than a quarter of the dearest design run.
 Twelve of the 20 skills run under 10,000 tokens.
 
-## What the lint returns
+## What the lint returned
 
-`scripts/house-style-lint.py` is the reason the mechanics file carries 1,918 tokens of
-tables. Run against 16 merged artifacts from the harness repository, it returns this:
+This section records the measurement that items 1 and 2 acted on. The lint and the
+mechanics file are deleted, so the figures here are a record, not a live reading.
+
+`scripts/house-style-lint.py` was the reason the mechanics file carried 1,918 tokens of
+tables. Run against 16 merged artifacts from the harness repository, it returned this:
 
 | Artifact set | Findings |
 | --- | --: |
@@ -183,17 +186,20 @@ sample without score tables would shift it a long way.
 
 The list is ordered by saving per unit of work.
 
-1. **Delete the lint and `house-style-mechanics.md`**. The tables exist to feed the lint,
-   and the lint returns about one unambiguous finding per artifact. Both files already tell
-   the agent not to read the tables. Removing the pair takes 3,551 tokens out of the chain
-   and drops the cluster's highest load, 28,408, to nothing.
-2. **Rewrite `house-style.md` at about 1,000 tokens**. Keep three sections that no checker
-   and no specification name can reach: `Before you post it` (465), `How long` (260), and
-   `Claims and evidence` (127). Keep the stated ASD-STE100 subset and Commonwealth
-   spelling. Drop the sentence-length caps, which fire on technical prose where
-   `CLAUDE.md` already rejects that bar. Drop the path to `docs/harness-feedback.md`,
-   which eight skills reach at depth 2 and none of them need. Expected saving is about
-   1,400 tokens per authoring run.
+1. **Delete the lint and `house-style-mechanics.md`**. Done. The tables existed to feed
+   the lint, and the lint returned about one unambiguous finding per artifact. Both files
+   already told the agent not to read the tables. Removing the pair takes 3,551 tokens out
+   of the chain and drops the cluster's highest load, 28,408, to nothing.
+2. **Rewrite `house-style.md` as one file**. Done, at 1,704 tokens rather than the 1,000
+   this list first projected. It keeps three sections that no checker and no specification
+   name can reach: the cut tests before posting, the test for length, and the evidence bar
+   on a claim. Google's mechanics now come from `CLAUDE.md`, which already covers these
+   artifacts. The sentence-length caps are gone, and so is the path to
+   `docs/harness-feedback.md`. Measured saving on the parent file is 688 tokens.
+
+   The 1,000-token projection added three section sizes and ignored the header, the scope
+   list, and the connective prose. Cutting to 1,000 would have meant dropping a section
+   the measurement said to keep.
 3. **Stop `dx-create-skill` reading the whole changelog**. It needs the current release
    section, not the history. Point it at the `Unreleased` heading, or have it query the
    file through a script. Expected saving is 3,979 tokens, and it grows with every release.
