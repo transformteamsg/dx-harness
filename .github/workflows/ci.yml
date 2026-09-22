@@ -19,6 +19,9 @@ jobs:
     # are only published version-pinned, so there is no -latest to track: moving to a
     # newer image is a deliberate edit here. Free for public repositories.
     runs-on: ubuntu-24.04-arm
+    # The job runs in about 2m30s. The ceiling replaces GitHub's 6-hour default,
+    # so a hang fails the run instead of holding a runner for the afternoon.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
