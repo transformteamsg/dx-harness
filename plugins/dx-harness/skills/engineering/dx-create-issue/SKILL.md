@@ -28,9 +28,9 @@ Options:
     - 📖 Story: "What outcome are we trying to deliver?"
     - 🔨 Task: "What work needs to be completed?"
     - 🐞 Bug: "What is not working as expected?"
-    - 💭 Help me decide
+    - 🔧 Chore: "What work keeps the system healthy, with no parent story?"
 ```
-"Story", "Task" or "Bug" goes to Step 5 with that issue type selected. Where your own read of the request disagrees with the pick, go to Step 4a instead and state both. "Help me decide" goes to Step 2.
+"Story", "Task", "Bug" or "Chore" goes to Step 5 with that issue type selected. Where your own read of the request disagrees with the pick, go to Step 4a instead and state both. An unclear answer, or "Other", goes to Step 2.
 
 ## 2. Guide issue type selection
 Use AskUserQuestion for each [guiding question](#guiding-questions). For each, use options in [guiding question options](#guiding-question-options).
