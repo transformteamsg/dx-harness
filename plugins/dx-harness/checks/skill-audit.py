@@ -213,6 +213,42 @@ def run_self_test():
             f"got {errors!r}",
         )
 
+    # Also true when done: a fixture covering the #366 regression itself —
+    # dx-create-story's SKILL.md named references/issue-template.md until a
+    # trim removed the sentence that did, and no existing check caught it.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "engineering", "dx-create-story")
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            "# dx-create-story\n\nFile a story issue for the request.\n",
+        )
+        write(
+            os.path.join(skill_dir, "references", "issue-template.md"),
+            "# Story issue template\n",
+        )
+        errors = audit_skill(skill_dir, td)
+        check_true(
+            "regression #366: removing the issue-template.md mention fails the audit",
+            len(errors) == 1 and "issue-template.md" in errors[0],
+            f"got {errors!r}",
+        )
+
+    # Also true when done: the audit reads every skill under both
+    # skills/engineering/ and skills/design/, not just one category.
+    with tempfile.TemporaryDirectory() as td:
+        skills_root = os.path.join(td, "skills")
+        eng_dir = os.path.join(skills_root, "engineering", "dx-eng-fake")
+        design_dir = os.path.join(skills_root, "design", "dx-design-fake")
+        write(os.path.join(eng_dir, "SKILL.md"), "# dx-eng-fake\n")
+        write(os.path.join(design_dir, "SKILL.md"), "# dx-design-fake\n")
+        found = find_skill_dirs(skills_root)
+        check_true(
+            "the audit reads skills under both engineering/ and design/",
+            os.path.normpath(eng_dir) in [os.path.normpath(d) for d in found]
+            and os.path.normpath(design_dir) in [os.path.normpath(d) for d in found],
+            f"got {found!r}",
+        )
+
     checklib.report_self_test(failures, case_count)
 
 
