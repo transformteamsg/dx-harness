@@ -145,5 +145,5 @@ Load the selected skill. Run one skill per confirmed issue.
 
 ## Rules
 - Do not file issues or run `gh`
-- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug
+- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore
 - Carry the scope, parent number, links and exclusions across on handoff, so the user does not repeat themselves
