@@ -6,6 +6,7 @@
 
 - **Code-level definition of done**: `procedures/definition-of-done.md` states the seven things a code change must make true and the evidence each is checked by, `dx-implement-issue` reports against every item before it opens a request and stops on an unsatisfied one, and `dx-create-pr` reads it instead of setting a second standard for coverage ([#317](https://github.com/transformteamsg/dx-harness/issues/317)).
 - **New skill `dx-create-skill`**: it writes a `SKILL.md` from an interview or converts an existing one to the skill prose standard, baselining a conversion before it changes a line and verifying the result by running it in isolated sessions ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Skill token budget**: `docs/token-budget.md` holds the method and the cluster comparison, and a document per team maps every skill to the files it reads and counts the tokens in each ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 
 ### Changed
 
@@ -15,6 +16,13 @@
 - **Criteria format picked per scenario**: a scenario a test runner can assert takes Given-When-Then, one only a person can confirm takes a checklist line, and one story carries both ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Contents list dropped**: a `SKILL.md` carries no table of contents, because the whole file is in context before an agent acts and a second copy of the step names goes stale on a renumber ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Attachment guidance extracted**: `dx-create-story` keeps its screenshot and recording rules in `references/attachments.md`, which a run opens only where the author has a file to upload ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **House style is one file**: `procedures/house-style.md` holds 1,704 tokens rather than 2,392. It keeps the cut tests, the test for length, and the evidence bar on a claim, and takes Google's mechanics from `CLAUDE.md` rather than restating them. The sentence-length caps are gone ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+- **Changelog read scoped**: `dx-create-skill` Step 8 reads the `## Unreleased` section through `sed` rather than opening the whole file, at 930 tokens rather than 3,979 ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+- **Trim verification points at the procedure**: `dx-trim-doc` checks a trimmed file against `procedures/house-style.md` instead of running the deleted lint ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+
+### Removed
+
+- **House style lint and its mechanics file**: `scripts/house-style-lint.py` and `procedures/house-style-mechanics.md` are deleted. Run against 16 merged artifacts, the lint returned nothing on eight issue bodies and 56 findings on eight request bodies, of which 48 per cent came from one rule firing on eval score cells in tables ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 
 ### Fixed
 
