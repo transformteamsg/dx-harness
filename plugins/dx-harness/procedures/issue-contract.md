@@ -1,8 +1,8 @@
 # Issue contract (shared procedure)
 
 This is the shared home for reading an issue and turning it into a contract you can
-build against. `dx-implement-issue` runs it once and passes the result to both
-halves. `dx-write-tests` and `dx-write-implementation` run it themselves when
+build against, and for the surface assessment that bounds it.
+`dx-implement-issue` runs it once and passes the result to both halves. `dx-write-tests` and `dx-write-implementation` run it themselves when
 someone invokes them alone, so neither depends on the router having gone first.
 
 Run it once per session. A half that receives the contract from the router does not
@@ -49,7 +49,16 @@ An `## Also true when done` item on a task is a contract item too. It is a condi
 a reviewer confirms by looking, so it might end up recorded as manual rather than
 covered by a test.
 
-## Step 4: Check the issue is ready
+## Step 4: Name the surfaces the work touches
+
+Run [surface-assessment.md](surface-assessment.md) against the items you just
+numbered. Run it here, before the code is read, because the assessment bounds
+which code the run explores.
+
+Record the value and the per-item breakdown. Both halves receive it from whoever
+ran this procedure, so neither derives it again.
+
+## Step 5: Check the issue is ready
 
 An issue is ready when it says what must be observably true once the work is done.
 Judge that against the shape, and stop rather than filling a gap with a guess.
@@ -63,7 +72,7 @@ Two conditions stop the run whatever the shape:
 - **Unresolved open questions.** A story carries them in `## Open questions` precisely so they are visible at this moment. Report them and ask which way to go, because they are decisions someone else owns.
 - **Nothing checkable at all.** An issue written before these templates existed, or a body that is a paragraph of intent, cannot be implemented faithfully. Say what is missing and offer to shape it with `dx-create-story`, `dx-create-task`, `dx-create-chore`, or `dx-create-bug` rather than proceeding on inference.
 
-## Step 5: Bind the agent patterns
+## Step 6: Bind the agent patterns
 
 Load the patterns that bind this session. They come from two places, read together:
 
@@ -89,20 +98,24 @@ If `review/agent-patterns.md` does not exist, bind the standard alone. If the
 standard cannot be found, say so and continue on whatever the repository's file
 holds. A missing plugin asset is worth reporting, but it is not a reason to stop.
 
-## Step 6: Read the code you are about to change
+## Step 7: Read the code you are about to change
 
-The issue names the surface, not the implementation, so the patterns come from the
-repository:
+The issue names the behaviour, not the implementation, so the patterns come from
+the repository:
 
 - The files that already do the nearest thing, and the patterns they follow
 - The current data model, if you are extending it
 - The existing API shape, if you are adding an endpoint
 - The conventions in the repository's own agent instructions, such as `CLAUDE.md` or `AGENTS.md`, especially for tests and commits
 
+Read the surfaces Step 4 named and no others. For a `frontend` assessment, skip
+the data model and the API shape in the list above. Reading them anyway is how a
+run starts planning work no criterion asked for.
+
 Do not skip this step. An agent that skips exploration produces code that compiles
 but diverges from the patterns already in the repository.
 
-## Step 7: Name the test stack
+## Step 8: Name the test stack
 
 A contract item is testable only if something in this repository can run a test.
 Settle that before anyone judges an item or writes a line.
