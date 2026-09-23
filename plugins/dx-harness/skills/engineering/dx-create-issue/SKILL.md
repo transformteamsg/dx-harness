@@ -66,6 +66,15 @@ Examples:
 - security audits
 ```
 
+Q4: If yes, go to Step 4a with 'Chore' selected.
+```
+Does it change nothing a user outside the team would observe, with no parent story?
+Examples:
+- bump `next` from 15.1 to 15.3
+- rotate the signing keys
+- give the API a staging environment
+```
+
 ### Guiding question options
 ```
 - Yes
