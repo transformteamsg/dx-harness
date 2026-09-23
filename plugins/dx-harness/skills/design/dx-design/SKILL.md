@@ -70,10 +70,10 @@ Every skill you dispatch runs in **return-to-caller mode**: pass the token
 `mode:return-to-caller` plus the context payload, so the routed skill skips its own
 interview and nobody answers the same question twice. The payload is what you already
 hold: the settled intent, and for **dx-design-execute** the sprint contract (or the
-one-line intent for a modification), the approved plan or accepted findings list (with
-any granted waivers and the L1 approver) or the explicit build ask verbatim, and the
-surface's design ticket reference. In this mode a routed skill also leaves the design
-review to you: whoever started the run spawns the reviewer once.
+one-line intent for a modification) and the approved plan or accepted findings list
+(with any granted waivers and the L1 approver) or the explicit build ask verbatim. In
+this mode a routed skill also leaves the design review to you: whoever started the run
+spawns the reviewer once.
 
 The routes:
 
@@ -89,7 +89,7 @@ The routes:
   off-menu.
 - **Missing DESIGN.md, or "define our design language"**: hand to
   **dx-design-language**.
-- **Tool problems** (capture broken, tracker unwired, onboarding): hand to
+- **Tool problems** (capture broken, `gh` not authenticated, onboarding): hand to
   **dx-design-setup**.
 - **Feedback about the harness itself** (a confusing gate, a check that misfired):
   hand to **dx-design-feedback**.
@@ -118,10 +118,10 @@ When the intent is "improve this" across an existing surface:
 5. **Hand the accepted fixes to dx-design-execute**, the single frontend-only
    implementer, per `../../../procedures/implement.md`. Dispatch it with
    `mode:return-to-caller` and the full context payload from section 3: the sprint
-   contract, the approved plan or accepted findings list (with any granted waivers and
-   the L1 approver), and the surface's design ticket reference. It then skips its own
-   interview and plan-approval stop, returns its run record to you, and does not spawn
-   its own reviewer. You never apply a fix yourself.
+   contract and the approved plan or accepted findings list (with any granted waivers
+   and the L1 approver). It then skips its own interview and plan-approval stop,
+   returns its review bundle to you, and does not spawn its own reviewer. You never
+   apply a fix yourself.
 6. **One review of the full result**: dispatch the design reviewer once over the
    combined outcome, per `../../../procedures/design-review.md`.
 
@@ -149,8 +149,10 @@ answer, off-menu, and you never build in response to one.
 - **Name rules plain-title first**: plain words, then the id in brackets, then the
   website link, per catalogue-mechanics.
 - **Offer exactly one next step**, the one that fits:
-  - Record the approved waiver on the surface's design ticket
-    (`../../../procedures/design-tickets.md`).
+  - Record the approved waiver in the surface's decision record
+    (`docs/decisions/<page>.md` in the product repo). Seed the record from
+    `docs/decisions/TEMPLATE.md` where it does not exist yet, the way
+    dx-design-execute seeds it at the plan gate.
   - Promote a repeated waiver into DESIGN.md's Overrides.
   - Start a rule proposal (`../../../procedures/rule-proposal.md`).
 - **Act only on an explicit yes.** Silence, hedging, or a new question is not consent;
@@ -160,11 +162,11 @@ answer, off-menu, and you never build in response to one.
 
 You join the shared back half of the run at plan approval. The procedure docs live in
 `../../../procedures/` (relative to this file): `plan-approval.md`, `implement.md`,
-`design-review.md`, `rule-proposal.md`, `catalogue-mechanics.md`, and
-`design-tickets.md`. The catalogue itself is `../../../standards/catalog.yaml`; its
-tier table and waiver syntax are in `../../../standards/README.md`. Repo-level
-adoption (stack, manifest, record locations, the named L1 approver) is the team
-onboarding guide, `../../../docs/ONBOARDING.md`.
+`design-review.md`, `rule-proposal.md`, and `catalogue-mechanics.md`. The catalogue
+itself is `../../../standards/catalog.yaml`; its tier table and waiver syntax are in
+`../../../standards/README.md`. Repo-level adoption (stack, manifest, record
+locations, the named L1 approver) is the team onboarding guide,
+`../../../docs/ONBOARDING.md`.
 
 Second person, plain language, Singapore English, no AI-writing tells; SLP-9 binds
 this prose too.

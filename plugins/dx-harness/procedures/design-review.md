@@ -19,11 +19,10 @@ positive, which is why the role exists separately.
   waiting.
 - **No dedicated designer on the team?** The portfolio designer holds this gate
   asynchronously, the same way they hold plan approval (see `plan-approval.md`,
-  beside this file): route the verdict and its evidence to them and record on the
-  design ticket that it was sent. Target turnaround is less than one day.
-- **Paste the full verdict verbatim into the decision record** and the surface's
-  design ticket run record (`design-tickets.md`, beside this file). The record is
-  the durable artifact; a summary in its place is a defect. Note the shared limit
+  beside this file): route the verdict and its evidence to them and record in the
+  decision record that it was sent. Target turnaround is less than one day.
+- **Paste the full verdict verbatim into the decision record.** The record is the
+  durable artifact; a summary in its place is a defect. Note the shared limit
   honestly: the reviewer runs the same model on the same standards, so it is a
   second read, not a fully independent one; treat split findings and anything not
   mechanically verified as candidates for human review.
@@ -49,7 +48,7 @@ with **new screenshots** of the changed surface:
   the new evidence.
 - **The builder's narration is not evidence.** "I fixed it" without a new capture is
   an unverified claim; a fix with no new screenshot stays unresolved.
-- The re-check verdicts go into the run record beside the original findings.
+- The re-check verdicts go into the decision record beside the original verdict.
 
 Repeat until the findings are resolved or explicitly accepted as open by the person
 who approved the plan.

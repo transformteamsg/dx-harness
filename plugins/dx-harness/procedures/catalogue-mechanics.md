@@ -48,7 +48,7 @@ restate them. Agent behaviour:
 - **L0** never deviates and never waives. An impossible L0 is a blocking question
   for the person, not a judgment call.
 - **L1** must pass. Propose a waiver at plan approval, but only a named human
-  approver grants it, recorded in the decision record and the design ticket.
+  approver grants it, recorded in the decision record.
 - **L2** deviates only with a specific, real reason ("looks better" is not one).
 
 ## When a control seems wrong

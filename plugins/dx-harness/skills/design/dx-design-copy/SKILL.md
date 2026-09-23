@@ -1,6 +1,6 @@
 ---
 name: dx-design-copy
-description: 'Use when the ask names the copy of a product surface but not the exact wording — reviewing or proposing user-facing text (page, form, notification, empty or error state), naming, error-message anatomy, or tone, with anti-AI-writing rules (SLP-9) applied. Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones — and loads this skill at implement for generation-time copy rules. A stated edit ("change the label to Save") is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Non-surface prose (site content, marketing, documentation) is out of scope.'
+description: 'Use when the ask names the copy of a product surface but not the exact wording — reviewing or proposing user-facing text (page, form, notification, empty or error state), naming, error-message anatomy, or tone, with anti-AI-writing rules (SLP-9) applied. Propose-only: presents up to five ranked findings for acceptance; dx-design-execute builds accepted ones — and loads this skill at implement for generation-time copy rules. A stated edit ("change the label to Save") is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Non-surface prose (site content, marketing, documentation) is out of scope.'
 ---
 
 # Copy for Teacher & School products
@@ -23,10 +23,10 @@ any disagree, the catalog control wins and the others are corrected.
 follow `../dx-design-critique/pass.md` with this skill's dimension subset, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). The pass captures the
-surface, judges only the wording, and records up to five ranked findings on the
-surface's design ticket; it proposes only and never edits the product. A stated
-exact edit ("change the label to Save") is a dx-design-execute intent, not a pass
-run. The dimension subset: **CNT-1, CNT-2, CNT-3,
+surface, judges only the wording, and presents up to five ranked findings for
+acceptance; it proposes only and never edits the product. A stated exact edit
+("change the label to Save") is a dx-design-execute intent, not a pass run. The
+dimension subset: **CNT-1, CNT-2, CNT-3,
 CNT-4 (domain fidelity — content modeling a real-world artifact is faithful to it or
 labelled illustrative), CNT-5 (device-agnostic action verbs), CNT-6 (low-informational-value
 words), CNT-7 (lead with purpose), CNT-8 (plain action verbs, not nominalisations),
@@ -37,9 +37,8 @@ UI term teachers already know — "Search" not "Find"), CNT-12 (sentence case), 
 Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
 (IDN-4 on CaseSync surfaces)**. The rest of this file is that pass's reference: it is what
 "on-voice" means. Catalogue mechanics (filtering, tiers, plain-title naming):
-`../../../procedures/catalogue-mechanics.md`. Findings are recorded per
-`../../../procedures/design-tickets.md`; accepted findings go to dx-design-execute,
-which owns plan approval, implement, design review, and verify
+`../../../procedures/catalogue-mechanics.md`. Accepted findings go to
+dx-design-execute, which owns plan approval, implement, design review, and verify
 (`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
 `../../../procedures/design-review.md`) and loads this skill at implement so
 generated copy arrives on-voice. Uncovered gaps become rule proposals per

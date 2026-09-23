@@ -16,6 +16,10 @@
 - **Contents list dropped**: a `SKILL.md` carries no table of contents, because the whole file is in context before an agent acts and a second copy of the step names goes stale on a renumber ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Attachment guidance extracted**: `dx-create-story` keeps its screenshot and recording rules in `references/attachments.md`, which a run opens only where the author has a file to upload ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
+### Removed
+
+- **Design tickets removed**: a design run keeps its findings in the conversation and puts the approved plan, the granted waivers, and the design review verdict in its decision record, rather than in a long-lived tracker issue per surface ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
+
 ### Fixed
 
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
