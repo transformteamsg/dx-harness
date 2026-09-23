@@ -141,6 +141,7 @@ Load the selected skill. Run one skill per confirmed issue.
 | Story | dx-create-story |
 | Task | dx-create-task |
 | Bug | dx-create-bug |
+| Chore | dx-create-chore |
 
 ## Rules
 - Do not file issues or run `gh`
