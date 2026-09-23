@@ -163,8 +163,8 @@ describe("both surfaces get two outcomes and no third", () => {
     expect(both.length, `${PROCEDURE} has no section for work touching both`).toBeGreaterThan(0);
   });
 
-  it("permits sequencing within one branch", () => {
-    expect(both, "the both case does not permit sequencing in one branch").toMatch(/one branch/i);
+  it("permits building both within one branch", () => {
+    expect(both, "the both case does not permit building both in one branch").toMatch(/one branch/i);
   });
 
   it("permits stopping to ask", () => {

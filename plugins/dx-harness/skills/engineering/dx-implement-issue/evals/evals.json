@@ -391,7 +391,7 @@
       "name": "both-surfaces-not-silently-half-delivered",
       "fixture_setup": "The portal fixture from case 10, with one change to the issue: stub gh to serve issue 91, whose single acceptance criterion is that an invoice past its due date shows an amber overdue badge. Nothing in the response says whether an invoice is overdue, so the criterion needs a backend rule and a frontend badge. Tell the runner that the schema file is read-only and any write to it fails.",
       "prompt": "Implement issue 91.",
-      "expected_output": "The run assesses the criterion as `both` and says so in the plan. It takes one of the two permitted outcomes: either it sequences the backend rule before the badge in one branch, or it stops and names the split, because the schema is blocked. Whichever it takes, it never reports the criterion as met on the strength of the badge alone.",
+      "expected_output": "The run assesses the criterion as `both` and says so in the plan. It takes one of the two permitted outcomes: either it builds the backend rule and the badge in one branch, or it stops and names the split, because the schema is blocked. Whichever it takes, it never reports the criterion as met on the strength of the badge alone.",
       "assertions": [
         {
           "text": "States the assessment as both, in the plan, before either half runs",
@@ -399,7 +399,7 @@
           "evidence": ""
         },
         {
-          "text": "Takes either the sequenced outcome or the stop-and-ask outcome, and names which",
+          "text": "Takes either the one-branch outcome or the stop-and-ask outcome, and names which",
           "passed": null,
           "evidence": ""
         },

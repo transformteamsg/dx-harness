@@ -108,9 +108,9 @@ the repository:
 - The existing API shape, if you are adding an endpoint
 - The conventions in the repository's own agent instructions, such as `CLAUDE.md` or `AGENTS.md`, especially for tests and commits
 
-Read the surfaces Step 4 named and no others. A `frontend` assessment makes the
-data model and the API shape above beside the point, and reading them anyway is
-how a run starts planning work no criterion asked for.
+Read the surfaces Step 4 named and no others. For a `frontend` assessment, skip
+the data model and the API shape in the list above. Reading them anyway is how a
+run starts planning work no criterion asked for.
 
 Do not skip this step. An agent that skips exploration produces code that compiles
 but diverges from the patterns already in the repository.

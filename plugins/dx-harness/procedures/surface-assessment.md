@@ -49,7 +49,7 @@ Surface assessment, contract #<issue>: <value>
 
 Say so in the plan. Then take one of two outcomes, and there is no third.
 
-1. **Sequence them in one branch.** Build the backend item first, then the frontend item that observes it, and commit each against its own contract item.
+1. **Build both in one branch.** Commit each half against its own contract item.
 2. **Stop and ask.** Where the two halves are large enough to review separately, or where one of them is blocked, name the split you would make and leave the choice to the developer. `dx-split-issue` cuts the issue where the answer is two issues.
 
 Never report a criterion as met when only one of its two surfaces is built.
