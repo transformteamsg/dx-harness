@@ -12,7 +12,7 @@ Use this skill when you hear:
 ## 1. Ask user to select issue type
 Read the request before asking. Check these in order and take the first that fits. Where one settles the issue type, say which type and why in one line, then go to Step 5.
 - Describes more than one piece of work -> Step 4b
-- Names the type ("create a bug for the mark total") -> that type. A named chore is a 🔨 Task
+- Names the type ("create a bug for the mark total") -> that type
 - Names a parent issue ("part of #142", "under the login flow story") -> 🔨 Task
 - Describes something that already exists but is behaving wrongly, including too slowly -> 🐞 Bug
 - Names who benefits and what they get from something that does not exist yet ("so teachers can download their marks", "As a parent, I can see my child's results") -> 📖 Story
