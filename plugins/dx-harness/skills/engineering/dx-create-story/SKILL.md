@@ -152,7 +152,7 @@ Are any of these actual dependencies, or are they unrelated?
 Let the author confirm or dismiss each one, and carry the confirmed ones to Step 8. Where the scan finds nothing related, go to Step 6 without prompting: do not ask the author to confirm a null result.
 
 ## 6. Triage the design need
-Decide whether this story can go to an engineer, or needs a designer before implementation starts. Read the reviewer-routing table in `../../design/dx-design/issue-intake.md`, the canonical copy, and judge each scenario against it.
+Decide whether this story can go to an engineer, or needs a designer before implementation starts. Read the reviewer-routing table in `../../../procedures/reviewer-routing.md`, the canonical copy, and judge each scenario against it.
 
 - Design assets is `N/A`, because the story has no user-facing surface -> Step 7
 - The surface is user-facing but no assets exist yet -> judge the scenarios against the table anyway, because the absence of assets is itself a reason a designer may be needed
