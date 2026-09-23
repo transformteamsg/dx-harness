@@ -112,7 +112,7 @@ Most repositories already have a `bug` label, because GitHub creates one by defa
 
   If no dependencies were confirmed, skip this.
 
-  If the author has a screenshot or recording but has not attached it, remind them to upload it now, following [../../../procedures/attachments.md](../../../procedures/attachments.md). An issue whose Evidence section says "see the recording" with nothing attached claims evidence that is not there, which is worse than an honest `None available`.
+  If the author has a screenshot or recording but has not attached it, remind them to upload it now, following [../../../procedures/attachments.md](../../../procedures/attachments.md).
 - **If the command fails with "command not found" or "'gh' is not recognized"**: render the issue title and body as markdown and instruct the author to create the issue manually via the GitHub web interface.
 - **If the command fails for any other reason**: surface the real error and stop.
 
