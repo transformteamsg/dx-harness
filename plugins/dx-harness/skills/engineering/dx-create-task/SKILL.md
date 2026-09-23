@@ -11,14 +11,6 @@ A task only makes sense in the context of the work it delivers, so every task li
 
 The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `N/A` or `None`, do not delete the heading. The one exception is the optional `Also true when done` checklist described in Step 2, which you delete outright when it is empty, because a heading standing over an empty list reads as an oversight rather than a decision. Write every section following [House style](../../../procedures/house-style.md): the parent already carries the background, so a task restates only what is specific to its own slice.
 
-## Attaching screenshots and recordings
-
-Images and recordings belong on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in GitHub's web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body. `gh` cannot attach binaries, so this step stays manual: say so rather than leaving the author to find out when the link does not resolve.
-
-Never commit a screenshot or a video to the repository so that an issue can link to it. It sits in every clone from then on, it outlives the issue that needed it, and deleting it later does not shrink the history. This applies to a coding agent at least as much as to a person: if you are the one holding the file, hand it to the author to upload instead of writing it into the working tree.
-
-Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. If the GIF is unreadable at that size, trim the recording to the few seconds that matter rather than raising the resolution.
-
 ## Workflow
 
 ### Step 1: Identify the parent
@@ -51,7 +43,7 @@ Ask for the following. Do not invent answers: ask if the user has not provided t
    The checklist supplements the scenarios, it does not replace them: a task with only a checklist and no scenario usually means either the behaviour has not been thought through yet, or the work is maintenance that belongs in `dx-create-chore`. When nothing invariant needs recording, delete the heading rather than filling it with `None`.
 4. **Out of scope**: at least one explicit exclusion, or confirm nothing adjacent is in scope.
 
-There is no user story section here: a task is described from the doing discipline's perspective, not a persona's. A design task may reference or attach the design context it needs (a parent Figma frame, the parent's design assets); an engineering task usually will not. Where it does attach something, follow Attaching screenshots and recordings above.
+There is no user story section here: a task is described from the doing discipline's perspective, not a persona's. A design task may reference or attach the design context it needs (a parent Figma frame, the parent's design assets); an engineering task usually will not. Where it does attach something, follow [../../../procedures/attachments.md](../../../procedures/attachments.md).
 
 ### Step 3: Design-need triage
 
