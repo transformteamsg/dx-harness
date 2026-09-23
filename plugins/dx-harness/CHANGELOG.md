@@ -22,6 +22,7 @@
 - **Changelog read scoped**: `dx-create-skill` Step 8 reads the `## Unreleased` section through `sed` rather than opening the whole file, at 930 tokens rather than 3,979 ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 - **Trim verification points at the procedure**: `dx-trim-doc` checks a trimmed file against `procedures/house-style.md` instead of running the deleted lint ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 - **Attachment guidance centralised**: `procedures/attachments.md` holds the wording once; `dx-create-task`, `dx-create-bug`, and `dx-create-story` all point at it instead of carrying their own copy ([#385](https://github.com/transformteamsg/dx-harness/issues/385)).
+- **Reviewer routing is a procedure**: `procedures/reviewer-routing.md` holds the four routing criteria, and `dx-create-story`, `dx-create-task`, and `dx-design` all read it. The two issue skills loaded all 2,203 tokens of `dx-design/issue-intake.md` to reach that table and now read 412, saving 1,791 per run ([#380](https://github.com/transformteamsg/dx-harness/issues/380)).
 
 ### Removed
 

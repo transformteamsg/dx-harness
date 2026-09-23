@@ -209,10 +209,11 @@ The list is ordered by saving per unit of work. Items 1 to 3 are [#379](https://
    A run then loads the branch it chose. Expected saving is 2,000 to 4,000 tokens per run.
    All three read no references, so the whole `SKILL.md` loads on every trigger. #346
    already tracks them by word count, and carries these token figures as a comment.
-5. **Extract the reviewer-routing table into a procedure**. `dx-create-story` and
+5. **Extract the reviewer-routing table into a procedure**. Done. `dx-create-story` and
    `dx-create-task` read all 2,203 tokens of `skills/design/dx-design/issue-intake.md` to
-   reach one 287-token table. A procedure all three skills read saves 1,916 tokens per run
-   and removes the cross-directory read.
+   reach one routing table. Both now read `procedures/reviewer-routing.md` at 412 tokens,
+   saving 1,791 per run, and no engineering skill reads a file under `skills/design/`.
+   `dx-design` reads both files and pays 182 tokens for the deduplication.
 6. **Re-measure after each change**. Rebuild this table before you trim anything else.
    The ranking, not the absolute figure, tells you where to work.
 
@@ -226,9 +227,9 @@ lint left to catch them.
 `procedures/house-style.md` is read at depth 1 by nine skills here and reached at depth 2
 by 10 design skills. Any change to it lands on both teams.
 
-`dx-create-story` and `dx-create-task` read
-`skills/design/dx-design/issue-intake.md` (2,203) at depth 1, for one 287-token table.
-The design team owns the directory. Item 5 above extracts the table into a procedure.
+`dx-create-story` and `dx-create-task` no longer read
+`skills/design/dx-design/issue-intake.md`. Item 5 above moved the routing table they
+needed into `procedures/reviewer-routing.md`, which all three skills read.
 
 Three design-owned files reach this cluster through `dx-create-skill` alone, all at depth
 2: `standards/README.md` (2,700), `procedures/catalogue-mechanics.md` (816), and
