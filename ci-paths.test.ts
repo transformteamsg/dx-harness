@@ -26,4 +26,33 @@ describe("ci.yml paths-ignore", () => {
   it("runs when an ignored file and a read file change together", () => {
     expect(skips(["docs/ROADMAP.md", "app/page.tsx"])).toBe(false);
   });
+  /* Each of these is read by a check, so a change to it alone must still run
+     CI. The list is the issue's coupled table, plus the product trees. */
+  const read = [
+    "README.md",
+    "LICENSE",
+    "CONTEXT.md",
+    "DESIGN.md",
+    "NOTICE.md",
+    "package.json",
+    "pnpm-lock.yaml",
+    "docs/agents/deploy.md",
+    "docs/decisions/example.md",
+    "docs/index.html",
+    "plugins/dx-harness/skills/engineering/dx-create-pr/SKILL.md",
+    ".github/workflows/ci.yml",
+    "CONTRIBUTING.md",
+    ".gitignore",
+    "app/page.tsx",
+    "components/postcard.tsx",
+    "content/overview.mdx",
+    "lib/motion.ts",
+    "scripts/generate-notices.mjs",
+    "tests/site-contract.spec.ts",
+    "deploy.test.ts",
+  ];
+
+  it.each(read)("runs for a change to %s alone", (file) => {
+    expect(skips([file])).toBe(false);
+  });
 });
