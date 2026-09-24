@@ -27,3 +27,11 @@ describe("pnpm check", () => {
     expect(scripts.check?.split(" && ")).toEqual(GATES);
   });
 });
+
+describe("pnpm build", () => {
+  it("runs next build and the CSP postbuild, and no gate", () => {
+    expect(scripts.build).toBe("next build");
+    expect(scripts.prebuild).toBeUndefined();
+    expect(scripts.postbuild).toBe("node scripts/externalize-next-inline-scripts.mjs");
+  });
+});
