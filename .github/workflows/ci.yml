@@ -61,11 +61,14 @@ jobs:
       - name: Install ast-grep
         run: npm install --global @ast-grep/cli@0.44.1
 
+      # The standards gate runs here, by name, once per job. pnpm build does
+      # not run it.
+      - name: Standards gate
+        run: pnpm check
+
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      # pnpm build's prebuild runs check-standards.mjs and the Python gates
-      # (check:python), so the gates run exactly once per job — here.
       - name: Build production site
         run: pnpm build
 
