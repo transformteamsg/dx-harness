@@ -13,10 +13,12 @@ export const metadata: Metadata = {
    fonts, the stylesheet, and the skip link. The chrome lives one level down —
    `(docs)/layout.tsx` for the documentation shell, `(landing)/layout.tsx` for
    the front page. Each group provides its own `#main-content` target, so the
-   skip link below works from either. */
+   skip link below works from either. `data-scroll-behavior` makes Next jump
+   to the top on a route change, while in-page anchors keep the smooth scroll
+   globals.css sets for readers who allow motion. */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <a
           href="#main-content"
