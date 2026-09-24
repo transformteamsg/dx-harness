@@ -41,7 +41,6 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.7",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.20.1",
