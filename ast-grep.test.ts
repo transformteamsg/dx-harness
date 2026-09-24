@@ -39,3 +39,11 @@ describe("the ast-grep devDependency", () => {
     expect(readRoot("pnpm-lock.yaml")).toContain("'@ast-grep/cli@0.44.1':");
   });
 });
+
+describe(".github/workflows/ci.yml", () => {
+  it("installs no ast-grep of its own", () => {
+    const ci = readRoot(".github/workflows/ci.yml");
+    expect(ci).not.toContain("@ast-grep/cli");
+    expect(ci).not.toMatch(/name: Install ast-grep/);
+  });
+});

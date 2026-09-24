@@ -75,11 +75,11 @@ describe("the check scripts' self-tests", () => {
     expect(gateScripts.filter(([, command]) => command.includes("--self-test"))).toEqual([]);
   });
 
-  it("run in CI after Python, PyYAML, and ast-grep are set up", () => {
+  it("run in CI after Python and PyYAML are set up", () => {
     const ci = readRoot(".github/workflows/ci.yml");
     const test = ci.indexOf("run: pnpm test\n");
     expect(test).toBeGreaterThan(-1);
-    for (const setup of ["uses: actions/setup-python", "run: pip install pyyaml", "run: npm install --global @ast-grep/cli"]) {
+    for (const setup of ["uses: actions/setup-python", "run: pip install pyyaml"]) {
       expect(ci.indexOf(setup)).toBeGreaterThan(-1);
       expect(ci.indexOf(setup)).toBeLessThan(test);
     }
