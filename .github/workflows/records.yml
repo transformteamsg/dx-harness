@@ -1,0 +1,47 @@
+name: Records
+
+# Runs the decision-record audit on the paths ci.yml ignores. A content edit
+# there reaches no check, but a rename or delete can break a docs/ path that a
+# decision record cites, which only audit-record.py catches. Keep `paths` here
+# identical to ci.yml's `paths-ignore`, and the run step identical to
+# package.json's check:records.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/ROADMAP.md
+      - docs/specs/**
+      - docs/superpowers/**
+      - plans/**
+      - review/**
+      - CLAUDE.md
+      - PRODUCT.md
+  pull_request:
+    branches: [main]
+    paths:
+      - docs/ROADMAP.md
+      - docs/specs/**
+      - docs/superpowers/**
+      - plans/**
+      - review/**
+      - CLAUDE.md
+      - PRODUCT.md
+
+permissions:
+  contents: read
+
+jobs:
+  records:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # audit-record.py imports only the standard library, so no PyYAML.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Decision-record audit
+        run: python3 plugins/dx-harness/checks/audit-record.py
