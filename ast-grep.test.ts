@@ -55,4 +55,8 @@ describe("CONTRIBUTING.md", () => {
     expect(guide).not.toMatch(/(pnpm add|npm install|npm i) (--global|-g) @ast-grep\/cli/);
     expect(guide).not.toContain("pnpm setup");
   });
+
+  it("says to run a check directly through pnpm exec", () => {
+    expect(guide).toMatch(/pnpm exec python3 plugins\/dx-harness\/checks\/[a-z-]+\.py/);
+  });
 });
