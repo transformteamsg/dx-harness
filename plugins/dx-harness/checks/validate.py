@@ -1734,7 +1734,7 @@ def run_self_test():
     # deliver. Asserted against the live catalog, with the detail file each
     # relabel forces, because both requirements have to hold in the same run:
     # a judgment or hybrid control with no detail file fails validate.py AND
-    # check-standards.mjs, and the .mjs gate runs first in prebuild. Reverting
+    # check-standards.mjs, and the .mjs gate runs first in `pnpm check`. Reverting
     # one half of the pair fails here rather than in a red build.
     relabelled = {
         "SLP-1": "hybrid", "SLP-6": "hybrid", "IDN-1": "hybrid",
@@ -2052,21 +2052,21 @@ def run_self_test():
                             f"and the rendered layer: want: {want!r}; "
                             f"got: {got!r}")
 
-        # The .mjs gate runs before the Python one in prebuild, so it is the
+        # The .mjs gate runs before the Python one in `pnpm check`, so it is the
         # first thing to fail on a missing detail file. Guarding the order
         # because the two gates enforce overlapping rules and only this one
         # decides which error a contributor sees first.
         case_count += 1
         pkg_path = os.path.join(site_root, "package.json")
-        prebuild = ""
+        gate = ""
         if os.path.isfile(pkg_path):
             with open(pkg_path) as fh:
-                prebuild = json.load(fh).get("scripts", {}).get("prebuild", "")
-        mjs, py = prebuild.find("check-standards.mjs"), prebuild.find("check:python")
+                gate = json.load(fh).get("scripts", {}).get("check", "")
+        mjs, py = gate.find("check-standards.mjs"), gate.find("check:python")
         want = (True, True, True)
         got = (mjs != -1, py != -1, mjs != -1 and py != -1 and mjs < py)
         if want != got:
-            failures.append(f"FAIL prebuild runs check-standards.mjs before the "
+            failures.append(f"FAIL pnpm check runs check-standards.mjs before the "
                             f"Python gate: want: {want!r}; got: {got!r}")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
