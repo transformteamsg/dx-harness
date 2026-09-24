@@ -4,11 +4,34 @@ name: CI
 # to main and on pull requests targeting main. Separate from deploy.yml — this
 # workflow never deploys; deploy.yml runs only after this workflow succeeds.
 
+# paths-ignore skips the whole job when every changed file is on the list, and
+# no check reads any file on it. That is safe only while main has
+# no required status check: today branch protection requires a review, not a
+# check. A skipped run reports nothing, so a required check would wait forever.
+# If one is ever added, replace paths-ignore with a gate job that always runs
+# and reports success on the skip path. records.yml runs on the same paths, because a rename
+# or delete there can still break check:records; keep the two lists identical.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - docs/ROADMAP.md
+      - docs/specs/**
+      - docs/superpowers/**
+      - plans/**
+      - review/**
+      - CLAUDE.md
+      - PRODUCT.md
   pull_request:
     branches: [main]
+    paths-ignore:
+      - docs/ROADMAP.md
+      - docs/specs/**
+      - docs/superpowers/**
+      - plans/**
+      - review/**
+      - CLAUDE.md
+      - PRODUCT.md
 
 permissions:
   contents: read
