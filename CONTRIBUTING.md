@@ -88,11 +88,12 @@ Run these before you push. CI runs the same set, so a green local run predicts a
 | --- | --- |
 | `pnpm lint` | ESLint across the repository |
 | `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm test` | Vitest unit tests |
-| `pnpm build` | The standards gate, the Next.js build, and the CSP externalization, in that order |
+| `pnpm test` | Vitest unit tests, then the check scripts' own self-tests (`test:checks`) |
+| `pnpm check` | The standards gate: `check-standards.mjs`, `check:design`, `check:records`, `check:python`, and `check:notices` |
+| `pnpm build` | The Next.js build, then the CSP externalization |
 | `pnpm test:e2e` | The rendered accessibility contract in Chromium |
 
-`pnpm build` carries more than a build. Its `prebuild` step runs `check-standards.mjs`, `check:python`, and `check:notices`, and its `postbuild` step moves Next.js inline scripts into external files so the deployed site satisfies Airbase's `script-src 'self'` policy. Never run `next build` directly for a deployable artefact: it skips both.
+`pnpm build` does not run the standards gate; run `pnpm check` for that. Its `postbuild` step moves Next.js inline scripts into external files so the deployed site satisfies Airbase's `script-src 'self'` policy. Never run `next build` directly for a deployable artefact: it skips that step.
 
 **No git hook runs any of this.** The repository has no `lefthook.yml` and no `.husky/`, so nothing checks your work on commit or on push. CI runs on pushes to `main` and on pull requests targeting `main`, which means an unchecked commit reaches CI before it reaches a reviewer. Run the commands yourself.
 

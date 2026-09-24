@@ -15,7 +15,7 @@ Validates standards/catalog.yaml for internal consistency:
   8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html — the plugin's or the consuming
      site's — must equal the catalog's actual control count), [WIRING-SYNC]
-     (enforced:script|partial claims actually run in prebuild/CI or are
+     (enforced:script|partial claims actually run from package.json or CI, or are
      exempted), and [SKILL-SYNC] (every catalog id is wired into >=1
      skill/agent file or grandfathered; no ghost ids in skills).
      A declared sync consumer that cannot be found on disk is an ERROR, never
@@ -580,7 +580,7 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
 
 
 # [WIRING-SYNC] scripts claimed as enforced:script|partial that are allowed to
-# run in neither prebuild nor CI, with a one-line honest reason each. Keep this
+# run in neither a package.json script nor CI, with a one-line honest reason each. Keep this
 # in sync with the "Wiring status" prose in checks/README.md.
 WIRING_EXEMPT = {
     "checks/contrast.py": "blocks for manual A11Y-1 verification until a product declares colour.pairs; build wiring is deferred to the catalogue recount",
@@ -592,7 +592,7 @@ def wiring_parity_errors(repo_root, catalog_by_id):
     """
     [WIRING-SYNC] Every control claiming enforced:script|partial via a
     script: field must have that script actually running somewhere
-    (package.json prebuild, or .github/workflows/ci.yml) — unless it is on
+    (a package.json script, or .github/workflows/ci.yml) — unless it is on
     the WIRING_EXEMPT list with a documented reason. Catches the class of
     drift where a catalog control claims automated enforcement that no
     automation delivers.
@@ -648,8 +648,8 @@ def wiring_parity_errors(repo_root, catalog_by_id):
         for cid, enforced in claimants:
             errors.append(
                 f"ERROR standards/catalog.yaml [WIRING-SYNC]: {cid} claims "
-                f"enforced:{enforced} via {sp} but it runs in neither prebuild "
-                f"nor CI and is not exempted"
+                f"enforced:{enforced} via {sp} but it runs in neither a "
+                f"package.json script nor CI and is not exempted"
             )
 
     # Dead exemptions: exempted script no longer exists, or no longer claimed.
