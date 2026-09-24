@@ -34,7 +34,6 @@
 - **Shape label corroborates only**: `dx-split-issue` reads a story from its heading, and treats a `story` or `skill:dx-create-story` label as confirmation where one is present rather than a second requirement ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Sentence case in `dx-create-issue`**: its two guiding-question headings and its Step 5 table headers follow the standard, so the skill prose standard no longer documents them as defects to work around ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Emoji headings read correctly**: `dx-create-task`, `dx-split-issue`, and `dx-code-review` match a story on its heading text and ignore a leading emoji ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
-- **Accessibility lint runs on Next 16**: `a11y-eslint.py` finds `eslint-plugin-jsx-a11y` through `eslint-config-next` 16, whose exports map hides its `package.json`, rather than skipping the layer as if the plugin were absent ([#342](https://github.com/transformteamsg/dx-harness/issues/342)).
 
 ## 0.7.0 (2026-09-14)
 
