@@ -80,7 +80,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
    - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible. The default yields to evidence: a cited line that settles one makes it CONFIRMED. The shape of the defect never decides the label on its own.
    - **A Removed behaviour finding cites the removal in the diff**, not the file.
    - **REFUTED only when provably wrong** — cite the line or invariant that rules it out.
-   - **Drop a REFUTED candidate here, silently**, and run neither part below on it.
+   - **Drop a REFUTED candidate here**, and run neither part below on it.
 
    Citations are required for behaviour claims only. For Simplification, Reuse, and Altitude, the diff is the evidence.
 
