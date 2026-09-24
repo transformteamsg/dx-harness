@@ -36,6 +36,5 @@ next-env.d.ts
 .claude
 
 # The harness's own Node dependencies (plugins/dx-harness/package.json) are a
-# provisioning surface, like the global ast-grep install: the manifest is
-# tracked, the install output is not.
+# provisioning surface: the manifest is tracked, the install output is not.
 plugins/dx-harness/package-lock.json
