@@ -23,4 +23,7 @@ describe("ci.yml paths-ignore", () => {
   it("skips a change to docs/ROADMAP.md alone", () => {
     expect(skips(["docs/ROADMAP.md"])).toBe(true);
   });
+  it("runs when an ignored file and a read file change together", () => {
+    expect(skips(["docs/ROADMAP.md", "app/page.tsx"])).toBe(false);
+  });
 });
