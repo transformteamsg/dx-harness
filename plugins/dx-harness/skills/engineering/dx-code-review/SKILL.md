@@ -62,28 +62,39 @@ A finding produced by a rule from `REVIEW.md` names that rule.
 1. Run the issue and test plan check (below). It must complete before the angles.
 2. Run all 8 review angles (below) on the diff. Collect candidates with `file`, `line`, `summary`, `failure_scenario`, and a severity from the table above.
    - **Raise every candidate the angle finds, then trim.** Do not stop looking at a count. Rank what the angle raised, carry the top 6 forward, and record the angle name and the number trimmed for the summary. The ceiling bounds what is posted, not what is examined: an angle that stops analysing at its sixth candidate loses the seventh defect outright instead of deferring it.
-3. Deduplicate: same defect at the same location, keep one.
-4. Label each candidate **CONFIRMED**, **PLAUSIBLE**, or **REFUTED**, and carry the label into the comment.
+3. Deduplicate:
+   - **Within the candidate list** — same defect at the same location, keep one.
+   - **Against the All open threads set** from sequence step 3 — where a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, drop the candidate.
+4. **Decide how many findings can post, before verification.** No candidate reaches step 5 unless it can still post.
+   - **Never cap Important or Pre-existing.**
+   - **Drop every candidate whose pattern the overlay suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only a row marked suppressed in the reviewed repository's `review/agent-patterns.md` suppresses a pattern.
+   - **On a re-review (Any skill thread non-empty), hold back every nit, unverified.** Carry the count to the summary.
+   - **Otherwise cap nits at 5.** The cap is global, not per-angle, so one angle may use all 5. Rank a candidate that already cites a `file:line` above one that does not, then diff order; keep the first 5 and carry the number held back to the summary.
+
+     **Backfill a kept nit that step 5 drops:** pull the next ranked nit in, verify it, and repeat until 5 nits stand or the ranked list is empty.
+5. **Verify each surviving candidate in one pass.** Take one candidate, do all three parts below on it, then take the next.
+
+   **Part 1. Label it CONFIRMED, PLAUSIBLE, or REFUTED**, and carry the label into the comment.
    - **CONFIRMED** requires evidence, not inference: for a behaviour claim, hold the `file:line` that establishes it. A function named `validateInput` is not evidence that it validates.
    - **A behaviour claim with no citation is dropped**, not downgraded. It never posts and never reaches the summary counts.
    - **PLAUSIBLE by default:** races, nil on rare-but-reachable paths, falsy-zero, off-by-one, regex missing anchor. These post, labelled as plausible. The default yields to evidence: a cited line that settles one makes it CONFIRMED. The shape of the defect never decides the label on its own.
    - **A Removed behaviour finding cites the removal in the diff**, not the file.
    - **REFUTED only when provably wrong** — cite the line or invariant that rules it out.
+   - **Drop a REFUTED candidate here**, and run neither part below on it.
 
    Citations are required for behaviour claims only. For Simplification, Reuse, and Altitude, the diff is the evidence.
-5. For each CONFIRMED or PLAUSIBLE finding, validate the suggestion against the repo's manifest (`package.json`, `go.mod`, `requirements.txt`, `Gemfile`):
+
+   **Part 2. Validate the suggestion against the repo's manifest**, only where the suggestion names a library, a library API, or a shell command. Skip it for any other suggestion. Where it applies, read the manifest (`package.json`, `go.mod`, `requirements.txt`, `Gemfile`):
    - **Found** → check any library named in the suggestion exists at the installed version; revise it, or note the upgrade it needs.
    - **None** → note that no manifest was found, and trace any shell command in the suggestion against the failure modes described.
-6. Drop every REFUTED finding, silently.
-7. **Agent pattern classification.** Match each remaining finding's `Pattern name` / `Trigger` against two sources read together:
-   - the reviewed repository's `review/agent-patterns.md`, fetched in step 4 — **never read from disk**
+
+   **Part 3. Classify the agent pattern.** Match the finding's `Pattern name` / `Trigger` against two sources read together:
+   - the reviewed repository's `review/agent-patterns.md`, fetched in sequence step 4 — **never read from disk**
    - this skill's [references/agent-pattern-standard.md](references/agent-pattern-standard.md)
 
    Where both carry the same `AP-NNN`, the repository's row wins. Tag matches `[AI-PATTERN]`.
 
-   **This step reads and tags. It writes nothing.** The registry is read-only here; a repository maintains its own counts and status. Schema and precedence: [references/agent-pattern-registry.md](references/agent-pattern-registry.md).
-
-   **Drop any finding matching a suppressed row**: not tagged, not verified, not posted. Count the drops for the summary.
+   **This part reads and tags. It writes nothing.** The registry is read-only here; a repository maintains its own counts and status. Schema and precedence: [references/agent-pattern-registry.md](references/agent-pattern-registry.md).
 
 ### Step 1 in detail: the issue and test plan check
 
@@ -125,7 +136,7 @@ Every posted comment ends with this footer, `{model}` replaced by the current mo
 
 The marker line identifies the comment as this skill's on a later run, which is how a re-review is detected.
 
-The second line goes on an inline finding only, and the summary comment omits it: a summary is not a finding, so there is nothing there to judge. A 👍 or 👎 on the comment is the author's verdict on whether that finding was worth raising, and step 3 of a later run reads it back.
+The second line goes on an inline finding only, and the summary comment omits it: a summary is not a finding, so there is nothing there to judge. A 👍 or 👎 on the comment is the author's verdict on whether that finding was worth raising, and sequence step 3 of a later run reads it back.
 
 1. Resolve the forge, the repository, and the request number per [../../../procedures/pr-mechanics.md](../../../procedures/pr-mechanics.md) § Resolving the request and its repository. That procedure owns the URL-beats-remote rule, both forge URL shapes, the bare-number case, the `--repo` discipline, and the CLI check. Do not re-derive any of it here.
 
@@ -135,7 +146,7 @@ The second line goes on an inline finding only, and the summary comment omits it
    ```bash
    gh pr view {number} --repo {owner}/{repo} --json number,headRefName,headRefOid,baseRefName,title
    ```
-3. Fetch every existing review thread, for dedup (step 6) and resolution (step 7):
+3. Fetch every existing review thread, for dedup (analysis step 3) and resolution (step 6):
    ```bash
    gh api graphql -f query='
    query($owner: String!, $repo: String!, $number: Int!) {
@@ -158,9 +169,9 @@ The second line goes on an inline finding only, and the summary comment omits it
    }' -f owner="{owner}" -f repo="{repo}" -F number={number}
    ```
    Derive three sets:
-   - **All open threads** — `isResolved` is false. Used for dedup in step 6.
-   - **Open skill threads** — of those, `comments[0].body` contains `code-review`. Used for resolution in step 7.
-   - **Any skill thread** — every thread whose `comments[0].body` contains `code-review`, resolved or not. Non-empty means this is a re-review. Resolved threads count.
+   - **All open threads** — `isResolved` is false. Used for dedup in analysis step 3.
+   - **Open skill threads** — of those, `comments[0].body` contains `code-review`. Used for resolution in step 6.
+   - **Any skill thread** — every thread whose `comments[0].body` contains `code-review`, resolved or not. Non-empty means this is a re-review. Resolved threads count. Used for the re-review rule in analysis step 4.
    - **Helpfulness verdicts** — for each skill thread, the `THUMBS_UP` and `THUMBS_DOWN` counts from its first comment's `reactionGroups`. This is the author's verdict on findings this skill posted before. Carry the totals to the summary.
 
      **Report the verdicts and nothing more.** One 👎 silences no pattern and drops no finding. Suppression is the registry's, and it has a threshold.
@@ -172,8 +183,7 @@ The second line goes on an inline finding only, and the summary comment omits it
    ```
    A 404 means no overlay, which is the ordinary case: match against the shipped standard alone. **Never read `review/agent-patterns.md` from disk.**
 5. Run the analysis (above) on the diff from step 4.
-6. Deduplicate against existing comments. For each finding, check the **all open threads** set: if a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, do not post it.
-7. Resolve addressed conversations. For each **open skill thread** the current diff has addressed:
+6. Resolve addressed conversations. For each **open skill thread** the current diff has addressed:
     ```bash
     gh api graphql -f query='
     mutation($threadId: ID!) {
@@ -182,13 +192,8 @@ The second line goes on an inline finding only, and the summary comment omits it
       }
     }' -f threadId="{thread_id}"
     ```
-8. **Apply volume control, then post once.**
-   - **Never cap Important or Pre-existing.** Post every one.
-   - **Cap nits at 5.** Rank CONFIRMED before PLAUSIBLE, then diff order; post the first 5 and carry the number held back to the summary. The cap is global, not per-angle, so one angle may use all 5.
-   - **On a re-review (Any skill thread non-empty), post no new nit at all.** Post Important and Pre-existing, resolve addressed threads, hold back every nit not already on an open thread.
-
-   Post everything surviving as a **single review**, not one comment per finding: [references/inline-comment-format.md](references/inline-comment-format.md) for the `gh api` invocation and its fallback.
-9. Print the outcome and summary per [references/summary-format.md](references/summary-format.md). Three outcomes: every path skipped, nothing found, findings posted.
+7. **Post once.** Post every finding that no analysis step dropped, including one that skips step 5, such as the issue and test plan check's missing-test finding. Post them as a **single review**, not one comment per finding: [references/inline-comment-format.md](references/inline-comment-format.md) for the `gh api` invocation and its fallback.
+8. Print the outcome and summary per [references/summary-format.md](references/summary-format.md). Three outcomes: every path skipped, nothing found, findings posted.
 
 ---
 
@@ -206,7 +211,7 @@ The second line goes on an inline finding only, and the summary comment omits it
 
 **What looks good:** always include. Specifics only, 2–4 bullets
 
-**Scope:** every confirmed or plausible finding survives the analysis, at every severity. Volume control applies at posting only
+**Scope:** the nit cap and the re-review rule run at analysis step 4, before verification. Every Important and Pre-existing candidate is verified unless the overlay suppresses its pattern, and every one that survives verification posts
 
 **Repository instructions:** only the root `REVIEW.md` is read. A finding from one of its rules names that rule. Skipped paths leave the diff before any angle sees them, and the summary reports them
 
