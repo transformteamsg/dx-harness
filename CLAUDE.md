@@ -1,6 +1,6 @@
 # dx-harness
 
-AI harness for agentic-driven product development (the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`) plus the TFX Design Standard website (TransformX, Teacher & School portfolio). The website runs on Next.js 15 App Router, Tailwind v4, MDX content, and a YAML control catalogue. The package manager is pnpm.
+AI harness for agentic-driven product development (the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`) plus the TFX Design Standard website (TransformX, Teacher & School portfolio). The website runs on Next.js 16 App Router, Tailwind v4, MDX content, and a YAML control catalogue. The package manager is pnpm.
 
 This site must pass its own standard. Before changing UI, read [plugins/dx-harness/standards/catalog.yaml](plugins/dx-harness/standards/catalog.yaml), especially the SLP (anti-slop) controls. The catalogue is the single source of truth, and the site reads it directly.
 
