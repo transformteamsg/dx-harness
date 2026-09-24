@@ -1,9 +1,9 @@
 /* Where pages moved in the IA restructure (guidelines/foundations →
    /standards/*, research → harness, principles removed) and where the
-   retired Reference pages now land. One map, two consumers: middleware.ts
+   retired Reference pages now land. One map, two consumers: proxy.ts
    issues permanent redirects for the HTML paths, and markdown-twin.ts
    aliases the old `.md` twins so published machine-reader URLs keep
-   resolving. No fs access — middleware imports it. */
+   resolving. No fs access — the proxy imports it. */
 
 export const movedPages: Record<string, string> = {
   "/principles": "/overview",

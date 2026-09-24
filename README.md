@@ -116,7 +116,7 @@ The upstream design-standard repo and its Notion source keep their existing
 
 ## Website
 
-This repo also hosts the design-standard website (Next.js 15, pnpm) — the
+This repo also hosts the design-standard website (Next.js 16, pnpm) — the
 human- and agent-readable rendering of the standard, including `/llms.txt`
 (with control details: `/llms-full.txt`) and `/standards/catalog.yaml`. It
 reads the catalog directly from `plugins/dx-harness/standards/`.

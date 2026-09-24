@@ -4,6 +4,8 @@
 // interpolate it into a page.evaluate expression) so the two runners cannot
 // silently disagree on what counts as "the same element" — a divergence here
 // previously dropped distinct reduced-motion findings as false duplicates.
+// Nothing imports it, so no-unused-vars cannot see those two callers.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function cssPath(el) {
   if (!el || el.nodeType !== 1) return "(no element)";
   if (el.id) return "#" + CSS.escape(el.id);
