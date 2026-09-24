@@ -27,4 +27,13 @@ describe(RULE, () => {
     expect(severity(config.rules?.[RULE])).toBe(2);
   });
 
+  it("reports nothing in the effects it first flagged", async () => {
+    const results = await eslint.lintFiles(FILES);
+    const findings = results.flatMap((result) =>
+      result.messages
+        .filter((message) => message.ruleId === RULE)
+        .map((message) => `${result.filePath.replace(`${process.cwd()}/`, "")}:${message.line}`),
+    );
+    expect(findings).toEqual([]);
+  }, 60_000);
 });
