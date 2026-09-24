@@ -41,5 +41,5 @@ Run as analysis step 1, before the review angles.
      - **Anything else**: file the finding below. Where the declaration omits the scenario from both headings, say it is incomplete. Where it records the scenario as manual and the request body names it nowhere, say the case reached no reviewer, because a declaration sits in a commit body.
 
      The finding has two parts:
-     - A 🔴 **Important** finding — "Missing automated test for: <scenario>" — filed alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips the candidate-list dedup and the verification pass (analysis step 5), and the cap never counts it. Analysis step 3 still deduplicates it against the request's existing threads, like every other finding.
+     - A 🔴 **Important** finding — "Missing automated test for: <scenario>" — filed alongside the review angles' findings. It's a confirmed process gap, not a speculative candidate, so it skips the within-list dedup in analysis step 3, all of step 4, and step 5. Step 3 still deduplicates it against the request's open threads.
      - A bullet on the **Reviewer To-Do** list — "Manually test: <scenario>" — printed with the review summary (see Rules). Nothing else adds a bullet to that list.
