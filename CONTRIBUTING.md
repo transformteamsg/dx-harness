@@ -11,12 +11,12 @@ pnpm install
 pnpm dev
 ```
 
-The full check suite needs three tools that no manifest declares, because the checks reach them as subprocesses rather than as packages:
+The full check suite needs three tools that the checks reach as subprocesses rather than as imports. `pnpm install` sets up ast-grep; the other two need a step of their own:
 
 | Tool | Version | Why |
 | --- | --- | --- |
 | Python 3 with PyYAML | 3.12 | `check:python` reads the control catalogue |
-| ast-grep | 0.44.1 exactly | `token-audit.py` and `type-scan.py` match source structure through it |
+| ast-grep | Pinned in `package.json` | `token-audit.py`, `type-scan.py`, and `structure-scan.py` match source structure through it |
 | Playwright Chromium | Installed through pnpm | `pnpm test:e2e` renders the accessibility contract |
 
 ```sh
@@ -26,7 +26,7 @@ pnpm exec playwright install --with-deps chromium
 
 The pnpm scripts find ast-grep in `node_modules/.bin`. To run a check directly, prefix it with `pnpm exec`, as in `pnpm exec python3 plugins/dx-harness/checks/token-audit.py app components lib`. Without the prefix, the check cannot find ast-grep and stops with one `ERROR` line.
 
-Pin ast-grep to 0.44.1 rather than tracking the latest release. The checks enforce it as a floor, and `plugins/dx-harness/checks/sgconfig.yml` is written against behaviour measured at that version. A check that cannot reach ast-grep fails with one `ERROR` line instead of reporting a clean run, because a scan that did not happen must never look like a scan that found nothing.
+Keep the ast-grep devDependency pinned to an exact version rather than a range. `plugins/dx-harness/checks/checklib.py` enforces a floor, and `plugins/dx-harness/checks/sgconfig.yml` is written against behaviour measured at that version. A check that cannot reach ast-grep fails with one `ERROR` line instead of reporting a clean run, because a scan that did not happen must never look like a scan that found nothing.
 
 ## Write the commit message
 
