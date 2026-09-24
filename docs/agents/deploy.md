@@ -12,7 +12,7 @@ Next.js 16's App Router does not meet that output contract by default: prerender
 
 `pnpm build` fixes the generated artifact in its `postbuild` step. `scripts/externalize-next-inline-scripts.mjs` moves executable inline scripts from every prerendered `.next/server/app/**/*.html` page into content-hashed files under `.next/static/csp-inline/`, then replaces them with same-origin `src` references. External scripts, empty scripts, and non-executable data blocks such as `type="application/json"` remain unchanged. The build fails if the expected prerendered output is missing or an executable inline script remains after processing.
 
-Do not remove the `postbuild` step or run `next build` directly for an Airbase image. `pnpm build` runs the standards checks, the Next.js build, and CSP externalization in order. `scripts/verify-deploy.mjs` derives every concrete public route from that build's `.next/prerender-manifest.json`, then checks the live deployment and rejects HTML that still contains executable inline scripts. An HTTP 200 on a small sample can no longer hide a missing page or CSP failure.
+Do not remove the `postbuild` step or run `next build` directly for an Airbase image. `pnpm build` runs the Next.js build and then CSP externalization. It does not run the standards checks: those are `pnpm check`, which the deploy steps below run first. `scripts/verify-deploy.mjs` derives every concrete public route from that build's `.next/prerender-manifest.json`, then checks the live deployment and rejects HTML that still contains executable inline scripts. An HTTP 200 on a small sample can no longer hide a missing page or CSP failure.
 
 ## One-time setup (human only, needs TechPass)
 
@@ -24,13 +24,16 @@ Do not remove the `postbuild` step or run `next build` directly for an Airbase i
 
 ## Deploy to staging
 
-From the repository root, with Docker running:
+From the repository root, with Docker running, run the standards gate first:
 
 ```sh
+pnpm check
 IMAGE="dx-harness:$(git rev-parse --short HEAD)"
 airbase container build --tag "$IMAGE"
 airbase container deploy --yes --image "$IMAGE" staging
 ```
+
+The image build does not run `pnpm check`. If you skip it, nothing stops you from deploying source that violates a catalogue control or ships stale notices. `pnpm check` needs Python with PyYAML and ast-grep on your machine; [CONTRIBUTING.md](../../CONTRIBUTING.md#set-up-your-machine) lists them.
 
 Pass the image tag to both commands. `airbase container deploy` can otherwise reuse an older
 local image that happens to carry its default tag, even when the working tree has changed.
@@ -56,6 +59,7 @@ deployment first; this is standard Airbase behavior, not something this repo con
 serves the bare `https://dx-harness.app.tc1.airbase.sg` with no `env--` prefix:
 
 ```sh
+pnpm check
 IMAGE="dx-harness:$(git rev-parse --short HEAD)"
 airbase container build --tag "$IMAGE"
 airbase container deploy --yes --image "$IMAGE"
@@ -87,6 +91,5 @@ node scripts/verify-deploy.mjs https://dx-harness.app.tc1.airbase.sg
 | Symptom | Likely cause |
 | --- | --- |
 | `airbase container deploy` can't resolve the handle | The Console project doesn't exist yet, or `airbase.json`'s `handle` still has the `<team-name>` placeholder |
-| Docker build fails on `check:python` | `python3`/`python3-yaml` didn't install in the builder stage; check the `apt-get install` step in `Dockerfile` |
 | Staging URL times out or 502s | `PORT` / `airbase.json`'s `port` likely disagree with what the app binds; the `Dockerfile`'s `CMD` must read `$PORT` and bind `0.0.0.0` |
 | A page 404s on staging but works locally | Something the route reads from disk (`content/`, `plugins/dx-harness/standards/`) didn't make it into the image; the `Dockerfile`'s runtime stage copies the full app tree specifically to avoid this |
