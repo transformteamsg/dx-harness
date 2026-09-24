@@ -5,18 +5,17 @@ import * as React from "react"
 // Kept in sync with the `lg:` visibility breakpoints in components/ui/sidebar.tsx.
 const MOBILE_BREAKPOINT = 1024
 
+function subscribe(onChange: () => void) {
+  const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+  mql.addEventListener("change", onChange)
+  return () => mql.removeEventListener("change", onChange)
+}
+
+// false on the server and during hydration, so the server markup matches.
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
-
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-    mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
-
-  return !!isMobile
+  return React.useSyncExternalStore(
+    subscribe,
+    () => window.innerWidth < MOBILE_BREAKPOINT,
+    () => false
+  )
 }

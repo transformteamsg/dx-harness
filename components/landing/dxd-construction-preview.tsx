@@ -126,7 +126,10 @@ export function DxdConstructionPreview() {
      then cancelled an effect later (A11Y-5). */
   const reduced = useReducedMotionResolved();
   const animating = reduced === false;
-  const [progress, setProgress] = useState(0);
+  /* A reduced-motion reader gets the finished drawing; everyone else gets the
+     drawn fraction the animation below advances. */
+  const [drawn, setDrawn] = useState(0);
+  const progress = reduced === true ? 1 : drawn;
   const frameId = useRef<number | null>(null);
   const arcLengthLookup = useMemo(
     () => createAstroidArcLengthLookup(SETTINGS),
@@ -142,19 +145,13 @@ export function DxdConstructionPreview() {
   const completed = progress >= 1;
 
   useEffect(() => {
-    if (reduced === null) return;
+    if (reduced !== false) return;
 
-    if (reduced) {
-      setProgress(1);
-      return;
-    }
-
-    setProgress(0);
     const delayId = window.setTimeout(() => {
       const startedAt = performance.now();
       const advance = (now: number) => {
         const next = Math.min(1, (now - startedAt) / (DRAW_DURATION * 1000));
-        setProgress(next);
+        setDrawn(next);
         if (next < 1) frameId.current = window.requestAnimationFrame(advance);
       };
       frameId.current = window.requestAnimationFrame(advance);
