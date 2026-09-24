@@ -24,6 +24,8 @@ pip install pyyaml
 pnpm exec playwright install --with-deps chromium
 ```
 
+The pnpm scripts find ast-grep in `node_modules/.bin`. To run a check directly, prefix it with `pnpm exec`, as in `pnpm exec python3 plugins/dx-harness/checks/token-audit.py app components lib`. Without the prefix, the check cannot find ast-grep and stops with one `ERROR` line.
+
 Pin ast-grep to 0.44.1 rather than tracking the latest release. The checks enforce it as a floor, and `plugins/dx-harness/checks/sgconfig.yml` is written against behaviour measured at that version. A check that cannot reach ast-grep fails with one `ERROR` line instead of reporting a clean run, because a scan that did not happen must never look like a scan that found nothing.
 
 ## Write the commit message
