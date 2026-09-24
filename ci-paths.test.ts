@@ -56,3 +56,10 @@ describe("ci.yml paths-ignore", () => {
     expect(skips([file])).toBe(false);
   });
 });
+
+describe("ci.yml triggers", () => {
+  it("carry the same paths-ignore list on push and on pull_request", () => {
+    expect(ignored.length).toBeGreaterThan(0);
+    expect(ci.on?.push?.["paths-ignore"]).toEqual(ignored);
+  });
+});
