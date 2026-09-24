@@ -58,7 +58,7 @@ Ask for each field below. Do not invent an answer: ask where the author has not 
 
    A scenario that describes implementation rather than observable behaviour goes back to the author. Step 3 adds to what the author gives here, so do not ask them to produce every failure and boundary unaided.
 5. **Out of scope**: at least one explicit exclusion. Where the author names none, ask them to confirm nothing adjacent is in scope.
-6. **Design assets**: Figma links, screenshots, or a prototype. A link needs only pasting. For a screenshot or a recording, read [references/attachments.md](references/attachments.md). Where none exist, offer a Mermaid diagram of the described flow: a state diagram for a multi-step form, a sequence diagram for actor interactions.
+6. **Design assets**: Figma links, screenshots, or a prototype. A link needs only pasting. For a screenshot or a recording, read [../../../procedures/attachments.md](../../../procedures/attachments.md). Where none exist, offer a Mermaid diagram of the described flow: a state diagram for a multi-step form, a sequence diagram for actor interactions.
 
 ## 3. Read the code for missed edge cases
 Read the code behind the scope and surface cases the author's criteria do not cover, so the story ships with the edges they would otherwise find in QA.

@@ -20,6 +20,7 @@
 - **House style is one file**: `procedures/house-style.md` holds 1,704 tokens rather than 2,392. It keeps the cut tests, the test for length, and the evidence bar on a claim, and takes Google's mechanics from `CLAUDE.md` rather than restating them. The sentence-length caps are gone ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 - **Changelog read scoped**: `dx-create-skill` Step 8 reads the `## Unreleased` section through `sed` rather than opening the whole file, at 930 tokens rather than 3,979 ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 - **Trim verification points at the procedure**: `dx-trim-doc` checks a trimmed file against `procedures/house-style.md` instead of running the deleted lint ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+- **Attachment guidance centralised**: `procedures/attachments.md` holds the wording once; `dx-create-task`, `dx-create-bug`, and `dx-create-story` all point at it instead of carrying their own copy ([#385](https://github.com/transformteamsg/dx-harness/issues/385)).
 
 ### Removed
 
