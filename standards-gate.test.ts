@@ -50,3 +50,38 @@ describe(".github/workflows/ci.yml", () => {
     expect(ci).not.toContain("continue-on-error");
   });
 });
+
+const SELF_TESTS = [
+  "validate",
+  "checklib",
+  "token-audit",
+  "type-scan",
+  "structure-scan",
+  "a11y-eslint",
+  "a11y-static",
+  "contrast",
+  "content-lint",
+  "audit-record",
+].map((name) => `python3 plugins/dx-harness/checks/${name}.py --self-test`);
+
+describe("the check scripts' self-tests", () => {
+  it("run from test:checks, which pnpm test calls", () => {
+    expect(scripts.test).toContain("pnpm run test:checks");
+    expect(scripts["test:checks"]?.split(" && ").sort()).toEqual([...SELF_TESTS].sort());
+  });
+
+  it("do not run from pnpm check or any check:* script", () => {
+    const gateScripts = Object.entries(scripts).filter(([name]) => name === "check" || name.startsWith("check:"));
+    expect(gateScripts.filter(([, command]) => command.includes("--self-test"))).toEqual([]);
+  });
+
+  it("run in CI after Python, PyYAML, and ast-grep are set up", () => {
+    const ci = readRoot(".github/workflows/ci.yml");
+    const test = ci.indexOf("run: pnpm test\n");
+    expect(test).toBeGreaterThan(-1);
+    for (const setup of ["uses: actions/setup-python", "run: pip install pyyaml", "run: npm install --global @ast-grep/cli"]) {
+      expect(ci.indexOf(setup)).toBeGreaterThan(-1);
+      expect(ci.indexOf(setup)).toBeLessThan(test);
+    }
+  });
+});
