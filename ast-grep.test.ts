@@ -60,3 +60,10 @@ describe("CONTRIBUTING.md", () => {
     expect(guide).toMatch(/pnpm exec python3 plugins\/dx-harness\/checks\/[a-z-]+\.py/);
   });
 });
+
+describe("the published notices", () => {
+  it("name no ast-grep package, since ast-grep never ships in the site", () => {
+    expect(readRoot("NOTICE.md")).not.toContain("@ast-grep");
+    expect(readRoot("lib/third-party-notices.generated.ts")).not.toContain("@ast-grep");
+  });
+});
