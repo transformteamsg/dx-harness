@@ -63,3 +63,11 @@ describe("ci.yml triggers", () => {
     expect(ci.on?.push?.["paths-ignore"]).toEqual(ignored);
   });
 });
+
+describe("ci.yml's note on required checks", () => {
+  it("records that none is required today, and the gate job to add if one is", () => {
+    const text = readRoot(".github/workflows/ci.yml");
+    expect(text).toMatch(/no required status check/i);
+    expect(text).toMatch(/gate job/i);
+  });
+});
