@@ -3,6 +3,7 @@
 import "@fontsource/anonymous-pro/400.css";
 import "@fontsource/anonymous-pro/700.css";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 /* The builder's note opens as a postcard, because that is what the page is: a
    short message from a named group of people, unaddressed, kept for their own
@@ -191,10 +192,13 @@ export function Postcard({
   month?: string;
   year?: string;
 }) {
-  /* flipped = the message side is showing. The default is the message, so a
-     page with no JavaScript is the letter, plainly; the effect below turns the
-     card picture-side up once script is alive to turn it back. */
-  const [flipped, setFlipped] = useState(true);
+  /* flipped = the message side is showing. The server and hydration render show
+     the message, so a page with no JavaScript is the letter, plainly; once
+     hydrated, the card turns picture-side up and the scroll and timer below
+     turn it back. */
+  const hydrated = useHydrated();
+  const [turned, setTurned] = useState(false);
+  const flipped = !hydrated || turned;
   const sceneRef = useRef<HTMLDivElement>(null);
   /* The idle timer turned the card; scroll may take over only after the
      threshold has genuinely been crossed once. */
@@ -203,8 +207,6 @@ export function Postcard({
   const hadScrolled = useRef(false);
 
   useEffect(() => {
-    setFlipped(false);
-
     const scene = sceneRef.current;
     if (!scene) return;
 
@@ -223,7 +225,7 @@ export function Postcard({
         if (!past) return;
         rearmed.current = true;
       }
-      setFlipped(past);
+      setTurned(past);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -233,7 +235,7 @@ export function Postcard({
     const timer = window.setTimeout(() => {
       if (!hadScrolled.current) {
         timerTurned.current = true;
-        setFlipped(true);
+        setTurned(true);
       }
     }, 2500);
 

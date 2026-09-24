@@ -337,6 +337,24 @@ test("the band's trail never mounts for a touch pointer", async ({ browser }) =>
   await context.close();
 });
 
+test("the postcard lands picture-side up once hydrated, and scrolling turns it", async ({ page }) => {
+  await open(page, "/note");
+  const side = page.getByText(/^Showing the (message|picture) side$/);
+
+  await expect(side).toHaveText("Showing the picture side");
+  await page.mouse.wheel(0, 800);
+  await expect(side).toHaveText("Showing the message side");
+});
+
+test("the postcard shows its message and stays put without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await open(page, "/note");
+
+  await expect(page.getByText("Showing the message side", { exact: true })).toHaveCount(1);
+  await context.close();
+});
+
 test("the notices page serves the licence texts it owes, and links their sources", async ({
   page,
 }) => {
