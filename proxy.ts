@@ -6,14 +6,14 @@ import { movedPages } from "@/lib/redirects";
    The existing dynamic page routes (app/{section}/[slug]/page.tsx) match a
    single segment, so a request to /guidelines/voice-tone.md would be claimed
    by [slug] (slug="voice-tone.md") and 404 — a root catch-all route is
-   silently shadowed. Middleware runs before routing, so it cannot be shadowed:
+   silently shadowed. The proxy runs before routing, so it cannot be shadowed:
    we rewrite every *.md request into the /md namespace, which has no page.tsx
    and so is served only by app/md/[...path]/route.ts.
 
    (The namespace is `/md`, not `/_md`: Next.js treats underscore-prefixed
    folders as private and excludes them from routing, so an `app/_md/**` route
    never registers — the request would still 404.) */
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   /* Pages the IA restructure moved: permanent redirect to the new home.
      Old `.md` twin URLs are not redirected — they resolve in place via
