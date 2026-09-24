@@ -1,7 +1,7 @@
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-export default [
+const config = [
   ...nextVitals,
   ...nextTs,
   {
@@ -24,3 +24,5 @@ export default [
     ignores: [".next/**", ".next-dev/**", "node_modules/**", ".claude/worktrees/**", "components/ink-icons.generated.ts", "next-env.d.ts", "plugins/dx-harness/checks/fixtures/**"],
   },
 ];
+
+export default config;

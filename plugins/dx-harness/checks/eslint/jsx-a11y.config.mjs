@@ -49,7 +49,7 @@ const files = parser
   ? ["**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs", "**/*.ts", "**/*.tsx"]
   : ["**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs"];
 
-export default [
+const config = [
   // Mirrors checklib.SKIP_DIRS so a broad target path never walks a vendored
   // or build tree.
   { ignores: ["**/node_modules/**", "**/.next/**", "**/dist/**", "**/out/**"] },
@@ -64,3 +64,5 @@ export default [
     },
   },
 ];
+
+export default config;
