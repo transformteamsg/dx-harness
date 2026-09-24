@@ -96,6 +96,8 @@ Run these before you push. CI runs the same set, so a green local run predicts a
 
 **No git hook runs any of this.** The repository has no `lefthook.yml` and no `.husky/`, so nothing checks your work on commit or on push. CI runs on pushes to `main` and on pull requests targeting `main`, which means an unchecked commit reaches CI before it reaches a reviewer. Run the commands yourself.
 
+CI skips a change that touches only files no check reads, such as `plans/` or `docs/ROADMAP.md`. The `paths-ignore` list in `.github/workflows/ci.yml` names them. A smaller workflow, `records.yml`, still runs the decision-record audit on those paths.
+
 ## Work through an issue
 
 Issues live as GitHub issues on `transformteamsg/dx-harness` and are managed with the `gh` CLI. `docs/agents/issue-tracker.md` holds the command conventions.
