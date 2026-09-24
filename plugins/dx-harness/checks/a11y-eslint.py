@@ -78,6 +78,7 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -134,7 +135,10 @@ const rootRequire = createRequire(path.join(root, "__dx_resolve__.cjs"));
 const hostPkgs = [];
 for (const host of ["eslint-config-next", "typescript-eslint",
                     "@typescript-eslint/eslint-plugin"]) {
-  try { hostPkgs.push(rootRequire.resolve(host + "/package.json")); } catch {}
+  // A host whose exports map omits ./package.json resolves by its entry point.
+  for (const entry of [host + "/package.json", host]) {
+    try { hostPkgs.push(rootRequire.resolve(entry)); break; } catch {}
+  }
 }
 function resolveDep(name) {
   try { return rootRequire.resolve(name); } catch {}
@@ -553,6 +557,33 @@ def run_self_test():
               len([ln for ln in lines if ln.startswith("ERROR")]))
         check("a skipped layer names its controls", True,
               any("A11Y-2, A11Y-3, A11Y-6, A11Y-8" in ln for ln in lines))
+
+    # ── a host package whose exports map hides package.json still resolves ────
+    # eslint-config-next 16 exports only its entry points, so the plugin it
+    # carries is reached from the host's entry file instead of its manifest.
+    with tempfile.TemporaryDirectory() as td:
+        def write(rel, text):
+            full = os.path.join(td, *rel.split("/"))
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, "w", encoding="utf-8") as fh:
+                fh.write(text)
+        write("package.json", "{}")
+        write("node_modules/eslint/package.json",
+              '{"name": "eslint", "bin": {"eslint": "bin/eslint.js"}}')
+        write("node_modules/eslint/bin/eslint.js", "")
+        host = "node_modules/eslint-config-next"
+        write(f"{host}/package.json",
+              '{"name": "eslint-config-next", "exports": {".": "./index.js"}}')
+        write(f"{host}/index.js", "")
+        write(f"{host}/node_modules/eslint-plugin-jsx-a11y/package.json",
+              '{"name": "eslint-plugin-jsx-a11y", "main": "index.js"}')
+        write(f"{host}/node_modules/eslint-plugin-jsx-a11y/index.js", "")
+        toolchain, _ = resolve_toolchain(td)
+        want = (os.path.join(os.path.realpath(td), *host.split("/"), "node_modules",
+                             "eslint-plugin-jsx-a11y", "index.js")
+                if shutil.which("node") else None)
+        check("the plugin resolves through a host whose exports hide package.json",
+              want, toolchain and os.path.realpath(toolchain["plugin"]))
 
     # ── target selection ──────────────────────────────────────────────────────
     with tempfile.TemporaryDirectory() as td:
