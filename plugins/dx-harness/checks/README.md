@@ -59,10 +59,11 @@ line conversion are each enforced in exactly one place. A second copy of any of
 them is where the floor silently stops being enforced.
 
 - **Provisioning.** ast-grep is a harness-side dependency reached with
-  `subprocess`, provisioned the same way PyYAML is: a named `Install ast-grep`
-  step in CI, assumed present on a dev machine (`brew install ast-grep`, or
-  `npm i -g @ast-grep/cli`). No manifest declares it, no binary is bundled, and
-  **nothing is installed or configured in the repo being checked**. The harness's
+  `subprocess`. The checks assume it is on `PATH` (`brew install ast-grep`, or
+  `npm i -g @ast-grep/cli`), no binary is bundled, and **nothing is installed or
+  configured in the repo being checked**. The repository that hosts this harness
+  pins it as a devDependency for its own contributors and CI; that entry belongs to
+  the site, not to the harness. The harness's
   `sgconfig.yml` and `rules/` travel with the harness and are reached with `-c`.
 - **The floor is 0.44.1**, compared as a numeric tuple. A missing, unreadable or
   too-old ast-grep prints one `ERROR <check>: …` line naming the tool and the
@@ -875,10 +876,11 @@ Wiring status (plan 069): in this repository, `pnpm check` runs the Python gate 
 `a11y-static.py`, `type-scan.py` over `app components`, and `structure-scan.py` over
 `app components lib`. `.github/workflows/ci.yml` runs `pnpm check` as its `Standards
 gate` step. Each script's `--self-test` run is in `test:checks`, which `pnpm test`
-calls, so CI runs the self-tests in its `Test` step. CI adds an `Install ast-grep` step
-beside `Install PyYAML`, because the checks layer reaches ast-grep with `subprocess`;
-the self-tests are what put the ast-grep provisioning contract and the
-`fixtures/parity/` corpus in CI rather than leaving them to a dev machine.
+calls, so CI runs the self-tests in its `Test` step. CI gets ast-grep from the pinned
+devDependency and PyYAML from its `Install PyYAML` step, because the checks layer
+reaches both with `subprocess`; the self-tests are what put the ast-grep provisioning
+contract and the `fixtures/parity/` corpus in CI rather than leaving them to a dev
+machine.
 `type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
 scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
 `leading-[…]` headings it flagged). `structure-scan` was wired in on the same rule:
