@@ -67,3 +67,16 @@ describe("the published notices", () => {
     expect(readRoot("lib/third-party-notices.generated.ts")).not.toContain("@ast-grep");
   });
 });
+
+describe("the ast-grep version", () => {
+  const installSites = [".github/workflows/ci.yml", "Dockerfile", "CONTRIBUTING.md", "docs/agents/deploy.md"];
+
+  it.each(installSites)("is not restated by an install in %s", (file) => {
+    expect(readRoot(file)).not.toMatch(/@ast-grep\/cli@\d/);
+    expect(readRoot(file)).not.toMatch(/ast-grep \| 0\.44\.1/);
+  });
+
+  it("keeps checklib.py's floor at 0.44.1", () => {
+    expect(readRoot("plugins/dx-harness/checks/checklib.py")).toContain('ASTGREP_MIN_VERSION_STR = "0.44.1"');
+  });
+});
