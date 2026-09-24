@@ -31,3 +31,11 @@ describe("the checks' ast-grep", () => {
     expect(run.stdout.trim()).toBe(path.join(bin, "ast-grep"));
   });
 });
+
+describe("the ast-grep devDependency", () => {
+  it("pins @ast-grep/cli at exactly 0.44.1, and the lockfile records it", () => {
+    const pkg = JSON.parse(readRoot("package.json"));
+    expect(pkg.devDependencies?.["@ast-grep/cli"]).toBe("0.44.1");
+    expect(readRoot("pnpm-lock.yaml")).toContain("'@ast-grep/cli@0.44.1':");
+  });
+});
