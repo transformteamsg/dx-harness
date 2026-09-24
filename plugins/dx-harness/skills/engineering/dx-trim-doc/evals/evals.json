@@ -136,7 +136,7 @@
     {
       "id": 4,
       "name": "reference-mode-uses-lint",
-      "fixture_setup": "The target is docs/decisions/landing.md, a decision record a person reads. It contains no instructions to an agent and no gates. The harness house style lint is available at scripts/house-style-lint.py.",
+      "fixture_setup": "The target is docs/decisions/landing.md, a decision record a person reads. It contains no instructions to an agent and no gates.",
       "prompt": "This decision record is bloated, tighten it up.",
       "expected_output": "The skill classifies the document as reference mode and skips the behaviour baseline, saying why. It verifies with the house style lint and the edge test rather than fixtures. It does not build or claim to build behaviour fixtures, and it does not describe the lint pass as a behaviour check.",
       "assertions": [

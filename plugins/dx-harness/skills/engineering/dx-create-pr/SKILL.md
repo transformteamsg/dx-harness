@@ -84,6 +84,8 @@ Fill the sections from the canonical template:
 - **Test plan**: one line per acceptance criterion from the issue, naming the criterion and the automated test that covers it. Name a criterion you did not cover rather than omitting it. For an untracked branch, say what you verified and how.
 - **Manual verification**: what a reviewer runs by hand, and what they should see. Take the command from the repository's own scripts and check that it exists before naming it. Do not carry over a command from another repository or from this skill.
 
+Those two sections are where this skill meets [Definition of done](../../../procedures/definition-of-done.md): between them they answer its DoD-1 and DoD-2. Read its items rather than inventing a second standard for what counts as covered. Where the branch came from `dx-implement-issue`, that run has already reported against every item, so take its block as given and do not judge coverage again.
+
 If a calling skill supplied extra content, add it as its own named section below Manual verification. Leave the shared sections as they are.
 
 Then cut it down, following [House style](../../../procedures/house-style.md), and run the lint its Before you post it section names. A body orients a reviewer; it is not a record of the work. The diff already shows what changed, the issue holds the reasoning, and the commit message holds the history, so a body that repeats any of them costs a reviewer time and buries the part only you could tell them. Write to these limits:

@@ -5,10 +5,14 @@ Engineering + design skills for agentic product development. Every skill is name
 
 ## Engineering skills
 
-`dx-implement-issue`, `dx-write-tests`, and `dx-write-implementation` share two
+`dx-implement-issue`, `dx-write-tests`, and `dx-write-implementation` share three
 procedures in `procedures/`: `issue-contract.md` reads an issue and turns it into a
-numbered contract, and `commit-discipline.md` holds the commit rules plus the
-coverage declaration that passes between the two halves.
+numbered contract, `surface-assessment.md` decides whether the work touches the
+frontend, the backend, both, or neither, and `commit-discipline.md` holds the commit
+rules plus the coverage declaration that passes between the two halves.
+`dx-implement-issue` also
+applies `definition-of-done.md`, which states what must be true before a piece of
+code ships, and `dx-create-pr` answers to it in the sections it writes.
 
 | Skill | What it does |
 |---|---|

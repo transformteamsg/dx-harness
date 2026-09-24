@@ -9,14 +9,7 @@ Use this skill when you hear:
 - "raise ticket"
 - "add github issue"
 
-## Table of Contents
-- [1. Ask user to select issue type](#1-ask-user-to-select-issue-type)
-- [2. Guide issue type selection](#2-guide-issue-type-selection)
-- [3. Suggest issue from user description](#3-suggest-issue-from-user-description)
-- [4a. Clarify selected issue type](#4a-clarify-selected-issue-type)
-- [4b. Clarify multiple identified issue types](#4b-clarify-multiple-identified-issue-types)
-
-## [1. Ask user to select issue type
+## 1. Ask user to select issue type
 Read the request before asking. Check these in order and take the first that fits. Where one settles the issue type, say which type and why in one line, then go to Step 5.
 - Describes more than one piece of work -> Step 4b
 - Names the type ("create a bug for the mark total") -> that type. A named chore is a 🔨 Task
@@ -42,7 +35,7 @@ Options:
 ## 2. Guide issue type selection
 Use AskUserQuestion for each [guiding question](#guiding-questions). For each, use options in [guiding question options](#guiding-question-options).
 
-### Guiding Questions
+### Guiding questions
 
 Q1: If yes, go to Step 4a with 'Bug' selected.
 ```
@@ -73,7 +66,7 @@ Examples:
 - security audits
 ```
 
-### Guiding Question Options
+### Guiding question options
 ```
 - Yes
 - No
@@ -134,7 +127,7 @@ Options:
 
 ## 5. Load skills for execution
 Load the selected skill. Run one skill per confirmed issue.
-| Issue Type | Skill Name |
+| Issue type | Skill name |
 | ---------- | ---------- |
 | Story | dx-create-story |
 | Task | dx-create-task |

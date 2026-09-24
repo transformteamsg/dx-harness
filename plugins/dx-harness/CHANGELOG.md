@@ -2,14 +2,38 @@
 
 ## Unreleased
 
+### Added
+
+- **Surface assessment on an issue**: `procedures/surface-assessment.md` decides whether an issue's work touches the frontend, the backend, both, or neither, the issue contract derives it before the code is read so it bounds what a run explores, and `dx-implement-issue` plans within it and states it in the report and in the request body ([#318](https://github.com/transformteamsg/dx-harness/issues/318)).
+- **Code-level definition of done**: `procedures/definition-of-done.md` states the seven things a code change must make true and the evidence each is checked by, `dx-implement-issue` reports against every item before it opens a request and stops on an unsatisfied one, and `dx-create-pr` reads it instead of setting a second standard for coverage ([#317](https://github.com/transformteamsg/dx-harness/issues/317)).
+- **New skill `dx-create-skill`**: it writes a `SKILL.md` from an interview or converts an existing one to the skill prose standard, baselining a conversion before it changes a line and verifying the result by running it in isolated sessions ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Skill token budget**: `docs/token-budget.md` holds the method and the cluster comparison, and a document per team maps every skill to the files it reads and counts the tokens in each ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+
 ### Changed
 
 - **Declared-manual criteria not re-reported**: `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
 - **Review verifies only postable findings**: `dx-code-review` applies the nit cap and the re-review rule before it verifies a finding, and checks a suggestion against the manifest only where it names a library, a library API, or a shell command, which cut a measured review's tokens by 12.9% ([#370](https://github.com/transformteamsg/dx-harness/issues/370), [#375](https://github.com/transformteamsg/dx-harness/pull/375)).
+- **Story skill rewritten**: `dx-create-story` is eight numbered steps with every branch ending at a named destination, and its persona gate sits at Step 1 stated once instead of twice with different force ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Split offered before intake**: a request naming two capabilities reaches the split question first, so the author no longer answers six questions about a story that is then cut in half ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Criteria format picked per scenario**: a scenario a test runner can assert takes Given-When-Then, one only a person can confirm takes a checklist line, and one story carries both ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Contents list dropped**: a `SKILL.md` carries no table of contents, because the whole file is in context before an agent acts and a second copy of the step names goes stale on a renumber ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Attachment guidance extracted**: `dx-create-story` keeps its screenshot and recording rules in `references/attachments.md`, which a run opens only where the author has a file to upload ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **House style is one file**: `procedures/house-style.md` holds 1,704 tokens rather than 2,392. It keeps the cut tests, the test for length, and the evidence bar on a claim, and takes Google's mechanics from `CLAUDE.md` rather than restating them. The sentence-length caps are gone ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+- **Changelog read scoped**: `dx-create-skill` Step 8 reads the `## Unreleased` section through `sed` rather than opening the whole file, at 930 tokens rather than 3,979 ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+- **Trim verification points at the procedure**: `dx-trim-doc` checks a trimmed file against `procedures/house-style.md` instead of running the deleted lint ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
+
+### Removed
+
+- **House style lint and its mechanics file**: `scripts/house-style-lint.py` and `procedures/house-style-mechanics.md` are deleted. Run against 16 merged artifacts, the lint returned nothing on eight issue bodies and 56 findings on eight request bodies, of which 48 per cent came from one rule firing on eval score cells in tables ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 
 ### Fixed
 
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
+- **Story template repaired**: it no longer offers two acceptance-criteria formats with no rule for choosing, and its Open questions line no longer runs two words together ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Stray bracket in `dx-create-issue`**: its first step heading no longer carries a bracket that broke it as a heading ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Shape label corroborates only**: `dx-split-issue` reads a story from its heading, and treats a `story` or `skill:dx-create-story` label as confirmation where one is present rather than a second requirement ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Sentence case in `dx-create-issue`**: its two guiding-question headings and its Step 5 table headers follow the standard, so the skill prose standard no longer documents them as defects to work around ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
+- **Emoji headings read correctly**: `dx-create-task`, `dx-split-issue`, and `dx-code-review` match a story on its heading text and ignore a leading emoji ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 
 ## 0.7.0 (2026-09-14)
 

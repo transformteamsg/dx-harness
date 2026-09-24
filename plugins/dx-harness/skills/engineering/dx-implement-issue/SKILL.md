@@ -16,9 +16,9 @@ already passes.
 ## Step 1: Read the issue and check it is ready
 
 Run [../../../procedures/issue-contract.md](../../../procedures/issue-contract.md),
-all seven steps. It settles the input, the shape, the numbered contract items,
-readiness, the agent patterns that bind this session, the code the work touches, and
-the test stack both halves write against.
+all eight steps. It settles the input, the shape, the numbered contract items, the
+surfaces the work touches, readiness, the agent patterns that bind this session,
+the code the work touches, and the test stack both halves write against.
 
 You run this once. Both halves accept the result from you, so neither repeats it.
 
@@ -27,11 +27,15 @@ to offer when something is missing.
 
 ## Step 2: Plan
 
-For each numbered contract item, state:
+Open the plan with the surface assessment Step 1 recorded: the value, and which
+item sits on which surface. Then, for each numbered contract item, state:
 
 - What code needs to change or be created
 - Which files are affected
 - What the corresponding test will assert
+
+Plan only what the assessment's value permits, per
+[../../../procedures/surface-assessment.md](../../../procedures/surface-assessment.md).
 
 State the plan before either half runs. If a half deviates from it, say why.
 
@@ -69,8 +73,8 @@ git checkout -b <branch-name>
 ## Step 4: Run the test half
 
 Run [../dx-write-tests/SKILL.md](../dx-write-tests/SKILL.md) and pass it the
-numbered contract items, the shape, the bound agent patterns, and the test stack, so
-it does not repeat Step 1.
+numbered contract items, the shape, the surface assessment, the bound agent
+patterns, and the test stack, so it does not repeat Step 1.
 
 It returns a branch whose tests fail on their assertions, and a coverage declaration
 in its final commit body naming which items it covered and which it recorded as
@@ -82,7 +86,7 @@ manual.
 ## Step 5: Run the implementation half
 
 Run [../dx-write-implementation/SKILL.md](../dx-write-implementation/SKILL.md) and
-pass it the same four things.
+pass it the same five things.
 
 It reads the declaration, implements against the named tests, adds tests for the
 paths its own code introduced, and runs the repository's checks.
@@ -90,7 +94,18 @@ paths its own code introduced, and runs the repository's checks.
 - **It reports a contract item with no test**: carry that forward. Do not send it back to write the test. Decide with the developer whether the item ships uncovered, is recorded as manual, or sends the run back to Step 4 for a fresh test.
 - **A check fails and it cannot fix it**: surface the failure and stop.
 
-## Step 6: Open a draft pull request
+## Step 6: Check the definition of done
+
+Run [../../../procedures/definition-of-done.md](../../../procedures/definition-of-done.md)
+against the branch the two halves left.
+
+Write its report block now, before the pull request step, and take the evidence
+from the branch rather than from what either half said it did.
+
+- **Every item is satisfied, or marked not applicable with a reason**: go to Step 7.
+- **An item is unsatisfied**: stop. Name the item and why, and open no pull request. Say what would close the gap, and leave the choice to a person, even where you are doing the development work.
+
+## Step 7: Open a draft pull request
 
 Do not open it from here. `dx-create-pr` owns pull request creation, including the
 body template, the draft state, the difference between a pull request and a GitLab
@@ -100,21 +115,24 @@ merge request, and the check for a request already open on the branch. Run
 - The issue number, so the title matches the issue title verbatim and the body carries a `Closes` line. If Step 1 worked from a pasted markdown body, say there is no issue number
 - The contract items the two halves covered, and the test that covers each, so its test plan names them
 - The manual items from the coverage declaration, in the words the test half wrote, for its Manual verification section
+- The surface assessment, as a named section headed `Surfaces`, so a reviewer reads which surfaces the branch touches and which one it left alone on purpose
 - The label `skill:implement-issue`, so this skill's usage stays queryable alongside the one `dx-create-pr` applies
 
 Do not write a body template here. A second template is how the two drift apart.
 
-- **The request opens**: go to Step 7.
+- **The request opens**: go to Step 8.
 - **`dx-create-pr` stops on an error**: surface that error and stop. Do not fall back to opening the request yourself.
 
-## Step 7: Report
+## Step 8: Report
 
 1. **Branch**: the branch name
-2. **Files changed**: each file, and what changed
-3. **Contract coverage**: each contract item, the test that covers it, and that it passes. On a task, each `Also true when done` item too, with how you checked it
-4. **Uncovered**: any contract item neither half covered, and what you agreed to do about it
-5. **Manual verification**: the manual items from the declaration, as what the developer walks through before marking the request ready. Name the repository's own dev command, taken from its scripts, rather than assuming one
-6. **Pull request**: the draft request URL
+2. **Surface assessment**: the value from Step 1, which item sits on which surface, and what the run would have needed from any surface it left alone
+3. **Files changed**: each file, and what changed
+4. **Contract coverage**: each contract item, the test that covers it, and that it passes. On a task, each `Also true when done` item too, with how you checked it
+5. **Uncovered**: any contract item neither half covered, and what you agreed to do about it
+6. **Manual verification**: the manual items from the declaration, as what the developer walks through before marking the request ready. Name the repository's own dev command, taken from its scripts, rather than assuming one
+7. **Definition of done**: the block from Step 6, unchanged
+8. **Pull request**: the draft request URL
 
 ## Running the halves yourself
 
@@ -129,7 +147,9 @@ Each half runs the intake itself when it is invoked directly.
 
 - Run the halves in order. Tests first, always.
 - Own the intake once. Pass the contract to both halves rather than letting either repeat it.
+- Plan within the surfaces the assessment names, and report the value rather than leaving a reader to infer it from the diff.
 - The split evaluation runs before either half, and a signal stops the run.
+- The definition of done is checked before the pull request step, and an unsatisfied item stops the run there.
 - Never write a test or a line of production code from here.
 - Carry an uncovered contract item into the report and the pull request. Do not resolve it by writing the test after the code.
 - Carry the manual items through in the test half's own words, and never report manual verification as done because the suite passed.

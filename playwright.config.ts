@@ -20,5 +20,9 @@ export default defineConfig({
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // `pnpm start` nests pnpm -> sh -> next-server. Without a kill deadline,
+    // a next-server that outlives SIGTERM leaves Playwright waiting on it
+    // after the last test, with no timeout covering that window.
+    gracefulShutdown: { signal: "SIGTERM", timeout: 5_000 },
   },
 });
