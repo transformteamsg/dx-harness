@@ -118,6 +118,15 @@ describe("docs/agents/deploy.md", () => {
     expect(doc).toContain('airbase container deploy --yes --image "$IMAGE" staging');
   });
 
+  it("names pnpm check as the deployer's step before the image build", () => {
+    expect(doc).toContain("pnpm check");
+    expect(doc.indexOf("pnpm check")).toBeLessThan(doc.indexOf('airbase container build --tag "$IMAGE"'));
+  });
+
+  it("has no troubleshooting row for check:python failing in the Docker build", () => {
+    expect(doc).not.toMatch(/Docker build fails on `check:python`/);
+  });
+
   it("documents the staging URL pattern", () => {
     expect(doc).toContain("staging--");
     expect(doc).toContain("app.tc1.airbase.sg");
