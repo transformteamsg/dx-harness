@@ -35,3 +35,18 @@ describe("pnpm build", () => {
     expect(scripts.postbuild).toBe("node scripts/externalize-next-inline-scripts.mjs");
   });
 });
+
+describe(".github/workflows/ci.yml", () => {
+  const ci = readRoot(".github/workflows/ci.yml");
+  const at = (line: string) => ci.indexOf(line);
+
+  it("runs pnpm check as its own named step, before the build", () => {
+    expect(ci).toMatch(/- name: [^\n]+\n\s+run: pnpm check\n/);
+    expect(at("run: pnpm check\n")).toBeGreaterThan(-1);
+    expect(at("run: pnpm check\n")).toBeLessThan(at("run: pnpm build\n"));
+  });
+
+  it("lets a failing check fail the job", () => {
+    expect(ci).not.toContain("continue-on-error");
+  });
+});
