@@ -47,3 +47,12 @@ describe(".github/workflows/ci.yml", () => {
     expect(ci).not.toMatch(/name: Install ast-grep/);
   });
 });
+
+describe("CONTRIBUTING.md", () => {
+  const guide = readRoot("CONTRIBUTING.md");
+
+  it("asks no contributor to install ast-grep, and drops the pnpm setup caveat", () => {
+    expect(guide).not.toMatch(/(pnpm add|npm install|npm i) (--global|-g) @ast-grep\/cli/);
+    expect(guide).not.toContain("pnpm setup");
+  });
+});
