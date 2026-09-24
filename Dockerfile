@@ -1,22 +1,14 @@
 # syntax=docker/dockerfile:1
 
 # Builder: installs deps fresh for this platform (sharp and unrs-resolver need
-# native builds, see pnpm-workspace.yaml's allowBuilds) and runs the same
-# `pnpm build` CI runs, so the standards gate (prebuild -> check-standards.mjs
-# + check:python) always runs here too -- see ci.yml's comment on why that
-# gate must run exactly once per build.
+# native builds, see pnpm-workspace.yaml's allowBuilds) and runs `pnpm build`
+# for the CSP externalization Airbase requires. The standards gate is
+# `pnpm check`, which CI and the deployer run; it produces no build input, so
+# the image carries none of its toolchain.
 FROM gdssingapore/airbase:node-22-builder AS builder
 WORKDIR /app
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 python3-yaml \
-  && rm -rf /var/lib/apt/lists/*
-
 RUN corepack enable && corepack prepare pnpm@11 --activate
-
-# The checks layer matches source structure through ast-grep, which is not a
-# package dependency. Pin the same version ci.yml installs.
-RUN npm install --global @ast-grep/cli@0.44.1
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile

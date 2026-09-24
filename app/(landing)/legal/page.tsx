@@ -17,7 +17,7 @@ import {
    about why the two are not interchangeable — the notice owed is the one shipped
    by the version pinned in the lockfile, and that text does not change when
    upstream relicenses later work, so serving it here is both the compliant and
-   the stable answer. `pnpm check:notices` runs in prebuild and fails the build if
+   the stable answer. `pnpm check:notices` runs in `pnpm check` and fails CI if
    these files drift from the installed tree.
 
    A server component on purpose: the notice data is ~200KB and belongs in the

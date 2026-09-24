@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 /* Structural checks for the Airbase container build (Dockerfile,
    airbase.json). These can't exercise an actual `docker build` or a live
    deploy (see docs/agents/deploy.md for that), so they guard the
-   properties that are the most likely to silently regress: the standards
-   gate running unskipped and exactly once, and the runtime contract
-   Airbase requires. See issue #142. */
+   properties that are the most likely to silently regress: the image
+   carrying no check-only toolchain, and the runtime contract Airbase
+   requires. See issues #142 and #224. */
 
 function readRoot(file: string) {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
@@ -42,21 +42,21 @@ describe("Dockerfile", () => {
     expect(dockerfile).not.toContain("node-24");
   });
 
-  it("installs python3 and pyyaml so check:python can run in the image", () => {
-    expect(dockerfile).toMatch(/python3\b/);
-    expect(dockerfile).toContain("python3-yaml");
+  it("installs no check-only toolchain: no Python, no PyYAML, no ast-grep", () => {
+    expect(dockerfile).not.toMatch(/python3/);
+    expect(dockerfile).not.toContain("@ast-grep/cli");
   });
 
   it("never reintroduces the Vercel prebuild skip", () => {
     expect(dockerfile).not.toContain("VERCEL");
   });
 
-  it("runs the standards gate through `pnpm build`, not a second time directly", () => {
-    expect(dockerfile).toContain("pnpm build");
-    // The gate already runs once via `pnpm build`'s prebuild hook (see
-    // ci.yml); a direct RUN of either check script here would run it twice.
+  it("runs `pnpm build` for the CSP externalization, and never the standards gate", () => {
+    expect(dockerfile).toContain("RUN pnpm build");
+    // The gate runs from `pnpm check` in CI and before a deploy, not in the
+    // image: it produces no build input (see issue #224).
+    expect(dockerfile).not.toMatch(/^RUN.*pnpm (run )?check/m);
     expect(dockerfile).not.toMatch(/^RUN.*check-standards\.mjs/m);
-    expect(dockerfile).not.toMatch(/^RUN.*check:python/m);
   });
 
   it("installs dependencies fresh, rather than copying node_modules from the host", () => {
@@ -116,6 +116,15 @@ describe("docs/agents/deploy.md", () => {
   it("documents the build and deploy commands", () => {
     expect(doc).toContain('airbase container build --tag "$IMAGE"');
     expect(doc).toContain('airbase container deploy --yes --image "$IMAGE" staging');
+  });
+
+  it("names pnpm check as the deployer's step before the image build", () => {
+    expect(doc).toContain("pnpm check");
+    expect(doc.indexOf("pnpm check")).toBeLessThan(doc.indexOf('airbase container build --tag "$IMAGE"'));
+  });
+
+  it("has no troubleshooting row for check:python failing in the Docker build", () => {
+    expect(doc).not.toMatch(/Docker build fails on `check:python`/);
   });
 
   it("documents the staging URL pattern", () => {

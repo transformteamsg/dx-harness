@@ -14,7 +14,7 @@
 
    Run: pnpm gen:notices  (after adding or upgrading a production dependency)
    Verify: pnpm check:notices  (regenerates in memory and fails on any drift —
-   wired into prebuild, so a forgotten regeneration cannot ship) */
+   wired into pnpm check, so a forgotten regeneration fails CI) */
 
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -247,7 +247,7 @@ const md = [
    --check exists because `pnpm gen:notices` is a step a human has to remember,
    and an unregenerated notice file is exactly the kind of thing that goes quietly
    wrong: someone adds a dependency and the published notices under-report what
-   ships. Wired into prebuild, so the build fails instead.
+   ships. Wired into pnpm check, so CI fails instead.
 
    It compares COVERAGE, not bytes. A byte comparison was the first attempt and it
    failed on CI for a reason that was not drift: the installed set is
