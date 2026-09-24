@@ -7,8 +7,24 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - docs/ROADMAP.md
+      - docs/specs/**
+      - docs/superpowers/**
+      - plans/**
+      - review/**
+      - CLAUDE.md
+      - PRODUCT.md
   pull_request:
     branches: [main]
+    paths-ignore:
+      - docs/ROADMAP.md
+      - docs/specs/**
+      - docs/superpowers/**
+      - plans/**
+      - review/**
+      - CLAUDE.md
+      - PRODUCT.md
 
 permissions:
   contents: read
