@@ -71,3 +71,23 @@ describe("ci.yml's note on required checks", () => {
     expect(text).toMatch(/gate job/i);
   });
 });
+
+describe(".github/workflows/records.yml", () => {
+  const file = path.join(process.cwd(), ".github/workflows/records.yml");
+  const records: (Workflow & { jobs?: Record<string, { steps?: { run?: string }[] }> }) | null = fs.existsSync(file)
+    ? parse(fs.readFileSync(file, "utf8"))
+    : null;
+  const scripts: Record<string, string> = JSON.parse(readRoot("package.json")).scripts;
+
+  it("runs on exactly the paths ci.yml ignores, on push and on pull_request", () => {
+    expect(records?.on?.push?.paths).toEqual(ignored);
+    expect(records?.on?.pull_request?.paths).toEqual(ignored);
+    expect(records?.on?.push?.branches).toEqual(ci.on?.push?.branches);
+    expect(records?.on?.pull_request?.branches).toEqual(ci.on?.pull_request?.branches);
+  });
+
+  it("runs the same command as check:records", () => {
+    const runs = Object.values(records?.jobs ?? {}).flatMap((job) => (job.steps ?? []).map((step) => step.run?.trim()));
+    expect(runs).toContain(scripts["check:records"]);
+  });
+});
