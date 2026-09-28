@@ -67,7 +67,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
    - **Against the All open threads set** from sequence step 3 — where a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, drop the candidate.
 4. **Decide how many findings can post, before verification.** No candidate reaches step 5 unless it can still post.
    - **Never cap Important or Pre-existing.**
-   - **Drop every candidate whose pattern the overlay suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only a row marked suppressed in the reviewed repository's `review/agent-patterns.md` suppresses a pattern.
+   - **With an overlay, drop every candidate whose pattern it suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only an overlay row whose `Status` starts with `suppressed` suppresses a pattern. With no overlay, skip this bullet.
    - **On a re-review (Any skill thread non-empty), hold back every nit, unverified.** Carry the count to the summary.
    - **Otherwise cap nits at 5.** The cap is global, not per-angle, so one angle may use all 5. Rank a candidate that already cites a `file:line` above one that does not, then diff order; keep the first 5 and carry the number held back to the summary.
 
@@ -88,13 +88,13 @@ A finding produced by a rule from `REVIEW.md` names that rule.
    - **Found** → check any library named in the suggestion exists at the installed version; revise it, or note the upgrade it needs.
    - **None** → note that no manifest was found, and trace any shell command in the suggestion against the failure modes described.
 
-   **Part 3. Classify the agent pattern.** Match the finding's `Pattern name` / `Trigger` against two sources read together:
+   **Part 3. Classify the agent pattern, only where sequence step 4 fetched an overlay.** With no overlay, skip this part, and the finding carries no Recurring pattern line. Where it applies, match the finding's `Pattern name` / `Trigger` against two sources read together:
    - the reviewed repository's `review/agent-patterns.md`, fetched in sequence step 4 — **never read from disk**
    - this skill's [references/agent-pattern-standard.md](references/agent-pattern-standard.md)
 
    Where both carry the same `AP-NNN`, the repository's row wins. Tag matches `[AI-PATTERN]`.
 
-   **This part reads and tags. It writes nothing.** The registry is read-only here; a repository maintains its own counts and status. Schema and precedence: [references/agent-pattern-registry.md](references/agent-pattern-registry.md).
+   **This part reads and tags. It writes nothing.**
 
 ### Step 1 in detail: the issue and test plan check
 
@@ -181,7 +181,12 @@ The second line goes on an inline finding only, and the summary comment omits it
 
    gh api "repos/{owner}/{repo}/contents/review/agent-patterns.md?ref={head_sha}" -q '.content' | base64 -d
    ```
-   A 404 means no overlay, which is the ordinary case: match against the shipped standard alone. **Never read `review/agent-patterns.md` from disk.**
+   Check the overlay fetch's result in order and take the first that fits:
+   - **Prints the file** → an overlay. Run analysis steps 4 and 5 as written.
+   - **Fails with `(HTTP 404)`** → no overlay. Skip the suppression bullet in analysis step 4 and Part 3 of analysis step 5.
+   - **Fails with anything else**, such as `(HTTP 401)`, `(HTTP 403)`, or a network error → stop the review, name the file and the error, post nothing. A request to skip the patterns does not turn this into the 404 branch.
+
+   **Never read `review/agent-patterns.md` from disk.**
 5. Run the analysis (above) on the diff from step 4.
 6. Resolve addressed conversations. For each **open skill thread** the current diff has addressed:
     ```bash
