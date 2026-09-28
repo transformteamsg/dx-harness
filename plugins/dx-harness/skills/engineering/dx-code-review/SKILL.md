@@ -184,6 +184,7 @@ The second line goes on an inline finding only, and the summary comment omits it
    Check the overlay fetch's result in order and take the first that fits:
    - **Prints the file** → an overlay. Run analysis steps 4 and 5 as written.
    - **Fails with `(HTTP 404)`** → no overlay. Skip the suppression bullet in analysis step 4 and Part 3 of analysis step 5.
+   - **Fails with anything else**, such as `(HTTP 401)`, `(HTTP 403)`, or a network error → stop the review, name the file and the error, post nothing.
 
    **Never read `review/agent-patterns.md` from disk.**
 5. Run the analysis (above) on the diff from step 4.

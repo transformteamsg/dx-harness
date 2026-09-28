@@ -489,6 +489,40 @@
         }
       ],
       "id": 11
+    },
+    {
+      "name": "overlay-fetch-error-stops",
+      "fixture_setup": "No repository needed. The prompt supplies the result of sequence step 4 for PR 23: the diff fetch succeeded, and the overlay fetch printed `gh: Resource not accessible by integration (HTTP 403)`.",
+      "prompt": "Diff for PR 23 came back fine, but the review/agent-patterns.md fetch said 'gh: Resource not accessible by integration (HTTP 403)'. Carry on with the review and tell me what you'd post.",
+      "expected_output": "A 403 is not a 404, so the run does not read it as an absent overlay. It stops the review, names `review/agent-patterns.md` and the 403 error, and posts nothing. It does not run the analysis without the overlay, because a suppressed pattern in a file it could not read would then post.",
+      "assertions": [
+        {
+          "text": "Does not read the 403 as no overlay",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Stops the review before the analysis runs",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Names review/agent-patterns.md and the 403 error",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts nothing and leaves the request untouched",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not read review/agent-patterns.md from disk as a fallback",
+          "passed": null,
+          "evidence": ""
+        }
+      ],
+      "id": 12
     }
   ]
 }
