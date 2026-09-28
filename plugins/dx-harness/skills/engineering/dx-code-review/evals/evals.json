@@ -440,6 +440,55 @@
         }
       ],
       "id": 10
+    },
+    {
+      "name": "overlay-classifies-and-suppresses",
+      "fixture_setup": "No repository needed. The prompt supplies the analysis inputs for PR 22: the request carries no review thread, and the overlay fetch in sequence step 4 printed a `review/agent-patterns.md` with two rows. AP-004 is `active`, `Confirmed by: 3 reviews`, with the Prevention cell 'After changing a function signature, grep for all call sites and update each before committing.' AP-007 is `suppressed (2026-08-01)`. The angles returned 1 Important candidate where `parseRow` gained a parameter and one caller still passes the old arguments, and 1 nit that flags a variable named `data`.",
+      "prompt": "PR 22 has no earlier threads. Its review/agent-patterns.md came back with AP-004 active at 3 reviews and AP-007 suppressed. Here are the two candidates. Walk the analysis from the dedup step, then tell me what each comment body carries and what the summary says. Post nothing.",
+      "expected_output": "The overlay exists, so the suppression bullet and Part 3 both run. The `data` nit matches AP-007, which the overlay marks suppressed, so analysis step 4 drops it before verification: it is not tagged, not verified, and not posted. The Important candidate matches AP-004, is tagged `[AI-PATTERN]`, and its comment carries a Recurring pattern line with the overlay row's count and Prevention text. The summary reports one finding on the Registry line and one drop on the Suppressed line. Nothing is posted.",
+      "assertions": [
+        {
+          "text": "Reads the fetched file as an overlay and runs the suppression bullet and Part 3",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Drops the `data` nit at analysis step 4, before verification, because AP-007 is suppressed",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Tags the Important candidate `[AI-PATTERN]` as AP-004",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The Important comment's Recurring pattern line carries the overlay's count of 3 and its Prevention text",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The summary's Registry line counts the one matched finding",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The summary's Suppressed line counts the one dropped nit",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Writes nothing to review/agent-patterns.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts nothing, because the prompt disabled posting",
+          "passed": null,
+          "evidence": ""
+        }
+      ],
+      "id": 11
     }
   ]
 }
