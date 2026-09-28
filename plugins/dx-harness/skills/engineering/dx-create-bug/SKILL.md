@@ -17,14 +17,6 @@ Dependencies live outside the body: link blockers and dependents with GitHub's n
 
 The canonical structure is in [references/issue-template.md](references/issue-template.md). Read that file when constructing or previewing an issue body. Fill every section: if there is nothing to say, write `None`, do not delete the heading. Write every section following [House style](../../../procedures/house-style.md): the reproduction steps and the expected-versus-actual gap carry the report, not a narrative of how it was found.
 
-## Attaching screenshots and recordings
-
-Images and recordings belong on the issue, never in the repository. Upload one by dragging the file into the issue or comment box in GitHub's web interface, which stores it on GitHub's own CDN and returns a URL to paste into the body. `gh` cannot attach binaries, so this step stays manual: say so rather than leaving the author to find out when the link does not resolve.
-
-Never commit a screenshot or a video to the repository so that an issue can link to it. It sits in every clone from then on, it outlives the issue that needed it, and deleting it later does not shrink the history. This applies to a coding agent at least as much as to a person: if you are the one holding the file, hand it to the author to upload instead of writing it into the working tree.
-
-Convert a screen recording to a GIF and keep it under 10 MB, which is GitHub's ceiling for an image or a GIF on an issue. If the GIF is unreadable at that size, trim the recording to the few seconds that matter rather than raising the resolution.
-
 ## Workflow
 
 ### Step 1: Gather the report
@@ -36,7 +28,7 @@ Ask for the following. Do not invent answers: ask if the author has not provided
 3. **Steps to reproduce**: a numbered path from a state anyone can reach to the moment it fails. If the author gives you a rough description, turn it into concrete numbered steps and read them back to confirm. Watch for missing preconditions: a specific account, role, feature flag, or seeded data that the author has and a fixer will not.
 4. **Expected behaviour**: what should have happened at the final step.
 5. **Actual behaviour**: what happens instead. Ask for error messages verbatim, including stack traces or console output, rather than paraphrased.
-6. **Evidence**: a screenshot or screen recording showing the bug reproducing. This is often the fastest way for a fixer to confirm they are looking at the same behaviour, so ask for it directly rather than treating it as optional. If the author does not have one, record that explicitly with the reason (`None available: intermittent, not captured yet`) instead of leaving the section blank, so a reader can tell the difference between "nobody looked" and "we tried and could not catch it". Where the evidence goes matters as much as having it, so follow the rules in Attaching screenshots and recordings above.
+6. **Evidence**: a screenshot or screen recording of the bug reproducing. Ask for it directly; do not treat it as optional. If the author has none, write the reason (`None available: intermittent, not captured yet`) rather than leaving the section blank. Follow [../../../procedures/attachments.md](../../../procedures/attachments.md) to attach it.
 7. **Environment**: browser and version, OS, device, app version or commit, and any account or role that matters. A bug that only reproduces in one environment is a different bug from one that reproduces everywhere, and the fixer needs to know which they have.
 8. **Impact**: who is affected, how often, and whether a workaround exists. This is what a triager reads to decide whether this is fixed today or next quarter, so avoid a bare severity label with nothing behind it.
 9. **Priority**: a single level from `P0` to `P4`, following Google's Issue Tracker convention (`P0` = drop everything, `P4` = trivial). This is the one-glance signal a triager sorts the backlog by, and it should follow from the impact described above rather than being asserted on its own: derive a suggested level from the impact and read it back for the author to confirm or override, since they may know of business context the report does not carry.
@@ -120,7 +112,7 @@ Most repositories already have a `bug` label, because GitHub creates one by defa
 
   If no dependencies were confirmed, skip this.
 
-  If the author has a screenshot or recording but has not attached it, remind them to upload it now, following Attaching screenshots and recordings. An issue whose Evidence section says "see the recording" with nothing attached claims evidence that is not there, which is worse than an honest `None available`.
+  If the author has a screenshot or recording but has not attached it, remind them to upload it now, following [../../../procedures/attachments.md](../../../procedures/attachments.md).
 - **If the command fails with "command not found" or "'gh' is not recognized"**: render the issue title and body as markdown and instruct the author to create the issue manually via the GitHub web interface.
 - **If the command fails for any other reason**: surface the real error and stop.
 
