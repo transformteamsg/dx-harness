@@ -391,6 +391,55 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "name": "no-overlay-skips-classification",
+      "fixture_setup": "No repository needed. The prompt supplies the analysis inputs for PR 21: the request carries no review thread, the overlay fetch in sequence step 4 printed `gh: Not Found (HTTP 404)`, and the angles returned 1 Important candidate that re-implements a helper already in `lib/format.ts` and 2 nits. All three survive verification as CONFIRMED.",
+      "prompt": "PR 21 has no earlier review threads, and fetching review/agent-patterns.md gave 'gh: Not Found (HTTP 404)'. Here are the three candidates the angles returned, all confirmed. Tell me which analysis steps you run on them, what each comment body carries, and the full summary. Post nothing.",
+      "expected_output": "A 404 means no overlay, so the run skips the suppression bullet in analysis step 4 and Part 3 of analysis step 5. It does not match the Important candidate against the shipped standard, even though that candidate fits AP-001. No comment body carries a Recurring pattern line, and the summary carries no Registry line and no Suppressed line. Nothing is posted.",
+      "assertions": [
+        {
+          "text": "Reads the 404 as no overlay",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Skips the suppression bullet in analysis step 4",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Skips Part 3 of analysis step 5 and does not open the agent pattern standard",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not tag the Important candidate as AP-001, although its shape fits that pattern",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "No comment body carries a Recurring pattern line",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The summary carries no Registry line and no Suppressed line",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Does not open references/agent-pattern-registry.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "Posts nothing, because the prompt disabled posting",
+          "passed": null,
+          "evidence": ""
+        }
+      ],
+      "id": 10
     }
   ]
 }
