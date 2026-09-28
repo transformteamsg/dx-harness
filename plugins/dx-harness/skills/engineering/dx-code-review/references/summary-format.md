@@ -38,7 +38,6 @@ Used by the last step of the review sequence in `SKILL.md`, after everything tha
 
   **Registry:** N finding(s) matched a known pattern, and N matched none. The registry is read-only to this review, so nothing was recorded.
 
-
   **Suppressed:** N finding(s) were dropped because their pattern is suppressed in this repository's registry.
 
   **Feedback:** N of M findings from earlier reviews were marked helpful, and N not helpful.
