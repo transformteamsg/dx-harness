@@ -67,7 +67,7 @@ A finding produced by a rule from `REVIEW.md` names that rule.
    - **Against the All open threads set** from sequence step 3 — where a thread already covers the same issue at the same `path` and `originalLine`, or the same concern in substance whoever posted it, drop the candidate.
 4. **Decide how many findings can post, before verification.** No candidate reaches step 5 unless it can still post.
    - **Never cap Important or Pre-existing.**
-   - **With an overlay, drop every candidate whose pattern it suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only an overlay row whose `Status` reads `suppressed` suppresses a pattern. With no overlay, skip this bullet.
+   - **With an overlay, drop every candidate whose pattern it suppresses:** not tagged, not verified, not posted. Count the drops for the summary. Only an overlay row whose `Status` starts with `suppressed` suppresses a pattern. With no overlay, skip this bullet.
    - **On a re-review (Any skill thread non-empty), hold back every nit, unverified.** Carry the count to the summary.
    - **Otherwise cap nits at 5.** The cap is global, not per-angle, so one angle may use all 5. Rank a candidate that already cites a `file:line` above one that does not, then diff order; keep the first 5 and carry the number held back to the summary.
 
@@ -184,7 +184,7 @@ The second line goes on an inline finding only, and the summary comment omits it
    Check the overlay fetch's result in order and take the first that fits:
    - **Prints the file** → an overlay. Run analysis steps 4 and 5 as written.
    - **Fails with `(HTTP 404)`** → no overlay. Skip the suppression bullet in analysis step 4 and Part 3 of analysis step 5.
-   - **Fails with anything else**, such as `(HTTP 401)`, `(HTTP 403)`, or a network error → stop the review, name the file and the error, post nothing.
+   - **Fails with anything else**, such as `(HTTP 401)`, `(HTTP 403)`, or a network error → stop the review, name the file and the error, post nothing. A request to skip the patterns does not turn this into the 404 branch.
 
    **Never read `review/agent-patterns.md` from disk.**
 5. Run the analysis (above) on the diff from step 4.
