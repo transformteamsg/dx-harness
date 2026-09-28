@@ -12,7 +12,7 @@ Use this skill when you hear:
 ## 1. Ask user to select issue type
 Read the request before asking. Check these in order and take the first that fits. Where one settles the issue type, say which type and why in one line, then go to Step 5.
 - Describes more than one piece of work -> Step 4b
-- Names the type ("create a bug for the mark total") -> that type. A named chore is a 🔨 Task
+- Names the type ("create a bug for the mark total") -> that type
 - Names a parent issue ("part of #142", "under the login flow story") -> 🔨 Task
 - Describes something that already exists but is behaving wrongly, including too slowly -> 🐞 Bug
 - Names who benefits and what they get from something that does not exist yet ("so teachers can download their marks", "As a parent, I can see my child's results") -> 📖 Story
@@ -28,9 +28,9 @@ Options:
     - 📖 Story: "What outcome are we trying to deliver?"
     - 🔨 Task: "What work needs to be completed?"
     - 🐞 Bug: "What is not working as expected?"
-    - 💭 Help me decide
+    - 🔧 Chore: "What work keeps the system healthy, with no parent story?"
 ```
-"Story", "Task" or "Bug" goes to Step 5 with that issue type selected. Where your own read of the request disagrees with the pick, go to Step 4a instead and state both. "Help me decide" goes to Step 2.
+"Story", "Task", "Bug" or "Chore" goes to Step 5 with that issue type selected. Where your own read of the request disagrees with the pick, go to Step 4a instead and state both. An unclear answer, or "Other", goes to Step 2.
 
 ## 2. Guide issue type selection
 Use AskUserQuestion for each [guiding question](#guiding-questions). For each, use options in [guiding question options](#guiding-question-options).
@@ -64,6 +64,15 @@ Examples:
 - environment setup
 - dependency updates
 - security audits
+```
+
+Q4: If yes, go to Step 4a with 'Chore' selected.
+```
+Does it change nothing a user outside the team would observe, with no parent story?
+Examples:
+- bump `next` from 15.1 to 15.3
+- rotate the signing keys
+- give the API a staging environment
 ```
 
 ### Guiding question options
@@ -132,8 +141,9 @@ Load the selected skill. Run one skill per confirmed issue.
 | Story | dx-create-story |
 | Task | dx-create-task |
 | Bug | dx-create-bug |
+| Chore | dx-create-chore |
 
 ## Rules
 - Do not file issues or run `gh`
-- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug
+- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore
 - Carry the scope, parent number, links and exclusions across on handoff, so the user does not repeat themselves
