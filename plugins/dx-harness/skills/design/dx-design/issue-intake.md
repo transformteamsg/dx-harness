@@ -92,26 +92,8 @@ the end.
 
 ## Reviewer-routing (feeds Phase 3's plan and Phase 6's PR body)
 
-Flag, per AC scenario, whether it needs a human designer's review before merge —
-this is the piece with no prior `dx-harness:dx-design` analog, and the part that actually
-answers "can an engineer implement a PM-written UI issue without designer input":
-
-| Criterion | Recommendation |
-|---|---|
-| New pattern not seen elsewhere in the codebase | Strongly recommended — route to designer |
-| New user flow (not just a new component) | Strongly recommended — route to designer |
-| Destructive or irreversible action | Strongly recommended — route to designer |
-| Modification to existing UI with clear AC | Can defer — engineer reviews and ships directly |
-
-This extends the validation-needs flagging Phase 3 already does for a CMP-1 waiver
-(a new component not in the manifest) — the missing piece was turning that flag into
-an explicit who-reviews-this-PR decision, written into the PR body and the decision
-record rather than left implicit. Write the recommendation and its reason into both.
-
-This flags for review; it does not schedule an actual user-test session — that
-scheduling mechanism does not exist in atelier today, and building one is out of
-scope here (an open question for a future, separate decision, not a side effect of
-this loop).
+Run `../../../procedures/reviewer-routing.md` against each AC scenario. Write the
+recommendation and its reason into both Phase 3's plan and Phase 6's PR body.
 
 ## Branch (both solo and hand-off runs)
 
