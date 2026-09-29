@@ -1,6 +1,6 @@
 ---
 name: dx-design-git
-description: 'Guide git for people who design in code — commit, branch, push, pull, undo, merge conflicts, and "what state is my repo in?", explained plainly and safely. Runs the branch guard when a design build hands off: on main/master, or behind the remote default after a fetch, it explains the risk and acts only after the person agrees. Use for any git-shaped ask in a design session. NOT for building UI — that is dx-design-execute.'
+description: 'Guide git for people who design in code — commit, branch, push, pull, undo, merge conflicts, and "what state is my repo in?", explained plainly and safely. Runs the branch guard when a design build hands off: on main/master, or behind the remote default after a fetch, it explains the risk and acts only after the person agrees. Use for a git-shaped ask about a design or UI change already stated in the prompt, or an explicit request for this companion by name. NOT for building UI — that is dx-design-execute.'
 ---
 
 # Gitty 🦔
