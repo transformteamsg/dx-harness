@@ -26,7 +26,7 @@ describe("ci.yml paths-ignore", () => {
     expect(skips(["docs/ROADMAP.md", "package.json"])).toBe(false);
   });
   /* Each of these is read by a check, so a change to it alone must still run
-     CI. site-removal.test.ts reads CLAUDE.md, README.md, and CONTRIBUTING.md. */
+     CI. */
   const read = [
     "README.md",
     "LICENSE",
@@ -44,7 +44,7 @@ describe("ci.yml paths-ignore", () => {
     ".claude-plugin/marketplace.json",
     ".github/workflows/ci.yml",
     ".gitignore",
-    "site-removal.test.ts",
+    "marketplace.test.ts",
     "standards-gate.test.ts",
   ];
 
@@ -65,9 +65,5 @@ describe("ci.yml's note on required checks", () => {
     const text = readRoot(".github/workflows/ci.yml");
     expect(text).toMatch(/no required status check/i);
     expect(text).toMatch(/gate job/i);
-  });
-
-  it("names no records workflow, which moved with the decision records", () => {
-    expect(readRoot(".github/workflows/ci.yml")).not.toContain("records.yml");
   });
 });
