@@ -2032,8 +2032,11 @@ def run_self_test():
     # list at the static layer. The rendered layer reads the DOM waiver marker
     # (data-dx-waive), which the rendered check runner introduced, so the marker
     # is now present and its presence is the assertion.
+    # Both cases need the website itself, not only a repository around the
+    # plugin, so they skip when the exhibit is absent.
     site_root = find_site_root(REPO_ROOT)
-    if site_root is not None:
+    if site_root is not None and os.path.isfile(
+            os.path.join(site_root, "components", "compare.tsx")):
         case_count += 1
         cfg_path = os.path.join(site_root, ".dx", "config.json")
         ignore_files = []

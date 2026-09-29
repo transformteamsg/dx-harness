@@ -30,6 +30,7 @@
 
 ### Fixed
 
+- **Self-test outside the website**: `validate.py --self-test` no longer fails its two website-only cases in a repository that has a `package.json` but no website, and skips them there instead ([#401](https://github.com/transformteamsg/dx-harness/issues/401)).
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
 - **Story template repaired**: it no longer offers two acceptance-criteria formats with no rule for choosing, and its Open questions line no longer runs two words together ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
 - **Stray bracket in `dx-create-issue`**: its first step heading no longer carries a bracket that broke it as a heading ([#366](https://github.com/transformteamsg/dx-harness/pull/366)).
