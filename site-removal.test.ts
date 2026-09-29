@@ -16,13 +16,39 @@ const SITE_PATHS = [
   "app",
   "components",
   "content",
+  "lib",
+  "hooks",
   "public",
+  "scripts",
+  "tests",
+  "proxy.ts",
   "next.config.mjs",
+  "postcss.config.mjs",
+  "components.json",
+  "eslint.config.mjs",
+  "playwright.config.ts",
+  "airbase.json",
+  "Dockerfile",
+  ".dockerignore",
+  "DESIGN.md",
+  "PRODUCT.md",
+  "NOTICE.md",
+  ".dx",
   "docs/agents/deploy.md",
+  "docs/decisions",
+  "plans",
   ".github/workflows/records.yml",
 ];
 
-const SITE_DEPENDENCIES = ["next", "react", "react-dom", "tailwindcss"];
+const SITE_DEPENDENCIES = [
+  "next",
+  "react",
+  "react-dom",
+  "tailwindcss",
+  "next-mdx-remote",
+  "@playwright/test",
+  "eslint-config-next",
+];
 
 describe("the website", () => {
   it("has no files in this repository", () => {

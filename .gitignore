@@ -22,6 +22,9 @@ Thumbs.db
 # Node dependencies for the tests and ast-grep
 node_modules/
 
+# Local environment files can hold secrets
+.env*
+
 # Claude worktrees
 .claude
 

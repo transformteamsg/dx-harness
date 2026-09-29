@@ -2,8 +2,6 @@ allowBuilds:
   # Its postinstall links the platform binary into place; without it every
   # call falls back to a slower runtime lookup and warns on stderr.
   '@ast-grep/cli': true
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
 
 # Refuse any release younger than 7 days, in minutes. A supply-chain attack
 # usually arrives as a brand-new patch of a popular package, so let releases age
