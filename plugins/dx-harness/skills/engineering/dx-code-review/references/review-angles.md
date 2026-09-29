@@ -12,7 +12,7 @@ Look for defects in individual statements or small expressions.
 - **Off-by-one:** boundary comparisons (`<` vs `<=`), slice/index ranges, loop start/end values, fence-post in pagination or chunking
 - **Null/nil safety:** value used before a null check, null returned by a function and immediately dereferenced by its caller, optional field accessed unconditionally
 - **Concurrency:** a concurrent call whose result is never waited for on a path that needs it, or a value read before the work producing it finished. In JS or TypeScript that is a missing `await` or a fire-and-forget promise on a critical path; in Go, a goroutine nobody waits on, a `WaitGroup` never awaited, or shared state written from two goroutines without a lock or channel
-- **Error handling:** catch block that swallows the error (no re-throw, no log, no observable side-effect), error return value ignored at the call site
+- **Error handling:** catch block that swallows the error (no re-throw, no log, no observable side-effect), error return value ignored at the call site, Go `err` assigned and never checked, unhandled promise rejection, `defer`/`recover` that swallows a panic without logging it. This item owns every catch or handler the diff adds, even where it wraps code that used to propagate. Where the diff deletes a re-throw, log, or check, Removed behaviour owns it
 - **Type coercion:** implicit comparison between incompatible types, string + number concatenation where arithmetic addition was intended
 - **Mutation:** function modifying an argument it doesn't own, shared collection mutated during iteration
 
@@ -21,7 +21,7 @@ Look for defects in individual statements or small expressions.
 Look for functionality that was deleted but whose absence creates a gap.
 
 - **Input validation:** was a null, length, type, or range check removed from an entry point or guard clause?
-- **Error propagation:** was an error path dropped? A `try`/`catch` added without a re-throw, an ignored error return, an unhandled promise rejection, a Go `err` assigned and never checked, or a `defer`/`recover` that swallows a panic without logging it
+- **Error propagation:** did the diff delete a re-throw, an error log, an `err` check, or a rejection handler? A catch or handler the diff adds is Line-by-line's, under Error handling
 - **Test deletions:** were any tests deleted that cover code paths still present in production code?
 - **Guards:** was a defensive condition removed or its predicate weakened (e.g. `> 0` changed to `>= 0`)?
 - **Rate limiting / throttling:** was a call-frequency cap, debounce, or retry limit removed?
