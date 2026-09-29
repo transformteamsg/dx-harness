@@ -116,14 +116,7 @@ The upstream design-standard repo and its Notion source keep their existing
 
 ## Website
 
-This repo also hosts the design-standard website (Next.js 16, pnpm) — the
-human- and agent-readable rendering of the standard, including `/llms.txt`
-(with control details: `/llms-full.txt`) and `/standards/catalog.yaml`. It
-reads the catalog directly from `plugins/dx-harness/standards/`.
-
-    pnpm install
-    pnpm dev      # local dev server
-    pnpm build    # runs the standards gates, then builds
+The design standard website renders the standard for people and agents, including `/llms.txt`, `/llms-full.txt`, and `/standards/catalog.yaml`. Read it at [the live design standard site](https://dx-harness.app.tc1.airbase.sg). Its source lives in `transformteamsg/dx-harness-website`, a private repository.
 
 ## Contributing
 

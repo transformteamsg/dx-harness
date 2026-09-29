@@ -1,22 +1,12 @@
 # dx-harness
 
-AI harness for agentic-driven product development (the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`) plus the TFX Design Standard website (TransformX, Teacher & School portfolio). The website runs on Next.js 16 App Router, Tailwind v4, MDX content, and a YAML control catalogue. The package manager is pnpm.
+AI harness for agentic-driven product development: the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`. The package manager is pnpm, and it installs only what the tests and the checks need.
 
-This site must pass its own standard. Before changing UI, read [plugins/dx-harness/standards/catalog.yaml](plugins/dx-harness/standards/catalog.yaml), especially the SLP (anti-slop) controls. The catalogue is the single source of truth, and the site reads it directly.
+The design standard website lives in the private repository `transformteamsg/dx-harness-website`.
 
-## Design constraints
+## Spelling
 
-- No gradient text, no nested cards, no side-tab borders, no bounce easing, no purple gradients (SLP controls).
-- Tokens: only the CSS variables in `app/globals.css`. No raw hex in components (TOK-1). Product colours: `--tw-blue` #0064FF, `--casesync` (Radix indigo-9), `--glow` (Radix orange-9).
-- Fonts: Plus Jakarta Sans Variable (display), Inter Variable (body) via Fontsource. No other typefaces (TYP-1).
-
-## Content and copy
-
-- Content lives in `content/`, not in components. Page chrome lives in `components/`. Don't hardcode standard content into TSX.
-- Copy: second person, active voice, sentence case, plain language. Error messages say what happened and what to do next.
-- The standards catalogue controls govern product code and user-facing copy: components, UI strings, and `content/`. They do not govern technical documents, whose rules are in the next section. When editing prose in `content/`, apply SLP-9 (AI-writing tells). The canonical lists and calibration live in `plugins/dx-harness/standards/controls/slp-9.md`, carried by the dx-design-copy skill.
-- Spelling is Commonwealth English in all prose: UI copy, `content/`, and docs.
-- Published docs intentionally have no `settled`/`proposed` status axis. Keep unresolved proposals in decision records or issues and label them there; don't add status frontmatter or badges to published pages.
+Spelling is Commonwealth English in all prose. Write `colour`, `behaviour`, `catalogue`, `organise`, `prioritise`, `centre`, and `-ise` rather than `-ize`. Identifiers keep the spelling they already have, such as `catalog.yaml` and the CSS `color` property. The one settled exception in prose is `judgment`, which is what `docs/` already uses.
 
 ## Technical documents
 
@@ -33,7 +23,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 - Write for a global audience: short sentences, and no idioms, colloquialisms, or slang.
 - Use descriptive link text, never "here" or "this link".
 - Where Google collides with `CONTEXT.md`, the vocabulary there wins.
-- One deliberate deviation, and only one: spelling stays Commonwealth English per Content and copy. Commonwealth spelling is not a mistake to correct.
+- One deliberate deviation, and only one: spelling stays Commonwealth English per Spelling. Commonwealth spelling is not a mistake to correct.
 - Apply this to documents you write or substantially revise. Don't retrofit files you are only passing through; a retrospective sweep is its own piece of work.
 
 ## Contributing
@@ -43,7 +33,7 @@ This site must pass its own standard. Before changing UI, read [plugins/dx-harne
 
 ## Verify
 
-- After content edits, run `pnpm build` to verify that MDX parses.
+- After a change, run `pnpm test` and `pnpm check`. CI runs the same commands, plus `pnpm typecheck`.
 
 ## Agent skills
 
@@ -58,7 +48,3 @@ Default label vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `read
 ### Domain docs
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
-
-### Deploy
-
-The website deploys as a container to Airbase (staging only so far). See `docs/agents/deploy.md`.
