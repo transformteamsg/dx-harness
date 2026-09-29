@@ -1,16 +1,14 @@
 name: CI
 
-# Runs the fast checks (lint, typecheck, unit tests, standards gate) on pushes
-# to main and on pull requests targeting main. Separate from deploy.yml — this
-# workflow never deploys; deploy.yml runs only after this workflow succeeds.
+# Runs the plugin's checks (typecheck, unit tests, check self-tests, standards
+# gate) on pushes to main and on pull requests targeting main.
 
 # paths-ignore skips the whole job when every changed file is on the list, and
 # no check reads any file on it. That is safe only while main has
 # no required status check: today branch protection requires a review, not a
 # check. A skipped run reports nothing, so a required check would wait forever.
 # If one is ever added, replace paths-ignore with a gate job that always runs
-# and reports success on the skip path. records.yml runs on the same paths, because a rename
-# or delete there can still break check:records; keep the two lists identical.
+# and reports success on the skip path.
 on:
   push:
     branches: [main]
@@ -18,20 +16,14 @@ on:
       - docs/ROADMAP.md
       - docs/specs/**
       - docs/superpowers/**
-      - plans/**
       - review/**
-      - CLAUDE.md
-      - PRODUCT.md
   pull_request:
     branches: [main]
     paths-ignore:
       - docs/ROADMAP.md
       - docs/specs/**
       - docs/superpowers/**
-      - plans/**
       - review/**
-      - CLAUDE.md
-      - PRODUCT.md
 
 permissions:
   contents: read
@@ -42,8 +34,8 @@ jobs:
     # are only published version-pinned, so there is no -latest to track: moving to a
     # newer image is a deliberate edit here. Free for public repositories.
     runs-on: ubuntu-24.04-arm
-    # The job runs in about 2m30s. The ceiling replaces GitHub's 6-hour default,
-    # so a hang fails the run instead of holding a runner for the afternoon.
+    # The ceiling replaces GitHub's 6-hour default, so a hang fails the run
+    # instead of holding a runner for the afternoon.
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -60,9 +52,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
-
       - name: Typecheck
         run: pnpm typecheck
 
@@ -73,19 +62,9 @@ jobs:
       - name: Install PyYAML
         run: pip install pyyaml
 
+      # Vitest, then every check script's --self-test (test:checks).
       - name: Test
         run: pnpm test
 
-      # The standards gate runs here, by name, once per job. pnpm build does
-      # not run it.
       - name: Standards gate
         run: pnpm check
-
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Build production site
-        run: pnpm build
-
-      - name: Rendered accessibility contract
-        run: pnpm test:e2e
