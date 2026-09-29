@@ -1,6 +1,6 @@
 ---
 name: dx-design-setup
-description: 'Set up a person''s machine for the design harness and orient newcomers. Installs and verifies the per-user tools the harness relies on — the agent-browser capture CLI + skill, an authenticated gh, commit signing, Python + PyYAML for the checks — and wires the design-ticket tracker. Use for "set up the harness", "agent-browser isn''t installed", "onboard me", or "teach me the harness". NOT for DESIGN.md — that is dx-design-language; NOT for designing or changing a page — that is dx-design-execute, or dx-design when unclear.'
+description: 'Set up a person''s machine for the design harness and orient newcomers. Installs and verifies the per-user tools the harness relies on — the agent-browser capture CLI + skill, an authenticated gh, commit signing, and Python + PyYAML for the checks. Use for "set up the harness", "agent-browser isn''t installed", "onboard me", or "teach me the harness". NOT for DESIGN.md — that is dx-design-language; NOT for designing or changing a page — that is dx-design-execute, or dx-design when unclear.'
 ---
 
 # Harness setup: per-user tools, tracker, and commit signing
@@ -18,12 +18,12 @@ machine and repo ready, so continue here for that.
 
 Work the checklist in `setup.md` (beside this file) top to bottom: run each check; if it
 passes, move on; if not, offer the install, run it once you have a yes, and re-run the
-check. The checklist covers three things: the per-user tools, the design-ticket tracker
-wiring, and a once-per-machine commit-signing flow. The axe row needs the plugin's own
-installation directory in `PLUGIN_ROOT`, as an absolute path: `${CLAUDE_PLUGIN_ROOT}` on
-Claude Code, and `../../../` from this file's directory on any other host. Every check is
-idempotent: a re-run detects existing state, repeats nothing, and reports what already
-passes. Two rules bind every row and do not change:
+check. The checklist covers three things: the per-user tools, the issue tracker, and a
+once-per-machine commit-signing flow. The axe row needs the plugin's own installation
+directory in `PLUGIN_ROOT`, as an absolute path: `${CLAUDE_PLUGIN_ROOT}` on Claude Code,
+and `../../../` from this file's directory on any other host. Every check is idempotent: a
+re-run detects existing state, repeats nothing, and reports what already passes. Two rules
+bind every row and do not change:
 
 - **Ask before installing.** Show the exact command, get a yes, then run it. In an
   unattended run, install nothing — list what is missing with the commands a human
@@ -53,7 +53,6 @@ sections with them, writes the file, and generates the projection. Full spec:
 - Repo-level adoption — the stack, the component manifest, record locations, the named
   L1 approver — belongs to the team onboarding guide (`../../../docs/ONBOARDING.md`),
   not here. Point there and stop.
-- Setup touches machine config, labels, signing keys, and the fallback ticket directory
-  only. It never edits product code.
+- Setup touches machine config and signing keys only. It never edits product code.
 - Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds
   this prose too.

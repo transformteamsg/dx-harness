@@ -11,10 +11,8 @@ decisions; that is fine. Brand essence for the portfolio is **Kind Utility**: us
 first, kind at the surface.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md` for tier behaviour and
-catalogue path resolution, and `../../../procedures/design-tickets.md` for how deferred
-sections and fix-todos are filed. The catalogue is at
-`../../../standards/catalog.yaml`; the full DESIGN.md spec is
-`../../../docs/DESIGN-CONTEXT.md`; the template is
+catalogue path resolution. The catalogue is at `../../../standards/catalog.yaml`; the
+full DESIGN.md spec is `../../../docs/DESIGN-CONTEXT.md`; the template is
 `../../../docs/templates/DESIGN.md`.
 
 **Path resolution for commands.** The `../../../` paths above resolve from this
@@ -28,7 +26,8 @@ root fails with file-not-found.
 
 - **The catalogue is always the rulebook. DESIGN.md never restates a control**: it
   cites ids and carries this product's own decisions and deviations.
-- **You never write product code.** Code catch-up is always a `design-fix-todo` issue.
+- **You never write product code.** Code catch-up is always a fix-todo issue
+  (`walkthrough.md`).
 - **Code stays the runtime authority.** A source-of-truth election guides what you ask
   about, never what the checks enforce.
 - **Overrides start empty on a first definition.** Never fish for deviations. A

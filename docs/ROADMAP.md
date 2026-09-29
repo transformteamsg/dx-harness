@@ -104,7 +104,7 @@ flowchart TD
         Groom["Grooming"]:::phase
         GroomSkill[["dx-groom-issue,<br/>dx-split-issue"]]:::skill
         GroomPlanned[["design-scope<br/>linking"]]:::skill
-        ArtSub[/"Technical sub-issues /<br/>design tickets"/]:::artifact
+        ArtSub[/"Technical<br/>sub-issues"/]:::artifact
         GroomOwner --> Groom --> GroomSkill --> GroomPlanned --> ArtSub
     end
 

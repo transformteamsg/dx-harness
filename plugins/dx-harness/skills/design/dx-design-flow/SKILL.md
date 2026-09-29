@@ -1,6 +1,6 @@
 ---
 name: dx-design-flow
-description: 'Use when the ask names the flow of an existing multi-step task but not the exact edit — step traversal, async states, escapability, draft safety ("this wizard loses my draft", "there''s no way out"). Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("add a back button to step 2") or a brand-new flow is dx-design-execute''s. How steps behave is flow; how a page is structured is dx-design-pattern. NOT for a whole-page review with no dimension named — that is dx-design-critique.'
+description: 'Use when the ask names the flow of an existing multi-step task but not the exact edit — step traversal, async states, escapability, draft safety ("this wizard loses my draft", "there''s no way out"). Propose-only: presents up to five ranked findings for acceptance; dx-design-execute builds accepted ones. A stated edit ("add a back button to step 2") or a brand-new flow is dx-design-execute''s. How steps behave is flow; how a page is structured is dx-design-pattern. NOT for a whole-page review with no dimension named — that is dx-design-critique.'
 ---
 
 # Improve the flow on an existing surface
@@ -32,9 +32,8 @@ structure, not polish.
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics
 (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
-The pass is propose-only: it records findings on the surface's design ticket per
-`../../../procedures/design-tickets.md` and hands accepted ones to dx-design-execute,
-which owns plan approval, implement, design review, and verify
-(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
+The pass is propose-only: it presents its findings for acceptance and hands accepted
+ones to dx-design-execute, which owns plan approval, implement, design review, and
+verify (`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
 `../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
 `../../../procedures/rule-proposal.md`.

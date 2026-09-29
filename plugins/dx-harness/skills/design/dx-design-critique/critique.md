@@ -50,12 +50,12 @@ propose changes before you have seen and judged the current state:
    teacher's task. Each names: the concrete change ("merge the two summary
    cards into one calm header row"), the pattern or control it serves
    (layout-patterns.md #4, LAY-5), and the cost (S/M). Suggestions are OFFERS:
-   the human approves them by S-number on the surface's design ticket, and
+   the human approves them by S-number in the conversation, and
    `dx-design-execute` builds accepted ones in a later run. A suggestion stays
    pending until the human replies; unpicked ones are marked `not accepted` on
    that reply, not silently dropped. A suggestion
    never bypasses `dx-design-execute`'s plan gate.
 6. The critique's findings and suggestions feed the report step (`report.md`,
-   beside this file) and the Findings comment on the surface's design ticket.
-   Critique proposes only; it never edits the product. Improvement is the goal,
-   and the critique keeps it targeted instead of a blanket restyle.
+   beside this file). Critique proposes only; it never edits the product.
+   Improvement is the goal, and the critique keeps it targeted instead of a
+   blanket restyle.

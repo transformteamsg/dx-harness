@@ -64,5 +64,4 @@ Constraints, non-negotiable while building:
   clearly marked demo-only hook where needed and note it in the decision record. A
   state that cannot be demonstrated cannot be verified.
 
-After the build, the run proceeds to `design-review.md` (beside this file). Record
-the run on the surface's design ticket per `design-tickets.md`.
+After the build, the run proceeds to `design-review.md` (beside this file).

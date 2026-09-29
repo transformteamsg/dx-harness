@@ -40,8 +40,8 @@ for the catalog mechanics: filtering, tier behaviour for agents, detail files, t
 waiver protocol, and plain-title rule naming. For any waiver or applicability
 question read `../../../standards/README.md` — never answer from memory. The shared
 back half of the run lives beside it: `../../../procedures/plan-approval.md`,
-`../../../procedures/implement.md`, `../../../procedures/design-review.md`,
-`../../../procedures/rule-proposal.md`, and `../../../procedures/design-tickets.md`.
+`../../../procedures/implement.md`, `../../../procedures/design-review.md`, and
+`../../../procedures/rule-proposal.md`.
 
 **The stack**: Base UI components, Radix Colors
 scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
@@ -76,8 +76,7 @@ token `mode:return-to-caller` plus a context payload:
   re-interviewed;
 - the approved plan or the accepted findings list (with any granted waivers and the
   L1 approver), or the verbatim ask when it names a specific plan or chosen
-  direction, so plan approval is not re-asked;
-- the surface's design ticket reference (issue number or local markdown path).
+  direction, so plan approval is not re-asked.
 
 In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
 payload carries a real approval: an approved plan; an accepted-findings list from a
@@ -262,9 +261,7 @@ splits across steps, a one-line **visual thesis** (the mood and energy it carrie
 stated as an extension of the product's existing system, never an invented new
 aesthetic), and one sentence on the trade-off.
 
-**The pick is the contract.** Record the chosen direction on the surface's design
-ticket run record (`../../../procedures/design-tickets.md`); the design review
-audits the built result against it.
+**The pick is the contract.** The design review audits the built result against it.
 
 Use the product's component manifest
 (`.dx/component-manifest.json`, filtered to `status: "stable"` entries) —
@@ -389,6 +386,5 @@ After the user accepts the result, finish the decision record started in Phase 3
 (`docs/decisions/<page>.md`): chosen direction, rejected directions and why, waivers
 granted and by whom, and the review verdict verbatim. Then follow
 `../../../procedures/rule-proposal.md` for any failure the review or the user caught
-that no control covered (it also routes harness friction to the feedback skill,
-which carries that procedure), and record the run on the surface's design ticket per
-`../../../procedures/design-tickets.md`.
+that no control covered (it also routes harness friction to the feedback skill, which
+carries that procedure).

@@ -42,8 +42,7 @@ human's clear early approval shortens it.
 
 Waivers are decided at the plan gate, not improvised during implementation. An L1
 waiver needs a named human approver, granted here and recorded in the decision
-record and on the surface's design ticket (see `design-tickets.md`, beside this
-file). L0 is never waived; an impossible L0 is a blocking question for the person,
+record. L0 is never waived; an impossible L0 is a blocking question for the person,
 not a judgment call. An L2 deviation needs a specific, real reason. For the tier
 table and the `dx-waive` syntax read `../standards/README.md`; never answer a waiver
 question from memory (mechanics: `catalogue-mechanics.md`, beside this file).
@@ -53,7 +52,7 @@ question from memory (mechanics: `catalogue-mechanics.md`, beside this file).
 The gate does not become optional. The **portfolio designer** holds this gate
 asynchronously: send them the compact plan + intended-diff summary (the files to
 be touched, the specific visual and structural changes, and what is preserved),
-and record on the design ticket that it was sent. The portfolio designer is the
+and record in the decision record that it was sent. The portfolio designer is the
 correct L1 approver for teams without an embedded designer. Target turnaround is
 less than one day. The same person holds the design-review gate asynchronously
 (see `design-review.md`, beside this file).
@@ -70,7 +69,6 @@ and record that it was sent.
 
 ## Record it
 
-Write the approved plan to the decision record and to the surface's design ticket
-run record (`design-tickets.md`). The approved plan is the artifact the design
-review grades against, so it must be fixed, not whatever you last proposed. Any L1
-waiver granted here records its named approver.
+Write the approved plan to the decision record. The approved plan is the artifact
+the design review grades against, so it must be fixed, not whatever you last
+proposed. Any L1 waiver granted here records its named approver.

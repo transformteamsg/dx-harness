@@ -1,6 +1,6 @@
 ---
 name: dx-design-motion
-description: 'Use when the ask names the motion of an existing product page but not the exact edit — transitions, easing, timing, reduced-motion ("the motion feels janky", "transitions are too slow"). Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("make the transition 150ms") or a brand-new interaction is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Visual styling goes to dx-design-polish.'
+description: 'Use when the ask names the motion of an existing product page but not the exact edit — transitions, easing, timing, reduced-motion ("the motion feels janky", "transitions are too slow"). Propose-only: presents up to five ranked findings for acceptance; dx-design-execute builds accepted ones. A stated edit ("make the transition 150ms") or a brand-new interaction is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Visual styling goes to dx-design-polish.'
 ---
 
 # Smooth the motion on an existing surface
@@ -30,9 +30,8 @@ instant — no animation on tab/arrow movement.
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
 token; pass.md defines both and what the token suppresses). Catalogue mechanics
 (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
-The pass is propose-only: it records findings on the surface's design ticket per
-`../../../procedures/design-tickets.md` and hands accepted ones to dx-design-execute,
-which owns plan approval, implement, design review, and verify
-(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
+The pass is propose-only: it presents its findings for acceptance and hands accepted
+ones to dx-design-execute, which owns plan approval, implement, design review, and
+verify (`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
 `../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
 `../../../procedures/rule-proposal.md`.

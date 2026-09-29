@@ -1,13 +1,13 @@
 ---
 name: dx-design-critique
-description: 'Grade an existing product page — capture it, score it against the standards catalogue and pattern inventory, and return ranked improvement suggestions. Use when the ask is to review, critique, audit, judge, improve, or polish a page WITHOUT naming a change or a pass dimension — including "I don''t like it", "what''s wrong here", and re-audit asks ("re-check this page against the catalogue", e.g. after new controls land). Propose-only: findings are recorded on the surface''s design ticket, and dx-design-execute builds accepted ones. NOT for a stated change or a new page — that is dx-design-execute; NOT for one of the five pass dimensions — that is the matching pass; NOT for grading a build''s own output — that is the design reviewer agent inside dx-design-execute''s loop.'
+description: 'Grade an existing product page — capture it, score it against the standards catalogue and pattern inventory, and return ranked improvement suggestions. Use when the ask is to review, critique, audit, judge, improve, or polish a page WITHOUT naming a change or a pass dimension — including "I don''t like it", "what''s wrong here", and re-audit asks ("re-check this page against the catalogue", e.g. after new controls land). Propose-only: findings are presented in the conversation, and dx-design-execute builds accepted ones. NOT for a stated change or a new page — that is dx-design-execute; NOT for one of the five pass dimensions — that is the matching pass; NOT for grading a build''s own output — that is the design reviewer agent inside dx-design-execute''s loop.'
 ---
 
 # Critique an existing surface
 
 You evaluate a page that already exists and you propose, never build. Critique never
-edits the product: findings land in the annotated-evidence report and on the surface's
-design ticket, and `dx-design-execute` builds accepted ones in a later run.
+edits the product: findings land in the annotated-evidence report and in the
+conversation, and `dx-design-execute` builds accepted ones in a later run.
 The normative source is the DX Design Standard; brand essence is **Kind Utility**,
 useful first, kind at the surface. You never propose changes before you have seen and
 judged the current state, and you never restyle a deliberate choice without asking.
@@ -40,20 +40,16 @@ For any waiver or applicability question read `../../../standards/README.md`
    structure, and publish it. The report is the default output of every critique run,
    not an opt-in; a person who asked for a whole-page review with no dimension named
    gets it without asking. Only critique produces it; the five passes never do.
-3. **Record the findings and stop.** Write a Findings comment on the surface's design
-   ticket, in the typed-heading format from `../../../procedures/design-tickets.md`
-   (the Findings heading carries the date and this skill's name), and link the report
-   URL from it. Then stop. Suggestions are offers, not a plan; do not implement
-   anything. At this point every suggestion is pending: do not mark anything
-   `accepted` or `not accepted` before the human replies in step 4.
-4. **Approval happens on the ticket, later.** When the human replies with S-numbers,
+3. **Present the suggestions and stop.** List the ranked suggestions by S-number in the
+   conversation with the report link, then stop. Suggestions are offers, not a plan; do
+   not implement anything. At this point every suggestion is pending: do not mark
+   anything `accepted` or `not accepted` before the human replies in step 4.
+4. **Approval happens in the conversation.** When the human replies with S-numbers,
    each approved S# marks the F-findings it fixes as `accepted`, and suggestions the
-   reply does not pick are marked `not accepted` then, never silently dropped
-   (`../../../procedures/design-tickets.md` sets both states only on the human's
-   response); the suggestions
+   reply does not pick are marked `not accepted` then, never silently dropped — set
+   both states on the human's response and never before; the suggestions
    table's Fixes column (S# to F#) is the mapping. `dx-design-execute` builds accepted
-   findings in a later run, its plan gate still applies, and each accepted finding then
-   links to the run record of the execute run that built it. Nothing is built inside a
+   findings in a later run, and its plan gate still applies. Nothing is built inside a
    critique run.
 
 Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds

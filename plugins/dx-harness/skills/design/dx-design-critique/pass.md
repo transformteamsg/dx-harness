@@ -3,7 +3,7 @@
 The five focused passes (dx-design-copy, dx-design-flow, dx-design-pattern,
 dx-design-motion, dx-design-polish) run this one procedure, each scoped to its own
 dimension. A pass is propose-only: it captures the surface, judges it inside its
-dimension, and records up to five ranked findings on the surface's design ticket. A
+dimension, and presents up to five ranked findings in the conversation. A
 pass NEVER edits the product, and it never runs verify. Only `dx-design-execute`
 edits the product; it owns build, design review, and verify through the shared
 back-half procedures. The pass SKILL.md that sent you here names the dimension's
@@ -26,8 +26,7 @@ A pass keeps two entries:
   interview (no clarifying questions back to the human) and the pass's own
   accept/decline exchange (step 4's ask and marks): the pass captures, judges, and
   returns its ranked findings to the caller. The orchestrator merges findings from
-  every dispatched pass into one ranked plan with one plan approval, and it owns the
-  design-ticket record for that run.
+  every dispatched pass into one ranked plan with one plan approval.
 
 ## Run it
 
@@ -46,25 +45,24 @@ A pass keeps two entries:
    pattern it serves. Findings are proposals; you change nothing. Anything you notice
    **outside** the dimension is NOTED and routed, never fixed here: "the spacing
    rhythm is a dx-design-pattern matter", "that wording is a dx-design-copy matter".
-4. **Record on the ticket, then ask.** Find or create the surface's design ticket and
-   record the findings as a Findings comment, format and conventions per
-   `../../../procedures/design-tickets.md` (no tracker wired: use its local-markdown
-   fallback). Ask the human to accept or decline each finding, then mark each one
-   `accepted` or `not accepted` on the comment. Declined findings stay recorded;
-   nothing is silently dropped. In return-to-caller mode, skip the ask: return the
-   ranked findings to the caller, which merges them and runs the one plan approval.
+4. **Present the findings, then ask.** Present the ranked findings in the conversation.
+   Ask the human to accept or decline each finding, then mark each one
+   `accepted` or `not accepted` on their word. Declined findings stay named as
+   declined; nothing is silently dropped. In return-to-caller mode, skip the ask: return
+   the ranked findings to the caller, which merges them and runs the one plan approval.
 5. **Hand off; never build.** Hand the accepted findings to `dx-design-execute` as a
    specified-change run in `return-to-caller` mode: the handoff carries the mode
-   token, the accepted findings, and the design-ticket reference. The token makes
-   execute skip its own intent interview; the person already accepted each finding in
+   token, the surface (its route path or flow name), and the accepted findings. The
+   token makes execute skip its own intent
+   interview, so name the surface in the handoff; execute cannot ask for it. The person already accepted each finding in
    step 4, and that acceptance is the approval context execute works from. Execute
    owns plan approval, implement, design review, and verify, through
    `../../../procedures/plan-approval.md`, `../../../procedures/implement.md`, and
    `../../../procedures/design-review.md`. A
    smaller accepted finding counts as plan approval and proceeds without a second
    stop; a whole-page rebuild always stops at plan approval before any edit. When the
-   human declines every finding, the run ends here: the Findings comment stands, with
-   every finding marked not accepted, and no product file changes.
+   human declines every finding, the run ends here: every finding is marked not
+   accepted, and no product file changes.
 
 ## L0 is never scoped out
 

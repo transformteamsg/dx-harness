@@ -1,6 +1,6 @@
 ---
 name: dx-design-polish
-description: 'Use when the ask names a visual dimension of an existing product page but not the exact edit — spacing, type, radius, colour, shadow, or type/weight hierarchy (SLP-6): "polish the spacing", "the headings don''t stand out". Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("set the padding to 16px") is dx-design-execute''s. NOT for a bare "polish/tidy the page" with no dimension named — that is dx-design-critique. Page hierarchy (what draws the eye) is dx-design-pattern''s; polish touches type/weight hierarchy only.'
+description: 'Use when the ask names a visual dimension of an existing product page but not the exact edit — spacing, type, radius, colour, shadow, or type/weight hierarchy (SLP-6): "polish the spacing", "the headings don''t stand out". Propose-only: presents up to five ranked findings for acceptance; dx-design-execute builds accepted ones. A stated edit ("set the padding to 16px") is dx-design-execute''s. NOT for a bare "polish/tidy the page" with no dimension named — that is dx-design-critique. Page hierarchy (what draws the eye) is dx-design-pattern''s; polish touches type/weight hierarchy only.'
 ---
 
 # Polish an existing surface
@@ -28,9 +28,9 @@ mode (called directly, or dispatched by the orchestrator with the `return-to-cal
 token; pass.md defines both and what the token suppresses). Card/nested-card
 composition (SLP-4/5/11) is a dx-design-pattern matter: note and route it, never a
 polish finding. Catalogue mechanics (filtering, tiers, plain-title naming):
-`../../../procedures/catalogue-mechanics.md`. The pass is propose-only: it records
-findings on the surface's design ticket per `../../../procedures/design-tickets.md`
-and hands accepted ones to dx-design-execute, which owns plan approval, implement,
-design review, and verify (`../../../procedures/plan-approval.md`,
-`../../../procedures/implement.md`, `../../../procedures/design-review.md`).
-Uncovered gaps become rule proposals per `../../../procedures/rule-proposal.md`.
+`../../../procedures/catalogue-mechanics.md`. The pass is propose-only: it presents
+its findings for acceptance and hands accepted ones to dx-design-execute, which owns
+plan approval, implement, design review, and verify
+(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
+`../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
+`../../../procedures/rule-proposal.md`.

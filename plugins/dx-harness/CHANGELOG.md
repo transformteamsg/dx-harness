@@ -28,6 +28,10 @@
 
 - **House style lint and its mechanics file**: `scripts/house-style-lint.py` and `procedures/house-style-mechanics.md` are deleted. Run against 16 merged artifacts, the lint returned nothing on eight issue bodies and 56 findings on eight request bodies, of which 48 per cent came from one rule firing on eval score cells in tables ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 
+### Removed
+
+- **Design tickets removed**: a design run keeps its findings in the conversation and puts the approved plan, the granted waivers, and the design review verdict in its decision record, rather than in a long-lived tracker issue per surface ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
+
 ### Fixed
 
 - **Axe row runs as written**: both axe commands in `dx-design-setup`'s checklist take the plugin's directory from `PLUGIN_ROOT` and abort when it is empty or unset, rather than installing into the repository you are checking ([#305](https://github.com/transformteamsg/dx-harness/issues/305), [#307](https://github.com/transformteamsg/dx-harness/pull/307)).
