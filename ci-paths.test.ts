@@ -3,10 +3,9 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 
-/* CI skips a change that touches only files no check reads, and a small
-   records workflow covers the one check such a change can still break. These
-   act out GitHub's paths-ignore rule with path.matchesGlob; whether GitHub
-   starts a run is confirmed by opening the pull requests. See issue #334. */
+/* CI skips a change that touches only files no check reads. These act out
+   GitHub's paths-ignore rule with path.matchesGlob; whether GitHub starts a
+   run is confirmed by opening the pull requests. See issues #334 and #401. */
 
 function readRoot(file: string) {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
@@ -24,32 +23,29 @@ describe("ci.yml paths-ignore", () => {
     expect(skips(["docs/ROADMAP.md"])).toBe(true);
   });
   it("runs when an ignored file and a read file change together", () => {
-    expect(skips(["docs/ROADMAP.md", "app/page.tsx"])).toBe(false);
+    expect(skips(["docs/ROADMAP.md", "package.json"])).toBe(false);
   });
   /* Each of these is read by a check, so a change to it alone must still run
-     CI. The list is the issue's coupled table, plus the product trees. */
+     CI. site-removal.test.ts reads CLAUDE.md, README.md, and CONTRIBUTING.md. */
   const read = [
     "README.md",
     "LICENSE",
     "CONTEXT.md",
-    "DESIGN.md",
-    "NOTICE.md",
+    "CLAUDE.md",
+    "CONTRIBUTING.md",
     "package.json",
     "pnpm-lock.yaml",
-    "docs/agents/deploy.md",
-    "docs/decisions/example.md",
+    "pnpm-workspace.yaml",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "docs/agents/issue-tracker.md",
     "docs/index.html",
     "plugins/dx-harness/skills/engineering/dx-create-pr/SKILL.md",
+    ".claude-plugin/marketplace.json",
     ".github/workflows/ci.yml",
-    "CONTRIBUTING.md",
     ".gitignore",
-    "app/page.tsx",
-    "components/postcard.tsx",
-    "content/overview.mdx",
-    "lib/motion.ts",
-    "scripts/generate-notices.mjs",
-    "tests/site-contract.spec.ts",
-    "deploy.test.ts",
+    "site-removal.test.ts",
+    "standards-gate.test.ts",
   ];
 
   it.each(read)("runs for a change to %s alone", (file) => {
@@ -70,24 +66,8 @@ describe("ci.yml's note on required checks", () => {
     expect(text).toMatch(/no required status check/i);
     expect(text).toMatch(/gate job/i);
   });
-});
 
-describe(".github/workflows/records.yml", () => {
-  const file = path.join(process.cwd(), ".github/workflows/records.yml");
-  const records: (Workflow & { jobs?: Record<string, { steps?: { run?: string }[] }> }) | null = fs.existsSync(file)
-    ? parse(fs.readFileSync(file, "utf8"))
-    : null;
-  const scripts: Record<string, string> = JSON.parse(readRoot("package.json")).scripts;
-
-  it("runs on exactly the paths ci.yml ignores, on push and on pull_request", () => {
-    expect(records?.on?.push?.paths).toEqual(ignored);
-    expect(records?.on?.pull_request?.paths).toEqual(ignored);
-    expect(records?.on?.push?.branches).toEqual(ci.on?.push?.branches);
-    expect(records?.on?.pull_request?.branches).toEqual(ci.on?.pull_request?.branches);
-  });
-
-  it("runs the same command as check:records", () => {
-    const runs = Object.values(records?.jobs ?? {}).flatMap((job) => (job.steps ?? []).map((step) => step.run?.trim()));
-    expect(runs).toContain(scripts["check:records"]);
+  it("names no records workflow, which moved with the decision records", () => {
+    expect(readRoot(".github/workflows/ci.yml")).not.toContain("records.yml");
   });
 });
