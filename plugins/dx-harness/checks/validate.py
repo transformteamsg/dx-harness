@@ -2026,49 +2026,6 @@ def run_self_test():
         failures.append(f"FAIL the three lay-controls fences agree on LAY-4's "
                         f"measure: want: {want!r}; got: {got!r} ({measures!r})")
 
-    # The teaching exhibit is suppressed at both check layers now that #154 has
-    # landed. components/compare.tsx is a deliberate anti-specimen carrying six
-    # inline dx-waive markers, so .dx/config.json drops it from the scanned file
-    # list at the static layer. The rendered layer reads the DOM waiver marker
-    # (data-dx-waive), which the rendered check runner introduced, so the marker
-    # is now present and its presence is the assertion.
-    site_root = find_site_root(REPO_ROOT)
-    if site_root is not None:
-        case_count += 1
-        cfg_path = os.path.join(site_root, ".dx", "config.json")
-        ignore_files = []
-        if os.path.isfile(cfg_path):
-            with open(cfg_path) as fh:
-                ignore_files = json.load(fh).get("detector", {}).get("ignoreFiles", [])
-        exhibit = os.path.join(site_root, "components", "compare.tsx")
-        rendered_marker = False
-        if os.path.isfile(exhibit):
-            with open(exhibit) as fh:
-                rendered_marker = "data-dx-waive" in fh.read()
-        want = (True, True)
-        got = ("components/compare.tsx" in ignore_files, rendered_marker)
-        if want != got:
-            failures.append(f"FAIL the exhibit is suppressed at both the static "
-                            f"and the rendered layer: want: {want!r}; "
-                            f"got: {got!r}")
-
-        # The .mjs gate runs before the Python one in `pnpm check`, so it is the
-        # first thing to fail on a missing detail file. Guarding the order
-        # because the two gates enforce overlapping rules and only this one
-        # decides which error a contributor sees first.
-        case_count += 1
-        pkg_path = os.path.join(site_root, "package.json")
-        gate = ""
-        if os.path.isfile(pkg_path):
-            with open(pkg_path) as fh:
-                gate = json.load(fh).get("scripts", {}).get("check", "")
-        mjs, py = gate.find("check-standards.mjs"), gate.find("check:python")
-        want = (True, True, True)
-        got = (mjs != -1, py != -1, mjs != -1 and py != -1 and mjs < py)
-        if want != got:
-            failures.append(f"FAIL pnpm check runs check-standards.mjs before the "
-                            f"Python gate: want: {want!r}; got: {got!r}")
-
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")
     try:

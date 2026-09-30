@@ -61,15 +61,8 @@ describe("CONTRIBUTING.md", () => {
   });
 });
 
-describe("the published notices", () => {
-  it("name no ast-grep package, since ast-grep never ships in the site", () => {
-    expect(readRoot("NOTICE.md")).not.toContain("@ast-grep");
-    expect(readRoot("lib/third-party-notices.generated.ts")).not.toContain("@ast-grep");
-  });
-});
-
 describe("the ast-grep version", () => {
-  const installSites = [".github/workflows/ci.yml", "Dockerfile", "CONTRIBUTING.md", "docs/agents/deploy.md"];
+  const installSites = [".github/workflows/ci.yml", "CONTRIBUTING.md"];
 
   it.each(installSites)("is not restated by an install in %s", (file) => {
     expect(readRoot(file)).not.toMatch(/@ast-grep\/cli@\d/);

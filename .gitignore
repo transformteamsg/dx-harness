@@ -1,4 +1,4 @@
-# Python (checks/ and scripts/ are Python 3)
+# Python (the checks are Python 3)
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -19,18 +19,11 @@ Thumbs.db
 # Subagent-driven-development process scratch (briefs, reports, review diffs, ledger)
 .superpowers/
 
-# Website (Next.js)
+# Node dependencies for the tests and ast-grep
 node_modules/
-.next/
-.next-dev/
-out/
-.env*
-*.tsbuildinfo
-next-env.d.ts
 
-# Playwright
-/test-results/
-/playwright-report/
+# Local environment files can hold secrets
+.env*
 
 # Claude worktrees
 .claude
