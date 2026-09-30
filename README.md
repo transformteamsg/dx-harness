@@ -121,6 +121,9 @@ human- and agent-readable rendering of the standard, including `/llms.txt`
 (with control details: `/llms-full.txt`) and `/standards/catalog.yaml`. It
 reads the catalog directly from `plugins/dx-harness/standards/`.
 
+The website deploys from the private repository `transformteamsg/dx-harness-website`.
+This repository carries no deploy configuration.
+
     pnpm install
     pnpm dev      # local dev server
     pnpm build    # runs the standards gates, then builds

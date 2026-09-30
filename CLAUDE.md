@@ -61,4 +61,4 @@ Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/age
 
 ### Deploy
 
-The website deploys as a container to Airbase (staging only so far). See `docs/agents/deploy.md`.
+The website deploys from `transformteamsg/dx-harness-website`, not from this repository. This repository carries no Airbase configuration. See `docs/agents/deploy.md`.
