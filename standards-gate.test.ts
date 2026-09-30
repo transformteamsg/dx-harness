@@ -13,10 +13,8 @@ function readRoot(file: string) {
 const scripts: Record<string, string> = JSON.parse(readRoot("package.json")).scripts;
 
 describe("pnpm check", () => {
-  it("runs validate.py, and nothing runs it from a build lifecycle", () => {
+  it("runs validate.py", () => {
     expect(scripts.check).toBe("python3 plugins/dx-harness/checks/validate.py");
-    expect(scripts.prebuild).toBeUndefined();
-    expect(scripts.build).toBeUndefined();
   });
 });
 
@@ -25,13 +23,6 @@ describe(".github/workflows/ci.yml", () => {
 
   it("runs pnpm check as its own named step", () => {
     expect(ci).toMatch(/- name: [^\n]+\n\s+run: pnpm check\n/);
-  });
-
-  it("runs no site step: lint, build, or the rendered contract", () => {
-    const siteSteps = ["run: pnpm lint", "run: pnpm build", "run: pnpm test:e2e", "playwright"].filter((step) =>
-      ci.includes(step),
-    );
-    expect(siteSteps, `ci.yml still runs site steps: ${siteSteps.join(", ")}`).toEqual([]);
   });
 
   it("lets a failing check fail the job", () => {

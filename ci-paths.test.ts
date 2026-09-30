@@ -19,8 +19,8 @@ const ignored = ci.on?.pull_request?.["paths-ignore"] ?? [];
 const skips = (files: string[]) => files.every((file) => ignored.some((glob) => path.matchesGlob(file, glob)));
 
 describe("ci.yml paths-ignore", () => {
-  it("skips a change to docs/ROADMAP.md alone", () => {
-    expect(skips(["docs/ROADMAP.md"])).toBe(true);
+  it.each(["docs/ROADMAP.md", "CLAUDE.md"])("skips a change to %s alone", (file) => {
+    expect(skips([file])).toBe(true);
   });
   it("runs when an ignored file and a read file change together", () => {
     expect(skips(["docs/ROADMAP.md", "package.json"])).toBe(false);
@@ -31,7 +31,6 @@ describe("ci.yml paths-ignore", () => {
     "README.md",
     "LICENSE",
     "CONTEXT.md",
-    "CLAUDE.md",
     "CONTRIBUTING.md",
     "package.json",
     "pnpm-lock.yaml",

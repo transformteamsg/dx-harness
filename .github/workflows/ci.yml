@@ -17,6 +17,7 @@ on:
       - docs/specs/**
       - docs/superpowers/**
       - review/**
+      - CLAUDE.md
   pull_request:
     branches: [main]
     paths-ignore:
@@ -24,6 +25,7 @@ on:
       - docs/specs/**
       - docs/superpowers/**
       - review/**
+      - CLAUDE.md
 
 permissions:
   contents: read
