@@ -2,35 +2,21 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-/* Structural checks for the Airbase container build (Dockerfile,
-   airbase.json). These can't exercise an actual `docker build` or a live
-   deploy (see docs/agents/deploy.md for that), so they guard the
-   properties that are the most likely to silently regress: the image
-   carrying no check-only toolchain, and the runtime contract Airbase
-   requires. See issues #142 and #224. */
+/* Structural checks for the Airbase container build (Dockerfile) and for the
+   absence of deploy configuration. These can't exercise an actual
+   `docker build` or a live deploy, so they guard the properties that are the
+   most likely to silently regress: the image carrying no check-only toolchain,
+   the runtime contract Airbase requires, and no deploy target in this
+   repository. The website deploys from transformteamsg/dx-harness-website
+   (see docs/agents/deploy.md). See issues #142, #224, and #401. */
 
 function readRoot(file: string) {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
-describe("airbase.json", () => {
-  const config = JSON.parse(readRoot("airbase.json"));
-
-  it("targets a container build", () => {
-    expect(config.framework).toBe("container");
-  });
-
-  it("has a team/project handle", () => {
-    expect(config.handle).toEqual(expect.stringContaining("/"));
-  });
-
-  it("matches the port the Dockerfile's CMD falls back to", () => {
-    const dockerfile = readRoot("Dockerfile");
-    expect(dockerfile).toContain(`\${PORT:-${config.port}}`);
-  });
-
-  it("requests the nano instance size", () => {
-    expect(config.instanceType).toBe("nano");
+describe("deploy configuration", () => {
+  it("has no airbase.json, so no deploy from this repository reaches the production project", () => {
+    expect(fs.existsSync(path.join(process.cwd(), "airbase.json"))).toBe(false);
   });
 });
 
@@ -113,22 +99,11 @@ describe(".dockerignore", () => {
 describe("docs/agents/deploy.md", () => {
   const doc = readRoot("docs/agents/deploy.md");
 
-  it("documents the build and deploy commands", () => {
-    expect(doc).toContain('airbase container build --tag "$IMAGE"');
-    expect(doc).toContain('airbase container deploy --yes --image "$IMAGE" staging');
+  it("names transformteamsg/dx-harness-website as the place the website deploys from", () => {
+    expect(doc).toContain("transformteamsg/dx-harness-website");
   });
 
-  it("names pnpm check as the deployer's step before the image build", () => {
-    expect(doc).toContain("pnpm check");
-    expect(doc.indexOf("pnpm check")).toBeLessThan(doc.indexOf('airbase container build --tag "$IMAGE"'));
-  });
-
-  it("has no troubleshooting row for check:python failing in the Docker build", () => {
-    expect(doc).not.toMatch(/Docker build fails on `check:python`/);
-  });
-
-  it("documents the staging URL pattern", () => {
-    expect(doc).toContain("staging--");
-    expect(doc).toContain("app.tc1.airbase.sg");
+  it("gives no command line that deploys from this repository", () => {
+    expect(doc).not.toMatch(/^\s*airbase container deploy/m);
   });
 });
