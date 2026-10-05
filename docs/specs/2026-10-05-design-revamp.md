@@ -76,7 +76,7 @@ Each story names the skill that serves it today and the gap. **Gap** marks a sto
 | ID | Story | Today | Gap |
 | --- | --- | --- | --- |
 | S13 | As P1, I want git explained and done with me safely, so that I never break the shared branch. | `dx-design-git` | Fits. The persona voice is heavy. |
-| S14 | As P1, I want the harness to keep its records without asking me where they go, so that I can focus on the design. | `procedures/design-tickets.md` | Partial ([#164](https://github.com/transformteamsg/dx-harness/issues/164)). |
+| S14 | As P1, I want the harness to keep its records without asking me where they go, so that I can focus on the design. | `procedures/design-tickets.md` | Partial ([#164](https://github.com/transformteamsg/dx-harness/issues/164)). The rebuild deletes design tickets and keeps the decision record as the only record ([#364](https://github.com/transformteamsg/dx-harness/issues/364)). |
 
 ### Governing the standard
 
@@ -108,6 +108,9 @@ Each story names the skill that serves it today and the gap. **Gap** marks a sto
 - **D3: a prototype path (S8).** A prototype runs on mock data. It skips the formal plan approval and the design review, keeps the L0 floor, and can be promoted to a full build.
 - **D4: the catalogue becomes a rule set modelled on ruff.** See [Catalogue](#catalogue-a-rule-set-modelled-on-ruff).
 - **D5: build in parallel, then cut over.** The new catalogue builds in `standards/rules/`, and the new skills build in `skills/design-revamp/`. See [Build strategy](#build-strategy).
+- **D6: agents read the rule files in the plugin.** Skills, the reviewer agent, and the checks read `standards/rules/`, not the published website. `DESIGN.md` selects the rules for a product. This supersedes [#407](https://github.com/transformteamsg/dx-harness/issues/407).
+- **D7: the website is an outside client.** The spec assumes the website moves to a private repository and reads the rule files through a submodule ([#389](https://github.com/transformteamsg/dx-harness/issues/389)). The catalogue work publishes a stable rule format; the site work happens in that repository.
+- **D8: git help moves to a shared layer.** `dx-design-git` becomes `dx-git-ops` in `skills/shared/` ([#273](https://github.com/transformteamsg/dx-harness/issues/273)), because anyone who commits uses it.
 
 ## Catalogue: a rule set modelled on ruff
 
@@ -142,7 +145,7 @@ A critique dimension, such as polish or copy, is a named selection of categories
 
 The rule set stays at the plugin root in `standards/`. The skills are one client among several:
 
-- The website: `lib/catalog.ts`, `lib/control-detail.ts`, `lib/llms.ts`, the catalogue pages, and `scripts/check-standards.mjs`.
+- The website, which reads the rule files through a submodule once it moves to its own repository (D7). Today it reads them through `lib/catalog.ts`, `lib/control-detail.ts`, `lib/llms.ts`, the catalogue pages, and `scripts/check-standards.mjs`.
 - The check scripts in `plugins/dx-harness/checks/`.
 - `plugins/dx-harness/scripts/generate-design-json.py`.
 - The reviewer agent, `plugins/dx-harness/agents/dx-design-review.md`.
@@ -150,7 +153,7 @@ The rule set stays at the plugin root in `standards/`. The skills are one client
 
 ## Target skill set
 
-The 13 skills become eight. Each skill serves the jobs that a persona names, and no skill exists only because a loop step exists.
+The 13 design skills become seven, and git help moves to a shared skill (D8). Each skill serves the jobs that a persona names, and no skill exists only because a loop step exists.
 
 | Skill | Stories | Change from today |
 | --- | --- | --- |
@@ -159,7 +162,7 @@ The 13 skills become eight. Each skill serves the jobs that a persona names, and
 | `dx-design-critique` | S9, S10, S12, S18, S21 | Absorbs the five passes as a dimension scope: all, copy, flow, pattern, motion, or polish. A whole-page run produces the report. A single-dimension run or a check-only run returns findings. `dx-implement-issue` calls the check-only mode (D2). |
 | `dx-design-language` | S3, S4, S16 | Writes the rule selection into `DESIGN.md` (D1). Owns standing overrides. |
 | `dx-design-setup` | S1, S2 | Supports repos outside the portfolio. Commit signing stays until a harness-wide setup skill exists. |
-| `dx-design-git` | S13 | Keeps plain explanations, the confirmation gate, and the branch guard. Drops the persona voice and the memory file in `~/.claude`. |
+| `dx-git-ops`, in `skills/shared/` | S13 | Replaces `dx-design-git` (D8). Keeps plain explanations, the confirmation gate, and the branch guard. Drops the designer framing and the memory file in `~/.claude`. Hands pull request creation to `dx-create-pr`. |
 | `dx-design-feedback` | S20 | No change. |
 | `dx-design-research-brief` | S19 | Rewritten to `plugins/dx-harness/procedures/skill-prose.md` and the house style. |
 
@@ -167,7 +170,7 @@ The rebuild removes `dx-design-copy`, `dx-design-polish`, `dx-design-motion`, `d
 
 ### Principles
 
-1. Skills carry no catalogue content and no portfolio content. They cite rule codes and read `DESIGN.md`.
+1. Skills carry no catalogue content and no portfolio content, such as the Kind Utility essence, the teacher audience, or the stack. They cite rule codes and read `DESIGN.md` ([#306](https://github.com/transformteamsg/dx-harness/issues/306), [#129](https://github.com/transformteamsg/dx-harness/issues/129)).
 2. A skill reads only its own folder, `procedures/`, and the plugin-root folders. It never reads another skill's folder.
 3. The agent contract (A1) is defined once, in `procedures/design-run-contract.md`.
 4. A skill never shows P1 harness vocabulary or asks P1 a bookkeeping question. It drafts first, then asks for a yes or no ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
@@ -190,7 +193,7 @@ The files that move under this rule:
 - `procedures/copy-rules.md` is new. It holds the voice, tone, and writing mechanics from the body of `dx-design-copy/SKILL.md`.
 - `implement-craft.md` moves to `standards/craft.md`. It is guidance on what good work looks like, and both `dx-design-critique` and `dx-design-execute` read it.
 - The coverage table in `checks/README.md` moves to `checks/COVERAGE.md`. The script internals stay in the README for maintainers.
-- `procedures/design-tickets.md` gains a rule: resolve or create the design ticket before the plan approval, without asking.
+- `procedures/design-tickets.md` is deleted. The decision record is the only record of a run, and findings stay in the session ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
 
 ## Build strategy
 
@@ -207,7 +210,7 @@ The new catalogue and the new skills build beside the live ones. The live versio
 1. **The live design skills are frozen.** They take bug fixes only.
 2. **A draft adds shared files and never edits live ones.** A new procedure gets a new file. A live procedure changes only at the cutover.
 3. **A draft passes its evals before the cutover.** Load it for a session with a local skill link that stays out of git, then run its evals.
-4. **One cutover at the end.** When every draft passes its evals, one pull request deletes `skills/design/` and renames `skills/design-revamp/` to `skills/design/`. The same pull request updates `validate.py`, `CONTEXT.md`, the site pages that list skills, `ONBOARDING.md`, and `CHANGELOG.md`.
+4. **One cutover at the end.** When every draft passes its evals, one pull request deletes `skills/design/` and renames `skills/design-revamp/` to `skills/design/`. The same pull request updates `validate.py`, `CONTEXT.md`, `ONBOARDING.md`, and `CHANGELOG.md`. The website's skill list changes in the website's own repository (D7).
 5. **The draft folder's README holds rules, not status.** `skills/design-revamp/README.md` states these guardrails and links to this spec and the epic. Status lives on the epic.
 
 ### Order
@@ -218,7 +221,7 @@ The new catalogue and the new skills build beside the live ones. The live versio
 4. `dx-design-execute`.
 5. `dx-design-language`.
 6. `dx-design`, after the skills that it routes to.
-7. `dx-design-git`, `dx-design-research-brief`, `dx-design-setup`, and `dx-design-feedback`, in any order.
+7. `dx-design-research-brief`, `dx-design-setup`, and `dx-design-feedback`, in any order. `dx-git-ops` moves to `skills/shared/` on its own issue ([#273](https://github.com/transformteamsg/dx-harness/issues/273)) and does not wait for the cutover.
 8. Cutover.
 9. `dx-implement-issue` calls the check-only mode of `dx-design-critique` (D2).
 
@@ -244,10 +247,10 @@ Until the clients migrate, `catalog.yaml` stays the file that the site, the chec
 | C10 | Port the typography category, `TYP` | 6 rules |
 | C11 | Port the tokens and colour categories, `TOK` and `COL` | 5 rules |
 | C12 | Port the motion category, `MOT` | 3 rules |
-| C13 | Port the portfolio category, from `IDN` and the rules scoped by `products:` | 4 or more rules |
+| C13 | Port the portfolio category, from `IDN` and the rules scoped by `products:`. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 or more rules |
 | C14 | Move `validate.py`, `checks/checklib.py`, and the check scripts to `standards/rules/` | Code |
 | C15 | Move `scripts/generate-design-json.py` to the rule files and the `DESIGN.md` selection | Code |
-| C16 | Move the website to the rule files | Code, `pnpm build` |
+| C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` that the website's repository builds from (D7) | Document and schema |
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml`, `standards/controls/`, and the parity check | Deletion |
 
@@ -270,12 +273,26 @@ Each place holds one kind of fact, and no place restates another.
 | `skills/design-revamp/README.md` | The guardrails, and links to this spec and the epic | Rarely |
 | `CONTEXT.md` | New terms, such as rule, category, selection, and redirect, and retired ones, such as pass | When the term ships |
 
+## Related issues
+
+These open issues predate this spec. Each one is superseded, folded into a sub-issue, or adopted.
+
+| Issue | Outcome |
+| --- | --- |
+| [#362](https://github.com/transformteamsg/dx-harness/issues/362): rewrite the catalogue prose | Superseded by the category ports, C4 to C13 |
+| [#306](https://github.com/transformteamsg/dx-harness/issues/306), [#129](https://github.com/transformteamsg/dx-harness/issues/129): portfolio content hardcoded in skills | Superseded by principle 1 |
+| [#285](https://github.com/transformteamsg/dx-harness/issues/285): remove IDN-4 | Folded into C1 and C13 |
+| [#407](https://github.com/transformteamsg/dx-harness/issues/407), with [#408](https://github.com/transformteamsg/dx-harness/issues/408) to [#410](https://github.com/transformteamsg/dx-harness/issues/410): agents read the catalogue from the website | Superseded by D6 |
+| [#389](https://github.com/transformteamsg/dx-harness/issues/389): move the website to a private repository | Assumed by D7; stays its own work |
+| [#364](https://github.com/transformteamsg/dx-harness/issues/364): delete the design-ticket mechanism | Adopted; the skill drafts carry no design tickets |
+| [#273](https://github.com/transformteamsg/dx-harness/issues/273): move git help to `skills/shared/` | Adopted as D8 |
+
 ## Open decisions
 
 - **Rule code format.** Keep the current codes, such as `A11Y-1`, or renumber in ruff's style, such as `A11Y001`, with redirects. C1 decides.
 - **Category list.** Whether `IDN` survives as a category, and the name of the portfolio category. C1 decides.
 - **Rule tiers.** Whether L0, L1, and L2 stay as they are, or map to a ruff-style severity. C1 decides.
-- **Harness-wide skills.** Whether `dx-design-feedback`, commit signing in `dx-design-setup`, and `dx-design-git` move out of the design group. Out of scope for this spec.
+- **Harness-wide skills.** Whether `dx-design-feedback` and commit signing in `dx-design-setup` also move to `skills/shared/`, as git help does (D8). Out of scope for this spec.
 
 ## Appendix: evaluation of the current skills
 
