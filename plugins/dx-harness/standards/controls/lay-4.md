@@ -30,9 +30,6 @@ Presentation, Level AAA) recommends ≤80 characters; the harness adopts this ce
 a strong default (L2) because it is straightforwardly checkable and because Baymard's
 research grounds the 66ch target in empirical reading data.
 
-**Product anchor**: `app/globals.css` in the DX-DS website sets `.prose { max-width: 70ch }`,
-which is within the target range and shows the intent is already operationalised.
-
 ## How to verify
 
 **Deterministic half** — the `checks/type-scan.py` measure rule, built in #161. It judges

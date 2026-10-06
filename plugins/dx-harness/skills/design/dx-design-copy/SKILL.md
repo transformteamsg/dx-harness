@@ -61,7 +61,7 @@ stress, or it goes.
 ## Voice (constant)
 
 The voice is **Clear, Thoughtful, Approachable** — the three attributes the
-[voice & tone guideline](/standards/voice-tone) defines and CNT-14 grades. Its
+voice & tone guideline defines and CNT-14 grades. Its
 "we are / we are not" table is the boundary to hold:
 
 <!-- dx-sync:voice-attributes source -->
@@ -136,9 +136,6 @@ The voice is **Clear, Thoughtful, Approachable** — the three attributes the
 - Singapore English spelling, proofread (CNT-13): organise, colour, centre; no
   typos, homophones, or doubled words in shipped text.
 
-The [Grammar & mechanics](/standards/grammar-mechanics) and [Text
-patterns](/standards/text-patterns) guidelines present these for human readers.
-
 ## The editing sequence (method, not a control)
 
 Good microcopy is edited into shape, not written in one go. The controls above say
@@ -161,9 +158,6 @@ in passes:
    (CNT-11), clear names (CNT-2), sentence case (CNT-12), Singapore English
    spelling and a proofread (CNT-13), plain error anatomy (CNT-1), and a last
    pass for AI-writing tells (SLP-9).
-
-The website's [Writing](/standards/writing) guideline presents the full sequence
-for human readers; this skill is where an agent applies it.
 
 ## AI writing tells (SLP-9)
 
