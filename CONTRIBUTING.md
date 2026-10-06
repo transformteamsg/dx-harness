@@ -1,30 +1,27 @@
 # Contributing to dx-harness
 
-This repository holds two things: the `dx-harness` Claude Code plugin in `plugins/dx-harness/`, and the design-standard website that renders the standard for people and agents. A change to either follows the same process.
+This repository holds the `dx-harness` Claude Code plugin, in `plugins/dx-harness/`. The design standard website lives in `transformteamsg/dx-harness-website`, a private repository, and follows its own process.
 
 ## Set up your machine
 
-The website needs Node 24 and pnpm 11:
+The tests need Node 24 and pnpm 11:
 
 ```sh
 pnpm install
-pnpm dev
 ```
 
-The full check suite needs three tools that the checks reach as subprocesses rather than as imports. `pnpm install` sets up ast-grep; the other two need a step of their own:
+The checks need two tools that they reach as subprocesses rather than as imports. `pnpm install` sets up ast-grep; Python needs a step of its own:
 
 | Tool | Version | Why |
 | --- | --- | --- |
-| Python 3 with PyYAML | 3.12 | `check:python` reads the control catalogue |
+| Python 3 with PyYAML | 3.12 | `validate.py` reads the control catalogue, and every check runs its self-test under Python |
 | ast-grep | Pinned in `package.json` | `token-audit.py`, `type-scan.py`, and `structure-scan.py` match source structure through it |
-| Playwright Chromium | Installed through pnpm | `pnpm test:e2e` renders the accessibility contract |
 
 ```sh
 pip install pyyaml
-pnpm exec playwright install --with-deps chromium
 ```
 
-The pnpm scripts find ast-grep in `node_modules/.bin`. To run a check directly, prefix it with `pnpm exec`, as in `pnpm exec python3 plugins/dx-harness/checks/token-audit.py app components lib`. Without the prefix, the check cannot find ast-grep and stops with one `ERROR` line.
+The pnpm scripts find ast-grep in `node_modules/.bin`. To run a check directly, prefix it with `pnpm exec`, as in `pnpm exec python3 plugins/dx-harness/checks/token-audit.py --self-test`. Without the prefix, the check cannot find ast-grep and stops with one `ERROR` line.
 
 Keep the ast-grep devDependency pinned to an exact version rather than a range. `plugins/dx-harness/checks/checklib.py` enforces a floor, and `plugins/dx-harness/checks/sgconfig.yml` is written against behaviour measured at that version. A check that cannot reach ast-grep fails with one `ERROR` line instead of reporting a clean run, because a scan that did not happen must never look like a scan that found nothing.
 
@@ -43,8 +40,8 @@ Commits follow this shape:
 Squash merging appends the pull request number, so a title lands in `main` with the number already on it. Do not add it yourself:
 
 ```
-feat(`landing`): rebuild the front page          <- the pull request title
-feat(`landing`): rebuild the front page (#163)   <- the commit in main
+feat(`skills`): route chore as a fourth type          <- the pull request title
+feat(`skills`): route chore as a fourth type (#387)   <- the commit in main
 ```
 
 ## Name the branch
@@ -85,18 +82,13 @@ Run these before you push. CI runs the same set, so a green local run predicts a
 
 | Command | What it covers |
 | --- | --- |
-| `pnpm lint` | ESLint across the repository |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm test` | Vitest unit tests, then the check scripts' own self-tests (`test:checks`) |
-| `pnpm check` | The standards gate: `check-standards.mjs`, `check:design`, `check:records`, `check:python`, and `check:notices` |
-| `pnpm build` | The Next.js build, then the CSP externalization |
-| `pnpm test:e2e` | The rendered accessibility contract in Chromium |
-
-`pnpm build` does not run the standards gate; run `pnpm check` for that. Its `postbuild` step moves Next.js inline scripts into external files so the deployed site satisfies Airbase's `script-src 'self'` policy. Never run `next build` directly for a deployable artefact: it skips that step.
+| `pnpm typecheck` | `tsc --noEmit` over the tests |
+| `pnpm test` | Vitest tests, then every check script's own self-test (`test:checks`) |
+| `pnpm check` | The standards gate: `validate.py`, which checks the control catalogue and the plugin files that restate it |
 
 **No git hook runs any of this.** The repository has no `lefthook.yml` and no `.husky/`, so nothing checks your work on commit or on push. CI runs on pushes to `main` and on pull requests targeting `main`, which means an unchecked commit reaches CI before it reaches a reviewer. Run the commands yourself.
 
-CI skips a change that touches only files no check reads, such as `plans/` or `docs/ROADMAP.md`. The `paths-ignore` list in `.github/workflows/ci.yml` names them. A smaller workflow, `records.yml`, still runs the decision-record audit on those paths.
+CI skips a change that touches only files no check reads, such as `docs/ROADMAP.md` or `review/`. The `paths-ignore` list in `.github/workflows/ci.yml` names them.
 
 ## Work through an issue
 
