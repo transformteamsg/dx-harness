@@ -186,7 +186,7 @@ A review issue covers one group of the current controls. For each control, it re
 
 | ID | Sub-issue | Scope |
 | --- | --- | --- |
-| C0 | Survey the current catalogue: candidate categories, and the controls that look wrong, duplicated, or portfolio-specific. Read-only. The disposition of each control stays in its review | Document |
+| C0 | Survey the current catalogue ([#427](https://github.com/transformteamsg/dx-harness/issues/427)): candidate categories, and the controls that look wrong, duplicated, or portfolio-specific. Read-only. The disposition of each control stays in its review | Document |
 | C1 | Decision record: the rule-file schema, the category list (with the opt-in portfolio category), the selection grammar in `DESIGN.md`, `status`, `redirects`, `parameters`, the code format, and which side owns the link between a rule and its check | Document |
 | C2 | Rule-writing standard: the fixed sections of a rule file and how to write each one. A value that a check reads is a parameter in the frontmatter, never prose | Document |
 | C3 | Scaffold: `standards/rules/`, the rule-file JSON schema, a template, and a check that every current control ID resolves | Code, no rules |
