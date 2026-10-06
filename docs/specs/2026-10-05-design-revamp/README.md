@@ -193,7 +193,7 @@ Until the clients migrate, `catalog.yaml` stays the file that the site, the chec
 | C7 | Port the content category, `CNT-8` to `CNT-14`. Moves the CNT-13 word list to parameters, and switches `content-lint.py` to read it. Carries the CNT-14 grading change from [#308](https://github.com/transformteamsg/dx-harness/pull/308) | 7 rules |
 | C8 | Port the layout category, `LAY` | 7 rules |
 | C9 | Port the anti-slop category, `SLP`. Moves the SLP-9 word lists to parameters, and switches `content-lint.py` to read them | 11 rules |
-| C10 | Port the typography category, `TYP`. Moves the type scale and thresholds to parameters, and switches `type-scan.py` to read them | 6 rules |
+| C10 | Port the typography category, `TYP`. Moves the type scale and thresholds to parameters, and switches `type-scan.py` to read them. Settles the line-height band of TYP-2, where the title and `type-scan.py` disagree ([#203](https://github.com/transformteamsg/dx-harness/issues/203)) | 6 rules |
 | C11 | Port the tokens and colour categories, `TOK` and `COL`. Settles where `token-audit.py` and `contrast.py` disagree with COL-2 ([#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295)) | 5 rules |
 | C12 | Port the motion category, `MOT` | 3 rules |
 | C13 | Port the portfolio category, from `IDN` and the rules scoped by `products:`. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 or more rules |
@@ -241,6 +241,7 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 | [#407](https://github.com/transformteamsg/dx-harness/issues/407), with [#408](https://github.com/transformteamsg/dx-harness/issues/408) to [#410](https://github.com/transformteamsg/dx-harness/issues/410): agents read the catalogue from the website | Superseded by D6 |
 | [#389](https://github.com/transformteamsg/dx-harness/issues/389): move the website to a private repository | The website left this repository in #405 (D7). #389 tracks the rest of the move. |
 | [#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295): checks that disagree with COL-2 | Folded into C11 |
+| [#203](https://github.com/transformteamsg/dx-harness/issues/203): `type-scan.py` enforces a floor where TYP-2 states a band | Folded into C10 |
 | [#296](https://github.com/transformteamsg/dx-harness/issues/296), [#126](https://github.com/transformteamsg/dx-harness/issues/126), [#27](https://github.com/transformteamsg/dx-harness/issues/27), [#133](https://github.com/transformteamsg/dx-harness/issues/133): detection bugs in the checks | Fixed on their own. Detection logic is not frozen. |
 | [#364](https://github.com/transformteamsg/dx-harness/issues/364): delete the design-ticket mechanism | Adopted; the skill drafts carry no design tickets |
 | [#273](https://github.com/transformteamsg/dx-harness/issues/273): move git help to `skills/shared/` | Adopted as D8 |
