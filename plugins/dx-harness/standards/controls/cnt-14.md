@@ -58,7 +58,7 @@ matches the moment — and no static signal decides it.
 This control makes that gestalt control-backed, the same move SLP made for slop and
 CNT-7 made for lead-with-purpose: a quality that was previously only a soft
 design-quality grade becomes a named, waivable finding pointing at a written standard
-(`content/standards/voice-tone.mdx`).
+(the Voice and Tone sections of `skills/design/dx-design-copy/SKILL.md`).
 
 ## Passes when
 

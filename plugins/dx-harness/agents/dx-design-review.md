@@ -204,7 +204,7 @@ surface with neither is a finding.
 
 **Voice quality + tone-fit (CNT-14, L2, judgment — controls/cnt-14.md).** Read the copy
 against the voice attributes (Clear / Thoughtful / Approachable) and the tone-by-context
-table in `content/standards/voice-tone.mdx`: name the surface's context
+table in `skills/design/dx-design-copy/SKILL.md`: name the surface's context
 (success, error, onboarding, destructive, empty state, permission) and judge whether the
 tone fits — affirming/brief success, calm/helpful error, sober/precise destructive,
 inviting empty state. This is the *gestalt* only: a mechanical miss belongs to its own
