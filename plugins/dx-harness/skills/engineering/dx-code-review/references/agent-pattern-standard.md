@@ -7,6 +7,8 @@
 > The six right-hand columns stay empty here. `Concrete example`, `First seen`, `Severity`, `Confirmed by`, `Rejected by`, and `Status` are per repository and are filled in by that repository's overlay, never in this file.
 >
 > Deduplication key: Pattern name, case-insensitive. Adding a pattern here is a change to the standard and goes through a pull request, not through a review.
+>
+> To write a repository's `review/agent-patterns.md`, take the column rules from [agent-pattern-registry.md](agent-pattern-registry.md).
 
 | ID | Angle | Pattern name | Trigger | Prevention | Concrete example | First seen | Severity | Confirmed by | Rejected by | Status |
 |----|-------|-------------|--------|-----------|-----------------|------------|----------|-------------|-------------|--------|
