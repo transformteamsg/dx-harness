@@ -200,7 +200,7 @@ Until the clients migrate, `catalog.yaml` stays the file that the site, the chec
 | C14a | Read the catalogue through one `checklib.py` module ([#425](https://github.com/transformteamsg/dx-harness/issues/425)). Can start before C1 | Code |
 | C14b | Switch `checklib.py` and `validate.py` to `standards/rules/`, and generate `checks/COVERAGE.md` from the rule files | Code |
 | C15 | Move `scripts/generate-design-json.py` to the rule files and the `DESIGN.md` selection | Code |
-| C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` that the website's repository builds from (D7) | Document and schema |
+| C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` and `procedures/copy-rules.md` that the website's repository builds from (D7). The website's voice, tone, and writing pages read `copy-rules.md` | Document and schema |
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml`, `standards/controls/`, and the parity check | Deletion |
 
@@ -240,6 +240,7 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 | [#285](https://github.com/transformteamsg/dx-harness/issues/285): remove IDN-4 | Folded into C1 and C13 |
 | [#407](https://github.com/transformteamsg/dx-harness/issues/407), with [#408](https://github.com/transformteamsg/dx-harness/issues/408) to [#410](https://github.com/transformteamsg/dx-harness/issues/410): agents read the catalogue from the website | Superseded by D6 |
 | [#389](https://github.com/transformteamsg/dx-harness/issues/389): move the website to a private repository | The website left this repository in #405 (D7). #389 tracks the rest of the move. |
+| [#421](https://github.com/transformteamsg/dx-harness/issues/421): move the copy-skill parity checks to the website repository | Superseded. The rebuild deletes `dx-design-copy` and its `dx-sync` blocks, and the website reads `procedures/copy-rules.md` through C16. |
 | [#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295): checks that disagree with COL-2 | Folded into C11 |
 | [#203](https://github.com/transformteamsg/dx-harness/issues/203): `type-scan.py` enforces a floor where TYP-2 states a band | Folded into C10 |
 | [#296](https://github.com/transformteamsg/dx-harness/issues/296), [#126](https://github.com/transformteamsg/dx-harness/issues/126), [#27](https://github.com/transformteamsg/dx-harness/issues/27), [#133](https://github.com/transformteamsg/dx-harness/issues/133): detection bugs in the checks | Fixed on their own. Detection logic is not frozen. |
