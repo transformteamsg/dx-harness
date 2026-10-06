@@ -20,7 +20,7 @@ The work runs in three stages:
 
 ## Personas and stories
 
-The personas and user stories live in [stories.md](stories.md). This file cites stories by ID, such as `P6-3`, and never restates them.
+The personas and user stories live in [stories/](stories/README.md), one file per persona. This file cites stories by ID, such as `P6-3`, and never restates them.
 
 ### Story gate
 
@@ -31,7 +31,7 @@ The personas and user stories live in [stories.md](stories.md). This file cites 
 
 ### How to contribute
 
-- **A story:** open a pull request that changes the persona's section of `stories.md`, against that persona's issue. Follow the rules at the top of `stories.md`.
+- **A story:** open a pull request that changes the persona's file in `stories/`, against that persona's issue. Follow the rules in [stories/README.md](stories/README.md).
 - **A decision or the architecture:** comment on #413, or add an entry under [Open decisions](#open-decisions). A story pull request does not edit this file.
 - **Everything else:** follow [CONTRIBUTING.md](../../../CONTRIBUTING.md).
 
@@ -192,7 +192,7 @@ C1 and C2 come first. A port can start after C3 merges, and the ports run in any
 
 ### Stories
 
-One task per persona confirms its stories in `stories.md`: P1, P2, P3, P4, P6, and A1. See the [story gate](#story-gate).
+One task per persona confirms its stories in `stories/`: P1 ([#415](https://github.com/transformteamsg/dx-harness/issues/415)), P2 ([#416](https://github.com/transformteamsg/dx-harness/issues/416)), P3 ([#417](https://github.com/transformteamsg/dx-harness/issues/417)), P4 ([#418](https://github.com/transformteamsg/dx-harness/issues/418)), A1 ([#419](https://github.com/transformteamsg/dx-harness/issues/419)), and P6 ([#420](https://github.com/transformteamsg/dx-harness/issues/420)). See the [story gate](#story-gate).
 
 ### Skills
 
@@ -205,7 +205,7 @@ Each place holds one kind of fact, and no place restates another.
 | Place | Holds | Changes when |
 | --- | --- | --- |
 | This file | Why and what: decisions, the target architecture, the build strategy, and open decisions | A decision changes |
-| [stories.md](stories.md) | Personas, stories, and acceptance examples | A persona issue merges |
+| [stories/](stories/README.md) | Personas, stories, and acceptance examples, one file per persona | A persona issue merges |
 | Decision records in `docs/adr/` | One hard-to-reverse decision each, with its options | Never. A new record supersedes an old one. |
 | The epic | Progress | Each pull request |
 | A sub-issue | One step: the section of this spec it implements, the stories it serves, and its acceptance criteria | Before work starts |
