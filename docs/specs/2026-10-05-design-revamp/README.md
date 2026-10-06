@@ -43,7 +43,7 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 - **D4: the catalogue becomes a rule set modelled on ruff.** See [Catalogue](#catalogue-a-rule-set-modelled-on-ruff).
 - **D5: build in parallel, then cut over.** The new catalogue builds in `standards/rules/`, and the new skills build in `skills/design-revamp/`. See [Build strategy](#build-strategy).
 - **D6: agents read the rule files in the plugin.** Skills, the reviewer agent, and the checks read `standards/rules/`, not the published website. `DESIGN.md` selects the rules for a product. This supersedes [#407](https://github.com/transformteamsg/dx-harness/issues/407).
-- **D7: the website is an outside client.** The spec assumes the website moves to a private repository and reads the rule files through a submodule ([#389](https://github.com/transformteamsg/dx-harness/issues/389)). The catalogue work publishes a stable rule format; the site work happens in that repository.
+- **D7: the website is an outside client.** The website left this repository in [#405](https://github.com/transformteamsg/dx-harness/pull/405) and reads the rule files from its own repository ([#389](https://github.com/transformteamsg/dx-harness/issues/389)). The catalogue work publishes a stable rule format; the site work happens in that repository.
 - **D8: git help moves to a shared layer.** `dx-design-git` becomes `dx-git-ops` in `skills/shared/` ([#273](https://github.com/transformteamsg/dx-harness/issues/273)), because anyone who commits uses it.
 
 ## Catalogue: a rule set modelled on ruff
@@ -64,6 +64,7 @@ The rebuild models the catalogue on ruff: clear rule categories, one documented 
 | `per-file-ignores` | Standing overrides in `DESIGN.md` |
 | Preview, stable, deprecated, and removed rules | A `status` field on each rule. It replaces the history comments. |
 | Redirects from an old code to a new one | A `redirects` map. Old waivers in product repos still resolve. |
+| Rule options in the project configuration, such as the docstring convention | A `parameters` block in the rule's frontmatter, such as the allowed type scale or a list of banned words. A check reads the parameters and never parses the prose. |
 
 ### Selection
 
@@ -79,11 +80,25 @@ A critique dimension, such as polish or copy, is a named selection of categories
 
 The rule set stays at the plugin root in `standards/`. The skills are one client among several:
 
-- The website, which reads the rule files through a submodule once it moves to its own repository (D7). Today it reads them through `lib/catalog.ts`, `lib/control-detail.ts`, `lib/llms.ts`, the catalogue pages, and `scripts/check-standards.mjs`.
+- The website, which reads the rule files from its own repository (D7).
 - The check scripts in `plugins/dx-harness/checks/`.
 - `plugins/dx-harness/scripts/generate-design-json.py`.
 - The reviewer agent, `plugins/dx-harness/agents/dx-design-review.md`.
 - From D2, the engineering skill `dx-implement-issue`.
+
+### Checks
+
+The check scripts in `plugins/dx-harness/checks/` depend on the catalogue in three ways:
+
+| Group | Scripts | What they read | During the rebuild |
+| --- | --- | --- | --- |
+| Independent | `skill-locators.py`, `skill-audit.py` | Markdown paths and skill folders | Unaffected |
+| IDs and tiers | `a11y-eslint.py`, `audit-record.py`, `rendered-check.py`, `structure-scan.py`, `reaudit-scope.py`, `waiver-reconcile.py` | Which rules exist, their tiers, and their bodies | Read through one `checklib.py` module (C14a), which C14b switches to `standards/rules/` |
+| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Switch to rule parameters in the port of their category |
+
+`validate.py` is rebuilt by the scaffold (C3) and loses its `dx-sync` parity checks at the skills cutover.
+
+Until C14b, how a check reads the catalogue is frozen. A check's detection logic still takes bug fixes.
 
 ## Target skill set
 
@@ -165,30 +180,31 @@ One epic, **Design revamp**, links to this spec. Each sub-issue is one pull requ
 
 ### Catalogue
 
-Until the clients migrate, `catalog.yaml` stays the file that the site, the check scripts, and the live skills read. A port pull request adds rule files and keeps the matching `catalog.yaml` entries consistent. A parity check in `validate.py` fails when a ported rule's metadata differs from its `catalog.yaml` entry.
+Until the clients migrate, `catalog.yaml` stays the file that the site, the check scripts, and the live skills read. A port pull request adds rule files and keeps the matching `catalog.yaml` entries consistent. A parity check in `validate.py` fails when a ported rule's metadata differs from its `catalog.yaml` entry, or when a rule parameter differs from the value a check reads today.
 
 | ID | Sub-issue | Scope |
 | --- | --- | --- |
-| C1 | Decision record: the rule-file schema, the category list (with the opt-in portfolio category), the selection grammar in `DESIGN.md`, `status`, `redirects`, and the code format | Document |
-| C2 | Rule-writing standard: the fixed sections of a rule file and how to write each one | Document |
+| C1 | Decision record: the rule-file schema, the category list (with the opt-in portfolio category), the selection grammar in `DESIGN.md`, `status`, `redirects`, `parameters`, the code format, and which side owns the link between a rule and its check | Document |
+| C2 | Rule-writing standard: the fixed sections of a rule file and how to write each one. A value that a check reads is a parameter in the frontmatter, never prose | Document |
 | C3 | Scaffold: `standards/rules/`, the rule-file JSON schema, a template, and the parity check | Code, no rules |
 | C4 | Port the accessibility category, `A11Y` | 11 rules |
 | C5 | Port the components and patterns category, `CMP` | 11 rules |
-| C6 | Port the content category, `CNT-1` to `CNT-7` | 7 rules |
-| C7 | Port the content category, `CNT-8` to `CNT-14` | 7 rules |
+| C6 | Port the content category, `CNT-1` to `CNT-7`. Moves the word lists of CNT-5 and CNT-6 to parameters, and switches `content-lint.py` to read them | 7 rules |
+| C7 | Port the content category, `CNT-8` to `CNT-14`. Moves the CNT-13 word list to parameters, and switches `content-lint.py` to read it. Carries the CNT-14 grading change from [#308](https://github.com/transformteamsg/dx-harness/pull/308) | 7 rules |
 | C8 | Port the layout category, `LAY` | 7 rules |
-| C9 | Port the anti-slop category, `SLP` | 11 rules |
-| C10 | Port the typography category, `TYP` | 6 rules |
-| C11 | Port the tokens and colour categories, `TOK` and `COL` | 5 rules |
+| C9 | Port the anti-slop category, `SLP`. Moves the SLP-9 word lists to parameters, and switches `content-lint.py` to read them | 11 rules |
+| C10 | Port the typography category, `TYP`. Moves the type scale and thresholds to parameters, and switches `type-scan.py` to read them. Settles the line-height band of TYP-2, where the title and `type-scan.py` disagree ([#203](https://github.com/transformteamsg/dx-harness/issues/203)) | 6 rules |
+| C11 | Port the tokens and colour categories, `TOK` and `COL`. Settles where `token-audit.py` and `contrast.py` disagree with COL-2 ([#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295)) | 5 rules |
 | C12 | Port the motion category, `MOT` | 3 rules |
 | C13 | Port the portfolio category, from `IDN` and the rules scoped by `products:`. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 or more rules |
-| C14 | Move `validate.py`, `checks/checklib.py`, and the check scripts to `standards/rules/` | Code |
+| C14a | Read the catalogue through one `checklib.py` module ([#425](https://github.com/transformteamsg/dx-harness/issues/425)). Can start before C1 | Code |
+| C14b | Switch `checklib.py` and `validate.py` to `standards/rules/`, and generate `checks/COVERAGE.md` from the rule files | Code |
 | C15 | Move `scripts/generate-design-json.py` to the rule files and the `DESIGN.md` selection | Code |
-| C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` that the website's repository builds from (D7) | Document and schema |
+| C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` and `procedures/copy-rules.md` that the website's repository builds from (D7). The website's voice, tone, and writing pages read `copy-rules.md` | Document and schema |
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml`, `standards/controls/`, and the parity check | Deletion |
 
-C1 and C2 come first. A port can start after C3 merges, and the ports run in any order. C13 depends on the category list from C1.
+C1 and C2 come first. A port can start after C3 merges, and the ports run in any order. C13 depends on the category list from C1. C14a can start at any time, and C14b follows the last port.
 
 ### Stories
 
@@ -219,10 +235,15 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 | Issue | Outcome |
 | --- | --- |
 | [#362](https://github.com/transformteamsg/dx-harness/issues/362): rewrite the catalogue prose | Superseded by the category ports, C4 to C13 |
-| [#306](https://github.com/transformteamsg/dx-harness/issues/306), [#129](https://github.com/transformteamsg/dx-harness/issues/129): portfolio content hardcoded in skills | Superseded by principle 1 |
+| [#306](https://github.com/transformteamsg/dx-harness/issues/306), [#129](https://github.com/transformteamsg/dx-harness/issues/129): portfolio content hardcoded in skills | Superseded by principle 1. No team outside the portfolio uses the live skills, so they get no interim fix. |
+| [#308](https://github.com/transformteamsg/dx-harness/pull/308): the pull request for #306 | Closed unmerged. Its `procedures/design-essence.md`, and its rule that `## Essence` has no portfolio default, are input to the `dx-design-language` draft. Its CNT-14 change goes to C7, and its locator check to [#423](https://github.com/transformteamsg/dx-harness/issues/423). |
 | [#285](https://github.com/transformteamsg/dx-harness/issues/285): remove IDN-4 | Folded into C1 and C13 |
 | [#407](https://github.com/transformteamsg/dx-harness/issues/407), with [#408](https://github.com/transformteamsg/dx-harness/issues/408) to [#410](https://github.com/transformteamsg/dx-harness/issues/410): agents read the catalogue from the website | Superseded by D6 |
-| [#389](https://github.com/transformteamsg/dx-harness/issues/389): move the website to a private repository | Assumed by D7; stays its own work |
+| [#389](https://github.com/transformteamsg/dx-harness/issues/389): move the website to a private repository | The website left this repository in #405 (D7). #389 tracks the rest of the move. |
+| [#421](https://github.com/transformteamsg/dx-harness/issues/421): move the copy-skill parity checks to the website repository | Superseded. The rebuild deletes `dx-design-copy` and its `dx-sync` blocks, and the website reads `procedures/copy-rules.md` through C16. |
+| [#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295): checks that disagree with COL-2 | Folded into C11 |
+| [#203](https://github.com/transformteamsg/dx-harness/issues/203): `type-scan.py` enforces a floor where TYP-2 states a band | Folded into C10 |
+| [#296](https://github.com/transformteamsg/dx-harness/issues/296), [#126](https://github.com/transformteamsg/dx-harness/issues/126), [#27](https://github.com/transformteamsg/dx-harness/issues/27), [#133](https://github.com/transformteamsg/dx-harness/issues/133): detection bugs in the checks | Fixed on their own. Detection logic is not frozen. |
 | [#364](https://github.com/transformteamsg/dx-harness/issues/364): delete the design-ticket mechanism | Adopted; the skill drafts carry no design tickets |
 | [#273](https://github.com/transformteamsg/dx-harness/issues/273): move git help to `skills/shared/` | Adopted as D8 |
 
@@ -230,6 +251,7 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 
 - **Rule code format.** Keep the current codes, such as `A11Y-1`, or renumber in ruff's style, such as `A11Y001`, with redirects. C1 decides.
 - **Category list.** Whether `IDN` survives as a category, and the name of the portfolio category. C1 decides.
+- **Rule-to-check link.** Whether a rule file names the script that checks it, as controls do today, or a check declares the rules it implements, as in ruff. The owning side generates `checks/COVERAGE.md`. C1 decides.
 - **Rule tiers.** Whether L0, L1, and L2 stay as they are, or map to a ruff-style severity. C1 decides.
 - **Harness-wide skills.** Whether `dx-design-feedback` and commit signing in `dx-design-setup` also move to `skills/shared/`, as git help does (D8). Out of scope for this spec.
 
