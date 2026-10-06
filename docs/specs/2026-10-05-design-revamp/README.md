@@ -94,7 +94,7 @@ The check scripts in `plugins/dx-harness/checks/` depend on the catalogue in thr
 | --- | --- | --- | --- |
 | Independent | `skill-locators.py`, `skill-audit.py` | Markdown paths and skill folders | Unaffected |
 | IDs and tiers | `a11y-eslint.py`, `audit-record.py`, `rendered-check.py`, `structure-scan.py`, `reaudit-scope.py`, `waiver-reconcile.py` | Which rules exist, their tiers, and their bodies | Read through one `checklib.py` module (C14a), which C14b switches to `standards/rules/` |
-| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Switch to rule parameters in the port of their category |
+| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Keep reading `catalog.yaml` until C14b switches them to rule parameters |
 
 `validate.py` is rebuilt by the scaffold (C3) and loses its `dx-sync` parity checks at the skills cutover.
 
@@ -164,7 +164,7 @@ The new catalogue and the new skills build beside the live ones. The live versio
 
 ### Order
 
-1. Catalogue: decision records, scaffold, category ports, client migration, and deletion of the old files.
+1. Catalogue: survey, decision records, scaffold, category reviews, client migration, and deletion of the old files.
 2. Scaffold for the skills: `skills/design-revamp/README.md` and `procedures/design-run-contract.md`.
 3. `dx-design-critique`, with `procedures/capture.md` and `procedures/copy-rules.md`.
 4. `dx-design-execute`.
@@ -180,31 +180,34 @@ One epic, **Design revamp**, links to this spec. Each sub-issue is one pull requ
 
 ### Catalogue
 
-Until the clients migrate, `catalog.yaml` stays the file that the site, the check scripts, and the live skills read. A port pull request adds rule files and keeps the matching `catalog.yaml` entries consistent. A parity check in `validate.py` fails when a ported rule's metadata differs from its `catalog.yaml` entry, or when a rule parameter differs from the value a check reads today.
+The new rules are written from scratch. Until the clients migrate, `catalog.yaml` stays the file that the check scripts and the live skills read, and it takes bug fixes only.
+
+A review issue covers one group of the current controls. For each control, it records one disposition: keep, change, merge, split, or drop. A kept, changed, merged, or split control maps to its new codes in `redirects`. A dropped control gets the `removed` status and a one-line reason. The review of the catalogue is complete when every current control ID resolves.
 
 | ID | Sub-issue | Scope |
 | --- | --- | --- |
+| C0 | Survey the current catalogue ([#427](https://github.com/transformteamsg/dx-harness/issues/427)): candidate categories, and the controls that look wrong, duplicated, or portfolio-specific. Read-only. The disposition of each control stays in its review | Document |
 | C1 | Decision record: the rule-file schema, the category list (with the opt-in portfolio category), the selection grammar in `DESIGN.md`, `status`, `redirects`, `parameters`, the code format, and which side owns the link between a rule and its check | Document |
 | C2 | Rule-writing standard: the fixed sections of a rule file and how to write each one. A value that a check reads is a parameter in the frontmatter, never prose | Document |
-| C3 | Scaffold: `standards/rules/`, the rule-file JSON schema, a template, and the parity check | Code, no rules |
-| C4 | Port the accessibility category, `A11Y` | 11 rules |
-| C5 | Port the components and patterns category, `CMP` | 11 rules |
-| C6 | Port the content category, `CNT-1` to `CNT-7`. Moves the word lists of CNT-5 and CNT-6 to parameters, and switches `content-lint.py` to read them | 7 rules |
-| C7 | Port the content category, `CNT-8` to `CNT-14`. Moves the CNT-13 word list to parameters, and switches `content-lint.py` to read it. Carries the CNT-14 grading change from [#308](https://github.com/transformteamsg/dx-harness/pull/308) | 7 rules |
-| C8 | Port the layout category, `LAY` | 7 rules |
-| C9 | Port the anti-slop category, `SLP`. Moves the SLP-9 word lists to parameters, and switches `content-lint.py` to read them | 11 rules |
-| C10 | Port the typography category, `TYP`. Moves the type scale and thresholds to parameters, and switches `type-scan.py` to read them. Settles the line-height band of TYP-2, where the title and `type-scan.py` disagree ([#203](https://github.com/transformteamsg/dx-harness/issues/203)) | 6 rules |
-| C11 | Port the tokens and colour categories, `TOK` and `COL`. Settles where `token-audit.py` and `contrast.py` disagree with COL-2 ([#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295)) | 5 rules |
-| C12 | Port the motion category, `MOT` | 3 rules |
-| C13 | Port the portfolio category, from `IDN` and the rules scoped by `products:`. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 or more rules |
+| C3 | Scaffold: `standards/rules/`, the rule-file JSON schema, a template, and a check that every current control ID resolves | Code, no rules |
+| C4 | Review the accessibility category, `A11Y` | 11 rules |
+| C5 | Review the components and patterns category, `CMP` | 11 rules |
+| C6 | Review the content category, `CNT-1` to `CNT-7`. Moves the word lists of CNT-5 and CNT-6 to parameters | 7 rules |
+| C7 | Review the content category, `CNT-8` to `CNT-14`. Moves the CNT-13 word list to parameters. Carries the CNT-14 grading change from [#308](https://github.com/transformteamsg/dx-harness/pull/308) | 7 rules |
+| C8 | Review the layout category, `LAY` | 7 rules |
+| C9 | Review the anti-slop category, `SLP`. Moves the SLP-9 word lists to parameters | 11 rules |
+| C10 | Review the typography category, `TYP`. Moves the type scale and thresholds to parameters. Settles the line-height band of TYP-2, where the title and `type-scan.py` disagree ([#203](https://github.com/transformteamsg/dx-harness/issues/203)) | 6 rules |
+| C11 | Review the tokens and colour categories, `TOK` and `COL`. Settles where `token-audit.py` and `contrast.py` disagree with COL-2 ([#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295)) | 5 rules |
+| C12 | Review the motion category, `MOT` | 3 rules |
+| C13 | Review the portfolio category, from `IDN` and the rules scoped by `products:`. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 or more rules |
 | C14a | Read the catalogue through one `checklib.py` module ([#425](https://github.com/transformteamsg/dx-harness/issues/425)). Can start before C1 | Code |
-| C14b | Switch `checklib.py` and `validate.py` to `standards/rules/`, and generate `checks/COVERAGE.md` from the rule files | Code |
+| C14b | Switch `checklib.py` and `validate.py` to `standards/rules/`, switch `type-scan.py` and `content-lint.py` to rule parameters, and generate `checks/COVERAGE.md` from the rule files | Code |
 | C15 | Move `scripts/generate-design-json.py` to the rule files and the `DESIGN.md` selection | Code |
 | C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` and `procedures/copy-rules.md` that the website's repository builds from (D7). The website's voice, tone, and writing pages read `copy-rules.md` | Document and schema |
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
-| C18 | Delete `catalog.yaml`, `standards/controls/`, and the parity check | Deletion |
+| C18 | Delete `catalog.yaml` and `standards/controls/` | Deletion |
 
-C1 and C2 come first. A port can start after C3 merges, and the ports run in any order. C13 depends on the category list from C1. C14a can start at any time, and C14b follows the last port.
+C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories from C1, which can differ from the current prefixes. C13 depends on the category list from C1. C14a can start at any time, and C14b follows the last review.
 
 ### Stories
 
@@ -234,7 +237,7 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 
 | Issue | Outcome |
 | --- | --- |
-| [#362](https://github.com/transformteamsg/dx-harness/issues/362): rewrite the catalogue prose | Superseded by the category ports, C4 to C13 |
+| [#362](https://github.com/transformteamsg/dx-harness/issues/362): rewrite the catalogue prose | Superseded by the category reviews, C4 to C13 |
 | [#306](https://github.com/transformteamsg/dx-harness/issues/306), [#129](https://github.com/transformteamsg/dx-harness/issues/129): portfolio content hardcoded in skills | Superseded by principle 1. No team outside the portfolio uses the live skills, so they get no interim fix. |
 | [#308](https://github.com/transformteamsg/dx-harness/pull/308): the pull request for #306 | Closed unmerged. Its `procedures/design-essence.md`, and its rule that `## Essence` has no portfolio default, are input to the `dx-design-language` draft. Its CNT-14 change goes to C7, and its locator check to [#423](https://github.com/transformteamsg/dx-harness/issues/423). |
 | [#285](https://github.com/transformteamsg/dx-harness/issues/285): remove IDN-4 | Folded into C1 and C13 |
