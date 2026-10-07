@@ -190,13 +190,6 @@ Scope: brand assets and voice registers of the Teacher & School products. C1 nam
 | TOK-3 | Radii from the scale, concentric nesting, and one radius for peers | `tok-3.md` | **Duplicated** (CMP-7, CMP-11): CMP-7 grades consistency between peers, and CMP-11 grades a nested child against its container.<br>**Portfolio-specific:** the scale is the shadcn default radius scale.<br>**Wrong:** the detail file anchors the peer radius to "this product's `app/globals.css`", a website file that left this repository in [#405](https://github.com/transformteamsg/dx-harness/pull/405). | It holds three statements across two candidate categories. On-scale radii fit `TOK`. Concentric nesting and one radius for peers fit `CMP`. Does it split? |
 | CMP-9 | Sanitisation of content that one user authors for another | `cmp-9.md` | **Wrong:** `verify` names `checks/cmp-scan.py`, which does not exist. | Render-time sanitisation is a security control, not a design rule, and it fits no candidate category. Does it stay in the design catalogue, or move to code review? |
 
-### Questions about the categories
-
-1. **Is `SLP` still a category?** The candidates move eight `SLP` controls to the domain that they grade. SLP-1, SLP-2, and SLP-3 could also move, to `COL`, `TYP`, and `CMP`, which would retire the prefix.
-2. **How does a generic rule carry portfolio values?** These controls state a generic rule with portfolio values written in: TOK-1, TOK-2, TYP-1, TYP-3, COL-1, COL-2, CMP-1, CNT-13, and CNT-14. Each value can become a parameter that the portfolio selection sets, or the control can split into a generic rule and a portfolio rule.
-3. **Who is the audience in a generic rule?** CNT-2, CNT-7, CNT-9, and CNT-11 state their test in terms of teachers. A generic rule could read the audience from `DESIGN.md` instead.
-4. **Is IDN-1 generic?** Every product with a logo can use only its approved assets. If IDN-1 is generic, it needs a category other than the portfolio one, which bears on whether `IDN` survives.
-
 ## Other observations
 
 These facts bear on C1 and the reviews, but they are not flags on one control.
