@@ -37,7 +37,7 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 
 ## Decisions
 
-- **D1: three ways to adopt a design language (P6-2, P6-3).** P6 can adopt the TFX standard alone, a portfolio product's language (for example Glow), or the team's own design system. The catalogue's rule selection carries this choice. See [Selection](#selection).
+- **D1: three ways to adopt a design language (P6-2, P6-3).** P6 can adopt the TFX standard alone, a preset design language (Teacher Workspace or Glow), or the team's own design system. The catalogue's rule selection carries this choice. See [Selection](#selection).
 - **D2: engineers build through `dx-implement-issue` (P2-1, P2-2).** `dx-implement-issue` builds UI for engineers and calls the design check as one of its steps. `dx-design-execute` stays shaped for designers.
 - **D3: a prototype path (P1-5).** A prototype runs on mock data. It skips the formal plan approval and the design review, keeps the L0 floor, and can be promoted to a full build.
 - **D4: the catalogue becomes a rule set modelled on ruff.** See [Catalogue](#catalogue-a-rule-set-modelled-on-ruff).
@@ -45,6 +45,11 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 - **D6: agents read the rule files in the plugin.** Skills, the reviewer agent, and the checks read `standards/rules/`, not the published website. `DESIGN.md` selects the rules for a product. This supersedes [#407](https://github.com/transformteamsg/dx-harness/issues/407).
 - **D7: the website is an outside client.** The website left this repository in [#405](https://github.com/transformteamsg/dx-harness/pull/405) and reads the rule files from its own repository ([#389](https://github.com/transformteamsg/dx-harness/issues/389)). The catalogue work publishes a stable rule format; the site work happens in that repository.
 - **D8: git help moves to a shared layer.** `dx-design-git` becomes `dx-git-ops` in `skills/shared/` ([#273](https://github.com/transformteamsg/dx-harness/issues/273)), because anyone who commits uses it.
+- **D9: a design language is a preset, not a category.** Every rule is generic. A rule that needs a value from a design language, such as the audience, a primary colour, or an asset library, reads it as a parameter. A preset in `standards/presets/` sets those values for one design language:
+  - Teacher Workspace holds the design language for teacher-facing products.
+  - Glow is a standalone design language.
+  - A later design language, such as one for student-facing products, is a new preset, not new rules.
+- **D10: `SLP` is not a category.** Each anti-slop rule moves to the category of the domain that it grades, for example SLP-1 to `COL`. The `redirects` map resolves every `SLP` code.
 
 ## Catalogue: a rule set modelled on ruff
 
@@ -57,28 +62,31 @@ The rebuild models the catalogue on ruff: clear rule categories, one documented 
 | Ruff | Catalogue |
 | --- | --- |
 | A code and a slug, for example `F401` `unused-import` | A code and a slug, for example `A11Y-1` `text-contrast` |
-| A category prefix for each source linter | A category prefix for each domain, plus an opt-in category for Teacher & School rules |
+| A category prefix for each source linter | A category prefix for each domain. No category holds the rules of one design language (D9). |
 | One documentation page per rule, with fixed sections | One file per rule. Metadata sits in the frontmatter. The body has fixed sections: what the rule checks, why it matters, a failing example, a passing example, and how it is checked. |
 | `select`, `ignore`, and `extend` in the project configuration | A rule selection in `DESIGN.md`. It replaces the `products:` and `audiences:` fields. |
+| `extend` of a shared configuration file | A preset in `standards/presets/`: the selection and the parameter values of one design language (D9) |
 | `# noqa` | `dx-waive`, unchanged |
 | `per-file-ignores` | Standing overrides in `DESIGN.md` |
 | Preview, stable, deprecated, and removed rules | A `status` field on each rule. It replaces the history comments. |
 | Redirects from an old code to a new one | A `redirects` map. Old waivers in product repos still resolve. |
-| Rule options in the project configuration, such as the docstring convention | A `parameters` block in the rule's frontmatter, such as the allowed type scale or a list of banned words. A check reads the parameters and never parses the prose. |
+| Rule options in the project configuration, such as the docstring convention | A `parameters` block in the rule's frontmatter, such as the allowed type scale or a list of banned words. A preset or `DESIGN.md` sets the values. A check reads the resolved values and never parses the prose. |
 
 ### Selection
 
 A product's `DESIGN.md` selects the rules that apply to it. The selection supports the three choices in D1:
 
 - **The TFX standard alone:** select the generic categories.
-- **A portfolio product's language:** extend that product's selection.
-- **The team's own design system:** select the generic categories and record the team's own values in `DESIGN.md`.
+- **A preset design language:** extend the Teacher Workspace preset or the Glow preset. A product can change a value of its preset in `DESIGN.md`, such as its primary colour.
+- **The team's own design system:** select the generic categories. `dx-design-language` records the team's value for each parameter that the selected rules need.
+
+A parameter value resolves in this order: the rule's default, then the preset, then `DESIGN.md`.
 
 A critique dimension, such as polish or copy, is a named selection of categories and rules. It replaces the hand-kept lists of control IDs in the pass skills.
 
 ### Location
 
-The rule set stays at the plugin root in `standards/`. The skills are one client among several:
+The rule set and the presets stay at the plugin root in `standards/`. The skills are one client among several:
 
 - The website, which reads the rule files from its own repository (D7).
 - The check scripts in `plugins/dx-harness/checks/`.
@@ -94,7 +102,7 @@ The check scripts in `plugins/dx-harness/checks/` depend on the catalogue in thr
 | --- | --- | --- | --- |
 | Independent | `skill-locators.py`, `skill-audit.py` | Markdown paths and skill folders | Unaffected |
 | IDs and tiers | `a11y-eslint.py`, `audit-record.py`, `rendered-check.py`, `structure-scan.py`, `reaudit-scope.py`, `waiver-reconcile.py` | Which rules exist, their tiers, and their bodies | Read through one `checklib.py` module (C14a), which C14b switches to `standards/rules/` |
-| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Keep reading `catalog.yaml` until C14b switches them to rule parameters |
+| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Keep reading `catalog.yaml` until C14b switches them to the resolved parameter values |
 
 `validate.py` is rebuilt by the scaffold (C3) and loses its `dx-sync` parity checks at the skills cutover.
 
@@ -109,7 +117,7 @@ The 13 design skills become seven, and git help moves to a shared skill (D8). Ea
 | `dx-design` | P1-11, P2-3, P3-1, P6-4, unclear asks | Front door and rule questions only. The improve-mode fan-out moves to `dx-design-critique`. Brainstorming moves to the diverge step of `dx-design-execute`. |
 | `dx-design-execute` | P1-3, P1-4, P1-5, P1-8, P1-10, A1-2 | Three modes: prototype (D3), build, and frontend hand-off on mock data ([#41](https://github.com/transformteamsg/dx-harness/issues/41)). Offers rendered directions for visual changes ([#134](https://github.com/transformteamsg/dx-harness/issues/134)). Drops the restated controls, the stack, and the flow section. |
 | `dx-design-critique` | P1-6, P1-7, P2-2, P3-3, A1-1 | Absorbs the five passes as a dimension scope: all, copy, flow, pattern, motion, or polish. A whole-page run produces the report. A single-dimension run or a check-only run returns findings. `dx-implement-issue` calls the check-only mode (D2). |
-| `dx-design-language` | P1-2, P3-1, P6-2, P6-3 | Writes the rule selection into `DESIGN.md` (D1). Owns standing overrides. |
+| `dx-design-language` | P1-2, P3-1, P6-2, P6-3 | Writes the preset, the rule selection, and the parameter values into `DESIGN.md` (D1, D9). Asks only for the parameters that have no value. Owns standing overrides. |
 | `dx-design-setup` | P1-1, P6-1 | Supports repos outside the portfolio. Commit signing stays until a harness-wide setup skill exists. |
 | `dx-git-ops`, in `skills/shared/` | P1-9 | Replaces `dx-design-git` (D8). Keeps plain explanations, the confirmation gate, and the branch guard. Drops the designer framing and the memory file in `~/.claude`. Hands pull request creation to `dx-create-pr`. |
 | `dx-design-feedback` | P1-12, P6-5 | No change. |
@@ -182,32 +190,32 @@ One epic, **Design revamp**, links to this spec. Each sub-issue is one pull requ
 
 The new rules are written from scratch. Until the clients migrate, `catalog.yaml` stays the file that the check scripts and the live skills read, and it takes bug fixes only.
 
-A review issue covers one group of the current controls. For each control, it records one disposition: keep, change, merge, split, or drop. A kept, changed, merged, or split control maps to its new codes in `redirects`. A dropped control gets the `removed` status and a one-line reason. The review of the catalogue is complete when every current control ID resolves.
+A review issue covers one group of the current controls. For each control, it records one disposition: keep, change, merge, split, or drop. A kept, changed, merged, or split control maps to its new codes in `redirects`. A dropped control gets the `removed` status and a one-line reason. A review that turns a value of the current portfolio into a parameter moves that value into the Teacher Workspace preset. The review of the catalogue is complete when every current control ID resolves.
 
 | ID | Sub-issue | Scope |
 | --- | --- | --- |
 | C0 | Survey the current catalogue ([#427](https://github.com/transformteamsg/dx-harness/issues/427)): candidate categories, and the controls that look wrong, duplicated, or portfolio-specific. Read-only. The disposition of each control stays in its review | Document |
-| C1 | Decision record: the rule-file schema, the category list (with the opt-in portfolio category), the selection grammar in `DESIGN.md`, `status`, `redirects`, `parameters`, the code format, and which side owns the link between a rule and its check | Document |
+| C1 | Decision record: the rule-file schema, the category list, the selection grammar in `DESIGN.md`, `status`, `redirects`, `parameters`, the preset format, how `DESIGN.md` sets a parameter value, the code format, and which side owns the link between a rule and its check | Document |
 | C2 | Rule-writing standard: the fixed sections of a rule file and how to write each one. A value that a check reads is a parameter in the frontmatter, never prose | Document |
-| C3 | Scaffold: `standards/rules/`, the rule-file JSON schema, a template, and a check that every current control ID resolves | Code, no rules |
+| C3 | Scaffold: `standards/rules/`, `standards/presets/`, the JSON schemas for a rule file and a preset, a template, and a check that every current control ID resolves | Code, no rules |
 | C4 | Review the accessibility category, `A11Y` | 11 rules |
 | C5 | Review the components and patterns category, `CMP` | 11 rules |
 | C6 | Review the content category, `CNT-1` to `CNT-7`. Moves the word lists of CNT-5 and CNT-6 to parameters | 7 rules |
 | C7 | Review the content category, `CNT-8` to `CNT-14`. Moves the CNT-13 word list to parameters. Carries the CNT-14 grading change from [#308](https://github.com/transformteamsg/dx-harness/pull/308) | 7 rules |
 | C8 | Review the layout category, `LAY` | 7 rules |
-| C9 | Review the anti-slop category, `SLP`. Moves the SLP-9 word lists to parameters | 11 rules |
+| C9 | Review the anti-slop controls, `SLP`. Moves each rule to the category of its domain (D10), and the SLP-9 word lists to parameters | 11 rules |
 | C10 | Review the typography category, `TYP`. Moves the type scale and thresholds to parameters. Settles the line-height band of TYP-2, where the title and `type-scan.py` disagree ([#203](https://github.com/transformteamsg/dx-harness/issues/203)) | 6 rules |
 | C11 | Review the tokens and colour categories, `TOK` and `COL`. Settles where `token-audit.py` and `contrast.py` disagree with COL-2 ([#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295)) | 5 rules |
 | C12 | Review the motion category, `MOT` | 3 rules |
-| C13 | Review the portfolio category, from `IDN` and the rules scoped by `products:`. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 or more rules |
+| C13 | Review the identity controls, `IDN`. IDN-1 and IDN-2 become generic rules with parameters for the asset library and the icon family. The registers of IDN-3 become a parameter of CNT-14. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 rules |
 | C14a | Read the catalogue through one `checklib.py` module ([#425](https://github.com/transformteamsg/dx-harness/issues/425)). Can start before C1 | Code |
-| C14b | Switch `checklib.py` and `validate.py` to `standards/rules/`, switch `type-scan.py` and `content-lint.py` to rule parameters, and generate `checks/COVERAGE.md` from the rule files | Code |
+| C14b | Switch `checklib.py` and `validate.py` to `standards/rules/` and `standards/presets/`, resolve parameter values in `checklib.py`, switch `type-scan.py` and `content-lint.py` to the resolved values, and generate `checks/COVERAGE.md` from the rule files | Code |
 | C15 | Move `scripts/generate-design-json.py` to the rule files and the `DESIGN.md` selection | Code |
 | C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` and `procedures/copy-rules.md` that the website's repository builds from (D7). The website's voice, tone, and writing pages read `copy-rules.md` | Document and schema |
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml` and `standards/controls/` | Deletion |
 
-C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories from C1, which can differ from the current prefixes. C13 depends on the category list from C1. C14a can start at any time, and C14b follows the last review.
+C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories from C1, which can differ from the current prefixes. C9 and C13 depend on the category list from C1. C14a can start at any time, and C14b follows the last review.
 
 ### Stories
 
@@ -253,7 +261,8 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 ## Open decisions
 
 - **Rule code format.** Keep the current codes, such as `A11Y-1`, or renumber in ruff's style, such as `A11Y001`, with redirects. C1 decides.
-- **Category list.** Whether `IDN` survives as a category, and the name of the portfolio category. C1 decides.
+- **Category list.** `SLP` and `IDN` retire (D9, D10). C1 decides the rest of the list.
+- **A value that is not set.** How a rule behaves when a parameter that it needs has no value, and whether settings that several rules read, such as the audience and the stack, are set once for the product. C1 decides.
 - **Rule-to-check link.** Whether a rule file names the script that checks it, as controls do today, or a check declares the rules it implements, as in ruff. The owning side generates `checks/COVERAGE.md`. C1 decides.
 - **Rule tiers.** Whether L0, L1, and L2 stay as they are, or map to a ruff-style severity. C1 decides.
 - **Harness-wide skills.** Whether `dx-design-feedback` and commit signing in `dx-design-setup` also move to `skills/shared/`, as git help does (D8). Out of scope for this spec.
