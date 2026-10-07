@@ -31,8 +31,8 @@ The **Detail file** column says **None** for the 15 controls with no file in `st
 | [`CNT` Content](#cnt-content) | The words on the surface: errors, names, voice, clarity, terms, case, and spelling. | 15 |
 | [`LAY` Layout](#lay-layout) | Grid, page template, density, alignment, focal hierarchy, and spacing rhythm. | 6 |
 | [`MOT` Motion](#mot-motion) | Duration, easing, motion tokens, and meaning without motion. | 4 |
-| [`SLP` Anti-slop](#slp-anti-slop) | Visual defaults that mark a surface as generated and have no other domain home. | 3 |
-| [Portfolio, opt-in](#portfolio-opt-in) | Brand assets and voice registers of the Teacher & School products. C1 names the category. | 4 |
+| [`SLP` Anti-slop](#slp-anti-slop) | Visual defaults that mark a surface as generated and have no other domain home. [D10](README.md#decisions) retires this category. | 3 |
+| [Portfolio, opt-in](#portfolio-opt-in) | Brand assets and voice registers of the Teacher & School products. [D9](README.md#decisions) replaces this category with presets. | 4 |
 | [Open questions](#open-questions-for-c1) | Controls that are not placed. | 2 |
 
 The candidates keep the current prefixes where the domain is unchanged. Three kinds of move change the current grouping:
@@ -164,6 +164,8 @@ Scope: duration, easing, motion tokens, and meaning without motion.
 
 Scope: visual defaults that mark a surface as generated and have no other domain home.
 
+[D10](README.md#decisions) retires this category: each rule moves to the category of the domain that it grades.
+
 | Control | Checks | Detail file | Flags |
 | --- | --- | --- | --- |
 | SLP-1 | No purple gradients, cyan on dark, or glow accents | `slp-1.md` | **Wrong:** the detail file calls `--glow` a declared product colour in this repository, and no file outside Markdown declares it.<br>**Portfolio-specific:** it exempts the Glow primary colour by name. |
@@ -172,7 +174,9 @@ Scope: visual defaults that mark a surface as generated and have no other domain
 
 ### Portfolio, opt-in
 
-Scope: brand assets and voice registers of the Teacher & School products. C1 names the category.
+Scope: brand assets and voice registers of the Teacher & School products.
+
+[D9](README.md#decisions) replaces this category with presets: IDN-1 and IDN-2 become generic rules with parameters, and the Teacher Workspace preset sets the values.
 
 | Control | Checks | Detail file | Flags |
 | --- | --- | --- | --- |
