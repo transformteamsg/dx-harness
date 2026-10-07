@@ -9,7 +9,7 @@ The survey flags controls. It does not decide what happens to them. The category
 
 ## How to read this survey
 
-Each control has one row. The rows are grouped by candidate category, and each category states its scope in one line. A control that fits no candidate category, or that seems to need a split across categories, is under [Open questions for C1](#open-questions-for-c1) instead.
+Each control has one row. The rows are grouped by candidate category, and each category states its scope in one line.
 
 A row carries these flags where they apply, each with a one-line reason:
 
@@ -24,16 +24,15 @@ The **Detail file** column says **None** for the 15 controls with no file in `st
 | Category | Scope | Controls |
 | --- | --- | --: |
 | [`A11Y` Accessibility](#a11y-accessibility) | The surface meets WCAG 2.2 AA. | 12 |
-| [`TOK` Tokens](#tok-tokens) | Colour and spacing values in code come from the declared token set. | 2 |
+| [`TOK` Tokens](#tok-tokens) | Colour, spacing, and radius values in code come from the declared token set. | 3 |
 | [`COL` Colour](#col-colour) | Colour roles, such as the primary action and functional states, use the right colour. | 2 |
 | [`TYP` Typography](#typ-typography) | Typefaces, sizes, the type scale, case, figures, and the prose measure. | 8 |
-| [`CMP` Components and patterns](#cmp-components-and-patterns) | Component reuse, action weight, states, flows, cards, and the choice between a page and a modal. | 14 |
+| [`CMP` Components and patterns](#cmp-components-and-patterns) | Component reuse, action weight, states, flows, cards, and the choice between a page and a modal. | 15 |
 | [`CNT` Content](#cnt-content) | The words on the surface: errors, names, voice, clarity, terms, case, and spelling. | 15 |
 | [`LAY` Layout](#lay-layout) | Grid, page template, density, alignment, focal hierarchy, and spacing rhythm. | 6 |
 | [`MOT` Motion](#mot-motion) | Duration, easing, motion tokens, and meaning without motion. | 4 |
 | [`SLP` Anti-slop](#slp-anti-slop) | Visual defaults that mark a surface as generated and have no other domain home. [D10](README.md#decisions) retires this category. | 3 |
 | [Portfolio, opt-in](#portfolio-opt-in) | Brand assets and voice registers of the Teacher & School products. [D9](README.md#decisions) replaces this category with presets. | 4 |
-| [Open questions](#open-questions-for-c1) | Controls that are not placed. | 2 |
 
 The candidates keep the current prefixes where the domain is unchanged. Three kinds of move change the current grouping:
 
@@ -62,12 +61,15 @@ Scope: the surface meets WCAG 2.2 AA.
 
 ### `TOK` Tokens
 
-Scope: colour and spacing values in code come from the declared token set.
+Scope: colour, spacing, and radius values in code come from the declared token set.
 
 | Control | Checks | Detail file | Flags |
 | --- | --- | --- | --- |
 | TOK-1 | No raw colour values | `tok-1.md` | **Portfolio-specific:** the allowed values are shadcn semantic tokens and Radix scales, the portfolio stack. |
 | TOK-2 | Spacing from the scale | None | **Portfolio-specific:** the allowed scale is the shadcn default. |
+| TOK-3 | Radii from the scale, concentric nesting, and one radius for peers | `tok-3.md` | **Duplicated** (CMP-7, CMP-11): CMP-7 grades consistency between peers, and CMP-11 grades a nested child against its container.<br>**Portfolio-specific:** the scale is the shadcn default radius scale.<br>**Wrong:** the detail file anchors the peer radius to "this product's `app/globals.css`", a website file that left this repository in [#405](https://github.com/transformteamsg/dx-harness/pull/405). |
+
+TOK-3 splits in C11: the on-scale statement stays in `TOK`, concentric nesting merges into CMP-11, and one radius for peers merges into CMP-7.
 
 ### `COL` Colour
 
@@ -107,12 +109,15 @@ Scope: component reuse, action weight, states, flows, cards, and the choice betw
 | CMP-6 | The data table pattern | `cmp-6.md` | **Duplicated** (A11Y-7, TYP-5, CMP-3): it bundles table semantics, tabular figures, and async states that those controls already grade. |
 | CMP-7 | Consistency with component defaults and sibling pages | `cmp-7.md` | **Duplicated** (TOK-3): TOK-3 also requires peer containers to share one radius. |
 | CMP-8 | Exits and draft safety in multi-step tasks | `cmp-8.md` | None |
+| CMP-9 | Sanitisation of content that one user authors for another | `cmp-9.md` | **Wrong:** `verify` names `checks/cmp-scan.py`, which does not exist. |
 | CMP-10 | Validation errors clear on correction | `cmp-10.md` | None |
 | CMP-11 | Nested child traces its container's edge | `cmp-11.md` | **Duplicated** (TOK-3): TOK-3's concentric-nesting clause grades a nested child's radius against its container. |
 | SLP-4 | No nested cards | None | **Duplicated** (SLP-11): a nested card is static content in card chrome, which SLP-11 already fails. |
 | SLP-5 | No feature-card template or identical card grids | `slp-5.md` | **Wrong:** `verify` describes a layout scan, but the check is `judgment` and no scan exists. |
 | SLP-10 | A page, not a modal, for complex tasks | `slp-10.md` | None |
 | SLP-11 | Cards only for interactive units | `slp-11.md` | **Duplicated** (SLP-4): SLP-4's nested cards are a case of static content in card chrome. |
+
+CMP-9 leaves the design catalogue in C5: the Security angle of `dx-code-review` covers it. Its clause on a prototype that defers sanitisation moves to [D3](README.md#decisions).
 
 ### `CNT` Content
 
@@ -184,15 +189,6 @@ Scope: brand assets and voice registers of the Teacher & School products.
 | IDN-2 | Icons from the approved product-icon family | `idn-2.md` | **Portfolio-specific:** the icon family and the Icon Generator belong to the portfolio's product-icon guideline. |
 | IDN-3 | Each product's tone register | `idn-3.md` | **Portfolio-specific:** the detail file holds a register table for each portfolio product.<br>**Duplicated** (CNT-14): CNT-14 grades the same copy against the shared voice. |
 | IDN-4 | Restraint on CaseSync case data | `idn-4.md` | **Portfolio-specific:** it is scoped by `products: [casesync]`. [#285](https://github.com/transformteamsg/dx-harness/issues/285) is open to remove it. |
-
-## Open questions for C1
-
-### Controls that are not placed
-
-| Control | Checks | Detail file | Flags | Question |
-| --- | --- | --- | --- | --- |
-| TOK-3 | Radii from the scale, concentric nesting, and one radius for peers | `tok-3.md` | **Duplicated** (CMP-7, CMP-11): CMP-7 grades consistency between peers, and CMP-11 grades a nested child against its container.<br>**Portfolio-specific:** the scale is the shadcn default radius scale.<br>**Wrong:** the detail file anchors the peer radius to "this product's `app/globals.css`", a website file that left this repository in [#405](https://github.com/transformteamsg/dx-harness/pull/405). | It holds three statements across two candidate categories. On-scale radii fit `TOK`. Concentric nesting and one radius for peers fit `CMP`. Does it split? |
-| CMP-9 | Sanitisation of content that one user authors for another | `cmp-9.md` | **Wrong:** `verify` names `checks/cmp-scan.py`, which does not exist. | Render-time sanitisation is a security control, not a design rule, and it fits no candidate category. Does it stay in the design catalogue, or move to code review? |
 
 ## Other observations
 
