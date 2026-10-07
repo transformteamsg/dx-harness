@@ -39,7 +39,7 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 
 - **D1: three ways to adopt a design language (P6-2, P6-3).** P6 can adopt the TFX standard alone, a preset design language (Teacher Workspace or Glow), or the team's own design system. The catalogue's rule selection carries this choice. See [Selection](#selection).
 - **D2: engineers build through `dx-implement-issue` (P2-1, P2-2).** `dx-implement-issue` builds UI for engineers and calls the design check as one of its steps. `dx-design-execute` stays shaped for designers.
-- **D3: a prototype path (P1-5).** A prototype runs on mock data. It skips the formal plan approval and the design review, keeps the L0 floor, and can be promoted to a full build. A prototype that renders HTML that one user writes for another records that it defers sanitisation.
+- **D3: a prototype path (P1-5).** A prototype runs on mock data. It skips the formal plan approval and the design review, keeps the L0 floor, and can be promoted to a full build. A prototype that defers the sanitisation of rendered HTML records the deferral, or CMP-9 fails.
 - **D4: the catalogue becomes a rule set modelled on ruff.** See [Catalogue](#catalogue-a-rule-set-modelled-on-ruff).
 - **D5: build in parallel, then cut over.** The new catalogue builds in `standards/rules/`, and the new skills build in `skills/design-revamp/`. See [Build strategy](#build-strategy).
 - **D6: agents read the rule files in the plugin.** Skills, the reviewer agent, and the checks read `standards/rules/`, not the published website. `DESIGN.md` selects the rules for a product. This supersedes [#407](https://github.com/transformteamsg/dx-harness/issues/407).
@@ -203,7 +203,7 @@ A review issue covers one group of the current controls. For each control, it re
 | C2 | Rule-writing standard: the fixed sections of a rule file and how to write each one. A value that a check reads is a parameter in the frontmatter, never prose | Document |
 | C3 | Scaffold: `standards/rules/`, `standards/presets/`, the JSON schemas for a rule file and a preset, a template, and a check that every current control ID resolves | Code, no rules |
 | C4 | Review the accessibility category, `A11Y` | 11 rules |
-| C5 | Review the components and patterns category, `CMP`. Merges the concentric-nesting statement of TOK-3 into CMP-11 and its peer-radius statement into CMP-7. Removes CMP-9, which the Security angle of `dx-code-review` covers | 11 rules |
+| C5 | Review the components and patterns category, `CMP`. Merges the concentric-nesting statement of TOK-3 into CMP-11 and its peer-radius statement into CMP-7. Makes CMP-9 a deterministic L0 rule that fails every `dangerouslySetInnerHTML` or `v-html` render with no sanitiser on the render path, and builds its check or files an issue for it | 11 rules |
 | C6 | Review the content category, `CNT-1` to `CNT-7`. Moves the word lists of CNT-5 and CNT-6 to parameters | 7 rules |
 | C7 | Review the content category, `CNT-8` to `CNT-14`. Moves the CNT-13 word list to parameters. Carries the CNT-14 grading change from [#308](https://github.com/transformteamsg/dx-harness/pull/308) | 7 rules |
 | C8 | Review the layout category, `LAY` | 7 rules |

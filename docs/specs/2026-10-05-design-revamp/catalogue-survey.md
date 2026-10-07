@@ -117,7 +117,7 @@ Scope: component reuse, action weight, states, flows, cards, and the choice betw
 | SLP-10 | A page, not a modal, for complex tasks | `slp-10.md` | None |
 | SLP-11 | Cards only for interactive units | `slp-11.md` | **Duplicated** (SLP-4): SLP-4's nested cards are a case of static content in card chrome. |
 
-CMP-9 leaves the design catalogue in C5: the Security angle of `dx-code-review` covers it. Its clause on a prototype that defers sanitisation moves to [D3](README.md#decisions).
+CMP-9 stays in `CMP` and becomes a deterministic L0 rule in C5. Its check fails every `dangerouslySetInnerHTML` or `v-html` render that has no sanitiser on the render path, and content that the same user wrote takes a waiver. Its clause on a prototype that defers sanitisation moves to [D3](README.md#decisions).
 
 ### `CNT` Content
 
