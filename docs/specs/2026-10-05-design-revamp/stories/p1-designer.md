@@ -171,3 +171,16 @@ As a designer who builds in code, I want to start a new repo for prototypes with
 - Given a new repo for prototypes, when I start my first prototype in it, then the run needs no further setup.
 
 **Today:** None. **Gap:** No skill creates a repo. `dx-design-setup` sets up the machine only.
+
+## P1-14: Keep my prototypes in step with the product
+
+As a designer who builds in code, I want my prototypes to use the product's current components, so that an engineer does not rebuild them and they do not drift from the product.
+
+**Acceptance examples**
+
+- Given a feature for a product that has a main repo, when I ask to prototype it, then the harness builds it in the main repo on a new branch, not in a sandbox.
+- Given a new idea with no product, when I prototype it, then the harness builds it in the sandbox.
+- Given a sandbox that imports the product's components, when the main repo changes a component, then my next prototype uses the changed component.
+- Given a sandbox with its own copy of a component that the main repo also has, when I start a prototype, then the harness tells me that the two differ and offers to use the main repo's version.
+
+**Today:** None. **Gap:** The drift check in `dx-design-language` compares code with `DESIGN.md` in one repo only. No skill compares a sandbox with the main repo.
