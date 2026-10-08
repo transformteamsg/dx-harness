@@ -154,3 +154,15 @@ As a designer who builds in code, I want to report a problem with the harness du
 - Given feedback about my product's design, not about the harness, when I give it, then the harness does not file it as harness feedback.
 
 **Today:** `dx-design-feedback`. **Gap:** None.
+
+## P1-13: Start a new repo for prototypes
+
+As a designer who builds in code, I want to start a new repo for prototypes with a starter app and a design language set up, so that I prototype without an engineer.
+
+**Acceptance examples**
+
+- Given no repo, when I ask for a new repo for prototypes, then the harness creates it on GitHub with a starter app that runs, after I confirm the name and the owner.
+- Given a new repo for prototypes, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
+- Given a new repo for prototypes, when I start my first prototype in it, then the run needs no further setup.
+
+**Today:** None. **Gap:** No skill creates a repo. `dx-design-setup` sets up the machine only.
