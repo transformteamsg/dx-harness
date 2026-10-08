@@ -59,20 +59,15 @@ As a designer who builds in code, I want to build a working frontend on mock dat
 
 ## P1-5: Prototype quickly
 
-As a designer who builds in code, I want a quick prototype without the full loop, so that I can test an idea before I commit to it.
+As a designer who builds in code, I want a quick prototype outside an existing codebase, without the full loop, so that I can test an idea before I commit to it.
 
 **Acceptance examples**
 
-- Given a product repo, when I ask for a quick prototype, then the harness builds it on a new branch on mock data, and the shared branch does not change.
-- Given a prototype in a product repo, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
+- Given a prototype from scratch or in a repo for prototypes, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
 - Given a repo for prototypes of one app, when I start a second prototype for that app, then the harness builds it beside the first and does not change the first.
 - Given a repo for prototypes, when I start a prototype of a completely new app, then the harness offers to create a separate repo for it and does not build it in the existing repo.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
-- Given a prototype from scratch or in a repo for prototypes, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
-- Given a prototype on top of an existing app, when the hifi is built, then it uses the app's own components on a new branch.
-- Given a prototype on top of an existing codebase, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
-- Given a prototype that is not on top of an existing codebase, when it is built, then no coding standards check runs.
-- Given a finished prototype on top of an existing app, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
+- Given a quick prototype, when it is built, then no coding standards check runs.
 - Given a plain HTML prototype, when I make it a full build, then the harness rebuilds it in the product's stack from the prototype.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a repo for prototypes from a product repo.
@@ -187,3 +182,18 @@ As a designer who builds in code, I want my prototypes to use the product's curr
 - Given a sandbox with its own copy of a component that the main repo also has, when I start a prototype, then the harness tells me that the two differ and offers to use the main repo's version.
 
 **Today:** None. **Gap:** The drift check in `dx-design-language` compares code with `DESIGN.md` in one repo only. No skill compares a sandbox with the main repo.
+
+## P1-15: Prototype in an existing codebase
+
+As a designer who builds in code, I want to prototype a feature on top of my product's existing codebase without the full loop, so that I test it in the real app and do not break the codebase.
+
+**Acceptance examples**
+
+- Given a product repo, when I ask for a prototype, then the harness builds it on a new branch on mock data, and the shared branch does not change.
+- Given a prototype in a product repo, when the hifi is built, then it uses the app's own components.
+- Given a prototype in a product repo, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
+- Given a prototype in a product repo, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
+- Given a prototype in a product repo, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
+- Given a finished prototype in a product repo, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
+
+**Today:** None. **Gap:** `dx-design-execute` runs every gate and has no prototype path for a product repo.
