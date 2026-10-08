@@ -20,7 +20,10 @@ P5, the harness maintainer, receives feedback only, so it has no file and no sto
 The evidence for these personas:
 
 - The owner roles in the `docs/ROADMAP.md` flowchart.
-- The three designer modes (prototype, revamp, and frontend hand-off) in `content/getting-started/plan.mdx`.
+- The three modes a designer works in:
+  - **Prototype:** the designer builds quickly with mock data to test an idea or show it to the team.
+  - **Revamp:** the designer improves existing UI in small steps and keeps how it works.
+  - **Frontend hand-off:** the designer builds a clean frontend and writes a spec, and an engineer connects it to the backend.
 - `plugins/dx-harness/docs/ONBOARDING.md` and `CONTEXT.md`.
 - The unattended-run rules in the current skills.
 - Harness-feedback issues [#41](https://github.com/transformteamsg/dx-harness/issues/41), [#134](https://github.com/transformteamsg/dx-harness/issues/134), and [#164](https://github.com/transformteamsg/dx-harness/issues/164).
