@@ -36,12 +36,14 @@ As a designer who builds in code, I want to see two or three rendered directions
 
 **Acceptance examples**
 
+- Given a new feature, when the run starts, then I see three to five greyscale wireframes before any hifi direction.
+- Given a chosen wireframe, when the hifi directions render, then each one keeps the structure of that wireframe.
 - Given a request for a new page, when the run offers directions, then I see two or three of them rendered before the harness builds one.
 - Given a visual change to an existing page, such as a new header colour, when the run starts, then I also see two or three rendered directions.
 - Given Claude Desktop, when the directions are ready, then I see each one in the app's preview, and I do not open a file path to see it.
 - Given three rendered directions, when I choose one, then the harness builds that direction only.
 
-**Today:** The diverge step of `dx-design-execute`. **Gap:** The diverge step skips visual changes ([#134](https://github.com/transformteamsg/dx-harness/issues/134)).
+**Today:** The diverge step of `dx-design-execute`. **Gap:** The diverge step skips visual changes ([#134](https://github.com/transformteamsg/dx-harness/issues/134)). The diverge step has no wireframe round.
 
 ## P1-4: Build a frontend on mock data and hand off the backend
 
@@ -65,7 +67,10 @@ As a designer who builds in code, I want a quick prototype without the full loop
 - Given a prototype in a product repo, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
 - Given a repo for prototypes that holds one prototype, when I start a second one, then the harness builds it beside the first and does not change the first.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
-- Given a finished prototype, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
+- Given a prototype from scratch or in a repo for prototypes, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
+- Given a prototype on top of an existing app, when the hifi is built, then it uses the app's own components on a new branch.
+- Given a finished prototype on top of an existing app, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
+- Given a plain HTML prototype, when I make it a full build, then the harness rebuilds it in the product's stack from the prototype.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a repo for prototypes from a product repo.
 
