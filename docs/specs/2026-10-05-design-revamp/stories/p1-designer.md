@@ -65,7 +65,8 @@ As a designer who builds in code, I want a quick prototype without the full loop
 
 - Given a product repo, when I ask for a quick prototype, then the harness builds it on a new branch on mock data, and the shared branch does not change.
 - Given a prototype in a product repo, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
-- Given a repo for prototypes that holds one prototype, when I start a second one, then the harness builds it beside the first and does not change the first.
+- Given a repo for prototypes of one app, when I start a second prototype for that app, then the harness builds it beside the first and does not change the first.
+- Given a repo for prototypes, when I start a prototype of a completely new app, then the harness offers to create a separate repo for it and does not build it in the existing repo.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a prototype from scratch or in a repo for prototypes, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
 - Given a prototype on top of an existing app, when the hifi is built, then it uses the app's own components on a new branch.
@@ -179,7 +180,7 @@ As a designer who builds in code, I want my prototypes to use the product's curr
 **Acceptance examples**
 
 - Given a feature for a product that has a main repo, when I ask to prototype it, then the harness builds it in the main repo on a new branch, not in a sandbox.
-- Given a new idea with no product, when I prototype it, then the harness builds it in the sandbox.
+- Given an idea for the product that is not ready for the main repo, when I prototype it, then the harness builds it in the sandbox.
 - Given a sandbox that imports the product's components, when the main repo changes a component, then my next prototype uses the changed component.
 - Given a sandbox with its own copy of a component that the main repo also has, when I start a prototype, then the harness tells me that the two differ and offers to use the main repo's version.
 
