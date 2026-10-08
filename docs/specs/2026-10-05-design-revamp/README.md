@@ -100,17 +100,22 @@ The rule set and the presets stay at the plugin root in `standards/`. The skills
 
 ### Checks
 
-The check scripts in `plugins/dx-harness/checks/` depend on the catalogue in three ways:
+The check scripts in `plugins/dx-harness/checks/` are of two kinds:
+
+- **Rule checks** implement how a rule is checked: `token-audit.py`, `contrast.py`, `a11y-eslint.py`, `a11y-static.py`, `type-scan.py`, `content-lint.py`, `structure-scan.py`, `rendered-check.py`, and `component-manifest.py`. `detect.py` runs them as one entry point. They stay, and C14 moves them to the rule files.
+- **Process checks** validate the records of a run: `audit-record.py`, `reaudit-scope.py`, and the half of `waiver-reconcile.py` that reads decision records. They check the format of the Shape C decision record, which the run contract replaces. The skills scaffold decides whether they stay. See [Open decisions](#open-decisions).
+
+The scripts depend on the catalogue in three ways:
 
 | Group | Scripts | What they read | During the rebuild |
 | --- | --- | --- | --- |
 | Independent | `skill-locators.py`, `skill-audit.py` | Markdown paths and skill folders | Unaffected |
-| IDs and tiers | `a11y-eslint.py`, `audit-record.py`, `rendered-check.py`, `structure-scan.py`, `reaudit-scope.py`, `waiver-reconcile.py` | Which rules exist, their tiers, and their bodies | Read through one `checklib.py` module (C14a), which C14b switches to `standards/rules/` |
-| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Keep reading `catalog.yaml` until C14b switches them to the resolved parameter values |
+| IDs and tiers | `a11y-eslint.py`, `audit-record.py`, `rendered-check.py`, and `structure-scan.py` through `checklib.catalog_tiers()`. `waiver-reconcile.py` and `reaudit-scope.py` through their own readers | Which rules exist, their tiers, and the category of each prefix | C14 switches `checklib.py` to `standards/rules/` and moves `waiver-reconcile.py` to it. `reaudit-scope.py` follows the decision on process checks. |
+| Parameters | `type-scan.py`, `content-lint.py` | The type scale in TYP-3's `verify` text, thresholds in rule titles, and the word lists in `slp-9.md`, `cnt-5.md`, `cnt-6.md`, and `cnt-13.md` | Keep reading `catalog.yaml` until C14 switches them to the resolved parameter values |
 
 `validate.py` is rebuilt by the scaffold (C3) and loses its `dx-sync` parity checks at the skills cutover.
 
-Until C14b, how a check reads the catalogue is frozen. A check's detection logic still takes bug fixes.
+Until C14, how a check reads the catalogue is frozen. A check's detection logic still takes bug fixes.
 
 ## Target skill set
 
@@ -212,14 +217,13 @@ A review issue covers one group of the current controls. For each control, it re
 | C11 | Review the tokens and colour categories, `TOK` and `COL`. Keeps the on-scale statement of TOK-3 and moves its other two statements to C5. Settles where `token-audit.py` and `contrast.py` disagree with COL-2 ([#128](https://github.com/transformteamsg/dx-harness/issues/128), [#352](https://github.com/transformteamsg/dx-harness/issues/352), [#295](https://github.com/transformteamsg/dx-harness/issues/295)) | 5 rules |
 | C12 | Review the motion category, `MOT` | 3 rules |
 | C13 | Review the identity controls, `IDN`. IDN-1 and IDN-2 become generic rules with parameters for the asset library and the icon family. The registers of IDN-3 become a parameter of CNT-14. Removes IDN-4 ([#285](https://github.com/transformteamsg/dx-harness/issues/285)) | 4 rules |
-| C14a | Read the catalogue through one `checklib.py` module ([#425](https://github.com/transformteamsg/dx-harness/issues/425)). Can start before C1 | Code |
-| C14b | Switch `checklib.py` and `validate.py` to `standards/rules/` and `standards/presets/`, resolve parameter values in `checklib.py`, switch `type-scan.py` and `content-lint.py` to the resolved values, and generate `checks/COVERAGE.md` from the checks (D14) | Code |
+| C14 | Switch `checklib.py` and `validate.py` to `standards/rules/` and `standards/presets/`, and resolve parameter values in `checklib.py`. Switch `waiver-reconcile.py` to `checklib.py`, and resolve old codes in `dx-waive` comments through `redirects`. Switch `type-scan.py` and `content-lint.py` to the resolved values. Generate `checks/COVERAGE.md` from the checks (D14). Supersedes [#425](https://github.com/transformteamsg/dx-harness/issues/425) | Code |
 | C15 | Move `scripts/generate-design-json.py` to the rule files and the `DESIGN.md` selection | Code |
 | C16 | Publish the rule format for the website: a documented, stable read contract over `standards/rules/` and `procedures/copy-rules.md` that the website's repository builds from (D7). The website's voice, tone, and writing pages read `copy-rules.md` | Document and schema |
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml` and `standards/controls/` | Deletion |
 
-C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories of D12, which can differ from the current prefixes. C14a can start at any time, and C14b follows the last review.
+C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories of D12, which can differ from the current prefixes. C14 follows the last review.
 
 ### Stories
 
@@ -265,6 +269,7 @@ These open issues predate this spec. Each one is superseded, folded into a sub-i
 ## Open decisions
 
 - **Rule tiers.** Whether L0, L1, and L2 stay as they are, or map to a ruff-style severity. C1 decides after [#432](https://github.com/transformteamsg/dx-harness/issues/432) classifies which controls a script can decide.
+- **Process checks.** Whether `audit-record.py` and `reaudit-scope.py` stay after the run contract defines the decision record. A re-audit (P3-3) can run the check-only mode of `dx-design-critique` against the `DESIGN.md` selection instead of reading the records. The skills scaffold decides.
 - **Harness-wide skills.** Whether `dx-design-feedback` and commit signing in `dx-design-setup` also move to `skills/shared/`, as git help does (D8). Out of scope for this spec.
 
 ## Appendix: evaluation of the current skills
