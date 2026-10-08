@@ -70,6 +70,8 @@ As a designer who builds in code, I want a quick prototype without the full loop
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a prototype from scratch or in a repo for prototypes, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
 - Given a prototype on top of an existing app, when the hifi is built, then it uses the app's own components on a new branch.
+- Given a prototype on top of an existing codebase, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
+- Given a prototype that is not on top of an existing codebase, when it is built, then no coding standards check runs.
 - Given a finished prototype on top of an existing app, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
 - Given a plain HTML prototype, when I make it a full build, then the harness rebuilds it in the product's stack from the prototype.
 
