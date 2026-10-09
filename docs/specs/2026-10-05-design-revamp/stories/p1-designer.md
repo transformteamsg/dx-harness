@@ -43,7 +43,9 @@ Every story keeps these principles, and every skill that serves a P1 story has e
 
 **Journey**
 
-Each branch is a decision that the designer makes. The principles apply at every step, and P1-9 and P1-12 apply whenever I ask.
+Each branch is a decision that the designer makes. The principles apply at every step, and P1-9 and P1-12 apply whenever I ask. The first map starts every journey and covers a new app and the product's sandbox. The second map covers the product's main repo.
+
+*Start, a new app, and the product's sandbox*
 
 ```mermaid
 flowchart TD
@@ -56,53 +58,51 @@ flowchart TD
     want -- Report a harness problem --> P1_12["P1-12: Report a problem with the harness"]
     want -- Design something --> repo{Where does the work belong?}
 
-    repo -- A completely new app --> dirA
-    repo -- "The product's sandbox" --> P1_14
-    repo -- "The product's main repo" --> useLang
-
-    subgraph newapp["No repo"]
-        dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
-        P1_5 --> keep5{Keep the idea?}
-    end
+    repo -- "The product's main repo" --> toMain(["Go to the second map"])
+    repo -- A completely new app --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
+    P1_5 --> keep5{Keep the idea?}
+    keep5 -- No --> doneA([Done])
     keep5 -- Yes --> P1_13["P1-13: Start a new repo for prototypes"]
-    keep5 -- No --> done([Done])
+    P1_13 -- "Rebuild the prototype in the new repo" --> P1_15
 
-    subgraph sandbox["The product's sandbox"]
-        P1_14["P1-14: Keep my product's sandbox in step with the product"] --> langS{Is the design language recorded?}
-        langS -- No --> P1_2["P1-2: Record my product's design language"] --> changeS
-        langS -- Yes --> changeS{What kind of change?}
-        changeS -- A stated edit --> P1_8s["P1-8: Make a stated edit safely"]
-        changeS -- I do not know what is wrong --> P1_6s["P1-6: Find out what is wrong with a page"]
-        changeS -- "One dimension, such as spacing" --> P1_7s["P1-7: Improve one dimension of a page"]
-        changeS -- A new feature or page --> dirB["P1-3: See rendered directions"] --> protoS{Prototype first?}
-        protoS -- Yes --> P1_15s["P1-15: Prototype in an existing codebase"]
-        protoS -- No --> P1_4s["P1-4: Build a frontend on mock data and hand off the backend"]
-        P1_15s --> full15s{Make it a full build?}
-        full15s -- "Yes, continue from the prototype" --> P1_4s
-    end
-    P1_13 -- "Rebuild the prototype in the new repo" --> P1_15s
-    P1_4s --> handoffS(["Behind a feature flag, an engineer builds it in the main repo"])
-    full15s -- No --> done
-    P1_6s --> done
-    P1_7s --> done
-    P1_8s --> done
+    repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
+    P1_14 --> lang{Is the design language recorded?}
+    lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
+    lang -- Yes --> change{What kind of change?}
+    change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
+    change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
+    change -- "One dimension, such as spacing" --> P1_7["P1-7: Improve one dimension of a page"]
+    change -- A new feature or page --> dirB["P1-3: See rendered directions"] --> proto{Prototype first?}
+    proto -- Yes --> P1_15["P1-15: Prototype in an existing codebase"]
+    proto -- No --> P1_4["P1-4: Build a frontend on mock data and hand off the backend"]
+    P1_15 --> full{Make it a full build?}
+    full -- "Yes, continue from the prototype" --> P1_4
+    full -- No --> done([Done])
+    P1_4 --> handoff(["Behind a feature flag, an engineer builds it in the main repo"])
+    P1_6 --> done
+    P1_7 --> done
+    P1_8 --> done
+```
 
-    subgraph mainrepo["The product's main repo"]
-        useLang["Use the product's design language from the sandbox"] --> changeM{What kind of change?}
-        changeM -- A stated edit --> P1_8m["P1-8: Make a stated edit safely"]
-        changeM -- I do not know what is wrong --> P1_6m["P1-6: Find out what is wrong with a page"]
-        changeM -- "One dimension, such as spacing" --> P1_7m["P1-7: Improve one dimension of a page"]
-        changeM -- A new feature or page --> dirC["P1-3: See rendered directions"] --> protoM{Prototype first?}
-        protoM -- Yes --> P1_15m["P1-15: Prototype in an existing codebase"]
-        protoM -- No --> P1_4m["P1-4: Build a frontend on mock data and hand off the backend"]
-        P1_15m --> full15m{Make it a full build?}
-        full15m -- "Yes, continue from the prototype" --> P1_4m
-    end
-    P1_4m --> handoffM(["An engineer connects the backend"])
-    full15m -- No --> done
-    P1_6m --> done
-    P1_7m --> done
-    P1_8m --> done
+*The product's main repo*
+
+```mermaid
+flowchart TD
+    from(["From the first map: the product's main repo"]) --> useLang["Use the product's design language from the sandbox"]
+    useLang --> change{What kind of change?}
+    change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
+    change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
+    change -- "One dimension, such as spacing" --> P1_7["P1-7: Improve one dimension of a page"]
+    change -- A new feature or page --> dirC["P1-3: See rendered directions"] --> proto{Prototype first?}
+    proto -- Yes --> P1_15["P1-15: Prototype in an existing codebase"]
+    proto -- No --> P1_4["P1-4: Build a frontend on mock data and hand off the backend"]
+    P1_15 --> full{Make it a full build?}
+    full -- "Yes, continue from the prototype" --> P1_4
+    full -- No --> done([Done])
+    P1_4 --> handoff(["An engineer connects the backend"])
+    P1_6 --> done
+    P1_7 --> done
+    P1_8 --> done
 ```
 
 ## P1-1: Set up my machine
