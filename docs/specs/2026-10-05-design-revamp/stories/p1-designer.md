@@ -21,7 +21,7 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 - [P1-11: Ask whether a rule applies](#p1-11-ask-whether-a-rule-applies)
 - [P1-12: Report a problem with the harness](#p1-12-report-a-problem-with-the-harness)
 - [P1-13: Start a new repo for prototypes](#p1-13-start-a-new-repo-for-prototypes)
-- [P1-14: Keep my prototypes in step with the product](#p1-14-keep-my-prototypes-in-step-with-the-product)
+- [P1-14: Keep my product's sandbox in step with the product](#p1-14-keep-my-products-sandbox-in-step-with-the-product)
 - [P1-15: Prototype in an existing codebase](#p1-15-prototype-in-an-existing-codebase)
 
 **Journey**
@@ -40,11 +40,11 @@ flowchart TD
     want -- Design something --> repo{Where does the work belong?}
 
     repo -- A completely new app --> P1_13["P1-13: Start a new repo for prototypes"]
-    repo -- A product idea that is not ready for the main repo --> P1_14["P1-14: Keep my prototypes in step with the product"]
+    repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
     repo -- The product's main repo --> lang{Is the design language recorded?}
 
     P1_13 --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
-    P1_14 --> dirB["P1-3: See rendered directions"] --> P1_5
+    P1_14 --> dirB["P1-3: See rendered directions"] --> P1_15
 
     lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
     lang -- Yes --> change{What kind of change?}
@@ -121,18 +121,18 @@ As a designer who builds in code, I want to build a working frontend on mock dat
 
 ## P1-5: Prototype quickly
 
-As a designer who builds in code, I want a quick prototype outside an existing codebase, without the full loop, so that I can test an idea before I commit to it.
+As a designer who builds in code, I want a quick prototype of a completely new app, without the full loop, so that I can test an idea before I commit to it.
 
 **Acceptance examples**
 
-- Given a prototype from scratch or in a repo for prototypes, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
+- Given a prototype of a completely new app, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
 - Given a repo for prototypes of one app, when I start a second prototype for that app, then the harness builds it beside the first and does not change the first.
 - Given a repo for prototypes, when I start a prototype of a completely new app, then the harness offers to create a separate repo for it and does not build it in the existing repo.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a quick prototype, when it is built, then no coding standards check runs.
 - Given a plain HTML prototype, when I make it a full build, then the harness rebuilds it in the product's stack from the prototype.
 
-**Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a repo for prototypes from a product repo.
+**Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a new app from an existing codebase.
 
 ## P1-6: Find out what is wrong with a page
 
@@ -232,18 +232,19 @@ As a designer who builds in code, I want to start a new repo for prototypes with
 
 **Today:** None. **Gap:** No skill creates a repo. `dx-design-setup` sets up the machine only.
 
-## P1-14: Keep my prototypes in step with the product
+## P1-14: Keep my product's sandbox in step with the product
 
-As a designer who builds in code, I want my prototypes to use the product's current components, so that an engineer does not rebuild them and they do not drift from the product.
+As a designer who builds in code, I want my product's sandbox kept in step with what the product ships, so that every new design starts from the current components.
 
 **Acceptance examples**
 
-- Given a feature for a product that has a main repo, when I ask to prototype it, then the harness builds it in the main repo on a new branch, not in a sandbox.
-- Given an idea for the product that is not ready for the main repo, when I prototype it, then the harness builds it in the sandbox.
-- Given a sandbox that imports the product's components, when the main repo changes a component, then my next prototype uses the changed component.
-- Given a sandbox with its own copy of a component that the main repo also has, when I start a prototype, then the harness tells me that the two differ and offers to use the main repo's version.
+- Given the product's sandbox, when I start a new design, then the harness checks which shipped components differ from the main repo before it builds.
+- Given a shipped component that differs, when the check finds it, then the harness shows me the two versions rendered side by side.
+- Given a shipped component that differs, when I agree to sync it, then the harness replaces the sandbox copy with the main repo's version, and it changes nothing without my agreement.
+- Given a prototype behind a feature flag that the main repo does not ship, when the sandbox syncs, then the prototype does not change.
+- Given no difference, when the check finishes, then the harness says so in one line and starts the design.
 
-**Today:** None. **Gap:** The drift check in `dx-design-language` compares code with `DESIGN.md` in one repo only. No skill compares a sandbox with the main repo.
+**Today:** None. **Gap:** The drift check in `dx-design-language` compares code with `DESIGN.md` in one repo only. No skill compares a sandbox with the main repo or syncs it.
 
 ## P1-15: Prototype in an existing codebase
 
@@ -251,11 +252,11 @@ As a designer who builds in code, I want to prototype a feature on top of my pro
 
 **Acceptance examples**
 
-- Given a product repo, when I ask for a prototype, then the harness builds it on a new branch on mock data, and the shared branch does not change.
-- Given a prototype in a product repo, when the hifi is built, then it uses the app's own components.
-- Given a prototype in a product repo, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
-- Given a prototype in a product repo, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
-- Given a prototype in a product repo, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
-- Given a finished prototype in a product repo, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
+- Given a product repo or its sandbox, when I ask for a prototype, then the harness builds it on a new branch on mock data, and the shared branch does not change.
+- Given a prototype in a product codebase, when the hifi is built, then it uses the app's own components.
+- Given a prototype in a product codebase, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
+- Given a prototype in a product codebase, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
+- Given a prototype in a product codebase, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
+- Given a finished prototype in a product codebase, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
 
-**Today:** None. **Gap:** `dx-design-execute` runs every gate and has no prototype path for a product repo.
+**Today:** None. **Gap:** `dx-design-execute` runs every gate and has no prototype path for a product codebase.
