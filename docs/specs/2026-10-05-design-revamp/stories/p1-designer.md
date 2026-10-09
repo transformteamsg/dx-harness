@@ -88,9 +88,11 @@ As a designer who builds in code, I want to record my product's design language 
 
 - Given a repo with colour and type tokens in its code, when I record the design language, then the harness drafts `DESIGN.md` from the code and asks me only to confirm or correct it.
 - Given a Figma file and a brand document that set different primary colours, when I record the design language, then the harness asks me once which source wins.
-- Given a repo for prototypes with no design language, when I record one, then I can choose an existing design language, such as Teacher Workspace, instead of defining one.
+- Given a new app's repo with no design language, when I record one, then I can choose an existing design language, such as Teacher Workspace, instead of defining one.
+- Given a product's sandbox, when I record or change the design language, then the harness writes it to the sandbox's `DESIGN.md`, which is the product's source of truth.
+- Given a change to the design language in the sandbox, when I hand off my next build, then the hand-off lists the change for the main repo.
 
-**Today:** `dx-design-language`. **Gap:** None.
+**Today:** `dx-design-language`. **Gap:** No skill hands a change to the design language from the sandbox to the main repo.
 
 ## P1-3: See rendered directions
 
@@ -247,6 +249,7 @@ As a designer who builds in code, I want my product's sandbox kept in step with 
 - Given a shipped component that differs, when the check finds it, then the harness shows me the two versions rendered side by side.
 - Given a shipped component that differs, when I agree to sync it, then the harness replaces the sandbox copy with the main repo's version, and it changes nothing without my agreement.
 - Given a prototype behind a feature flag that the main repo does not ship, when the sandbox syncs, then the prototype does not change.
+- Given a shipped component that differs only because the sandbox's design language changed, when the check finds it, then the harness keeps the sandbox copy and reports the change for the main repo.
 - Given no difference, when the check finishes, then the harness says so in one line and starts the design.
 
 **Today:** None. **Gap:** The drift check in `dx-design-language` compares code with `DESIGN.md` in one repo only. No skill compares a sandbox with the main repo or syncs it.
