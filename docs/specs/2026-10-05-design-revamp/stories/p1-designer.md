@@ -5,6 +5,7 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 - **Background:** UI or UX designer with no engineering background. New to git. Uses Claude Desktop.
 - **What they want from the harness:** Turn a design idea into working UI that meets the standard, without an engineer and without breaking the codebase. The harness decides where a default exists and uses no harness vocabulary ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
 - **Priority:** Primary persona. Where the needs of two personas conflict, the architecture optimises for P1.
+- **Evidence:** [Teacher Workspace sandbox divergence](../teacher-workspace-divergence.md), for P1-2, P1-4, P1-13, and P1-14.
 
 **Principles**
 
