@@ -39,11 +39,10 @@ flowchart TD
     want -- Report a harness problem --> P1_12["P1-12: Report a problem with the harness"]
     want -- Design something --> repo{Where does the work belong?}
 
-    repo -- A completely new app --> P1_13["P1-13: Start a new repo for prototypes"]
+    repo -- A completely new app --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
     repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
     repo -- The product's main repo --> lang{Is the design language recorded?}
 
-    P1_13 --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
     P1_14 --> dirB["P1-3: See rendered directions"] --> P1_15
 
     lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
@@ -55,13 +54,14 @@ flowchart TD
     proto -- Yes --> P1_15["P1-15: Prototype in an existing codebase"]
     proto -- No --> P1_4["P1-4: Build a frontend on mock data and hand off the backend"]
 
-    P1_5 --> full5{Make it a full build?}
-    full5 -- "Yes, rebuild in the product's stack" --> P1_4
+    P1_5 --> keep5{Keep the idea?}
+    keep5 -- Yes --> P1_13["P1-13: Start a new repo for prototypes"]
+    P1_13 -- "Rebuild the prototype in the new repo" --> P1_15
     P1_15 --> full15{Make it a full build?}
     full15 -- "Yes, continue from the prototype" --> P1_4
 
     P1_4 --> handoff([An engineer connects the backend])
-    full5 -- No --> done([Done])
+    keep5 -- No --> done([Done])
     full15 -- No --> done
     P1_6 --> done
     P1_7 --> done
@@ -126,11 +126,12 @@ As a designer who builds in code, I want a quick prototype of a completely new a
 **Acceptance examples**
 
 - Given a prototype of a completely new app, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
-- Given a repo for prototypes of one app, when I start a second prototype for that app, then the harness builds it beside the first and does not change the first.
-- Given a repo for prototypes, when I start a prototype of a completely new app, then the harness offers to create a separate repo for it and does not build it in the existing repo.
+- Given a new idea with no repo, when I prototype it, then the harness builds it and does not create a repo.
+- Given a prototype of a new app, when I start a second prototype for the same app, then the harness builds it beside the first and does not change the first.
+- Given a product's sandbox, when I start a prototype of a completely new app, then the harness starts it outside the sandbox and does not build it there.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a quick prototype, when it is built, then no coding standards check runs.
-- Given a plain HTML prototype, when I make it a full build, then the harness rebuilds it in the product's stack from the prototype.
+- Given a plain HTML prototype that I want to keep, when I say so, then the harness offers to start a repo for the app.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a new app from an existing codebase.
 
@@ -222,15 +223,16 @@ As a designer who builds in code, I want to report a problem with the harness du
 
 ## P1-13: Start a new repo for prototypes
 
-As a designer who builds in code, I want to start a new repo for prototypes with a starter app and a design language set up, so that I prototype without an engineer.
+As a designer who builds in code, I want to start a repo for a new app in the stack that our production apps use, so that its prototypes and its later product do not drift apart.
 
 **Acceptance examples**
 
-- Given no repo, when I ask for a new repo for prototypes, then the harness creates it on GitHub with a starter app that runs, after I confirm the name and the owner.
-- Given a new repo for prototypes, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
-- Given a new repo for prototypes, when I start my first prototype in it, then the run needs no further setup.
+- Given a plain HTML prototype that I want to keep, when I ask for a repo, then the harness creates it on GitHub in the production stack, after I confirm the name and the owner.
+- Given a new repo, when the harness creates it, then it rebuilds the plain HTML prototype in the repo with the stack's components.
+- Given a new repo, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
+- Given a new repo, when I start my next prototype in it, then the run needs no further setup.
 
-**Today:** None. **Gap:** No skill creates a repo. `dx-design-setup` sets up the machine only.
+**Today:** None. **Gap:** No skill creates a repo. Nothing records the stack that the production apps use.
 
 ## P1-14: Keep my product's sandbox in step with the product
 
