@@ -2,9 +2,25 @@
 
 Part of the [design revamp stories](README.md). Confirmed through [#415](https://github.com/transformteamsg/dx-harness/issues/415).
 
-- **Background:** UI or UX designer with no engineering background. New to git. May use Claude Desktop.
+- **Background:** UI or UX designer with no engineering background. New to git. Uses Claude Desktop.
 - **What they want from the harness:** Turn a design idea into working UI that meets the standard, without an engineer and without breaking the codebase. The harness decides where a default exists and uses no harness vocabulary ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
 - **Priority:** Primary persona. Where the needs of two personas conflict, the architecture optimises for P1.
+
+**Principles**
+
+Every story keeps these principles, and every skill that serves a P1 story has evals for them.
+
+- **No step needs a terminal.** Every step happens in Claude Desktop.
+  - Given any step that needs me, when the harness reaches it, then it tells me what to click or type in Claude Desktop, and it does not ask me to open a terminal.
+  - Given a step that needs a command, when the harness reaches it, then it runs the command for me and says in plain words what it did.
+- **No run changes the shared branch or discards my work without my yes.**
+  - Given I am on the shared branch, when a build is about to start, then the harness explains the risk in one plain line and starts a new branch only after I agree.
+  - Given my branch is behind the shared branch, when a build is about to start, then the harness offers to update my branch first and waits for my answer.
+  - Given a step that would discard my changes, when the harness reaches it, then it shows me what I would lose and waits for my yes.
+- **The harness keeps its own records and never asks me where they go.**
+  - Given a finished run, when the harness records it, then it does not ask me where the record goes.
+  - Given any run, when it finishes, then the decision record is the only record it writes, and it creates no design ticket ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
+  - Given a run that needs a decision from me, when the harness asks, then it shows a drafted answer and asks for a yes or no ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
 
 **Stories**
 
@@ -16,8 +32,8 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 - [P1-6: Find out what is wrong with a page](#p1-6-find-out-what-is-wrong-with-a-page)
 - [P1-7: Improve one dimension of a page](#p1-7-improve-one-dimension-of-a-page)
 - [P1-8: Make a stated edit safely](#p1-8-make-a-stated-edit-safely)
-- [P1-9: Use git safely](#p1-9-use-git-safely)
-- [P1-10: Keep records without being asked](#p1-10-keep-records-without-being-asked)
+- [P1-9: Save, share, and undo my work](#p1-9-save-share-and-undo-my-work)
+- [P1-10: Keep records without being asked (retired)](#p1-10-keep-records-without-being-asked-retired)
 - [P1-11: Ask whether a rule applies](#p1-11-ask-whether-a-rule-applies)
 - [P1-12: Report a problem with the harness](#p1-12-report-a-problem-with-the-harness)
 - [P1-13: Start a new repo for prototypes](#p1-13-start-a-new-repo-for-prototypes)
@@ -26,7 +42,7 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 
 **Journey**
 
-Each branch is a decision that the designer makes. P1-9 and P1-10 also apply at every build, and P1-12 applies at any step.
+Each branch is a decision that the designer makes. The principles apply at every step, and P1-9 and P1-12 apply whenever I ask.
 
 ```mermaid
 flowchart TD
@@ -35,7 +51,7 @@ flowchart TD
     setup -- Yes --> want{What do I want to do?}
 
     want -- Ask about a rule --> P1_11["P1-11: Ask whether a rule applies"]
-    want -- Get help with git --> P1_9["P1-9: Use git safely"]
+    want -- "Save, share, or undo my work" --> P1_9["P1-9: Save, share, and undo my work"]
     want -- Report a harness problem --> P1_12["P1-12: Report a problem with the harness"]
     want -- Design something --> repo{Where does the work belong?}
 
@@ -75,7 +91,7 @@ As a designer who builds in code, I want my machine set up for the harness in on
 **Acceptance examples**
 
 - Given a machine with none of the harness tools, when I run setup, then it installs each missing tool and reports at the end that every tool is ready.
-- Given Claude Desktop with no terminal open, when a step needs me to sign in to GitHub, then setup tells me what to click or type in the app, and no step asks me to open a terminal.
+- Given a step that needs me to sign in to GitHub, when setup reaches it, then setup tells me what to click or type in Claude Desktop.
 - Given a machine that is already set up, when I run setup again, then it changes nothing and reports that every tool is ready.
 
 **Today:** `dx-design-setup`. **Gap:** Commit signing is not design-specific. The GitHub sign-in step needs a terminal.
@@ -104,7 +120,7 @@ As a designer who builds in code, I want to see two or three rendered directions
 - Given a chosen wireframe, when the hifi directions render, then each one keeps the structure of that wireframe.
 - Given a request for a new page, when the run offers directions, then I see two or three of them rendered before the harness builds one.
 - Given a visual change to an existing page, such as a new header colour, when the run starts, then I also see two or three rendered directions.
-- Given Claude Desktop, when the directions are ready, then I see each one in the app's preview, and I do not open a file path to see it.
+- Given rendered directions, when they are ready, then I see each one in the preview in Claude Desktop, and I do not open a file path to see it.
 - Given three rendered directions, when I choose one, then the harness builds that direction only.
 
 **Today:** The diverge step of `dx-design-execute`. **Gap:** The diverge step skips visual changes ([#134](https://github.com/transformteamsg/dx-harness/issues/134)). The diverge step has no wireframe round.
@@ -177,30 +193,25 @@ As a designer who builds in code, I want to make a stated edit, such as "change 
 
 **Today:** The modification path of `dx-design-execute`. **Gap:** None.
 
-## P1-9: Use git safely
+## P1-9: Save, share, and undo my work
 
-As a designer who builds in code, I want git explained and done with me safely, so that I never break the shared branch.
+As a designer who builds in code, I want to save, share, and undo my work by asking in plain words, so that I recover from any git mistake without an engineer.
 
 **Acceptance examples**
 
-- Given I am on the shared branch, when a build is about to start, then the harness explains the risk in one plain line and starts a new branch only after I agree.
-- Given my branch is behind the shared branch, when a build is about to start, then the harness offers to update my branch first and waits for my answer.
 - Given I ask "is my work saved?", when the harness answers, then it tells me the state of my repo in plain words and names the git term once.
-- Given Claude Desktop with no terminal open, when I want to save and share my work, then the harness does each git step with me in the conversation.
+- Given I ask to share my work for review, when the harness does it, then it saves my changes and opens a pull request for me.
+- Given I ask for the latest changes from the team, when the harness gets them, then it updates my branch and tells me in plain words what changed.
+- Given a conflict between my changes and the team's, when the harness finds it, then it shows me each conflict in plain words, and it keeps both sides until I choose.
+- Given I ask to undo my changes since this morning, when the harness is about to do it, then it shows me what I would lose and waits for my yes.
+- Given a commit that I made to the shared branch by mistake, when I ask for help, then the harness moves my work to a new branch and does not rewrite history that the team already has.
+- Given work that I think is lost, when I ask for it, then the harness finds it if git still holds it and restores it to a new branch.
 
 **Today:** `dx-design-git`. **Gap:** The persona voice is heavy.
 
-## P1-10: Keep records without being asked
+## P1-10: Keep records without being asked (retired)
 
-As a designer who builds in code, I want the harness to keep its records without asking me where they go, so that I can focus on the design.
-
-**Acceptance examples**
-
-- Given a finished run, when the harness records it, then it does not ask me where the record goes.
-- Given any run, when it finishes, then the decision record is the only record it writes, and it creates no design ticket.
-- Given a run that needs a decision from me, when the harness asks, then it shows a drafted answer and asks for a yes or no.
-
-**Today:** `procedures/design-tickets.md`. **Gap:** The skills ask where records go ([#164](https://github.com/transformteamsg/dx-harness/issues/164)). The rebuild keeps the decision record as the only record ([#364](https://github.com/transformteamsg/dx-harness/issues/364)).
+Retired: it is a rule for every story, so it moved to Principles.
 
 ## P1-11: Ask whether a rule applies
 
