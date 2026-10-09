@@ -60,7 +60,7 @@ flowchart TD
     P1_15 --> full15{Make it a full build?}
     full15 -- "Yes, continue from the prototype" --> P1_4
 
-    P1_4 --> handoff([An engineer connects the backend])
+    P1_4 --> handoff(["An engineer connects the backend, or builds it in the main repo"])
     keep5 -- No --> done([Done])
     full15 -- No --> done
     P1_6 --> done
@@ -109,11 +109,14 @@ As a designer who builds in code, I want to see two or three rendered directions
 
 ## P1-4: Build a frontend on mock data and hand off the backend
 
-As a designer who builds in code, I want to build a working frontend on mock data and hand the backend to an engineer, so that I can test the design end to end.
+As a designer who builds in code, I want to build a working frontend on mock data, in the main codebase or the product's sandbox, and hand the backend to an engineer, so that I can test the design end to end.
 
 **Acceptance examples**
 
 - Given a product repo with a real backend, when I build a page on mock data, then all the mock data sits in one place that an engineer replaces, and no file that calls the backend changes.
+- Given a design that is ready to build, when the build starts, then it waits for my approval of a plan before it changes any file.
+- Given a finished build, when I am about to hand it off, then a design review checks it against the standard first.
+- Given a full build in the product's sandbox, when I hand it off, then it stays behind a feature flag, and an engineer builds it in the main repo from the spec.
 - Given a page built on mock data, when I hand it off, then the engineer gets a spec that lists each data source the page needs and the shape of its data.
 - Given a story with acceptance criteria, when the build finishes, then each criterion has an end-to-end test that passes on the mock data.
 
@@ -259,6 +262,6 @@ As a designer who builds in code, I want to prototype a feature on top of my pro
 - Given a prototype in a product codebase, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
 - Given a prototype in a product codebase, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a prototype in a product codebase, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
-- Given a finished prototype in a product codebase, when I ask to make it a full build, then the run continues from the prototype with the plan approval and the design review.
+- Given a finished prototype in a product codebase, when I ask to make it a full build, then the run continues from the prototype as a full build (P1-4), with the plan approval and the design review.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate and has no prototype path for a product codebase.
