@@ -56,30 +56,42 @@ flowchart TD
     want -- Report a harness problem --> P1_12["P1-12: Report a problem with the harness"]
     want -- Design something --> repo{Where does the work belong?}
 
-    repo -- A completely new app --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
-    repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
-    repo -- The product's main repo --> lang{Is the design language recorded?}
+    repo -- A completely new app --> dirA
+    repo -- "The product's sandbox" --> P1_14
+    repo -- "The product's main repo" --> lang
 
-    P1_14 --> dirB["P1-3: See rendered directions"] --> P1_15
-
-    lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
-    lang -- Yes --> change{What kind of change?}
-    change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
-    change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
-    change -- "One dimension, such as spacing" --> P1_7["P1-7: Improve one dimension of a page"]
-    change -- A new feature or page --> dirC["P1-3: See rendered directions"] --> proto{Prototype first?}
-    proto -- Yes --> P1_15["P1-15: Prototype in an existing codebase"]
-    proto -- No --> P1_4["P1-4: Build a frontend on mock data and hand off the backend"]
-
-    P1_5 --> keep5{Keep the idea?}
+    subgraph newapp["No repo"]
+        dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
+        P1_5 --> keep5{Keep the idea?}
+    end
     keep5 -- Yes --> P1_13["P1-13: Start a new repo for prototypes"]
-    P1_13 -- "Rebuild the prototype in the new repo" --> P1_15
-    P1_15 --> full15{Make it a full build?}
-    full15 -- "Yes, continue from the prototype" --> P1_4
-
-    P1_4 --> handoff(["An engineer connects the backend, or builds it in the main repo"])
     keep5 -- No --> done([Done])
-    full15 -- No --> done
+
+    subgraph sandbox["The product's sandbox"]
+        P1_14["P1-14: Keep my product's sandbox in step with the product"] --> dirB["P1-3: See rendered directions"]
+        dirB --> P1_15s["P1-15: Prototype in an existing codebase"]
+        P1_15s --> full15s{Make it a full build?}
+        full15s -- "Yes, continue from the prototype" --> P1_4s["P1-4: Build a frontend on mock data and hand off the backend"]
+    end
+    P1_13 -- "Rebuild the prototype in the new repo" --> P1_15s
+    P1_4s --> handoffS(["Behind a feature flag, an engineer builds it in the main repo"])
+    full15s -- No --> done
+
+    subgraph mainrepo["The product's main repo"]
+        lang{Is the design language recorded?}
+        lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
+        lang -- Yes --> change{What kind of change?}
+        change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
+        change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
+        change -- "One dimension, such as spacing" --> P1_7["P1-7: Improve one dimension of a page"]
+        change -- A new feature or page --> dirC["P1-3: See rendered directions"] --> proto{Prototype first?}
+        proto -- Yes --> P1_15m["P1-15: Prototype in an existing codebase"]
+        proto -- No --> P1_4m["P1-4: Build a frontend on mock data and hand off the backend"]
+        P1_15m --> full15m{Make it a full build?}
+        full15m -- "Yes, continue from the prototype" --> P1_4m
+    end
+    P1_4m --> handoffM(["An engineer connects the backend"])
+    full15m -- No --> done
     P1_6 --> done
     P1_7 --> done
     P1_8 --> done
