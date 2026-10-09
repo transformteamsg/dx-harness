@@ -24,6 +24,50 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 - [P1-14: Keep my prototypes in step with the product](#p1-14-keep-my-prototypes-in-step-with-the-product)
 - [P1-15: Prototype in an existing codebase](#p1-15-prototype-in-an-existing-codebase)
 
+**Journey**
+
+Each branch is a decision that the designer makes. P1-9 and P1-10 also apply at every build, and P1-12 applies at any step.
+
+```mermaid
+flowchart TD
+    start([I open Claude]) --> setup{Is my machine set up?}
+    setup -- No --> P1_1["P1-1: Set up my machine"] --> want
+    setup -- Yes --> want{What do I want to do?}
+
+    want -- Ask about a rule --> P1_11["P1-11: Ask whether a rule applies"]
+    want -- Get help with git --> P1_9["P1-9: Use git safely"]
+    want -- Report a harness problem --> P1_12["P1-12: Report a problem with the harness"]
+    want -- Design something --> repo{Where does the work belong?}
+
+    repo -- A completely new app --> P1_13["P1-13: Start a new repo for prototypes"]
+    repo -- A product idea that is not ready for the main repo --> P1_14["P1-14: Keep my prototypes in step with the product"]
+    repo -- The product's main repo --> lang{Is the design language recorded?}
+
+    P1_13 --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
+    P1_14 --> dirB["P1-3: See rendered directions"] --> P1_5
+
+    lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
+    lang -- Yes --> change{What kind of change?}
+    change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
+    change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
+    change -- "One dimension, such as spacing" --> P1_7["P1-7: Improve one dimension of a page"]
+    change -- A new feature or page --> dirC["P1-3: See rendered directions"] --> proto{Prototype first?}
+    proto -- Yes --> P1_15["P1-15: Prototype in an existing codebase"]
+    proto -- No --> P1_4["P1-4: Build a frontend on mock data and hand off the backend"]
+
+    P1_5 --> full5{Make it a full build?}
+    full5 -- "Yes, rebuild in the product's stack" --> P1_4
+    P1_15 --> full15{Make it a full build?}
+    full15 -- "Yes, continue from the prototype" --> P1_4
+
+    P1_4 --> handoff([An engineer connects the backend])
+    full5 -- No --> done([Done])
+    full15 -- No --> done
+    P1_6 --> done
+    P1_7 --> done
+    P1_8 --> done
+```
+
 ## P1-1: Set up my machine
 
 As a designer who builds in code, I want my machine set up for the harness in one guided session, so that my first design run does not fail on a missing tool.
