@@ -6,6 +6,24 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 - **What they want from the harness:** Turn a design idea into working UI that meets the standard, without an engineer and without breaking the codebase. The harness decides where a default exists and uses no harness vocabulary ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
 - **Priority:** Primary persona. Where the needs of two personas conflict, the architecture optimises for P1.
 
+**Stories**
+
+- [P1-1: Set up my machine](#p1-1-set-up-my-machine)
+- [P1-2: Record my product's design language](#p1-2-record-my-products-design-language)
+- [P1-3: See rendered directions](#p1-3-see-rendered-directions)
+- [P1-4: Build a frontend on mock data and hand off the backend](#p1-4-build-a-frontend-on-mock-data-and-hand-off-the-backend)
+- [P1-5: Prototype quickly](#p1-5-prototype-quickly)
+- [P1-6: Find out what is wrong with a page](#p1-6-find-out-what-is-wrong-with-a-page)
+- [P1-7: Improve one dimension of a page](#p1-7-improve-one-dimension-of-a-page)
+- [P1-8: Make a stated edit safely](#p1-8-make-a-stated-edit-safely)
+- [P1-9: Use git safely](#p1-9-use-git-safely)
+- [P1-10: Keep records without being asked](#p1-10-keep-records-without-being-asked)
+- [P1-11: Ask whether a rule applies](#p1-11-ask-whether-a-rule-applies)
+- [P1-12: Report a problem with the harness](#p1-12-report-a-problem-with-the-harness)
+- [P1-13: Start a new repo for prototypes](#p1-13-start-a-new-repo-for-prototypes)
+- [P1-14: Keep my prototypes in step with the product](#p1-14-keep-my-prototypes-in-step-with-the-product)
+- [P1-15: Prototype in an existing codebase](#p1-15-prototype-in-an-existing-codebase)
+
 ## P1-1: Set up my machine
 
 As a designer who builds in code, I want my machine set up for the harness in one guided session, so that my first design run does not fail on a missing tool.
