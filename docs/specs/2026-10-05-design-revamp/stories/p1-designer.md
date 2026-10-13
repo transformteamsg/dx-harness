@@ -112,13 +112,14 @@ As a designer who builds in code, I want my machine set up for the harness in on
 
 **Acceptance examples**
 
+- Given a new designer and an organisation that enabled the harness, when I open the **Code** tab in a local session, then the harness is already there, and I install nothing.
 - Given a machine with none of the harness tools, when I run setup, then it installs each missing tool and reports at the end that every tool is ready.
 - Given a machine that is already set up, when I run setup again, then it changes nothing and reports that every tool is ready.
 - Given a commit that is not signed, when I save my work, then the harness stops, explains the problem in one plain line, and offers to run setup.
 - Given that I am not signed in to the `gh` CLI, when I share my work, then the harness offers to run setup before it opens the pull request.
 - Given a setup step that needs a terminal, such as commit signing, when setup reaches it, then the harness opens the terminal step with me and tells me what to type.
 
-**Today:** `dx-design-setup`. **Gap:** Commit signing is not design-specific. The GitHub sign-in step needs a terminal. No skill sends me to setup when a commit is unsigned or the `gh` sign-in is missing.
+**Today:** `dx-design-setup`. **Gap:** Commit signing is not design-specific. The GitHub sign-in step needs a terminal. No skill sends me to setup when a commit is unsigned or the `gh` sign-in is missing. Nothing tells a designer in the **Chat** tab to use the **Code** tab.
 
 ## P1-2: Record my product's design language
 
