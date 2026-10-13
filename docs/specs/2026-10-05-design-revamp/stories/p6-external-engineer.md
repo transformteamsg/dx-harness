@@ -54,3 +54,16 @@ As an engineer from another team, I want to report a problem with the harness fr
 To be written in [#420](https://github.com/transformteamsg/dx-harness/issues/420).
 
 **Today:** `dx-design-feedback`. **Gap:** None.
+
+## P6-6: Extend the harness for my product family
+
+As an engineer from another team, I want to extend the harness with my product family's standards, so that every product in the family follows them, and one change to the family's standards reaches every product.
+
+**Acceptance examples**
+
+- Given a product whose `DESIGN.md` extends my product family's standards, when a check reads a value, then the value resolves in this order: the rule's default, then my product family's standards, then the product's `DESIGN.md`.
+- Given a rule that my product family adds, when a check or a design review runs on a product in the family, then each finding on that rule cites the family's own code, and every harness rule that the product selects still applies.
+- Given an edit to my product family's standards, when the next check runs on any product that extends them, then the check uses the edited standards, and each product's `DESIGN.md` stays unchanged.
+- Given an L0 rule in the harness, when my product family's standards relax or remove it, then the rule still applies to every product in the family, and the harness reports the skipped line of the family's standards.
+
+**Today:** None. **Gap:** No layer sits between the catalogue and a product's `DESIGN.md`. The harness reads `DESIGN.md` only at the product repo root. Each product therefore keeps its own copy of the family's standards, and installing the harness brings none of them.
