@@ -2,7 +2,7 @@
 
 Part of the [design revamp stories](README.md). Confirmed through [#415](https://github.com/transformteamsg/dx-harness/issues/415).
 
-- **Background:** UI or UX designer with no engineering background. New to git. Uses Claude Desktop.
+- **Background:** UI or UX designer with no engineering background. New to git. Uses Claude Desktop, or Claude Code in a terminal with the organisation's shared AI platform tokens.
 - **What they want from the harness:** Turn a design idea into working UI that meets the standard, without an engineer and without breaking the codebase. The harness decides where a default exists and uses no harness vocabulary ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
 - **Priority:** Primary persona. Where the needs of two personas conflict, the architecture optimises for P1.
 - **Evidence:** [Teacher Workspace sandbox divergence](../teacher-workspace-divergence.md), for P1-2, P1-4, P1-13, and P1-14.
@@ -11,9 +11,10 @@ Part of the [design revamp stories](README.md). Confirmed through [#415](https:/
 
 Every story keeps these principles, and every skill that serves a P1 story has evals for them.
 
-- **No step needs a terminal.** Every step happens in Claude Desktop.
-  - Given any step that needs me, when the harness reaches it, then it tells me what to click or type in Claude Desktop, and it does not ask me to open a terminal.
+- **No step requires a terminal, except setup.** Every step works in Claude Desktop and in a terminal.
+  - Given a session in Claude Desktop, when the harness reaches a step that needs me, then it tells me what to click or type in Claude Desktop.
   - Given a step that needs a command, when the harness reaches it, then it runs the command for me and says in plain words what it did.
+  - Given a session in a terminal, when the harness reaches any step, then the step behaves the same as in Claude Desktop.
 - **No run changes the shared branch or discards my work without my yes.**
   - Given I am on the shared branch, when a build is about to start, then the harness explains the risk in one plain line and starts a new branch only after I agree.
   - Given my branch is behind the shared branch, when a build is about to start, then the harness offers to update my branch first and waits for my answer.
@@ -63,7 +64,7 @@ flowchart TD
     P1_5 --> keep5{Keep the idea?}
     keep5 -- No --> doneA([Done])
     keep5 -- Yes --> P1_13["P1-13: Start a new repo for prototypes"]
-    P1_13 -- "Rebuild the prototype in the new repo" --> P1_15
+    P1_13 -- "Move the prototype into the new repo" --> P1_15
 
     repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
     P1_14 --> lang{Is the design language recorded?}
@@ -112,10 +113,12 @@ As a designer who builds in code, I want my machine set up for the harness in on
 **Acceptance examples**
 
 - Given a machine with none of the harness tools, when I run setup, then it installs each missing tool and reports at the end that every tool is ready.
-- Given a step that needs me to sign in to GitHub, when setup reaches it, then setup tells me what to click or type in Claude Desktop.
 - Given a machine that is already set up, when I run setup again, then it changes nothing and reports that every tool is ready.
+- Given a commit that is not signed, when I save my work, then the harness stops, explains the problem in one plain line, and offers to run setup.
+- Given that I am not signed in to the `gh` CLI, when I share my work, then the harness offers to run setup before it opens the pull request.
+- Given a setup step that needs a terminal, such as commit signing, when setup reaches it, then the harness opens the terminal step with me and tells me what to type.
 
-**Today:** `dx-design-setup`. **Gap:** Commit signing is not design-specific. The GitHub sign-in step needs a terminal.
+**Today:** `dx-design-setup`. **Gap:** Commit signing is not design-specific. The GitHub sign-in step needs a terminal. No skill sends me to setup when a commit is unsigned or the `gh` sign-in is missing.
 
 ## P1-2: Record my product's design language
 
@@ -133,18 +136,21 @@ As a designer who builds in code, I want to record my product's design language 
 
 ## P1-3: See rendered directions
 
-As a designer who builds in code, I want to see two or three rendered directions for a new page or a visual change, so that I choose between things I can see.
+As a designer who builds in code, I want to see rendered directions for a new page or a visual change, so that I choose between things I can see.
 
 **Acceptance examples**
 
-- Given a new feature, when the run starts, then I see three to five greyscale wireframes before any hifi direction.
-- Given a chosen wireframe, when the hifi directions render, then each one keeps the structure of that wireframe.
-- Given a request for a new page, when the run offers directions, then I see two or three of them rendered before the harness builds one.
-- Given a visual change to an existing page, such as a new header colour, when the run starts, then I also see two or three rendered directions.
-- Given rendered directions, when they are ready, then I see each one in the preview in Claude Desktop, and I do not open a file path to see it.
+- Given a request to design something, when the run starts, then the harness renders each direction as an HTML artifact before it builds one.
+- Given a run in Claude, when the directions are ready, then I see them as a Claude artifact in my browser, and I do not open a file path.
+- Given a design problem, when the harness renders directions, then each one takes a different approach to the problem, not a variant of one layout.
+- Given rendered directions, when they are ready, then the harness asks whether I want one of them or more exploration.
+- Given a request to explore more, when the harness answers, then it renders new directions and keeps the earlier ones.
+- Given any direction, when it renders, then it follows `DESIGN.md` and the standard.
+- Given no fidelity in my request, when the harness renders directions, then it does not make greyscale wireframes.
+- Given a visual change to an existing page, such as a new header colour, when the run starts, then I also see rendered directions.
 - Given three rendered directions, when I choose one, then the harness builds that direction only.
 
-**Today:** The diverge step of `dx-design-execute`. **Gap:** The diverge step skips visual changes ([#134](https://github.com/transformteamsg/dx-harness/issues/134)). The diverge step has no wireframe round.
+**Today:** The diverge step of `dx-design-execute`. **Gap:** The diverge step skips visual changes ([#134](https://github.com/transformteamsg/dx-harness/issues/134)). It always makes two or three directions and has no way to ask for more.
 
 ## P1-4: Build a frontend on mock data and hand off the backend
 
@@ -167,15 +173,21 @@ As a designer who builds in code, I want a quick prototype of a completely new a
 
 **Acceptance examples**
 
-- Given a prototype of a completely new app, when it is built, then it is plain HTML that opens in Claude Desktop with no install.
+- Given a recorded stack for the organisation, when I start a prototype of a new app, then the harness uses that stack and does not ask me.
+- Given no recorded stack, when I start a prototype, then the harness asks me once whether a framework and a component library are already decided.
+- Given a component library that runs in a Claude artifact, such as shadcn/ui, when the harness builds the prototype, then it builds the prototype in that library as an artifact.
+- Given no decided library, or a library that cannot run in an artifact, when the harness builds the prototype, then it builds HTML that follows `DESIGN.md` and the library's tokens.
+- Given any prototype of a new app, when it is built, then it opens with no install and no setup.
+- Given a session that cannot publish artifacts, such as one on the organisation's shared tokens, when the prototype is built, then it opens as a local file in my browser.
+- Given a prototype that needs my product's own components, when I ask for it, then the harness offers to build it in the product's sandbox (P1-15).
 - Given a new idea with no repo, when I prototype it, then the harness builds it and does not create a repo.
 - Given a prototype of a new app, when I start a second prototype for the same app, then the harness builds it beside the first and does not change the first.
 - Given a product's sandbox, when I start a prototype of a completely new app, then the harness starts it outside the sandbox and does not build it there.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a quick prototype, when it is built, then no coding standards check runs.
-- Given a plain HTML prototype that I want to keep, when I say so, then the harness offers to start a repo for the app.
+- Given a prototype that I approve, when I want to keep it, then the harness offers to start a repo (P1-13), and setup runs then if my machine needs it.
 
-**Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a new app from an existing codebase.
+**Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a new app from an existing codebase. No skill chooses between an artifact library and HTML for a prototype.
 
 ## P1-6: Find out what is wrong with a page
 
@@ -222,6 +234,7 @@ As a designer who builds in code, I want to save, share, and undo my work by ask
 
 - Given I ask "is my work saved?", when the harness answers, then it tells me the state of my repo in plain words and names the git term once.
 - Given I ask to share my work for review, when the harness does it, then it saves my changes and opens a pull request for me.
+- Given a commit that is not signed, when I ask to save my work, then the harness sends me to setup (P1-1).
 - Given I ask for the latest changes from the team, when the harness gets them, then it updates my branch and tells me in plain words what changed.
 - Given a conflict between my changes and the team's, when the harness finds it, then it shows me each conflict in plain words, and it keeps both sides until I choose.
 - Given I ask to undo my changes since this morning, when the harness is about to do it, then it shows me what I would lose and waits for my yes.
@@ -264,8 +277,8 @@ As a designer who builds in code, I want to start a repo for a new app in the st
 
 **Acceptance examples**
 
-- Given a plain HTML prototype that I want to keep, when I ask for a repo, then the harness creates it on GitHub in the production stack, after I confirm the name and the owner.
-- Given a new repo, when the harness creates it, then it rebuilds the plain HTML prototype in the repo with the stack's components.
+- Given a prototype that I approved, when I ask for a repo, then the harness creates it on GitHub in the production stack, after I confirm the name and the owner.
+- Given a new repo, when the harness creates it, then it moves the prototype into the repo with the stack's components, and it rebuilds any part that does not use them.
 - Given a new repo, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
 - Given a new repo, when I start my next prototype in it, then the run needs no further setup.
 
