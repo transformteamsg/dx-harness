@@ -25,8 +25,7 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 ### Story gate
 
 - Each persona has one confirmation issue under [#413](https://github.com/transformteamsg/dx-harness/issues/413). The issue confirms the persona's stories and writes their acceptance examples. A persona's stories are confirmed when its issue closes.
-- A skill sub-issue is filed only after every story it serves is confirmed.
-- The P6 refinement issue blocks C1, because the selection grammar in C1 carries D1.
+- A skill sub-issue is filed only after every story it serves is confirmed. A skill that serves P1 is the exception: its P1 stories alone gate it, and the stories of other personas join it in a later issue.
 - A new or changed story that no skill serves needs a pull request to the [target skill table](#target-skill-set) in this file.
 
 ### How to contribute
@@ -231,7 +230,11 @@ One task per persona confirms its stories in `stories/`: P1 ([#415](https://gith
 
 ### Skills
 
-The epic gets one sub-issue for each draft skill, filed after C1 settles the categories and the stories it serves are confirmed. A skill issue that grows past one reviewable job splits with `dx-split-issue`. `dx-design-critique` is the likely case: the core run, dimensions as selections, the report, and the check-only mode.
+The epic gets one sub-issue for each draft skill, filed when the [story gate](#story-gate) allows. A skill that writes or reads the selection, such as `dx-design-language`, also waits for C1.
+
+The skills that serve P1 are filed and built first, in this order: `dx-design-setup`, `dx-design-language`, `dx-design-execute`, and `dx-design-critique`. The skills for the other personas follow.
+
+A skill issue that grows past one reviewable job splits with `dx-split-issue`. `dx-design-critique` is the likely case: the core run, dimensions as selections, the report, and the check-only mode.
 
 ## Holding context
 
