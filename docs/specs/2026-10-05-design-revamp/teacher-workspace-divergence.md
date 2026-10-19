@@ -3,7 +3,7 @@
 **Date:** 2026-10-09
 **Supports:** P1-2, P1-4, P1-13, and P1-14 in [the P1 stories](stories/p1-designer.md)
 
-This file records how the Teacher Workspace design sandbox and its production repo diverge. It is evidence for the stories above, and it reads the two repos as they stood on the date above.
+This file shows how work flowed before the harness changed it. It records how the Teacher Workspace design sandbox and its production repo diverge. It is evidence for the stories above, and it reads the two repos as they stood on the date above.
 
 ## The two repos
 
@@ -31,8 +31,8 @@ The sandbox is five months older than production. It chose its router, its Tailw
 
 The app card shows the same design in each repo:
 
-- Sandbox: `src/components/app-card.tsx` at commit `e13602f`, 183 lines.
-- Production: [`apps/host/src/components/AppCard.tsx` at commit `86559f1`](https://github.com/transformteamsg/teacher-workspace/blob/86559f1754e1b075346a175efdae21150d20b38d/apps/host/src/components/AppCard.tsx), 98 lines.
+- Sandbox: `src/components/app-card.tsx`, 183 lines.
+- Production: [`apps/host/src/components/AppCard.tsx`](https://github.com/transformteamsg/teacher-workspace/blob/main/apps/host/src/components/AppCard.tsx), 98 lines on the date above.
 
 | | Sandbox | Production |
 | --- | --- | --- |

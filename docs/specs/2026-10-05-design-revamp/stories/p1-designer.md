@@ -186,6 +186,8 @@ As a designer who builds in code, I want a quick prototype of a completely new a
 - Given a product's sandbox, when I start a prototype of a completely new app, then the harness starts it outside the sandbox and does not build it there.
 - Given a quick prototype, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a quick prototype, when it is built, then no coding standards check runs.
+- Given a quick prototype and no request for options, when the harness builds it, then it builds one prototype and shows no directions.
+- Given a finished quick prototype, when I want to share it, then the harness gives me a file or a link.
 - Given a prototype that I approve, when I want to keep it, then the harness offers to start a repo (P1-13), and setup runs then if my machine needs it.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a new app from an existing codebase. No skill chooses between an artifact library and HTML for a prototype.
@@ -224,6 +226,8 @@ As a designer who builds in code, I want to make a stated edit, such as "change 
 - Given the request "change the label to Save", when the harness makes the edit, then it does not ask me to choose a direction or approve a plan.
 - Given a stated edit that breaks a rule, such as a text colour with too little contrast, when I ask for it, then the harness tells me before it builds and offers a value that passes.
 - Given a stated edit, when it is made, then nothing else on the page changes.
+- Given a request with a stated value, such as "set the padding to 16px", when I ask, then the harness makes that edit directly.
+- Given a request with a goal and no value, such as "make the header blue", when I ask, then the harness shows rendered directions (P1-3) and does not make a stated edit.
 
 **Today:** The modification path of `dx-design-execute`. **Gap:** None.
 
@@ -295,6 +299,8 @@ As a designer who builds in code, I want my product's sandbox kept in step with 
 - Given a shipped component that differs, when the check finds it, then the harness shows me the two versions rendered side by side.
 - Given a shipped component that differs, when I agree to sync it, then the harness replaces the sandbox copy with the main repo's version, and it changes nothing without my agreement.
 - Given a prototype behind a feature flag that the main repo does not ship, when the sandbox syncs, then the prototype does not change.
+- Given a sandbox copy that holds mock data or changes that no branch has merged, when I agree to sync it, then the harness keeps them and replaces only the parts of the shipped design that differ.
+- Given work on another branch of the sandbox, when the sandbox syncs, then that branch does not change.
 - Given a shipped component that differs only because the sandbox's design language changed, when the check finds it, then the harness keeps the sandbox copy and reports the change for the main repo.
 - Given a main repo that holds a copy of `DESIGN.md`, when the sandbox's design language changes, then the check reports the copy as out of step and offers to open a pull request that updates it.
 - Given no difference, when the check finishes, then the harness says so in one line and starts the design.
@@ -308,7 +314,7 @@ As a designer who builds in code, I want to prototype a feature on top of my pro
 **Acceptance examples**
 
 - Given a product repo or its sandbox, when I ask for a prototype, then the harness builds it on a new branch on mock data, and the shared branch does not change.
-- Given a prototype in a product codebase, when the hifi is built, then it uses the app's own components.
+- Given a prototype in a product codebase, when the high-fidelity version is built, then it uses the app's own components.
 - Given a prototype in a product codebase, when it is built, then the codebase's own coding standards checks run in full, such as its lint, type check, and tests.
 - Given a prototype in a product codebase, when it is built, then the checks for unsafe and inaccessible output still run, and the plan approval and the design review do not.
 - Given a prototype in a product codebase, when I finish it, then the harness does not merge it into the shared branch until I make it a full build.
