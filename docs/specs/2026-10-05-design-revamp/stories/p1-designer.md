@@ -2,7 +2,7 @@
 
 Part of the [design revamp stories](README.md). Confirmed through [#415](https://github.com/transformteamsg/dx-harness/issues/415).
 
-- **Background:** UI or UX designer with no engineering background. New to git. Uses Claude Desktop, or Claude Code in a terminal with the organisation's shared AI platform tokens.
+- **Background:** UI or UX designer with no engineering background, in any domain: teachers, students, or parents. New to git. Uses Claude Desktop, or Claude Code in a terminal with the organisation's shared AI platform tokens.
 - **What they want from the harness:** Turn a design idea into working UI that meets the standard, without an engineer and without breaking the codebase. The harness decides where a default exists and uses no harness vocabulary ([#164](https://github.com/transformteamsg/dx-harness/issues/164)).
 - **Priority:** Primary persona. Where the needs of two personas conflict, the architecture optimises for P1.
 - **Evidence:** [Teacher Workspace sandbox divergence](../teacher-workspace-divergence.md), for P1-2, P1-4, P1-13, and P1-14.
@@ -135,8 +135,14 @@ As a designer who builds in code, I want to record my product's design language 
 - Given a new app's repo with no design language, when I record one, then I can choose an existing design language, such as Teacher Workspace, instead of defining one.
 - Given a product's sandbox, when I record or change the design language, then the harness writes it to the sandbox's `DESIGN.md`, which is the product's source of truth.
 - Given a change to the design language in the sandbox, when I hand off my next build, then the hand-off lists the change for the main repo.
+- Given a product, when I record its design language, then the harness asks which domain the product belongs to, from a list, and applies that domain's standards over the shared standards.
+- Given a chosen domain, when the harness reads a value, then the value resolves in this order: the rule's default, the domain's standards, then my product's `DESIGN.md`.
+- Given a domain whose standards relax or remove an L0 rule, when the harness checks my product, then the L0 rule still applies, and the harness reports the skipped line.
+- Given my product's `DESIGN.md`, when the harness writes it, then it records only where my product differs from its domain.
+- Given a change to my domain's standards in the harness repo, when my plugin updates, then my next check uses the change, and my product's `DESIGN.md` does not change.
+- Given a domain that has no recorded design language, when I choose it, then the harness says so and offers to record the first one (P6-2).
 
-**Today:** `dx-design-language`. **Gap:** No skill hands a change to the design language from the sandbox to the main repo.
+**Today:** `dx-design-language`. **Gap:** No skill hands a change to the design language from the sandbox to the main repo. No skill offers a list of domains or applies a domain's standards.
 
 ## P1-3: See rendered directions
 
