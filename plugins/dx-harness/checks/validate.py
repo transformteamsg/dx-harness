@@ -29,6 +29,7 @@ Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
 
+import ast
 import importlib.util
 import json
 import os
@@ -498,6 +499,11 @@ def live_skills_count(repo_root):
     return count
 
 
+# checks/*.py files that are not check scripts: the catalogue validator and
+# the shared library. Neither is counted as a check or declares COVERAGE.
+NOT_CHECK_SCRIPTS = {"validate.py", "checklib.py"}
+
+
 def live_checks_count(repo_root):
     """
     Number of check scripts under `<repo_root>/checks/*.py`, per the repo's
@@ -510,12 +516,11 @@ def live_checks_count(repo_root):
     checks_dir = os.path.join(repo_root, "checks")
     if not os.path.isdir(checks_dir):
         return 0
-    exempt = {"validate.py", "checklib.py"}
     return len(
         [
             fname
             for fname in os.listdir(checks_dir)
-            if fname.endswith(".py") and fname not in exempt
+            if fname.endswith(".py") and fname not in NOT_CHECK_SCRIPTS
         ]
     )
 
@@ -1319,15 +1324,160 @@ def collect_errors(repo_root, _return_count=False):
 COVERAGE_FILENAME = "COVERAGE.md"
 
 
+def _module_literal(path, name):
+    """The value of a module-level `<name> = <literal>` in `path`, read with ast so
+    the script is never imported. None when there is no such assignment."""
+    with open(path, encoding="utf-8") as fh:
+        tree = ast.parse(fh.read(), filename=path)
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == name for t in node.targets):
+            return ast.literal_eval(node.value)
+    return None
+
+
+def _declaration_errors(rel, decl):
+    if not isinstance(decl, dict):
+        return [f"ERROR {rel}: COVERAGE must be a dict"]
+    kind = decl.get("kind")
+    if kind == "process":
+        purpose = decl.get("purpose")
+        if not (isinstance(purpose, str) and purpose.strip()):
+            return [f"ERROR {rel}: a process check's COVERAGE needs a 'purpose'"]
+        return []
+    if kind != "rule":
+        return [f"ERROR {rel}: COVERAGE 'kind' must be 'rule' or 'process'"]
+    controls = decl.get("controls")
+    if not isinstance(controls, dict) or not controls:
+        return [f"ERROR {rel}: COVERAGE names no control; a rule check declares the "
+                f"controls it decides, and a check that decides none is kind 'process'"]
+    errors = []
+    for cid, spec in controls.items():
+        if not (isinstance(spec, dict) and isinstance(spec.get("covers"), str)
+                and spec["covers"].strip() and isinstance(spec.get("misses"), str)):
+            errors.append(f"ERROR {rel}: COVERAGE for {cid} needs a non-empty 'covers' "
+                          f"and a 'misses' string")
+    if "note" in decl and not isinstance(decl["note"], str):
+        errors.append(f"ERROR {rel}: COVERAGE 'note' must be a string")
+    return errors
+
+
 def read_check_coverage(checks_dir):
-    """({script: declaration}, errors) for every check script in `checks_dir`."""
-    raise NotImplementedError("read_check_coverage")
+    """({script: declaration}, errors) for every check script in `checks_dir`. A
+    script with no COVERAGE, or with one that is not a literal, is an error."""
+    declarations, errors = {}, []
+    for fname in sorted(os.listdir(checks_dir)):
+        if not fname.endswith(".py") or fname in NOT_CHECK_SCRIPTS:
+            continue
+        rel = f"checks/{fname}"
+        try:
+            decl = _module_literal(os.path.join(checks_dir, fname), "COVERAGE")
+        except (OSError, SyntaxError, ValueError) as exc:
+            errors.append(f"ERROR {rel}: COVERAGE must be a literal: {exc}")
+            continue
+        if decl is None:
+            errors.append(f"ERROR {rel}: no COVERAGE declaration; declare the controls "
+                          f"this check decides, or kind 'process'")
+            continue
+        problems = _declaration_errors(rel, decl)
+        if problems:
+            errors.extend(problems)
+            continue
+        declarations[fname] = decl
+    return declarations, errors
+
+
+def _cell(text):
+    return text.replace("|", "\\|").replace("\n", " ") if text else "None recorded"
+
+
+def _script_names(control):
+    script = control.get("script")
+    scripts = [script] if isinstance(script, str) else (script or [])
+    return [os.path.basename(s) for s in scripts if isinstance(s, str)]
 
 
 def coverage_markdown(checks_dir, controls):
     """(COVERAGE.md text, errors) from the declarations in `checks_dir` and the
-    catalogue `controls`."""
-    raise NotImplementedError("coverage_markdown")
+    catalogue `controls`. On any error the text is empty. A catalogue `script:`
+    claim that the named check does not declare is listed, not failed: the
+    declaration is what the check decides."""
+    declarations, errors = read_check_coverage(checks_dir)
+    by_id = {c["id"]: c for c in controls if isinstance(c, dict) and "id" in c}
+    rule_checks = {f: d for f, d in declarations.items() if d["kind"] == "rule"}
+    for fname, decl in rule_checks.items():
+        for cid in decl["controls"]:
+            if cid not in by_id:
+                errors.append(f"ERROR checks/{fname}: COVERAGE names {cid}, "
+                              f"which the catalogue does not have")
+    if errors:
+        return "", errors
+
+    covered = {cid for d in rule_checks.values() for cid in d["controls"]}
+    disagreements = []
+    for control in controls:
+        for fname in _script_names(control):
+            decl = declarations.get(fname)
+            if decl is not None and control["id"] not in decl.get("controls", {}):
+                disagreements.append((control["id"], fname))
+
+    lines = [
+        "# Check coverage",
+        "",
+        "<!-- Generated by `python3 checks/validate.py --write-coverage` from the",
+        "     COVERAGE declaration in each check script. Do not edit this file by hand. -->",
+        "",
+        "What each check decides, and what it leaves to a person. A control that a",
+        "check covers in part still needs a manual pass for what it misses. How to run",
+        "each check, and how it works inside, is in [README.md](README.md).",
+        "",
+        "## Rule checks",
+    ]
+    for fname, decl in rule_checks.items():
+        lines += ["", f"### `{fname}`", ""]
+        if decl.get("note"):
+            lines += [decl["note"], ""]
+        lines += ["| Control | Tier | Covers | Misses |", "| --- | --- | --- | --- |"]
+        for cid, spec in decl["controls"].items():
+            lines.append(f"| {cid} | {by_id[cid].get('tier', '?')} | "
+                         f"{_cell(spec['covers'])} | {_cell(spec['misses'])} |")
+    lines += ["", "## Covered by no check", "",
+              "No check decides these controls. Verify each one by hand against its",
+              "detail file.", "",
+              "| Control | Tier | Check type |", "| --- | --- | --- |"]
+    for control in controls:
+        if control["id"] not in covered:
+            lines.append(f"| {control['id']} | {control.get('tier', '?')} | "
+                         f"{control.get('check', '?')} |")
+    if disagreements:
+        lines += ["", "## Catalogue claims that disagree", "",
+                  "The catalogue names a check as the script for these controls, and the",
+                  "check does not declare them. Trust the declaration above, and check",
+                  "these controls by hand.", "",
+                  "| Control | Script in the catalogue |", "| --- | --- |"]
+        for cid, fname in disagreements:
+            lines.append(f"| {cid} | `{fname}` |")
+    process = {f: d for f, d in declarations.items() if d["kind"] == "process"}
+    if process:
+        lines += ["", "## Process checks", "",
+                  "These checks validate records, the harness, or other checks. They decide",
+                  "no control.", ""]
+        for fname, decl in process.items():
+            lines.append(f"- `{fname}`: {decl['purpose']}")
+    return "\n".join(lines) + "\n", []
+
+
+def write_coverage(repo_root):
+    """Write checks/COVERAGE.md and return the error lines (empty on success)."""
+    with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
+        controls = yaml.safe_load(fh)["controls"]
+    checks_dir = os.path.join(repo_root, "checks")
+    text, errors = coverage_markdown(checks_dir, controls)
+    if errors:
+        return errors
+    with open(os.path.join(checks_dir, COVERAGE_FILENAME), "w", encoding="utf-8") as fh:
+        fh.write(text)
+    return []
 
 
 # ── Self-test ──────────────────────────────────────────────────────────────────
@@ -2700,6 +2850,15 @@ def main():
 
     if "--coverage" in args:
         print_coverage(REPO_ROOT)
+        sys.exit(0)
+
+    if "--write-coverage" in args:
+        errors = write_coverage(REPO_ROOT)
+        for e in errors:
+            print(e)
+        if errors:
+            sys.exit(1)
+        print(f"OK: wrote checks/{COVERAGE_FILENAME}")
         sys.exit(0)
 
     errors, n = collect_errors(REPO_ROOT, _return_count=True)
