@@ -2563,6 +2563,13 @@ def run_self_test():
             return None
         return check_result
 
+    coverage_case("coverage: a check with no COVERAGE declaration fails and names it",
+                  {"fake-scan.py": rule_check_source, "silent-scan.py": "print('no declaration')\n"},
+                  coverage_controls, names_script("silent-scan.py", "no COVERAGE"))
+    coverage_case("coverage: a rule check that names no control fails and names it",
+                  {"fake-scan.py": rule_check_source,
+                   "empty-scan.py": 'COVERAGE = {"kind": "rule", "controls": {}}\n'},
+                  coverage_controls, names_script("empty-scan.py", "names no control"))
     coverage_case("coverage: a check that names an unknown control fails",
                   {"fake-scan.py": rule_check_source.replace('"TOK-2"', '"TOK-9"')},
                   coverage_controls, names_script("fake-scan.py", "TOK-9"))
