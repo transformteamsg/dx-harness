@@ -2578,6 +2578,21 @@ def run_self_test():
                                    .replace('"TOK-2": {"covers": "off-scale', '"A11Y-1": {"covers": "off-scale')},
                   coverage_controls, names_script("fake-scan.py", "TOK-1"))
 
+    def lists_uncovered(text, errs):
+        if errs:
+            return f"want no errors; got {errs!r}"
+        if "## Covered by no check" not in text:
+            return f"want a 'Covered by no check' section; got:\n{text}"
+        section = text.split("## Covered by no check", 1)[1]
+        if "| A11Y-1 | L0 | deterministic |" not in section:
+            return f"want A11Y-1 listed as covered by no check; got:\n{section}"
+        if "TOK-1" in section or "TOK-2" in section:
+            return f"want only uncovered controls in the section; got:\n{section}"
+        return None
+
+    coverage_case("coverage: a control that no check covers is listed as covered by no check",
+                  {"fake-scan.py": rule_check_source}, coverage_controls, lists_uncovered)
+
     case_count += 1
     try:
         with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
