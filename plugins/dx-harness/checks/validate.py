@@ -2753,6 +2753,57 @@ def run_self_test():
     coverage_case("coverage: a control that no check covers is listed as covered by no check",
                   {"fake-scan.py": rule_check_source}, coverage_controls, lists_uncovered)
 
+    # Paths the generator introduced, written after the code.
+    coverage_case("coverage: a COVERAGE that is not a literal fails and names the check",
+                  {"fake-scan.py": "COVERAGE = build()\n"},
+                  coverage_controls, names_script("fake-scan.py", "must be a literal"))
+    coverage_case("coverage: an unknown kind fails",
+                  {"fake-scan.py": 'COVERAGE = {"kind": "lint", "controls": {}}\n'},
+                  coverage_controls, names_script("fake-scan.py", "'kind'"))
+    coverage_case("coverage: a process check with no purpose fails",
+                  {"fake-scan.py": 'COVERAGE = {"kind": "process"}\n'},
+                  coverage_controls, names_script("fake-scan.py", "purpose"))
+    coverage_case("coverage: a control with an empty covers fails",
+                  {"fake-scan.py": rule_check_source.replace("raw hex in style contexts", "")},
+                  coverage_controls, names_script("fake-scan.py", "TOK-1"))
+
+    def renders_note_and_escapes(text, errs):
+        if errs:
+            return f"want no errors; got {errs!r}"
+        if "Needs an open page." not in text:
+            return f"want the note under the check heading; got:\n{text}"
+        if "a \\| b" not in text:
+            return f"want a pipe in a cell escaped; got:\n{text}"
+        return None
+
+    coverage_case("coverage: renders a note and escapes a pipe in a cell",
+                  {"fake-scan.py": rule_check_source
+                   .replace('"kind": "rule",', '"kind": "rule", "note": "Needs an open page.",')
+                   .replace("colours composed at run time", "a | b")},
+                  coverage_controls, renders_note_and_escapes)
+
+    case_count += 1
+    write_root = tempfile.mkdtemp(prefix="validate-selftest-write-coverage-")
+    try:
+        os.makedirs(os.path.join(write_root, "checks"))
+        os.makedirs(os.path.join(write_root, "standards"))
+        with open(os.path.join(write_root, "checks", "fake-scan.py"), "w") as fh:
+            fh.write(rule_check_source)
+        with open(os.path.join(write_root, "standards", "catalog.yaml"), "w") as fh:
+            yaml.safe_dump({"controls": coverage_controls}, fh)
+        write_errs = write_coverage(write_root)
+        written = os.path.join(write_root, "checks", COVERAGE_FILENAME)
+        if write_errs or not os.path.isfile(written):
+            failures.append(f"FAIL coverage: --write-coverage writes the file: {write_errs!r}")
+        with open(os.path.join(write_root, "checks", "silent-scan.py"), "w") as fh:
+            fh.write("print('no declaration')\n")
+        os.remove(written)
+        case_count += 1
+        if not write_coverage(write_root) or os.path.isfile(written):
+            failures.append("FAIL coverage: --write-coverage writes nothing when a check fails")
+    finally:
+        shutil.rmtree(write_root, ignore_errors=True)
+
     case_count += 1
     try:
         with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
