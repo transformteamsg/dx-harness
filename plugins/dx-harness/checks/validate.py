@@ -2504,6 +2504,84 @@ def run_self_test():
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)
 
+    # ── [COVERAGE] cases (#461) ──────────────────────────────────────────────
+    coverage_controls = [
+        {"id": "TOK-1", "tier": "L1", "check": "deterministic", "script": "checks/fake-scan.py"},
+        {"id": "TOK-2", "tier": "L1", "check": "deterministic"},
+        {"id": "A11Y-1", "tier": "L0", "check": "deterministic"},
+    ]
+    rule_check_source = (
+        'COVERAGE = {\n'
+        '    "kind": "rule",\n'
+        '    "controls": {\n'
+        '        "TOK-1": {"covers": "raw hex in style contexts",\n'
+        '                  "misses": "colours composed at run time"},\n'
+        '        "TOK-2": {"covers": "off-scale spacing", "misses": ""},\n'
+        '    },\n'
+        '}\n'
+    )
+    process_check_source = 'COVERAGE = {"kind": "process", "purpose": "validates run records"}\n'
+
+    def coverage_case(name, files, controls, check_result):
+        nonlocal case_count
+        case_count += 1
+        tmp_checks = tempfile.mkdtemp(prefix="validate-selftest-coverage-")
+        try:
+            for fname, text in files.items():
+                with open(os.path.join(tmp_checks, fname), "w", encoding="utf-8") as fh:
+                    fh.write(text)
+            try:
+                text, errs = coverage_markdown(tmp_checks, controls)
+            except Exception as exc:  # the generator must report, never crash
+                failures.append(f"FAIL {name}: generator raised {type(exc).__name__}: {exc}")
+                return
+            problem = check_result(text, errs)
+            if problem:
+                failures.append(f"FAIL {name}: {problem}")
+        finally:
+            shutil.rmtree(tmp_checks, ignore_errors=True)
+
+    def lists_check_coverage(text, errs):
+        if errs:
+            return f"want no errors; got {errs!r}"
+        for needle in ("fake-scan.py", "| TOK-1 | L1 | raw hex in style contexts | colours composed at run time |",
+                       "| TOK-2 | L1 | off-scale spacing | None recorded |",
+                       "audit-thing.py", "validates run records"):
+            if needle not in text:
+                return f"want {needle!r} in COVERAGE.md; got:\n{text}"
+        return None
+
+    coverage_case("coverage: lists each check, its controls, and what each misses",
+                  {"fake-scan.py": rule_check_source, "audit-thing.py": process_check_source,
+                   "checklib.py": "# a library, not a check\n", "validate.py": "# the validator\n"},
+                  coverage_controls, lists_check_coverage)
+
+    def names_script(script, needle):
+        def check_result(text, errs):
+            if not any(script in e and needle in e for e in errs):
+                return f"want an error naming {script} and {needle!r}; got {errs!r}"
+            return None
+        return check_result
+
+    coverage_case("coverage: a check that names an unknown control fails",
+                  {"fake-scan.py": rule_check_source.replace('"TOK-2"', '"TOK-9"')},
+                  coverage_controls, names_script("fake-scan.py", "TOK-9"))
+    coverage_case("coverage: a control whose script field names a check it does not declare fails",
+                  {"fake-scan.py": rule_check_source.replace('"TOK-1"', '"TOK-2"', 1)
+                                   .replace('"TOK-2": {"covers": "off-scale', '"A11Y-1": {"covers": "off-scale')},
+                  coverage_controls, names_script("fake-scan.py", "TOK-1"))
+
+    case_count += 1
+    try:
+        with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
+            live_controls = yaml.safe_load(fh)["controls"]
+        _live_text, live_errs = coverage_markdown(_CHECKS_DIR, live_controls)
+        if live_errs:
+            failures.append(f"FAIL coverage: every live check declares its coverage: {live_errs!r}")
+    except Exception as exc:
+        failures.append(f"FAIL coverage: every live check declares its coverage: "
+                        f"generator raised {type(exc).__name__}: {exc}")
+
     # ── Report ───────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
 
