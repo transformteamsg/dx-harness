@@ -30,7 +30,7 @@ passes. Two rules bind every row and do not change:
   should run, marked "missing, not installed".
 - **Verify, then say so.** A tool is set up only when its check command passes; report
   the actual output, never more than the check shows — the same honesty line the checks
-  hold (`../../../checks/README.md`).
+  hold (`../../../checks/COVERAGE.md`).
 
 Close with the end-to-end health check named at the bottom of `setup.md`, then tell the
 user what passed, what was installed, and what is still missing (and why) in one short
@@ -49,7 +49,7 @@ sections with them, writes the file, and generates the projection. Full spec:
 
 - Do not oversell. If a check is not built yet, say "verified manually" — the harness
   claims no enforcement it lacks. Full statement and per-script coverage:
-  `../../../checks/README.md`.
+  `../../../checks/COVERAGE.md`.
 - Repo-level adoption — the stack, the component manifest, record locations, the named
   L1 approver — belongs to the team onboarding guide (`../../../docs/ONBOARDING.md`),
   not here. Point there and stop.

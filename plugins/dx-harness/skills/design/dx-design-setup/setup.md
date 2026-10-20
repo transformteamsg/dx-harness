@@ -14,7 +14,7 @@ Two rules bind every row:
   commands a human should run, marked "missing, not installed".
 - **Verify, then say so.** A tool is set up when its check command passes;
   report the actual output. Never claim more than the check shows — the same
-  honesty line the checks hold (`../../../checks/README.md`).
+  honesty line the checks hold (`../../../checks/COVERAGE.md`).
 
 Work the table top to bottom: run the check; if it passes, move on; if not,
 offer the install, run it (or hand it to the user where marked), and re-run

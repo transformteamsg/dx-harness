@@ -3,8 +3,9 @@
 Run in this order; do not present output to the user while a step is failing:
 
 1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the built
-   `checks/` scripts first — `checks/README.md` is the authority for the full set,
-   each script's flags, and the static subset each does *not* cover.
+   `checks/` scripts first — `checks/COVERAGE.md` is the authority for the full set
+   and the static subset each does *not* cover. The commands below carry each
+   script's flags; read `checks/README.md` only for a flag they do not show.
    **Locating them:** like the catalog, `checks/` ships with this harness, not with
    the product repo — resolve it relative to this verify.md file, three levels up:
    `<this-skill-dir>/../../../checks/` (the same path works in the harness dev repo
