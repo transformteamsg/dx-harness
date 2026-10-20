@@ -62,7 +62,7 @@ None of these differences is a decision that someone recorded. Each one came fro
 
 ## What the stories take from this
 
-- **P1-13:** a new app's repo starts in the stack that the production apps use, because the sandbox chose its stack first and production chose another.
+- **P1-13 and P1-16:** a new app starts in a sandbox repo. A production-ready repo in the stack that the production apps use follows from a ready prototype, because the sandbox chose its stack first and production chose another.
 - **P1-14:** a check at the start of each design and a one-way sync of shipped components keep the sandbox in step with production. A sync can copy only when the two stacks agree.
 - **P1-4:** a hand-off from the sandbox stays a rebuild until the sandbox and production share foundations.
 - **P1-2:** the sandbox owns `DESIGN.md`, as it does here, and a change to it goes to production in the next hand-off.

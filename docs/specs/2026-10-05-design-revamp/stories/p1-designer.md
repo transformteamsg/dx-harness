@@ -38,9 +38,10 @@ Every story keeps these principles, and every skill that serves a P1 story has e
 - [P1-10: Keep records without being asked (retired)](#p1-10-keep-records-without-being-asked-retired)
 - [P1-11: Ask whether a rule applies](#p1-11-ask-whether-a-rule-applies)
 - [P1-12: Report a problem with the harness](#p1-12-report-a-problem-with-the-harness)
-- [P1-13: Start a new repo for prototypes](#p1-13-start-a-new-repo-for-prototypes)
+- [P1-13: Start a sandbox repo for a prototype](#p1-13-start-a-sandbox-repo-for-a-prototype)
 - [P1-14: Keep my product's sandbox in step with the product](#p1-14-keep-my-products-sandbox-in-step-with-the-product)
 - [P1-15: Prototype in an existing codebase](#p1-15-prototype-in-an-existing-codebase)
+- [P1-16: Start a production-ready repo from a sandbox prototype](#p1-16-start-a-production-ready-repo-from-a-sandbox-prototype)
 
 **Journey**
 
@@ -63,8 +64,10 @@ flowchart TD
     repo -- A completely new app --> dirA["P1-3: See rendered directions"] --> P1_5["P1-5: Prototype quickly"]
     P1_5 --> keep5{Keep the idea?}
     keep5 -- No --> doneA([Done])
-    keep5 -- Yes --> P1_13["P1-13: Start a new repo for prototypes"]
-    P1_13 -- "Move the prototype into the new repo" --> P1_15
+    keep5 -- Yes --> P1_13["P1-13: Start a sandbox repo for a prototype"]
+    P1_13 -- "Keep prototyping in the sandbox repo" --> P1_15
+    P1_13 --> ready{Is the prototype ready for production?}
+    ready -- Yes --> P1_16["P1-16: Start a production-ready repo from a sandbox prototype"] --> doneA
 
     repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
     P1_14 --> lang{Is the design language recorded?}
@@ -188,7 +191,7 @@ As a designer who builds in code, I want a quick prototype of a completely new a
 - Given a quick prototype, when it is built, then no coding standards check runs.
 - Given a quick prototype and no request for options, when the harness builds it, then it builds one prototype and shows no directions.
 - Given a finished quick prototype, when I want to share it, then the harness gives me a file or a link.
-- Given a prototype that I approve, when I want to keep it, then the harness offers to start a repo (P1-13), and setup runs then if my machine needs it.
+- Given a prototype that I approve, when I want to keep it, then the harness offers to start a sandbox repo (P1-13), and setup runs then if my machine needs it.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate. No skill tells a new app from an existing codebase. No skill chooses between an artifact library and HTML for a prototype.
 
@@ -276,21 +279,23 @@ As a designer who builds in code, I want to report a problem with the harness du
 
 **Today:** `dx-design-feedback`. **Gap:** None.
 
-## P1-13: Start a new repo for prototypes
+## P1-13: Start a sandbox repo for a prototype
 
-As a designer who builds in code, I want to start a repo for a new app in the stack that our production apps use, so that its prototypes and its later product do not drift apart.
+As a designer who builds in code, I want to start a sandbox repo for a new app, so that I keep my prototypes in one place before anyone builds the app for production.
 
 **Acceptance examples**
 
-- Given a prototype that I approved, when I ask for a repo, then the harness creates it on GitHub in the production stack, with a name that ends in `-sandbox`, after I confirm the name.
+- Given a prototype that I approved, when I ask for a repo, then the harness creates a sandbox repo on GitHub with a name that ends in `-sandbox`, after I confirm the name.
 - Given a repo to create, when the harness asks who owns it, then I choose my personal GitHub account or an organisation that I belong to, and the harness does not choose for me.
 - Given an organisation where I cannot create a repo, when I choose it, then the harness says so in one plain line and asks me to choose again.
-- Given a new repo, when the harness creates it, then the repo is private.
-- Given a new repo, when the harness creates it, then it moves the prototype into the repo with the stack's components, and it rebuilds any part that does not use them.
-- Given a new repo, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
-- Given a new repo, when I start my next prototype in it, then the run needs no further setup.
+- Given a new sandbox repo, when the harness creates it, then the repo is private.
+- Given a new sandbox repo, when the harness creates it, then it moves the prototype into the repo as it is, and it does not rebuild it.
+- Given a sandbox repo, when I build in it, then it does not run the guardrails of a production app, such as the coding standards checks, and the checks for unsafe and inaccessible output still run.
+- Given a new sandbox repo, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
+- Given a new sandbox repo, when I start my next prototype in it, then the run needs no further setup.
+- Given a new idea, when I start to build it, then the harness builds it in a sandbox first, and it never builds it as a production app first.
 
-**Today:** None. **Gap:** No skill creates a repo. Nothing records the stack that the production apps use.
+**Today:** None. **Gap:** No skill creates a repo.
 
 ## P1-14: Keep my product's sandbox in step with the product
 
@@ -324,3 +329,18 @@ As a designer who builds in code, I want to prototype a feature on top of my pro
 - Given a finished prototype in a product codebase, when I ask to make it a full build, then the run continues from the prototype as a full build (P1-4), with the plan approval and the design review.
 
 **Today:** None. **Gap:** `dx-design-execute` runs every gate and has no prototype path for a product codebase.
+
+## P1-16: Start a production-ready repo from a sandbox prototype
+
+As a designer who builds in code, I want a new production-ready repo started from a sandbox prototype that is ready, so that an engineer builds on a base that meets the guardrails of a production app.
+
+**Acceptance examples**
+
+- Given a sandbox prototype that I judge ready, when I ask for a production-ready repo, then the harness creates a new repo in the stack that our production apps use, after I confirm the name and who owns it.
+- Given a new production-ready repo, when the harness creates it, then it moves the prototype in with the stack's components, and it rebuilds any part that does not use them.
+- Given a new production-ready repo, when the harness creates it, then the guardrails of a production app run in it, such as the coding standards checks.
+- Given a new production-ready repo, when the harness creates it, then the design language of the sandbox prototype is recorded in it.
+- Given a new production-ready repo, when the harness creates it, then the sandbox repo does not change.
+- Given a sandbox prototype that I have not judged ready, when I ask for a production-ready repo, then the harness asks me to confirm that it is ready before it creates anything.
+
+**Today:** None. **Gap:** No skill creates a repo. Nothing records the stack that the production apps use or the guardrails of a production app.
