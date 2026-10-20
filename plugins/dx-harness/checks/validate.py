@@ -25,6 +25,10 @@ Validates standards/catalog.yaml for internal consistency:
      reason saying why no script exists, or a temporary GAP_GRANDFATHERED
      allowance. 'gap:' is forbidden on L0 and on any control a script or the
      evaluator already covers.
+  10. Rule set [RULE-SET]: every file under standards/rules/, presets/, and
+     dimensions/ reads the same way in checklib's stdlib reader and in PyYAML,
+     meets standards/rules/schema.json, and resolves. The count of current
+     control IDs that resolve to a rule is printed; --strict fails on the rest.
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -1073,7 +1077,7 @@ def uitext_parity_errors(repo_root):
     return errors
 
 
-def collect_errors(repo_root, _return_count=False):
+def collect_errors(repo_root, _return_count=False, strict=False):
     """
     Run all of Steps 1–7 against `repo_root` and return a list of error
     strings (empty on a fully valid catalog). Uses a local errors accumulator
@@ -1307,7 +1311,243 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(tone_parity_errors(repo_root))
     errors.extend(uitext_parity_errors(repo_root))
 
+    # ── Step 10: Rule set ────────────────────────────────────────────────────
+    errors.extend(rule_set_errors(repo_root))
+    if strict and os.path.isdir(os.path.join(repo_root, "standards", "rules")):
+        _resolved, unresolved = rule_set_coverage(repo_root, catalog_by_id)
+        for cid in unresolved:
+            err("standards/rules", f"{cid} resolves to no rule file and no redirect (--strict)")
+
     return result(len(catalog_by_id))
+
+
+# ── Step 10: Rule set (standards/rules/, #463) ─────────────────────────────────
+# The rule set replaces catalog.yaml one rule file at a time (#413). Until the
+# category reviews write the rules, no current control ID resolves, so the
+# coverage count is reported and fails only with --strict.
+
+RULE_ROOT_FILES = {"schema.json", "redirects.yaml", "_template.md", "README.md"}
+RULE_SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+RULE_PARAMETER_RE = re.compile(r"^[a-z0-9_]+$")
+RULE_CODE_RE = re.compile(r"^[A-Z0-9]+-\d+$")
+
+
+def _subset_parity_error(rel, subset_text):
+    """None when the stdlib subset reader and PyYAML read `subset_text` the
+    same way, else the ERROR line. The subset reader is what the checks use at
+    run time, so a file that reads differently would resolve wrongly."""
+    try:
+        ours = checklib.read_yaml_subset(subset_text)
+    except checklib.RuleSetError as exc:
+        return f"ERROR {rel}: {exc}"
+    try:
+        theirs = yaml.safe_load(subset_text)
+    except yaml.YAMLError as exc:
+        return f"ERROR {rel}: not valid YAML: {exc}"
+    if theirs is None:
+        theirs = {}
+    if ours != theirs:
+        return (f"ERROR {rel}: the stdlib reader and PyYAML read this differently "
+                f"(stdlib: {ours!r}; PyYAML: {theirs!r}): quote the value")
+    return None
+
+
+def rule_file_errors(path, rel, category, schema):
+    """Schema errors for one rule file in the `category` folder."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            frontmatter, _body = checklib.split_frontmatter(fh.read())
+    except (OSError, checklib.RuleSetError) as exc:
+        return [f"ERROR {rel}: {exc}"]
+    parity = _subset_parity_error(rel, frontmatter)
+    if parity:
+        return [parity]
+    data = checklib.read_yaml_subset(frontmatter)
+    errors = []
+
+    def err(message):
+        errors.append(f"ERROR {rel}: {message}")
+
+    required, optional = schema["required_fields"], schema["optional_fields"]
+    for field in required:
+        if field not in data:
+            err(f"missing required field '{field}'")
+    for field in data:
+        if field not in required and field not in optional:
+            err(f"unknown field '{field}'")
+    code = data.get("code")
+    if isinstance(code, str):
+        prefix = code.rpartition("-")[0]
+        if not RULE_CODE_RE.match(code) or prefix != category:
+            err(f"code '{code}' must be {category}-<number> in the {category.lower()}/ folder")
+        if os.path.basename(path) != f"{code.lower()}.md":
+            err(f"file name must be {code.lower()}.md")
+    elif "code" in data:
+        err("code must be a string")
+    if "category" in data and data["category"] != category:
+        err(f"category '{data['category']}' does not match the {category.lower()}/ folder")
+    if "slug" in data and not (isinstance(data["slug"], str) and RULE_SLUG_RE.match(data["slug"])):
+        err(f"slug '{data['slug']}' must be kebab-case")
+    if "title" in data and not (isinstance(data["title"], str) and data["title"].strip()):
+        err("title must be a non-empty string")
+    for field, allowed in (("tier", schema["tiers"]), ("check", schema["checks"]),
+                           ("status", schema["statuses"])):
+        if field in data and data[field] not in allowed:
+            err(f"{field} '{data[field]}' must be one of {', '.join(allowed)}")
+    if "applies_to" in data:
+        value = data["applies_to"]
+        if not isinstance(value, list) or not value:
+            err("applies_to must be a non-empty list")
+        else:
+            for item in value:
+                if item not in schema["applies_to"]:
+                    err(f"applies_to '{item}' must be one of {', '.join(schema['applies_to'])}")
+    removed = data.get("status") == "removed"
+    reason = data.get("reason")
+    if removed and not (isinstance(reason, str) and reason.strip()):
+        err("a removed rule needs a one-line 'reason'")
+    if not removed and "reason" in data:
+        err("'reason' belongs on a removed rule only")
+    params = data.get("parameters")
+    if params is not None:
+        if not isinstance(params, dict):
+            err("parameters must be a mapping of name to {description, default}")
+        else:
+            fields = schema["parameter_fields"]
+            for name, spec in params.items():
+                if not RULE_PARAMETER_RE.match(name):
+                    err(f"parameter '{name}' must be snake_case")
+                if not isinstance(spec, dict):
+                    err(f"parameter '{name}' must be a mapping")
+                    continue
+                for field in fields["required"]:
+                    if not (isinstance(spec.get(field), str) and spec[field].strip()):
+                        err(f"parameter '{name}' needs a '{field}'")
+                for field in spec:
+                    if field not in fields["required"] and field not in fields["optional"]:
+                        err(f"parameter '{name}' has unknown field '{field}'")
+    return errors
+
+
+def rule_set_errors(repo_root):
+    """
+    [RULE-SET] Every rule file, redirect, preset, and dimension under
+    `<repo_root>/standards/` reads with the stdlib subset reader exactly as
+    PyYAML reads it, meets standards/rules/schema.json, and resolves. A tree
+    with no standards/rules/ has nothing to check.
+    """
+    standards = os.path.join(repo_root, "standards")
+    rules_dir = os.path.join(standards, "rules")
+    if not os.path.isdir(rules_dir):
+        return []
+    errors = []
+
+    def err(location, message):
+        errors.append(f"ERROR {location}: {message}")
+
+    try:
+        schema = checklib.load_rule_schema()
+    except checklib.RuleSetError as exc:
+        return [f"ERROR standards/rules/schema.json: {exc}"]
+    categories = schema["categories"]
+    for name in sorted(os.listdir(rules_dir)):
+        path = os.path.join(rules_dir, name)
+        rel = os.path.relpath(path, repo_root)
+        if os.path.isdir(path):
+            if name != name.lower() or name.upper() not in categories:
+                err(rel, f"not a category folder; use one of "
+                         f"{', '.join(c.lower() for c in categories)}")
+                continue
+            for fname in sorted(os.listdir(path)):
+                fpath = os.path.join(path, fname)
+                frel = os.path.relpath(fpath, repo_root)
+                if not fname.endswith(".md"):
+                    err(frel, "a category folder holds rule files (.md) only")
+                    continue
+                errors.extend(rule_file_errors(fpath, frel, name.upper(), schema))
+        elif name not in RULE_ROOT_FILES and not name.startswith("."):
+            err(rel, "unexpected file in standards/rules/; a rule belongs in its category folder")
+
+    template = os.path.join(rules_dir, "_template.md")
+    if os.path.isfile(template):
+        rel = os.path.relpath(template, repo_root)
+        try:
+            with open(template, encoding="utf-8") as fh:
+                parity = _subset_parity_error(rel, checklib.split_frontmatter(fh.read())[0])
+            if parity:
+                errors.append(parity)
+        except checklib.RuleSetError as exc:
+            err(rel, str(exc))
+
+    redirects_path = os.path.join(rules_dir, "redirects.yaml")
+    if os.path.isfile(redirects_path):
+        with open(redirects_path, encoding="utf-8") as fh:
+            parity = _subset_parity_error(os.path.relpath(redirects_path, repo_root), fh.read())
+        if parity:
+            errors.append(parity)
+    if errors:
+        return errors
+
+    try:
+        resolver = checklib.RuleResolver(repo_root)
+    except checklib.RuleSetError as exc:
+        return [f"ERROR standards/rules: {exc}"]
+    slugs = {}
+    for code, rule in sorted(resolver.rules.items()):
+        slug = rule.get("slug")
+        if slug in slugs:
+            err(os.path.relpath(rule["path"], repo_root),
+                f"slug '{slug}' is also used by {slugs[slug]}")
+        slugs[slug] = code
+    redirects_rel = os.path.relpath(redirects_path, repo_root)
+    for old, targets in sorted(resolver.redirects.items()):
+        if not RULE_CODE_RE.match(old):
+            err(redirects_rel, f"'{old}' is not a code")
+        if old in resolver.rules:
+            err(redirects_rel, f"{old} is a rule code; a redirect cannot shadow a rule")
+        for target in targets:
+            if target not in resolver.rules:
+                err(redirects_rel, f"{old} redirects to {target}, and no rule file has {target}")
+
+    for folder in ("presets", "dimensions"):
+        folder_path = os.path.join(standards, folder)
+        if not os.path.isdir(folder_path):
+            continue
+        for fname in sorted(os.listdir(folder_path)):
+            if not fname.endswith(".md"):
+                continue
+            path = os.path.join(folder_path, fname)
+            rel = os.path.relpath(path, repo_root)
+            try:
+                selection = checklib.read_selection(path)
+                if selection["extend"]:
+                    err(rel, f"a {folder[:-1]} cannot extend a preset")
+                if folder == "dimensions" and (selection["ignore"] or selection["parameters"]):
+                    err(rel, "a dimension only selects; it has no ignore and no parameters")
+                resolver.check_selection(selection, rel)
+            except checklib.RuleSetError as exc:
+                err(rel, str(exc))
+    return errors
+
+
+def rule_set_coverage(repo_root, control_ids):
+    """(resolved, unresolved) current control IDs: an ID resolves when a rule
+    file has its code, whatever the status, or when every code it redirects to
+    has a rule file. An unreadable rule set resolves nothing; rule_set_errors
+    reports why."""
+    try:
+        rules, redirects = checklib.load_rule_set(
+            os.path.join(repo_root, "standards", "rules"))
+    except checklib.RuleSetError:
+        return [], sorted(control_ids)
+    resolved, unresolved = [], []
+    for cid in sorted(control_ids):
+        targets = redirects.get(cid)
+        if cid in rules or (targets and all(t in rules for t in targets)):
+            resolved.append(cid)
+        else:
+            unresolved.append(cid)
+    return resolved, unresolved
 
 
 # ── Self-test ──────────────────────────────────────────────────────────────────
@@ -2484,6 +2724,95 @@ def run_self_test():
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)
 
+    # ── [RULE-SET] cases ─────────────────────────────────────────────────────
+    rule_fixture = os.path.join(_CHECKS_DIR, "fixtures", "rule-set")
+
+    def rule_set_case(name, mutate, needle):
+        nonlocal case_count
+        case_count += 1
+        root = tempfile.mkdtemp(prefix="validate-selftest-rules-")
+        try:
+            shutil.copytree(os.path.join(rule_fixture, "standards"),
+                            os.path.join(root, "standards"))
+            mutate(root)
+            errs = rule_set_errors(root)
+        finally:
+            shutil.rmtree(root, ignore_errors=True)
+        if needle is None and errs:
+            failures.append(f"FAIL {name}: expected no errors — got: {errs}")
+        elif needle is not None and not any(needle in e for e in errs):
+            failures.append(f"FAIL {name}: expected an error containing {needle!r} — got: {errs}")
+
+    def rewrite(rel, old, new):
+        def mutate(root):
+            path = os.path.join(root, rel)
+            with open(path, encoding="utf-8") as fh:
+                text = fh.read()
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(text.replace(old, new))
+        return mutate
+
+    def add_file(rel, text):
+        def mutate(root):
+            path = os.path.join(root, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(text)
+        return mutate
+
+    rule_set_case("rule set: the fixture tree is clean", lambda root: None, None)
+    rule_set_case("rule set: a tier outside the schema fails",
+                  rewrite("standards/rules/mot/mot-1.md", "tier: L2", "tier: L3"), "tier 'L3'")
+    rule_set_case("rule set: a value PyYAML reads differently fails",
+                  rewrite("standards/rules/mot/mot-1.md",
+                          "title: Motion stays inside the duration band", "title: yes"),
+                  "read this differently")
+    rule_set_case("rule set: a file name that is not the code fails",
+                  lambda root: os.rename(os.path.join(root, "standards/rules/mot/mot-1.md"),
+                                         os.path.join(root, "standards/rules/mot/motion.md")),
+                  "file name must be mot-1.md")
+    rule_set_case("rule set: a code in the wrong folder fails",
+                  rewrite("standards/rules/mot/mot-1.md", "code: MOT-1", "code: TOK-7"),
+                  "must be MOT-<number>")
+    rule_set_case("rule set: a removed rule with no reason fails",
+                  rewrite("standards/rules/typ/typ-9.md", "reason: Merged into another rule\n", ""),
+                  "needs a one-line 'reason'")
+    rule_set_case("rule set: a parameter with no description fails",
+                  rewrite("standards/rules/col/col-1.md",
+                          "    description: The product primary colour\n", ""),
+                  "needs a 'description'")
+    rule_set_case("rule set: an unknown field fails",
+                  rewrite("standards/rules/col/col-1.md", "status: stable", "status: stable\nphase: [verify]"),
+                  "unknown field 'phase'")
+    rule_set_case("rule set: a redirect to a missing rule fails",
+                  rewrite("standards/rules/redirects.yaml", "OLD-1: [COL-1]", "OLD-1: [COL-9]"),
+                  "no rule file has COL-9")
+    rule_set_case("rule set: a redirect that shadows a rule fails",
+                  rewrite("standards/rules/redirects.yaml", "OLD-1: [COL-1]", "MOT-1: [COL-1]"),
+                  "cannot shadow a rule")
+    rule_set_case("rule set: a preset that names an unknown code fails",
+                  rewrite("standards/presets/brand.md", '["A11Y", "COL"]', '["A11Y", "XYZ-1"]'),
+                  "XYZ-1")
+    rule_set_case("rule set: a dimension with an ignore fails",
+                  rewrite("standards/dimensions/polish.md", '"TYP"]', '"TYP"]\n- ignore: ["COL-1"]'),
+                  "a dimension only selects")
+    rule_set_case("rule set: a folder that is not a category fails",
+                  add_file("standards/rules/slp/slp-1.md", "---\ncode: SLP-1\n---\n"),
+                  "not a category folder")
+    rule_set_case("rule set: a duplicate slug fails",
+                  rewrite("standards/rules/mot/mot-1.md", "slug: motion-duration", "slug: text-contrast"),
+                  "is also used by")
+
+    case_count += 1
+    if rule_set_errors(os.path.join("no", "such", "root")) != []:
+        failures.append("FAIL rule set: a tree with no standards/rules/ has nothing to check")
+    case_count += 1
+    got = rule_set_coverage(rule_fixture, ["A11Y-1", "OLD-1", "SLP-1", "TYP-9", "XYZ-1"])
+    want = (["A11Y-1", "OLD-1", "SLP-1", "TYP-9"], ["XYZ-1"])
+    if got != want:
+        failures.append(f"FAIL rule set: coverage counts codes, redirects, and removed rules: "
+                        f"want: {want!r}; got: {got!r}")
+
     # ── Report ───────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
 
@@ -2572,7 +2901,8 @@ def main():
         print_coverage(REPO_ROOT)
         sys.exit(0)
 
-    errors, n = collect_errors(REPO_ROOT, _return_count=True)
+    errors, n = collect_errors(REPO_ROOT, _return_count=True,
+                               strict="--strict" in args)
 
     if errors:
         for e in errors:
@@ -2580,6 +2910,9 @@ def main():
         sys.exit(1)
     else:
         print(f"OK: {n} controls valid")
+        resolved, _unresolved = rule_set_coverage(REPO_ROOT, checklib.catalog_tiers())
+        print(f"INFO rule set: {len(resolved)} of {n} current control IDs resolve "
+              f"(--strict fails on the rest)")
         sys.exit(0)
 
 
