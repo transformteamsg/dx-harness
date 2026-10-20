@@ -1310,6 +1310,26 @@ def collect_errors(repo_root, _return_count=False):
     return result(len(catalog_by_id))
 
 
+# ── Check coverage: checks/COVERAGE.md (#461) ─────────────────────────────────
+# Each check script declares what it decides in a module-level COVERAGE
+# constant. `--write-coverage` reads those constants (with ast, never by
+# importing the script) and writes checks/COVERAGE.md, the file the design
+# skills and the reviewer agent read instead of checks/README.md.
+
+COVERAGE_FILENAME = "COVERAGE.md"
+
+
+def read_check_coverage(checks_dir):
+    """({script: declaration}, errors) for every check script in `checks_dir`."""
+    raise NotImplementedError("read_check_coverage")
+
+
+def coverage_markdown(checks_dir, controls):
+    """(COVERAGE.md text, errors) from the declarations in `checks_dir` and the
+    catalogue `controls`."""
+    raise NotImplementedError("coverage_markdown")
+
+
 # ── Self-test ──────────────────────────────────────────────────────────────────
 
 def run_self_test():
