@@ -1,0 +1,24 @@
+{
+  "comment": "Rule file schema for standards/rules/<category>/<code>.md, read by checks/checklib.py and checks/validate.py. Frontmatter is the YAML subset that checklib.read_yaml_subset() reads. The C1 decision record (#413) can revise any value here.",
+  "categories": {
+    "A11Y": "Accessibility",
+    "TOK": "Tokens",
+    "COL": "Colour",
+    "TYP": "Typography",
+    "CMP": "Components and patterns",
+    "CNT": "Content",
+    "LAY": "Layout",
+    "MOT": "Motion"
+  },
+  "required_fields": ["code", "slug", "title", "category", "tier", "check", "status", "applies_to"],
+  "optional_fields": ["parameters", "reason"],
+  "tiers": ["L0", "L1", "L2"],
+  "checks": ["deterministic", "judgment", "hybrid"],
+  "statuses": ["preview", "stable", "deprecated", "removed"],
+  "applies_to": ["page", "component", "flow", "content"],
+  "parameter_fields": {
+    "required": ["description"],
+    "optional": ["default"]
+  },
+  "selection_keys": ["extend", "select", "ignore"]
+}

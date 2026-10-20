@@ -1,0 +1,4 @@
+# Maps a current control ID, or a retired rule code, to the rule codes that
+# replace it, so a dx-waive comment or a DESIGN.md selection that names the
+# old code still resolves. One entry per line:
+#   OLD-1: [NEW-1, NEW-2]
