@@ -194,6 +194,19 @@ The list is ordered by saving per unit of work.
 6. **Re-measure after each change**. Rebuild this table before you trim anything else.
    The ranking, not the absolute figure, tells you where to work.
 
+## Measured changes
+
+The tables above are the baseline from before these changes. Rebuild them with the
+method in [Skill token budget](token-budget.md) before you rank the next change.
+
+| Change | Before | After | Saved per read |
+| --- | --: | --: | --: |
+| The design skills and the reviewer read `checks/COVERAGE.md`, not `checks/README.md`, for coverage ([#461](https://github.com/transformteamsg/dx-harness/issues/461)) | 22,209 | 2,960 | 19,249 |
+
+Measured on 2026-10-20 with `cl100k_base`. "Before" is `checks/README.md` on `main`
+at that date, which had grown from the 22,160 tokens counted above. A build reads the
+coverage file once before verify, and a setup run reads it once.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
