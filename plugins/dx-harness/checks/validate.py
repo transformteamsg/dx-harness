@@ -2573,10 +2573,20 @@ def run_self_test():
     coverage_case("coverage: a check that names an unknown control fails",
                   {"fake-scan.py": rule_check_source.replace('"TOK-2"', '"TOK-9"')},
                   coverage_controls, names_script("fake-scan.py", "TOK-9"))
-    coverage_case("coverage: a control whose script field names a check it does not declare fails",
+    def lists_disagreement(text, errs):
+        if errs:
+            return f"want no errors; a disagreement is listed, not failed; got {errs!r}"
+        if "## Catalogue claims that disagree" not in text:
+            return f"want a 'Catalogue claims that disagree' section; got:\n{text}"
+        section = text.split("## Catalogue claims that disagree", 1)[1]
+        if "| TOK-1 | `fake-scan.py` |" not in section:
+            return f"want TOK-1 and fake-scan.py listed as a disagreement; got:\n{section}"
+        return None
+
+    coverage_case("coverage: a script field that names a check which does not declare the control is listed",
                   {"fake-scan.py": rule_check_source.replace('"TOK-1"', '"TOK-2"', 1)
                                    .replace('"TOK-2": {"covers": "off-scale', '"A11Y-1": {"covers": "off-scale')},
-                  coverage_controls, names_script("fake-scan.py", "TOK-1"))
+                  coverage_controls, lists_disagreement)
 
     def lists_uncovered(text, errs):
         if errs:
