@@ -1003,6 +1003,500 @@ def layer_controls(layer, rule_map=None):
     return list(controls)
 
 
+# ── Rule set: standards/rules/ (#413, #463) ───────────────────────────────────
+#
+# The rule set replaces catalog.yaml one rule file at a time. Rule frontmatter
+# and redirects.yaml use a YAML subset this module reads without PyYAML, so a
+# check that resolves a selection stays dependency-free; validate.py confirms
+# that PyYAML reads every file the same way. Python 3.9 compatible, because the
+# macOS system python3 is 3.9.
+
+
+class RuleSetError(Exception):
+    """The rule set, a preset, a dimension, or a selection cannot be read or
+    resolved. The message names the file or the code at fault."""
+
+
+def _plugin_root():
+    return os.path.dirname(_CHECKS_DIR)
+
+
+def load_rule_schema():
+    """The rule file schema, always the harness copy: fixtures supply rules,
+    never their own schema."""
+    path = os.path.join(_plugin_root(), "standards", "rules", "schema.json")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, ValueError) as exc:
+        raise RuleSetError(f"cannot read {path}: {exc}")
+
+
+_FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---[ \t]*(?:\n|\Z)", re.DOTALL)
+_SUBSET_KEY_RE = re.compile(r"([A-Za-z0-9_.-]+):(?:[ \t]+(.*))?$")
+_SUBSET_INT_RE = re.compile(r"[-+]?\d+")
+_SUBSET_FLOAT_RE = re.compile(r"[-+]?(\d+\.\d*|\.\d+)([eE][-+]?\d+)?")
+_SUBSET_UNSUPPORTED = ("{", "&", "*", "!", "|", ">", "%", "@", "`")
+
+
+def split_frontmatter(text):
+    """(frontmatter, body) of a file that opens with a `---` block."""
+    m = _FRONTMATTER_RE.match(text.replace("\r\n", "\n"))
+    if not m:
+        raise RuleSetError("no frontmatter between opening `---` lines")
+    return m.group(1), text.replace("\r\n", "\n")[m.end():]
+
+
+def _subset_strip_comment(value):
+    if value.startswith("#"):
+        return ""
+    if value[:1] in ("'", '"'):
+        quote = value[0]
+        i = 1
+        while i < len(value):
+            if value[i] == "\\" and quote == '"':
+                i += 2
+                continue
+            if value[i] == quote:
+                if quote == "'" and value[i + 1:i + 2] == "'":
+                    i += 2
+                    continue
+                rest = value[i + 1:].strip()
+                if rest and not rest.startswith("#"):
+                    raise RuleSetError(f"text after a closing quote: {value!r}")
+                return value[:i + 1]
+            i += 1
+        raise RuleSetError(f"unclosed quote: {value!r}")
+    cut = value.find(" #")
+    return (value[:cut] if cut >= 0 else value).rstrip()
+
+
+def _subset_split_list(inner):
+    items, buf, quote = [], "", None
+    for ch in inner:
+        if quote:
+            buf += ch
+            if ch == quote:
+                quote = None
+        elif ch in ("'", '"'):
+            quote = ch
+            buf += ch
+        elif ch == ",":
+            items.append(buf.strip())
+            buf = ""
+        elif ch in "[]{}":
+            raise RuleSetError(f"nested collections are outside the subset: [{inner}]")
+        else:
+            buf += ch
+    if quote:
+        raise RuleSetError(f"unclosed quote in [{inner}]")
+    if buf.strip():
+        items.append(buf.strip())
+    elif items:
+        raise RuleSetError(f"empty item in [{inner}]")
+    return items
+
+
+def _subset_scalar(value):
+    if value[:1] == '"':
+        try:
+            return json.loads(value)
+        except ValueError:
+            raise RuleSetError(f"bad double-quoted string: {value}")
+    if value[:1] == "'":
+        return value[1:-1].replace("''", "'")
+    if value.startswith(_SUBSET_UNSUPPORTED) or ": " in value or value.endswith(":"):
+        raise RuleSetError(f"value outside the YAML subset: {value!r}; quote it")
+    if value in ("true", "True", "TRUE"):
+        return True
+    if value in ("false", "False", "FALSE"):
+        return False
+    if value in ("null", "Null", "NULL", "~"):
+        return None
+    if _SUBSET_INT_RE.fullmatch(value):
+        return int(value)
+    if _SUBSET_FLOAT_RE.fullmatch(value):
+        return float(value)
+    return value
+
+
+def _subset_value(value):
+    if value.startswith("["):
+        if not value.endswith("]"):
+            raise RuleSetError(f"a flow list must close on its own line: {value!r}")
+        return [_subset_scalar(item) for item in _subset_split_list(value[1:-1])]
+    return _subset_scalar(value)
+
+
+def read_yaml_subset(text):
+    """
+    Read the YAML subset that rule frontmatter and redirects.yaml use: block
+    mappings indented by two spaces, `key: value` scalars, and one-line flow
+    lists of scalars. Full-line and trailing `#` comments are allowed. Block
+    lists, flow mappings, multi-line strings, anchors, and tags are not: they
+    raise RuleSetError, never a guess. A bare `key:` with no children is None,
+    as in YAML.
+    """
+    root = {}
+    stack = [(-2, root)]
+    bare = []
+    for lineno, raw in enumerate(text.replace("\r\n", "\n").split("\n"), 1):
+        line = raw.rstrip()
+        content = line.lstrip(" ")
+        if not content or content.startswith("#"):
+            continue
+        indent = len(line) - len(content)
+        if "\t" in line[:indent + 1] or indent % 2:
+            raise RuleSetError(f"line {lineno}: indent with two spaces per level")
+        if content.startswith("- "):
+            raise RuleSetError(f"line {lineno}: block lists are outside the subset; use [a, b]")
+        m = _SUBSET_KEY_RE.match(content)
+        if not m:
+            raise RuleSetError(f"line {lineno}: expected `key: value`")
+        key, value = m.group(1), m.group(2)
+        while indent <= stack[-1][0]:
+            stack.pop()
+        parent_indent, parent = stack[-1]
+        if indent != parent_indent + 2:
+            raise RuleSetError(f"line {lineno}: unexpected indent")
+        if key in parent:
+            raise RuleSetError(f"line {lineno}: duplicate key {key!r}")
+        try:
+            value = _subset_strip_comment(value.strip()) if value is not None else ""
+            if value == "":
+                child = {}
+                parent[key] = child
+                stack.append((indent, child))
+                bare.append((parent, key))
+            else:
+                parent[key] = _subset_value(value)
+        except RuleSetError as exc:
+            raise RuleSetError(f"line {lineno}: {exc}")
+    for parent, key in reversed(bare):
+        if parent[key] == {}:
+            parent[key] = None
+    return root
+
+
+def read_rule_file(path):
+    """The frontmatter of one rule file, read with the YAML subset."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+        frontmatter, _body = split_frontmatter(text)
+        data = read_yaml_subset(frontmatter)
+    except OSError as exc:
+        raise RuleSetError(f"{path}: cannot read: {exc}")
+    except RuleSetError as exc:
+        raise RuleSetError(f"{path}: {exc}")
+    return data
+
+
+def load_redirects(path):
+    """{old code: [new codes]} from redirects.yaml. An absent or empty file is
+    an empty map."""
+    if not os.path.isfile(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = read_yaml_subset(fh.read())
+    except OSError as exc:
+        raise RuleSetError(f"{path}: cannot read: {exc}")
+    except RuleSetError as exc:
+        raise RuleSetError(f"{path}: {exc}")
+    redirects = {}
+    for old, new in data.items():
+        if isinstance(new, str):
+            new = [new]
+        if not isinstance(new, list) or not new or not all(isinstance(c, str) for c in new):
+            raise RuleSetError(f"{path}: {old} must map to a list of rule codes")
+        redirects[old] = new
+    return redirects
+
+
+def load_rule_set(rules_dir=None):
+    """
+    ({code: rule}, {old code: [new codes]}) for every rule file under
+    `<rules_dir>/<category>/` and the redirects map beside them. Each rule is
+    its frontmatter plus `path`. Files outside a category folder (the template,
+    the schema) are not rules. Schema conformance beyond what resolution needs
+    is validate.py's job.
+    """
+    if rules_dir is None:
+        rules_dir = os.path.join(_plugin_root(), "standards", "rules")
+    rules = {}
+    if not os.path.isdir(rules_dir):
+        return rules, {}
+    for category in sorted(os.listdir(rules_dir)):
+        category_dir = os.path.join(rules_dir, category)
+        if not os.path.isdir(category_dir):
+            continue
+        for fname in sorted(os.listdir(category_dir)):
+            if not fname.endswith(".md"):
+                continue
+            path = os.path.join(category_dir, fname)
+            rule = read_rule_file(path)
+            code = rule.get("code")
+            if not isinstance(code, str):
+                raise RuleSetError(f"{path}: no `code` in the frontmatter")
+            if code in rules:
+                raise RuleSetError(f"{path}: {code} is also defined in {rules[code]['path']}")
+            rule["path"] = path
+            rules[code] = rule
+    return rules, load_redirects(os.path.join(rules_dir, "redirects.yaml"))
+
+
+_SECTION_RE = re.compile(r"^##\s+(.+?)\s*$")
+# The same bullet grammar scripts/generate-design-json.py parses DESIGN.md with.
+_FIELD_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*:\s+(.+?)\s*$")
+_BULLET_RE = re.compile(r"^\s*[-*]\s+\S")
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+_PARAMETER_KEY_RE = re.compile(r"^([A-Za-z0-9]+-\d+)\.([a-z0-9_]+)$")
+
+
+def _field_value(raw):
+    """int literal -> int, JSON array -> list, else the string verbatim, as
+    generate-design-json.py coerces a DESIGN.md field."""
+    s = raw.strip()
+    if re.fullmatch(r"-?\d+", s):
+        return int(s)
+    if s.startswith("[") and s.endswith("]"):
+        try:
+            v = json.loads(s)
+            if isinstance(v, list):
+                return v
+        except ValueError:
+            pass
+    return s
+
+
+def read_selection(path):
+    """
+    The selection that a DESIGN.md, a preset, or a dimension file declares:
+
+        {"extend": name or None, "select": [...], "ignore": [...],
+         "parameters": {(code, name): value}, "has_rules": bool}
+
+    `## Rules` carries `- extend: <preset>`, `- select: [...]`, and
+    `- ignore: [...]`. `## Parameters` carries `- <CODE>.<name>: <value>`.
+    Other sections are not read. Raises RuleSetError on a bullet in either
+    section that it cannot read.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = _HTML_COMMENT_RE.sub("", fh.read())
+    except OSError as exc:
+        raise RuleSetError(f"{path}: cannot read: {exc}")
+    keys = tuple(load_rule_schema()["selection_keys"])
+    selection = {"extend": None, "select": [], "ignore": [], "parameters": {},
+                 "has_rules": False}
+    section = None
+    for lineno, line in enumerate(text.split("\n"), 1):
+        heading = _SECTION_RE.match(line)
+        if heading:
+            section = heading.group(1).strip().lower()
+            if section == "rules":
+                selection["has_rules"] = True
+            continue
+        if section not in ("rules", "parameters") or not _BULLET_RE.match(line):
+            continue
+        where = f"{path}:{lineno}"
+        m = _FIELD_RE.match(line)
+        if not m:
+            raise RuleSetError(f"{where}: expected `- key: value` under ## {section.title()}")
+        key, value = m.group(1).strip().strip("`*").strip(), _field_value(m.group(2))
+        if section == "rules":
+            if key not in keys:
+                raise RuleSetError(f"{where}: unknown key {key!r}; use one of {', '.join(keys)}")
+            if key == "extend":
+                if not isinstance(value, str) or not re.fullmatch(r"[a-z0-9-]+", value):
+                    raise RuleSetError(f"{where}: extend names one preset, for example `teacher-workspace`")
+                selection["extend"] = value
+            else:
+                if isinstance(value, str):
+                    value = [value]
+                if not all(isinstance(v, str) for v in value):
+                    raise RuleSetError(f"{where}: {key} takes a list of codes and categories")
+                selection[key].extend(v.strip() for v in value)
+        else:
+            pm = _PARAMETER_KEY_RE.match(key)
+            if not pm:
+                raise RuleSetError(f"{where}: a parameter is `- <CODE>.<name>: <value>`")
+            selection["parameters"][(pm.group(1), pm.group(2))] = value
+    return selection
+
+
+def _code_sort_key(code, categories):
+    prefix, _, number = code.rpartition("-")
+    order = list(categories)
+    return (order.index(prefix) if prefix in order else len(order), prefix,
+            int(number) if number.isdigit() else 0)
+
+
+class RuleResolver:
+    """
+    Expands the codes and categories of a selection against one rule set.
+    `plugin_root` holds `standards/rules/`, `standards/presets/`, and
+    `standards/dimensions/`; it defaults to this harness.
+    """
+
+    def __init__(self, plugin_root=None):
+        self.plugin_root = plugin_root or _plugin_root()
+        self.standards = os.path.join(self.plugin_root, "standards")
+        self.schema = load_rule_schema()
+        self.categories = self.schema["categories"]
+        self.rules, self.redirects = load_rule_set(os.path.join(self.standards, "rules"))
+
+    def resolve_code(self, code, label):
+        """The rule codes that `code` names, through redirects when it is an
+        old code. A removed rule or an unknown code raises."""
+        targets = [code] if code in self.rules else self.redirects.get(code)
+        if targets is None:
+            raise RuleSetError(f"{label} names {code}, which no rule file has and no redirect maps")
+        for target in targets:
+            rule = self.rules.get(target)
+            if rule is None:
+                raise RuleSetError(f"{label} names {code}, which redirects to {target}, and no rule file has {target}")
+            if rule.get("status") == "removed":
+                raise RuleSetError(f"{label} names {code}, and {target} is removed: {rule.get('reason', 'no reason given')}")
+        return set(targets)
+
+    def expand(self, selectors, label):
+        """The rule codes a list of selectors names. A category selects its
+        stable rules; a code selects that rule whatever its status."""
+        chosen = set()
+        for selector in selectors:
+            if selector in self.categories:
+                chosen |= {c for c, r in self.rules.items()
+                           if r.get("category") == selector and r.get("status") == "stable"}
+            else:
+                chosen |= self.resolve_code(selector, label)
+        return chosen
+
+    def parameter_target(self, code, name, label):
+        targets = self.resolve_code(code, label)
+        if len(targets) != 1:
+            raise RuleSetError(f"{label} sets {code}.{name}, but {code} redirects to "
+                               f"{', '.join(sorted(targets))}: name the new code")
+        target = next(iter(targets))
+        if name not in (self.rules[target].get("parameters") or {}):
+            raise RuleSetError(f"{label} sets {code}.{name}, which {target} does not define")
+        return target
+
+    def check_selection(self, selection, label):
+        """Raise RuleSetError on the first selector or parameter in
+        `selection` that does not resolve. Used to validate presets and
+        dimensions."""
+        self.expand(selection["select"], label)
+        self.expand(selection["ignore"], label)
+        for code, name in selection["parameters"]:
+            self.parameter_target(code, name, label)
+
+    def sort(self, codes):
+        return sorted(codes, key=lambda c: _code_sort_key(c, self.categories))
+
+
+def resolve_selection(product_root=None, dimension=None, plugin_root=None):
+    """
+    The rules that apply to a product, and their parameter values. A value
+    resolves from the rule's default, then the preset that DESIGN.md extends,
+    then DESIGN.md. With `dimension`, the result keeps only the rules that
+    `standards/dimensions/<dimension>.md` selects. Every stable L0 rule is
+    always in the result: the L0 floor is never scoped out, and an `ignore`
+    that names an L0 rule raises.
+
+    A product with no DESIGN.md, or a DESIGN.md with no `## Rules` section,
+    gets every stable rule; `sources` says so. The C1 decision record (#413)
+    can change that default.
+
+    Returns {"sources": [...], "rules": [...], "notes": [...]}. Each rule is
+    {code, slug, title, category, tier, check, status, applies_to, path,
+    parameters, not_configured}, where `not_configured` lists the parameters
+    that no layer set and that have no default.
+    """
+    resolver = RuleResolver(plugin_root)
+    rules = resolver.rules
+    layers = []
+    design_md = os.path.join(product_root, "DESIGN.md") if product_root else None
+    if design_md and os.path.isfile(design_md):
+        own = read_selection(design_md)
+        if own["extend"]:
+            preset_path = os.path.join(resolver.standards, "presets", own["extend"] + ".md")
+            if not os.path.isfile(preset_path):
+                raise RuleSetError(f"{design_md} extends {own['extend']!r}, and no preset has that name")
+            preset = read_selection(preset_path)
+            if preset["extend"]:
+                raise RuleSetError(f"{preset_path}: a preset cannot extend another preset")
+            layers.append((f"preset: {own['extend']}", preset))
+        layers.append(("DESIGN.md", own))
+
+    notes = []
+    if any(selection["has_rules"] for _, selection in layers):
+        chosen = set()
+        for label, selection in layers:
+            chosen |= resolver.expand(selection["select"], label)
+        for label, selection in layers:
+            dropped = resolver.expand(selection["ignore"], label)
+            l0 = resolver.sort(c for c in dropped if rules[c].get("tier") == "L0")
+            if l0:
+                raise RuleSetError(f"{label} ignores {', '.join(l0)}: an L0 rule cannot be ignored")
+            chosen -= dropped
+        sources = [label for label, _ in layers]
+    else:
+        chosen = {c for c, r in rules.items() if r.get("status") == "stable"}
+        if not design_md or not os.path.isfile(design_md):
+            sources = ["default: every stable rule, because the product has no DESIGN.md"]
+        else:
+            sources = ["default: every stable rule, because DESIGN.md has no ## Rules section"]
+
+    if dimension:
+        dimension_path = os.path.join(resolver.standards, "dimensions", dimension + ".md")
+        if not os.path.isfile(dimension_path):
+            raise RuleSetError(f"no dimension named {dimension!r} in {os.path.dirname(dimension_path)}")
+        label = f"dimension: {dimension}"
+        chosen &= resolver.expand(read_selection(dimension_path)["select"], label)
+        sources.append(label)
+
+    floor = {c for c, r in rules.items() if r.get("tier") == "L0" and r.get("status") == "stable"}
+    if floor - chosen:
+        notes.append("added the L0 floor: " + ", ".join(resolver.sort(floor - chosen)))
+    chosen |= floor
+
+    values = {}
+    for code in chosen:
+        params = rules[code].get("parameters") or {}
+        values[code] = {name: spec.get("default") for name, spec in params.items()
+                        if isinstance(spec, dict) and "default" in spec}
+    for label, selection in layers:
+        for (code, name), value in selection["parameters"].items():
+            target = resolver.parameter_target(code, name, label)
+            if target in values:
+                values[target][name] = value
+            else:
+                notes.append(f"{label} sets {code}.{name}, and {target} is not in the selection")
+
+    result = []
+    for code in resolver.sort(chosen):
+        rule = rules[code]
+        if rule.get("status") in ("preview", "deprecated"):
+            notes.append(f"{code} is {rule['status']}")
+        params = rule.get("parameters") or {}
+        result.append({
+            "code": code,
+            "slug": rule.get("slug"),
+            "title": rule.get("title"),
+            "category": rule.get("category"),
+            "tier": rule.get("tier"),
+            "check": rule.get("check"),
+            "status": rule.get("status"),
+            "applies_to": rule.get("applies_to") or [],
+            "path": rule["path"],
+            "parameters": values[code],
+            "not_configured": sorted(n for n in params if n not in values[code]),
+        })
+    return {"sources": sources, "rules": result, "notes": notes}
+
+
 def report_self_test(failures, case_count):
     """
     Print the `SELF-TEST OK (N cases)` / `SELF-TEST FAILED (…)` lines and
@@ -1513,6 +2007,127 @@ def _self_test():
     # ── astgrep_scan guards ───────────────────────────────────────────────────
     check_eq("scan: no scannable file means no ast-grep run and no directory walk",
              [], astgrep_scan(["notes.md"], "token-audit"))
+
+    # ── rule set: the YAML subset reader ──────────────────────────────────────
+    check_eq("subset: scalars, quoted strings, and flow lists",
+             {"a": "plain", "b": "#0064FF", "c": 16, "d": 1.5, "e": True,
+              "f": None, "g": ["x", "y z", "it's"], "h": []},
+             read_yaml_subset('a: plain\nb: "#0064FF"\nc: 16\nd: 1.5\ne: true\n'
+                              "f: ~\ng: [x, 'y z', 'it''s']\nh: []\n"))
+    check_eq("subset: nested mappings and comments",
+             {"p": {"q": {"default": 3, "description": "d"}}, "r": None},
+             read_yaml_subset("# top\np:\n  q:\n    default: 3  # three\n"
+                              "    description: d\nr:\n"))
+    check_eq("subset: a bare # value is a comment, as in YAML",
+             {"a": None}, read_yaml_subset("a: #0064FF\n"))
+    for name, bad in (("block list", "a:\n  - x\n"),
+                      ("flow mapping", "a: {b: 1}\n"),
+                      ("odd indent", "a:\n   b: 1\n"),
+                      ("duplicate key", "a: 1\na: 2\n"),
+                      ("plain colon value", "a: b: c\n"),
+                      ("unclosed quote", "a: 'x\n"),
+                      ("nested flow list", "a: [[1]]\n")):
+        try:
+            read_yaml_subset(bad)
+            check_eq(f"subset: rejects a {name}", "RuleSetError", "no error")
+        except RuleSetError:
+            check(f"subset: rejects a {name}", True)
+
+    # ── rule set: resolution ──────────────────────────────────────────────────
+    fixture_root = os.path.join(_CHECKS_DIR, "fixtures", "rule-set")
+
+    def codes(result):
+        return [r["code"] for r in result["rules"]]
+
+    def resolve_with(design_text, **kwargs):
+        with tempfile.TemporaryDirectory() as product:
+            if design_text is not None:
+                with open(os.path.join(product, "DESIGN.md"), "w", encoding="utf-8") as fh:
+                    fh.write(design_text)
+            return resolve_selection(product, plugin_root=fixture_root, **kwargs)
+
+    def resolve_error(design_text, **kwargs):
+        try:
+            resolve_with(design_text, **kwargs)
+        except RuleSetError as exc:
+            return str(exc)
+        return "no error"
+
+    rules, redirects = load_rule_set(os.path.join(fixture_root, "standards", "rules"))
+    check_eq("rule set: loads every rule file under a category folder",
+             ["A11Y-1", "A11Y-2", "COL-1", "COL-2", "MOT-1", "TOK-1", "TYP-9"],
+             sorted(rules))
+    check_eq("rule set: reads redirects", {"OLD-1": ["COL-1"], "SLP-1": ["COL-1", "COL-2"]},
+             redirects)
+    check_eq("rule set: an absent rules folder is an empty set",
+             ({}, {}), load_rule_set(os.path.join("no", "such", "rules")))
+
+    default = resolve_with(None)
+    check_eq("resolve: no DESIGN.md selects every stable rule",
+             ["A11Y-1", "A11Y-2", "TOK-1", "COL-1", "MOT-1"], codes(default))
+    check("resolve: no DESIGN.md names the default as the source",
+          default["sources"][0].startswith("default:") and "no DESIGN.md" in default["sources"][0])
+    no_rules = resolve_with("# DESIGN.md\n\n## Essence\nCalm.\n")
+    check("resolve: a DESIGN.md with no Rules section names the default",
+          "no ## Rules section" in no_rules["sources"][0])
+
+    layered = resolve_with("## Rules\n- extend: brand\n- select: [\"MOT-1\", \"TOK\"]\n\n"
+                           "## Parameters\n- COL-1.primary: #FF0000\n- MOT-1.duration_max: 200\n")
+    check_eq("resolve: preset and DESIGN.md selections combine",
+             ["A11Y-1", "A11Y-2", "TOK-1", "COL-1", "MOT-1"], codes(layered))
+    by_code = {r["code"]: r for r in layered["rules"]}
+    check_eq("resolve: DESIGN.md wins over the preset and the default",
+             "#FF0000", by_code["COL-1"]["parameters"]["primary"])
+    check_eq("resolve: DESIGN.md sets a value over the rule default",
+             200, by_code["MOT-1"]["parameters"]["duration_max"])
+    check_eq("resolve: names the preset and DESIGN.md as sources",
+             ["preset: brand", "DESIGN.md"], layered["sources"])
+    check_eq("resolve: a parameter with no value is not configured",
+             (["scale"], {}), (by_code["TOK-1"]["not_configured"], by_code["TOK-1"]["parameters"]))
+    preset_only = resolve_with("## Rules\n- extend: brand\n")
+    check_eq("resolve: the preset wins over the rule default",
+             "#0064FF", {r["code"]: r for r in preset_only["rules"]}["COL-1"]["parameters"]["primary"])
+    check_eq("resolve: a category selects its stable rules only",
+             ["A11Y-1", "A11Y-2", "COL-1"], codes(preset_only))
+
+    check_eq("resolve: an old code resolves through redirects",
+             ["A11Y-1", "A11Y-2", "COL-1"], codes(resolve_with("## Rules\n- select: [\"OLD-1\"]\n")))
+    check_eq("resolve: a code selects a preview rule",
+             ["A11Y-1", "A11Y-2", "COL-2"], codes(resolve_with("## Rules\n- select: [\"COL-2\"]\n")))
+    check("resolve: an unknown code stops and names the code",
+          "XYZ-9" in resolve_error("## Rules\n- select: [\"XYZ-9\"]\n"))
+    check("resolve: a removed rule stops and gives its reason",
+          "TYP-9" in resolve_error("## Rules\n- select: [\"TYP-9\"]\n")
+          and "Merged into another rule" in resolve_error("## Rules\n- select: [\"TYP-9\"]\n"))
+    check("resolve: an ignored L0 rule stops and names the rule",
+          "A11Y-1" in resolve_error("## Rules\n- select: [\"A11Y\"]\n- ignore: [\"A11Y-1\"]\n")
+          and "L0" in resolve_error("## Rules\n- select: [\"A11Y\"]\n- ignore: [\"A11Y-1\"]\n"))
+    check_eq("resolve: ignore drops a rule that is not L0",
+             ["A11Y-1", "A11Y-2", "TOK-1", "COL-1"],
+             codes(resolve_with("## Rules\n- select: [\"TOK\", \"COL\", \"MOT\"]\n- ignore: [\"MOT-1\"]\n")))
+    floor_only = resolve_with("## Rules\n- select: [\"MOT\"]\n")
+    check_eq("resolve: the L0 floor is always in the result",
+             ["A11Y-1", "A11Y-2", "MOT-1"], codes(floor_only))
+    check("resolve: says when it added the L0 floor",
+          any(n.startswith("added the L0 floor") for n in floor_only["notes"]))
+    check("resolve: an unknown preset stops and names it",
+          "nosuch" in resolve_error("## Rules\n- extend: nosuch\n"))
+    check("resolve: a parameter the rule does not define stops",
+          "COL-1.shade" in resolve_error("## Rules\n- select: [\"COL\"]\n\n## Parameters\n- COL-1.shade: 3\n"))
+    check("resolve: a parameter on a code that redirects to two rules stops",
+          "SLP-1" in resolve_error("## Rules\n- select: [\"COL\"]\n\n## Parameters\n- SLP-1.primary: 3\n"))
+    check("resolve: an unreadable Rules bullet stops",
+          "unknown key" in resolve_error("## Rules\n- choose: [\"COL\"]\n"))
+
+    polish = resolve_with(None, dimension="polish")
+    check_eq("resolve: a dimension keeps its selection plus the L0 floor",
+             ["A11Y-1", "A11Y-2", "TOK-1", "COL-1"], codes(polish))
+    check_eq("resolve: names the dimension as a source", "dimension: polish", polish["sources"][-1])
+    check("resolve: an unknown dimension stops and names it",
+          "speed" in resolve_error(None, dimension="speed"))
+
+    live = resolve_selection()
+    check("resolve: the harness rule set resolves", isinstance(live["rules"], list))
 
     _astgrep_config_failure_cases(check_eq)
 

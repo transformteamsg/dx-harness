@@ -1,0 +1,3 @@
+# Fixture redirects for the resolver self-tests.
+OLD-1: [COL-1]
+SLP-1: [COL-1, COL-2]
