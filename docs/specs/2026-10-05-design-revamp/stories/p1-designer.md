@@ -282,7 +282,10 @@ As a designer who builds in code, I want to start a repo for a new app in the st
 
 **Acceptance examples**
 
-- Given a prototype that I approved, when I ask for a repo, then the harness creates it on GitHub in the production stack, after I confirm the name and the owner.
+- Given a prototype that I approved, when I ask for a repo, then the harness creates it on GitHub in the production stack, with a name that ends in `-sandbox`, after I confirm the name.
+- Given a repo to create, when the harness asks who owns it, then I choose my personal GitHub account or an organisation that I belong to, and the harness does not choose for me.
+- Given an organisation where I cannot create a repo, when I choose it, then the harness says so in one plain line and asks me to choose again.
+- Given a new repo, when the harness creates it, then the repo is private.
 - Given a new repo, when the harness creates it, then it moves the prototype into the repo with the stack's components, and it rebuilds any part that does not use them.
 - Given a new repo, when the harness creates it, then a design language is recorded, either an existing one that I choose or one that I define in the same session.
 - Given a new repo, when I start my next prototype in it, then the run needs no further setup.
