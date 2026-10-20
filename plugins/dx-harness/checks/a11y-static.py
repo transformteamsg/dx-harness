@@ -67,6 +67,26 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "controls": {
+        "A11Y-2": {
+            "covers": (
+                "FOCUS: an outline removed with no focus-visible replacement on"
+                " the same line"
+            ),
+            "misses": (
+                "Keyboard reachability (`a11y-eslint.py`) and traversal order. "
+                "Focus styles in a separate stylesheet are flagged as a false "
+                "positive: confirm with a keyboard"
+            ),
+        },
+    },
+}
+
 import importlib.util
 import os
 import re

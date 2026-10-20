@@ -59,6 +59,17 @@ Usage
     python3 checks/detect.py --self-test
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "process",
+    "purpose": (
+        "Runs the other checks as one entry point, with one exit contract and "
+        "an ignore layer. It decides no control itself."
+    ),
+}
+
 import argparse
 import fnmatch
 import json

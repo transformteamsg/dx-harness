@@ -117,6 +117,71 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "controls": {
+        "CNT-1": {
+            "covers": (
+                "A string that is only a raw error code, and a bare \"Something "
+                "went wrong\" with no next step"
+            ),
+            "misses": (
+                "The full anatomy of an error message: what happened, what it "
+                "means, and what to do next"
+            ),
+        },
+        "CNT-3": {
+            "covers": (
+                "A user-facing string or prose line whose longest sentence is "
+                "over 25 words"
+            ),
+            "misses": (
+                "Strings built by concatenation, and an imported constant at "
+                "its use site"
+            ),
+        },
+        "CNT-5": {
+            "covers": (
+                "Device-bound verbs such as click, tap, and swipe in multi-word"
+                " copy"
+            ),
+            "misses": (
+                "\"press\" and \"see\", ambiguous link text, and whether a hit is a"
+                " UI instruction"
+            ),
+        },
+        "CNT-6": {
+            "covers": (
+                "Sentence-initial empty openers, and the filler words just, "
+                "really, very, and please"
+            ),
+            "misses": (
+                "\"such\", \"that\", droppable articles and conjunctions, and the "
+                "clarity exception"
+            ),
+        },
+        "CNT-13": {
+            "covers": "US spellings and common misspellings, from `cnt-13.md`",
+            "misses": "",
+        },
+        "SLP-9": {
+            "covers": (
+                "The lint half: the buzzword, AI-vocabulary, filler, and "
+                "chatbot-artifact lists from `slp-9.md`, and two or more em "
+                "dashes in one sentence"
+            ),
+            "misses": (
+                "The structural tells: negative parallelism, forced triads, "
+                "copula avoidance, significance inflation, redundant label and "
+                "helper pairs, and em-dash clusters across a paragraph"
+            ),
+        },
+    },
+}
+
 import importlib.util
 import os
 import re

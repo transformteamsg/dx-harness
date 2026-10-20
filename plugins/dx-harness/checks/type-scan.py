@@ -98,6 +98,61 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation (NOTE lines alone do not fail).
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "controls": {
+        "TYP-1": {
+            "covers": (
+                "A font family other than Plus Jakarta Sans and Inter, "
+                "`font-mono` and `font-serif`, and a non-approved generic as "
+                "the primary family"
+            ),
+            "misses": "Font weights",
+        },
+        "TYP-2": {
+            "covers": (
+                "Font sizes under 14px, and unitless or em line-heights outside"
+                " the body band"
+            ),
+            "misses": (
+                "The 12px label versus 14px body decision, and line-heights in "
+                "px or %"
+            ),
+        },
+        "TYP-3": {
+            "covers": (
+                "Sizes off the Tailwind default type scale, read from TYP-3's "
+                "catalogue entry"
+            ),
+            "misses": (
+                "Sizes set in a stylesheet the scan cannot see, or composed "
+                "from variables"
+            ),
+        },
+        "TYP-4": {
+            "covers": "`text-transform: uppercase` and the `uppercase` utility",
+            "misses": "All-caps set by a camelCase inline style in JSX",
+        },
+        "LAY-4": {
+            "covers": "A measure cap in `ch` above 80ch",
+            "misses": (
+                "A missing cap, a measure in any unit but `ch`, and a `var()` "
+                "chain that leaves the file"
+            ),
+        },
+        "TYP-6": {
+            "covers": "A measure cap in `ch` above 75ch",
+            "misses": (
+                "A missing cap, a measure in any unit but `ch`, and a `var()` "
+                "chain that leaves the file"
+            ),
+        },
+    },
+}
+
 import importlib.util
 import os
 import re

@@ -35,6 +35,17 @@ Exit 0 and print "OK: <n> records audited" on success.
 Exit 1 and print "ERROR <file>: <message>" lines on failure.
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "process",
+    "purpose": (
+        "Checks that each decision record in `docs/decisions/` follows the "
+        "design loop and its template."
+    ),
+}
+
 import importlib.util
 import os
 import re

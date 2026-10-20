@@ -106,6 +106,40 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation (NOTE lines alone do not fail).
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "note": (
+        "`.vue` and `.svelte` files are counted, not scanned, and both controls "
+        "go to manual verification for them."
+    ),
+    "controls": {
+        "A11Y-7": {
+            "covers": (
+                "A `<table>` or `role=\"table\"` element with no `<th>` and no "
+                "`role=\"columnheader\"`"
+            ),
+            "misses": (
+                "Heading hierarchy and list semantics (`rendered-check.py`), "
+                "and styled divs that stand in for a heading, a list, or a "
+                "table"
+            ),
+        },
+        "CMP-6": {
+            "covers": (
+                "A `<table>` or `role=\"table\"` element with no `<th>` and no "
+                "`role=\"columnheader\"`"
+            ),
+            "misses": (
+                "Numeric alignment, tabular figures, form grouping, and styled "
+                "divs that stand in for a table"
+            ),
+        },
+    },
+}
+
 import importlib.util
 import os
 import re

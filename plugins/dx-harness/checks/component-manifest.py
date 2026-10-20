@@ -30,6 +30,26 @@ False-positive note (SPEC §3):
   stays off (same trust lesson as token-audit / plan 007).
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "note": "Also validates `.dx/component-manifest.json` against its spec.",
+    "controls": {
+        "CMP-1": {
+            "covers": (
+                "With `coverage: \"complete\"` in the manifest, a component "
+                "import in changed source that resolves outside the manifest"
+            ),
+            "misses": (
+                "Every import when the manifest's coverage is partial or "
+                "absent. A barrel re-export can give a false hit"
+            ),
+        },
+    },
+}
+
 import json
 import os
 import re

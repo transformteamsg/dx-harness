@@ -70,6 +70,30 @@ Exit 0 and print nothing (or NOTEs only, or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any sub-AA pair or unverified L0 coverage gap.
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "note": (
+        "Grades A11Y-1 N/A, with an operational ERROR, until the product's "
+        "DESIGN.md declares colour pairs."
+    ),
+    "controls": {
+        "A11Y-1": {
+            "covers": (
+                "The foreground and background token pairs declared under `## "
+                "Colour` in DESIGN.md, measured against AA"
+            ),
+            "misses": (
+                "Any rendered element, any pairing a product uses but did not "
+                "declare, large-text classification, non-text contrast, and "
+                "`color-mix` outside OKLab"
+            ),
+        },
+    },
+}
+
 import importlib.util
 import json
 import os

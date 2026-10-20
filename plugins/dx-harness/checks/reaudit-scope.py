@@ -51,6 +51,17 @@ Exit codes
           `--category`, a missing records directory, or no/ambiguous target.
 """
 
+# What this check decides, read by `validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "process",
+    "purpose": (
+        "Lists the decision records to re-audit when a control is added or "
+        "changed. A query, not a gate."
+    ),
+}
+
 import importlib.util
 import os
 import sys
