@@ -679,7 +679,7 @@ def wiring_parity_errors(repo_root, catalog_by_id):
 # it is not yet wired. Additions need a reason; removals (once a control gets
 # wired) are free — shrink-only in practice.
 SKILL_WIRING_GRANDFATHERED = {
-    "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "IDN-1": "identity check (logo/lockup) is planned but unbuilt, so checks/COVERAGE.md lists IDN-1 as covered by no check, and no skill names it yet",
     # TYP-6 came off this list in #161, the commit that shipped its check:
     # skills/design/dx-design-pattern/SKILL.md now names it beside LAY-4, the
     # control it shares a measure rule body with.

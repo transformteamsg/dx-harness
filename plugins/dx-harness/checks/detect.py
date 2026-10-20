@@ -47,7 +47,7 @@ invalid config. This differs from the per-script 0/1: a wrapped script's exit 1
 misconfiguration.
 
 Honest enforcement: detect covers only the built checks; it never reports an unbuilt
-control as passed. Per-script coverage lives in checks/README.md.
+control as passed. Per-script coverage lives in checks/COVERAGE.md.
 
 Usage
 ─────
