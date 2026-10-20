@@ -67,11 +67,13 @@ flowchart TD
     keep5 -- Yes --> P1_13["P1-13: Start a sandbox repo for a prototype"]
     P1_13 -- "Keep prototyping in the sandbox repo" --> P1_15
     P1_13 --> ready{Is the prototype ready for production?}
+    ready -- No --> P1_15
     ready -- Yes --> P1_16["P1-16: Start a production-ready repo from a sandbox prototype"] --> doneA
 
     repo -- "The product's sandbox" --> P1_14["P1-14: Keep my product's sandbox in step with the product"]
     P1_14 --> lang{Is the design language recorded?}
-    lang -- No --> P1_2["P1-2: Record my product's design language"] --> change
+    lang -- No --> P1_2["P1-2: Choose my domain and record my product's design language"] --> change
+    P1_2 -- "The domain has none" --> P6_2["P6-2: Record the first design language for the domain"] --> change
     lang -- Yes --> change{What kind of change?}
     change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
     change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
@@ -92,7 +94,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    from(["From the first map: the product's main repo"]) --> useLang["Use the product's design language from the sandbox"]
+    from(["From the first map: the product's main repo"]) --> useLang["Use the shared standards, the domain's standards, and the product's design language from the sandbox"]
     useLang --> change{What kind of change?}
     change -- A stated edit --> P1_8["P1-8: Make a stated edit safely"]
     change -- I do not know what is wrong --> P1_6["P1-6: Find out what is wrong with a page"]
