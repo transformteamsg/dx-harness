@@ -103,9 +103,9 @@ COVERAGE = {
         "A11Y-3": {
             "covers": "`label-has-associated-control` and `autocomplete-valid`",
             "misses": (
-                "Cross-file `htmlFor` and `id` association, and icon-only "
-                "accessible names, because the preset disables "
-                "`control-has-associated-label`"
+                "Placeholder-only labels, cross-file `htmlFor` and `id` "
+                "association, and icon-only accessible names, because the "
+                "preset disables `control-has-associated-label`"
             ),
         },
         "A11Y-6": {

@@ -5,6 +5,11 @@ Scripts that verify `check: deterministic` controls (and the deterministic half 
 violation, and prints violations with file/line/element and the control id — verbose
 on failure, silent on success.
 
+Which controls each check decides, and what each one misses, is in
+[COVERAGE.md](COVERAGE.md). It is generated from the `COVERAGE` declaration in each
+script by `python3 checks/validate.py --write-coverage`. This file holds how each
+check runs and how it works inside.
+
 ## Shared scaffolding: `checklib.py` (plan 071)
 
 `checklib.py` holds what used to be duplicated across the check scripts: the
@@ -256,7 +261,7 @@ this **replaces hand-maintained gap lists**, which drift as controls are added (
 
 `python3 checks/token-audit.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for raw colour values, off-scale spacing, and off-scale border-radius that should be replaced with design tokens. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
 
-**Coverage:** TOK-1 (raw hex/rgb/hsl/oklch/named-colour in style contexts, plus raw colour inside Tailwind arbitrary-value utilities e.g. `bg-[…]` — see below), TOK-2 (off-scale spacing — shadcn default scale), TOK-3 (off-scale border-radius), COL-2 (Tailwind palette utility classes bypassing the semantic layer; COL-1 partial — palette bypass only, product-primary resolution is judgment). Suggests the nearest scale value or token pattern on every violation.
+Every violation suggests the nearest scale value or token pattern. What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **Token-definition exemption:** raw values inside a `:root { --*: … }` custom-property block or a `/* dx-tokens */` … `/* /dx-tokens */` region are exempt — tokens must be defined somewhere.
 
@@ -327,14 +332,7 @@ a TypeScript-capable parser are resolved from the **target's** `node_modules` �
 directly, or through a package that declares them, because pnpm keeps a transitive
 dependency out of the target root. `eslint-config-next` already carries all three.
 
-**Coverage:** A11Y-2 (`click-events-have-key-events`, `no-static-element-interactions`,
-`interactive-supports-focus`, `no-noninteractive-element-interactions`,
-`mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`,
-`anchor-is-valid`, `no-autofocus`, `no-access-key`), A11Y-3
-(`label-has-associated-control`, `autocomplete-valid`), A11Y-6 (`alt-text`,
-`img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`),
-A11Y-8 (the aria suite). Every one of those controls keeps a manual remainder, so none
-of them reaches `enforced: script`.
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **Why the preset, not all 39.** The maintainers' preset encodes real ARIA exceptions.
 Measured on this repo: 1 finding under `recommended` against 8 under all 39, and all 7
@@ -347,17 +345,6 @@ and per-rule options are used verbatim; no rule outside it is enabled.
 **Findings name the rule:** `ERROR <file>:<line> [<CTL>][jsx-a11y/<rule>] <message> —
 suggest: fix per jsx-a11y/<rule>`, formatted by `checklib.emit_error`, so a finding
 traces back to its row in `a11y-rule-map.json`.
-
-**Static-subset caveat — what this layer does NOT verify:**
-
-- Contrast (A11Y-1) — `contrast.py` answers declared token pairs; computed colours need
-  a rendered page.
-- A visible focus indicator (A11Y-2's focus half) — no eslint or axe rule exists, which
-  is why `a11y-static.py`'s FOCUS rule stays bespoke.
-- Focus traversal order (A11Y-2), cross-file `htmlFor`/`id` association (A11Y-3),
-  informative-versus-decorative judgment (A11Y-6), closed overlays and ARIA state
-  changes (A11Y-8).
-- Anything a rendered DOM is needed for: that is the rendered check's half.
 
 **A layer that did not run does not silently pass.** When eslint or the plugin cannot
 be resolved, when the TypeScript parser is missing and `.ts`/`.tsx` files were in
@@ -387,15 +374,9 @@ instead, so the case count never depends on the environment.
 
 **Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted** because their line-local regexes could not make reliable ARIA judgments. jsx-a11y's maintained preset replaces KBD and checks label association, but deliberately leaves `control-has-associated-label` disabled; icon-only accessible-name judgment therefore stays rendered/manual. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
 
-**Static-subset caveat — what this script does NOT verify:**
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
-- Keyboard reachability (A11Y-2's reachability half) — `a11y-eslint`'s `click-events-have-key-events`, `no-static-element-interactions` and `interactive-supports-focus`.
-- Label association (part of A11Y-3) — `a11y-eslint`'s `label-has-associated-control`. Icon-only accessible names remain rendered/manual because the preset leaves `control-has-associated-label` disabled.
-- Computed contrast ratios (A11Y-1) — `contrast.py` answers the declared token pairs; computed colours need rendered ones.
-- Interactive hit-area size (A11Y-4) — needs computed layout.
-- Focus traversal order and completeness (A11Y-2 traversal half) — needs a live DOM.
-- ARIA state tracking — `aria-expanded`/`aria-pressed`/`aria-checked` updating to match visual state (A11Y-8 state half) — cannot be detected statically without cross-file variable mutation tracking. Deferred; manual pass required.
-- Focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core, and this false-positive class is **accepted** rather than answered with a new dependency (`stylelint-a11y` was declined). Confirm the rendered element with a keyboard before treating a flag as a bug.
+**Known false positive:** focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core, and this false-positive class is **accepted** rather than answered with a new dependency (`stylelint-a11y` was declined). Confirm the rendered element with a keyboard before treating a flag as a bug.
 
 **Waiver suppression:** A11Y-2 is L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
 
@@ -457,13 +438,7 @@ with it: the Tailwind and CSS pairing regexes, `_classify_tw_value`, `_looks_lik
 `color-mix` maths, `_parse_tw_alpha`, `_composite`, `_band`, `_verdict_line` and the
 `--tokens` flag — the resolver surface another build reuses verbatim.
 
-**What this check does NOT verify:**
-
-- **Any rendered element**, and any pairing a product uses but never declared. That is the
-  rendered check's half of A11Y-1.
-- **Font-size-dependent large-text classification.** The 3.0–4.5 band is flagged
-  conservatively with a "confirm the text size" note.
-- **Non-text (UI component) contrast**, and `color-mix` in spaces other than `oklab`.
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 Path arguments are no longer scanned. A path on the command line only locates the repo
 root (and says so in a `NOTE`); `detect.py` passes `--repo-root` instead of targets.
@@ -517,12 +492,7 @@ A11Y-8 with no harness edit. Where a product has no dark mode (no theme toggle, 
 `.dark` or `[data-theme="dark"]` layer), the dark cells record `N/A, product has no dark
 mode` — the same truthful outcome verify records, never a pass.
 
-**Coverage.** A11Y-1 (`color-contrast`, both themes), A11Y-3 (`label`), A11Y-4
-(`target-size`), A11Y-5 (the reduced-motion evaluation), A11Y-6 (`image-alt`,
-`svg-img-alt`), A11Y-7 (`list`, `listitem`, `heading-order`), A11Y-8 (the aria suite),
-A11Y-9 (`document-title`, `html-has-lang`), A11Y-10 (`bypass`, report-only). Every one
-of them keeps a manual remainder **and** depends on a URL being available, so none of
-them reaches `enforced: script`.
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **Three buckets, not two.** Violations become `ERROR` lines and exit 1. Passes are
 counted once per cell and never printed per node, because a per-node pass list invites
@@ -581,18 +551,6 @@ class: `NOTE` lines naming the failure and every control going to manual verific
 then **exit 0**. That shape is forced by `detect.py`, which reads exit 1 with no `ERROR`
 line as a crash — reporting an uncovered layer as harness breakage would be worse than
 useless. A11Y-1 and A11Y-3 are L0 and still block until verified by some path.
-
-**Static-subset caveat — what this check does NOT verify:**
-
-- **A visible focus indicator (A11Y-2).** 0 of axe's 105 rules check for one, which is
-  why `a11y-static.py`'s FOCUS rule stays bespoke. This check claims no part of A11Y-2.
-- **A11Y-11**, which needs interaction. It stays fully evaluator and manual.
-- **Anything behind an interaction.** The runner clicks nothing, hovers nothing and
-  opens nothing, so closed overlays, state changes and traversal order stay with the
-  evaluator by construction.
-- **Whether an animation is *essential*** (A11Y-5's judgment half), whether an image is
-  informative or decorative (A11Y-6), whether a heading is descriptive (A11Y-7), and
-  whether an SPA updates its title per view (A11Y-9).
 
 **The harness-side Node dependency.** `@axe-core/playwright` (which brings its own
 `axe-core`) and `playwright-core` are declared in `plugins/dx-harness/package.json` and
@@ -681,17 +639,7 @@ The SLP-9 half scans the masked **line**, not only the extracted strings: a buzz
 - **CNT-6 (L2):** a sentence-*initial* empty opener ("There is", "There are", "It is", "This is") or a safe-subset filler word (just, really, very, please) in a multi-word user-facing string or MDX prose line. "In order to" is deliberately NOT in the CNT-6 lists — SLP-9's filler-phrase rule owns it, so one token never fires two controls. A template segment that follows an interpolation is not a sentence start, so the opener rule skips its first sentence and checks the rest.
 - **CNT-13 (L2):** a US spelling or common misspelling in a multi-word user-facing string or MDX prose line, read from `cnt-13.md`, with the British or corrected spelling as the suggestion. A bare one-word identifier is not flagged.
 
-**Static-subset caveat — what this script does NOT verify:**
-
-- Strings built by concatenation, and an imported constant used as copy (`<h1>{TITLE}</h1>`) — unresolvable at the use site; the constant is linted at its definition site instead, as origin `literal`. A template literal IS linted, per static segment; the interpolated expression itself never is.
-- Whether a string is truly user-facing vs. an internal label, key, or fixture — class values, style values, module paths and non-rendering attribute values are masked outright (see Scope above); past that, conservative heuristics, and coordinate / SVG-path data (mostly numeric tokens) is excluded.
-- A text child or attribute value that no line in the file completes — the scanner carries a construct across lines, but a file whose tags or quotes do not balance is extracted from as far as the scanner can model it and no further. It never falls back to scanning the whole line, because whole-line scanning is the false-positive bug it replaced.
-- Class or text in `.html` `<script>` and `<style>` blocks, and prose in `.css` beyond the at-rule masking — the SLP-9 line scan still reads them; no CNT rule does.
-- CNT-7 (descriptive copy leads with its purpose) — judgment (evaluator); split from CNT-3.
-- SLP-9's structural-tell *evaluator* half — negative parallelism, forced triads, copula avoidance, significance inflation, redundant label/helper pairs, em-dash clustering across a paragraph — all judgment (evaluator).
-- CNT-1's full "what happened → what it means → what to do next" anatomy — judgment (evaluator); the script only catches the raw-code-only and bare-"Something went wrong" cases.
-- CNT-5's harder half — "press" and "see", ambiguous link text ("click here", "read more"), and confirming a hit is a UI instruction rather than incidental prose — judgment (evaluator).
-- CNT-6's harder half — "such", "that", droppable articles/conjunctions ("a", "the", "and"), and the clarity exception on every hit ("only if it does not reduce clarity") — judgment (evaluator).
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **L2 waiver behaviour:** `content-lint` honours an inline `dx-waive <CTL-ID> reason="..."`
 comment, which the "Waiver handling" rule above requires of every check. An **L2** control
@@ -725,16 +673,7 @@ is how the markers are authored in `components/compare.tsx`.
 
 **LAY-4 / TYP-6 scope decision:** a missing cap is **never** flagged. The built half is each control's *second* `fails_when` only: a **disallow** rule over caps already present. Each control's first `fails_when` ("no max-width and spans the full viewport") is **presence-requiring**, and a presence-requiring static rule either flags every paragraph or proves nothing, because deciding which block is running prose is the judgment half. An element with no cap produces no `ERROR` and no `NOTE`; that silence is the contract, and it is what separates this rule from TYP-5's accepted gap. Merging the two controls is deliberately **not** done here: the near-duplicate numbers (80 vs 75 ceiling, ~66 vs 40-60 target) are known, and whether to merge them is an open catalogue question.
 
-**Static-subset caveat — what this script does NOT verify:**
-
-- Font *weights* (TYP-1's "PJS 600 / Inter 400/500/600" half) — weight is rarely co-located with the family and "approved weight" needs the family resolved; deferred to the manual pass.
-- The 12px-vs-14px floor *decision* (TYP-2) — whether an element is a label (12px floor) or body (14px floor) needs rendered context; 12–13px is flagged with the ambiguity noted, not asserted as a definite body violation.
-- Line-heights given in px or % (TYP-2) — the ratio needs the font size, rarely on the same line.
-- All-caps set via camelCase inline style (TYP-4) — `style={{textTransform:'uppercase'}}` in JSX is not matched; only the CSS `text-transform: uppercase` form and the Tailwind `uppercase` utility are.
-- A **missing** measure cap (LAY-4 / TYP-6) — the presence-requiring half of both controls, which stays with the evaluator (see the scope decision above).
-- A measure written in any unit but `ch` (LAY-4 / TYP-6) — converting `px` / `rem` / `%` to characters needs the rendered font size, the same reason px and percentage line-heights are not judged. One `NOTE` per line, never an `ERROR`, so a stylesheet full of px max-widths cannot flood the report.
-- A measure reached through a `var()` chain that leaves the file (LAY-4 / TYP-6) — out of static reach. One `NOTE` per line, never an `ERROR`.
-- Fonts / sizes set in a separate stylesheet the line-local rule can't see, or composed from variables / class-name interpolation — out of static reach.
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
 (see "The ast-grep front end" above). The type scale, both floors, the line-height
@@ -765,7 +704,7 @@ The check is named `structure` (what `detect.py` prints, and what prefixes every
 operational `ERROR`); the file is `structure-scan.py`, because every scan script in
 this layer is `*-scan.py`.
 
-**Coverage: A11Y-7 (L1) and CMP-6 (L2), from one detection.** Both controls fail in
+**One detection, two control ids: A11Y-7 (L1) and CMP-6 (L2).** Both controls fail in
 the same shape and are decided by the same walk, so one check carries both. One
 detected element prints **two** `ERROR` lines at the same file and line, `[A11Y-7]`
 first then `[CMP-6]`, never a compound `[A11Y-7, CMP-6]` bracket, because
@@ -791,25 +730,7 @@ text. The run prints one `NOTE` naming how many files it could not parse and sen
 A11Y-7 and CMP-6 to manual verification for them, so a layer that did not run never
 reads as a pass.
 
-**What this check does NOT verify:**
-
-- Heading hierarchy and list semantics. axe's `heading-order`, `list` and `listitem`
-  own those at the rendered layer. A source walk cannot see a page assembled from a
-  layout, MDX and components, so a static heading walk would flag good work. No such
-  walk ships here, despite what `a11y-7.md` used to promise.
-- Styled divs standing in for a heading, a list or a table (A11Y-7's own first
-  `fails_when` clause). Deciding the content *is* one of those is pattern-fit
-  judgment, which `cmp-6.md` keeps with the evaluator. A static rule for it flags
-  every CSS grid.
-- Numeric alignment and tabular figures (CMP-6's other clauses). No rule reads an
-  alignment utility, `tabular-nums` or the content of a `<td>`. A source scan cannot
-  see which figures line up in a rendered column, and `cmp-6.md` exempts a
-  deliberately left-aligned identifier column. TYP-5's gap is accepted for the same
-  reason.
-- Form grouping (`fieldset` / `legend`), descriptive headings and labels, persistent
-  header behaviour, and empty/loading states (CMP-3, which is `cmp-scan`'s).
-- `role="grid"` and `role="treegrid"`. Both carry interaction contracts a source
-  scan cannot judge, so the narrowing leaves them out.
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 Note that the shipped rule catches a case neither control's `fails_when` list names
 literally: both lists describe divs used *instead of* a table, and this rule catches a
@@ -842,30 +763,9 @@ downgrade (and the mapped-body cell interpolation that must never be mistaken fo
 
 **CMP-1 import-diff — only when `coverage: "complete"`:** the diff flags any component import in changed source that resolves outside the manifest. When `coverage` is `"partial"` (or absent) the diff stays **off** and the script reports `partial manifest — diff not run` — a team that declares complete coverage is asserting the manifest is reliable enough to diff against.
 
-**What this script does NOT verify:** re-exports and barrel files can produce false-positive diff hits when an import resolves through a barrel that isn't the manifest's import path; if you hit these, downgrade to `coverage: "partial"` and the diff stays off (same trust lesson as `token-audit`). The manifest is only as complete as the product keeps it — a stale manifest passes schema validation but misses new components.
+What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **Self-test:** `python3 checks/component-manifest.py --self-test` → `SELF-TEST OK (11 cases)`.
-
-Planned for V1 (remaining):
-
-| Check | Controls | Approach |
-|---|---|---|
-| ~~`contrast`~~ | ~~A11Y-1~~ | ✅ built — `contrast` grades the declared token pairs before anything renders; `rendered-check` runs axe `color-contrast` on the open page in both themes. axe's `incomplete` items (a background image, a gradient) stay manual |
-| ~~`focus`~~ | ~~A11Y-2~~ | ✅ built (static subset) — `a11y-static` covers FOCUS (outline removal), `a11y-eslint` covers keyboard reachability (`click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`); traversal order and hit-area still need a rendered DOM |
-| ~~`labels`~~ | ~~A11Y-3~~ | ✅ built (static subset) — `a11y-eslint` covers `label-has-associated-control` and `autocomplete-valid`; placeholder-only label and cross-file `htmlFor`/`id` association still need a rendered DOM |
-| ~~`targets`~~ | ~~A11Y-4~~ | ✅ built (rendered) — `rendered-check` runs axe `target-size`, force-enabled, at 360 and 1280 |
-| ~~`reduced-motion`~~ | ~~A11Y-5~~ | ✅ built (rendered) — `rendered-check`'s one reduced-motion cell reports what still moves under the emulation; whether an animation is *essential* stays with the evaluator |
-| ~~`alt-scan`~~ | ~~A11Y-6~~ | ✅ built (static subset) — `a11y-eslint` covers `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, `media-has-caption`; the informative-versus-decorative judgment and every non-JSX image stay manual |
-| ~~`structure`~~ | ~~A11Y-7, CMP-6 (static halves)~~ | ✅ built (static subset): `structure-scan` flags a `<table>` or `role="table"` with no `<th>` and no `role="columnheader"`, under both control ids. No heading-hierarchy walk and no list rule ship: axe's `heading-order`, `list` and `listitem` own those at the rendered layer, and alignment, tabular figures, form grouping and the styled-div judgment are never guessed from source |
-| ~~`nrv`~~ | ~~A11Y-8 (deterministic half)~~ | ✅ built (static subset) — `a11y-eslint` covers the aria suite (`aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, the role-conversion rules); ARIA state tracking (aria-expanded/pressed/checked) is the deferred extension — too fuzzy statically, manual pass required |
-| ~~`token-audit`~~ | ~~TOK-1..3, COL-1..2~~ | ✅ built |
-| ~~`type-scan`~~ | ~~TYP-1..4, LAY-4, TYP-6~~ | ✅ built (static subset) — `type-scan` covers TYP-1 (font families), TYP-2 (size floor + unitless line-height), TYP-3 (on-scale, scale sourced from the catalog), TYP-4 (no all-caps, acronyms exempt), and LAY-4 + TYP-6 (one measure rule, two ceilings, sourced from the catalog); font *weights*, the label-vs-body floor decision, px/% line-heights, and a *missing* measure cap still need rendered context |
-| `cmp-scan` | CMP-2, CMP-3, CMP-9 (deterministic halves) | Enumerate destructive actions and assert a consequence surface + undo/confirm exists; enumerate async actions and assert loading/success/error states exist and are reachable; find `dangerouslySetInnerHTML`/`v-html` on cross-user content and check for a sanitiser in the render path |
-| ~~`content-lint`~~ | ~~CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, SLP-9 (deterministic half)~~ | ✅ built and wired (static subset) — `content-lint` covers CNT-1 (raw codes), CNT-3 (sentence length), CNT-5 (device verbs, from `cnt-5.md`), CNT-6 (sentence-initial empty openers + safe filler subset, from `cnt-6.md`), CNT-13 (US spellings and common misspellings, from `cnt-13.md`), and the SLP-9 lint lists (read live from `standards/controls/slp-9.md`) + em-dash chains; the SLP-9 structural-tell evaluator half, CNT-7 (lead-with-purpose, split from CNT-3), and the CNT-5/CNT-6/CNT-13 judgment halves stay evaluator |
-| `motion` | MOT-1, MOT-2, SLP-8 | Animation durations within 100–300ms, standard easing, none decorative on critical paths; motion values resolve to the declared motion token set; no bounce/elastic/overshoot easing |
-| `identity` | IDN-1, IDN-2 | Logo/lockup files resolve to the approved asset library and product icons to the approved icon family; no inline redraws |
-| `slop-scan` | SLP-1..3 | Stylesheet/DOM scan: purple-violet gradient palettes, cyan-on-dark theming, glow accents, gradient text, thick side-tab borders on rounded cards |
-| `slop-rendered` | SLP-4, SLP-6 | Rendered checks, because both need a real page: nested cards in the rendered tree, and the adjacent type-scale ratio actually used |
 
 Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate

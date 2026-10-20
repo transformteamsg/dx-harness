@@ -123,8 +123,8 @@ COVERAGE = {
             ),
             "misses": (
                 "Heading hierarchy and list semantics (`rendered-check.py`), "
-                "and styled divs that stand in for a heading, a list, or a "
-                "table"
+                "styled divs that stand in for a heading, a list, or a table, "
+                "and `role=\"grid\"` and `role=\"treegrid\"`"
             ),
         },
         "CMP-6": {
@@ -133,8 +133,8 @@ COVERAGE = {
                 "`role=\"columnheader\"`"
             ),
             "misses": (
-                "Numeric alignment, tabular figures, form grouping, and styled "
-                "divs that stand in for a table"
+                "Numeric alignment, tabular figures, form grouping, persistent "
+                "header behaviour, and styled divs that stand in for a table"
             ),
         },
     },

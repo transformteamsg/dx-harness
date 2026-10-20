@@ -16,7 +16,7 @@ Needs eslint, eslint-plugin-jsx-a11y, and a TypeScript parser in the target's no
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
 | A11Y-2 | L0 | Keyboard reachability: `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`, `no-noninteractive-element-interactions`, `mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`, `anchor-is-valid`, `no-autofocus`, and `no-access-key` | A visible focus indicator (`a11y-static.py`), and focus traversal order |
-| A11Y-3 | L0 | `label-has-associated-control` and `autocomplete-valid` | Cross-file `htmlFor` and `id` association, and icon-only accessible names, because the preset disables `control-has-associated-label` |
+| A11Y-3 | L0 | `label-has-associated-control` and `autocomplete-valid` | Placeholder-only labels, cross-file `htmlFor` and `id` association, and icon-only accessible names, because the preset disables `control-has-associated-label` |
 | A11Y-6 | L1 | `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, and `media-has-caption` | Whether an image is informative or decorative, and every image outside JSX |
 | A11Y-8 | L1 | The jsx-a11y aria suite: `aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, and the role-conversion rules | Closed overlays, and ARIA state that must change with the visual state |
 
@@ -35,6 +35,8 @@ Also validates `.dx/component-manifest.json` against its spec.
 | CMP-1 | L1 | With `coverage: "complete"` in the manifest, a component import in changed source that resolves outside the manifest | Every import when the manifest's coverage is partial or absent. A barrel re-export can give a false hit |
 
 ### `content-lint.py`
+
+Every control below misses copy the scan cannot resolve: strings built by concatenation, a constant at its use site, markup whose tags or quotes do not balance, and text in `.html` `<script>` and `<style>` blocks. Whether a string is user-facing is a heuristic.
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
@@ -75,8 +77,8 @@ Runs axe on a page that is already open, at 360 and 1280 in each supported theme
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-7 | L1 | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Heading hierarchy and list semantics (`rendered-check.py`), and styled divs that stand in for a heading, a list, or a table |
-| CMP-6 | L2 | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Numeric alignment, tabular figures, form grouping, and styled divs that stand in for a table |
+| A11Y-7 | L1 | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Heading hierarchy and list semantics (`rendered-check.py`), styled divs that stand in for a heading, a list, or a table, and `role="grid"` and `role="treegrid"` |
+| CMP-6 | L2 | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Numeric alignment, tabular figures, form grouping, persistent header behaviour, and styled divs that stand in for a table |
 
 ### `token-audit.py`
 

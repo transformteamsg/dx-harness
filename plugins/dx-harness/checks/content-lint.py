@@ -122,6 +122,12 @@ Exit 1 with ERROR lines on any violation.
 # generated file to know what still needs a manual pass.
 COVERAGE = {
     "kind": "rule",
+    "note": (
+        "Every control below misses copy the scan cannot resolve: strings built "
+        "by concatenation, a constant at its use site, markup whose tags or "
+        "quotes do not balance, and text in `.html` `<script>` and `<style>` "
+        "blocks. Whether a string is user-facing is a heuristic."
+    ),
     "controls": {
         "CNT-1": {
             "covers": (
