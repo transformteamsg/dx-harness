@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-design-research-brief",
-  "notes": "Offline eval for the on-demand references (#462). Run each case in an isolated session that has only the skill folder. The developer waived the baseline run against the version before #462, so the cases grade the new version alone. Grade the reads from the session transcript: a read of references/ux-metrics.md is a Read tool call on that path. A run that stops at a question it must ask is a complete and valid outcome. Assertions carry passed=null until a run fills them in.",
+  "notes": "Offline eval for the on-demand references (#462). Run each case in an isolated session that has only the skill folder. The developer waived the baseline run against the version before #462, so the cases grade the new version alone. Grade the reads from the session transcript: a read of a reference is a Read tool call on that path. A run that stops at a question it must ask is a complete and valid outcome. Assertions carry passed=null until a run fills them in.",
   "evals": [
     {
       "id": 0,
@@ -9,7 +9,7 @@
       "expected_output": "A complete plan in the output format with all 12 components in order, a generative study type, and UX metrics marked not applicable.",
       "assertions": [
         {
-          "text": "The plan carries every heading in references/output-format.md, in that order, from PROJECT BACKGROUND to RESOURCES",
+          "text": "The plan carries every heading in the output format in references/components.md, in that order, from PROJECT BACKGROUND to RESOURCES",
           "passed": null,
           "evidence": ""
         },
@@ -24,7 +24,7 @@
           "evidence": ""
         },
         {
-          "text": "The plan ends with the researcher reminders",
+          "text": "The plan ends with the reminders block for the researcher",
           "passed": null,
           "evidence": ""
         }
@@ -50,17 +50,22 @@
           "text": "The reply treats the 18% drop as a business metric, not as the research goal",
           "passed": null,
           "evidence": ""
+        },
+        {
+          "text": "The transcript shows no read of references/components.md",
+          "passed": null,
+          "evidence": ""
         }
       ]
     },
     {
       "id": 2,
-      "name": "evaluative-reads-ux-metrics",
+      "name": "evaluative-skips-generative-guidance",
       "prompt": "Help me plan this study. We redesigned the claim submission form in our insurance app and want to benchmark it against the old form before launch. The goal is to measure whether people finish a claim faster and with fewer errors on the new form. Unmoderated, remote, two segments: first-time claimants and repeat claimants. Results due in three weeks.",
-      "expected_output": "An evaluative plan whose run reads references/ux-metrics.md and lists quantitative metrics under UX METRICS.",
+      "expected_output": "An evaluative plan whose run reads references/evaluative.md, not references/generative.md, and lists quantitative metrics under UX METRICS.",
       "assertions": [
         {
-          "text": "The transcript shows a read of references/ux-metrics.md",
+          "text": "The transcript shows a read of references/evaluative.md and no read of references/generative.md",
           "passed": null,
           "evidence": ""
         },
@@ -78,12 +83,12 @@
     },
     {
       "id": 3,
-      "name": "generative-skips-ux-metrics",
+      "name": "generative-skips-evaluative-guidance",
       "prompt": "We're starting a new research project. We want to discover how community nurses plan their home visits across a day, and what gets in the way, before we decide whether to build a scheduling tool at all. Interviews and some shadowing. Six weeks.",
-      "expected_output": "A generative plan whose run never reads references/ux-metrics.md and marks UX METRICS not applicable.",
+      "expected_output": "A generative plan whose run never reads references/evaluative.md and marks UX METRICS not applicable.",
       "assertions": [
         {
-          "text": "The transcript shows no read of references/ux-metrics.md",
+          "text": "The transcript shows no read of references/evaluative.md",
           "passed": null,
           "evidence": ""
         },
@@ -93,7 +98,7 @@
           "evidence": ""
         },
         {
-          "text": "The transcript shows a read of references/components.md and references/output-format.md",
+          "text": "The transcript shows a read of references/components.md and references/generative.md",
           "passed": null,
           "evidence": ""
         }

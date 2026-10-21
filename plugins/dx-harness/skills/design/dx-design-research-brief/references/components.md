@@ -1,7 +1,8 @@
 # Research plan components
 
-Guidance for each component of the plan, in plan order. Component 7, UX metrics, lives
-in [ux-metrics.md](ux-metrics.md), and only an evaluative or hybrid study reads it.
+Guidance for each component, in plan order, then the output format. The study-type
+reference that Step 3 names holds the goal examples, methods, UX metrics, sample sizes,
+and durations for that study type.
 
 ### 1. Project background
 
@@ -58,17 +59,7 @@ end, to make decisions with confidence.
 
 Write three goals at most. More than three widens the scope and makes depth impossible.
 
-Common generative research goals:
-
-- Discover people's current processes or decision-making about [research subject], and how they feel about the overall experience
-- Learn about people's current pain points, frustrations, and barriers with [current process or tools], and how they would improve it
-- Understand what [research subject] means to people: how they define it and why it matters to them
-
-Common evaluative research goals:
-
-- Evaluate how people use or interact with [product, website, app, or service]
-- Uncover the tools people use to [achieve goal] and their experience with those tools
-- Uncover the pain points or confusion people meet when they interact with [prototype or experience]
+Take the goal examples from the study-type reference.
 
 Questions to ask stakeholders when you write the goals:
 
@@ -111,19 +102,12 @@ project that it was a success?"
 Name the method or methods, and say briefly why each fits the goals. For a study with
 more than one phase, describe each phase.
 
-| Study type | Methods |
-| --- | --- |
-| Generative | One-to-one interviews, diary studies, contextual inquiry |
-| Evaluative, qualitative | Qualitative usability test or experience feedback session, concept testing |
-| Evaluative, quantitative | Quantitative usability test, tree testing, first-click testing, surveys with metrics |
-| Hybrid | Generative first, then an evaluative follow-up |
+Take the methods from the study-type reference.
 
-Match the method to what the team needs to learn:
+### 7. UX metrics
 
-- Why users behave a certain way -> qualitative
-- How many, and how fast -> quantitative
-- A test of a mid-fidelity design -> qualitative usability test
-- A benchmark of a live product -> quantitative usability test
+Take the metrics from the study-type reference. A generative study writes
+`Not applicable: generative study`.
 
 ### 8. Participants and recruitment
 
@@ -137,26 +121,7 @@ participant needs to give you meaningful data. Find the criteria with these ques
 
 The researcher writes the screener survey from these criteria, outside this plan.
 
-The recruitment section covers:
-
-- Number of participants, over-recruited by at least 20%
-- Number per segment, where the study has segments
-- How you will recruit: a panel, an agency, LinkedIn, Hotjar, or another channel
-- Session format: remote or in person
-- Session length
-- Participant demographics
-- Incentive amount
-- A link to the screener survey
-
-Sample sizes:
-
-| Study | Participants |
-| --- | --- |
-| Generative or qualitative | 10 to 15 per segment for saturation, five at minimum |
-| Qualitative usability test | Seven to 10 per segment |
-| Quantitative usability test | Five per segment at minimum when moderated, 15 or more when unmoderated |
-| Benchmarking | 25 or more per segment |
-
+Over-recruit by at least 20%. Take the sample size from the study-type reference.
 "Per segment" means per distinct audience type, never the total across all segments.
 
 ### 9. Deliverables and next steps
@@ -177,24 +142,8 @@ the start.
 Set timeline expectations early. Include a buffer of one to two weeks, and call the
 timeline approximate.
 
-Phases to include:
-
-- Planning and scoping
-- Recruitment
-- Conducting sessions, which can overlap with recruitment
-- Analysis and synthesis
-- Report-building
-- Share-outs and readouts
-- Workshops
-
-Typical durations:
-
-| Study | Duration |
-| --- | --- |
-| Generative | Four to six weeks |
-| Evaluative | Two to four weeks |
-| Hybrid | Three to five weeks |
-| Each additional segment | One to two weeks more |
+Take the duration from the study-type reference. Add one to two weeks for each segment
+after the first.
 
 ### 11. Discussion guide or task script
 
@@ -207,15 +156,97 @@ reference for the whole project.
 
 ### 12. Resources
 
-Link everything relevant:
+Link everything relevant. This section keeps the plan useful for people who join the
+project late, and for the researcher's own later case studies.
 
-- Intake document
-- Screener survey
-- Raw data: recordings and notes
-- Synthesis board
-- Report or presentation
-- Prototypes or concepts
-- Previous relevant studies
+## Output format
 
-This section keeps the plan useful for people who join the project late, and for the
-researcher's own later case studies.
+Keep every heading. End the plan with the reminders block.
+
+```
+RESEARCH PLAN: [Project name]
+Researcher: [Name]
+Date: [Date]
+Version: [1.0]
+
+PROJECT BACKGROUND
+[Two to four sentences on context, the business problem, the user problem, and the decisions this research will inform]
+
+INTERNAL STAKEHOLDERS
+Responsible: [Name, role]
+Accountable: [Name, role]
+Consulted: [Name, role]
+Informed: [Name, role]
+
+HYPOTHESES
+- [Hypothesis 1]
+
+ASSUMPTIONS
+- [Assumption 1]
+
+RESEARCH STATEMENT
+[One or two sentences that use the research statement model]
+
+RESEARCH GOALS
+1. [Goal 1]
+2. [Goal 2]
+3. [Goal 3, if needed]
+
+SUCCESS CRITERIA
+- [Criterion 1]
+- [Criterion 2]
+
+METHODOLOGY
+[Method or methods, and a brief rationale]
+
+UX METRICS
+- [Metric 1]
+- [Metric 2]
+
+PARTICIPANTS AND RECRUITMENT
+Criteria: [List]
+Number: [X participants, Y per segment]
+Recruitment method: [Panel, agency, LinkedIn, Hotjar, or another channel]
+Session format: [Remote or in person]
+Session length: [X minutes]
+Demographics: [List]
+Incentive: [Amount and type]
+Screener: [Link]
+
+DELIVERABLES AND NEXT STEPS
+Deliverables:
+- [Deliverable 1, and why this format]
+- [Deliverable 2]
+
+Next steps:
+- [Workshop, follow-up research, or another step]
+
+APPROXIMATE TIMELINE
+Planning and scoping: [X days]
+Recruitment: [X weeks]
+Conducting sessions: [X weeks]
+Analysis and synthesis: [X weeks]
+Report-building: [X days]
+Share-outs: [X days]
+Workshops: [X days]
+Total: Approximately [X weeks]
+
+DISCUSSION GUIDE / TASK SCRIPT
+[Included here, or a link to a separate document]
+
+RESOURCES
+- Intake document: [link]
+- Screener survey: [link]
+- Raw data, recordings and notes: [link]
+- Synthesis board: [link]
+- Report or presentation: [link]
+- Prototypes or concepts: [link]
+- Previous relevant studies: [link]
+```
+
+```
+Reminders for the researcher
+- Do not write interview questions before the stakeholders agree on the research goals. Each question serves a goal.
+- Update the plan as the project changes, especially the resources section.
+- Do not start the project until the stakeholders have seen the plan. Align before you recruit.
+```

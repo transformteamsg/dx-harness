@@ -6,14 +6,16 @@ import { describe, expect, it } from "vitest";
    into references read on demand. A skill run writes the plan, so nothing here
    exercises a live run; the eval suite does that. These guard the properties
    that would silently regress instead: that the 12 components keep their order
-   and their guidance, that the goal gate sits before any writing, and that only
-   a study type that needs it reaches the UX metrics guidance. See issue #462. */
+   and their guidance, that the goal gate sits before any writing, and that a
+   run reads only the guidance its study type and its inputs need. See issue
+   #462. */
 
 const SKILL_DIR = "plugins/dx-harness/skills/design/dx-design-research-brief";
 const SKILL = `${SKILL_DIR}/SKILL.md`;
 const COMPONENTS = `${SKILL_DIR}/references/components.md`;
-const UX_METRICS = `${SKILL_DIR}/references/ux-metrics.md`;
-const OUTPUT_FORMAT = `${SKILL_DIR}/references/output-format.md`;
+const GENERATIVE = `${SKILL_DIR}/references/generative.md`;
+const EVALUATIVE = `${SKILL_DIR}/references/evaluative.md`;
+const INTAKE = `${SKILL_DIR}/references/intake.md`;
 const EVALS = `${SKILL_DIR}/evals/evals.json`;
 const BUDGET = "plugins/dx-harness/docs/token-budget-design.md";
 
@@ -41,45 +43,42 @@ const PLAN = [
   { component: "Resources", headings: ["RESOURCES"] },
 ];
 
-/* Phrases only the UX metrics guidance carries. Finding one in a file every
-   run reads means a generative run pays for it again. */
-const UX_METRIC_TERMS = ["Single Ease Question", "UMUX", "Time on task"];
+/* Phrases only one conditional reference carries. Finding one in a file every
+   run reads means a run that skips that reference pays for it again. */
+const EVALUATIVE_TERMS = ["Single Ease Question", "UMUX", "Time on task", "tree testing"];
+const GENERATIVE_TERMS = ["diary studies", "Discover people's current processes"];
+const INTAKE_TERMS = ["What led you to request research support now?"];
 
 function headingLines(text: string) {
   return text.split("\n").filter((line) => /^#{2,3} /.test(line));
 }
 
+function linkLines(text: string, file: string) {
+  return text.split("\n").filter((line) => line.includes(`](references/${file})`));
+}
+
 describe("item 1: the plan has all 12 components", () => {
-  it("lists the 12 components in plan order in SKILL.md", () => {
-    const skill = read(SKILL);
-    expect(skill).not.toBe("");
-    const positions = PLAN.map(({ component }) => skill.indexOf(component));
+  it("gives each component a guidance section in components.md, in plan order", () => {
+    const guidance = headingLines(read(COMPONENTS));
+    const positions = PLAN.map(({ component }) => guidance.findIndex((line) => line.includes(component)));
     positions.forEach((position, i) => expect(position, PLAN[i].component).toBeGreaterThan(-1));
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
   });
 
-  it("gives each component a guidance section in a reference", () => {
-    const guidance = headingLines(read(COMPONENTS) + "\n" + read(UX_METRICS));
-    for (const { component } of PLAN) {
-      expect(guidance.some((line) => line.includes(component)), component).toBe(true);
-    }
-  });
-
-  it("gives each component a heading in the output format", () => {
-    const format = read(OUTPUT_FORMAT);
-    expect(format).not.toBe("");
-    for (const { component, headings } of PLAN) {
-      for (const heading of headings) {
-        expect(format, `${component}: ${heading}`).toMatch(new RegExp(`^${heading.replace("/", "\\/")}`, "m"));
-      }
-    }
+  it("gives each component its output heading, in plan order", () => {
+    const components = read(COMPONENTS);
+    const positions = PLAN.flatMap(({ headings }) =>
+      headings.map((heading) => components.search(new RegExp(`^${heading.replace("/", "\\/")}$`, "m"))),
+    );
+    positions.forEach((position) => expect(position).toBeGreaterThan(-1));
+    expect([...positions].sort((a, b) => a - b)).toEqual(positions);
   });
 
   it("keeps the guidance and the output format out of SKILL.md", () => {
     const skill = read(SKILL);
     expect(skill).not.toBe("");
     expect(skill).not.toMatch(/^RESEARCH PLAN: /m);
-    expect(skill).not.toContain("Bad vs. better goal examples");
+    expect(skill).not.toMatch(/^PROJECT BACKGROUND$/m);
   });
 });
 
@@ -87,37 +86,46 @@ describe("item 2: a request with no research goal gets a question first", () => 
   it("stops for the research goal before the step that writes the plan", () => {
     const skill = read(SKILL);
     const gate = skill.search(/no research goal/i);
-    const write = skill.indexOf(PLAN[0].component);
+    const write = skill.indexOf("](references/components.md)");
     expect(gate).toBeGreaterThan(-1);
     expect(write).toBeGreaterThan(-1);
     expect(gate).toBeLessThan(write);
   });
+
+  it("links the intake form once, from the branch that asks for the goal", () => {
+    const links = linkLines(read(SKILL), "intake.md");
+    expect(links).toHaveLength(1);
+    expect(links[0]).toMatch(/stakeholder/i);
+  });
 });
 
-describe("item 3: only a study that needs it reads the UX metrics guidance", () => {
-  it("holds the UX metrics guidance in its own reference", () => {
-    const metrics = read(UX_METRICS);
-    for (const term of UX_METRIC_TERMS) expect(metrics, term).toContain(term);
+describe("item 3: a run reads only the guidance its study type needs", () => {
+  it("holds the conditional guidance in its own references", () => {
+    for (const term of EVALUATIVE_TERMS) expect(read(EVALUATIVE), term).toContain(term);
+    for (const term of GENERATIVE_TERMS) expect(read(GENERATIVE), term).toContain(term);
+    for (const term of INTAKE_TERMS) expect(read(INTAKE), term).toContain(term);
   });
 
-  it("keeps the UX metrics guidance out of the files every run reads", () => {
-    const always = read(SKILL) + read(COMPONENTS) + read(OUTPUT_FORMAT);
+  it("keeps the conditional guidance out of the files every run reads", () => {
+    const always = read(SKILL) + read(COMPONENTS);
     expect(always).not.toBe("");
-    for (const term of UX_METRIC_TERMS) expect(always, term).not.toContain(term);
+    for (const term of [...EVALUATIVE_TERMS, ...GENERATIVE_TERMS, ...INTAKE_TERMS]) {
+      expect(always, term).not.toContain(term);
+    }
   });
 
-  it("links the UX metrics reference once, under the evaluative branch, and skips it for generative", () => {
+  it("links each study-type reference once, on the line for its study type", () => {
     const skill = read(SKILL);
-    const links = skill.split("\n").filter((line) => line.includes("](references/ux-metrics.md)"));
-    expect(links).toHaveLength(1);
-    expect(links[0]).toMatch(/evaluative/i);
-    expect(skill).toMatch(/generative[^\n]*(do not|does not|skip)[^\n]*ux-metrics\.md|ux-metrics\.md[^\n]*generative/i);
+    const evaluative = linkLines(skill, "evaluative.md");
+    const generative = linkLines(skill, "generative.md");
+    expect(evaluative.filter((line) => /^- .*-> evaluative/.test(line))).toHaveLength(1);
+    expect(generative.filter((line) => /^- .*-> generative/.test(line))).toHaveLength(1);
+    const generativeLine = generative.find((line) => /-> generative/.test(line)) ?? "";
+    expect(generativeLine).not.toContain("evaluative.md");
   });
 
-  it("links the components and the output format references", () => {
-    const skill = read(SKILL);
-    expect(skill).toContain("](references/components.md)");
-    expect(skill).toContain("](references/output-format.md)");
+  it("links the components reference", () => {
+    expect(read(SKILL)).toContain("](references/components.md)");
   });
 });
 
@@ -137,8 +145,8 @@ describe("also true when done", () => {
     for (const name of [
       "plan-has-all-twelve-components",
       "missing-goal-asked-first",
-      "evaluative-reads-ux-metrics",
-      "generative-skips-ux-metrics",
+      "evaluative-skips-generative-guidance",
+      "generative-skips-evaluative-guidance",
     ]) {
       expect(names, name).toContain(name);
     }
