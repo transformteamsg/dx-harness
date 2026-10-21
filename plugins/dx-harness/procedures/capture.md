@@ -15,6 +15,11 @@ Take 1280 for every run. Add 360 when any dimension in the run judges responsive
 behaviour: its accepted issues name a narrow screen or reflow, or its subset holds a
 control about responsive layout.
 
+Triage captures 1280 before the person accepts any issue, so the dimensions are not
+known yet. When an accepted dimension then needs 360, add 360 to the one capture:
+the same session and the same capture set. Take no second capture of a width the
+set already holds.
+
 ## Step 2: Capture each width once
 
 Capture each width once, with the mechanism order in step 2 of

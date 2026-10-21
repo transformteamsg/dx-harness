@@ -107,7 +107,7 @@ When the intent is "improve this" across an existing surface:
 2. **Name the standout issues** in plain words. Do not grade: scored audits stay with
    dx-design-critique, and triage never attaches a score.
 3. **Route by what the person accepts**, per `../../../procedures/capture.md`:
-   resolve the rules once, and give each dimension the capture set and its own subset.
+   add any width a dimension needs to the one capture, resolve the rules once, and give each dimension the capture set and its own subset.
    - One accepted issue in one dimension: dispatch that pass alone as a propose-only
      subagent, with `mode:return-to-caller`, the accepted issue as its payload,
      the capture set, and its subset; it returns its ranked findings to you and never re-interviews
