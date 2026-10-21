@@ -118,8 +118,10 @@ The tiers stay `L0`, `L1`, and `L2` until [#432](https://github.com/transformtea
 - Every check needs a way to report a skipped L0 line. C14 adds it to `checklib.py`.
 - P6-6 holds: a product from another team extends the harness through its own `DESIGN.md`. Its acceptance examples 1 and 3 assume a shared product family layer, so the P6 revision in [#420](https://github.com/transformteamsg/dx-harness/issues/420) must reword them.
 
-## Open questions
+## Deferred
 
-1. **Applying a different preset to one page or component.** [#442](https://github.com/transformteamsg/dx-harness/issues/442) asks for it. Decision 5 allows one `extends` for a whole product.
-2. **Deriving a preset from products.** The `teacher` and `professional-learning` presets do not exist yet. Teacher Workspace and Glow are the evidence for them. Decide who derives each preset, and whether `dx-design-language` offers the derivation.
-3. **The P7 domain design owner stories** ([#445](https://github.com/transformteamsg/dx-harness/issues/445)) may change who edits a preset.
+No question blocks this record. Each item below waits for a story or an issue.
+
+1. **A different preset for one page or component** ([#442](https://github.com/transformteamsg/dx-harness/issues/442)). A product has one preset in this version, because decision 5 allows one `extends`.
+2. **Deriving a preset from products.** The `teacher` and `professional-learning` presets do not exist yet. The design lead of each domain writes the preset by hand from the `DESIGN.md` of its products. A story decides whether `dx-design-language` offers the derivation.
+3. **Who edits a preset** ([#445](https://github.com/transformteamsg/dx-harness/issues/445)). Decision 7 assumes that the harness maintainers edit presets. The P7 stories may change this.
