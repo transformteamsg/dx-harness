@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 /* CI runs the plugin's checks: the Vitest tests, every check script's
-   --self-test, and validate.py. The gate runs from `pnpm check`, and the
+   --self-test, validate.py, and rule-scaffold.py. The gate runs from `pnpm check`, and the
    self-tests run with the rest of the tests. See issues #224 and #401. */
 
 function readRoot(file: string) {
@@ -13,8 +13,10 @@ function readRoot(file: string) {
 const scripts: Record<string, string> = JSON.parse(readRoot("package.json")).scripts;
 
 describe("pnpm check", () => {
-  it("runs validate.py", () => {
-    expect(scripts.check).toBe("python3 plugins/dx-harness/checks/validate.py");
+  it("runs validate.py, then rule-scaffold.py", () => {
+    expect(scripts.check).toBe(
+      "python3 plugins/dx-harness/checks/validate.py && python3 plugins/dx-harness/checks/rule-scaffold.py",
+    );
   });
 });
 
