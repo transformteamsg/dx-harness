@@ -2,7 +2,7 @@
 
 The five focused passes (dx-design-copy, dx-design-flow, dx-design-pattern,
 dx-design-motion, dx-design-polish) run this one procedure, each scoped to its own
-dimension. A pass is propose-only: it captures the surface, judges it inside its
+dimension. A pass is propose-only: it judges a capture of the surface inside its
 dimension, and records up to five ranked findings on the surface's design ticket. A
 pass NEVER edits the product, and it never runs verify. Only `dx-design-execute`
 edits the product; it owns build, design review, and verify through the shared
