@@ -50,8 +50,13 @@ Give each dimension the capture set and its own subset, and nothing wider. The
 dimension reads the `detail` files in its subset and the reference files its pass
 `SKILL.md` names. It reads no other rules.
 
-Dispatch one propose-only subagent for each pass, with `mode:return-to-caller`,
-the accepted issues for that pass, the capture set, and that pass's subset.
+How the dimensions run depends on how many there are:
+
+- **One or two dimensions**: judge each one in the run's own context, with steps 3
+  and 4 of `pass.md`. Start no subagent.
+- **Three or more dimensions**: dispatch one propose-only subagent for each pass,
+  with `mode:return-to-caller`, the accepted issues for that pass, the capture set,
+  and that pass's subset.
 
 ## Step 5: When a width does not capture
 

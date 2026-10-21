@@ -106,16 +106,15 @@ When the intent is "improve this" across an existing surface:
    for every dimension in the run.
 2. **Name the standout issues** in plain words. Do not grade: scored audits stay with
    dx-design-critique, and triage never attaches a score.
-3. **Route by what the person accepts**, per `../../../procedures/capture.md`:
-   add any width a dimension needs to the one capture, resolve the rules once, and give each dimension the capture set and its own subset.
-   - One accepted issue in one dimension: dispatch that pass alone as a propose-only
-     subagent, with `mode:return-to-caller`, the accepted issue as its payload,
-     the capture set, and its subset; it returns its ranked findings to you and never re-interviews
-     the person.
-   - Several accepted issues across dimensions: dispatch the relevant passes as
-     parallel propose-only subagents, one per pass, each with `mode:return-to-caller`,
-     its accepted issues, the capture set, and its subset, so nobody is interviewed twice. Each
-     pass proposes; none of them edits the product or talks to the person.
+3. **Judge the dimensions the person accepts**, per `../../../procedures/capture.md`:
+   add any width a dimension needs to the one capture, resolve the rules once, and
+   give each dimension the capture set and its own subset.
+   - One or two dimensions: judge each one yourself, with the pass procedure in
+     `../dx-design-critique/pass.md`. Start no subagent.
+   - Three or more dimensions: dispatch the passes as parallel propose-only
+     subagents, one per pass, each with `mode:return-to-caller`, its accepted issues,
+     the capture set, and its subset, so nobody is interviewed twice. Each pass
+     proposes; none of them edits the product or talks to the person.
 4. **Merge the proposals into one ranked plan** and run the shared gate in
    `../../../procedures/plan-approval.md`: one plan approval per run, asked by you,
    because you started the run.
