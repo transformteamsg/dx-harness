@@ -141,6 +141,17 @@ def audit_skill(skill_dir, repo_root):
     return errors
 
 
+# Every session loads every skill description, so a design description stays
+# short and its routing detail lives in the skill body. CONTRIBUTING.md states
+# the same cap.
+DESIGN_DESCRIPTION_CAP = 500
+
+
+def audit_description(skill_dir, repo_root):
+    """Placeholder until the cap is implemented."""
+    return []
+
+
 def run_self_test():
     import tempfile
 
@@ -248,6 +259,67 @@ def run_self_test():
             and os.path.normpath(design_dir) in [os.path.normpath(d) for d in found],
             f"got {found!r}",
         )
+
+    # #456 AC1: a design skill description over the cap fails, and the
+    # error names the skill, the length, and the cap.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "design", "dx-design-fake")
+        long_description = "x" * (DESIGN_DESCRIPTION_CAP + 1)
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            f"---\nname: dx-design-fake\ndescription: '{long_description}'\n---\n\n# Fake\n",
+        )
+        errors = audit_description(skill_dir, td)
+        check_true(
+            "#456 AC1 design description over the cap is reported",
+            len(errors) == 1
+            and errors[0].startswith("ERROR ")
+            and "dx-design-fake" in errors[0]
+            and f"{DESIGN_DESCRIPTION_CAP + 1} characters" in errors[0]
+            and f"cap of {DESIGN_DESCRIPTION_CAP}" in errors[0],
+            f"got {errors!r}",
+        )
+
+    # #456 AC1, the edge: a description at exactly the cap passes, and the
+    # cap is measured on the parsed value, so a doubled apostrophe counts once.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "design", "dx-design-fake")
+        at_cap = "it''s" + "x" * (DESIGN_DESCRIPTION_CAP - 4)
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            f"---\nname: dx-design-fake\ndescription: '{at_cap}'\n---\n",
+        )
+        errors = audit_description(skill_dir, td)
+        check_true(
+            "#456 AC1 design description at the cap passes",
+            errors == [],
+            f"got {errors!r}",
+        )
+
+    # #456 out of scope: an engineering skill description is not capped.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "engineering", "dx-eng-fake")
+        long_description = "x" * (DESIGN_DESCRIPTION_CAP + 1)
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            f"---\nname: dx-eng-fake\ndescription: '{long_description}'\n---\n",
+        )
+        errors = audit_description(skill_dir, td)
+        check_true(
+            "#456 engineering description over the cap is not reported",
+            errors == [],
+            f"got {errors!r}",
+        )
+
+    # #456 AC2: every design skill in this plugin is within the cap.
+    design_errors = []
+    for skill_dir in find_skill_dirs(DEFAULT_SKILLS_ROOT):
+        design_errors.extend(audit_description(skill_dir, PLUGIN_ROOT))
+    check_true(
+        "#456 AC2 every design skill description is within the cap",
+        design_errors == [],
+        "\n  ".join(design_errors),
+    )
 
     checklib.report_self_test(failures, case_count)
 
