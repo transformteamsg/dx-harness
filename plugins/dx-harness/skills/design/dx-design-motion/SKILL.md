@@ -1,6 +1,6 @@
 ---
 name: dx-design-motion
-description: 'Use when the ask names the motion of an existing product page but not the exact edit — transitions, easing, timing, reduced-motion ("the motion feels janky", "transitions are too slow"). Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("make the transition 150ms") or a brand-new interaction is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Visual styling goes to dx-design-polish.'
+description: 'Use when the ask names the motion of an existing product page but not the exact edit: transitions, easing, timing, or reduced motion ("the motion feels janky", "transitions are too slow"). Propose-only: records up to five ranked findings on the surface''s design ticket for dx-design-execute to build. NOT for a stated edit, a brand-new interaction, visual styling, or a whole-page review.'
 ---
 
 # Smooth the motion on an existing surface
@@ -8,6 +8,12 @@ description: 'Use when the ask names the motion of an existing product page but 
 A focused pass on the **motion** dimension: how the interface moves — entrances, state
 and view changes, hover/press feedback. You judge motion only; styling, layout, copy,
 and flow structure are out of scope and get NOTED and routed.
+
+**When the ask belongs to another skill:**
+
+- A stated edit, such as "make the transition 150ms", or a brand-new interaction goes to `dx-design-execute`.
+- Visual styling goes to `dx-design-polish`.
+- A review of the whole page with no dimension named goes to `dx-design-critique`.
 
 **Dimension controls** (the subset for this pass; procedure and loading rules:
 ../dx-design-critique/pass.md):

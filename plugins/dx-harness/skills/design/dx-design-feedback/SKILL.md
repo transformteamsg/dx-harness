@@ -1,6 +1,6 @@
 ---
 name: dx-design-feedback
-description: 'Capture feedback about the design harness itself — a confusing skill or gate, a check that flagged wrongly or is missing, a process or onboarding gap — and file it as a `[harness-feedback]` GitHub issue on the harness repo. Use when the user gives such feedback in ANY session, including mid-task while another skill is running, or asks to "file this as harness feedback". NOT for feedback about a product''s design or page — that is a pass or dx-design-critique; NOT for proposing a new catalogue control — that is a rule proposal, via dx-design.'
+description: 'Capture feedback about the design harness itself: a confusing skill or gate, a check that flagged wrongly or is missing, or a process or onboarding gap. Files it as a `[harness-feedback]` GitHub issue on the harness repo. Use in ANY session, including mid-task while another skill runs, or when asked to "file this as harness feedback". NOT for feedback about a product''s design or page.'
 ---
 
 # Harness feedback → GitHub issue
@@ -9,6 +9,11 @@ The user just told you something about the harness itself, not the product you'r
 building. Capture it now — it evaporates when the session ends — then file it
 correctly. Full process spec: `../../../docs/harness-feedback.md` (resolve relative
 to this SKILL.md, three levels up — it ships with the plugin).
+
+**When the ask belongs to another skill:**
+
+- Feedback about a product's design or page goes to the matching pass or to `dx-design-critique`.
+- A proposal for a new catalogue control is a rule proposal, made through `dx-design`.
 
 ## Procedure
 

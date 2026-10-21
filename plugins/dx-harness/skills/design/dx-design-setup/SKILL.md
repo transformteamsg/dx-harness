@@ -1,12 +1,16 @@
 ---
 name: dx-design-setup
-description: 'Set up a person''s machine for the design harness and orient newcomers. Installs and verifies the per-user tools the harness relies on — the agent-browser capture CLI + skill, an authenticated gh, commit signing, Python + PyYAML for the checks — and wires the design-ticket tracker. Use for "set up the harness", "agent-browser isn''t installed", "onboard me", or "teach me the harness". NOT for DESIGN.md — that is dx-design-language; NOT for designing or changing a page — that is dx-design-execute, or dx-design when unclear.'
+description: 'Set up a person''s machine for the design harness and orient newcomers. Installs and verifies the agent-browser capture CLI and skill, an authenticated gh, commit signing, and Python with PyYAML, and wires the design-ticket tracker. Use for "set up the harness", "agent-browser isn''t installed", "onboard me", or "teach me the harness". NOT for DESIGN.md or for designing a page.'
 ---
 
 # Harness setup: per-user tools, tracker, and commit signing
 
 Get a person's machine ready for the design loop. Brand essence is **Kind Utility**:
 useful first, kind at the surface. Keep turns short; ask before you install.
+
+**When the ask belongs to another skill:**
+
+- Designing or changing a page goes to `dx-design-execute`, or to `dx-design` when the ask is unclear.
 
 **New to the harness?** Two lines: the harness makes an agent follow the DX Design
 Standard whenever it builds Teacher & School UI — one promise, *intent without loss*,

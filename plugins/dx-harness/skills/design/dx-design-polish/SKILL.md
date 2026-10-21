@@ -1,6 +1,6 @@
 ---
 name: dx-design-polish
-description: 'Use when the ask names a visual dimension of an existing product page but not the exact edit — spacing, type, radius, colour, shadow, or type/weight hierarchy (SLP-6): "polish the spacing", "the headings don''t stand out". Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones. A stated edit ("set the padding to 16px") is dx-design-execute''s. NOT for a bare "polish/tidy the page" with no dimension named — that is dx-design-critique. Page hierarchy (what draws the eye) is dx-design-pattern''s; polish touches type/weight hierarchy only.'
+description: 'Use when the ask names a visual dimension of an existing product page but not the exact edit: spacing, type, radius, colour, shadow, or type/weight hierarchy ("polish the spacing", "the headings don''t stand out"). Propose-only: records up to five ranked findings on the surface''s design ticket for dx-design-execute to build. NOT for a stated edit ("set the padding to 16px"), a bare "polish the page" with no dimension, or page hierarchy.'
 ---
 
 # Polish an existing surface
@@ -8,6 +8,12 @@ description: 'Use when the ask names a visual dimension of an existing product p
 A focused pass on the **polish** dimension: the token, type, and colour craft that makes
 a screen read as cared-for rather than templated. You judge the visual surface only —
 structure, wording, motion, and flow are out of scope and get NOTED and routed.
+
+**When the ask belongs to another skill:**
+
+- A stated edit, such as "set the padding to 16px", goes to `dx-design-execute`.
+- A bare "polish the page" or "tidy the page" with no dimension named goes to `dx-design-critique`.
+- Page hierarchy, that is, what draws the eye, goes to `dx-design-pattern`. Polish covers type and weight hierarchy (SLP-6) only.
 
 **Dimension controls** (the subset for this pass; procedure and loading rules:
 ../dx-design-critique/pass.md):

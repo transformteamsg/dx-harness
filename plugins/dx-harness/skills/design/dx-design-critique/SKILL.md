@@ -1,6 +1,6 @@
 ---
 name: dx-design-critique
-description: 'Grade an existing product page — capture it, score it against the standards catalogue and pattern inventory, and return ranked improvement suggestions. Use when the ask is to review, critique, audit, judge, improve, or polish a page WITHOUT naming a change or a pass dimension — including "I don''t like it", "what''s wrong here", and re-audit asks ("re-check this page against the catalogue", e.g. after new controls land). Propose-only: findings are recorded on the surface''s design ticket, and dx-design-execute builds accepted ones. NOT for a stated change or a new page — that is dx-design-execute; NOT for one of the five pass dimensions — that is the matching pass; NOT for grading a build''s own output — that is the design reviewer agent inside dx-design-execute''s loop.'
+description: 'Grade an existing product page: capture it, score it against the standards catalogue and pattern inventory, and return ranked improvement suggestions. Use when the ask is to review, critique, audit, judge, improve, or polish a page without naming a change or a pass dimension, including "I don''t like it", "what''s wrong here", and re-audit asks ("re-check this page against the catalogue"). Propose-only: dx-design-execute builds accepted findings.'
 ---
 
 # Critique an existing surface
@@ -11,6 +11,12 @@ design ticket, and `dx-design-execute` builds accepted ones in a later run.
 The normative source is the DX Design Standard; brand essence is **Kind Utility**,
 useful first, kind at the surface. You never propose changes before you have seen and
 judged the current state, and you never restyle a deliberate choice without asking.
+
+**When the ask belongs to another skill:**
+
+- A stated change or a new page goes to `dx-design-execute`.
+- An ask that names one pass dimension goes to the matching pass: `dx-design-copy`, `dx-design-polish`, `dx-design-motion`, `dx-design-flow`, or `dx-design-pattern`.
+- Grading a build's own output belongs to the design reviewer agent inside the `dx-design-execute` loop.
 
 **Load first:** the control catalog at `standards/catalog.yaml`. It ships with this
 harness, not the product repo — resolve it relative to this SKILL.md, three levels up:
