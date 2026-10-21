@@ -8,7 +8,7 @@
 
 The catalogue is portfolio-specific. Product and audience filters, Teacher Workspace values, and Radix and Tailwind scales sit inside controls that are otherwise generic. A designer or an engineer outside the Teacher & School portfolio cannot use the harness without inheriting those values.
 
-The confirmed P1 stories (P1-2) and the P6 stories (P6-6) add a requirement. A product belongs to a domain, and the domain's standards sit between the shared standards and the product's own `DESIGN.md`. The spec calls that layer a preset (D9). The stories call it a domain's standards or a product family's standards. This record treats them as one layer.
+The confirmed P1 stories (P1-2) add a requirement. A product belongs to a domain, and the domain's standards sit between the shared standards and the product's own `DESIGN.md`. The spec calls that layer a preset (D9).
 
 A preset is the design language of a domain. A product is not a preset. Teacher Workspace is a product in the teacher domain, and Glow is a product in the professional learning domain. A product reflects its domain's design language, and the design language of a domain can be derived from its products later.
 
@@ -31,7 +31,9 @@ One layer sits between the rule's default and the product. A preset is a file in
 
 A preset is named for its domain, never for a product. Until a domain has a preset, its products hold their own values in `DESIGN.md`. A person who chooses a domain with no preset records the first one (P6-2).
 
-A product family (P6-6) is a preset. A preset extends no other preset. A product family that needs a second layer is an open question below.
+The plugin carries domain presets only. It carries no preset for a team or a product family. A preset extends no other preset.
+
+A team that wants its own values on top of a domain preset sets them in the `DESIGN.md` of each product. Each product repeats the team's values.
 
 ### 2. A preset cannot lower the L0 floor
 
@@ -96,7 +98,7 @@ A check reads the resolved values from `checklib.py`. A check never parses rule 
 
 ### 7. Where an edit to a preset lands
 
-A preset lives in the plugin. A product repo holds no copy of it. A change to a preset reaches a product when the plugin updates, and the product's `DESIGN.md` does not change (P1-2, P6-6).
+A preset lives in the plugin. A product repo holds no copy of it. A change to a preset reaches a product when the plugin updates, and the product's `DESIGN.md` does not change (P1-2).
 
 ### 8. Rule tiers
 
@@ -104,7 +106,7 @@ The tiers stay `L0`, `L1`, and `L2` until [#432](https://github.com/transformtea
 
 ## Options considered
 
-- **Separate layers for a domain and a product family.** Each layer has its own file type and its own resolution step. Rejected: P1-2 and P6-6 state the same resolution order, so one layer meets both.
+- **A layer for a product family between the domain preset and `DESIGN.md`.** One edit would reach every product of the family (P6-6). Rejected: it needs a place for the family's preset outside the harness repo and a preset that extends a preset. The cost is that each product repeats the team's values.
 - **A category per domain.** Rejected by D9. A domain's values would live inside rule files and break the rule that every rule is generic.
 - **A copy of the preset in each product repo.** Rejected: P1-2 requires that a change to a domain's standards reaches a product without an edit to its `DESIGN.md`.
 
@@ -114,11 +116,10 @@ The tiers stay `L0`, `L1`, and `L2` until [#432](https://github.com/transformtea
 - `dx-design-language` writes only `extends`, `select`, `ignore`, and `parameters`. It asks for a parameter only when no layer has a value.
 - The `products` and `audiences` filters leave the catalogue, and a value of the portfolio, such as a primary colour, moves into the `DESIGN.md` of the product that owns it. A later record derives the domain presets from those products.
 - Every check needs a way to report a skipped L0 line. C14 adds it to `checklib.py`.
+- P6-6 conflicts with decision 1. Its acceptance examples require a product family layer. The P6 revision in [#420](https://github.com/transformteamsg/dx-harness/issues/420) must drop or change it.
 
 ## Open questions
 
-1. **A product family outside the harness repo.** P6-6 lets a team extend the harness with its own standards. Decision 7 keeps presets in the plugin, so a team outside the portfolio has no place for its preset. Options: a path in the product repo, or a second plugin that ships presets. [#443](https://github.com/transformteamsg/dx-harness/issues/443) covers contribution to the plugin only.
-2. **A preset that extends a preset.** A product family inside a domain needs two layers. Decision 1 allows one.
-3. **Applying a different preset to one page or component.** [#442](https://github.com/transformteamsg/dx-harness/issues/442) asks for it. Decision 5 allows one `extends` for a whole product.
-4. **Deriving a preset from products.** The `teacher` and `professional-learning` presets do not exist yet. Teacher Workspace and Glow are the evidence for them. Decide who derives each preset, and whether `dx-design-language` offers the derivation.
-5. **The P7 domain design owner stories** ([#445](https://github.com/transformteamsg/dx-harness/issues/445)) may change who edits a preset.
+1. **Applying a different preset to one page or component.** [#442](https://github.com/transformteamsg/dx-harness/issues/442) asks for it. Decision 5 allows one `extends` for a whole product.
+2. **Deriving a preset from products.** The `teacher` and `professional-learning` presets do not exist yet. Teacher Workspace and Glow are the evidence for them. Decide who derives each preset, and whether `dx-design-language` offers the derivation.
+3. **The P7 domain design owner stories** ([#445](https://github.com/transformteamsg/dx-harness/issues/445)) may change who edits a preset.
