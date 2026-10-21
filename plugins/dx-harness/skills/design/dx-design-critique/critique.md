@@ -25,7 +25,11 @@ propose changes before you have seen and judged the current state:
    it attaches to the page you just captured, runs axe across both viewports and
    both themes plus one reduced-motion cell, and restores the session so the
    frames you already took stay valid evidence. Its `NOTE` lines are items for
-   the manual accessibility pass, not gates.
+   the manual accessibility pass, not gates. The frames, each width that did not
+   capture, and the rendered check output are this run's capture set; the steps
+   below and `report.md` judge from it and take no second capture.
+   `../../../procedures/capture.md` gives the same capture set to every
+   dimension in a run that judges several.
 3. **Layout read (do this before judging).** Read the pattern inventory at
    `../../../standards/layout-patterns.md` (beside the catalogue). From the 1280 frame (and 360 when responsive behaviour is in
    scope), write down — in this order, before any judgment: (a) the page's
