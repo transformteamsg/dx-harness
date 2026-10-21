@@ -116,7 +116,7 @@ The tiers stay `L0`, `L1`, and `L2` until [#432](https://github.com/transformtea
 - `dx-design-language` writes only `extends`, `select`, `ignore`, and `parameters`. It asks for a parameter only when no layer has a value.
 - The `products` and `audiences` filters leave the catalogue, and a value of the portfolio, such as a primary colour, moves into the `DESIGN.md` of the product that owns it. A later record derives the domain presets from those products.
 - Every check needs a way to report a skipped L0 line. C14 adds it to `checklib.py`.
-- P6-6 conflicts with decision 1. Its acceptance examples require a product family layer. The P6 revision in [#420](https://github.com/transformteamsg/dx-harness/issues/420) must drop or change it.
+- P6-6 holds: a product from another team extends the harness through its own `DESIGN.md`. Its acceptance examples 1 and 3 assume a shared product family layer, so the P6 revision in [#420](https://github.com/transformteamsg/dx-harness/issues/420) must reword them.
 
 ## Open questions
 
