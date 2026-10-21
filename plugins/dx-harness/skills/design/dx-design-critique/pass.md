@@ -34,7 +34,9 @@ A pass keeps two entries:
 ## Run it
 
 1. **Capture the surface.**
-   - **Dispatched**: judge from the capture set the caller gave you, per
+   - **Dispatched**: the pass takes no capture of its own. Judge from the capture set
+     the caller gave you. A width missing from the set stays missing: every rule
+     that needed it takes a `verify` verdict, evidence incomplete, per
      `../../../procedures/capture.md`.
    - **Direct**: same mechanism order as `critique.md` (beside this file); read its
      step 2 and follow it. A pass that judges responsive behaviour captures 360 too.

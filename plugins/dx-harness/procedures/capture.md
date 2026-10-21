@@ -6,7 +6,8 @@ improve mode. A pass called directly judges one dimension in its own context, so
 captures for itself per `pass.md` and does not run this procedure.
 
 The run captures the surface once and resolves the rules once. Each dimension then
-judges from what the run gives it, and no dimension reads the catalogue.
+judges from what the run gives it. No dimension takes its own capture, and no
+dimension reads the catalogue.
 
 ## Step 1: Decide the widths
 
@@ -46,3 +47,13 @@ dimension reads the `detail` files in its subset and the reference files its pas
 
 Dispatch one propose-only subagent for each pass, with `mode:return-to-caller`,
 the accepted issues for that pass, the capture set, and that pass's subset.
+
+## Step 5: When a width does not capture
+
+A width that does not capture after the mechanism order in Step 2 stays missing.
+No dimension takes its own capture to fill the gap, and the run does not retry it
+once for each dimension.
+
+Every rule that needed that width takes a `verify` verdict: evidence incomplete,
+never failed. Name the missing width in the merged plan, so the person sees which
+judgments the run could not make.
