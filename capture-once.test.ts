@@ -89,3 +89,27 @@ describe("the run captures each width once", () => {
     expect(procedure, "the procedure copies the mechanism order").not.toMatch(/playwright/i);
   });
 });
+
+/* Contract item 2: one rule resolution for each run. */
+describe("the run resolves the rules once", () => {
+  const procedure = read(PROCEDURE);
+
+  it("loads the catalogue once", () => {
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    expect(procedure, "the procedure does not load the catalogue once").toMatch(
+      /catalog\.yaml[^\n]*once/i,
+    );
+  });
+
+  it("gives each dimension its subset", () => {
+    expect(procedure, "the procedure does not hand each dimension its subset").toMatch(
+      /each dimension[^\n]*subset/i,
+    );
+  });
+
+  it("a dispatched pass reads no other rules", () => {
+    expect(read(PASS), `${PASS} lets a dispatched pass read more rules`).toMatch(
+      /reads? no other rules/i,
+    );
+  });
+});
