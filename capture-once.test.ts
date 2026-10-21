@@ -162,3 +162,31 @@ describe("a responsive dimension adds 360 to the one capture", () => {
     expect(widths).toBeLessThan(handoff);
   });
 });
+
+/* Contract item 5: a small run starts no subagent. */
+describe("one or two dimensions are judged in the run's own context", () => {
+  const improve = section(read(ORCHESTRATOR), IMPROVE);
+  const procedure = read(PROCEDURE);
+
+  it("the orchestrator judges one or two dimensions itself", () => {
+    expect(improve.length, `${ORCHESTRATOR} has no improve section`).toBeGreaterThan(0);
+    expect(improve, "improve mode has no rule for one or two dimensions").toMatch(
+      /one or two dimensions/i,
+    );
+    expect(improve, "improve mode does not forbid the subagent").toMatch(/no subagent/i);
+  });
+
+  it("the orchestrator no longer sends one dimension out alone", () => {
+    expect(improve.length, `${ORCHESTRATOR} has no improve section`).toBeGreaterThan(0);
+    expect(improve, "improve mode still dispatches a single pass").not.toMatch(
+      /dispatch that pass alone/i,
+    );
+  });
+
+  it("the procedure sends out three or more as subagents", () => {
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    expect(procedure, "the procedure has no threshold for subagents").toMatch(
+      /three or more dimensions/i,
+    );
+  });
+});
