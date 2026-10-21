@@ -81,12 +81,16 @@ parameters:
 extends: teacher
 select: [A11Y, TOK]
 ignore: [CMP-5]
+exclude:
+  - rules: [CMP-5]
+    paths: [src/legacy/, src/pages/print.tsx]
 parameters:
   primary-colour: "#..."
 ```
 
 - `extends` names one preset. With no `extends`, the product takes the generic categories.
 - `select` and `ignore` follow ruff. `select` narrows the rules, and `ignore` removes one rule from the set. `ignore` is invalid on an L0 rule.
+- `exclude` scopes a rule out of a file or a directory, as `per-file-ignores` does in ruff. Each entry names the rules and the paths. `exclude` is invalid on an L0 rule.
 - `DESIGN.md` records only where the product differs from its preset (P1-2).
 - A setting that several rules read, such as the audience, the stack, and the spelling locale, sits in the `parameters` map under a shared name.
 
@@ -104,6 +108,16 @@ A preset lives in the plugin. A product repo holds no copy of it. A change to a 
 
 The tiers stay `L0`, `L1`, and `L2` until [#432](https://github.com/transformteamsg/dx-harness/issues/432) classifies which controls a script can decide. A later record can map the tiers to a ruff-style severity. The L0 floor in decision 2 depends only on the name `L0`.
 
+### 9. Domain presets start from the existing products
+
+The first presets are drafts. The `teacher` preset is derived from Teacher Workspace, and the `professional-learning` preset is derived from Glow. The design language owner of a domain can change a draft later.
+
+The derivation reads a product's codebase and writes a `DESIGN.md`. A person then moves the values that belong to the domain into the preset. A skill for the first step is needed. It is not in the target skill table of the spec, and `dx-design-language` already drafts a `DESIGN.md` from code (P1-2). A story decides whether the skill is new or a mode of `dx-design-language`.
+
+### 10. Who edits a preset
+
+The harness maintainers and the collaborators assigned in the `dx-harness` repository edit presets. The change goes through a pull request.
+
 ## Options considered
 
 - **A layer for a product family between the domain preset and `DESIGN.md`.** One edit would reach every product of the family (P6-6). Rejected: it needs a place for the family's preset outside the harness repo and a preset that extends a preset. The cost is that each product repeats the team's values.
@@ -115,13 +129,10 @@ The tiers stay `L0`, `L1`, and `L2` until [#432](https://github.com/transformtea
 - C2 and C3 build on decisions 3 to 5. The JSON schemas for a rule file and a preset come from this record.
 - `dx-design-language` writes only `extends`, `select`, `ignore`, and `parameters`. It asks for a parameter only when no layer has a value.
 - The `products` and `audiences` filters leave the catalogue, and a value of the portfolio, such as a primary colour, moves into the `DESIGN.md` of the product that owns it. A later record derives the domain presets from those products.
+- The `exclude` field adds a path filter to every check. C14 adds it to `checklib.py`.
 - Every check needs a way to report a skipped L0 line. C14 adds it to `checklib.py`.
 - P6-6 holds: a product from another team extends the harness through its own `DESIGN.md`. Its acceptance examples 1 and 3 assume a shared product family layer, so the P6 revision in [#420](https://github.com/transformteamsg/dx-harness/issues/420) must reword them.
 
 ## Deferred
 
-No question blocks this record. Each item below waits for a story or an issue.
-
-1. **A different preset for one page or component** ([#442](https://github.com/transformteamsg/dx-harness/issues/442)). A product has one preset in this version, because decision 5 allows one `extends`.
-2. **Deriving a preset from products.** The `teacher` and `professional-learning` presets do not exist yet. The design lead of each domain writes the preset by hand from the `DESIGN.md` of its products. A story decides whether `dx-design-language` offers the derivation.
-3. **Who edits a preset** ([#445](https://github.com/transformteamsg/dx-harness/issues/445)). Decision 7 assumes that the harness maintainers edit presets. The P7 stories may change this.
+A different preset for one page or component ([#442](https://github.com/transformteamsg/dx-harness/issues/442)). A product has one preset in this version, because decision 5 allows one `extends`. The `exclude` field in decision 5 removes a rule from a path. It does not apply a different preset to it.
