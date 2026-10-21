@@ -148,8 +148,44 @@ DESIGN_DESCRIPTION_CAP = 500
 
 
 def audit_description(skill_dir, repo_root):
-    """Placeholder until the cap is implemented."""
-    return []
+    """Audits the `description:` of one skill's `SKILL.md` against
+    DESIGN_DESCRIPTION_CAP. Returns a list of `ERROR ...` lines, empty for a
+    skill outside `design/` or a description within the cap. Measures the
+    parsed YAML value, so quoting and a doubled apostrophe do not count. A
+    `SKILL.md` that cannot be read or parsed fails the skill rather than
+    passing it."""
+    if os.path.basename(os.path.dirname(skill_dir)) != "design":
+        return []
+
+    skill_md = os.path.join(skill_dir, "SKILL.md")
+    rel = os.path.relpath(skill_md, repo_root)
+    try:
+        import yaml
+    except ImportError:
+        return [f"ERROR {rel}:1 cannot import yaml — install pyyaml"]
+    try:
+        with open(skill_md, "r", encoding="utf-8") as f:
+            text = f.read()
+    except OSError as exc:
+        return [f"ERROR {rel}:1 cannot read this file ({exc})"]
+
+    match = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+    try:
+        frontmatter = yaml.safe_load(match.group(1)) if match else None
+    except yaml.YAMLError as exc:
+        return [f"ERROR {rel}:1 frontmatter YAML parse error ({exc})"]
+    description = frontmatter.get("description") if isinstance(frontmatter, dict) else None
+    if not isinstance(description, str):
+        return [f"ERROR {rel}:1 frontmatter has no description"]
+
+    if len(description) <= DESIGN_DESCRIPTION_CAP:
+        return []
+    name = os.path.basename(skill_dir)
+    return [
+        f"ERROR {rel}:1 {name} description is {len(description)} characters, "
+        f"over the design skill cap of {DESIGN_DESCRIPTION_CAP} — move the "
+        f"routing detail into the skill body"
+    ]
 
 
 def run_self_test():
@@ -338,13 +374,17 @@ def main():
     errors = []
     for skill_dir in skill_dirs:
         errors.extend(audit_skill(skill_dir, repo_root))
+        errors.extend(audit_description(skill_dir, repo_root))
 
     for line in errors:
         print(line)
 
     if errors:
         sys.exit(1)
-    print(f"OK: {len(skill_dirs)} skills audited, 0 orphaned reference files")
+    print(
+        f"OK: {len(skill_dirs)} skills audited, 0 orphaned reference files, "
+        f"0 design descriptions over {DESIGN_DESCRIPTION_CAP} characters"
+    )
     sys.exit(0)
 
 
