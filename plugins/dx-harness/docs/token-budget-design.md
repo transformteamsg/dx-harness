@@ -194,6 +194,22 @@ The list is ordered by saving per unit of work.
 6. **Re-measure after each change**. Rebuild this table before you trim anything else.
    The ranking, not the absolute figure, tells you where to work.
 
+## Measured changes
+
+The tables above are the baseline from before these changes. Rebuild them with the
+method in [Skill token budget](token-budget.md) before you rank the next change.
+
+| Change | Before | After | Saved per read |
+| --- | --: | --: | --: |
+| `dx-design-research-brief` reads its component guidance and output format from `references/`, and only an evaluative or hybrid study reads `references/ux-metrics.md` ([#462](https://github.com/transformteamsg/dx-harness/issues/462)) | 3,667 | 3,886 generative, 3,982 evaluative | -219 generative, -315 evaluative |
+
+Measured on 2026-10-21 with `cl100k_base`. "After" is one run: `SKILL.md` (1,269),
+`references/components.md` (1,973), and `references/output-format.md` (644), plus
+`references/ux-metrics.md` (96) for an evaluative or hybrid study. A run now costs more,
+because every run reads 11 of the 12 components and the new steps add routing. The
+split moves 96 tokens off the generative path, and makes three reads where the skill
+made none.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
