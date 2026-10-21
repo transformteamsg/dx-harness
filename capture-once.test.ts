@@ -113,3 +113,28 @@ describe("the run resolves the rules once", () => {
     );
   });
 });
+
+/* Contract item 3: a failed capture is not retried in each dimension. */
+describe("a failed width is evidence incomplete, not a second capture", () => {
+  const procedure = read(PROCEDURE);
+
+  it("gives every rule that needed the width a verify verdict", () => {
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    expect(procedure, "the procedure does not give a verify verdict").toContain("`verify`");
+    expect(procedure, "the procedure does not call it evidence incomplete").toMatch(
+      /evidence incomplete/i,
+    );
+  });
+
+  it("no dimension takes its own capture", () => {
+    expect(procedure, "the procedure lets a dimension capture").toMatch(
+      /no dimension takes its own capture/i,
+    );
+  });
+
+  it("a dispatched pass takes no capture of its own", () => {
+    expect(read(PASS), `${PASS} lets a dispatched pass capture`).toMatch(
+      /takes? no capture of its own/i,
+    );
+  });
+});
