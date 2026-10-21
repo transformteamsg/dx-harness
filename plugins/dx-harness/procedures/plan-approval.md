@@ -45,7 +45,8 @@ waiver needs a named human approver, granted here and recorded in the decision
 record and on the surface's design ticket (see `design-tickets.md`, beside this
 file). L0 is never waived; an impossible L0 is a blocking question for the person,
 not a judgment call. An L2 deviation needs a specific, real reason. For the tier
-table and the `dx-waive` syntax read `../standards/README.md`; never answer a waiver
+table and the `dx-waive` syntax, read `../standards/README.md` before the structured
+ask when the plan proposes a waiver; never answer a waiver
 question from memory (mechanics: `catalogue-mechanics.md`, beside this file).
 
 ## No dedicated designer on the team
