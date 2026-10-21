@@ -36,7 +36,7 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 
 ## Decisions
 
-- **D1: three ways to adopt a design language (P6-2, P6-3).** P6 can adopt the TFX standard alone, a preset design language (Teacher Workspace or Glow), or the team's own design system. The catalogue's rule selection carries this choice. See [Selection](#selection).
+- **D1: three ways to adopt a design language (P6-2, P6-3).** P6 can adopt the TFX standard alone, the preset of a domain (teacher or professional learning), or the team's own design system. The catalogue's rule selection carries this choice. See [Selection](#selection).
 - **D2: engineers build through `dx-implement-issue` (P2-1, P2-2).** `dx-implement-issue` builds UI for engineers and calls the design check as one of its steps. `dx-design-execute` stays shaped for designers.
 - **D3: a prototype path (P1-5).** A prototype runs on mock data. It skips the formal plan approval and the design review, keeps the L0 floor, and can be promoted to a full build. A prototype that defers the sanitisation of rendered HTML records the deferral, or CMP-9 fails.
 - **D4: the catalogue becomes a rule set modelled on ruff.** See [Catalogue](#catalogue-a-rule-set-modelled-on-ruff).
@@ -44,10 +44,10 @@ The personas and user stories live in [stories/](stories/README.md), one file pe
 - **D6: agents read the rule files in the plugin.** Skills, the reviewer agent, and the checks read `standards/rules/`, not the published website. `DESIGN.md` selects the rules for a product. This supersedes [#407](https://github.com/transformteamsg/dx-harness/issues/407).
 - **D7: the website is an outside client.** The website left this repository in [#405](https://github.com/transformteamsg/dx-harness/pull/405) and reads the rule files from its own repository ([#389](https://github.com/transformteamsg/dx-harness/issues/389)). The catalogue work publishes a stable rule format; the site work happens in that repository.
 - **D8: git help moves to a shared layer.** `dx-design-git` becomes `dx-git-ops` in `skills/shared/` ([#273](https://github.com/transformteamsg/dx-harness/issues/273)), because anyone who commits uses it.
-- **D9: a design language is a preset, not a category.** Every rule is generic. A rule that needs a value from a design language, such as the audience, a primary colour, or an asset library, reads it as a parameter. A preset in `standards/presets/` sets those values for one design language:
-  - Teacher Workspace holds the design language for teacher-facing products.
-  - Glow is a standalone design language.
-  - A later design language, such as one for student-facing products, is a new preset, not new rules.
+- **D9: a design language is a preset, not a category.** Every rule is generic. A rule that needs a value from a design language, such as the audience, a primary colour, or an asset library, reads it as a parameter. A preset in `standards/presets/` sets those values for the design language of one domain. A product is not a preset. A product reflects the design language of its domain:
+  - The `teacher` preset holds the design language for teacher-facing products. It starts as a draft derived from Teacher Workspace.
+  - The `professional-learning` preset holds the design language for professional learning products. It starts as a draft derived from Glow.
+  - A later domain, such as students, is a new preset, not new rules.
 - **D10: `SLP` is not a category.** Each anti-slop rule moves to the category of the domain that it grades, for example SLP-1 to `COL`. The `redirects` map resolves every `SLP` code.
 - **D11: rule codes keep the `PREFIX-N` format, such as `A11Y-1`.** A rule that moves or splits takes the next free number in its new category, and `redirects` maps its old code. A number is never reused.
 - **D12: eight categories.** `A11Y`, `TOK`, `COL`, `TYP`, `CMP`, `CNT`, `LAY`, and `MOT`. `TOK` grades whether a value is allowed, and `COL` grades whether a colour has the right role.
@@ -80,10 +80,10 @@ The rebuild models the catalogue on ruff: clear rule categories, one documented 
 A product's `DESIGN.md` selects the rules that apply to it. The selection supports the three choices in D1:
 
 - **The TFX standard alone:** select the generic categories.
-- **A preset design language:** extend the Teacher Workspace preset or the Glow preset. A product can change a value of its preset in `DESIGN.md`, such as its primary colour.
+- **The preset of a domain:** extend the `teacher` preset or the `professional-learning` preset. A product can change a value of its preset in `DESIGN.md`, such as its primary colour, and can apply another domain's preset to a path with `scopes`.
 - **The team's own design system:** select the generic categories. `dx-design-language` records the team's value for each parameter that the selected rules need.
 
-A parameter value resolves in this order: the rule's default, then the preset, then `DESIGN.md`.
+A parameter value resolves in this order: the rule's default, the product preset, the product's `DESIGN.md`, then the preset and `parameters` of the matching scope. [ADR 0001](../../adr/0001-rule-set-and-presets.md) decides the order.
 
 A critique dimension, such as polish or copy, is a named selection of categories and rules. It replaces the hand-kept lists of control IDs in the pass skills.
 
@@ -198,7 +198,7 @@ One epic, **Design revamp**, links to this spec. Each sub-issue is one pull requ
 
 The new rules are written from scratch. Until the clients migrate, `catalog.yaml` stays the file that the check scripts and the live skills read, and it takes bug fixes only.
 
-A review issue covers one group of the current controls. For each control, it records one disposition: keep, change, merge, split, or drop. A kept, changed, merged, or split control maps to its new codes in `redirects`. A dropped control gets the `removed` status and a one-line reason. A review that turns a value of the current portfolio into a parameter moves that value into the Teacher Workspace preset. The review of the catalogue is complete when every current control ID resolves.
+A review issue covers one group of the current controls. For each control, it records one disposition: keep, change, merge, split, or drop. A kept, changed, merged, or split control maps to its new codes in `redirects`. A dropped control gets the `removed` status and a one-line reason. A review that turns a value of the current portfolio into a parameter moves that value into the `DESIGN.md` of the product that owns it. A person later derives the domain presets from those products. The review of the catalogue is complete when every current control ID resolves.
 
 | ID | Sub-issue | Scope |
 | --- | --- | --- |
@@ -222,7 +222,10 @@ A review issue covers one group of the current controls. For each control, it re
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml` and `standards/controls/` | Deletion |
 
-C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories of D12, which can differ from the current prefixes. C14 follows the last review.
+C0 comes first, then C1 and C2. A review can start after C3 merges. The reviews sort into two groups:
+
+- **Domain-insensitive:** C4, C8, and C12. They run in any order after C3.
+- **Domain-sensitive:** C5, C6, C7, C9, C10, C11, and C13. They hold values of a domain, such as the stack, the colours, the type scale, the spelling locale, and the voice. They run after the `teacher` and `professional-learning` presets exist as drafts (D9), so that each review splits its values into a shared default and a value of a preset. If the rebuilt `dx-design-language` is not ready, a person drafts the two presets by hand from Teacher Workspace and Glow. A review writes its rules into the categories of D12, which can differ from the current prefixes. C14 follows the last review.
 
 ### Stories
 
