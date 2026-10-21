@@ -138,3 +138,27 @@ describe("a failed width is evidence incomplete, not a second capture", () => {
     );
   });
 });
+
+/* Contract item 4: a dimension that needs 360 extends the one capture. */
+describe("a responsive dimension adds 360 to the one capture", () => {
+  const procedure = read(PROCEDURE);
+
+  it("adds 360 to the capture set", () => {
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    expect(procedure, "the procedure does not add 360 to the capture set").toMatch(
+      /add 360 to the (one|same) capture/i,
+    );
+  });
+
+  it("takes no second capture", () => {
+    expect(procedure, "the procedure permits a second capture").toMatch(/no second capture/i);
+  });
+
+  it("settles the widths before any dimension starts", () => {
+    const widths = procedure.search(/^## Step \d+: Decide the widths/m);
+    const handoff = procedure.search(/^## Step \d+: Hand each dimension/m);
+    expect(widths, `${PROCEDURE} has no widths step`).toBeGreaterThan(-1);
+    expect(handoff, `${PROCEDURE} has no handoff step`).toBeGreaterThan(-1);
+    expect(widths).toBeLessThan(handoff);
+  });
+});
