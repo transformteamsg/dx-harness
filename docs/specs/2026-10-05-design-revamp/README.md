@@ -222,7 +222,10 @@ A review issue covers one group of the current controls. For each control, it re
 | C17 | Move the reviewer agent, the design procedures, and the live skills to the rule files | Prose |
 | C18 | Delete `catalog.yaml` and `standards/controls/` | Deletion |
 
-C0 comes first, then C1 and C2. A review can start after C3 merges, and the reviews run in any order. A review writes its rules into the categories of D12, which can differ from the current prefixes. C14 follows the last review.
+C0 comes first, then C1 and C2. A review can start after C3 merges. The reviews sort into two groups:
+
+- **Domain-insensitive:** C4, C8, and C12. They run in any order after C3.
+- **Domain-sensitive:** C5, C6, C7, C9, C10, C11, and C13. They hold values of a domain, such as the stack, the colours, the type scale, the spelling locale, and the voice. They run after the `teacher` and `professional-learning` presets exist as drafts (D9), so that each review splits its values into a shared default and a value of a preset. If the rebuilt `dx-design-language` is not ready, a person drafts the two presets by hand from Teacher Workspace and Glow. A review writes its rules into the categories of D12, which can differ from the current prefixes. C14 follows the last review.
 
 ### Stories
 
