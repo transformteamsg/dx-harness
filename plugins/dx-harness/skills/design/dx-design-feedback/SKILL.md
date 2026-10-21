@@ -1,6 +1,6 @@
 ---
 name: dx-design-feedback
-description: 'Capture feedback about the design harness itself: a confusing skill or gate, a check that flagged wrongly or is missing, or a process or onboarding gap. Files it as a `[harness-feedback]` GitHub issue on the harness repo. Use in ANY session, including mid-task while another skill runs, or when asked to "file this as harness feedback". NOT for feedback about a product''s design or page.'
+description: 'Capture feedback about the design harness itself: a confusing skill or gate, a check that flagged wrongly or is missing, or a process or onboarding gap. Files it as a `[harness-feedback]` GitHub issue on the harness repo. Use in ANY session, including mid-task while another skill runs, or when asked to "file this as harness feedback". NOT for feedback about a product''s design or page, or for proposing a new catalogue control.'
 ---
 
 # Harness feedback → GitHub issue
