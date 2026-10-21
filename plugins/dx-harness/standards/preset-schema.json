@@ -1,0 +1,20 @@
+{
+  "comment": "Frontmatter schema for a preset at standards/presets/<name>.md. Decision 4 of docs/adr/0001-rule-set-and-presets.md. Validated by checks/rule-scaffold.py, which also checks each parameter against the parameters that rules declare.",
+  "type": "object",
+  "required": ["name", "select"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "select": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"] }
+    },
+    "add": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9]*-[0-9]+$" }
+    },
+    "parameters": { "type": "object" }
+  }
+}
