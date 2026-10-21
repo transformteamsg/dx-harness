@@ -11,6 +11,7 @@
 
 ### Changed
 
+- **Research brief reads references**: `dx-design-research-brief` asks for the research goal before it writes any part of a plan, and reads its component guidance and output format from `references/`, with the UX metrics guidance read only for an evaluative or hybrid study ([#462](https://github.com/transformteamsg/dx-harness/issues/462)).
 - **Declared-manual criteria not re-reported**: `dx-code-review` no longer re-reports a criterion that the branch's coverage declaration records as manual and the request body already names ([#319](https://github.com/transformteamsg/dx-harness/issues/319)).
 - **Review verifies only postable findings**: `dx-code-review` applies the nit cap and the re-review rule before it verifies a finding, and checks a suggestion against the manifest only where it names a library, a library API, or a shell command, which cut a measured review's tokens by 12.9% ([#370](https://github.com/transformteamsg/dx-harness/issues/370), [#375](https://github.com/transformteamsg/dx-harness/pull/375)).
 - **No overlay, no classification**: `dx-code-review` skips pattern classification and suppression when the reviewed repository has no `review/agent-patterns.md`, no longer loads the registry schema, and stops the review when that file's fetch fails for any reason other than a 404 ([#371](https://github.com/transformteamsg/dx-harness/issues/371)).
