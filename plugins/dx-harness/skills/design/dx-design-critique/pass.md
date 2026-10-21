@@ -23,7 +23,8 @@ A pass keeps two entries:
 - **Dispatched.** The orchestrator (`dx-design`) dispatches the pass as a
   propose-only subagent in its improve-what-exists fan-out, or judges the pass in
   its own context when the run has one or two dimensions. Either way, the pass
-  receives the mode token `return-to-caller` and the run's capture set, per `../../../procedures/capture.md`. The token
+  receives the mode token `return-to-caller`, the run's capture set, and this
+  pass's subset of the rules, per `../../../procedures/capture.md`. The token
   suppresses the pass's own interview (no clarifying questions back to the human)
   and the pass's own accept/decline exchange (step 4's ask and marks): the pass
   judges from what it received and returns its ranked findings to the caller. The
@@ -41,10 +42,14 @@ A pass keeps two entries:
      surface.
 
    Either way, do not fabricate what the page looks like.
-2. **Load only your slice.** Load the pass's control-id subset (named in the SKILL.md
-   that sent you here) from `../../../standards/catalog.yaml`, read each control's
-   `detail` file when it has one, and load the pass's named reference files, nothing
-   wider.
+2. **Load only your slice.**
+   - **Dispatched**: use the subset the caller gave you, read each control's
+     `detail` file when it has one, and load the pass's named reference files. The
+     pass reads no other rules, and it does not open the catalogue.
+   - **Direct**: load the pass's control-id subset (named in the SKILL.md that sent
+     you here) from `../../../standards/catalog.yaml`, read each control's `detail`
+     file when it has one, and load the pass's named reference files, nothing wider.
+
    The dimension is the boundary; the catalog ids are the rules. Mechanics
    (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
 3. **Up to five ranked findings, inside the dimension only.** Ground each finding in
