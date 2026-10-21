@@ -26,7 +26,7 @@ rules in `../../../procedures/catalogue-mechanics.md`; read a control's `detail`
 before applying it. If the
 product repo has a `DESIGN.md`, it calibrates colour/tone/motion — load it too.
 
-For any waiver or applicability question read `../../../standards/README.md`
+When someone asks about or proposes a waiver, read `../../../standards/README.md` in that turn
 — never answer from memory.
 
 ## Run it

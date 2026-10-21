@@ -4,9 +4,11 @@ The catalogue (`../standards/catalog.yaml`) is the normative layer of this harne
 the standards tier of the DX Design Standard (DX-DS §3). Every entry is a control:
 one verifiable rule with an id, tier, and check type. Litmus test: **if you cannot
 check it, it is a principle or guideline, not a standard.** The tier table, the
-`dx-waive` syntax, and the authoring rules live in `../standards/README.md`; read it
-for any waiver or applicability question. **Never answer a waiver question from
-memory** or from a summary; re-read `../standards/README.md` every time.
+`dx-waive` syntax, and the authoring rules live in `../standards/README.md`. Read it
+only when someone asks about or proposes a waiver, and read it in that turn, before
+you answer. **Never answer a waiver question from memory** or from a summary.
+Applicability comes from the catalogue's scope fields and the product's DESIGN.md,
+not from the waiver rules.
 
 ## Path resolution
 
@@ -42,7 +44,7 @@ not a source to load.
 
 ## Applying tiers and waivers
 
-Read the tier table and `dx-waive` syntax in `../standards/README.md`; do not
+On a waiver, read the tier table and `dx-waive` syntax in `../standards/README.md`; do not
 restate them. Agent behaviour:
 
 - **L0** never deviates and never waives. An impossible L0 is a blocking question

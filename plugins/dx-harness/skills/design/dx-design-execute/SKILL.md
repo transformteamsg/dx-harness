@@ -42,8 +42,8 @@ if present — per-product parameters only; on conflict with implemented code
 conventions, the code wins and you flag the drift. Spec: the harness's
 `docs/DESIGN-CONTEXT.md`. Also read `../../../procedures/catalogue-mechanics.md`
 for the catalog mechanics: filtering, tier behaviour for agents, detail files, the
-waiver protocol, and plain-title rule naming. For any waiver or applicability
-question read `../../../standards/README.md` — never answer from memory. The shared
+waiver protocol, and plain-title rule naming. When someone asks about or proposes a
+waiver, read `../../../standards/README.md` in that turn — never answer from memory. The shared
 back half of the run lives beside it: `../../../procedures/plan-approval.md`,
 `../../../procedures/implement.md`, `../../../procedures/design-review.md`,
 `../../../procedures/rule-proposal.md`, and `../../../procedures/design-tickets.md`.
