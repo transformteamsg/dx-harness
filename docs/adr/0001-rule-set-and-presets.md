@@ -86,17 +86,36 @@ exclude:
     paths: [src/legacy/, src/pages/print.tsx]
 parameters:
   primary-colour: "#..."
+scopes:
+  - paths: [src/teacher/]
+    extends: teacher
+    parameters:
+      primary-colour: "#..."
 ```
 
 - `extends` names one preset. With no `extends`, the product takes the generic categories.
 - `select` and `ignore` follow ruff. `select` narrows the rules, and `ignore` removes one rule from the set. `ignore` is invalid on an L0 rule.
 - `exclude` scopes a rule out of a file or a directory, as `per-file-ignores` does in ruff. Each entry names the rules and the paths. `exclude` is invalid on an L0 rule.
+- `scopes` applies a different preset to a file or a directory ([#442](https://github.com/transformteamsg/dx-harness/issues/442)). A scope has `paths`, `extends`, and optional `parameters`. It has no `select` or `ignore`.
+  - The first matching scope applies, and scopes do not overlap.
+  - The scope's preset replaces the product preset's `select` for those paths. The product's `ignore` and `exclude` still apply.
+  - A scope cannot lower the L0 floor (decision 2).
 - `DESIGN.md` records only where the product differs from its preset (P1-2).
 - A setting that several rules read, such as the audience, the stack, and the spelling locale, sits in the `parameters` map under a shared name.
 
 ### 6. Parameter resolution
 
-A parameter value resolves in this order: the rule's default, then the preset, then `DESIGN.md`. A required parameter with no value at any layer reports "not configured" (D13).
+A parameter value resolves in this order. A later layer wins.
+
+1. The rule's default.
+2. The product preset.
+3. The `parameters` of the product's `DESIGN.md`.
+4. The preset of the matching scope, for a file in a scope.
+5. The `parameters` of the matching scope.
+
+A value that the scope's preset sets wins over a product-level value. A value that the scope's preset does not set carries over from the product.
+
+ A required parameter with no value at any layer reports "not configured" (D13).
 
 A check reads the resolved values from `checklib.py`. A check never parses rule prose.
 
@@ -122,17 +141,16 @@ The harness maintainers and the collaborators assigned in the `dx-harness` repos
 
 - **A layer for a product family between the domain preset and `DESIGN.md`.** One edit would reach every product of the family (P6-6). Rejected: it needs a place for the family's preset outside the harness repo and a preset that extends a preset. The cost is that each product repeats the team's values.
 - **A category per domain.** Rejected by D9. A domain's values would live inside rule files and break the rule that every rule is generic.
+- **One preset for each product, with `exclude` only.** Rejected: a product with pages for another domain, such as a student app with teacher pages, could drop rules but could not apply the other domain's values.
 - **A copy of the preset in each product repo.** Rejected: P1-2 requires that a change to a domain's standards reaches a product without an edit to its `DESIGN.md`.
 
 ## Consequences
 
 - C2 and C3 build on decisions 3 to 5. The JSON schemas for a rule file and a preset come from this record.
-- `dx-design-language` writes only `extends`, `select`, `ignore`, and `parameters`. It asks for a parameter only when no layer has a value.
+- `dx-design-language` writes only `extends`, `select`, `ignore`, `exclude`, `scopes`, and `parameters`. It asks for a parameter only when no layer has a value.
 - The `products` and `audiences` filters leave the catalogue, and a value of the portfolio, such as a primary colour, moves into the `DESIGN.md` of the product that owns it. A later record derives the domain presets from those products.
-- The `exclude` field adds a path filter to every check. C14 adds it to `checklib.py`.
+- The `exclude` and `scopes` fields add a path filter to every check. C14 adds the filter and a file-to-scope map to `checklib.py`.
+- A rendered check runs on a page, so it needs a route-to-path map to find the scope. C14 decides how.
+- `dx-design-critique` reports which preset it graded a page against.
 - Every check needs a way to report a skipped L0 line. C14 adds it to `checklib.py`.
 - P6-6 holds: a product from another team extends the harness through its own `DESIGN.md`. Its acceptance examples 1 and 3 assume a shared product family layer, so the P6 revision in [#420](https://github.com/transformteamsg/dx-harness/issues/420) must reword them.
-
-## Deferred
-
-A different preset for one page or component ([#442](https://github.com/transformteamsg/dx-harness/issues/442)). A product has one preset in this version, because decision 5 allows one `extends`. The `exclude` field in decision 5 removes a rule from a path. It does not apply a different preset to it.
