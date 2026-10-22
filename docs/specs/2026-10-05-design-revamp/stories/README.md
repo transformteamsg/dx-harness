@@ -12,7 +12,7 @@ Persona P1 is primary. Where the needs of two personas conflict, the architectur
 | P2 | Frontend engineer in the portfolio | [p2-frontend-engineer.md](p2-frontend-engineer.md) | [#416](https://github.com/transformteamsg/dx-harness/issues/416) |
 | P3 | Design lead | [p3-design-lead.md](p3-design-lead.md) | [#417](https://github.com/transformteamsg/dx-harness/issues/417) |
 | P4 | Product manager or researcher | [p4-product-manager.md](p4-product-manager.md) | [#418](https://github.com/transformteamsg/dx-harness/issues/418) |
-| P6 | Engineer from another team | [p6-external-engineer.md](p6-external-engineer.md) | [#420](https://github.com/transformteamsg/dx-harness/issues/420) |
+| P6 | Designer whose domain has no design language yet | [p6-new-domain-designer.md](p6-new-domain-designer.md) | [#420](https://github.com/transformteamsg/dx-harness/issues/420) |
 | A1 | Calling agent | [a1-calling-agent.md](a1-calling-agent.md) | [#419](https://github.com/transformteamsg/dx-harness/issues/419) |
 
 P5, the harness maintainer, receives feedback only, so it has no file and no stories.

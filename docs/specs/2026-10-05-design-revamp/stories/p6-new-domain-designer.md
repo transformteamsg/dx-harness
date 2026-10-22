@@ -1,13 +1,13 @@
-# P6: engineer from another team
+# P6: designer whose domain has no design language yet
 
 Part of the [design revamp stories](README.md). Confirmed through [#420](https://github.com/transformteamsg/dx-harness/issues/420).
 
-- **Background:** Works on an app outside the Teacher & School portfolio.
-- **What they want from the harness:** Adopt a design language for their app, and have the harness hold their UI to it.
+- **Background:** UI or UX designer in a domain (teachers, students, or parents) whose design language is not recorded in the harness yet. Builds to the shared standards until the domain has one.
+- **What they want from the harness:** Record the first design language for their domain, so that every designer in the domain builds to it.
 
 ## P6-1: Install the harness outside the portfolio
 
-As an engineer from another team, I want to install the harness in a repo outside the portfolio, so that I can use it on my own app.
+As a designer whose domain has no recorded design language, I want to install the harness in a repo outside the portfolio, so that I can use it on my own app.
 
 **Acceptance examples**
 
@@ -17,7 +17,7 @@ To be written in [#420](https://github.com/transformteamsg/dx-harness/issues/420
 
 ## P6-2: Record my team's own design system
 
-As an engineer from another team, I want to record my team's existing design system as the design language of my app, so that every run builds to it.
+As a designer whose domain has no recorded design language, I want to record my team's existing design system as the design language of my app, so that every run builds to it.
 
 **Acceptance examples**
 
@@ -27,7 +27,7 @@ To be written in [#420](https://github.com/transformteamsg/dx-harness/issues/420
 
 ## P6-3: Adopt an existing design language
 
-As an engineer from another team, I want to adopt an existing design language for my app, so that I do not define one from nothing.
+As a designer whose domain has no recorded design language, I want to adopt an existing design language for my app, so that I do not define one from nothing.
 
 **Acceptance examples**
 
@@ -37,7 +37,7 @@ To be written in [#420](https://github.com/transformteamsg/dx-harness/issues/420
 
 ## P6-4: Ask whether a rule applies to my app
 
-As an engineer from another team, I want to ask whether a rule applies to my app or how to waive it, so that I proceed without guessing.
+As a designer whose domain has no recorded design language, I want to ask whether a rule applies to my app or how to waive it, so that I proceed without guessing.
 
 **Acceptance examples**
 
@@ -47,7 +47,7 @@ To be written in [#420](https://github.com/transformteamsg/dx-harness/issues/420
 
 ## P6-5: Report a problem with the harness
 
-As an engineer from another team, I want to report a problem with the harness from my own repo, so that the maintainers hear about it.
+As a designer whose domain has no recorded design language, I want to report a problem with the harness from my own repo, so that the maintainers hear about it.
 
 **Acceptance examples**
 
@@ -57,7 +57,7 @@ To be written in [#420](https://github.com/transformteamsg/dx-harness/issues/420
 
 ## P6-6: Extend the harness for my product family
 
-As an engineer from another team, I want to extend the harness with my product family's standards, so that every product in the family follows them, and one change to the family's standards reaches every product.
+As a designer whose domain has no recorded design language, I want to extend the harness with my product family's standards, so that every product in the family follows them, and one change to the family's standards reaches every product.
 
 **Acceptance examples**
 
