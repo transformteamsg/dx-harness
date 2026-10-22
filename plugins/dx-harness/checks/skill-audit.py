@@ -152,6 +152,53 @@ def audit_skill(skill_dir, repo_root):
     return errors
 
 
+# Every session loads every skill description, so a design description stays
+# short and its routing detail lives in the skill body. CONTRIBUTING.md states
+# the same cap.
+DESIGN_DESCRIPTION_CAP = 500
+
+
+def audit_description(skill_dir, repo_root):
+    """Audits the `description:` of one skill's `SKILL.md` against
+    DESIGN_DESCRIPTION_CAP. Returns a list of `ERROR ...` lines, empty for a
+    skill outside `design/` or a description within the cap. Measures the
+    parsed YAML value, so quoting and a doubled apostrophe do not count. A
+    `SKILL.md` that cannot be read or parsed fails the skill rather than
+    passing it."""
+    if os.path.basename(os.path.dirname(skill_dir)) != "design":
+        return []
+
+    skill_md = os.path.join(skill_dir, "SKILL.md")
+    rel = os.path.relpath(skill_md, repo_root)
+    try:
+        import yaml
+    except ImportError:
+        return [f"ERROR {rel}:1 cannot import yaml — install pyyaml"]
+    try:
+        with open(skill_md, "r", encoding="utf-8") as f:
+            text = f.read()
+    except OSError as exc:
+        return [f"ERROR {rel}:1 cannot read this file ({exc})"]
+
+    match = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+    try:
+        frontmatter = yaml.safe_load(match.group(1)) if match else None
+    except yaml.YAMLError as exc:
+        return [f"ERROR {rel}:1 frontmatter YAML parse error ({exc})"]
+    description = frontmatter.get("description") if isinstance(frontmatter, dict) else None
+    if not isinstance(description, str):
+        return [f"ERROR {rel}:1 frontmatter has no description"]
+
+    if len(description) <= DESIGN_DESCRIPTION_CAP:
+        return []
+    name = os.path.basename(skill_dir)
+    return [
+        f"ERROR {rel}:1 {name} description is {len(description)} characters, "
+        f"over the design skill cap of {DESIGN_DESCRIPTION_CAP} — move the "
+        f"routing detail into the skill body"
+    ]
+
+
 def run_self_test():
     import tempfile
 
@@ -260,6 +307,67 @@ def run_self_test():
             f"got {found!r}",
         )
 
+    # #456 AC1: a design skill description over the cap fails, and the
+    # error names the skill, the length, and the cap.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "design", "dx-design-fake")
+        long_description = "x" * (DESIGN_DESCRIPTION_CAP + 1)
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            f"---\nname: dx-design-fake\ndescription: '{long_description}'\n---\n\n# Fake\n",
+        )
+        errors = audit_description(skill_dir, td)
+        check_true(
+            "#456 AC1 design description over the cap is reported",
+            len(errors) == 1
+            and errors[0].startswith("ERROR ")
+            and "dx-design-fake" in errors[0]
+            and f"{DESIGN_DESCRIPTION_CAP + 1} characters" in errors[0]
+            and f"cap of {DESIGN_DESCRIPTION_CAP}" in errors[0],
+            f"got {errors!r}",
+        )
+
+    # #456 AC1, the edge: a description at exactly the cap passes, and the
+    # cap is measured on the parsed value, so a doubled apostrophe counts once.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "design", "dx-design-fake")
+        at_cap = "it''s" + "x" * (DESIGN_DESCRIPTION_CAP - 4)
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            f"---\nname: dx-design-fake\ndescription: '{at_cap}'\n---\n",
+        )
+        errors = audit_description(skill_dir, td)
+        check_true(
+            "#456 AC1 design description at the cap passes",
+            errors == [],
+            f"got {errors!r}",
+        )
+
+    # #456 out of scope: an engineering skill description is not capped.
+    with tempfile.TemporaryDirectory() as td:
+        skill_dir = os.path.join(td, "skills", "engineering", "dx-eng-fake")
+        long_description = "x" * (DESIGN_DESCRIPTION_CAP + 1)
+        write(
+            os.path.join(skill_dir, "SKILL.md"),
+            f"---\nname: dx-eng-fake\ndescription: '{long_description}'\n---\n",
+        )
+        errors = audit_description(skill_dir, td)
+        check_true(
+            "#456 engineering description over the cap is not reported",
+            errors == [],
+            f"got {errors!r}",
+        )
+
+    # #456 AC2: every design skill in this plugin is within the cap.
+    design_errors = []
+    for skill_dir in find_skill_dirs(DEFAULT_SKILLS_ROOT):
+        design_errors.extend(audit_description(skill_dir, PLUGIN_ROOT))
+    check_true(
+        "#456 AC2 every design skill description is within the cap",
+        design_errors == [],
+        "\n  ".join(design_errors),
+    )
+
     checklib.report_self_test(failures, case_count)
 
 
@@ -277,13 +385,17 @@ def main():
     errors = []
     for skill_dir in skill_dirs:
         errors.extend(audit_skill(skill_dir, repo_root))
+        errors.extend(audit_description(skill_dir, repo_root))
 
     for line in errors:
         print(line)
 
     if errors:
         sys.exit(1)
-    print(f"OK: {len(skill_dirs)} skills audited, 0 orphaned reference files")
+    print(
+        f"OK: {len(skill_dirs)} skills audited, 0 orphaned reference files, "
+        f"0 design descriptions over {DESIGN_DESCRIPTION_CAP} characters"
+    )
     sys.exit(0)
 
 

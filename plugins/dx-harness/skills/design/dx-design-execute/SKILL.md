@@ -1,6 +1,6 @@
 ---
 name: dx-design-execute
-description: 'Build product UI — a new page, screen, form, flow, or component, or a stated change to an existing one ("add a field", "restyle the header", "set the padding to 16px"). The only skill that edits the product: it also builds accepted findings handed over by the passes and dx-design-critique. Runs intent → diverge (2–3 directions) → plan approval → implement → design review; an explicit ask to build a specific plan or chosen direction counts as plan approval. NOT for a review with no change named — that is dx-design-critique; NOT for an open-ended improvement ask naming one pass dimension (copy, flow, pattern, motion, polish) with no edit stated — that is the matching pass.'
+description: 'Build product UI: a new page, screen, form, flow, or component, or a stated change to an existing one ("add a field", "restyle the header", "set the padding to 16px"). The only design skill that edits the product, including accepted findings from the passes and dx-design-critique. Runs intent, 2–3 directions, plan approval, implement, and design review. NOT for a review with no change named, or an open-ended ask about one pass dimension.'
 ---
 
 # Design UI
@@ -15,6 +15,11 @@ passes and dx-design-critique propose only, and their accepted findings are buil
 here. Intent and diverge live in this file; the back half of the run (plan approval,
 implement, design review, rule proposal) is shared procedure, loaded from
 `../../../procedures/` and never restated here.
+
+**When the ask belongs to another skill:**
+
+- A review with no change named goes to `dx-design-critique`.
+- An open-ended improvement ask that names one pass dimension (copy, flow, pattern, motion, or polish) and states no edit goes to the matching pass.
 
 
 <!-- dx-sync:L0 source=catalog -->
