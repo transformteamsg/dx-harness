@@ -74,7 +74,7 @@ shape, so detect.py keeps them as control-less findings rather than grading an
 incomplete run clean.
 """
 
-# What this check decides, read by `validate.py --write-coverage` into
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
 # checks/COVERAGE.md. Keep it true to the code: the design skills read the
 # generated file to know what still needs a manual pass.
 COVERAGE = {
@@ -155,7 +155,7 @@ checklib = _load_checklib()
 
 # The harness-side flat config. It lives under checks/eslint/ so a .mjs file is
 # never a scan target (checklib.TARGET_EXTENSIONS) and never moves
-# validate.py's live_checks_count (which counts checks/*.py).
+# design-catalog-validate.py's live_checks_count (which counts checks/*.py).
 CONFIG_PATH = os.path.join(_CHECKS_DIR, "eslint", "jsx-a11y.config.mjs")
 
 # The rule map's layer name for this check.

@@ -8,7 +8,7 @@ one* only when relevant.
 
 The normative source is the **DX Design Standard (DX-DS)**. The litmus test for
 what belongs here: *if you can't check it, it's a principle or a guideline — not a
-standard.* Standards are the only layer the harness can enforce automatically. Run `python3 checks/validate.py` to verify the catalog, detail files, and all cross-references are consistent.
+standard.* Standards are the only layer the harness can enforce automatically. Run `python3 checks/design-catalog-validate.py` to verify the catalog, detail files, and all cross-references are consistent.
 
 ## Schema
 
@@ -133,13 +133,13 @@ Two OPTIONAL per-control fields (see the schema example above):
   - Never written for `script`, `partial` or `evaluator`, and never for a
     `judgment` control: relabelling to `judgment` closes the gap by
     definition, because the evaluator becomes the enforcement.
-  - A "planned script" note is not a reason. `validate.py` rejects the phrase.
+  - A "planned script" note is not a reason. `design-catalog-validate.py` rejects the phrase.
     Write the real obstacle, so the reason self-closes when the obstacle goes.
 
 The `optional_fields` roster in `schema.json` lists every optional key,
 including `gap`. It documents the format; nothing rejects a key outside it.
 
-Query the live picture with `python3 checks/validate.py --coverage` — a table
+Query the live picture with `python3 checks/design-catalog-validate.py --coverage` — a table
 of every control's `enforced` state (defaulted) and `script:` path, plus a
 summary count. This replaces hand-maintained gap lists, which drift.
 
@@ -164,7 +164,7 @@ summary count. This replaces hand-maintained gap lists, which drift.
    DESIGN.md (L0 never; L1 needs a named approver; L2 needs a reason) — never separate rules.
 6. **A machine-checked control arrives with a check, a reason, or an honest label.** A new
    `deterministic` or `hybrid` control lands with a script, a `gap:` reason (an accepted
-   gap), or an honest relabel to `judgment`. `checks/validate.py` enforces the same thing:
+   gap), or an honest relabel to `judgment`. `checks/design-catalog-validate.py` enforces the same thing:
    a `deterministic` or `hybrid` control whose effective `enforced` is `manual` and which
    carries no `gap:` is an error. A "planned script" note is not a reason, and an `L0`
    control has no reason available to it at all: only a script.
@@ -175,7 +175,7 @@ summary count. This replaces hand-maintained gap lists, which drift.
 ---
 id: TYP-2
 # frontmatter repeats the catalog entry verbatim. catalog.yaml is the source
-# of truth; checks/validate.py fails if a detail file drifts from it.
+# of truth; checks/design-catalog-validate.py fails if a detail file drifts from it.
 ---
 
 ## Requirement

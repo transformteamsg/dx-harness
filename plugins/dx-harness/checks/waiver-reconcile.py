@@ -49,7 +49,7 @@ Exit 0 silent (or only NOTEs) on a clean reconcile; exit 1 with ERROR lines
 on any orphan / L0-inline / unknown-id finding.
 """
 
-# What this check decides, read by `validate.py --write-coverage` into
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
 # checks/COVERAGE.md. Keep it true to the code: the design skills read the
 # generated file to know what still needs a manual pass.
 COVERAGE = {

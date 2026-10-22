@@ -13,7 +13,7 @@ Otherwise prints one `UNRESOLVED <file>: <locator> -> <resolved-path>` line
 per failure and exits 1.
 """
 
-# What this check decides, read by `validate.py --write-coverage` into
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
 # checks/COVERAGE.md. Keep it true to the code: the design skills read the
 # generated file to know what still needs a manual pass.
 COVERAGE = {

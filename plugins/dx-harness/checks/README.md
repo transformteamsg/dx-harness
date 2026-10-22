@@ -7,7 +7,7 @@ on failure, silent on success.
 
 Which controls each check decides, and what each one misses, is in
 [COVERAGE.md](COVERAGE.md). It is generated from the `COVERAGE` declaration in each
-script by `python3 checks/validate.py --write-coverage`. Run that command after you
+script by `python3 checks/design-catalog-validate.py --write-coverage`. Run that command after you
 change a declaration or add, remove, or edit a control in the catalogue. `pnpm check`
 fails when the committed file does not match what the command writes. This file holds
 how each check runs and how it works inside.
@@ -137,12 +137,12 @@ coverage.
 
 `checks/eslint/jsx-a11y.config.mjs` is the harness-side eslint flat config the lint
 layer runs. It sits in its own subdirectory because a `.mjs` file there is invisible
-to `checklib.TARGET_EXTENSIONS` and to `validate.py`'s `live_checks_count` (which
+to `checklib.TARGET_EXTENSIONS` and to `design-catalog-validate.py`'s `live_checks_count` (which
 counts `checks/*.py`), so it can neither become a scan target nor move a count.
 
 The map's integrity — every mapped control id exists in `standards/catalog.yaml`, all
 31 preset rules present, one control id per rule — is asserted by
-`python3 checks/a11y-eslint.py --self-test`, not by `validate.py`.
+`python3 checks/a11y-eslint.py --self-test`, not by `design-catalog-validate.py`.
 
 ## Detector — one entry over the checks (built)
 
@@ -239,11 +239,11 @@ their behaviour is proven by their own `--self-test`s and a real-corpus run over
 
 ## Validator (built)
 
-`python3 checks/validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, a `gap:` reason on every `deterministic`/`hybrid` control that is effectively manual (or a temporary entry on the shrink-only `GAP_GRANDFATHERED` allowance list in `validate.py`), and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
+`python3 checks/design-catalog-validate.py` — validates `standards/catalog.yaml` against the schema in `standards/README.md`: field presence and allowed values, tier→waiver pairing, `detail:` file existence, detail-frontmatter ↔ catalog consistency, a `gap:` reason on every `deterministic`/`hybrid` control that is effectively manual (or a temporary entry on the shrink-only `GAP_GRANDFATHERED` allowance list in `design-catalog-validate.py`), and that every control ID referenced in skills/docs exists in the catalog. Exit 0 on pass, exit 1 with `ERROR` lines on failure. This is the repo's verification baseline — run it before committing any `standards/` change.
 
-The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs from a `package.json` script or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
+The validator also enforces two **fragment-parity** sub-checks via `<!-- dx-sync:… -->` markers: `[L0-SYNC]` (the inline "Non-negotiables (L0)" lists in `CLAUDE.md` and `design/SKILL.md` must equal the catalog's `tier: L0` set) and `[SLP9-SYNC]` (the `copy` buzzword summary must be a subset of the canonical list in `standards/controls/slp-9.md`). See [docs/SYNC.md](../docs/SYNC.md). A third check, `[COUNT-SYNC]`, needs no markers: every "`<N> controls`", "`<N> skills`", "`<N> check scripts`", or "`<N> checks built`" claim in `README.md` **and `docs/index.html`** must equal the live count it claims — the catalog's control count, the number of `.claude/skills/*/SKILL.md` dirs, or `checks/*.py` minus `design-catalog-validate.py` minus `checklib.py` — so an added, removed, or renamed control/skill/check fails the build until the prose is updated. A fourth, `[WIRING-SYNC]`, verifies every `enforced: script|partial` claim actually runs from a `package.json` script or CI (or is on the `WIRING_EXEMPT` allowlist below). A fifth, `[SKILL-SYNC]`, verifies every control id named under `.claude/skills/**` or `.claude/agents/**` exists in the catalog (no ghost ids), and every catalog id is named in at least one skill/agent file or sits on the `SKILL_WIRING_GRANDFATHERED` allowlist in `design-catalog-validate.py` (no silent orphans) — see `docs/SYNC.md`. A sixth, `[LAY-SYNC]`, verifies the inline layout-controls list in `design/SKILL.md`, `evaluator.md`, and `layout/SKILL.md` each equal the catalog's `LAY-*` id set — see `docs/SYNC.md`.
 
-**Self-test:** `python3 checks/validate.py --self-test` → `SELF-TEST OK (111 cases)`.
+**Self-test:** `python3 checks/design-catalog-validate.py --self-test` → `SELF-TEST OK (111 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -251,9 +251,9 @@ that drifts: `enforced` (`script` | `partial` | `manual` | `evaluator`) and `scr
 (repo-relative path or list of paths to the covering script(s)). Absent `enforced`
 defaults to `manual` for `deterministic`/`hybrid` controls and `evaluator` for
 `judgment` controls — a `judgment` control's evaluator-verified half is not a gap.
-`validate.py` enforces the pairing (`script:` requires `enforced: script|partial`;
+`design-catalog-validate.py` enforces the pairing (`script:` requires `enforced: script|partial`;
 every `script:` path must exist on disk; `enforced: evaluator` only on
-`judgment`/`hybrid` controls). `python3 checks/validate.py --coverage` prints the
+`judgment`/`hybrid` controls). `python3 checks/design-catalog-validate.py --coverage` prints the
 live table (id · tier · check · enforced[defaulted] · script) and a summary count —
 this **replaces hand-maintained gap lists**, which drift as controls are added (see
 `standards/README.md` §Enforcement).
@@ -566,7 +566,7 @@ crash.
 neither `package.json` nor `ci.yml` has one, so `[WIRING-SYNC]` cannot be satisfied by it
 — but the check also claims no control's `script:` field yet, so there is nothing for
 `[WIRING-SYNC]` to ask about and a `WIRING_EXEMPT` entry today would be a **dead
-exemption**, which is itself an ERROR (`validate.py`: an exempted script no longer
+exemption**, which is itself an ERROR (`design-catalog-validate.py`: an exempted script no longer
 claimed by any control). The `script:` fields and the `enforced:` labels are #162's, and
 the exemptions land in the same commit as the claims. The decided values this check hands
 to that recount: A11Y-1, A11Y-3, A11Y-4, A11Y-5, A11Y-6, A11Y-7, A11Y-8, A11Y-9 and
@@ -774,7 +774,7 @@ Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
 (full suite). L0 failures block; L1 failures loop the agent back to implement.
 
 Wiring status (plan 069): in this repository, `pnpm check` runs the Python gate through
-`check:python`: `validate.py`, `token-audit.py` over `app components lib`,
+`check:python`: `design-catalog-validate.py`, `token-audit.py` over `app components lib`,
 `a11y-static.py`, `type-scan.py` over `app components`, and `structure-scan.py` over
 `app components lib`. `.github/workflows/ci.yml` runs `pnpm check` as its `Standards
 gate` step. Each script's `--self-test` run is in `test:checks`, which `pnpm test`
@@ -799,7 +799,7 @@ sentence splitter now sees a terminator that sits inside markdown emphasis. The 
 `content/` reported was then rewritten. The policy fix is the waiver handling below.
 
 `contrast.py` and `component-manifest.py` stay **manual** — each is
-on the `WIRING_EXEMPT` list in `checks/validate.py`, with a one-line reason.
+on the `WIRING_EXEMPT` list in `checks/design-catalog-validate.py`, with a one-line reason.
 `contrast` is exempt for a different
 reason since it became a token-pair check: it is **honest-inert** until a product
 declares `colour.pairs` in DESIGN.md, and this repo declares none, so it emits an
@@ -828,7 +828,7 @@ belongs to the manual A11Y-2 pass, and per the harness rule a failing check is n
 wired into the build. Run it from the design skills' verify step
 (`skills/design/dx-design-execute/verify.md`) and through `detect.py`'s curated profile.
 
-The `[WIRING-SYNC]` check in `validate.py` now enforces this list: a control claiming
+The `[WIRING-SYNC]` check in `design-catalog-validate.py` now enforces this list: a control claiming
 `enforced: script|partial` via a `script:` field must run from a `package.json` script or CI, or be on
 `WIRING_EXEMPT` with a reason — the exemption list above is exactly, and only, what
 `WIRING_EXEMPT` says. Stamping a control `enforced: script` without wiring the script

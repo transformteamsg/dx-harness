@@ -51,7 +51,7 @@ Exit codes
           `--category`, a missing records directory, or no/ambiguous target.
 """
 
-# What this check decides, read by `validate.py --write-coverage` into
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
 # checks/COVERAGE.md. Keep it true to the code: the design skills read the
 # generated file to know what still needs a manual pass.
 COVERAGE = {
@@ -105,7 +105,7 @@ def catalog_categories(catalog_path=CATALOG_PATH):
     """Parse standards/catalog.yaml → (id_to_category, prefix_to_category).
 
     A control's category is meta.categories[id.split("-")[0]]. If a control's
-    prefix is missing from meta.categories, that is a hard defect (validate.py
+    prefix is missing from meta.categories, that is a hard defect (design-catalog-validate.py
     step 5b enforces it) — raise rather than guess a category."""
     import yaml
 
@@ -121,7 +121,7 @@ def catalog_categories(catalog_path=CATALOG_PATH):
         if prefix not in prefix_to_category:
             raise KeyError(
                 f"catalog control {cid} has prefix {prefix!r} with no "
-                f"meta.categories entry — fix the catalog (validate.py step 5b)"
+                f"meta.categories entry — fix the catalog (design-catalog-validate.py step 5b)"
             )
         id_to_category[cid] = prefix_to_category[prefix]
     return id_to_category, prefix_to_category

@@ -44,7 +44,7 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
-# What this check decides, read by `validate.py --write-coverage` into
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
 # checks/COVERAGE.md. Keep it true to the code: the design skills read the
 # generated file to know what still needs a manual pass.
 COVERAGE = {

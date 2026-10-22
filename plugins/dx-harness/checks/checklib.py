@@ -20,8 +20,8 @@ Rule logic stays in each script; this module holds only the scaffolding that
 was duplicated across them.
 
 astgrep_scan() is the one door every check uses to reach ast-grep. It is here
-and not in a new checks/*.py file because validate.py's live_checks_count()
-counts every checks/*.py except validate.py and checklib.py, and a new file
+and not in a new checks/*.py file because design-catalog-validate.py's live_checks_count()
+counts every checks/*.py except design-catalog-validate.py and checklib.py, and a new file
 would be counted as a check script.
 """
 

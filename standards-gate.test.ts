@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 /* CI runs the plugin's checks: the Vitest tests, every check script's
-   --self-test, and validate.py. The gate runs from `pnpm check`, and the
+   --self-test, and design-catalog-validate.py. The gate runs from `pnpm check`, and the
    self-tests run with the rest of the tests. See issues #224 and #401. */
 
 function readRoot(file: string) {
@@ -13,8 +13,8 @@ function readRoot(file: string) {
 const scripts: Record<string, string> = JSON.parse(readRoot("package.json")).scripts;
 
 describe("pnpm check", () => {
-  it("runs validate.py", () => {
-    expect(scripts.check).toBe("python3 plugins/dx-harness/checks/validate.py");
+  it("runs design-catalog-validate.py", () => {
+    expect(scripts.check).toBe("python3 plugins/dx-harness/checks/design-catalog-validate.py");
   });
 });
 
@@ -42,7 +42,7 @@ const SELF_TESTS = fs
 describe("the check scripts' self-tests", () => {
   it("are found on disk", () => {
     expect(SELF_TESTS).toContain(`python3 ${CHECKS}/audit-record.py --self-test`);
-    expect(SELF_TESTS).toContain(`python3 ${CHECKS}/validate.py --self-test`);
+    expect(SELF_TESTS).toContain(`python3 ${CHECKS}/design-catalog-validate.py --self-test`);
   });
 
   it("all run from test:checks, which pnpm test calls after vitest", () => {

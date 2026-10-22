@@ -2,7 +2,7 @@
 
 One file per catalogue decision: a ratchet admission or rejection, a harness rule
 (like `evd-1-async-evidence.md`), or a control amendment. The catalog validator
-(`checks/validate.py`) sweeps every `.md` here for control-id cross-references,
+(`checks/design-catalog-validate.py`) sweeps every `.md` here for control-id cross-references,
 and `checks/audit-record.py` requires that any record a decision record cites
 actually exists.
 

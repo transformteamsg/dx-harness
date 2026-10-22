@@ -17,7 +17,7 @@ Behaviour:
     "partial manifest — diff not run".
 
 Exit codes:
-  0 — silent on pass (validate.py convention)
+  0 — silent on pass (design-catalog-validate.py convention)
   1 — one ERROR line per violation
 
 False-positive note (SPEC §3):
@@ -30,7 +30,7 @@ False-positive note (SPEC §3):
   stays off (same trust lesson as token-audit / plan 007).
 """
 
-# What this check decides, read by `validate.py --write-coverage` into
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
 # checks/COVERAGE.md. Keep it true to the code: the design skills read the
 # generated file to know what still needs a manual pass.
 COVERAGE = {
