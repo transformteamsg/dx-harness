@@ -1319,7 +1319,8 @@ def collect_errors(repo_root, _return_count=False):
 # Each check script declares what it decides in a module-level COVERAGE
 # constant. `--write-coverage` reads those constants (with ast, never by
 # importing the script) and writes checks/COVERAGE.md, the file the design
-# skills and the reviewer agent read instead of checks/README.md.
+# skills and the reviewer agent read for coverage. `pnpm check` fails when the
+# committed file differs from what the generator writes.
 
 COVERAGE_FILENAME = "COVERAGE.md"
 
@@ -1477,6 +1478,26 @@ def write_coverage(repo_root):
         return errors
     with open(os.path.join(checks_dir, COVERAGE_FILENAME), "w", encoding="utf-8") as fh:
         fh.write(text)
+    return []
+
+
+def coverage_drift_errors(repo_root):
+    """Error lines when checks/COVERAGE.md is missing or differs from what
+    `--write-coverage` generates from the declarations and the catalogue."""
+    with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
+        controls = yaml.safe_load(fh)["controls"]
+    checks_dir = os.path.join(repo_root, "checks")
+    text, errors = coverage_markdown(checks_dir, controls)
+    if errors:
+        return errors
+    try:
+        with open(os.path.join(checks_dir, COVERAGE_FILENAME), encoding="utf-8") as fh:
+            current = fh.read()
+    except FileNotFoundError:
+        current = None
+    if current != text:
+        return [f"ERROR checks/{COVERAGE_FILENAME}: does not match the COVERAGE declarations "
+                f"and the catalogue; run `python3 checks/validate.py --write-coverage`"]
     return []
 
 
@@ -2804,6 +2825,48 @@ def run_self_test():
     finally:
         shutil.rmtree(write_root, ignore_errors=True)
 
+    drift_root = tempfile.mkdtemp(prefix="validate-selftest-coverage-drift-")
+    try:
+        os.makedirs(os.path.join(drift_root, "checks"))
+        os.makedirs(os.path.join(drift_root, "standards"))
+        with open(os.path.join(drift_root, "checks", "fake-scan.py"), "w") as fh:
+            fh.write(rule_check_source)
+        with open(os.path.join(drift_root, "standards", "catalog.yaml"), "w") as fh:
+            yaml.safe_dump({"controls": coverage_controls}, fh)
+        drift_file = os.path.join(drift_root, "checks", COVERAGE_FILENAME)
+
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if not any(COVERAGE_FILENAME in e and "--write-coverage" in e for e in drift_errs):
+            failures.append(f"FAIL coverage drift: a missing COVERAGE.md fails and names "
+                            f"--write-coverage; got {drift_errs!r}")
+
+        write_coverage(drift_root)
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if drift_errs:
+            failures.append(f"FAIL coverage drift: a current COVERAGE.md passes; got {drift_errs!r}")
+
+        with open(os.path.join(drift_root, "standards", "catalog.yaml"), "w") as fh:
+            yaml.safe_dump({"controls": coverage_controls
+                            + [{"id": "TOK-3", "tier": "L1", "check": "deterministic"}]}, fh)
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if not any(COVERAGE_FILENAME in e and "--write-coverage" in e for e in drift_errs):
+            failures.append(f"FAIL coverage drift: a control added to the catalogue makes "
+                            f"COVERAGE.md stale; got {drift_errs!r}")
+
+        write_coverage(drift_root)
+        with open(drift_file, "a", encoding="utf-8") as fh:
+            fh.write("a hand edit\n")
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if not any(COVERAGE_FILENAME in e and "--write-coverage" in e for e in drift_errs):
+            failures.append(f"FAIL coverage drift: a hand edit to COVERAGE.md fails; "
+                            f"got {drift_errs!r}")
+    finally:
+        shutil.rmtree(drift_root, ignore_errors=True)
+
     case_count += 1
     try:
         with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
@@ -2913,6 +2976,9 @@ def main():
         sys.exit(0)
 
     errors, n = collect_errors(REPO_ROOT, _return_count=True)
+    # The drift check reads the catalogue, so it runs only on a valid one.
+    if not errors:
+        errors = coverage_drift_errors(REPO_ROOT)
 
     if errors:
         for e in errors:

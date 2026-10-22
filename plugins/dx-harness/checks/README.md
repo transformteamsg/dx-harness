@@ -7,8 +7,10 @@ on failure, silent on success.
 
 Which controls each check decides, and what each one misses, is in
 [COVERAGE.md](COVERAGE.md). It is generated from the `COVERAGE` declaration in each
-script by `python3 checks/validate.py --write-coverage`. This file holds how each
-check runs and how it works inside.
+script by `python3 checks/validate.py --write-coverage`. Run that command after you
+change a declaration or add, remove, or edit a control in the catalogue. `pnpm check`
+fails when the committed file does not match what the command writes. This file holds
+how each check runs and how it works inside.
 
 ## Shared scaffolding: `checklib.py` (plan 071)
 
