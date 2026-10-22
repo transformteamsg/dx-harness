@@ -7,8 +7,7 @@ check it, it is a principle or guideline, not a standard.** The tier table, the
 `dx-waive` syntax, and the authoring rules live in `../standards/README.md`. Read it
 only when someone asks about or proposes a waiver, and read it in that turn, before
 you answer. **Never answer a waiver question from memory** or from a summary.
-Applicability comes from the catalogue's scope fields and the product's DESIGN.md,
-not from the waiver rules.
+Applicability comes from the catalogue's scope fields and the product's DESIGN.md.
 
 ## Path resolution
 
