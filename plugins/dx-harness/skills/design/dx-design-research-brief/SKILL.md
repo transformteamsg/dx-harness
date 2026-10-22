@@ -1,6 +1,6 @@
 ---
 name: dx-design-research-brief
-description: 'Build a user research plan or research brief for any study: generative, evaluative, or hybrid. Use when someone needs to plan a research project, write a research plan, create a research brief, document study goals and methodology, align stakeholders on a study, or structure a new research request. Triggers include "write me a research plan", "help me plan this study", "I need a research brief", "create a research plan for", "we''re starting a new research project", "how do I structure this research request", and "help me document this study".'
+description: 'Build a user research plan or research brief for any study: generative, evaluative, or hybrid. Use when someone needs to plan a research project, document study goals and methodology, align stakeholders on a study, or structure a new research request. Triggers include "write me a research plan", "help me plan this study", "I need a research brief", and "we''re starting a new research project".'
 ---
 
 # Research plan builder
@@ -39,8 +39,8 @@ Write the goals against the user problem.
 
 Check these in order and take the first that fits:
 
-- The goal is to measure, benchmark, or test a design or a live product ("test the new prototype") -> evaluative: read [references/evaluative.md](references/evaluative.md)
 - The goal has a discovery phase and a testing phase ("learn how they plan meals, then test two concepts") -> hybrid: read both study-type references
+- The goal is to measure, benchmark, or test a design or a live product ("test the new prototype") -> evaluative: read [references/evaluative.md](references/evaluative.md)
 - The goal is to discover behaviour, needs, or mental models ("how do nurses hand over a shift") -> generative: read [references/generative.md](references/generative.md), and do not read the evaluative reference
 
 ## 4. Write the plan

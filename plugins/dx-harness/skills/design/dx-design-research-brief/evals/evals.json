@@ -103,6 +103,29 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "id": 4,
+      "name": "hybrid-reads-both-references",
+      "prompt": "Plan a study for us. We want to learn how small-business owners track their invoices today, and then test two dashboard concepts with them. The finance product lead, Wei, owns it. We have about a month.",
+      "expected_output": "A hybrid plan whose run reads references/generative.md and references/evaluative.md, describes a generative phase then an evaluative phase, and uses the hybrid timeline.",
+      "assertions": [
+        {
+          "text": "The transcript shows a read of references/generative.md and a read of references/evaluative.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "METHODOLOGY describes a generative phase first, then an evaluative phase",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "APPROXIMATE TIMELINE totals three to five weeks, not the generative or evaluative duration",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
     }
   ]
 }

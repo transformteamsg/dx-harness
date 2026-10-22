@@ -124,6 +124,19 @@ describe("item 3: a run reads only the guidance its study type needs", () => {
     expect(generativeLine).not.toContain("evaluative.md");
   });
 
+  it("checks for a hybrid study before an evaluative one, so a hybrid study reads both references", () => {
+    const skill = read(SKILL);
+    const hybrid = skill.search(/^- .*-> hybrid/m);
+    const evaluative = skill.search(/^- .*-> evaluative/m);
+    expect(hybrid).toBeGreaterThan(-1);
+    expect(evaluative).toBeGreaterThan(-1);
+    expect(hybrid).toBeLessThan(evaluative);
+  });
+
+  it("gives a hybrid study its own timeline", () => {
+    expect(read(EVALUATIVE)).toMatch(/^\*\*Hybrid timeline\*\*/m);
+  });
+
   it("links the components reference", () => {
     expect(read(SKILL)).toContain("](references/components.md)");
   });
@@ -147,6 +160,7 @@ describe("also true when done", () => {
       "missing-goal-asked-first",
       "evaluative-skips-generative-guidance",
       "generative-skips-evaluative-guidance",
+      "hybrid-reads-both-references",
     ]) {
       expect(names, name).toContain(name);
     }

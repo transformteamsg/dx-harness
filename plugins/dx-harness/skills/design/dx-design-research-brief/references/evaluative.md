@@ -1,8 +1,7 @@
 # Evaluative study
 
 Guidance for an evaluative study, and for the evaluative phase of a hybrid study. A
-hybrid study runs the generative phase first, then an evaluative follow-up, in three to
-five weeks.
+hybrid study runs the generative phase first, then an evaluative follow-up.
 
 **Research goals** (component 4). Common evaluative goals:
 
@@ -40,3 +39,6 @@ Where no phase is quantitative, write `Not applicable: qualitative study`.
 | Benchmarking | 25 or more per segment |
 
 **Timeline** (component 10): two to four weeks.
+
+**Hybrid timeline** (component 10): three to five weeks for both phases together. Use
+this duration, not the generative or evaluative one.
