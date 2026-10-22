@@ -201,12 +201,12 @@ method in [Skill token budget](token-budget.md) before you rank the next change.
 
 | Change | Before | After | Saved per read |
 | --- | --: | --: | --: |
-| `dx-design-research-brief` reads its component guidance from `references/`, and reads only the study-type guidance and intake form a run needs ([#462](https://github.com/transformteamsg/dx-harness/issues/462)) | 3,667 | 2,924 generative, 3,133 evaluative, 3,299 hybrid | 743 generative, 534 evaluative, 368 hybrid |
+| `dx-design-research-brief` reads its component guidance from `references/`, and reads only the study-type guidance and intake form a run needs ([#462](https://github.com/transformteamsg/dx-harness/issues/462)) | 3,667 | 2,891 generative, 3,126 evaluative, 3,292 hybrid | 776 generative, 541 evaluative, 375 hybrid |
 
-Measured on 2026-10-21 with `cl100k_base`. "After" is one run: `SKILL.md` (695) and
+Measured on 2026-10-21 with `cl100k_base`. "After" is one run: `SKILL.md` (662) and
 `references/components.md` (2,063), plus `references/generative.md` (166),
-`references/evaluative.md` (375), or both for a hybrid study. A run that has no research
-goal stops after `SKILL.md`, at 695, or 942 when it also reads `references/intake.md`
+`references/evaluative.md` (401), or both for a hybrid study. A run that has no research
+goal stops after `SKILL.md`, at 662, or 909 when it also reads `references/intake.md`
 (247) for an outside stakeholder. The output template now carries the component
 headings once, and the reminders no longer repeat rules that the components state.
 
