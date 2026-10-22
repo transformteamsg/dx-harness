@@ -1,0 +1,131 @@
+{
+  "skill_name": "dx-design-research-brief",
+  "notes": "Offline eval for the on-demand references (#462). Run each case in an isolated session that has only the skill folder. The developer waived the baseline run against the version before #462, so the cases grade the new version alone. Grade the reads from the session transcript: a read of a reference is a Read tool call on that path. A run that stops at a question it must ask is a complete and valid outcome. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "plan-has-all-twelve-components",
+      "prompt": "Write a research plan. The payroll team at a logistics company wants to understand how warehouse supervisors approve overtime each week, because approvals arrive late and staff get paid late. The goal is to learn how supervisors decide on overtime and where the approval gets stuck. The payroll lead, Priya, owns the study, and the finance director is accountable. We need insights in five weeks for the next quarter's planning.",
+      "expected_output": "A complete plan in the output format with all 12 components in order, a generative study type, and UX metrics marked not applicable.",
+      "assertions": [
+        {
+          "text": "The plan carries every heading in the output format in references/components.md, in that order, from PROJECT BACKGROUND to RESOURCES",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "PROJECT BACKGROUND names the business problem and the user problem separately",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "RESEARCH GOALS holds three goals at most",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The plan ends with the reminders block for the researcher",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "missing-goal-asked-first",
+      "prompt": "Can you put together a research brief? Sign-ups for our tenant portal dropped 18% last quarter and leadership wants research on it.",
+      "expected_output": "The run asks for the research goal and writes no part of the plan in the same reply.",
+      "assertions": [
+        {
+          "text": "The reply asks what the team needs to learn, or which decision the research supports",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply holds no plan heading, such as PROJECT BACKGROUND or RESEARCH GOALS, and no draft of any component",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply treats the 18% drop as a business metric, not as the research goal",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows no read of references/components.md",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "evaluative-skips-generative-guidance",
+      "prompt": "Help me plan this study. We redesigned the claim submission form in our insurance app and want to benchmark it against the old form before launch. The goal is to measure whether people finish a claim faster and with fewer errors on the new form. Unmoderated, remote, two segments: first-time claimants and repeat claimants. Results due in three weeks.",
+      "expected_output": "An evaluative plan whose run reads references/evaluative.md, not references/generative.md, and lists quantitative metrics under UX METRICS.",
+      "assertions": [
+        {
+          "text": "The transcript shows a read of references/evaluative.md and no read of references/generative.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "UX METRICS lists at least time on task, task success, and number of errors",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "PARTICIPANTS AND RECRUITMENT states a number per segment, not only a total",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "generative-skips-evaluative-guidance",
+      "prompt": "We're starting a new research project. We want to discover how community nurses plan their home visits across a day, and what gets in the way, before we decide whether to build a scheduling tool at all. Interviews and some shadowing. Six weeks.",
+      "expected_output": "A generative plan whose run never reads references/evaluative.md and marks UX METRICS not applicable.",
+      "assertions": [
+        {
+          "text": "The transcript shows no read of references/evaluative.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The UX METRICS heading is present and says the component does not apply to a generative study",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows a read of references/components.md and references/generative.md",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "hybrid-reads-both-references",
+      "prompt": "Plan a study for us. We want to learn how small-business owners track their invoices today, and then test two dashboard concepts with them. The finance product lead, Wei, owns it. We have about a month.",
+      "expected_output": "A hybrid plan whose run reads references/generative.md and references/evaluative.md, describes a generative phase then an evaluative phase, and uses the hybrid timeline.",
+      "assertions": [
+        {
+          "text": "The transcript shows a read of references/generative.md and a read of references/evaluative.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "METHODOLOGY describes a generative phase first, then an evaluative phase",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "APPROXIMATE TIMELINE totals three to five weeks, not the generative or evaluative duration",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}
