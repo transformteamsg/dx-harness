@@ -194,6 +194,12 @@ The list is ordered by saving per unit of work.
 6. **Re-measure after each change**. Rebuild this table before you trim anything else.
    The ranking, not the absolute figure, tells you where to work.
 
+## Coverage read
+
+A design build reads `checks/COVERAGE.md` once before verify, and a setup run reads it
+once. The file is 2,962 tokens, against the 22,160-token baseline above, a saving of
+19,198 tokens per read. Measured on 2026-10-22 with `cl100k_base`.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
