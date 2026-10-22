@@ -107,6 +107,16 @@ describe("the run resolves the rules once", () => {
     );
   });
 
+  /* design-catalog-validate.py's L0-SYNC check watches only the marked L0
+     lists. An unmarked copy here would go stale when the L0 set changes. */
+  it("takes the L0 controls from the catalogue, not a typed list", () => {
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    expect(procedure, "the procedure does not name the L0 controls").toMatch(/L0/);
+    expect(procedure, "the procedure types an L0 control id by hand").not.toMatch(
+      /A11Y-\d|CMP-\d/,
+    );
+  });
+
   it("a dispatched pass reads no other rules", () => {
     expect(read(PASS), `${PASS} lets a dispatched pass read more rules`).toMatch(
       /reads? no other rules/i,

@@ -38,8 +38,9 @@ Load `../standards/catalog.yaml` once for the run, and filter it by phase and sc
 per `catalogue-mechanics.md`, beside this file. Then take each dimension's subset
 from the control ids its pass `SKILL.md` names.
 
-Add the four L0 controls to every subset: A11Y-1, A11Y-2, A11Y-3, and CMP-2. They
-bind every pass whatever its dimension, per the L0 section of `pass.md`.
+Add the L0 controls to every subset. Take them from the catalogue's `tier: L0`
+controls, not from a list here. They bind every pass whatever its dimension, per the
+L0 section of `pass.md`.
 
 For each control in a subset, record its id, title, tier, and `verify` text, and
 the path to its `detail` file when it has one.
