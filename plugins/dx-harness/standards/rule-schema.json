@@ -1,0 +1,33 @@
+{
+  "comment": "Frontmatter schema for a rule file at standards/rules/<category>/<slug>.md. Decision 3 of docs/adr/0001-rule-set-and-presets.md. Validated by checks/rule-scaffold.py.",
+  "type": "object",
+  "required": ["code", "slug", "category", "tier", "status", "check", "applies_to"],
+  "additionalProperties": false,
+  "properties": {
+    "code": { "type": "string", "pattern": "^(A11Y|TOK|COL|TYP|CMP|CNT|LAY|MOT)-[0-9]+$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "category": { "enum": ["A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"] },
+    "tier": { "enum": ["L0", "L1", "L2"] },
+    "status": { "enum": ["preview", "stable", "deprecated", "removed"] },
+    "check": { "enum": ["deterministic", "judgment", "hybrid"] },
+    "applies_to": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["page", "component", "flow", "content"] }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "default": {},
+          "type": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

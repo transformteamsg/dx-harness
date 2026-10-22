@@ -940,3 +940,13 @@ outright rather than reporting it as claimed (see "Rendered check" above) — a 
 an L0/L1 control is itself reported as a
 violation unless it appears in the decision record with a named approver (L1; L0 is
 never waivable).
+
+## Rule scaffold (built)
+
+`python3 checks/rule-scaffold.py [<standards-dir>]` validates the rule set and the presets that [ADR 0001](../../../docs/adr/0001-rule-set-and-presets.md) decides. It checks each rule file under `standards/rules/` against `standards/rule-schema.json` (the `_template.md` is skipped), and each preset under `standards/presets/` against `standards/preset-schema.json`. A preset that sets a parameter that no rule declares fails. An error line names the file and the field: `ERROR rules/tok/x.md: tier: required field is missing`.
+
+It also lists every control ID in `standards/catalog.yaml` that no rule file, no entry in `standards/rules/redirects.yaml`, and no `removed` rule covers. That list is advisory: it prints as a `NOTE` and does not fail the check, until C14 makes it fail. A missing or empty `redirects.yaml` is valid. The script reads `catalog.yaml` for IDs only and changes nothing about how other checks read it.
+
+`pnpm check` runs it after `validate.py`. Exit 0 and `OK: <n> rules, <m> presets valid` on pass; exit 1 with `ERROR` lines on failure.
+
+**Self-test:** `python3 checks/rule-scaffold.py --self-test` -> `SELF-TEST OK (10 cases)`

@@ -1,6 +1,6 @@
 # 0001: Rule set, presets, and the product selection
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-20
 **Epic:** [#413](https://github.com/transformteamsg/dx-harness/issues/413) (C1 in the [design revamp spec](../specs/2026-10-05-design-revamp/README.md#catalogue))
 
