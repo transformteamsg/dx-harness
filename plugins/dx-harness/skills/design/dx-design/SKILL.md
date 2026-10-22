@@ -1,6 +1,6 @@
 ---
 name: dx-design
-description: 'Front door for design work when the ask is unclear, mixed, or dimensionless — "improve my app", "where do I start?", several issues at once, or brainstorming directions. Grills to find intent, with a five-mode menu as fallback, then routes: a named change to dx-design-execute, a whole-page graded review to dx-design-critique, one of the five pass dimensions to that pass, git-shaped asks to dx-design-git, missing DESIGN.md to dx-design-language. In improve mode it runs light triage and propose-only passes, merges findings into one ranked plan behind one plan approval, then hands the build to dx-design-execute. Also answers control-catalogue rule and waiver questions ("can I waive TOK-1?", "does CMP-3 apply here?") and offers the next step that fits: record the waiver, promote a standing override, or start a rule proposal. A sharp ask that already names its skill or dimension routes there directly and skips this.'
+description: 'Front door for design work when the ask is unclear, mixed, or names no dimension: "improve my app", "where do I start?", several issues at once, or brainstorming directions. Grills for intent, then routes to the matching design skill, or runs light triage and propose-only passes behind one plan approval. Also answers control-catalogue rule and waiver questions ("can I waive TOK-1?", "does CMP-3 apply here?"). A sharp ask that already names its skill or dimension goes there directly.'
 ---
 
 # Orchestrate a design run

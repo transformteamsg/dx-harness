@@ -1,6 +1,6 @@
 ---
 name: dx-design-language
-description: 'Define a product''s design language and write DESIGN.md — essence, colour, typography, motion signature, voice, guardrails, and standing overrides. Use to create or revise DESIGN.md, when a run finds it missing, when code and DESIGN.md drift (it revises DESIGN.md and files fix-todos; changing product code is dx-design-execute), or to promote a repeated waiver into a standing override. Health-scan first: evidence-first on a token-healthy repo (mine the code, confirm or correct), interview-first on a token-less one; ingests Figma and brand docs with a per-session source-of-truth election. NOT for catalogue rule or waiver questions — that is dx-design.'
+description: 'Define a product''s design language and write DESIGN.md: essence, colour, typography, motion signature, voice, guardrails, and standing overrides. Use to create or revise DESIGN.md, when a run finds it missing, when code and DESIGN.md drift, or to promote a repeated waiver into a standing override. Ingests Figma and brand docs. NOT for catalogue rule or waiver questions, or for changing product code.'
 ---
 
 # Define the design language
@@ -9,6 +9,11 @@ You guide one person through recording their product's design language in `DESIG
 and generate its typed projection `.dx/design.json`. The person may be relaying team
 decisions; that is fine. Brand essence for the portfolio is **Kind Utility**: useful
 first, kind at the surface.
+
+**When the ask belongs to another skill:**
+
+- When code and `DESIGN.md` drift, revise `DESIGN.md` and file fix-todos. Changing product code goes to `dx-design-execute`.
+- A catalogue rule or waiver question goes to `dx-design`.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md` for tier behaviour and
 catalogue path resolution, and `../../../procedures/design-tickets.md` for how deferred

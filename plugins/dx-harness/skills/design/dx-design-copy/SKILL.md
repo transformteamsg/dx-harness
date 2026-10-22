@@ -1,6 +1,6 @@
 ---
 name: dx-design-copy
-description: 'Use when the ask names the copy of a product surface but not the exact wording — reviewing or proposing user-facing text (page, form, notification, empty or error state), naming, error-message anatomy, or tone, with anti-AI-writing rules (SLP-9) applied. Propose-only: records up to five ranked findings on the surface''s design ticket; dx-design-execute builds accepted ones — and loads this skill at implement for generation-time copy rules. A stated edit ("change the label to Save") is dx-design-execute''s. NOT for a whole-page review with no dimension named — that is dx-design-critique. Non-surface prose (site content, marketing, documentation) is out of scope.'
+description: 'Use when the ask names the copy of an existing product surface but not the exact wording: user-facing text on a page, form, notification, or empty or error state, naming, error-message anatomy, or tone, with anti-AI-writing rules (SLP-9) applied. Propose-only: records up to five ranked findings on the surface''s design ticket for dx-design-execute to build. NOT for a stated wording edit, a whole-page review, or prose outside the product such as marketing or documentation.'
 ---
 
 # Copy for Teacher & School products
@@ -9,6 +9,11 @@ The DX-DS voice & tone (§4.1) and naming (§4.2) guidelines, applied at generat
 time. The intent: copy arrives already on-voice, so no builder — least of all
 non-native English speakers — carries the UX-writing burden personally. The content
 catalog controls CNT-1 through CNT-14 and SLP-9 (AI-writing tells) bind this skill.
+
+**When the ask belongs to another skill:**
+
+- A review of the whole page with no dimension named goes to `dx-design-critique`.
+- Prose outside the product surface, such as site content, marketing, or documentation, is out of scope.
 
 **Source of truth.** The normative rules are the catalog controls — the content family
 CNT-1 through CNT-14 (error anatomy, naming, voice mechanics, domain fidelity, device
