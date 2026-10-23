@@ -81,13 +81,13 @@ controls:
     check: deterministic
     phase: [implement, verify]
     applies_to: [component]
-    verify: "Every input has an associated visible label element; checks/a11y-static"
+    verify: "Every input has an associated visible label element; checks/a11y-eslint and checks/rendered-check"
     waiver: none
     fails_when:
       - placeholder used as the only label
       - icon-only button without aria-label
     enforced: partial
-    script: checks/a11y-static.py
+    script: [checks/a11y-eslint.py, checks/rendered-check.py]
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: A11Y-4
