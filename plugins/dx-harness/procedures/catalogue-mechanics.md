@@ -30,13 +30,31 @@ Pass only the flags your skill names. A flag you leave out does not narrow the l
   product and audience that the run settled. Audience defaults to teachers.
 
 Every L0 rule is on every list. Each rule line gives the id, tier, title, `verify`
-text, and the absolute path to its detail file when it has one.
+text, the check that covers the rule fully when one does, and the absolute path to
+its detail file when it has one.
 
-- **Read the detail of no rule outside the list.** Read a listed rule's detail file,
-  at the path the list gives, before you apply or grade that rule. A rule with no
-  `Detail:` is self-sufficient: its title and `verify` text are the whole rule. A
-  `judgment` or `hybrid` rule with no detail is a catalogue defect. Raise it, and do
-  not improvise a rubric.
+- **Read the detail of no rule outside the list.** A rule with no `Detail:` is
+  self-sufficient: its title and `verify` text are the whole rule. A `judgment` or
+  `hybrid` rule with no detail is a catalogue defect. Raise it, and do not improvise
+  a rubric.
+- **Read only the part of the detail that your role needs.** Print it from the path
+  the list gives, before you apply or grade the rule:
+
+  ```bash
+  python3 <harness>/scripts/rule-detail.py <detail path> --for build
+  python3 <harness>/scripts/rule-detail.py <detail path> --for review
+  ```
+
+  A builder reads `--for build`: the requirement, the pass and fail conditions, and
+  the waiver. A reviewer, and a verify step that grades a rule by hand, reads
+  `--for review`, which adds the evaluator guidance and the "Do not flag" list. Do
+  not open the detail file itself. When `--for review` exits with a catalogue
+  defect, report it, grade the rule from its `verify` text only, and write no
+  rubric of your own.
+- **A rule with `Covered by:` needs no detail when its check is clean.** Run the
+  check that the line names on the files you changed. When it ran with no findings
+  for the rule, read no detail for that rule. When it reports a finding, read the
+  rule's `--for build` part before you fix it.
 - **Report its `Selection:` line to the person**, in plain words, before you apply
   any rule. The line names the filters and the `DESIGN.md` the list came from. On a
   product with no `DESIGN.md`, it says the portfolio defaults apply.
@@ -64,7 +82,8 @@ restate them. Agent behaviour:
 
 ## When a control seems wrong
 
-Escalate in this order: check the detail file's "Do not flag" exceptions; propose a
+Escalate in this order: check the "Do not flag" exceptions in the rule's `--for
+review` part; propose a
 waiver at the right gate; surface the conflict. Never silently ignore a control, and
 never edit the catalogue to make a failing check pass. A control that is wrong in
 principle becomes a rule proposal (`rule-proposal.md`, beside this file).
