@@ -77,3 +77,14 @@ describe("the selection line", () => {
   });
 });
 
+/* Contract item 3: an unknown rule code stops the list. */
+describe("a product that names a rule code the catalogue does not have", () => {
+  const repo = product("# DESIGN.md\n\n## Overrides\n- TOK-99 (L2): any spacing - reason: legacy grid\n");
+  const run = list(repo, "--dimension", "polish");
+
+  it("stops, names the unknown code, and prints no rules", () => {
+    expect(run.status).not.toBe(0);
+    expect(run.out).toMatch(/unknown rule code TOK-99/);
+    expect(ruleIds(run.stdout)).toEqual([]);
+  });
+});
