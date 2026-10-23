@@ -367,9 +367,10 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
     is free.
     """
     source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
+    # checks/detect.py is not a consumer: it reads the L0 set from the catalog
+    # through checklib, so it has no inline copy to drift (#479).
     consumers = [
         os.path.join(repo_root, "skills", "design", "dx-design-execute", "SKILL.md"),
-        os.path.join(repo_root, "checks", "detect.py"),
     ]
     present, errors = required_consumer_errors(repo_root, consumers, "L0-SYNC")
     for fpath in present:
@@ -1660,15 +1661,16 @@ def run_self_test():
                  l0_errs_for_span(extract_sync_block("no markers here", "L0")),
                  "missing dx-sync:L0 markers")
 
-    # The detector is an executable L0 consumer. A malformed fixture must be
-    # reported; this fails if its path is silently skipped by l0_parity_errors.
+    # A malformed fixture of the declared consumer must be reported; this fails
+    # if its path is silently skipped by l0_parity_errors.
     with tempfile.TemporaryDirectory() as td:
-        os.makedirs(os.path.join(td, "checks"))
-        with open(os.path.join(td, "checks", "detect.py"), "w") as fh:
-            fh.write("# no L0 marker")
-        assert_error("L0 detector consumer is not skipped",
+        skill_dir = os.path.join(td, "skills", "design", "dx-design-execute")
+        os.makedirs(skill_dir)
+        with open(os.path.join(skill_dir, "SKILL.md"), "w") as fh:
+            fh.write("no L0 marker")
+        assert_error("L0 consumer is not skipped",
                      l0_parity_errors(td, {cid: {"tier": "L0"} for cid in L0_SOURCE}, xref_re),
-                     "checks/detect.py [L0-SYNC]: missing dx-sync:L0 markers")
+                     "dx-design-execute/SKILL.md [L0-SYNC]: missing dx-sync:L0 markers")
 
     LAY_SOURCE = {"LAY-1", "LAY-2", "LAY-3", "LAY-4", "LAY-5", "LAY-6", "LAY-7"}
 

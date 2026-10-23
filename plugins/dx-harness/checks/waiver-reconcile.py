@@ -68,7 +68,6 @@ import sys
 # ── Paths ────────────────────────────────────────────────────────────────────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
-CATALOG_PATH = os.path.join(REPO_ROOT, "standards", "catalog.yaml")
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
 # Inline waiver syntax (CLAUDE.md "Always-on rules" / checks/README.md):
@@ -192,20 +191,6 @@ def find_recorded_waivers(records):
     return recorded
 
 
-def catalog_tiers(catalog_path=CATALOG_PATH):
-    """Parse standards/catalog.yaml → {control_id: tier}."""
-    import yaml
-
-    with open(catalog_path, encoding="utf-8") as fh:
-        data = yaml.safe_load(fh)
-    tiers = {}
-    for control in data.get("controls", []):
-        cid = control.get("id")
-        if cid:
-            tiers[cid] = str(control.get("tier", "")).upper()
-    return tiers
-
-
 # ── Step 2: reconcile + emit ───────────────────────────────────────────────────
 def reconcile(inline_waivers, recorded_waivers, tiers, rel=None):
     """Reconcile the three inputs. Returns (errors, notes) — lists of strings.
@@ -258,14 +243,14 @@ def reconcile(inline_waivers, recorded_waivers, tiers, rel=None):
 def run_self_test():
     """Embedded self-test. Prints SELF-TEST OK (N cases) and exits 0 on
     success; prints failures and exits 1. Builds temp source + record files;
-    reads the REAL standards/catalog.yaml for tiers (read-only, like
-    audit-record's path-referencing cases)."""
+    reads the REAL catalogue tiers through checklib.rule_tiers() (read-only,
+    like audit-record's path-referencing cases)."""
     import tempfile
 
     failures = []
     case_count = 0
 
-    tiers = catalog_tiers()  # real catalog, read-only
+    tiers = checklib.rule_tiers()  # real catalog, read-only
 
     def write_temp(content, suffix):
         tf = tempfile.NamedTemporaryFile(
@@ -528,7 +513,11 @@ def main():
 
     # Catalog: resolve relative to the harness checks dir (tiers are the
     # harness's, regardless of which consumer repo's source is scanned).
-    tiers = catalog_tiers()
+    try:
+        tiers = checklib.rule_tiers()
+    except checklib.RulesUnresolvedError as exc:
+        print(exc.line("waiver-reconcile"))
+        sys.exit(1)
 
     # Report missing source paths, like a11y-static does.
     path_errors = []

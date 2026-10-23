@@ -72,6 +72,8 @@ COVERAGE = {
 
 import argparse
 import fnmatch
+import functools
+import importlib.util
 import json
 import os
 import re
@@ -98,9 +100,23 @@ PRUNE_DIRS = {"node_modules", "dist", "build", "out", "coverage", "vendor", "__p
 SCAN_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue",
                    ".svelte", ".md", ".mdx"}
 
-# <!-- dx-sync:L0 source=catalog -->
-L0_CONTROL_IDS = frozenset({"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"})
-# <!-- /dx-sync:L0 -->
+
+def _load_checklib():
+    path = os.path.join(CHECKS_DIR, "checklib.py")
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
+
+
+@functools.lru_cache(maxsize=None)
+def l0_control_ids():
+    """The L0 controls, from the rules that apply. Raises
+    checklib.RulesUnresolvedError when the catalogue cannot be read."""
+    return frozenset(i for i, t in checklib.rule_tiers().items() if t == "L0")
 
 # ERROR-line convention (checks/README.md):
 #   ERROR <file>:<line> [<CTL>] <message>
@@ -187,7 +203,7 @@ def load_overrides(repo_root):
         tier = entry.get("tier")
         if not isinstance(control, str) or not isinstance(tier, str):
             continue
-        if tier == "L0" or control in L0_CONTROL_IDS:
+        if tier == "L0" or control in l0_control_ids():
             continue
         out.append({
             "control": control,
@@ -386,7 +402,7 @@ def parse_findings(check_name, error_lines):
 
 def effective_ignore_rules(ignore_rules):
     """Return configured rules that may be ignored; catalog L0 controls never may."""
-    return set(ignore_rules) - L0_CONTROL_IDS
+    return set(ignore_rules) - l0_control_ids()
 
 
 def apply_ignore_rules(findings, ignore_rules):
@@ -615,6 +631,16 @@ def run(argv):
     repo_root = find_repo_root(targets[0])
 
     try:
+        l0_control_ids()
+    except checklib.RulesUnresolvedError as exc:
+        if args.json:
+            print(json.dumps({"findings": [], "counts": {"total": 0},
+                              "error": exc.line("detect"), "exit": EXIT_FAILURE}, indent=2))
+        else:
+            print(exc.line("detect"))
+        return EXIT_FAILURE
+
+    try:
         config = load_config(repo_root, no_config=args.no_config)
     except ConfigError as exc:
         # Invalid config is a misconfiguration → exit 1.
@@ -813,7 +839,9 @@ def run_self_test():
     check("ignoreRules keeps L0 CMP-2", any(f["control"] == "CMP-2" for f in kept))
     check("ignoreRules never drops operational", any(f["control"] is None for f in kept))
     check("effective ignores exclude every L0 control",
-          not (effective_ignore_rules(list(L0_CONTROL_IDS) + ["TYP-2"]) & L0_CONTROL_IDS))
+          not (effective_ignore_rules(list(l0_control_ids()) + ["TYP-2"]) & l0_control_ids()))
+    check("L0 set comes from the catalog",
+          l0_control_ids() == {"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"})
 
     text_results = [{
         "name": "a11y-static",
