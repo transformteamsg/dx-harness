@@ -600,7 +600,7 @@ def run_self_test():
     check_eq("VALID_RULES is exactly the ids the sub-rule table emits",
              VALID_RULES,
              {ctl for ids in RULE_CONTROLS.values() for ctl in ids})
-    tiers = checklib.catalog_tiers()
+    tiers = checklib.rule_tiers()
     check_eq("both control ids exist in the catalogue, on the tiers that make "
              "the split load-bearing",
              {"A11Y-7": "L1", "CMP-6": "L2"},

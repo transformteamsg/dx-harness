@@ -242,50 +242,7 @@ LINE_COMMENT_EXTENSIONS = {".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
 # own line and the following lines indented at least as far, stopping at the
 # next marker or at the first line indented less. It never runs past the
 # element it annotates, so a marker on one panel cannot quiet its sibling.
-CATALOG_PATH = os.path.join(
-    os.path.dirname(_CHECKS_DIR), "standards", "catalog.yaml")
-
 WAIVER_RE = re.compile(r"dx-waive\s+([A-Z][A-Z0-9]*-\d+)", re.IGNORECASE)
-
-# The tiers this check's own controls sit on, used only when catalog.yaml cannot
-# be read. A NOTE is printed when this is reached, never a silent substitution.
-FALLBACK_TIERS = {"CNT-1": "L1", "CNT-3": "L2", "CNT-5": "L2", "CNT-6": "L2",
-                  "CNT-13": "L2", "SLP-9": "L2"}
-
-_CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
-_CATALOG_TIER_RE = re.compile(r"^\s*tier:\s*(L\d)\s*$")
-
-
-def load_tiers(path=CATALOG_PATH):
-    """
-    Return ({CTL-ID: tier}, used_fallback, note). Read from catalog.yaml with a
-    line scan rather than a YAML parse: only the id-to-tier pairing is needed,
-    and the check stays dependency-free. The catalogue is the single source of
-    truth, so a tier that moves there moves here with no edit.
-    """
-    try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
-    except OSError as exc:
-        return (dict(FALLBACK_TIERS), True,
-                f"NOTE content-lint: cannot read {path} ({exc}) — "
-                "using the embedded tier table")
-    tiers = {}
-    current = None
-    for line in text.splitlines():
-        m = _CATALOG_ID_RE.match(line)
-        if m:
-            current = m.group(1).upper()
-            continue
-        m = _CATALOG_TIER_RE.match(line)
-        if m and current:
-            tiers[current] = m.group(1)
-            current = None
-    if not tiers:
-        return (dict(FALLBACK_TIERS), True,
-                f"NOTE content-lint: no tiers parsed from {path} — "
-                "using the embedded tier table")
-    return tiers, False, None
 
 
 def collect_waivers(lines):
@@ -1522,7 +1479,7 @@ def check_file(filepath, lists=None, phrase_res=None, word_res=None, device_re=N
         cnt13_lists, _c13_fallback, _c13_note = load_cnt13_lists()
         cnt13_res = _build_cnt13_res(cnt13_lists)
     if tiers is None:
-        tiers, _t_fallback, _t_note = load_tiers()
+        tiers = checklib.rule_tiers()
 
     try:
         with open(filepath, encoding="utf-8", errors="replace") as fh:
@@ -1864,7 +1821,10 @@ def _check_cnt1_text(text, lineno, all_lines, emit, origin=ORIGIN_MDX_PROSE):
 
 def scan_paths(paths):
     """Walk the given paths and collect all violations. Prints the fallback NOTE
-    once if the SLP-9 lists could not be read from slp-9.md."""
+    once if the SLP-9 lists could not be read from slp-9.md. Raises
+    checklib.RulesUnresolvedError when the waiver tiers cannot be resolved,
+    before it reads or reports any word list."""
+    tiers = checklib.rule_tiers()
     lists, used_fallback, note = load_slp9_lists()
     if used_fallback and note:
         print(note)
@@ -1888,9 +1848,6 @@ def scan_paths(paths):
     device_re = _build_word_regex(device_verbs)
     cnt6_res = _build_cnt6_res(cnt6_lists)
     cnt13_res = _build_cnt13_res(cnt13_lists)
-    tiers, t_fallback, t_note = load_tiers()
-    if t_fallback and t_note:
-        print(t_note)
 
     all_errors = []
     for kind, val in checklib.iter_target_files(paths, TARGET_EXTENSIONS):
@@ -2839,7 +2796,11 @@ def main():
     if "--self-test" in args:
         run_self_test()
         return
-    findings = scan_paths(args)
+    try:
+        findings = scan_paths(args)
+    except checklib.RulesUnresolvedError as exc:
+        print(exc.line("content-lint"))
+        sys.exit(1)
     for f in findings:
         print(f)
     # A NOTE is an L2 waiver honoured at the deviation site: reported, never

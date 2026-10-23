@@ -752,7 +752,10 @@ def run(session=None, url=None, viewports=DEFAULT_VIEWPORTS, themes="auto",
     except checklib.RuleMapError as exc:
         return 1, [f"ERROR rendered-check: {exc}"], []
 
-    tiers = checklib.catalog_tiers()
+    try:
+        tiers = checklib.rule_tiers()
+    except checklib.RulesUnresolvedError as exc:
+        return 1, [exc.line("rendered-check")], []
     resolve = cdp_resolver or resolve_cdp_url
     execute = cell_runner or (lambda job: run_cell(job, node=node))
 
@@ -935,7 +938,7 @@ def run_self_test():
 
     rule_map = checklib.load_rule_map()
     controls = checklib.layer_controls(LAYER, rule_map)
-    tiers = checklib.catalog_tiers()
+    tiers = checklib.rule_tiers()
     detect = _load_detect()
 
     # ── the run matrix covers every shape the spec fixed ───────────────────────
