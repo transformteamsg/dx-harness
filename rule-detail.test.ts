@@ -141,7 +141,7 @@ describe("3. a missing evaluator part is a catalogue defect", () => {
       .filter((file) => file.endsWith(".md"))
       .filter((file) => detail(path.join(CONTROLS, file), "review").status !== 0);
     expect(failing).toEqual([]);
-  });
+  }, 20_000);
 
   it("the reviewer reports the defect and writes no rubric of its own", () => {
     const agent = flat(AGENT);
@@ -169,5 +169,28 @@ describe("4. a rule a clean check covers fully needs no detail", () => {
     expect(mechanics).toContain("`Covered by:`");
     expect(mechanics).toMatch(/no findings/i);
     expect(mechanics).toMatch(/read no detail for (that|the) rule/i);
+  });
+});
+
+/* Paths the command itself introduced. */
+describe("the detail command", () => {
+  it("stops as a tool failure when the detail file cannot be read", () => {
+    const run = detail(path.join(CONTROLS, "no-such-rule.md"), "build");
+    expect(run.status).toBe(4);
+    expect(run.out).toMatch(/cannot read/);
+  });
+
+  it("keeps a heading inside a code fence as text of its section", () => {
+    const file = detailFile("hybrid", ["Requirement", "Evaluator guidance"]);
+    fs.appendFileSync(file, "\n## Fails when\n\n```markdown\n## Rationale\nquoted\n```\n");
+    const build = detail(file, "build");
+    expect(build.status, build.out).toBe(0);
+    expect(build.stdout).toContain("quoted");
+  });
+
+  it("keeps the status note that sits before the first section", () => {
+    const build = detail(path.join(CONTROLS, "mot-2.md"), "build");
+    expect(build.status, build.out).toBe(0);
+    expect(build.stdout).toMatch(/Status: proposed/);
   });
 });

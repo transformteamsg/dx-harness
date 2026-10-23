@@ -37,8 +37,9 @@ the product and audience, get the build's in-scope list with
 this file. Pass no `--phase` or `--surface`: a build runs every phase, and a page
 with an async or destructive action also takes the flow rules. Report the
 `Selection:` line to the person. When the command exits with an error, stop before
-you plan or build, and show the error. Read a listed rule's detail file before you
-apply it. Also read the product's `DESIGN.md` (repo root)
+you plan or build, and show the error. Before you apply a listed rule, read its
+build part with `python3 <harness>/scripts/rule-detail.py <detail path> --for
+build`. A rule with `Covered by:` needs no detail when its check runs clean. Also read the product's `DESIGN.md` (repo root)
 if present — per-product parameters only; on conflict with implemented code
 conventions, the code wins and you flag the drift. Spec: the harness's
 `docs/DESIGN-CONTEXT.md`. The catalogue mechanics also hold tier behaviour for
@@ -52,7 +53,7 @@ back half of the run lives beside it: `../../../procedures/plan-approval.md`,
 scales, shadcn/ui default tokens for spacing/radius/type. Plus Jakarta Sans (600) for
 display, Inter (400/500/600) for body/UI. Each product anchors primary actions and
 brand moments in its **own** primary (Teacher Workspace → Teacher & School Blue
-`#0064FF`; Glow → orange; CaseSync → indigo — see COL-1's detail file for the
+`#0064FF`; Glow → orange; CaseSync → indigo — see COL-1's build part for the
 table). Build from these by default.
 
 **Judgment lens.** Where no control decides and Kind Utility alone is too coarse,
@@ -275,7 +276,7 @@ Use the product's component manifest
 (`.dx/component-manifest.json`, filtered to `status: "stable"` entries) —
 options may only compose components that exist in the manifest (CMP-1 applies from
 here on). If the product has no manifest yet, fall back to the v0-limit procedure
-in `standards/controls/cmp-1.md` and note "asserted, no manifest".
+in CMP-1's `--for review` part and note "asserted, no manifest".
 Progressive disclosure is the default pattern: show the core path, reveal complexity
 on demand. Three anti-slop controls bind at this altitude: a complex multi-section
 task gets a page, never a modal (SLP-10) — if an option puts tabs, columns, or its

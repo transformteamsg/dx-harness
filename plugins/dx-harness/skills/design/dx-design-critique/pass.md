@@ -46,15 +46,16 @@ A pass keeps two entries:
    Either way, do not fabricate what the page looks like.
 2. **Load only your slice.**
    - **Dispatched**: use the subset the caller gave you, read each control's
-     `detail` file when it has one, and load the pass's named reference files. The
+     review part when it has a detail, with `python3
+     <harness>/scripts/rule-detail.py <detail path> --for review`, and load the pass's named reference files. The
      pass reads no other rules, and it does not open the catalogue.
    - **Direct**: get the pass's in-scope list with `python3
      <harness>/scripts/in-scope-rules.py <repo-root> --dimension <pass> --phase
      verify`, where `<harness>` is the absolute path three levels above this file
      and `<pass>` is the dimension of the SKILL.md that sent you here. Report the
      `Selection:` line to the person. When the command exits with an error, stop
-     before you judge anything, and show the error. Read each listed rule's detail
-     file when it has one, and load the pass's named reference files, nothing wider.
+     before you judge anything, and show the error. Read each listed rule's
+     `--for review` part when it has a detail, and load the pass's named reference files, nothing wider.
 
    The dimension is the boundary; the catalog ids are the rules. Mechanics
    (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
