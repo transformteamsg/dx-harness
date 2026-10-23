@@ -6,10 +6,10 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [content]
-verify: "Lint headings/labels/buttons for Title-Case patterns (planned content-lint heuristic); evaluator judges sentence-case compliance and the proper-noun / branded-term exemptions"
+verify: "Evaluator checks headings/labels/buttons for Title-Case patterns and judges sentence-case compliance and the proper-noun / branded-term exemptions; no script, per this control's accepted gap"
 waiver: rationale
-enforced: partial
-script: checks/content-lint.py
+enforced: manual
+gap: "No script: a capitalised word is a finding only when it is not a proper or branded noun, and copy does not mark which words those are, so every capitals match is the evaluator's call."
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
@@ -64,11 +64,10 @@ it is L2: deviate only with a recorded reason, not silently.
 
 ## How to verify
 
-**Hybrid.** Deterministic half — a planned `checks/content-lint.py` heuristic flags
-headings, labels, and button strings where multiple words begin with a capital (a
-Title-Case signal), leaving proper-noun exemption to review. Until the heuristic ships,
-verify manually against the rendered copy and label it "verified manually". Judgment half —
-the evaluator reads each heading, label, button, and sentence and confirms only the first
+**Hybrid.** No script runs for this control; see its accepted gap. Verify manually
+against the rendered copy and label it "verified manually": flag headings, labels, and
+button strings where multiple words begin with a capital (a Title-Case signal). Then the
+evaluator reads each heading, label, button, and sentence and confirms only the first
 word and genuine proper or branded nouns are capitalised.
 
 ## Evaluator guidance

@@ -152,17 +152,6 @@ detail file.
 | LAY-6 | L2 | judgment |
 | LAY-7 | L2 | judgment |
 
-## Catalogue claims that disagree
-
-The catalogue names a check as the script for these controls, and the
-check does not declare them. Trust the declaration above, and check
-these controls by hand.
-
-| Control | Script in the catalogue |
-| --- | --- |
-| CNT-9 | `content-lint.py` |
-| CNT-12 | `content-lint.py` |
-
 ## Process checks
 
 These checks validate records, the harness, or other checks. They decide
