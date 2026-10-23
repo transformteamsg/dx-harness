@@ -94,10 +94,12 @@ describe("the run captures each width once", () => {
 describe("the run resolves the rules once", () => {
   const procedure = read(PROCEDURE);
 
-  it("loads the catalogue once", () => {
+  /* #478 replaces the catalogue load with the in-scope list, so the run gets
+     that list once instead. */
+  it("gets the in-scope list once", () => {
     expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
-    expect(procedure, "the procedure does not load the catalogue once").toMatch(
-      /catalog\.yaml[^\n]*once/i,
+    expect(procedure, "the procedure does not get the in-scope list once").toMatch(
+      /in-scope-rules\.py[^\n]*once/i,
     );
   });
 
