@@ -166,7 +166,7 @@ controls:
       - visual state change with no ARIA state update
     detail: controls/a11y-8.md
     enforced: partial
-    script: checks/a11y-static.py
+    script: [checks/a11y-eslint.py, checks/rendered-check.py]
     refs: [https://a11y.tech.gov.sg/checklist/]
 
   - id: A11Y-9

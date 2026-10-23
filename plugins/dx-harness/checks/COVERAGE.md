@@ -160,7 +160,6 @@ these controls by hand.
 
 | Control | Script in the catalogue |
 | --- | --- |
-| A11Y-8 | `a11y-static.py` |
 | COL-2 | `contrast.py` |
 | CNT-9 | `content-lint.py` |
 | CNT-12 | `content-lint.py` |
