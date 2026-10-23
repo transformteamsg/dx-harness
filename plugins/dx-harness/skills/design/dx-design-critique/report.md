@@ -76,7 +76,7 @@ Do not restructure or reorder it.
    came from.
 6. **Code-level findings** as a numbered table; F-ids continue the same series.
    Columns: tier, location (file:line), fix S#.
-7. **Full catalogue coverage table**: every control with a verdict of
+7. **Coverage table**: every rule on the run's in-scope list with a verdict of
    pass/fail/partial/verify/N-A plus a one-line note. "Verify" means evidence
    incomplete; it is never counted or styled as "failed".
 8. **What works, preserve**: deliberate choices protected from restyling;

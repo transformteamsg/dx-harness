@@ -40,8 +40,9 @@ why this role exists separately.
    multi-step interactions, also the journey evidence: the happy path traversed
    frame-by-frame plus one walked recovery path. If a flow arrives with per-step
    stills only, say so — you cannot grade a journey from pages.
-4. The **judgment and hybrid controls** in scope (from `standards/catalog.yaml`,
-   filtered to `check: judgment | hybrid`, `phase: verify`).
+4. The run's **in-scope list**, as `scripts/in-scope-rules.py` printed it. Grade
+   the rules on it whose detail file says `check: judgment` or `check: hybrid`, and
+   read no rule's detail outside the list.
 5. The **component inventory** from Phase 1 — the route, every component, and every
    interactive control with its states.
 6. The **standing overrides** from the product repo's `.dx/design.json` (`overrides`

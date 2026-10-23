@@ -1,6 +1,6 @@
 # Catalogue mechanics (shared procedure)
 
-The catalogue (`../standards/catalog.yaml`) is the normative layer of this harness,
+The catalogue is the normative layer of this harness,
 the standards tier of the DX Design Standard (DX-DS §3). Every entry is a control:
 one verifiable rule with an id, tier, and check type. Litmus test: **if you cannot
 check it, it is a principle or guideline, not a standard.** The tier table, the
@@ -9,37 +9,47 @@ only when someone asks about or proposes a waiver, and read it in that turn, bef
 you answer. **Never answer a waiver question from memory** or from a summary.
 Applicability comes from the catalogue's scope fields and the product's DESIGN.md.
 
-## Path resolution
+## The in-scope list
 
-The catalogue ships with the harness, not the product repo; never expect
-`standards/` in the project cwd.
+A run reads the rules it applies from the in-scope list, never from the catalogue
+file. Do not open `../standards/catalog.yaml`. The catalogue ships with the harness,
+not the product repo, so resolve the harness root to an absolute path and substitute
+it for `<harness>`:
 
-- From a procedure doc in `procedures/`: `../standards/catalog.yaml`.
-- From a skill directory (`skills/design/<dir>/SKILL.md`): three levels up,
-  `../../../standards/catalog.yaml`.
-- From `agents/dx-design-review.md`: `../standards/catalog.yaml`; the spawning agent
-  also passes the absolute path, because the agent cannot resolve it from the
-  product cwd.
+```bash
+python3 <harness>/scripts/in-scope-rules.py <repo-root> [flags]
+```
 
-**Agents read `../standards/catalog.yaml` from the plugin, never a hosted copy.**
-The website's anchors present the same controls for humans; they are links to cite,
-not a source to load.
+Pass only the flags your skill names. A flag you leave out does not narrow the list:
 
-## Reading and filtering
+- `--dimension <pass>` keeps one pass dimension's rules.
+- `--phase <phase>` keeps the rules for one phase.
+- `--surface <type>` keeps the rules for one surface type: `page`, `component`,
+  `flow`, or `content`.
+- `--product <product>` and `--audience <audience>` keep the scoped rules for the
+  product and audience that the run settled. Audience defaults to teachers.
 
-- Load the index once per session; read a control's `detail` file only when it is in
-  scope (details carry rationale, examples, and evaluator guidance). A control with
-  no `detail:` is self-sufficient: `title` + `verify` are the whole rule. A
-  `judgment`/`hybrid` control missing its detail is a catalogue defect (raise it, do
-  not improvise a rubric).
-- Filter by `phase`, `applies_to`, and scope (`products` / `audiences`). A control
-  without a scope field is global and always in scope; a scoped one applies only
-  when the run's product or audience is listed. Audience defaults to teachers when
-  the intent phase did not establish one. A content-only change pulls
-  `applies_to: [content]` controls, not the whole catalogue.
-- Portfolio-wide: one set of controls for every product. Per-product difference is
-  nuance calibration or a standing override in that product's DESIGN.md, never
-  separate rules.
+Every L0 rule is on every list. Each rule line gives the id, tier, title, `verify`
+text, and the absolute path to its detail file when it has one.
+
+- **Read the detail of no rule outside the list.** Read a listed rule's detail file,
+  at the path the list gives, before you apply or grade that rule. A rule with no
+  `Detail:` is self-sufficient: its title and `verify` text are the whole rule. A
+  `judgment` or `hybrid` rule with no detail is a catalogue defect. Raise it, and do
+  not improvise a rubric.
+- **Report its `Selection:` line to the person**, in plain words, before you apply
+  any rule. The line names the filters and the `DESIGN.md` the list came from. On a
+  product with no `DESIGN.md`, it says the portfolio defaults apply.
+- **When the command exits with an error, stop before you review or build
+  anything.** Show the error to the person as the command printed it. An unknown
+  rule code in `DESIGN.md` is fixed there, through `dx-design-language`.
+- Get the list again when the run's product, audience, or surface type changes. A
+  content-only change passes `--surface content`.
+
+One set of rules covers the whole portfolio. Per-product difference is nuance
+calibration or a standing override in that product's DESIGN.md, never separate
+rules. The website's anchors present the same rules for humans: they are links to
+cite, not a source to load.
 
 ## Applying tiers and waivers
 
