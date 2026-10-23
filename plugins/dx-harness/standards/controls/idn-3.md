@@ -32,7 +32,7 @@ colour rule — one control, a per-product table.
 
 Source of truth for this table is this file; the `copy` skill's per-product tone section
 points here rather than restating it (per `docs/SYNC.md`). If the two drift in practice,
-add a `dx-sync:idn-register` block and a parity sub-check in `validate.py` — deferred for
+add a `dx-sync:idn-register` block and a parity sub-check in `design-catalog-validate.py` — deferred for
 v1, pointer suffices.
 
 ## Rationale

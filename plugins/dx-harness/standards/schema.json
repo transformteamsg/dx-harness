@@ -1,5 +1,5 @@
 {
-  "comment": "Catalog schema shared by harness/checks/validate.py and scripts/check-standards.mjs — edit here, never in the validators. Format prose: standards/README.md.",
+  "comment": "Catalog schema shared by harness/checks/design-catalog-validate.py and scripts/check-standards.mjs — edit here, never in the validators. Format prose: standards/README.md.",
   "required_fields": ["id", "source", "title", "tier", "check", "phase", "applies_to", "verify", "waiver"],
   "optional_fields": ["products", "audiences", "detail", "enforced", "script", "status", "gap", "fails_when", "refs"],
   "tier_waiver": { "L0": "none", "L1": "documented", "L2": "rationale" },

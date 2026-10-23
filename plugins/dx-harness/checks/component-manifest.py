@@ -17,7 +17,7 @@ Behaviour:
     "partial manifest — diff not run".
 
 Exit codes:
-  0 — silent on pass (validate.py convention)
+  0 — silent on pass (design-catalog-validate.py convention)
   1 — one ERROR line per violation
 
 False-positive note (SPEC §3):
@@ -29,6 +29,26 @@ False-positive note (SPEC §3):
   If you hit false positives, downgrade to coverage: "partial" and the diff
   stays off (same trust lesson as token-audit / plan 007).
 """
+
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "note": "Also validates `.dx/component-manifest.json` against its spec.",
+    "controls": {
+        "CMP-1": {
+            "covers": (
+                "With `coverage: \"complete\"` in the manifest, a component "
+                "import in changed source that resolves outside the manifest"
+            ),
+            "misses": (
+                "Every import when the manifest's coverage is partial or "
+                "absent. A barrel re-export can give a false hit"
+            ),
+        },
+    },
+}
 
 import json
 import os

@@ -163,7 +163,7 @@ Not every deterministic control has a script yet, and every built script covers 
 **static subset** of its control — never assume a control is mechanically enforced.
 **Never report a `checks/`-backed control as "passed" when no script ran** — say
 "verified manually" or "could not verify mechanically", and list what a human should
-re-check. Which scripts exist and exactly what each does *not* cover: `checks/README.md`
+re-check. Which scripts exist and exactly what each does *not* cover: `checks/COVERAGE.md`
 (read it before the verify phase).
 
 ## Phase 1 — Intent (sprint contract)

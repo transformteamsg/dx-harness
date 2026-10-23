@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Catalog validator — checks/validate.py
+Catalog validator — checks/design-catalog-validate.py
 Validates standards/catalog.yaml for internal consistency:
   1. YAML parses; top-level 'controls' is a non-empty list.
   2. Required fields present per control; allowed values enforced.
@@ -29,6 +29,7 @@ Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
 
+import ast
 import importlib.util
 import json
 import os
@@ -51,7 +52,7 @@ checklib = _load_checklib()
 try:
     import yaml
 except ImportError:
-    print("ERROR validate.py: cannot import yaml — install pyyaml")
+    print("ERROR design-catalog-validate.py: cannot import yaml — install pyyaml")
     sys.exit(1)
 
 # ── Path setup ─────────────────────────────────────────────────────────────────
@@ -108,7 +109,7 @@ def required_consumer_errors(repo_root, consumers, tag):
             rel = os.path.relpath(fpath, repo_root)
             errors.append(
                 f"ERROR {rel} [{tag}]: declared consumer does not exist — "
-                f"fix the file or the consumer list in checks/validate.py")
+                f"fix the file or the consumer list in checks/design-catalog-validate.py")
     return present, errors
 
 
@@ -498,24 +499,28 @@ def live_skills_count(repo_root):
     return count
 
 
+# checks/*.py files that are not check scripts: the catalogue validator and
+# the shared library. Neither is counted as a check or declares COVERAGE.
+NOT_CHECK_SCRIPTS = {"design-catalog-validate.py", "checklib.py"}
+
+
 def live_checks_count(repo_root):
     """
     Number of check scripts under `<repo_root>/checks/*.py`, per the repo's
     own prose convention (checks/README.md, docs/index.html): the catalog
-    validator (`validate.py`) is counted separately in prose ("the catalog
+    validator (`design-catalog-validate.py`) is counted separately in prose ("the catalog
     validator + N check scripts"), and `checklib.py` is a shared library, not
-    a check. So: check scripts = `checks/*.py` minus `validate.py` minus
+    a check. So: check scripts = `checks/*.py` minus `design-catalog-validate.py` minus
     `checklib.py`.
     """
     checks_dir = os.path.join(repo_root, "checks")
     if not os.path.isdir(checks_dir):
         return 0
-    exempt = {"validate.py", "checklib.py"}
     return len(
         [
             fname
             for fname in os.listdir(checks_dir)
-            if fname.endswith(".py") and fname not in exempt
+            if fname.endswith(".py") and fname not in NOT_CHECK_SCRIPTS
         ]
     )
 
@@ -534,7 +539,7 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
       - "<N> controls"      vs. the catalog's actual control count
       - "<N> skills"        vs. `live_skills_count` (dirs with a SKILL.md)
       - "<N> check scripts" / "<N> checks built" vs. `live_checks_count`
-        (checks/*.py minus validate.py minus checklib.py)
+        (checks/*.py minus design-catalog-validate.py minus checklib.py)
 
     `skills_count`/`checks_count` default to the live counts computed from
     `repo_root`; callers (e.g. the self-test) may pass fabricated counts
@@ -674,7 +679,7 @@ def wiring_parity_errors(repo_root, catalog_by_id):
 # it is not yet wired. Additions need a reason; removals (once a control gets
 # wired) are free — shrink-only in practice.
 SKILL_WIRING_GRANDFATHERED = {
-    "IDN-1": "identity check (logo/lockup) is planned but unbuilt (checks/README.md V1 table) — not yet named in any skill",
+    "IDN-1": "identity check (logo/lockup) is planned but unbuilt, so checks/COVERAGE.md lists IDN-1 as covered by no check, and no skill names it yet",
     # TYP-6 came off this list in #161, the commit that shipped its check:
     # skills/design/dx-design-pattern/SKILL.md now names it beside LAY-4, the
     # control it shares a measure rule body with.
@@ -741,12 +746,12 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
     for cid in sorted(SKILL_WIRING_GRANDFATHERED):
         if cid not in catalog_ids:
             errors.append(
-                f"ERROR checks/validate.py [SKILL-SYNC]: SKILL_WIRING_GRANDFATHERED "
+                f"ERROR checks/design-catalog-validate.py [SKILL-SYNC]: SKILL_WIRING_GRANDFATHERED "
                 f"entry '{cid}' is not a catalog id (dead entry)"
             )
         elif cid not in orphans:
             print(
-                f"NOTE checks/validate.py [SKILL-SYNC]: {cid} is now mentioned "
+                f"NOTE checks/design-catalog-validate.py [SKILL-SYNC]: {cid} is now mentioned "
                 f"in a skill/agent file — consider removing it from "
                 f"SKILL_WIRING_GRANDFATHERED"
             )
@@ -902,12 +907,12 @@ def gap_allowlist_errors(catalog_by_id):
         control = catalog_by_id.get(cid)
         if control is None:
             errors.append(
-                f"ERROR checks/validate.py: GAP_GRANDFATHERED entry '{cid}' is "
+                f"ERROR checks/design-catalog-validate.py: GAP_GRANDFATHERED entry '{cid}' is "
                 f"not a catalog id (dead entry)"
             )
         elif not gap_allowance_needed(control):
             print(
-                f"NOTE checks/validate.py: {cid} no longer needs a gap "
+                f"NOTE checks/design-catalog-validate.py: {cid} no longer needs a gap "
                 f"allowance; consider removing it from GAP_GRANDFATHERED"
             )
     return errors
@@ -1310,6 +1315,192 @@ def collect_errors(repo_root, _return_count=False):
     return result(len(catalog_by_id))
 
 
+# ── Check coverage: checks/COVERAGE.md (#461) ─────────────────────────────────
+# Each check script declares what it decides in a module-level COVERAGE
+# constant. `--write-coverage` reads those constants (with ast, never by
+# importing the script) and writes checks/COVERAGE.md, the file the design
+# skills and the reviewer agent read for coverage. `pnpm check` fails when the
+# committed file differs from what the generator writes.
+
+COVERAGE_FILENAME = "COVERAGE.md"
+
+
+def _module_literal(path, name):
+    """The value of a module-level `<name> = <literal>` in `path`, read with ast so
+    the script is never imported. None when there is no such assignment."""
+    with open(path, encoding="utf-8") as fh:
+        tree = ast.parse(fh.read(), filename=path)
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and any(
+                isinstance(t, ast.Name) and t.id == name for t in node.targets):
+            return ast.literal_eval(node.value)
+    return None
+
+
+def _declaration_errors(rel, decl):
+    if not isinstance(decl, dict):
+        return [f"ERROR {rel}: COVERAGE must be a dict"]
+    kind = decl.get("kind")
+    if kind == "process":
+        purpose = decl.get("purpose")
+        if not (isinstance(purpose, str) and purpose.strip()):
+            return [f"ERROR {rel}: a process check's COVERAGE needs a 'purpose'"]
+        return []
+    if kind != "rule":
+        return [f"ERROR {rel}: COVERAGE 'kind' must be 'rule' or 'process'"]
+    controls = decl.get("controls")
+    if not isinstance(controls, dict) or not controls:
+        return [f"ERROR {rel}: COVERAGE names no control; a rule check declares the "
+                f"controls it decides, and a check that decides none is kind 'process'"]
+    errors = []
+    for cid, spec in controls.items():
+        if not (isinstance(spec, dict) and isinstance(spec.get("covers"), str)
+                and spec["covers"].strip() and isinstance(spec.get("misses"), str)):
+            errors.append(f"ERROR {rel}: COVERAGE for {cid} needs a non-empty 'covers' "
+                          f"and a 'misses' string")
+    if "note" in decl and not isinstance(decl["note"], str):
+        errors.append(f"ERROR {rel}: COVERAGE 'note' must be a string")
+    return errors
+
+
+def read_check_coverage(checks_dir):
+    """({script: declaration}, errors) for every check script in `checks_dir`. A
+    script with no COVERAGE, or with one that is not a literal, is an error."""
+    declarations, errors = {}, []
+    for fname in sorted(os.listdir(checks_dir)):
+        if not fname.endswith(".py") or fname in NOT_CHECK_SCRIPTS:
+            continue
+        rel = f"checks/{fname}"
+        try:
+            decl = _module_literal(os.path.join(checks_dir, fname), "COVERAGE")
+        except (OSError, SyntaxError, ValueError) as exc:
+            errors.append(f"ERROR {rel}: COVERAGE must be a literal: {exc}")
+            continue
+        if decl is None:
+            errors.append(f"ERROR {rel}: no COVERAGE declaration; declare the controls "
+                          f"this check decides, or kind 'process'")
+            continue
+        problems = _declaration_errors(rel, decl)
+        if problems:
+            errors.extend(problems)
+            continue
+        declarations[fname] = decl
+    return declarations, errors
+
+
+def _cell(text):
+    return text.replace("|", "\\|").replace("\n", " ") if text else "None recorded"
+
+
+def _script_names(control):
+    script = control.get("script")
+    scripts = [script] if isinstance(script, str) else (script or [])
+    return [os.path.basename(s) for s in scripts if isinstance(s, str)]
+
+
+def coverage_markdown(checks_dir, controls):
+    """(COVERAGE.md text, errors) from the declarations in `checks_dir` and the
+    catalogue `controls`. On any error the text is empty. A catalogue `script:`
+    claim that the named check does not declare is listed, not failed: the
+    declaration is what the check decides."""
+    declarations, errors = read_check_coverage(checks_dir)
+    by_id = {c["id"]: c for c in controls if isinstance(c, dict) and "id" in c}
+    rule_checks = {f: d for f, d in declarations.items() if d["kind"] == "rule"}
+    for fname, decl in rule_checks.items():
+        for cid in decl["controls"]:
+            if cid not in by_id:
+                errors.append(f"ERROR checks/{fname}: COVERAGE names {cid}, "
+                              f"which the catalogue does not have")
+    if errors:
+        return "", errors
+
+    covered = {cid for d in rule_checks.values() for cid in d["controls"]}
+    disagreements = []
+    for control in controls:
+        for fname in _script_names(control):
+            decl = declarations.get(fname)
+            if decl is not None and control["id"] not in decl.get("controls", {}):
+                disagreements.append((control["id"], fname))
+
+    lines = [
+        "# Check coverage",
+        "",
+        "<!-- Generated by `python3 checks/design-catalog-validate.py --write-coverage` from the",
+        "     COVERAGE declaration in each check script. Do not edit this file by hand. -->",
+        "",
+        "What each check decides, and what it leaves to a person. A control that a",
+        "check covers in part still needs a manual pass for what it misses. How to run",
+        "each check, and how it works inside, is in [README.md](README.md).",
+        "",
+        "## Rule checks",
+    ]
+    for fname, decl in rule_checks.items():
+        lines += ["", f"### `{fname}`", ""]
+        if decl.get("note"):
+            lines += [decl["note"], ""]
+        lines += ["| Control | Tier | Covers | Misses |", "| --- | --- | --- | --- |"]
+        for cid, spec in decl["controls"].items():
+            lines.append(f"| {cid} | {by_id[cid].get('tier', '?')} | "
+                         f"{_cell(spec['covers'])} | {_cell(spec['misses'])} |")
+    lines += ["", "## Covered by no check", "",
+              "No check decides these controls. Verify each one by hand against its",
+              "detail file.", "",
+              "| Control | Tier | Check type |", "| --- | --- | --- |"]
+    for control in controls:
+        if control["id"] not in covered:
+            lines.append(f"| {control['id']} | {control.get('tier', '?')} | "
+                         f"{control.get('check', '?')} |")
+    if disagreements:
+        lines += ["", "## Catalogue claims that disagree", "",
+                  "The catalogue names a check as the script for these controls, and the",
+                  "check does not declare them. Trust the declaration above, and check",
+                  "these controls by hand.", "",
+                  "| Control | Script in the catalogue |", "| --- | --- |"]
+        for cid, fname in disagreements:
+            lines.append(f"| {cid} | `{fname}` |")
+    process = {f: d for f, d in declarations.items() if d["kind"] == "process"}
+    if process:
+        lines += ["", "## Process checks", "",
+                  "These checks validate records, the harness, or other checks. They decide",
+                  "no control.", ""]
+        for fname, decl in process.items():
+            lines.append(f"- `{fname}`: {decl['purpose']}")
+    return "\n".join(lines) + "\n", []
+
+
+def write_coverage(repo_root):
+    """Write checks/COVERAGE.md and return the error lines (empty on success)."""
+    with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
+        controls = yaml.safe_load(fh)["controls"]
+    checks_dir = os.path.join(repo_root, "checks")
+    text, errors = coverage_markdown(checks_dir, controls)
+    if errors:
+        return errors
+    with open(os.path.join(checks_dir, COVERAGE_FILENAME), "w", encoding="utf-8") as fh:
+        fh.write(text)
+    return []
+
+
+def coverage_drift_errors(repo_root):
+    """Error lines when checks/COVERAGE.md is missing or differs from what
+    `--write-coverage` generates from the declarations and the catalogue."""
+    with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
+        controls = yaml.safe_load(fh)["controls"]
+    checks_dir = os.path.join(repo_root, "checks")
+    text, errors = coverage_markdown(checks_dir, controls)
+    if errors:
+        return errors
+    try:
+        with open(os.path.join(checks_dir, COVERAGE_FILENAME), encoding="utf-8") as fh:
+            current = fh.read()
+    except FileNotFoundError:
+        current = None
+    if current != text:
+        return [f"ERROR checks/{COVERAGE_FILENAME}: does not match the COVERAGE declarations "
+                f"and the catalogue; run `python3 checks/design-catalog-validate.py --write-coverage`"]
+    return []
+
+
 # ── Self-test ──────────────────────────────────────────────────────────────────
 
 def run_self_test():
@@ -1709,7 +1900,7 @@ def run_self_test():
     assert_clean("gap allowance resolved never blocks", resolved_errs)
     case_count += 1
     want = True
-    got = (f"NOTE checks/validate.py: {pending_id} no longer needs a gap allowance"
+    got = (f"NOTE checks/design-catalog-validate.py: {pending_id} no longer needs a gap allowance"
            in note_buffer.getvalue())
     if want != got:
         failures.append(f"FAIL gap allowance resolved prints a NOTE: want: {want!r}; "
@@ -1733,7 +1924,7 @@ def run_self_test():
     # The triage found 11 controls whose label promised a check no script can
     # deliver. Asserted against the live catalog, with the detail file each
     # relabel forces, because both requirements have to hold in the same run:
-    # a judgment or hybrid control with no detail file fails validate.py AND
+    # a judgment or hybrid control with no detail file fails design-catalog-validate.py AND
     # check-standards.mjs, and the .mjs gate runs first in `pnpm check`. Reverting
     # one half of the pair fails here rather than in a red build.
     relabelled = {
@@ -2065,7 +2256,7 @@ def run_self_test():
         # ── skills/check-scripts extension ───────────────────────────────
         # Fabricate a skills tree (2 real skills + 1 dir with no SKILL.md,
         # which must not count) and a checks tree (3 check scripts +
-        # validate.py + checklib.py, neither of which counts).
+        # design-catalog-validate.py + checklib.py, neither of which counts).
         skills_dir = os.path.join(count_tmp, "skills")
         for skill_name in ("alpha", "beta"):
             skill_path = os.path.join(skills_dir, skill_name)
@@ -2076,7 +2267,7 @@ def run_self_test():
 
         checks_dir = os.path.join(count_tmp, "checks")
         os.makedirs(checks_dir, exist_ok=True)
-        for check_name in ("one.py", "two.py", "three.py", "validate.py", "checklib.py"):
+        for check_name in ("one.py", "two.py", "three.py", "design-catalog-validate.py", "checklib.py"):
             with open(os.path.join(checks_dir, check_name), "w") as fh:
                 fh.write("# fixture\n")
 
@@ -2484,6 +2675,209 @@ def run_self_test():
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)
 
+    # ── [COVERAGE] cases (#461) ──────────────────────────────────────────────
+    coverage_controls = [
+        {"id": "TOK-1", "tier": "L1", "check": "deterministic", "script": "checks/fake-scan.py"},
+        {"id": "TOK-2", "tier": "L1", "check": "deterministic"},
+        {"id": "A11Y-1", "tier": "L0", "check": "deterministic"},
+    ]
+    rule_check_source = (
+        'COVERAGE = {\n'
+        '    "kind": "rule",\n'
+        '    "controls": {\n'
+        '        "TOK-1": {"covers": "raw hex in style contexts",\n'
+        '                  "misses": "colours composed at run time"},\n'
+        '        "TOK-2": {"covers": "off-scale spacing", "misses": ""},\n'
+        '    },\n'
+        '}\n'
+    )
+    process_check_source = 'COVERAGE = {"kind": "process", "purpose": "validates run records"}\n'
+
+    def coverage_case(name, files, controls, check_result):
+        nonlocal case_count
+        case_count += 1
+        tmp_checks = tempfile.mkdtemp(prefix="validate-selftest-coverage-")
+        try:
+            for fname, text in files.items():
+                with open(os.path.join(tmp_checks, fname), "w", encoding="utf-8") as fh:
+                    fh.write(text)
+            try:
+                text, errs = coverage_markdown(tmp_checks, controls)
+            except Exception as exc:  # the generator must report, never crash
+                failures.append(f"FAIL {name}: generator raised {type(exc).__name__}: {exc}")
+                return
+            problem = check_result(text, errs)
+            if problem:
+                failures.append(f"FAIL {name}: {problem}")
+        finally:
+            shutil.rmtree(tmp_checks, ignore_errors=True)
+
+    def lists_check_coverage(text, errs):
+        if errs:
+            return f"want no errors; got {errs!r}"
+        for needle in ("fake-scan.py", "| TOK-1 | L1 | raw hex in style contexts | colours composed at run time |",
+                       "| TOK-2 | L1 | off-scale spacing | None recorded |",
+                       "audit-thing.py", "validates run records"):
+            if needle not in text:
+                return f"want {needle!r} in COVERAGE.md; got:\n{text}"
+        return None
+
+    coverage_case("coverage: lists each check, its controls, and what each misses",
+                  {"fake-scan.py": rule_check_source, "audit-thing.py": process_check_source,
+                   "checklib.py": "# a library, not a check\n", "design-catalog-validate.py": "# the validator\n"},
+                  coverage_controls, lists_check_coverage)
+
+    def names_script(script, needle):
+        def check_result(text, errs):
+            if not any(script in e and needle in e for e in errs):
+                return f"want an error naming {script} and {needle!r}; got {errs!r}"
+            return None
+        return check_result
+
+    coverage_case("coverage: a check with no COVERAGE declaration fails and names it",
+                  {"fake-scan.py": rule_check_source, "silent-scan.py": "print('no declaration')\n"},
+                  coverage_controls, names_script("silent-scan.py", "no COVERAGE"))
+    coverage_case("coverage: a rule check that names no control fails and names it",
+                  {"fake-scan.py": rule_check_source,
+                   "empty-scan.py": 'COVERAGE = {"kind": "rule", "controls": {}}\n'},
+                  coverage_controls, names_script("empty-scan.py", "names no control"))
+    coverage_case("coverage: a check that names an unknown control fails",
+                  {"fake-scan.py": rule_check_source.replace('"TOK-2"', '"TOK-9"')},
+                  coverage_controls, names_script("fake-scan.py", "TOK-9"))
+    def lists_disagreement(text, errs):
+        if errs:
+            return f"want no errors; a disagreement is listed, not failed; got {errs!r}"
+        if "## Catalogue claims that disagree" not in text:
+            return f"want a 'Catalogue claims that disagree' section; got:\n{text}"
+        section = text.split("## Catalogue claims that disagree", 1)[1]
+        if "| TOK-1 | `fake-scan.py` |" not in section:
+            return f"want TOK-1 and fake-scan.py listed as a disagreement; got:\n{section}"
+        return None
+
+    coverage_case("coverage: a script field that names a check which does not declare the control is listed",
+                  {"fake-scan.py": rule_check_source.replace('"TOK-1"', '"TOK-2"', 1)
+                                   .replace('"TOK-2": {"covers": "off-scale', '"A11Y-1": {"covers": "off-scale')},
+                  coverage_controls, lists_disagreement)
+
+    def lists_uncovered(text, errs):
+        if errs:
+            return f"want no errors; got {errs!r}"
+        if "## Covered by no check" not in text:
+            return f"want a 'Covered by no check' section; got:\n{text}"
+        section = text.split("## Covered by no check", 1)[1]
+        if "| A11Y-1 | L0 | deterministic |" not in section:
+            return f"want A11Y-1 listed as covered by no check; got:\n{section}"
+        if "TOK-1" in section or "TOK-2" in section:
+            return f"want only uncovered controls in the section; got:\n{section}"
+        return None
+
+    coverage_case("coverage: a control that no check covers is listed as covered by no check",
+                  {"fake-scan.py": rule_check_source}, coverage_controls, lists_uncovered)
+
+    # Paths the generator introduced, written after the code.
+    coverage_case("coverage: a COVERAGE that is not a literal fails and names the check",
+                  {"fake-scan.py": "COVERAGE = build()\n"},
+                  coverage_controls, names_script("fake-scan.py", "must be a literal"))
+    coverage_case("coverage: an unknown kind fails",
+                  {"fake-scan.py": 'COVERAGE = {"kind": "lint", "controls": {}}\n'},
+                  coverage_controls, names_script("fake-scan.py", "'kind'"))
+    coverage_case("coverage: a process check with no purpose fails",
+                  {"fake-scan.py": 'COVERAGE = {"kind": "process"}\n'},
+                  coverage_controls, names_script("fake-scan.py", "purpose"))
+    coverage_case("coverage: a control with an empty covers fails",
+                  {"fake-scan.py": rule_check_source.replace("raw hex in style contexts", "")},
+                  coverage_controls, names_script("fake-scan.py", "TOK-1"))
+
+    def renders_note_and_escapes(text, errs):
+        if errs:
+            return f"want no errors; got {errs!r}"
+        if "Needs an open page." not in text:
+            return f"want the note under the check heading; got:\n{text}"
+        if "a \\| b" not in text:
+            return f"want a pipe in a cell escaped; got:\n{text}"
+        return None
+
+    coverage_case("coverage: renders a note and escapes a pipe in a cell",
+                  {"fake-scan.py": rule_check_source
+                   .replace('"kind": "rule",', '"kind": "rule", "note": "Needs an open page.",')
+                   .replace("colours composed at run time", "a | b")},
+                  coverage_controls, renders_note_and_escapes)
+
+    case_count += 1
+    write_root = tempfile.mkdtemp(prefix="validate-selftest-write-coverage-")
+    try:
+        os.makedirs(os.path.join(write_root, "checks"))
+        os.makedirs(os.path.join(write_root, "standards"))
+        with open(os.path.join(write_root, "checks", "fake-scan.py"), "w") as fh:
+            fh.write(rule_check_source)
+        with open(os.path.join(write_root, "standards", "catalog.yaml"), "w") as fh:
+            yaml.safe_dump({"controls": coverage_controls}, fh)
+        write_errs = write_coverage(write_root)
+        written = os.path.join(write_root, "checks", COVERAGE_FILENAME)
+        if write_errs or not os.path.isfile(written):
+            failures.append(f"FAIL coverage: --write-coverage writes the file: {write_errs!r}")
+        with open(os.path.join(write_root, "checks", "silent-scan.py"), "w") as fh:
+            fh.write("print('no declaration')\n")
+        os.remove(written)
+        case_count += 1
+        if not write_coverage(write_root) or os.path.isfile(written):
+            failures.append("FAIL coverage: --write-coverage writes nothing when a check fails")
+    finally:
+        shutil.rmtree(write_root, ignore_errors=True)
+
+    drift_root = tempfile.mkdtemp(prefix="validate-selftest-coverage-drift-")
+    try:
+        os.makedirs(os.path.join(drift_root, "checks"))
+        os.makedirs(os.path.join(drift_root, "standards"))
+        with open(os.path.join(drift_root, "checks", "fake-scan.py"), "w") as fh:
+            fh.write(rule_check_source)
+        with open(os.path.join(drift_root, "standards", "catalog.yaml"), "w") as fh:
+            yaml.safe_dump({"controls": coverage_controls}, fh)
+        drift_file = os.path.join(drift_root, "checks", COVERAGE_FILENAME)
+
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if not any(COVERAGE_FILENAME in e and "--write-coverage" in e for e in drift_errs):
+            failures.append(f"FAIL coverage drift: a missing COVERAGE.md fails and names "
+                            f"--write-coverage; got {drift_errs!r}")
+
+        write_coverage(drift_root)
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if drift_errs:
+            failures.append(f"FAIL coverage drift: a current COVERAGE.md passes; got {drift_errs!r}")
+
+        with open(os.path.join(drift_root, "standards", "catalog.yaml"), "w") as fh:
+            yaml.safe_dump({"controls": coverage_controls
+                            + [{"id": "TOK-3", "tier": "L1", "check": "deterministic"}]}, fh)
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if not any(COVERAGE_FILENAME in e and "--write-coverage" in e for e in drift_errs):
+            failures.append(f"FAIL coverage drift: a control added to the catalogue makes "
+                            f"COVERAGE.md stale; got {drift_errs!r}")
+
+        write_coverage(drift_root)
+        with open(drift_file, "a", encoding="utf-8") as fh:
+            fh.write("a hand edit\n")
+        case_count += 1
+        drift_errs = coverage_drift_errors(drift_root)
+        if not any(COVERAGE_FILENAME in e and "--write-coverage" in e for e in drift_errs):
+            failures.append(f"FAIL coverage drift: a hand edit to COVERAGE.md fails; "
+                            f"got {drift_errs!r}")
+    finally:
+        shutil.rmtree(drift_root, ignore_errors=True)
+
+    case_count += 1
+    try:
+        with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
+            live_controls = yaml.safe_load(fh)["controls"]
+        _live_text, live_errs = coverage_markdown(_CHECKS_DIR, live_controls)
+        if live_errs:
+            failures.append(f"FAIL coverage: every live check declares its coverage: {live_errs!r}")
+    except Exception as exc:
+        failures.append(f"FAIL coverage: every live check declares its coverage: "
+                        f"generator raised {type(exc).__name__}: {exc}")
+
     # ── Report ───────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
 
@@ -2572,7 +2966,19 @@ def main():
         print_coverage(REPO_ROOT)
         sys.exit(0)
 
+    if "--write-coverage" in args:
+        errors = write_coverage(REPO_ROOT)
+        for e in errors:
+            print(e)
+        if errors:
+            sys.exit(1)
+        print(f"OK: wrote checks/{COVERAGE_FILENAME}")
+        sys.exit(0)
+
     errors, n = collect_errors(REPO_ROOT, _return_count=True)
+    # The drift check reads the catalogue, so it runs only on a valid one.
+    if not errors:
+        errors = coverage_drift_errors(REPO_ROOT)
 
     if errors:
         for e in errors:

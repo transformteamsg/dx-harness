@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "check": "python3 plugins/dx-harness/checks/validate.py",
+    "check": "python3 plugins/dx-harness/checks/design-catalog-validate.py",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && pnpm run test:checks",
-    "test:checks": "python3 plugins/dx-harness/checks/validate.py --self-test && python3 plugins/dx-harness/checks/checklib.py --self-test && python3 plugins/dx-harness/checks/token-audit.py --self-test && python3 plugins/dx-harness/checks/type-scan.py --self-test && python3 plugins/dx-harness/checks/structure-scan.py --self-test && python3 plugins/dx-harness/checks/a11y-eslint.py --self-test && python3 plugins/dx-harness/checks/a11y-static.py --self-test && python3 plugins/dx-harness/checks/contrast.py --self-test && python3 plugins/dx-harness/checks/content-lint.py --self-test && python3 plugins/dx-harness/checks/audit-record.py --self-test && python3 plugins/dx-harness/checks/component-manifest.py --self-test && python3 plugins/dx-harness/checks/detect.py --self-test && python3 plugins/dx-harness/checks/reaudit-scope.py --self-test && python3 plugins/dx-harness/checks/rendered-check.py --self-test && python3 plugins/dx-harness/checks/skill-audit.py --self-test && python3 plugins/dx-harness/checks/waiver-reconcile.py --self-test"
+    "test:checks": "python3 plugins/dx-harness/checks/design-catalog-validate.py --self-test && python3 plugins/dx-harness/checks/checklib.py --self-test && python3 plugins/dx-harness/checks/token-audit.py --self-test && python3 plugins/dx-harness/checks/type-scan.py --self-test && python3 plugins/dx-harness/checks/structure-scan.py --self-test && python3 plugins/dx-harness/checks/a11y-eslint.py --self-test && python3 plugins/dx-harness/checks/a11y-static.py --self-test && python3 plugins/dx-harness/checks/contrast.py --self-test && python3 plugins/dx-harness/checks/content-lint.py --self-test && python3 plugins/dx-harness/checks/audit-record.py --self-test && python3 plugins/dx-harness/checks/component-manifest.py --self-test && python3 plugins/dx-harness/checks/detect.py --self-test && python3 plugins/dx-harness/checks/reaudit-scope.py --self-test && python3 plugins/dx-harness/checks/rendered-check.py --self-test && python3 plugins/dx-harness/checks/skill-audit.py --self-test && python3 plugins/dx-harness/checks/waiver-reconcile.py --self-test"
   },
   "devDependencies": {
     "@ast-grep/cli": "0.44.1",

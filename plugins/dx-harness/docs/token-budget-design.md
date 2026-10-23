@@ -210,6 +210,12 @@ goal stops after `SKILL.md`, at 662, or 909 when it also reads `references/intak
 (247) for an outside stakeholder. The output template now carries the component
 headings once, and the reminders no longer repeat rules that the components state.
 
+## Coverage read
+
+A design build reads `checks/COVERAGE.md` once before verify, and a setup run reads it
+once. The file is 2,962 tokens, against the 22,160-token baseline above, a saving of
+19,198 tokens per read. Measured on 2026-10-22 with `cl100k_base`.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through

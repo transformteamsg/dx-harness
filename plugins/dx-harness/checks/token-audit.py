@@ -44,6 +44,48 @@ Exit 0 and print nothing (or SELF-TEST OK) on success.
 Exit 1 with ERROR lines on any violation.
 """
 
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "controls": {
+        "TOK-1": {
+            "covers": (
+                "Raw hex, rgb, hsl, oklch, and named colours in style contexts,"
+                " and raw colour inside Tailwind arbitrary-value utilities such"
+                " as `bg-[…]`"
+            ),
+            "misses": "",
+        },
+        "TOK-2": {
+            "covers": "Off-scale spacing against the shadcn default scale",
+            "misses": "",
+        },
+        "TOK-3": {
+            "covers": "Off-scale border-radius, and concentric nesting on one element",
+            "misses": "Peer-radius consistency across elements, which is judgment",
+        },
+        "COL-1": {
+            "covers": (
+                "Palette bypass only: a Tailwind palette class that skips the "
+                "semantic layer"
+            ),
+            "misses": (
+                "Whether a primary action uses the product primary, which is "
+                "judgment"
+            ),
+        },
+        "COL-2": {
+            "covers": (
+                "Tailwind palette utility classes that bypass the semantic "
+                "layer, except colour names the theme defines"
+            ),
+            "misses": "",
+        },
+    },
+}
+
 import importlib.util
 import os
 import re

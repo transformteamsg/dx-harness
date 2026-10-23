@@ -74,6 +74,64 @@ shape, so detect.py keeps them as control-less findings rather than grading an
 incomplete run clean.
 """
 
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "note": (
+        "Needs eslint, eslint-plugin-jsx-a11y, and a TypeScript parser in the "
+        "target's node_modules. When they cannot be resolved, every control below"
+        " goes to manual verification."
+    ),
+    "controls": {
+        "A11Y-2": {
+            "covers": (
+                "Keyboard reachability: `click-events-have-key-events`, "
+                "`no-static-element-interactions`, "
+                "`interactive-supports-focus`, "
+                "`no-noninteractive-element-interactions`, "
+                "`mouse-events-have-key-events`, `no-noninteractive-tabindex`, "
+                "`tabindex-no-positive`, `anchor-is-valid`, `no-autofocus`, and"
+                " `no-access-key`"
+            ),
+            "misses": (
+                "A visible focus indicator (`a11y-static.py`), and focus "
+                "traversal order"
+            ),
+        },
+        "A11Y-3": {
+            "covers": "`label-has-associated-control` and `autocomplete-valid`",
+            "misses": (
+                "Placeholder-only labels, cross-file `htmlFor` and `id` "
+                "association, and icon-only accessible names, because the "
+                "preset disables `control-has-associated-label`"
+            ),
+        },
+        "A11Y-6": {
+            "covers": (
+                "`alt-text`, `img-redundant-alt`, `anchor-has-content`, "
+                "`iframe-has-title`, and `media-has-caption`"
+            ),
+            "misses": (
+                "Whether an image is informative or decorative, and every image"
+                " outside JSX"
+            ),
+        },
+        "A11Y-8": {
+            "covers": (
+                "The jsx-a11y aria suite: `aria-props`, `aria-role`, "
+                "`role-has-required-aria-props`, `role-supports-aria-props`, "
+                "`no-redundant-roles`, and the role-conversion rules"
+            ),
+            "misses": (
+                "Closed overlays, and ARIA state that must change with the "
+                "visual state"
+            ),
+        },
+    },
+}
+
 import importlib.util
 import json
 import os
@@ -97,7 +155,7 @@ checklib = _load_checklib()
 
 # The harness-side flat config. It lives under checks/eslint/ so a .mjs file is
 # never a scan target (checklib.TARGET_EXTENSIONS) and never moves
-# validate.py's live_checks_count (which counts checks/*.py).
+# design-catalog-validate.py's live_checks_count (which counts checks/*.py).
 CONFIG_PATH = os.path.join(_CHECKS_DIR, "eslint", "jsx-a11y.config.mjs")
 
 # The rule map's layer name for this check.

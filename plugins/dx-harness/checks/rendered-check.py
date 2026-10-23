@@ -77,6 +77,69 @@ Usage
                                    [--json] [--self-test]
 """
 
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "rule",
+    "note": (
+        "Runs axe on a page that is already open, at 360 and 1280 in each "
+        "supported theme, plus one reduced-motion cell. With no open session, "
+        "every control below goes to manual verification. It clicks nothing, so "
+        "anything behind an interaction stays manual."
+    ),
+    "controls": {
+        "A11Y-1": {
+            "covers": "axe `color-contrast` in both themes",
+            "misses": (
+                "Items axe reports as incomplete, such as text over a "
+                "background image or a gradient"
+            ),
+        },
+        "A11Y-3": {
+            "covers": "axe `label`",
+            "misses": "Labels on controls behind an interaction",
+        },
+        "A11Y-4": {
+            "covers": "axe `target-size`, enabled by name, at 360 and 1280",
+            "misses": "Targets behind an interaction",
+        },
+        "A11Y-5": {
+            "covers": (
+                "What still moves under reduced-motion emulation, in one cell "
+                "at 1280"
+            ),
+            "misses": "Whether an animation is essential, which is judgment",
+        },
+        "A11Y-6": {
+            "covers": "axe `image-alt` and `svg-img-alt`",
+            "misses": "Whether an image is informative or decorative",
+        },
+        "A11Y-7": {
+            "covers": "axe `list`, `listitem`, and `heading-order`",
+            "misses": "Whether a heading is descriptive",
+        },
+        "A11Y-8": {
+            "covers": (
+                "The axe aria suite from the installed axe, on markup a person "
+                "can reach"
+            ),
+            "misses": (
+                "Closed overlays, state changes, and hidden markup, which go to"
+                " the manual pass"
+            ),
+        },
+        "A11Y-9": {
+            "covers": "axe `document-title` and `html-has-lang`",
+            "misses": "Whether a single-page app updates its title for each view",
+        },
+        "A11Y-10": {
+            "covers": "axe `bypass`, report-only: it never fails the run",
+            "misses": "Whether the skip link comes first",
+        },
+    },
+}
+
 import argparse
 import importlib.util
 import json

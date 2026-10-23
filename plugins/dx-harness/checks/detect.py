@@ -47,7 +47,7 @@ invalid config. This differs from the per-script 0/1: a wrapped script's exit 1
 misconfiguration.
 
 Honest enforcement: detect covers only the built checks; it never reports an unbuilt
-control as passed. Per-script coverage lives in checks/README.md.
+control as passed. Per-script coverage lives in checks/COVERAGE.md.
 
 Usage
 ─────
@@ -58,6 +58,17 @@ Usage
     python3 checks/detect.py --tokens app/globals.css <path>   # contrast token map
     python3 checks/detect.py --self-test
 """
+
+# What this check decides, read by `design-catalog-validate.py --write-coverage` into
+# checks/COVERAGE.md. Keep it true to the code: the design skills read the
+# generated file to know what still needs a manual pass.
+COVERAGE = {
+    "kind": "process",
+    "purpose": (
+        "Runs the other checks as one entry point, with one exit contract and "
+        "an ignore layer. It decides no control itself."
+    ),
+}
 
 import argparse
 import fnmatch

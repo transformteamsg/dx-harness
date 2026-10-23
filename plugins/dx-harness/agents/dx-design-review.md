@@ -84,7 +84,7 @@ checked and how — it becomes a `manual` row in the VERIFICATION LEDGER (below)
 the record audit validates, so "verified manually" carries evidence rather than being
 an unauditable claim. Any deterministic violation you can see — in a screenshot or in
 the code — is a finding regardless, belt and braces. Which scripts exist and the
-static subset each covers: `checks/README.md`.
+static subset each covers: `checks/COVERAGE.md`.
 **Locating the scripts:** `checks/` ships with this harness, not with the product
 repo — resolve it relative to this agent file, one level up:
 `<this-agent-dir>/../checks/` (the same path works in the harness dev repo and when
