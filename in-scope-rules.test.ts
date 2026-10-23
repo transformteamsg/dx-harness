@@ -52,3 +52,28 @@ describe("a review scoped to the polish dimension", () => {
   });
 });
 
+/* Contract item 2: the run says what it applied. */
+describe("the selection line", () => {
+  it("names the selection on a product with no DESIGN.md", () => {
+    const run = list(product(), "--dimension", "polish", "--phase", "verify", "--product", "glow");
+    expect(run.status, run.out).toBe(0);
+    const selection = run.stdout.split("\n")[0];
+    expect(selection).toMatch(/^Selection: /);
+    expect(selection).toContain("dimension polish");
+    expect(selection).toContain("phase verify");
+    expect(selection).toContain("product glow");
+    expect(selection).toContain("audience teachers");
+    expect(selection).toContain("no DESIGN.md");
+  });
+
+  it("names the DESIGN.md it read when the product has one", () => {
+    const repo = product("# DESIGN.md\n\n## Essence\nCalm.\n");
+    const run = list(repo);
+    expect(run.status, run.out).toBe(0);
+    const selection = run.stdout.split("\n")[0];
+    expect(selection).toMatch(/^Selection: /);
+    expect(selection).toContain("dimension all");
+    expect(selection).toContain(path.join(repo, "DESIGN.md"));
+  });
+});
+
