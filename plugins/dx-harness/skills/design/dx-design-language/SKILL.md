@@ -16,11 +16,17 @@ first, kind at the surface.
 - A catalogue rule or waiver question goes to `dx-design`.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md` for tier behaviour and
-catalogue path resolution, and `../../../procedures/design-tickets.md` for how deferred
-sections and fix-todos are filed. The catalogue is at
-`../../../standards/catalog.yaml`; the full DESIGN.md spec is
+the in-scope list, and `../../../procedures/design-tickets.md` for how deferred
+sections and fix-todos are filed. The full DESIGN.md spec is
 `../../../docs/DESIGN-CONTEXT.md`; the template is
 `../../../docs/templates/DESIGN.md`.
+
+**The rules you cite** come from the product's in-scope list:
+`python3 <harness>/scripts/in-scope-rules.py <repo-root> --product <product>`. Get it
+when the session first needs a rule id or tier, and report the `Selection:` line to
+the person. When the command exits with an error, stop and show the error. An
+unknown rule code in `DESIGN.md` is the one error this skill fixes: correct the code
+with the person, then get the list again.
 
 **Path resolution for commands.** The `../../../` paths above resolve from this
 skill file's own directory (the harness install), never from the product repo.
@@ -86,7 +92,7 @@ python3 <harness>/scripts/generate-design-json.py <repo-root>
 ## Promoting a waiver into a standing override
 
 When the same waiver recurs run after run, or the person asks to make one standing:
-confirm the control id and tier from the catalogue, draft the override line in the
+confirm the control id and tier from the in-scope list, draft the override line in the
 grammar (`../../../docs/DESIGN-CONTEXT.md`), collect the reason (L1 and L2) and the
 named approver (L1; the approver field records accountability, not presence, so a
 relayed "approver: J. Tan" is legitimate), append it to the Overrides section, and

@@ -69,7 +69,7 @@ into the plan.
 - **The control most at risk** — which in-scope control will this plan most likely
   fail at build, and is the plan specific enough to pass it? Weight the L0 tier,
   reflow, and the high-frequency anti-slop traps — take the current tiers and the SLP
-  family from `standards/catalog.yaml` at grill time, not from a remembered list,
+  family from the run's in-scope list at grill time, not from a remembered list,
   which goes stale the day the catalog ratchets.
 - **Waiver honesty** — for every proposed waiver: is it genuinely mandated or
   unavoidable, or is it convenience? Check what the waiver's tier demands in

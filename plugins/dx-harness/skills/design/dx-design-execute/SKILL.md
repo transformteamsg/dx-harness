@@ -30,19 +30,19 @@ actions show consequences and offer undo or confirm (CMP-2).
 These never bend — if one
 seems impossible, that is a blocking question for the user, not a judgment call.
 
-**Load first:** the control catalog at `standards/catalog.yaml`. **Locating it:** the
-catalog ships with this harness, not with the product repo — resolve it relative to
-this SKILL.md file, three levels up: `<this-skill-dir>/../../../standards/catalog.yaml`
-(the same path works in the harness dev repo and when installed as the
-`dx-harness` plugin; do not expect `standards/` in the project cwd). Filter
-controls by `phase` and scope (`products`/`audiences` — absent = global) as you
-go; read a control's `detail` file (same `standards/`
-directory) before applying it. Also read the product's `DESIGN.md` (repo root)
+**Load first:** `../../../procedures/catalogue-mechanics.md`. Once Phase 1 settles
+the product and audience, get the build's in-scope list with
+`python3 <harness>/scripts/in-scope-rules.py <repo-root> --product <product>
+--audience <audience>`, where `<harness>` is the absolute path three levels above
+this file. Pass no `--phase` or `--surface`: a build runs every phase, and a page
+with an async or destructive action also takes the flow rules. Report the
+`Selection:` line to the person. When the command exits with an error, stop before
+you plan or build, and show the error. Read a listed rule's detail file before you
+apply it. Also read the product's `DESIGN.md` (repo root)
 if present — per-product parameters only; on conflict with implemented code
 conventions, the code wins and you flag the drift. Spec: the harness's
-`docs/DESIGN-CONTEXT.md`. Also read `../../../procedures/catalogue-mechanics.md`
-for the catalog mechanics: filtering, tier behaviour for agents, detail files, the
-waiver protocol, and plain-title rule naming. When someone asks about or proposes a
+`docs/DESIGN-CONTEXT.md`. The catalogue mechanics also hold tier behaviour for
+agents, the waiver protocol, and plain-title rule naming. When someone asks about or proposes a
 waiver, read `../../../standards/README.md` in that turn — never answer from memory. The shared
 back half of the run lives beside it: `../../../procedures/plan-approval.md`,
 `../../../procedures/implement.md`, `../../../procedures/design-review.md`,
@@ -351,8 +351,8 @@ Skill-specific notes on the gate:
 - The decision record this repo writes the approved plan to is
   `docs/decisions/<page>.md` in the **product repo**. If `docs/decisions/TEMPLATE.md`
   does not yet exist there, copy it from the plugin first; it ships at
-  `<this-skill-dir>/../../../docs/decisions/TEMPLATE.md` (resolved the same way as
-  the catalog in the Load-first note) so records conform to `audit-record.py` by
+  `<this-skill-dir>/../../../docs/decisions/TEMPLATE.md` (resolved from the harness
+  root, as in the Load-first note) so records conform to `audit-record.py` by
   default.
 
 ## Phase 4 — Implement

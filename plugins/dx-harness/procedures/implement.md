@@ -34,9 +34,9 @@ Constraints, non-negotiable while building:
   to the smallest reversible change that meets the contract. But preserved is not
   waived: "deliberate" protects an element's look from restyling, never its
   compliance from verification.
-- **Catalogue controls bind throughout.** Load `../standards/catalog.yaml` and
-  filter to the in-scope controls per `catalogue-mechanics.md` (beside this file);
-  read a control's detail file before applying it. The L0 floor never bends.
+- **Catalogue controls bind throughout.** Build against the run's in-scope list,
+  per `catalogue-mechanics.md` (beside this file); read a listed control's detail
+  file before applying it. The L0 floor never bends.
 - Compose only manifest components (`status: "stable"` from
   `.dx/component-manifest.json`) when the product has a manifest. When the product
   has no manifest, that is a supported state: follow the v0-limit procedure in

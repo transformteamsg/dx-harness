@@ -18,13 +18,13 @@ judged the current state, and you never restyle a deliberate choice without aski
 - An ask that names one pass dimension goes to the matching pass: `dx-design-copy`, `dx-design-polish`, `dx-design-motion`, `dx-design-flow`, or `dx-design-pattern`.
 - Grading a build's own output belongs to the design reviewer agent inside the `dx-design-execute` loop.
 
-**Load first:** the control catalog at `standards/catalog.yaml`. It ships with this
-harness, not the product repo — resolve it relative to this SKILL.md, three levels up:
-`<this-skill-dir>/../../../standards/catalog.yaml`. Filter controls by `phase` and scope
-(`products` / `audiences` — absent = global) as you go, per the "Reading and filtering"
-rules in `../../../procedures/catalogue-mechanics.md`; read a control's `detail` file
-before applying it. If the
-product repo has a `DESIGN.md`, it calibrates colour/tone/motion — load it too.
+**Load first:** `../../../procedures/catalogue-mechanics.md`, then get the critique's
+in-scope list with `python3 <harness>/scripts/in-scope-rules.py <repo-root> --phase
+verify --product <product> --audience <audience>`, where `<harness>` is the absolute
+path three levels above this file. Report the `Selection:` line to the person. When
+the command exits with an error, stop before you capture or grade, and show the
+error. Read a listed rule's detail file before you grade it. If the product repo has
+a `DESIGN.md`, it calibrates colour/tone/motion — load it too.
 
 When someone asks about or proposes a waiver, read `../../../standards/README.md` in that turn
 — never answer from memory.

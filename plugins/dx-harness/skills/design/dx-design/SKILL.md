@@ -164,8 +164,9 @@ answer, off-menu, and you never build in response to one.
 You join the shared back half of the run at plan approval. The procedure docs live in
 `../../../procedures/` (relative to this file): `plan-approval.md`, `implement.md`,
 `design-review.md`, `rule-proposal.md`, `catalogue-mechanics.md`, and
-`design-tickets.md`. The catalogue itself is `../../../standards/catalog.yaml`; its
-tier table and waiver syntax are in `../../../standards/README.md`, read only on a waiver. Repo-level
+`design-tickets.md`. A run reads its rules from the in-scope list that
+`catalogue-mechanics.md` gives, never the whole catalogue. The tier table and waiver
+syntax are in `../../../standards/README.md`, read only on a waiver. Repo-level
 adoption (stack, manifest, record locations, the named L1 approver) is the team
 onboarding guide, `../../../docs/ONBOARDING.md`.
 

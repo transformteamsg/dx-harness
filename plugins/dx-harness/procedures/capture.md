@@ -7,7 +7,7 @@ captures for itself per `pass.md` and does not run this procedure.
 
 The run captures the surface once and resolves the rules once. Each dimension then
 judges from what the run gives it. No dimension takes its own capture, and no
-dimension reads the catalogue.
+dimension gets its own list.
 
 ## Step 1: Decide the widths
 
@@ -34,16 +34,17 @@ Record the capture set:
 
 ## Step 3: Resolve the rules once
 
-Load `../standards/catalog.yaml` once for the run, and filter it by phase and scope
-per `catalogue-mechanics.md`, beside this file. Then take each dimension's subset
-from the control ids its pass `SKILL.md` names.
+Get the in-scope list from `<harness>/scripts/in-scope-rules.py` once for each
+dimension in the run, with `--dimension <pass> --phase verify`, per
+`catalogue-mechanics.md`, beside this file. `<harness>` is the absolute path one
+level above this file. Each list is that dimension's subset.
 
-Add the L0 controls to every subset. Take them from the catalogue's `tier: L0`
-controls, not from a list here. They bind every pass whatever its dimension, per the
-L0 section of `pass.md`.
+Report each `Selection:` line to the person. When the command exits with an error,
+stop before any dimension judges, and show the error.
 
-For each control in a subset, record its id, title, tier, and `verify` text, and
-the path to its `detail` file when it has one.
+Each list already holds the L0 controls. They bind every pass whatever its
+dimension, per the L0 section of `pass.md`. Each rule line holds the id, title,
+tier, `verify` text, and the path to the `detail` file when the rule has one.
 
 ## Step 4: Hand each dimension its evidence
 
