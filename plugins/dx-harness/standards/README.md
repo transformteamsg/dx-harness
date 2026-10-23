@@ -191,3 +191,15 @@ Concrete examples, code where useful.
 ## How to verify
 Exact command, selector, or evaluator instructions.
 ```
+
+A run reads a detail file through `scripts/rule-detail.py`, which prints one part:
+
+- `--for build` gives the builder the requirement, the pass and fail conditions,
+  the waiver, and any other section that states part of the rule.
+- `--for review` adds `Evaluator guidance`, `How to verify`, `Deconfliction ...`,
+  and `Do not flag`.
+- No reader gets `Rationale` or a `Why ...` section.
+
+Put text that a builder needs outside the evaluator sections. A `judgment` or
+`hybrid` rule needs `Evaluator guidance` or `How to verify`, or `--for review`
+stops as a catalogue defect.
