@@ -216,6 +216,23 @@ A design build reads `checks/COVERAGE.md` once before verify, and a setup run re
 once. The file is 2,962 tokens, against the 22,160-token baseline above, a saving of
 19,198 tokens per read. Measured on 2026-10-22 with `cl100k_base`.
 
+## Rule list read
+
+A design run reads its in-scope list from `scripts/in-scope-rules.py` instead of
+`standards/catalog.yaml`, which is 19,051 tokens in the baseline above.
+
+| Run | Flags | List tokens | Saved per run |
+| --- | --- | --: | --: |
+| One build, `tw` | `--product tw --audience teachers` | 7,028 | 12,023 |
+| One build, `casesync` | `--product casesync --audience teachers` | 7,148 | 11,903 |
+| One critique | `--phase verify --product tw` | 7,028 | 12,023 |
+| One pass, `polish` | `--dimension polish --phase verify` | 1,512 | 17,539 |
+| One pass, smallest to largest | `--dimension <pass> --phase verify` | 621 `motion` to 2,015 `copy` | 17,036 to 18,430 |
+
+`procedures/catalogue-mechanics.md` grew from 837 to 988 tokens, because it now holds
+the list command and its rules. A run still reads the detail file of each rule on its
+list. Measured on 2026-10-23 with `cl100k_base`, on a product with no `DESIGN.md`.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
