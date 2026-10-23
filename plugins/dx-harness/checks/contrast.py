@@ -470,7 +470,7 @@ def check_pairs(pairs, resolver, tokens_rel):
     return out
 
 
-def inert_notes(reason, controls):
+def inert_notes(reason, controls, tiers=None):
     """The honest-inert report: nothing was declared, so the check grades N/A
     and says which controls go to manual verification instead of passing."""
     verb = "goes" if len(controls) == 1 else "go"
@@ -482,7 +482,7 @@ def inert_notes(reason, controls):
         f"NOTE  contrast: {', '.join(controls)} {verb} to manual verification "
         f"(not reported as passing)",
     ]
-    l0 = checklib.l0_subset(controls)
+    l0 = checklib.l0_subset(controls, tiers)
     if l0:
         lines.append(f"NOTE  contrast: {', '.join(l0)} is L0 and blocks until verified "
                      f"by some path")
@@ -512,10 +512,14 @@ def run(repo_root, tokens_file=None):
         controls = checklib.layer_controls(LAYER)
     except checklib.RuleMapError as exc:
         return 1, [f"ERROR contrast: {exc}"]
+    try:
+        tiers = checklib.rule_tiers()
+    except checklib.RulesUnresolvedError as exc:
+        return 1, [exc.line("contrast")]
 
     design, reason = load_design_projection(repo_root)
     if design is None:
-        return 1, inert_notes(reason, controls)
+        return 1, inert_notes(reason, controls, tiers)
 
     pairs, malformed = declared_pairs(design)
     out = [f"ERROR contrast: malformed colour.pairs entry {entry!r} "
@@ -523,7 +527,7 @@ def run(repo_root, tokens_file=None):
            for entry in malformed]
     if not pairs:
         return 1, out + inert_notes("colour.pairs is absent or empty in "
-                                    ".dx/design.json", controls)
+                                    ".dx/design.json", controls, tiers)
 
     tokens_file = tokens_file or tokens_source(design, repo_root)
     css_text = ""

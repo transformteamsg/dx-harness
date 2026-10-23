@@ -365,7 +365,9 @@ def audit_record(text, name, repo_root):
             method_idx = column_index(header, "method", 1)
             evidence_idx = column_index(header, "evidence", 2)
             valid_methods = {"script", "manual", "unverified"}
-            tiers = checklib.catalog_tiers()
+            # Raises RulesUnresolvedError when the catalogue is unreadable;
+            # main() reports it, so no tier is guessed.
+            tiers = checklib.rule_tiers()
             ledger_controls = set()
             for row in rows:
                 control = row[0] if len(row) > 0 else ""
@@ -396,10 +398,7 @@ def audit_record(text, name, repo_root):
                     )
                 # ── 12. L0 never unverified ─────────────────────────────
                 # An unverified row that nobody reads is a quiet pass. L0
-                # has no waiver, so it gets no quiet exit either. Tier
-                # lookup states less when the catalogue is unreadable
-                # (catalog_tiers returns {}), so this never crashes and
-                # never guesses a tier.
+                # has no waiver, so it gets no quiet exit either.
                 if m == "unverified":
                     for control_id in sorted(row_controls):
                         if tiers.get(control_id) == "L0":
@@ -969,8 +968,12 @@ def main():
         sys.exit(1)
 
     errors = []
-    for path in paths:
-        errors.extend(audit_file(path, explicit_root or repo_root_for(path)))
+    try:
+        for path in paths:
+            errors.extend(audit_file(path, explicit_root or repo_root_for(path)))
+    except checklib.RulesUnresolvedError as exc:
+        print(exc.line("audit-record"))
+        sys.exit(1)
 
     if errors:
         for e in errors:

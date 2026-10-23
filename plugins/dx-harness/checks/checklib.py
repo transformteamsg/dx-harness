@@ -839,19 +839,6 @@ def catalog_controls(path=None):
     return controls
 
 
-def catalog_tiers(path=None):
-    """
-    {control id: tier} from `standards/catalog.yaml`, read through
-    catalog_controls() so a check that needs a tier stays dependency-free.
-    `waiver-reconcile.py` keeps its own yaml-based reader because it needs
-    whole control bodies.
-
-    Returns {} when the catalogue cannot be read — a caller states less, it
-    never crashes and never guesses a tier.
-    """
-    return {c["id"]: c["tier"] for c in catalog_controls(path) if c.get("tier")}
-
-
 # ── In-scope rule list ────────────────────────────────────────────────────────
 #
 # The rules a design run reads, resolved once here so the list command
@@ -870,6 +857,11 @@ DIMENSION_RULES = {
 }
 
 DEFAULT_AUDIENCE = "teachers"
+
+# A product or audience filter that keeps every scoped control. A check does
+# not know which product or audience it scans for, so a rule scoped to any of
+# them can apply.
+ANY_SCOPE = object()
 
 _HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 
@@ -909,7 +901,8 @@ def resolve_rules(controls, dimension=None, phase=None, surface=None,
     A control is in scope when its `phase` holds `phase`, its `applies_to`
     holds `surface`, its `products` is absent or holds `product`, and its
     `audiences` is absent or holds `audience`. A filter left as None does not
-    narrow. A `products:`-scoped control needs a stated product. With a
+    narrow. A `products:`-scoped control needs a stated product. ANY_SCOPE as
+    the product or the audience keeps every control scoped to one. With a
     `dimension`, only that dimension's DIMENSION_RULES stay. Every L0 control
     is in scope whatever the filters, because L0 is never scoped out.
     """
@@ -924,9 +917,9 @@ def resolve_rules(controls, dimension=None, phase=None, surface=None,
             continue
         if surface is not None and surface not in c.get("applies_to", []):
             continue
-        if "products" in c and product not in c["products"]:
+        if product is not ANY_SCOPE and "products" in c and product not in c["products"]:
             continue
-        if "audiences" in c and audience not in c["audiences"]:
+        if audience is not ANY_SCOPE and "audiences" in c and audience not in c["audiences"]:
             continue
         if dimension is not None and c["id"] not in DIMENSION_RULES[dimension]:
             continue
@@ -934,10 +927,85 @@ def resolve_rules(controls, dimension=None, phase=None, surface=None,
     return selected
 
 
+class RulesUnresolvedError(Exception):
+    """Raised when the rules that apply cannot be resolved, because the
+    catalogue cannot be read. A check that catches it prints line() and exits
+    as a tool failure: it never guesses a tier and never reports a control as
+    met."""
+
+    def __init__(self, path):
+        self.path = path
+        super().__init__(f"cannot read the control catalogue at {path}")
+
+    def line(self, check):
+        return (f"ERROR {check}: could not resolve the rules that apply. It cannot "
+                f"read the control catalogue at {self.path}. No tier is guessed, "
+                f"and every control goes to manual verification. Fix the harness "
+                f"install and rerun.")
+
+
+def rules_that_apply(path=None, dimension=None, phase=None, surface=None,
+                     product=ANY_SCOPE, audience=ANY_SCOPE):
+    """The rules that apply, from the same resolve_rules() the list command
+    (scripts/in-scope-rules.py) uses, so a design skill and a check agree.
+    Every check reaches the catalogue through here.
+
+    A check scans without knowing the product or the audience, so both default
+    to ANY_SCOPE. Raises RulesUnresolvedError when the catalogue cannot be
+    read, never an empty list.
+    """
+    controls = catalog_controls(path)
+    if not controls:
+        raise RulesUnresolvedError(path or CATALOG_PATH)
+    return resolve_rules(controls, dimension=dimension, phase=phase,
+                         surface=surface, product=product, audience=audience)
+
+
+def rule_tiers(path=None):
+    """{rule id: tier} for the rules that apply. Raises RulesUnresolvedError
+    when the catalogue cannot be read."""
+    return {c["id"]: c["tier"] for c in rules_that_apply(path) if c.get("tier")}
+
+
+_CATEGORIES_RE = re.compile(r"^  categories:\s*$")
+_CATEGORY_RE = re.compile(r"^    ([A-Z][A-Z0-9]*):\s*(.*?)\s*$")
+
+
+def rule_categories(path=None):
+    """(id_to_category, prefix_to_category) for the rules that apply, from the
+    catalogue's `meta.categories`. Raises RulesUnresolvedError when the
+    catalogue cannot be read, and KeyError when a rule's prefix has no
+    category, because a guessed category would scope the wrong records.
+    """
+    rules = rules_that_apply(path)
+    prefix_to_category = {}
+    with open(path or CATALOG_PATH, encoding="utf-8") as fh:
+        inside = False
+        for line in fh:
+            if _CATEGORIES_RE.match(line):
+                inside = True
+                continue
+            m = _CATEGORY_RE.match(line) if inside else None
+            if not m:
+                if inside:
+                    break
+                continue
+            prefix_to_category[m.group(1)] = _catalog_value(m.group(2))
+    id_to_category = {}
+    for rule in rules:
+        prefix = rule["id"].rsplit("-", 1)[0]
+        if prefix not in prefix_to_category:
+            raise KeyError(
+                f"catalog control {rule['id']} has prefix {prefix!r} with no "
+                f"meta.categories entry. Fix the catalog (design-catalog-validate.py step 5b)")
+        id_to_category[rule["id"]] = prefix_to_category[prefix]
+    return id_to_category, prefix_to_category
+
+
 def l0_subset(controls, tiers=None):
     """The L0 members of `controls`, in the order given. Used to say "this one
     still blocks" when a layer could not verify it."""
-    tiers = catalog_tiers() if tiers is None else tiers
+    tiers = rule_tiers() if tiers is None else tiers
     return [c for c in controls if tiers.get(c) == "L0"]
 
 
@@ -1014,8 +1082,9 @@ def scoped_controls(section_body, tiers=None):
       inline N/A cannot uncheck the in-scope controls named beside it.
 
     The result is filtered against the catalogue so a prose token shaped
-    like an id (UTF-8) drops out; when the catalogue is unreadable
-    (tiers == {}) the filter is skipped rather than emptying the scope.
+    like an id (UTF-8) drops out. With `tiers` given as {} the filter is
+    skipped rather than emptying the scope; left as None, the tiers come from
+    rule_tiers(), which raises when the catalogue is unreadable.
     """
     if not section_body:
         return set()
@@ -1058,7 +1127,7 @@ def scoped_controls(section_body, tiers=None):
             included |= control_ids_in(sentence)
 
     ids = included - excluded
-    tiers = catalog_tiers() if tiers is None else tiers
+    tiers = rule_tiers() if tiers is None else tiers
     if tiers:
         ids &= set(tiers)
     return ids
@@ -1531,13 +1600,38 @@ def _self_test():
         layer_controls("eslint-jsx-a11y", rule_map) == ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"],
     )
     check(
-        "catalog_tiers: reads a control's tier without yaml",
-        catalog_tiers().get("A11Y-2") == "L0",
+        "rule_tiers: reads a rule's tier without yaml",
+        rule_tiers().get("A11Y-2") == "L0",
     )
+    _missing = os.path.join("no", "such", "catalog.yaml")
+    for _name, _door in (("rules_that_apply", rules_that_apply),
+                         ("rule_tiers", rule_tiers),
+                         ("rule_categories", rule_categories)):
+        _unresolved = None
+        try:
+            _door(_missing)
+        except RulesUnresolvedError as exc:
+            _unresolved = exc
+        check(f"{_name}: an unreadable catalogue raises, never a guess",
+              _unresolved is not None and _unresolved.path == _missing)
     check(
-        "catalog_tiers: an unreadable catalogue yields {}, never a guess",
-        catalog_tiers(os.path.join("no", "such", "catalog.yaml")) == {},
+        "rules unresolved: the line says it could not resolve, and guesses no tier",
+        RulesUnresolvedError(_missing).line("a-check").startswith(
+            "ERROR a-check: could not resolve the rules that apply."),
     )
+    check_eq(
+        "rules_that_apply: a check keeps the rules scoped to any product",
+        True, "IDN-4" in {c["id"] for c in rules_that_apply()},
+    )
+    check_eq(
+        "rules_that_apply: is resolve_rules over the whole catalogue",
+        [c["id"] for c in resolve_rules(catalog_controls(), product=ANY_SCOPE,
+                                        audience=ANY_SCOPE)],
+        [c["id"] for c in rules_that_apply()],
+    )
+    _by_id, _by_prefix = rule_categories()
+    check_eq("rule_categories: a rule takes its prefix's category",
+             ("Colour", "Colour"), (_by_id.get("COL-2"), _by_prefix.get("COL")))
     check(
         "l0_subset: keeps only the L0 controls, in order",
         l0_subset(["A11Y-6", "A11Y-2", "A11Y-3"]) == ["A11Y-2", "A11Y-3"],
@@ -1601,7 +1695,7 @@ def _self_test():
                  [], [c for c in _wanted if c not in _named])
     check_eq("dimension rules: every id is in the catalogue", [],
              [c for ids in DIMENSION_RULES.values() for c in ids
-              if c not in catalog_tiers()])
+              if c not in rule_tiers()])
 
     raised_layer = False
     try:

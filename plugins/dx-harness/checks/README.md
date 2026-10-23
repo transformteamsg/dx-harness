@@ -45,17 +45,21 @@ cannot see, which is the failure this layer exists to remove. `emit_error` and
 
 checklib also loads the a11y rule map (`load_rule_map`,
 `layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
-below) so the three a11y layers read one file rather than three copies of it, and
-reads control tiers from the catalogue with a stdlib parse (`catalog_tiers`,
-`l0_subset`) so a check can say "this one is L0 and still blocks" without PyYAML —
-`waiver-reconcile.py` keeps its own yaml-based reader because it needs whole control
-bodies. `scoped_controls` parses a record's "Controls in scope" notation into the
+below) so the three a11y layers read one file rather than three copies of it.
+Every check gets the rules that apply through checklib, with the resolution that
+`scripts/in-scope-rules.py` uses, so a design skill and a check agree on which
+rules apply: `rules_that_apply` for the rules, `rule_tiers` for their tiers
+(with `l0_subset` on top), and `rule_categories` for `meta.categories`. No check
+reads the catalogue itself. When the catalogue cannot be read, these raise
+`RulesUnresolvedError`, and the check prints `ERROR <check>: could not resolve the
+rules that apply` and exits 1. It never guesses a tier and reports no control as
+passed. `scoped_controls` parses a record's "Controls in scope" notation into the
 in-scope id set, shared by `audit-record.py` and `reaudit-scope.py`: ranges and
 slash lists expand, "out of scope" excludes its whole segment (and the bullets
 under an out-of-scope label), and an inline "N/A" excludes only the ids in its
 own clause, so exclusion wins without unchecking the in-scope controls named
 beside it. checklib has its own gate:
-`python3 checks/checklib.py --self-test` → `SELF-TEST OK (89 cases)`.
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (95 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -228,7 +232,7 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (79 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (80 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing (both the static
 `<file>:<line>` and the rendered `<route>:<cell>` shape, at both of `_FINDING_RE`'s call
@@ -649,10 +653,9 @@ comment, which the "Waiver handling" rule above requires of every check. An **L2
 <found> — rationale waiver at the deviation site` and does not fail the run: an L2 waiver is
 `rationale`, so the reason at the site is the whole requirement. An **L1** control (CNT-1)
 prints `ERROR ... [CNT-1][waiver-claimed] ... — verify approver in decision record` and still
-exits 1, exactly as `token-audit` does. **L0** is untouched. Tiers are read from
-`standards/catalog.yaml` at runtime, so a tier that moves there moves here with no edit; a
-catalogue that cannot be read prints a NOTE and falls back to an embedded table, never
-silently. A marker covers its own line and the block it introduces — the following lines
+exits 1, exactly as `token-audit` does. **L0** is untouched. Tiers come from
+`checklib.rule_tiers()` at runtime, so a tier that moves in the catalogue moves here with no
+edit; a catalogue that cannot be read stops the check with an `ERROR` and exit 1. A marker covers its own line and the block it introduces — the following lines
 indented at least as far, stopping at the next marker or the first line indented less — which
 is how the markers are authored in `components/compare.tsx`.
 
@@ -667,9 +670,9 @@ is how the markers are authored in `components/compare.tsx`.
 - **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter; the named Tailwind family utilities `font-mono` / `font-serif` (which resolve to a third default typeface stack — but **never** the weight utilities `font-semibold` / `font-bold` / …, which are not a typeface choice); and a non-approved generic — `monospace` / `serif` / `ui-monospace` / `ui-serif` — used as the **primary** CSS `font-family`. Allowed: the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body`, the sans fallbacks `sans-serif` / `system-ui` / `ui-sans-serif`, and any utility a project sanctions by adding it to `ALLOWED_FONT_TOKENS`.
 - **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]`/`text-[Nrem]` with `N < 14` (rem values are converted at ×16 before judging). The suggest text carries the 12/14 ambiguity (labels may go to 12px; body floor is 14px) since label-vs-body context needs rendered layout.
 - **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
-- **TYP-3 on-scale (L1):** a `text-[Npx]`/`text-[Nrem]` or `font-size:Npx`/`Nrem` whose size (rem converted at ×16) is not on the **Tailwind default type scale `{128,96,72,60,48,36,30,24,20,18,16,14,12}`**. A fractional-pixel size is off-scale by definition, even when its rounded value happens to be in the set. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if the catalog can't be read.
+- **TYP-3 on-scale (L1):** a `text-[Npx]`/`text-[Nrem]` or `font-size:Npx`/`Nrem` whose size (rem converted at ×16) is not on the **Tailwind default type scale `{128,96,72,60,48,36,30,24,20,18,16,14,12}`**. A fractional-pixel size is off-scale by definition, even when its rounded value happens to be in the set. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if that field cannot be parsed. A catalog that cannot be read stops the check with an `ERROR` and exit 1.
 - **TYP-4 all-caps (L2):** a `text-transform: uppercase` declaration or an `uppercase` Tailwind utility (matched as a class token — inside a class/className attr or a class-list-shaped string). Text is never set in all-caps, at any length — short labels included (HF-20). The English word "uppercase" in body text, and genuine acronyms (literal capitals, not a transform), are not flagged.
-- **LAY-4 + TYP-6 measure (both L2):** a line-measure cap **already written in `ch`** that runs past its control's ceiling: above **80ch** for LAY-4, above **75ch** for TYP-6. One rule body, two thresholds, read at runtime from the two controls' catalog **titles** ("never above 80ch", "roughly 45-75 characters per line") so they cannot drift; the same numbers are the embedded fallback if the catalog can't be read. Both ceilings are tested for every cap, so a cap above 80ch reports twice, once `[LAY-4]` and once `[TYP-6]`, the way one font size already reports under both TYP-2 and TYP-3. Two findings is deliberate: it keeps the two controls independently selectable with `--rules` and independently waivable. Each ceiling is **exclusive**: 80ch reports TYP-6 only, 75ch reports nothing. Forms read: `max-w-[Nch]`, the arbitrary property `[max-width:Nch]`, a CSS `max-width: Nch` (in a stylesheet, a `<style>` block, a `style="…"` attribute, or a styled-components body), a JSX `style={{ maxWidth: 'Nch' }}`, and a `var()` whose custom property is defined in the **same file**, resolved and reported at the use site. A cap **below 45ch** is a heading, a label, or small print, never running text, so it is never flagged. That floor is measured **by value, not by element**, because a 44ch `text-sm` caption on a `<p>` is genuine narrow prose.
+- **LAY-4 + TYP-6 measure (both L2):** a line-measure cap **already written in `ch`** that runs past its control's ceiling: above **80ch** for LAY-4, above **75ch** for TYP-6. One rule body, two thresholds, read at runtime from the two controls' catalog **titles** ("never above 80ch", "roughly 45-75 characters per line") so they cannot drift; the same numbers are the embedded fallback if those titles cannot be parsed. Both ceilings are tested for every cap, so a cap above 80ch reports twice, once `[LAY-4]` and once `[TYP-6]`, the way one font size already reports under both TYP-2 and TYP-3. Two findings is deliberate: it keeps the two controls independently selectable with `--rules` and independently waivable. Each ceiling is **exclusive**: 80ch reports TYP-6 only, 75ch reports nothing. Forms read: `max-w-[Nch]`, the arbitrary property `[max-width:Nch]`, a CSS `max-width: Nch` (in a stylesheet, a `<style>` block, a `style="…"` attribute, or a styled-components body), a JSX `style={{ maxWidth: 'Nch' }}`, and a `var()` whose custom property is defined in the **same file**, resolved and reported at the use site. A cap **below 45ch** is a heading, a label, or small print, never running text, so it is never flagged. That floor is measured **by value, not by element**, because a 44ch `text-sm` caption on a `<p>` is genuine narrow prose.
 
 **TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
 

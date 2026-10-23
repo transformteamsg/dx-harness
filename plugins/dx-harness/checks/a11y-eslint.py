@@ -425,7 +425,10 @@ def run(paths, target_root=None, node="node"):
     except checklib.RuleMapError as exc:
         return 1, [f"ERROR a11y-eslint: {exc}"]
 
-    tiers = checklib.catalog_tiers()
+    try:
+        tiers = checklib.rule_tiers()
+    except checklib.RulesUnresolvedError as exc:
+        return 1, [exc.line("a11y-eslint")]
     out = []
     _, missing, _ = partition_targets(paths)
     for p in missing:
@@ -589,7 +592,7 @@ def run_self_test():
     check("an unparsed file adds no NOTE", [], fatal_notes)
 
     # ── a layer that did not run does not silently pass ────────────────────────
-    tiers = checklib.catalog_tiers()
+    tiers = checklib.rule_tiers()
     check("the catalogue tiers are readable", "L0", tiers.get("A11Y-2"))
     skip = manual_verification_notes("no eslint in /repo's node_modules", controls, tiers)
     check("the skip report starts with an operational ERROR", True,
@@ -671,7 +674,7 @@ def run_self_test():
     # with it, so this checks the raw row count instead.
     check("the map is shared with rendered-check rows, not scoped to "
           "jsx-a11y alone", True, len(rule_map["rules"]) > len(jsx_rules))
-    catalog_ids = set(checklib.catalog_tiers())
+    catalog_ids = set(checklib.rule_tiers())
     check("every mapped control id is in the catalogue", set(),
           set(rule_map["rules"].values()) - catalog_ids)
     check("every layer's controls are in the catalogue", set(),

@@ -69,7 +69,6 @@ import sys
 # ── Paths ────────────────────────────────────────────────────────────────────
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
-CATALOG_PATH = os.path.join(REPO_ROOT, "standards", "catalog.yaml")
 DECISIONS_DIR = os.path.join(REPO_ROOT, "docs", "decisions")
 
 # ── Reuse audit-record's section parser (do not rewrite it) ───────────────────
@@ -100,33 +99,6 @@ split_sections = _AR.split_sections
 find_section = _AR.find_section
 
 
-# ── Catalog: id → category, via meta.categories[prefix] ───────────────────────
-def catalog_categories(catalog_path=CATALOG_PATH):
-    """Parse standards/catalog.yaml → (id_to_category, prefix_to_category).
-
-    A control's category is meta.categories[id.split("-")[0]]. If a control's
-    prefix is missing from meta.categories, that is a hard defect (design-catalog-validate.py
-    step 5b enforces it) — raise rather than guess a category."""
-    import yaml
-
-    with open(catalog_path, encoding="utf-8") as fh:
-        data = yaml.safe_load(fh)
-    prefix_to_category = dict(data.get("meta", {}).get("categories", {}))
-    id_to_category = {}
-    for control in data.get("controls", []):
-        cid = control.get("id")
-        if not cid:
-            continue
-        prefix = cid.split("-")[0]
-        if prefix not in prefix_to_category:
-            raise KeyError(
-                f"catalog control {cid} has prefix {prefix!r} with no "
-                f"meta.categories entry — fix the catalog (design-catalog-validate.py step 5b)"
-            )
-        id_to_category[cid] = prefix_to_category[prefix]
-    return id_to_category, prefix_to_category
-
-
 # ── Records: record path → set of in-scope control ids ────────────────────────
 def record_controls(records_dir):
     """For each docs/decisions/*.md (skip TEMPLATE.md), extract the set of
@@ -141,7 +113,7 @@ def record_controls(records_dir):
     if not os.path.isdir(records_dir):
         raise FileNotFoundError(records_dir)
     out = {}
-    tiers = checklib.catalog_tiers()
+    tiers = checklib.rule_tiers()
     for fname in sorted(os.listdir(records_dir)):
         if not fname.endswith(".md") or fname == "TEMPLATE.md":
             continue
@@ -170,7 +142,7 @@ def affected_records(target_ids, target_category, records):
 
     Returns {"direct": [paths], "same_category": [paths]}, each sorted, with
     same_category excluding any record already in direct."""
-    id_to_category, _prefix = catalog_categories()
+    id_to_category, _prefix = checklib.rule_categories()
     direct = []
     same_category = []
     for path in sorted(records):
@@ -191,7 +163,7 @@ def resolve_target(arg, category_mode):
         category_mode is True.
     Raises ValueError on a usage error (unknown id / unknown category), which
     main() surfaces as exit 1 — never a silent empty result."""
-    id_to_category, prefix_to_category = catalog_categories()
+    id_to_category, prefix_to_category = checklib.rule_categories()
 
     if category_mode:
         # Accept either a prefix ("COL") or the human category name ("Colour").
@@ -267,13 +239,13 @@ def run_self_test():
     """Embedded self-test. Prints SELF-TEST OK (N cases) and exits 0 on
     success; prints failures and exits 1. Builds temp records (synthetic
     `## Controls in scope` sections) in a temp dir; reads the REAL
-    standards/catalog.yaml for the category map (read-only)."""
+    catalogue's category map through checklib.rule_categories() (read-only)."""
     import tempfile
 
     failures = []
     case_count = 0
 
-    id_to_category, prefix_to_category = catalog_categories()
+    id_to_category, prefix_to_category = checklib.rule_categories()
 
     # Sanity: the real categories we lean on in the cases must exist. (If the
     # catalog ever drops these, the self-test should fail loudly, not pass.)
@@ -499,6 +471,9 @@ def main():
     # Resolve the target (unknown id / unknown category → usage error, exit 1).
     try:
         target_ids, category, label = resolve_target(target, category_mode)
+    except checklib.RulesUnresolvedError as exc:
+        print(exc.line("reaudit-scope"))
+        sys.exit(1)
     except ValueError as exc:
         print(f"ERROR reaudit-scope: {exc}")
         sys.exit(1)

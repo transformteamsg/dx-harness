@@ -177,42 +177,38 @@ TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 # ── TYP-3 type scale ──────────────────────────────────────────────────────────
 # Sourced from TYP-3's catalog `verify` field:
 #   "Sizes in {128,96,72,60,48,36,30,24,20,18,16,14,12}; checks/type-scan"
-# Read at runtime from standards/catalog.yaml when available (so it cannot drift
-# from the catalog), with this set as the embedded fallback if the catalog can't
-# be read/parsed. This is Tailwind's default type scale (text-xs … text-9xl).
+# Read at runtime from the rules that apply (so it cannot drift from the
+# catalog), with this set as the embedded fallback if TYP-3's verify text cannot
+# be parsed. An unreadable catalogue is not a parse failure: it raises
+# checklib.RulesUnresolvedError. This is Tailwind's default type scale
+# (text-xs … text-9xl).
 TYPE_SCALE_FALLBACK = {128, 96, 72, 60, 48, 36, 30, 24, 20, 18, 16, 14, 12}
 
-CATALOG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "catalog.yaml",
-)
+
+def _rule_text(path, field):
+    """{rule id: that rule's `field`} for the rules that apply. Raises
+    checklib.RulesUnresolvedError when the catalogue cannot be read."""
+    return {c["id"]: c.get(field) for c in checklib.rules_that_apply(path)}
 
 
-def load_type_scale(path=CATALOG_PATH):
+def load_type_scale(path=None):
     """
-    Read the allowed type-scale set from TYP-3's `verify` field in catalog.yaml:
+    Read the allowed type-scale set from TYP-3's `verify` field:
     `Sizes in {128,96,72,60,48,36,30,24,20,18,16,14,12}; …`. Returns (set, note);
-    `note` is non-None if the embedded fallback was used.
+    `note` is non-None if the embedded fallback was used. Raises
+    checklib.RulesUnresolvedError when the catalogue cannot be read.
     """
-    try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
-    except OSError:
-        return TYPE_SCALE_FALLBACK, (
-            f"NOTE type-scan: could not read {path}; using embedded TYP-3 scale"
-        )
-    # Find TYP-3's verify line and pull the {…} set out of it.
-    idx = text.find("id: TYP-3")
-    section = text[idx:] if idx != -1 else text
-    m = re.search(r"verify:\s*\"[^\"]*Sizes in\s*\{([0-9,\s]+)\}", section)
+    where = path or "the catalog"
+    verify = _rule_text(path, "verify").get("TYP-3") or ""
+    m = re.search(r"Sizes in\s*\{([0-9,\s]+)\}", verify)
     if not m:
         return TYPE_SCALE_FALLBACK, (
-            f"NOTE type-scan: could not parse TYP-3 scale from {path}; using embedded set"
+            f"NOTE type-scan: could not parse TYP-3 scale from {where}; using embedded set"
         )
     scale = {int(n) for n in re.findall(r"\d+", m.group(1))}
     if not scale:
         return TYPE_SCALE_FALLBACK, (
-            f"NOTE type-scan: TYP-3 scale parsed empty from {path}; using embedded set"
+            f"NOTE type-scan: TYP-3 scale parsed empty from {where}; using embedded set"
         )
     return scale, None
 
@@ -249,49 +245,32 @@ _TYP6_BAND_RE = re.compile(r"roughly\s*(\d+)\s*-\s*(\d+)\s*characters", re.IGNOR
 _TYP6_TARGET_RE = re.compile(r"target\s*(\d+)\s*-\s*(\d+)\s*\)", re.IGNORECASE)
 
 
-def _catalog_title(text, ctrl_id):
-    """The `title:` of one control in catalog.yaml, quotes stripped, or None.
-    Scans forward from the control's own `id:` line, so the first `title:` found
-    is that control's own."""
-    idx = text.find(f"id: {ctrl_id}\n")
-    if idx == -1:
-        return None
-    m = re.search(r"title:\s*(.+)", text[idx:])
-    if not m:
-        return None
-    return m.group(1).strip().strip("'\"")
-
-
-def load_measure(path=CATALOG_PATH):
+def load_measure(path=None):
     """
     Read LAY-4's and TYP-6's measure ceilings, their targets and the 45ch floor
-    out of those two controls' `title` fields in catalog.yaml. Returns
-    (measure, note) in MEASURE_FALLBACK's shape; `note` is non-None if any part
-    fell back, so the caller can say so once instead of scanning on a silently
-    invented number.
+    out of those two controls' `title` fields. Returns (measure, note) in
+    MEASURE_FALLBACK's shape; `note` is non-None if any part fell back, so the
+    caller can say so once instead of scanning on a silently invented number.
+    Raises checklib.RulesUnresolvedError when the catalogue cannot be read.
     """
     def fallback(reason):
         return MEASURE_FALLBACK, (
             f"NOTE type-scan: {reason}; using embedded LAY-4/TYP-6 measures"
         )
 
-    try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
-    except OSError:
-        return fallback(f"could not read {path}")
-
-    lay4 = _catalog_title(text, "LAY-4")
-    typ6 = _catalog_title(text, "TYP-6")
+    where = path or "the catalog"
+    titles = _rule_text(path, "title")
+    lay4 = titles.get("LAY-4")
+    typ6 = titles.get("TYP-6")
     if lay4 is None or typ6 is None:
-        return fallback(f"could not find LAY-4/TYP-6 titles in {path}")
+        return fallback(f"could not find LAY-4/TYP-6 titles in {where}")
 
     lay4_ceiling = _LAY4_CEILING_RE.search(lay4)
     lay4_target = _LAY4_TARGET_RE.search(lay4)
     typ6_band = _TYP6_BAND_RE.search(typ6)
     typ6_target = _TYP6_TARGET_RE.search(typ6)
     if not (lay4_ceiling and lay4_target and typ6_band and typ6_target):
-        return fallback(f"could not parse LAY-4/TYP-6 measures from {path}")
+        return fallback(f"could not parse LAY-4/TYP-6 measures from {where}")
 
     return {
         "ceilings": {
@@ -1265,11 +1244,15 @@ def run_self_test():
             f"got {live_measure!r} note={live_note!r}"
         )
     case_count += 1
-    missing_measure, missing_note = load_measure(os.path.join("no", "such", "catalog.yaml"))
-    if missing_measure != MEASURE_FALLBACK or missing_note is None:
-        failures.append(
-            "FAIL measure thresholds: an unreadable catalog must fall back and say so"
-        )
+    for loader in (load_measure, load_type_scale):
+        try:
+            loader(os.path.join("no", "such", "catalog.yaml"))
+            failures.append(
+                f"FAIL {loader.__name__}: an unreadable catalog must raise, "
+                f"never fall back to an embedded value"
+            )
+        except checklib.RulesUnresolvedError:
+            pass
 
     # ── Parity corpus ──────────────────────────────────────────────────────────
     # Every record in fixtures/parity/expected/ was produced by the pre-swap
@@ -1363,6 +1346,9 @@ def main():
         sys.exit(1)
     try:
         results = scan_paths(args, rules)
+    except checklib.RulesUnresolvedError as exc:
+        print(exc.line("type-scan"))
+        sys.exit(1)
     except checklib.AstGrepError as exc:
         # One ERROR line, exit 1, no findings printed. Never a clean result:
         # ast-grep can lose a whole file's matches at exit 0, so a check that
