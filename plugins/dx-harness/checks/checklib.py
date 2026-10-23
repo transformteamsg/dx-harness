@@ -790,40 +790,148 @@ def emit_rendered_error(route, cell, ctl, found, suggest, extra=None):
     return emit_error(route, cell, ctl, found, suggest, extra=extra)
 
 
+CATALOG_PATH = os.path.join(os.path.dirname(_CHECKS_DIR), "standards", "catalog.yaml")
+
 _CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
-_CATALOG_TIER_RE = re.compile(r"^\s*tier:\s*(\S+)\s*$")
+# A control's own top-level field: four spaces of indent, then `key: value`.
+# Deeper lines (fails_when bullets, refs) never match.
+_CATALOG_FIELD_RE = re.compile(r"^    ([a-z_]+):\s*(.*?)\s*$")
+_CATALOG_LIST_FIELDS = ("phase", "applies_to", "products", "audiences")
+_CATALOG_TEXT_FIELDS = ("tier", "title", "verify", "detail")
+
+
+def _catalog_value(raw):
+    """A one-line catalogue value: a `[a, b]` flow list becomes a list, a
+    double-quoted string loses its quotes, anything else stays verbatim."""
+    if raw.startswith("[") and raw.endswith("]"):
+        return [v.strip() for v in raw[1:-1].split(",") if v.strip()]
+    if len(raw) >= 2 and raw[0] == raw[-1] == '"':
+        return raw[1:-1]
+    return raw
+
+
+def catalog_controls(path=None):
+    """
+    Every control in `standards/catalog.yaml`, in catalogue order, as a dict of
+    the fields a rule list needs: `id`, `tier`, `title`, `verify`, `detail`
+    (the path relative to `standards/`, or absent), and the `phase`,
+    `applies_to`, `products`, and `audiences` lists (a scope field is absent
+    when the control is global). Parsed with stdlib regexes, so it works where
+    PyYAML is absent; every one of these fields is written on one line.
+
+    Returns [] when the catalogue cannot be read. A caller that needs the
+    rules treats that as a tool failure, never as an empty scope.
+    """
+    controls = []
+    try:
+        with open(path or CATALOG_PATH, encoding="utf-8") as fh:
+            for line in fh:
+                m = _CATALOG_ID_RE.match(line)
+                if m:
+                    controls.append({"id": m.group(1)})
+                    continue
+                f = _CATALOG_FIELD_RE.match(line)
+                if controls and f and f.group(2) and f.group(1) in (
+                        _CATALOG_LIST_FIELDS + _CATALOG_TEXT_FIELDS):
+                    controls[-1][f.group(1)] = _catalog_value(f.group(2))
+    except OSError:
+        return []
+    return controls
 
 
 def catalog_tiers(path=None):
     """
-    {control id: tier} from `standards/catalog.yaml`, parsed with a stdlib
-    regex (the same shape scripts/generate-design-json.py uses) so a check that
-    needs a tier stays dependency-free. `waiver-reconcile.py` keeps its own
-    yaml-based reader because it needs whole control bodies; this one reads two
-    fields and must work where PyYAML is absent.
+    {control id: tier} from `standards/catalog.yaml`, read through
+    catalog_controls() so a check that needs a tier stays dependency-free.
+    `waiver-reconcile.py` keeps its own yaml-based reader because it needs
+    whole control bodies.
 
     Returns {} when the catalogue cannot be read — a caller states less, it
     never crashes and never guesses a tier.
     """
-    if path is None:
-        checks_dir = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(os.path.dirname(checks_dir), "standards", "catalog.yaml")
-    tiers, current = {}, None
-    try:
-        with open(path, encoding="utf-8") as fh:
-            for line in fh:
-                m = _CATALOG_ID_RE.match(line)
-                if m:
-                    current = m.group(1)
-                    continue
-                if current:
-                    t = _CATALOG_TIER_RE.match(line)
-                    if t:
-                        tiers[current] = t.group(1)
-                        current = None
-    except OSError:
-        return {}
-    return tiers
+    return {c["id"]: c["tier"] for c in catalog_controls(path) if c.get("tier")}
+
+
+# ── In-scope rule list ────────────────────────────────────────────────────────
+#
+# The rules a design run reads, resolved once here so the list command
+# (scripts/in-scope-rules.py) and the checks select the same slice.
+
+# The rules each pass dimension selects, as its pass SKILL.md names them. The
+# L0 floor is added to every dimension by resolve_rules(), not listed here.
+# The self-test fails when a SKILL.md stops naming one of these ids.
+DIMENSION_RULES = {
+    "copy": [f"CNT-{n}" for n in range(1, 15)] + ["SLP-9", "IDN-3", "IDN-4"],
+    "flow": ["CMP-2", "CMP-3", "CMP-8", "A11Y-2", "A11Y-11", "SLP-10"],
+    "motion": ["MOT-1", "MOT-2", "MOT-3", "A11Y-5", "SLP-8"],
+    "pattern": [f"LAY-{n}" for n in range(1, 8)] + ["TYP-6", "SLP-4", "SLP-5", "SLP-11"],
+    "polish": ["TOK-1", "TOK-2", "TOK-3", "TYP-1", "TYP-2", "TYP-3", "TYP-4", "TYP-5",
+               "COL-1", "COL-2", "SLP-1", "SLP-2", "SLP-3", "SLP-6", "SLP-7"],
+}
+
+DEFAULT_AUDIENCE = "teachers"
+
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
+class UnknownRuleError(ValueError):
+    """Raised when a product names a rule code the catalogue does not have.
+    `codes` is the sorted list of unknown codes."""
+
+    def __init__(self, codes):
+        self.codes = sorted(codes)
+        super().__init__(", ".join(self.codes))
+
+
+def design_rule_codes(text, controls):
+    """The rule codes a product's DESIGN.md names, outside HTML comments.
+
+    Only a token whose prefix is a catalogue category (TOK, CNT, ...) counts as
+    a rule code, so prose such as "UTF-8" is not one. Raises UnknownRuleError
+    when a code is not in `controls`: a product that names a rule the
+    catalogue does not have is a typo or a stale file, and a run that guessed
+    past it would apply a rule nobody wrote.
+    """
+    known = {c["id"] for c in controls}
+    prefixes = {cid.rsplit("-", 1)[0] for cid in known}
+    codes = {cid for cid in control_ids_in(_HTML_COMMENT_RE.sub("", text))
+             if cid.rsplit("-", 1)[0] in prefixes}
+    unknown = codes - known
+    if unknown:
+        raise UnknownRuleError(unknown)
+    return codes
+
+
+def resolve_rules(controls, dimension=None, phase=None, surface=None,
+                  product=None, audience=DEFAULT_AUDIENCE):
+    """The controls in scope for a run, in catalogue order.
+
+    A control is in scope when its `phase` holds `phase`, its `applies_to`
+    holds `surface`, its `products` is absent or holds `product`, and its
+    `audiences` is absent or holds `audience`. A filter left as None does not
+    narrow. A `products:`-scoped control needs a stated product. With a
+    `dimension`, only that dimension's DIMENSION_RULES stay. Every L0 control
+    is in scope whatever the filters, because L0 is never scoped out.
+    """
+    if dimension is not None and dimension not in DIMENSION_RULES:
+        raise ValueError(f"unknown dimension {dimension!r}")
+    selected = []
+    for c in controls:
+        if c.get("tier") == "L0":
+            selected.append(c)
+            continue
+        if phase is not None and phase not in c.get("phase", []):
+            continue
+        if surface is not None and surface not in c.get("applies_to", []):
+            continue
+        if "products" in c and product not in c["products"]:
+            continue
+        if "audiences" in c and audience not in c["audiences"]:
+            continue
+        if dimension is not None and c["id"] not in DIMENSION_RULES[dimension]:
+            continue
+        selected.append(c)
+    return selected
 
 
 def l0_subset(controls, tiers=None):
@@ -1434,6 +1542,67 @@ def _self_test():
         "l0_subset: keeps only the L0 controls, in order",
         l0_subset(["A11Y-6", "A11Y-2", "A11Y-3"]) == ["A11Y-2", "A11Y-3"],
     )
+    check(
+        "catalog_controls: an unreadable catalogue yields [], never a guess",
+        catalog_controls(os.path.join("no", "such", "catalog.yaml")) == [],
+    )
+
+    # ── resolve_rules and design_rule_codes ───────────────────────────────────
+    _rules = [
+        {"id": "A11Y-1", "tier": "L0", "phase": ["verify"], "applies_to": ["page"]},
+        {"id": "TOK-1", "tier": "L1", "phase": ["implement", "verify"],
+         "applies_to": ["page"]},
+        {"id": "MOT-1", "tier": "L1", "phase": ["verify"], "applies_to": ["component"]},
+        {"id": "IDN-4", "tier": "L1", "phase": ["verify"], "applies_to": ["page"],
+         "products": ["casesync"]},
+        {"id": "CNT-1", "tier": "L2", "phase": ["plan"], "applies_to": ["content"],
+         "audiences": ["parents"]},
+    ]
+
+    def _ids(**kw):
+        return [c["id"] for c in resolve_rules(_rules, **kw)]
+
+    check_eq("resolve: L0 stays when no filter would keep it",
+             ["A11Y-1"], _ids(phase="plan", surface="content"))
+    check_eq("resolve: a dimension keeps its own rules and L0",
+             ["A11Y-1", "TOK-1"], _ids(dimension="polish"))
+    check_eq("resolve: a products-scoped rule needs its product stated",
+             ["A11Y-1", "TOK-1", "MOT-1"], _ids())
+    check_eq("resolve: a products-scoped rule binds its product",
+             ["A11Y-1", "TOK-1", "MOT-1", "IDN-4"], _ids(product="casesync"))
+    check_eq("resolve: an audience-scoped rule binds its audience",
+             ["A11Y-1", "CNT-1"], _ids(phase="plan", audience="parents"))
+    raised_dimension = False
+    try:
+        _ids(dimension="spacing")
+    except ValueError:
+        raised_dimension = True
+    check("resolve: an unknown dimension raises, never an empty list", raised_dimension)
+
+    check_eq("design codes: a code in a comment or prose like UTF-8 is not named",
+             {"TOK-1"},
+             design_rule_codes("<!-- TOK-99 --> TOK-1 in UTF-8 text", _rules))
+    unknown_codes = None
+    try:
+        design_rule_codes("- TOK-1..3 (L1): any - reason: grid", _rules)
+    except UnknownRuleError as exc:
+        unknown_codes = exc.codes
+    check_eq("design codes: a range naming missing rules raises with each code",
+             ["TOK-2", "TOK-3"], unknown_codes)
+
+    # Each dimension's rules against the SKILL.md that names them, so the
+    # list and the pass cannot drift apart.
+    _skills_dir = os.path.join(os.path.dirname(_CHECKS_DIR), "skills", "design")
+    for _dimension, _wanted in DIMENSION_RULES.items():
+        with open(os.path.join(_skills_dir, f"dx-design-{_dimension}", "SKILL.md"),
+                  encoding="utf-8") as fh:
+            _named = control_ids_in(fh.read())
+        check_eq(f"dimension rules: dx-design-{_dimension} names every rule",
+                 [], [c for c in _wanted if c not in _named])
+    check_eq("dimension rules: every id is in the catalogue", [],
+             [c for ids in DIMENSION_RULES.values() for c in ids
+              if c not in catalog_tiers()])
+
     raised_layer = False
     try:
         layer_controls("no-such-layer", rule_map)
