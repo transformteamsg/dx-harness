@@ -2,7 +2,7 @@
 
 The five focused passes (dx-design-copy, dx-design-flow, dx-design-pattern,
 dx-design-motion, dx-design-polish) run this one procedure, each scoped to its own
-dimension. A pass is propose-only: it captures the surface, judges it inside its
+dimension. A pass is propose-only: it judges a capture of the surface inside its
 dimension, and records up to five ranked findings on the surface's design ticket. A
 pass NEVER edits the product, and it never runs verify. Only `dx-design-execute`
 edits the product; it owns build, design review, and verify through the shared
@@ -21,24 +21,38 @@ A pass keeps two entries:
 - **Direct.** A person calls the pass with a sharp ask that names its dimension. Run
   all five steps below, including the accept/decline exchange in step 4.
 - **Dispatched.** The orchestrator (`dx-design`) dispatches the pass as a
-  propose-only subagent in its improve-what-exists fan-out. The dispatch prompt
-  carries the mode token `return-to-caller`. The token suppresses the pass's own
-  interview (no clarifying questions back to the human) and the pass's own
-  accept/decline exchange (step 4's ask and marks): the pass captures, judges, and
-  returns its ranked findings to the caller. The orchestrator merges findings from
-  every dispatched pass into one ranked plan with one plan approval, and it owns the
+  propose-only subagent in its improve-what-exists fan-out, or judges the pass in
+  its own context when the run has one or two dimensions. Either way, the pass
+  receives the mode token `return-to-caller`, the run's capture set, and this
+  pass's subset of the rules, per `../../../procedures/capture.md`. The token
+  suppresses the pass's own interview (no clarifying questions back to the human)
+  and the pass's own accept/decline exchange (step 4's ask and marks): the pass
+  judges from what it received and returns its ranked findings to the caller. The
+  orchestrator merges findings from every dispatched pass into one ranked plan with one plan approval, and it owns the
   design-ticket record for that run.
 
 ## Run it
 
-1. **Capture the surface.** Same mechanism order as `critique.md` (beside this file) —
-   read its step 1 and follow it; do not fabricate what the page looks like. A pass that
-   judges responsive behaviour captures 360 too. No capture mechanism available: route
-   to setup rather than judging an unseen surface.
-2. **Load only your slice.** Load the pass's control-id subset (named in the SKILL.md
-   that sent you here) from `../../../standards/catalog.yaml`, read each control's
-   `detail` file when it has one, and load the pass's named reference files — nothing
-   wider. The dimension is the boundary; the catalog ids are the rules. Mechanics
+1. **Capture the surface.**
+   - **Dispatched**: the pass takes no capture of its own. Judge from the capture set
+     the caller gave you. A width missing from the set stays missing: every rule
+     that needed it takes a `verify` verdict, evidence incomplete, per
+     `../../../procedures/capture.md`.
+   - **Direct**: same mechanism order as `critique.md` (beside this file); read its
+     step 2 and follow it. A pass that judges responsive behaviour captures 360 too.
+     No capture mechanism available: route to setup rather than judging an unseen
+     surface.
+
+   Either way, do not fabricate what the page looks like.
+2. **Load only your slice.**
+   - **Dispatched**: use the subset the caller gave you, read each control's
+     `detail` file when it has one, and load the pass's named reference files. The
+     pass reads no other rules, and it does not open the catalogue.
+   - **Direct**: load the pass's control-id subset (named in the SKILL.md that sent
+     you here) from `../../../standards/catalog.yaml`, read each control's `detail`
+     file when it has one, and load the pass's named reference files, nothing wider.
+
+   The dimension is the boundary; the catalog ids are the rules. Mechanics
    (filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
 3. **Up to five ranked findings, inside the dimension only.** Ground each finding in
    the captured surface. Rank by impact on the teacher's task. Name each finding

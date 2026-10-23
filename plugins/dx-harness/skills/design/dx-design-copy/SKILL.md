@@ -27,8 +27,8 @@ any disagree, the catalog control wins and the others are corrected.
 **Improve-the-copy pass.** For a scoped "improve / polish the copy on `<page>`" run,
 follow `../dx-design-critique/pass.md` with this skill's dimension subset, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
-token; pass.md defines both and what the token suppresses). The pass captures the
-surface, judges only the wording, and records up to five ranked findings on the
+token; pass.md defines both and what the token suppresses). The pass judges a capture
+of the surface for the wording only, and records up to five ranked findings on the
 surface's design ticket; it proposes only and never edits the product. A stated
 exact edit ("change the label to Save") is a dx-design-execute intent, not a pass
 run. The dimension subset: **CNT-1, CNT-2, CNT-3,
