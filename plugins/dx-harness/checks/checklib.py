@@ -797,7 +797,7 @@ _CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
 # Deeper lines (fails_when bullets, refs) never match.
 _CATALOG_FIELD_RE = re.compile(r"^    ([a-z_]+):\s*(.*?)\s*$")
 _CATALOG_LIST_FIELDS = ("phase", "applies_to", "products", "audiences")
-_CATALOG_TEXT_FIELDS = ("tier", "title", "verify", "detail")
+_CATALOG_TEXT_FIELDS = ("tier", "title", "verify", "detail", "enforced", "script")
 
 
 def _catalog_value(raw):
@@ -814,7 +814,8 @@ def catalog_controls(path=None):
     """
     Every control in `standards/catalog.yaml`, in catalogue order, as a dict of
     the fields a rule list needs: `id`, `tier`, `title`, `verify`, `detail`
-    (the path relative to `standards/`, or absent), and the `phase`,
+    (the path relative to `standards/`, or absent), `enforced` and `script`
+    (absent when the catalogue leaves them out), and the `phase`,
     `applies_to`, `products`, and `audiences` lists (a scope field is absent
     when the control is global). Parsed with stdlib regexes, so it works where
     PyYAML is absent; every one of these fields is written on one line.
@@ -1636,6 +1637,10 @@ def _self_test():
         "l0_subset: keeps only the L0 controls, in order",
         l0_subset(["A11Y-6", "A11Y-2", "A11Y-3"]) == ["A11Y-2", "A11Y-3"],
     )
+    _by_cid = {c["id"]: c for c in catalog_controls()}
+    check_eq("catalog_controls: reads enforced and script",
+             ("script", "checks/token-audit.py"),
+             (_by_cid["TOK-1"].get("enforced"), _by_cid["TOK-1"].get("script")))
     check(
         "catalog_controls: an unreadable catalogue yields [], never a guess",
         catalog_controls(os.path.join("no", "such", "catalog.yaml")) == [],
