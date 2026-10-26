@@ -203,6 +203,7 @@ method in [Skill token budget](token-budget.md) before you rank the next change.
 | --- | --: | --: | --: |
 | `dx-design-research-brief` reads its component guidance from `references/`, and reads only the study-type guidance and intake form a run needs ([#462](https://github.com/transformteamsg/dx-harness/issues/462)) | 3,667 | 2,891 generative, 3,126 evaluative, 3,292 hybrid | 776 generative, 541 evaluative, 375 hybrid |
 | `dx-design-execute` reads each phase from `references/` when the run enters that phase ([#458](https://github.com/transformteamsg/dx-harness/issues/458)) | 83,037 | 82,054 modification, 82,895 new page, 83,247 new page for a flow | 983 modification, 142 new page, -210 new page for a flow |
+| A build reads the copy writing rules from `procedures/copy-rules.md`, and the review method stays in `dx-design-copy/SKILL.md` ([#460](https://github.com/transformteamsg/dx-harness/issues/460)) | 3,728 | 2,422 build that writes copy, 0 build with no copy | 1,306 build that writes copy, 3,728 build with no copy |
 
 Measured on 2026-10-21 with `cl100k_base`. "After" is one run: `SKILL.md` (662) and
 `references/components.md` (2,063), plus `references/generative.md` (166),
@@ -221,6 +222,14 @@ from 5,953 to 2,577 tokens and holds the entry rules, the gates, and the run ord
 The other phase files are `references/intent.md` (1,246), `references/plan.md` (835),
 `references/implement.md` (186), and `references/rule-proposal.md` (123). Measured on
 2026-10-26 with `cl100k_base`.
+
+For the copy rules, "Before" is the 3,728-token `dx-design-copy/SKILL.md` that a build
+read at implement. It was 3,663 on `main` directly before the change. After, a build
+that writes or changes user-facing text reads `procedures/copy-rules.md` (2,422), and
+a build that changes no user-facing text reads no copy rules. `SKILL.md` keeps the
+review method at 1,363 tokens, so a copy pass reads 3,785, which is 122 more than
+before. The pointers in `procedures/implement.md` and `references/implement.md` grew
+by 42 tokens together. Measured on 2026-10-26 with `cl100k_base`.
 
 ## Coverage read
 

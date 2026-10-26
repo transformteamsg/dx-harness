@@ -24,8 +24,8 @@ reader who does not know the codebase is worse than a long word that does not.
 
 This file does not govern:
 
-- **Product UI copy.** SLP-9 governs the text a product's own users read, and the
-  `dx-design-copy` skill carries it.
+- **Product UI copy.** SLP-9 governs the text a product's own users read, and
+  `copy-rules.md` carries it.
 - **Published technical documents.** `docs/`, `CONTEXT.md`, and READMEs take Google's
   mechanics without this concision bar.
 - **Code and code comments.** `CLAUDE.md` already sets the default to no comments.

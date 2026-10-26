@@ -11,5 +11,6 @@ Skill-specific notes while building:
   ones the surface calls for from `../implement-craft.md` as you
   build, not as a cleanup pass; each refines the shared constraints, none replaces
   them, and the design reviewer grades Craft on them.
-- The copy pass skill the shared constraints defer to ships with this harness:
-  `../../dx-design-copy/SKILL.md`, relative to this file.
+- **Copy**: when the build writes or changes user-facing text, read
+  `../../../../procedures/copy-rules.md` before you write that user-facing text.
+  A build that changes no user-facing text reads no copy rules.
