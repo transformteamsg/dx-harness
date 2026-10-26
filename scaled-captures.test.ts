@@ -130,3 +130,22 @@ describe("1. an agent judges a 1280 capture from a scaled copy", () => {
     expect(report, "the report does not keep crops off the scaled copy").toMatch(/never crop from (the|a) scaled copy/i);
   });
 });
+
+/* Contract item 2: rough directions are wireframe pages. */
+describe("2. rough directions are wireframe pages", () => {
+  const diverge = flat(DIVERGE);
+
+  it("diverge writes a wireframe page for each direction when a person asks for rough directions", () => {
+    expect(diverge.length, `${DIVERGE} is missing or empty`).toBeGreaterThan(0);
+    expect(diverge, "diverge has no rule for rough directions").toMatch(/rough directions/i);
+    expect(diverge, "diverge does not write wireframe pages").toMatch(/each direction is a wireframe page/i);
+  });
+
+  it("a wireframe page carries no styling", () => {
+    expect(diverge, "the wireframe rule does not forbid styling").toMatch(/wireframe[^.]*no (colou?r|brand|styl)/i);
+  });
+
+  it("keeps the styled page as the default", () => {
+    expect(diverge, "diverge lost its styled default").toContain("self-contained HTML");
+  });
+});
