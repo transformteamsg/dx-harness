@@ -52,7 +52,7 @@ function run() {
     date: "2026-10-26",
     facts: [
       ["Run URL", "http://localhost:3000/"],
-      ["Pages captured", "Home and Class at 1280"],
+      ["Pages captured", "Home and Class, 1280 wide"],
       ["Checks run", "rendered-check.py"],
       ["Catalogue coverage", "56 rules"],
     ],
