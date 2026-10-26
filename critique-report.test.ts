@@ -220,3 +220,45 @@ describe("3. the report script stops when Pillow is not installed", () => {
     expect(report, "the report step lost the placeholder rule").toMatch(/never ship a report with placeholder images/i);
   });
 });
+
+/* Written after the code: paths the script introduced. */
+describe("a crop region past the edge of its capture", () => {
+  function withRegion(region: number[]) {
+    const r = run();
+    const doc = JSON.parse(fs.readFileSync(r.file, "utf8"));
+    doc.findings[1].crops[0].region = region;
+    fs.writeFileSync(r.file, JSON.stringify(doc));
+    return r;
+  }
+
+  it("crops to the capture and shows no fill below the page", () => {
+    /* The captures are 900 tall in scaled pixels, so this region runs 100 past the bottom. */
+    const r = withRegion([0, 700, 1280, 300]);
+    const build = python([SCRIPT, r.file, "--out", r.out]);
+    expect(build.status, build.out).toBe(0);
+    const sheet = printed(build.stdout, "contact sheet")!;
+    const dark = python(["-c", `from PIL import Image; im = Image.open(${JSON.stringify(sheet)}).convert("L"); print(sum(1 for v in im.getdata() if v < 16))`]);
+    expect(dark.status, dark.out).toBe(0);
+    /* The label text is the only dark ink on a white page. A filled band would be thousands of pixels. */
+    expect(Number(dark.stdout.trim())).toBeLessThan(2000);
+  });
+
+  it("exits 2 when the region is wholly outside the capture, and writes no report", () => {
+    const r = withRegion([0, 1000, 1280, 200]);
+    const build = python([SCRIPT, r.file, "--out", r.out]);
+    expect(build.status).toBe(2);
+    expect(build.out).toContain("outside its capture");
+    expect(fs.existsSync(path.join(r.out, "report.html"))).toBe(false);
+  });
+});
+
+describe("a capture the script cannot read", () => {
+  it("exits 4 and writes no report", () => {
+    const r = run();
+    fs.rmSync(path.join(r.dir, "captures", "1280-class.png"));
+    const build = python([SCRIPT, r.file, "--out", r.out]);
+    expect(build.status).toBe(4);
+    expect(build.out).toContain("cannot read");
+    expect(fs.existsSync(path.join(r.out, "report.html"))).toBe(false);
+  });
+});
