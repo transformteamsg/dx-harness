@@ -9,9 +9,10 @@ checks select the same slice. Every L0 rule is on every list.
 The first line names the selection the list came from, including whether the
 product has a `DESIGN.md`. Each rule follows on one line:
 
-    - <ID> (<tier>) <title>. Verify: <verify>. Detail: <absolute path>
+    - <ID> (<tier>) <title>. Verify: <verify>. Covered by: <check>. Detail: <absolute path>
 
-`Detail:` is present only when the rule has a detail file.
+`Covered by:` is present only when a check covers the rule fully
+(`enforced: script`). `Detail:` is present only when the rule has a detail file.
 
 Usage:
   python3 scripts/in-scope-rules.py <repo-root> [--dimension polish]
@@ -65,6 +66,9 @@ def rule_line(control):
     line = f"- {control['id']} ({control.get('tier', '?')}) {control.get('title', '')}."
     if control.get("verify"):
         line += f" Verify: {control['verify']}."
+    if control.get("enforced") == "script" and control.get("script"):
+        script = control["script"]
+        line += f" Covered by: {', '.join(script) if isinstance(script, list) else script}."
     if control.get("detail"):
         line += f" Detail: {os.path.join(STANDARDS_DIR, control['detail'])}"
     return line

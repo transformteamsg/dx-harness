@@ -49,7 +49,8 @@ tier, `verify` text, and the path to the `detail` file when the rule has one.
 ## Step 4: Hand each dimension its evidence
 
 Give each dimension the capture set and its own subset, and nothing wider. The
-dimension reads the `detail` files in its subset and the reference files its pass
+dimension reads the review part of each rule in its subset that has a detail, with
+`rule-detail.py <detail path> --for review`, and the reference files its pass
 `SKILL.md` names. It reads no other rules.
 
 How the dimensions run depends on how many there are:

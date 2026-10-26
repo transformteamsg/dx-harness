@@ -230,8 +230,31 @@ A design run reads its in-scope list from `scripts/in-scope-rules.py` instead of
 | One pass, smallest to largest | `--dimension <pass> --phase verify` | 621 `motion` to 2,015 `copy` | 17,036 to 18,430 |
 
 `procedures/catalogue-mechanics.md` grew from 837 to 988 tokens, because it now holds
-the list command and its rules. A run still reads the detail file of each rule on its
-list. Measured on 2026-10-23 with `cl100k_base`, on a product with no `DESIGN.md`.
+the list command and its rules. Measured on 2026-10-23 with `cl100k_base`, on a
+product with no `DESIGN.md`.
+
+## Rule detail read
+
+A builder reads the build part of each listed rule from `scripts/rule-detail.py
+--for build`, not the whole detail file. The build part holds the requirement, the
+pass and fail conditions, the sections that state part of the rule, and the waiver.
+The reviewer reads the `--for review` part, which adds the evaluator guidance, how
+to verify, the deconfliction notes, and the "Do not flag" list. Neither part holds
+the frontmatter, the rationale, or a "Why ..." section.
+
+| Run | Rules with detail | Before | After | Saved per run |
+| --- | --: | --: | --: | --: |
+| One build, `tw` | 56 | 52,820 | 18,102 | 34,718 |
+| One build, `casesync` | 57 | 53,667 | 18,412 | 35,255 |
+| One review, `tw` | 56 | 52,820 | 34,510 | 18,310 |
+
+The "After" column for a build counts every listed rule. A rule with `Covered by:`
+needs no detail when its check runs clean. Today that is TOK-1 alone, which saves
+another 228 tokens. On a product with no component manifest, the builder reads
+CMP-1's review part for its v0-limit procedure, which adds 650 tokens.
+`procedures/catalogue-mechanics.md` grew from 988 to 1,251 tokens, because it now
+holds the detail command and its rules. Measured on 2026-10-23 with `cl100k_base`,
+on a product with no `DESIGN.md`.
 
 ## Shared with the engineering team
 

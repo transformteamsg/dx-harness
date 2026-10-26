@@ -32,8 +32,8 @@ Run in this order; do not present output to the user while a step is failing:
      is a manual check, never a pass.
    Each reads line-local code only: traversal order, computed hit-area, ARIA-state,
    inherited/computed backgrounds, and font-size classification all stay in the manual
-   pass. Everything without a script: verify by hand against the control's detail file
-   and label it "verified manually" (see "What actually runs today" above).
+   pass. Everything without a script: verify by hand against the control's review
+   part, from `rule-detail.py <detail path> --for review`, and label it "verified manually" (see "What actually runs today" above).
    For the manual accessibility pass, work through the catalog's A11Y controls in id
    order — they mirror the GovTech checklist's Essential tier
    (a11y.tech.gov.sg/checklist), which addresses ~96% of common web accessibility

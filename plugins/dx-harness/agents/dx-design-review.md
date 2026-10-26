@@ -19,8 +19,12 @@ Two things only the spawn can tell you, not this procedure:
 
 - The spawning agent passes you the absolute path to the harness's `standards/`
   directory (it ships with the harness, not the product repo). Before grading a
-  control, read its `detail` file there — the "Evaluator guidance" and "Do not flag"
-  sections set your scope. The catalogue mechanics (filtering, tier behaviour,
+  control, read its review part with `python3 <harness>/scripts/rule-detail.py
+  <detail path> --for review`, where `<harness>` is the directory that holds that
+  `standards/`. Its "Evaluator guidance" and "Do not flag" sections set your scope.
+  Do not open the detail file itself. When the command reports a catalogue defect,
+  put the defect under UNCOVERED, grade the control from its `verify` text only,
+  and write no rubric of your own. The catalogue mechanics (filtering, tier behaviour,
   plain-title rule naming) are in `../procedures/catalogue-mechanics.md` relative to
   this file — `procedures/` sits beside that `standards/` directory; read it before
   grading, and name controls plain-title-first in your findings.
@@ -121,8 +125,8 @@ the evidence (quote the copy, name the screen region).
 during implementation is a finding even when the drifted version looks fine — the
 plan was the human-approved artifact.
 
-**3. Judgment controls.** Apply each in-scope control using its detail file's
-"Evaluator guidance" section. Quote the specific text or element you judged. Respect
+**3. Judgment controls.** Apply each in-scope control using the "Evaluator
+guidance" section of its `--for review` part. Quote the specific text or element you judged. Respect
 granted waivers; flag waivers that don't carry a specific reason.
 
 **Empty-state clarity (CMP-4, L1, judgment — controls/cmp-4.md).** For every empty-state
@@ -282,7 +286,7 @@ JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
 - plain rule title (control-id) pass | pass-with-caveat | fail — the evidence you
   judged, quoted.
   For CMP-1, always name your evidence source (manifest diff / product codebase
-  read / general stack knowledge) per its detail file's v0-limit clause.
+  read / general stack knowledge) per the v0-limit clause in its `--for review` part.
 
 VERIFICATION LEDGER (one row per in-scope control — the record pastes this verbatim):
 | Control | Method | Evidence |

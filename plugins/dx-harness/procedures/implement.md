@@ -35,12 +35,13 @@ Constraints, non-negotiable while building:
   waived: "deliberate" protects an element's look from restyling, never its
   compliance from verification.
 - **Catalogue controls bind throughout.** Build against the run's in-scope list,
-  per `catalogue-mechanics.md` (beside this file); read a listed control's detail
-  file before applying it. The L0 floor never bends.
+  per `catalogue-mechanics.md` (beside this file). Before you apply a listed
+  control, read its build part with `rule-detail.py <detail path> --for build`. The
+  L0 floor never bends.
 - Compose only manifest components (`status: "stable"` from
   `.dx/component-manifest.json`) when the product has a manifest. When the product
   has no manifest, that is a supported state: follow the v0-limit procedure in
-  `../standards/controls/cmp-1.md`, inspect the product codebase for the component,
+  CMP-1's `--for review` part, inspect the product codebase for the component,
   and record the `asserted, no manifest` verdict form (CMP-1). Never block on a
   missing manifest and never invent one. Semantic tokens only, no raw colour or
   off-scale spacing/radius (TOK-1..3); the portfolio typefaces only, on-scale sizes

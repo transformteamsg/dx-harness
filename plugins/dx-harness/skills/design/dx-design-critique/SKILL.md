@@ -23,7 +23,8 @@ in-scope list with `python3 <harness>/scripts/in-scope-rules.py <repo-root> --ph
 verify --product <product> --audience <audience>`, where `<harness>` is the absolute
 path three levels above this file. Report the `Selection:` line to the person. When
 the command exits with an error, stop before you capture or grade, and show the
-error. Read a listed rule's detail file before you grade it. If the product repo has
+error. Before you grade a listed rule, read its review part with `python3
+<harness>/scripts/rule-detail.py <detail path> --for review`. If the product repo has
 a `DESIGN.md`, it calibrates colour/tone/motion — load it too.
 
 When someone asks about or proposes a waiver, read `../../../standards/README.md` in that turn
