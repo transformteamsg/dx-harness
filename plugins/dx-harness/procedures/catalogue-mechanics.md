@@ -75,7 +75,10 @@ On a waiver, read the tier table and `dx-waive` syntax in `../standards/README.m
 restate them. Agent behaviour:
 
 - **L0** never deviates and never waives. An impossible L0 is a blocking question
-  for the person, not a judgment call.
+  for the person, not a judgment call. Every L0 rule binds whatever the dimension:
+  record an L0 failure that sits outside the dimension, and never drop one
+  silently. The floor binds before the run has its in-scope list, and outside the
+  loop.
 - **L1** must pass. Propose a waiver at plan approval, but only a named human
   approver grants it, recorded in the decision record and the design ticket.
 - **L2** deviates only with a specific, real reason ("looks better" is not one).

@@ -43,7 +43,7 @@ Report each `Selection:` line to the person. When the command exits with an erro
 stop before any dimension judges, and show the error.
 
 Each list already holds the L0 controls. They bind every pass whatever its
-dimension, per the L0 section of `pass.md`. Each rule line holds the id, title,
+dimension, per the L0 tier in `catalogue-mechanics.md`. Each rule line holds the id, title,
 tier, `verify` text, and the path to the `detail` file when the rule has one.
 
 ## Step 4: Hand each dimension its evidence

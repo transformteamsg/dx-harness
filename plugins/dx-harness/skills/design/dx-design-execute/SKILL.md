@@ -20,13 +20,8 @@ lives in its own file, named in "Run order".
 - An open-ended improvement ask that names one pass dimension (copy, flow, pattern, motion, or polish) and states no edit goes to the matching pass.
 
 
-<!-- dx-sync:L0 source=catalog -->
-**Non-negotiables (L0), binding even outside the loop:** AA contrast (A11Y-1); keyboard
-reach with visible focus (A11Y-2); a visible label on every field (A11Y-3); destructive
-actions show consequences and offer undo or confirm (CMP-2).
-<!-- /dx-sync:L0 -->
-These never bend — if one
-seems impossible, that is a blocking question for the user, not a judgment call.
+**The L0 floor binds even outside the loop**, per the L0 tier in
+`../../../procedures/catalogue-mechanics.md`.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md`. Once Phase 1 settles
 the product and audience, get the build's in-scope list with

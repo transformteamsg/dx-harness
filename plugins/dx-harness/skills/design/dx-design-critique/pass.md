@@ -85,16 +85,12 @@ A pass keeps two entries:
    human declines every finding, the run ends here: the Findings comment stands, with
    every finding marked not accepted, and no product file changes.
 
-## L0 is never scoped out
+## The L0 floor
 
-The four non-negotiables — AA contrast (A11Y-1), keyboard reach with visible focus
-(A11Y-2), a visible label on every field (A11Y-3), destructive actions show consequences
-and offer undo or confirm (CMP-2) — bind every pass regardless of dimension. A contrast
-failure surfaces even in a motion pass. A pass cannot fix anything itself, so when you
-hit one, either record it as a finding (say so when it exceeds strict dimension scope)
-or route it explicitly to the right skill. You may never let an L0 failure pass
-unrecorded because it sat outside the dimension you were asked to work in; a silent
-drop is never an option.
+Every L0 rule binds every pass whatever its dimension, per the L0 tier in
+`../../../procedures/catalogue-mechanics.md`. A pass cannot fix anything itself, so
+record an L0 failure as a finding (say so when it exceeds strict dimension scope)
+or route it explicitly to the right skill.
 
 Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds this
 prose too.
