@@ -85,6 +85,14 @@ const controls: Control[] = parse(read(`${HARNESS}/standards/catalog.yaml`)).con
 const L0 = controls.filter((c) => c.tier === "L0").map((c) => c.id);
 const LAY = controls.filter((c) => c.id.startsWith("LAY-")).map((c) => c.id);
 
+/* A field list that each copy of the return-to-caller payload carried. */
+const PAYLOAD = [
+  { name: "the build input", pattern: /granted waivers and the L1 approver/i },
+  { name: "the review bundle", pattern: /the waivers applied/i },
+  { name: "the pass input", pattern: /capture set,? and (its|this pass's|that pass's) subset/i },
+  { name: "the pass handoff", pattern: /the mode token, the accepted findings, and the design.ticket reference/i },
+];
+
 describe("the rule sets the tests compare against", () => {
   it("come from the catalogue", () => {
     expect(L0.length, "the catalogue has no L0 rule").toBeGreaterThan(0);
@@ -137,14 +145,6 @@ describe("1. one copy of each rule", () => {
     expect(flat(REVIEW), "design-review.md lost the N/A outcome").toMatch(/state does not exist/);
   });
 
-  /* A field list that each copy of the return-to-caller payload carried. */
-  const PAYLOAD = [
-    { name: "the build input", pattern: /granted waivers and the L1 approver/i },
-    { name: "the review bundle", pattern: /the waivers applied/i },
-    { name: "the pass input", pattern: /capture set,? and (its|this pass's|that pass's) subset/i },
-    { name: "the pass handoff", pattern: /the mode token, the accepted findings, and the design.ticket reference/i },
-  ];
-
   it.each(PAYLOAD)("$name is only in the return-to-caller contract", ({ pattern }) => {
     expect(read(CONTRACT).length, `${CONTRACT} is missing or empty`).toBeGreaterThan(0);
     expect(holders(pattern), "the payload has more than one copy").toEqual([CONTRACT]);
@@ -152,5 +152,46 @@ describe("1. one copy of each rule", () => {
 
   it.each([EXECUTE, ORCHESTRATOR, PASS, CAPTURE])("%s names the return-to-caller contract", (file) => {
     expect(flat(file), `${file} does not name return-to-caller.md`).toContain("return-to-caller.md");
+  });
+});
+
+/* Contract item 2: a skill gets the L0 floor from the catalogue by tier, and
+   the skill text names no L0 rule. A file that names one L0 rule for its own
+   reason, such as the flow pass naming CMP-2, is not a copy of the floor. */
+describe("2. a skill reads the L0 floor from the catalogue", () => {
+  const floor = bullet(MECHANICS, "L0", "L1");
+
+  it("the catalogue mechanics put every L0 rule on every list", () => {
+    expect(flat(MECHANICS)).toMatch(/every L0 rule is on every list/i);
+  });
+
+  /* pass.md held the one rule about the floor that the catalogue does not:
+     a pass records an L0 failure outside its dimension. It moves here. */
+  it("the mechanics bind the floor whatever the dimension", () => {
+    expect(floor.length, `${MECHANICS} has no L0 bullet`).toBeGreaterThan(0);
+    expect(floor, "the L0 bullet does not bind every dimension").toMatch(/dimension/i);
+    expect(floor, "the L0 bullet does not forbid a silent drop").toMatch(/record/i);
+  });
+
+  /* execute's block bound the floor before the run had its list. */
+  it("the mechanics bind the floor before the run has its list", () => {
+    expect(floor, "the L0 bullet does not bind before the list").toMatch(/before/i);
+  });
+
+  it.each([EXECUTE, PASS, IMPLEMENT])("%s names no L0 rule in a floor statement", (file) => {
+    const text = flat(file);
+    expect(text.length, `${file} is missing or empty`).toBeGreaterThan(0);
+    expect(text, `${file} still carries an L0 block`).not.toMatch(/Non-negotiables|L0 is never scoped out/);
+    const named = L0.filter((id) => new RegExp(`\\b${id}\\b`).test(read(file)));
+    if (file !== EXECUTE) expect(named, `${file} names L0 rules`).toEqual([]);
+  });
+
+  it.each([EXECUTE, PASS])("%s takes the floor from the catalogue mechanics", (file) => {
+    expect(flat(file), `${file} does not name the catalogue mechanics`).toContain("catalogue-mechanics.md");
+  });
+
+  it("the capture procedure takes the floor from the mechanics, not from pass.md", () => {
+    expect(flat(CAPTURE), "capture.md still sends the floor to pass.md").not.toMatch(/L0 section of `pass\.md`/);
+    expect(flat(CAPTURE), "capture.md does not name the mechanics").toContain("catalogue-mechanics.md");
   });
 });
