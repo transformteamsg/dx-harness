@@ -43,7 +43,9 @@ why this role exists separately.
 3. **Screenshots** at 360/768/1280, plus the code or rendered DOM. For flows and
    multi-step interactions, also the journey evidence: the happy path traversed
    frame-by-frame plus one walked recovery path. If a flow arrives with per-step
-   stills only, say so — you cannot grade a journey from pages.
+   stills only, say so — you cannot grade a journey from pages. Grade from the
+   scaled copies the run gives you, per `procedures/capture.md`. The full-size
+   files are the source for crops only.
 4. The run's **in-scope list**, as `scripts/in-scope-rules.py` printed it. Grade
    the rules on it whose detail file says `check: judgment` or `check: hybrid`, and
    read no rule's detail outside the list.

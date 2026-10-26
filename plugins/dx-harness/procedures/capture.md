@@ -9,6 +9,9 @@ The run captures the surface once and resolves the rules once. Each dimension th
 judges from what the run gives it. No dimension takes its own capture, and no
 dimension gets its own list.
 
+Step 3 binds every capture, including one that a direct pass, a critique, or a
+verify step takes.
+
 ## Step 1: Decide the widths
 
 Take 1280 for every run. Add 360 when any dimension in the run judges responsive
@@ -32,12 +35,24 @@ Record the capture set:
 - Each width that did not capture, with the error
 - The rendered check output, or the reason it did not run
 
-## Step 3: Resolve the rules once
+## Step 3: Scale each frame
+
+Run `python3 <harness>/scripts/scale-capture.py --width 1280 <frame>...` on every
+frame in the capture set, where `<harness>` is the absolute path one level above
+this file. It prints one path for each frame: the scaled copy, or the frame itself
+when the frame is no wider than 1280. Add the scaled copies to the capture set.
+
+Every agent that judges, the reviewer included, reads the scaled copy. The
+full-size file stays the source for crops.
+
+When `scale-capture.py` exits with an error, stop and show the error. The error
+names the install step. No agent judges from a capture the run could not scale.
+
+## Step 4: Resolve the rules once
 
 Get the in-scope list from `<harness>/scripts/in-scope-rules.py` once for each
 dimension in the run, with `--dimension <pass> --phase verify`, per
-`catalogue-mechanics.md`, beside this file. `<harness>` is the absolute path one
-level above this file. Each list is that dimension's subset.
+`catalogue-mechanics.md`, beside this file. Each list is that dimension's subset.
 
 Report each `Selection:` line to the person. When the command exits with an error,
 stop before any dimension judges, and show the error.
@@ -46,7 +61,7 @@ Each list already holds the L0 controls. They bind every pass whatever its
 dimension, per the L0 tier in `catalogue-mechanics.md`. Each rule line holds the id, title,
 tier, `verify` text, and the path to the `detail` file when the rule has one.
 
-## Step 4: Hand each dimension its evidence
+## Step 5: Hand each dimension its evidence
 
 Give each dimension the capture set and its own subset, and nothing wider. The
 dimension reads the review part of each rule in its subset that has a detail, with
@@ -60,7 +75,7 @@ How the dimensions run depends on how many there are:
 - **Three or more dimensions**: dispatch one propose-only subagent for each pass,
   with the pass input in `return-to-caller.md`, beside this file.
 
-## Step 5: When a width does not capture
+## Step 6: When a width does not capture
 
 A width that does not capture after the mechanism order in Step 2 stays missing.
 No dimension takes its own capture to fill the gap, and the run does not retry it

@@ -11,8 +11,9 @@ and ranked suggestions in hand.
 
 ## 1. Source images
 
-Use the full-res 1280 captures from this run's capture step. Never redline a page
-you did not capture this run. If capture failed on a page, do not fake evidence:
+Crop from the full-size 1280 captures from this run's capture step. Never crop from
+a scaled copy: it is for judging only. Never redline a page you did not capture this
+run. If capture failed on a page, do not fake evidence:
 every control that needed that page takes a "verify" verdict in the coverage table
 (evidence incomplete, never "failed"), and the lede states which pages were not
 captured.

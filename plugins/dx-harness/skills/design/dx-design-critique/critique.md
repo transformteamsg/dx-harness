@@ -30,7 +30,10 @@ propose changes before you have seen and judged the current state:
    frames you already took stay valid evidence. Its `NOTE` lines are items for
    the manual accessibility pass, not gates. The frames, each width that did not
    capture, and the rendered check output are this run's capture set; the steps
-   below and `report.md` judge from it and take no second capture.
+   below and `report.md` judge from it and take no second capture. Scale every
+   frame per Step 3 of `../../../procedures/capture.md` before you judge: the
+   steps below judge from the scaled copies, and `report.md` crops from the
+   full-size files.
    `../../../procedures/capture.md` gives the same capture set to every
    dimension in a run that judges several.
 3. **Layout read (do this before judging).** Read the pattern inventory at
