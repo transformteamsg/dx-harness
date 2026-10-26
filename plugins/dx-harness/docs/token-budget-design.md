@@ -202,6 +202,7 @@ method in [Skill token budget](token-budget.md) before you rank the next change.
 | Change | Before | After | Saved per read |
 | --- | --: | --: | --: |
 | `dx-design-research-brief` reads its component guidance from `references/`, and reads only the study-type guidance and intake form a run needs ([#462](https://github.com/transformteamsg/dx-harness/issues/462)) | 3,667 | 2,891 generative, 3,126 evaluative, 3,292 hybrid | 776 generative, 541 evaluative, 375 hybrid |
+| `dx-design-execute` reads each phase from `references/` when the run enters that phase ([#458](https://github.com/transformteamsg/dx-harness/issues/458)) | 83,037 | 82,054 modification, 82,895 new page, 83,247 new page for a flow | 983 modification, 142 new page, -210 new page for a flow |
 
 Measured on 2026-10-21 with `cl100k_base`. "After" is one run: `SKILL.md` (662) and
 `references/components.md` (2,063), plus `references/generative.md` (166),
@@ -209,6 +210,17 @@ Measured on 2026-10-21 with `cl100k_base`. "After" is one run: `SKILL.md` (662) 
 goal stops after `SKILL.md`, at 662, or 909 when it also reads `references/intake.md`
 (247) for an outside stakeholder. The output template now carries the component
 headings once, and the reminders no longer repeat rules that the components state.
+
+For `dx-design-execute`, "Before" is the 83,037-token baseline run, and "After" applies
+this change alone to it. The change touches only the files that the skill owns:
+`SKILL.md`, the phase files, `grill.md`, `implement-craft.md`, and `verify.md`. They
+total 10,652 tokens before. After, a modification run with a fixed structure reads
+9,669 and skips `references/diverge.md` (841) and `references/flow.md` (352). A new
+page run reads 10,510, and a new page run for a flow reads 10,862. `SKILL.md` went
+from 5,953 to 2,577 tokens and holds the entry rules, the gates, and the run order.
+The other phase files are `references/intent.md` (1,246), `references/plan.md` (835),
+`references/implement.md` (186), and `references/rule-proposal.md` (123). Measured on
+2026-10-26 with `cl100k_base`.
 
 ## Coverage read
 

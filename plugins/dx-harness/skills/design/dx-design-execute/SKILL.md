@@ -9,12 +9,10 @@ You are designing UI for the Teacher & School portfolio (Teacher Workspace, Case
 Glow, and TW surfaces). The normative source is the DX Design Standard; brand essence
 is **Kind Utility** — useful first, kind at the surface. Standards compliance is not a
 final check — it shapes every phase. The run is: intent, diverge, plan approval,
-implement, design review. Work through the phases in order; do not skip a gate even
-if the request seems simple. This is the ONLY skill that edits the product: the
+implement, design review. This is the ONLY skill that edits the product: the
 passes and dx-design-critique propose only, and their accepted findings are built
-here. Intent and diverge live in this file; the back half of the run (plan approval,
-implement, design review, rule proposal) is shared procedure, loaded from
-`../../../procedures/` and never restated here.
+here. This file holds the entry rules, the gates, and the run order. Each phase body
+lives in its own file, named in "Run order".
 
 **When the ask belongs to another skill:**
 
@@ -112,7 +110,7 @@ and it hands off to `dx-design-git` when it trips.
 
 This loop covers both. Choose the entry depth by change size, never skip the gates:
 
-- **New page or flow** — run all six phases.
+- **New page or flow** — run all six phases in "Run order".
 - **Modification** (add a field, change a layout region, restyle a component) — run a
   scoped loop: a one-line intent, skip diverge if the structure is fixed, a short plan
   naming the controls the *changed surface* pulls in, then implement and verify the
@@ -136,265 +134,23 @@ critique returns ranked suggestions whose "what underperforms" list sets the sco
 of the polish; the procedure lives in `../dx-design-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
 has to pass its controls, it only means don't restyle a deliberate choice.
 
-## A flow is not a stack of pages
+## Gates
 
-When the surface is
-a flow — or a single page hosts a multi-step interaction — design the journey, not
-just each screen:
+These rules bind in every phase, including a phase whose file the run has not read:
 
-- **Map it in Phase 1**: entry points (where does the teacher arrive from, and with
-  what already known?), the done state, and every exit — back, cancel, abandon. A
-  flow with only its happy path mapped is a demo, not a design.
-- **Edge cases are structure, not polish.** Decide in Phase 3, not during build:
-  interruption (timeout, network loss mid-flow), partial completion and resume, the
-  teacher who left at step 2 and returns tomorrow, data that already exists
-  elsewhere. For each, the plan says what happens to the teacher's work — "your
-  draft is saved" must be a designed behaviour before it can be honest copy.
-- **Interactions carry the flow.** Transitions preserve context — content and
-  controls stay in predictable positions across steps (HIG: Flexibility); keyboard
-  traversal works across the whole journey, not just within each screen (A11Y-2 at
-  flow scope); focus lands somewhere sensible after every step change (A11Y-11
-  applies at each transition, not only at async states).
-- **Escapability is part of the structure** (HIG: Agency): the teacher can leave at
-  any step without losing work, and the route out is visible, not discovered.
+- Work through the phases in order. Do not skip a gate, even when the request seems simple.
+- Edit no product file before plan approval. Plan approval occurs one time per run, per `../../../procedures/plan-approval.md`. In return-to-caller mode, only an approval that the payload carries counts, per "Two ways in".
+- Run the branch guard in `../../../procedures/implement.md` before the first product edit, in both modes. When it trips, hand off to `dx-design-git`.
+- Never report a `checks/`-backed control as "passed" when no script ran. Say "verified manually" or "could not verify mechanically", and list what a human should re-check. Every built script covers only a static subset of its control. `checks/COVERAGE.md` names what each script does not cover.
+- Do not present output to the user while a verify step fails. The `dx-design-review` agent writes the verdict, never you.
 
-## What actually runs today
+## Run order
 
-Not every deterministic control has a script yet, and every built script covers only a
-**static subset** of its control — never assume a control is mechanically enforced.
-**Never report a `checks/`-backed control as "passed" when no script ran** — say
-"verified manually" or "could not verify mechanically", and list what a human should
-re-check. Which scripts exist and exactly what each does *not* cover: `checks/COVERAGE.md`
-(read it before the verify phase).
+Read each phase file when the run enters that phase, and not before. Check the run against the entry depth in "New page vs. modification", and run these phases in order:
 
-## Phase 1 — Intent (sprint contract)
-
-### Clarify the ask before you scope it
-
-A request like "apply the standards", "improve this", "polish it", or "make it
-better" names *no dimension of change* — and you cannot infer one, so do not try.
-"Apply the standards" in particular reads by default as a **compliance + anti-slop
-pass**: on a surface that is already decent, that can finish with the visuals looking
-almost unchanged. The fix is not to guess bigger;
-it is to **ask**. When the request is open-ended, use a structured `AskUserQuestion`
-to pin down which **dimension(s)** are in scope:
-
-- **Visual & brand expression** — colour, type expression, imagery, the surface's
-  energy, and how strongly it carries the product's brand (Glow's warmth, TW's blue,
-  CaseSync's indigo). This is the dimension "apply the standards" silently drops.
-- **Layout & structure** — hierarchy, composition, page template, density.
-- **UX & flow** — the teacher's path, the steps, the states, the friction.
-- **Copy** — headings, labels, microcopy, error states.
-- **Compliance & anti-slop only** — fix control violations, change nothing that is
-  deliberate. This is the *narrowest* ask; confirm it is what the builder meant
-  rather than the default they fell into.
-
-Pair the dimensions with an **ambition level** — the smallest reversible change that
-meets the contract (Phase 4's standing default), a targeted lift of the
-underperforming parts, or a bold reimagining *within the product's existing system*
-(never an invented aesthetic — COL-1, TYP-1, SLP-1 still bind). Standards compliance
-is the floor in every case; this question decides whether the ceiling is in scope
-too. Write the answer into the done-criteria so the evaluator grades against the
-dimension the builder wanted, not the one the phrase defaulted to.
-
-Establish the rest, asking the user only what you cannot infer:
-
-> For an **existing** surface, the contract's done-criteria target the critique's
-> findings *through the dimensions chosen above*, not a blanket redesign and not a
-> compliance-only pass when the builder asked for more.
-
-1. **Purpose**: what must the teacher accomplish on this page? One sentence. Apply
-   the one test: *does this help teachers work faster with less stress?* If not,
-   raise that before designing anything. Keep the scope focused (HIG: Purpose):
-   prioritise the few things this moment actually needs and make those truly good —
-   a page with a clear use beats one that does everything.
-2. **The teacher and the moment**: anchor in a specific teacher's real workflow, not
-   an abstract "user" — can you name the teacher and the moment this serves? ("Ms.
-   Lim, P5 Math, entering marks the week before reports are due.") Design for the
-   stressed week, not the average one.
-3. **Product and page type**: which product (TW / CaseSync / Glow / TW surface — this
-   sets tone calibration per `copy`; a repo outside the portfolio answers
-   **other** and names the actual product — a true answer always exists, and
-   "closest fit" is never recorded as the product), and what kind of surface:
-   workspace view, form, flow step, dashboard, settings, empty state, onboarding.
-   Page type selects controls via `applies_to`. For **other**, every
-   `products:`-scoped control (e.g. IDN-4) is recorded in the decision record as
-   **deliberately out of scope — product outside the portfolio**, a decision, not
-   a silent drop. **Audience**: who does this surface serve —
-   teachers (the default; assume it when unstated), students (ask which band:
-   primary, or secondary and up), or parents? Record it in the sprint contract;
-   it scopes `audiences:`-scoped controls for the rest of the loop. If the product
-   repo has a `DESIGN.md`, load it now — it calibrates colour/tone/motion for
-   everything downstream. **Any
-   surface with an async or destructive
-   action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
-   page — do not let the page/flow split scope them out.
-4. **Done-criteria**: write a short sprint contract — the 3–6 statements the evaluator
-   will later grade against. State the **dimension(s) and ambition** chosen in "Clarify
-   the ask" as explicit criteria (e.g. "the surface visibly carries Glow's warmth", not
-   just "passes the standards") — otherwise the evaluator has no way to catch a run that
-   delivered compliance when the builder wanted a visual redesign. Include the
-   `intent`-phase controls (CNT-2 naming applies here: name the feature in plain
-   language now, before a placeholder name spreads).
-5. **Component inventory**: list the surface as a coverage checklist — the route,
-   every component it renders (by import name), and every **interactive control**
-   on it (buttons, inputs, dropdowns/combobox, toggles, tabs, links, menus). For
-   each interactive control, name the states to exercise later: open, keyboard-tab
-   (focus visible?), screen-read (role + accessible name + state?). This is the
-   list Phase 5 checks off and the evaluator independently verifies — coverage is
-   a provable checklist, not a vibe.
-
-Output: the sprint contract, shown to the user.
-
-## Phase 2 — Diverge
-
-Produce 2–3 clearly different directions and render each one as a real,
-self-contained HTML page, so the person picks between things they can see, not
-descriptions. Skip diverge only when the structure is fixed (the modification path
-above) or the ask names a chosen direction.
-
-**Rendering and hosting.** Each direction is one self-contained HTML file: inline
-CSS, no external requests, honest content (the real headings and copy from Phase 1,
-not lorem ipsum). In Claude Code, publish the pages as Claude Artifacts; they open
-in the browser automatically. In a harness without artifact publishing, write the
-HTML files locally and open them in the browser (`open <file>` on macOS, or the
-platform equivalent). In a headless or unattended run where no browser can open,
-print the file paths or artifact URLs and ask for the pick; NEVER silently choose a
-direction yourself.
-
-**The accompanying summary.** Beside the rendered pages, give each direction a short
-text summary: layout structure, which existing components it composes, how the flow
-splits across steps, a one-line **visual thesis** (the mood and energy it carries,
-stated as an extension of the product's existing system, never an invented new
-aesthetic), and one sentence on the trade-off.
-
-**The pick is the contract.** Record the chosen direction on the surface's design
-ticket run record (`../../../procedures/design-tickets.md`); the design review
-audits the built result against it.
-
-Use the product's component manifest
-(`.dx/component-manifest.json`, filtered to `status: "stable"` entries) —
-options may only compose components that exist in the manifest (CMP-1 applies from
-here on). If the product has no manifest yet, fall back to the v0-limit procedure
-in CMP-1's `--for review` part and note "asserted, no manifest".
-Progressive disclosure is the default pattern: show the core path, reveal complexity
-on demand. Three anti-slop controls bind at this altitude: a complex multi-section
-task gets a page, never a modal (SLP-10) — if an option puts tabs, columns, or its
-own scrolling inside a dialog, it is not an option; a grid of identical cards is
-not a default layout (SLP-5) — structure should come from the task's hierarchy, not
-a template; and a card is only for an interactive unit (SLP-11) — if an option boxes
-static content in card chrome where spacing, type, and a divider would group it, that
-is a finding, not a layout. Two lenses bind here too: simplicity is not minimalism (HIG: Simplicity) —
-keep the important things close and let the rest fall away, never hide what the task
-needs; and keep the teacher free to move (HIG: Agency) — an option that locks people
-into a guided flow or mode must make it easy to skip or escape.
-
-**Compose, don't fill.** Treat the first screen as a composition, not a container to
-pack: one clear focal point — the teacher's primary task and its single primary action
-(CMP-5) — with related content grouped by proximity and a shared region rather than
-boxed in cards (SLP-11), and everything else stepped down so hierarchy does the
-explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does it fit
-a known page template for its type?), LAY-5 (does its density fit the task?), LAY-6
-(do shared edges align?), and LAY-7 (one primary focal region; does the visual reading
-order match the task's priority order — the squint test) — design to them now, not as
-a cleanup pass.
-
-Output: the rendered direction pages plus their summaries, with a recommendation.
-The user picks; the pick becomes the contract above.
-
-## Phase 3 — Plan (human gate)
-
-The gate protocol is shared: read `../../../procedures/plan-approval.md` now and
-run it. It holds the stop-once rule (plan approval occurs one time per run; an
-explicit ask to build a specific plan or chosen direction counts as approval), the
-three gate stages, L1 waiver approval, the unattended-run proxy rules, and where
-the approved plan is recorded. The grilling procedure its stage 2 runs is
-`grill.md`, beside this skill. In return-to-caller mode the gate is satisfied only
-when the payload carries an approval; without one, return the plan to the caller
-per "Two ways in" above, and never stop twice in one run.
-
-Expand the chosen direction into a plan:
-
-- Page/step structure and the component for each region.
-- Tokens/patterns used; any **missing component** surfaced explicitly with options
-  (extend an existing Base UI component / request from the design system — never
-  improvise a one-off without a CMP-1 waiver).
-- **Interaction plan**: name the 2–3 specific motions the chosen option uses — one
-  entrance, one state transition, one hover/reveal — described concretely (what moves,
-  from what to what), not "add animations". Reuse the product's existing motion
-  conventions; every motion is bound by MOT-1 (100–300ms, standard easing, none on
-  critical paths beyond functional feedback), SLP-8 (no bounce/elastic), and A11Y-5
-  (a reduced-motion variant). Motion that improves neither hierarchy nor feedback is cut.
-- The controls in scope for this page (filtered catalog), with any proposed waivers
-  and their rationale — waivers are decided here, not improvised during implementation.
-- Content outline: headings, key copy, names checked against CNT-2, error states
-  (CMP-3: enumerate loading/success/error states per async action — and for each
-  state, its A11Y-11 announcement channel: live region or focus move; CMP-2: every
-  destructive action's consequence + undo/confirm, decided now).
-- **Flow map** (when the surface is a flow or hosts a multi-step interaction): entry
-  points, done state, every exit, and the edge cases from "A flow is not a stack of
-  pages" — interruption, partial completion, resume — each with what happens to the
-  teacher's work. A plan that covers the steps but not the journey between them is
-  incomplete.
-- **Tradeoffs, named**: what this design sacrifices and why that's acceptable.
-- **Plan summary table**: end the plan with a compact table the reader can scan in one
-  pass — one row per plan dimension (structure; components; interaction & motion; async
-  states + each one's A11Y-11 channel; controls in scope; waivers; tradeoffs; evidence
-  to capture), each cell a tight phrase, not prose. It is a summary the grill and the
-  approver read first, never a substitute for the plan above it.
-
-Skill-specific notes on the gate:
-
-- The structured Approve / Adjust question is the default at the Phase 2 direction
-  pick and at continuation gates too, but the three-stage split lives only at this
-  gate. At the Phase 2 pick the dialog may be same-turn, because the summaries are
-  short enough to read inside it.
-- The decision record this repo writes the approved plan to is
-  `docs/decisions/<page>.md` in the **product repo**. If `docs/decisions/TEMPLATE.md`
-  does not yet exist there, copy it from the plugin first; it ships at
-  `<this-skill-dir>/../../../docs/decisions/TEMPLATE.md` (resolved from the harness
-  root, as in the Load-first note) so records conform to `audit-record.py` by
-  default.
-
-## Phase 4 — Implement
-
-The implement procedure is shared: read `../../../procedures/implement.md` now. It
-holds the **branch guard** (run it before any edit, in both modes; when it trips,
-hand off to `dx-design-git`), the frontend-only boundary, and the non-negotiable
-build constraints. Build exactly the approved plan under them.
-
-Skill-specific notes while building:
-
-- **Interface craft** (HIG: Craft): the small details that read as care. Apply the
-  ones the surface calls for from `implement-craft.md` (beside this skill) as you
-  build, not as a cleanup pass; each refines the shared constraints, none replaces
-  them, and the design reviewer grades Craft on them.
-- The copy pass skill the shared constraints defer to ships with this harness:
-  `../dx-design-copy/SKILL.md`, relative to this skill.
-
-## Phase 5: Design review
-
-In standalone mode, run the five steps in `verify.md` (beside this skill) IN
-ORDER: read it now, before verifying anything, and do not present output to the
-user while a step is failing. It carries the deterministic checks, the evidence
-sets and the rendered check, then hands off to the shared procedure
-`../../../procedures/design-review.md` for reviewer dispatch, the verbatim-verdict
-rule, and the verdict re-check from new screenshots. The verdict is written by the
-`dx-design-review` agent, never by you.
-
-In return-to-caller mode, run only steps 1 to 3 of `verify.md`: the deterministic
-checks, the evidence capture and the rendered check. Never run step 4 yourself;
-reviewer dispatch belongs to whoever started the run, exactly once. Return the
-review bundle from "Two ways in" to the caller, who dispatches the reviewer and
-routes the verdict back; when findings come back, address them and re-run from
-step 1 (step 5).
-
-## Phase 6: Rule proposal
-
-After the user accepts the result, finish the decision record started in Phase 3
-(`docs/decisions/<page>.md`): chosen direction, rejected directions and why, waivers
-granted and by whom, and the review verdict verbatim. Then follow
-`../../../procedures/rule-proposal.md` for any failure the review or the user caught
-that no control covered (it also routes harness friction to the feedback skill,
-which carries that procedure), and record the run on the surface's design ticket per
-`../../../procedures/design-tickets.md`.
+1. **Intent**: read [references/intent.md](references/intent.md). When the surface is a flow, or a single page hosts a multi-step interaction, also read [references/flow.md](references/flow.md).
+2. **Diverge**: read [references/diverge.md](references/diverge.md). Skip this phase, and do not read its file, when the structure is fixed or the ask names a chosen direction.
+3. **Plan**: read [references/plan.md](references/plan.md). It stops at the plan-approval gate.
+4. **Implement**: read [references/implement.md](references/implement.md) after plan approval.
+5. **Design review**: read [verify.md](verify.md). In standalone mode, run all of its steps in order. In return-to-caller mode, run steps 1 to 3 only, and return the review bundle from "Two ways in". The caller dispatches the reviewer. When findings come back, address them and re-run from step 1.
+6. **Rule proposal**: after the user accepts the result, read [references/rule-proposal.md](references/rule-proposal.md).
