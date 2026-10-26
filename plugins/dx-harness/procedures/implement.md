@@ -58,7 +58,8 @@ Constraints, non-negotiable while building:
 - One primary action per view (CMP-5); components at their defaults and the way
   sibling pages use them (CMP-7); data tables use the semantic table pattern —
   header row, right-aligned numeric columns with tabular figures (CMP-6).
-- Copy follows the copy pass skill as you write it, not as a cleanup pass; SLP-9
+- When the build writes or changes user-facing text, follow `copy-rules.md` (beside
+  this file) for that user-facing text as you write it, not as a cleanup pass; SLP-9
   (AI-writing tells) binds all of it.
 - **Make every asserted state reachable for evidence.** If a control claims
   loading/success/error states, the design review must photograph them; build a

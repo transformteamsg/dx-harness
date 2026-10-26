@@ -321,7 +321,7 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
 # markers and compared against its source here. See docs/SYNC.md.
 
 # REQUIRED_CORE — a hard-coded floor of buzzwords that must appear in BOTH the
-# canonical slp-9.md list and the copy skill's summary. NOT synced from
+# canonical slp-9.md list and the copy rules' summary. NOT synced from
 # slp-9.md by design, so the check keeps an anchor even if both lists are edited.
 # If the canonical list ever drops one of these, update this set too (see SYNC.md).
 REQUIRED_CORE = {"streamline", "empower", "supercharge"}
@@ -422,12 +422,12 @@ def lay_parity_errors(repo_root, catalog_by_id, xref_re):
 
 def slp9_parity_errors(repo_root):
     """
-    [SLP9-SYNC] The copy skill's buzzword summary must be a SUBSET of the
-    canonical slp-9.md buzzword list (the skill may show fewer words, never more),
+    [SLP9-SYNC] The copy rules' buzzword summary must be a SUBSET of the
+    canonical slp-9.md buzzword list (the rules may show fewer words, never more),
     and REQUIRED_CORE must appear in both. Missing markers are an error.
     """
     src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
-    con_path = os.path.join(repo_root, "skills", "design", "dx-design-copy", "SKILL.md")
+    con_path = os.path.join(repo_root, "procedures", "copy-rules.md")
     present, errors = required_consumer_errors(repo_root, [src_path, con_path],
                                                "SLP9-SYNC")
 
@@ -455,7 +455,7 @@ def slp9_parity_errors(repo_root):
         extra = consumer - source
         if extra:
             errors.append(
-                f"ERROR {rel} [SLP9-SYNC]: skill buzzword(s) "
+                f"ERROR {rel} [SLP9-SYNC]: copy-rules buzzword(s) "
                 f"{{{', '.join(sorted(extra))}}} not in canonical slp-9.md list"
             )
 
@@ -927,10 +927,11 @@ def gap_allowlist_errors(catalog_by_id):
     return errors
 
 
-# ── Copy-skill ↔ guideline parity (VOICE / TONE / UITEXT) ────────────────────────
-# The copy skill (skills/design/dx-design-copy/SKILL.md) inlines the voice-attributes
-# and tone-by-context tables and the draft-phase editing sequence; the website
-# guidelines restate them for human readers. Source = the plugin-shipped skill;
+# ── Copy rules ↔ guideline parity (VOICE / TONE / UITEXT) ────────────────────────
+# The copy rules (procedures/copy-rules.md) inline the voice-attributes and
+# tone-by-context tables, and the copy skill (skills/design/dx-design-copy/SKILL.md)
+# inlines the draft-phase editing sequence; the website guidelines restate them for
+# human readers. Source = the plugin-shipped file;
 # consumers = the website mdx under content/standards/, which live OUTSIDE the plugin
 # (found by find_content_root, like package.json in wiring_parity_errors) — so these
 # are website-optional sub-checks that return clean when the site tree is absent (the
@@ -993,21 +994,20 @@ def _section_heading_words(span):
 
 def _table_parity_errors(repo_root, name, tag, consumer_rel):
     """
-    Shared engine for [VOICE-SYNC] / [TONE-SYNC]: the skill's marked table
+    Shared engine for [VOICE-SYNC] / [TONE-SYNC]: the copy rules' marked table
     (source) must equal the website guideline's marked table (consumer) as
     normalized row sets. Website-optional — a missing guideline file returns
     clean. A missing source or consumer marker is an error.
     """
-    skill_path = os.path.join(repo_root, "skills", "design", "dx-design-copy",
-                              "SKILL.md")
-    present, errors = required_consumer_errors(repo_root, [skill_path], tag)
-    if skill_path not in present:
+    rules_path = os.path.join(repo_root, "procedures", "copy-rules.md")
+    present, errors = required_consumer_errors(repo_root, [rules_path], tag)
+    if rules_path not in present:
         return errors
-    with open(skill_path) as fh:
+    with open(rules_path) as fh:
         src_span = extract_sync_block_any(fh.read(), name)
     if src_span is None:
         errors.append(
-            f"ERROR skills/design/dx-design-copy/SKILL.md [{tag}]: "
+            f"ERROR procedures/copy-rules.md [{tag}]: "
             f"missing dx-sync:{name} source markers")
         return errors
 
@@ -1026,21 +1026,21 @@ def _table_parity_errors(repo_root, name, tag, consumer_rel):
     con_rows = _normalize_table_rows(con_span)
     if src_rows != con_rows:
         errors.append(
-            f"ERROR {consumer_rel} [{tag}]: table rows differ from the copy skill — "
-            f"only in skill: {sorted(src_rows - con_rows)}; "
+            f"ERROR {consumer_rel} [{tag}]: table rows differ from the copy rules — "
+            f"only in copy rules: {sorted(src_rows - con_rows)}; "
             f"only in guideline: {sorted(con_rows - src_rows)}"
         )
     return errors
 
 
 def voice_parity_errors(repo_root):
-    """[VOICE-SYNC] copy skill's voice-attributes table == voice-tone.mdx's."""
+    """[VOICE-SYNC] copy rules' voice-attributes table == voice-tone.mdx's."""
     return _table_parity_errors(repo_root, "voice-attributes", "VOICE-SYNC",
                                 "content/standards/voice-tone.mdx")
 
 
 def tone_parity_errors(repo_root):
-    """[TONE-SYNC] copy skill's tone-by-context table == voice-tone.mdx's."""
+    """[TONE-SYNC] copy rules' tone-by-context table == voice-tone.mdx's."""
     return _table_parity_errors(repo_root, "tone-context", "TONE-SYNC",
                                 "content/standards/voice-tone.mdx")
 
@@ -2413,8 +2413,9 @@ def run_self_test():
         shutil.rmtree(skillsync_tmp, ignore_errors=True)
 
     # ── [VOICE-SYNC] / [TONE-SYNC] / [UITEXT-SYNC] cases ─────────────────────
-    # Lay out a synthetic repo: harness/skills/design/dx-design-copy/SKILL.md
-    # (source, <!-- --> markers) and content/standards/*.mdx one level up
+    # Lay out a synthetic repo: harness/procedures/copy-rules.md and
+    # harness/skills/design/dx-design-copy/SKILL.md (sources, <!-- --> markers)
+    # and content/standards/*.mdx one level up
     # (consumers, {/* */} markers) — mirroring the real placement so the
     # helpers' find_content_root walk-up and website-absent bail-out are
     # exercised for real.
@@ -2424,12 +2425,15 @@ def run_self_test():
         skill_dir = os.path.join(harness_dir, "skills", "design", "dx-design-copy")
         os.makedirs(skill_dir)
         skill_path = os.path.join(skill_dir, "SKILL.md")
+        rules_dir = os.path.join(harness_dir, "procedures")
+        os.makedirs(rules_dir)
+        rules_path = os.path.join(rules_dir, "copy-rules.md")
         guide_dir = os.path.join(copy_tmp, "content", "standards")
         os.makedirs(guide_dir)
         voice_path = os.path.join(guide_dir, "voice-tone.mdx")
         uitext_path = os.path.join(guide_dir, "writing.mdx")
 
-        skill_md = (
+        rules_md = (
             "<!-- dx-sync:voice-attributes source -->\n"
             "| We are | We are not |\n|---|---|\n"
             "| Clear but not cold | Robotic or detached |\n"
@@ -2437,7 +2441,11 @@ def run_self_test():
             "<!-- dx-sync:tone-context source -->\n"
             "| Context | Tone | Direction |\n|---|---|---|\n"
             "| Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |\n"
-            "<!-- /dx-sync:tone-context -->\n\n"
+            "<!-- /dx-sync:tone-context -->\n"
+        )
+        with open(rules_path, "w") as fh:
+            fh.write(rules_md)
+        skill_md = (
             "<!-- dx-sync:uitext-sequence source -->\n"
             "1. **Draft.** a\n2. **Purposeful.** b\n3. **Concise.** c\n"
             "4. **Conversational.** d\n5. **Clear.** e\n"

@@ -17,7 +17,7 @@ This file does not govern:
   comments.** [House style](house-style.md) governs those. Never graft it onto a
   skill instead of this file: a repository trial found that makes output worse,
   and `house-style.md` records the finding.
-- **Product UI copy.** SLP-9 governs it, carried by `dx-design-copy`.
+- **Product UI copy.** SLP-9 governs it, carried by [Copy rules](copy-rules.md).
 - **Published technical documents.** `docs/`, `CONTEXT.md`, and READMEs follow
   the Google developer documentation style guide, which the Technical documents
   section of `CLAUDE.md` names. Write this file's own prose to that guide too.
