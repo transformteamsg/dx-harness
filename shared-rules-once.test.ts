@@ -231,3 +231,27 @@ describe("3. a skill that needs a new payload field adds it to the contract", ()
     expect(read(PASS)).toMatch(/^## Two entries/m);
   });
 });
+
+/* Also true when done: the validator passes, and each dx-sync check whose
+   copies are gone goes with them. The validator run itself is in
+   grading-text.test.ts. */
+describe("4. the sync checks for the removed copies are gone", () => {
+  const validator = fs.readFileSync(VALIDATE, "utf8");
+
+  it.each(["L0-SYNC", "LAY-SYNC"])("the validator has no %s check", (tag) => {
+    expect(validator, `the validator still runs [${tag}]`).not.toContain(`[${tag}]`);
+  });
+
+  it.each(["L0-SYNC", "LAY-SYNC"])("checks/README.md documents no %s check", (tag) => {
+    expect(read(CHECKS_README), `the README still documents [${tag}]`).not.toContain(`[${tag}]`);
+  });
+
+  it("no run file carries a dx-sync fence for the removed copies", () => {
+    expect(holders(/dx-sync:(L0|lay-controls)\b/), "a fence is left behind").toEqual([]);
+  });
+
+  it("the validator passes", () => {
+    const run = spawnSync("python3", [VALIDATE], { cwd: ROOT, encoding: "utf8" });
+    expect(run.status, `${run.stdout}${run.stderr}`).toBe(0);
+  });
+});
