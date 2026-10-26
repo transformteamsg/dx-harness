@@ -152,5 +152,5 @@ Read each phase file when the run enters that phase, and not before. Check the r
 2. **Diverge**: read [references/diverge.md](references/diverge.md). Skip this phase, and do not read its file, when the structure is fixed or the ask names a chosen direction.
 3. **Plan**: read [references/plan.md](references/plan.md). It stops at the plan-approval gate.
 4. **Implement**: read [references/implement.md](references/implement.md) after plan approval.
-5. **Design review**: read [verify.md](verify.md). In standalone mode, run all of its steps in order. In return-to-caller mode, run steps 1 to 3 only, and return the review bundle from "Two ways in".
+5. **Design review**: read [verify.md](verify.md). In standalone mode, run all of its steps in order. In return-to-caller mode, run steps 1 to 3 only, and return the review bundle from "Two ways in". The caller dispatches the reviewer. When findings come back, address them and re-run from step 1.
 6. **Rule proposal**: after the user accepts the result, read [references/rule-proposal.md](references/rule-proposal.md).
