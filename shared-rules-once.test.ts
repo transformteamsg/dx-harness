@@ -195,3 +195,39 @@ describe("2. a skill reads the L0 floor from the catalogue", () => {
     expect(flat(CAPTURE), "capture.md does not name the mechanics").toContain("catalogue-mechanics.md");
   });
 });
+
+/* Contract item 3: a payload field a skill needs goes into the contract. */
+describe("3. a skill that needs a new payload field adds it to the contract", () => {
+  const contract = flat(CONTRACT);
+
+  it("the contract says a new field goes into it", () => {
+    expect(contract.length, `${CONTRACT} is missing or empty`).toBeGreaterThan(0);
+    expect(contract, "the contract does not own new fields").toMatch(/field[^.]*(add|goes)[^.]*(here|this (file|contract))/i);
+  });
+
+  /* The review bundle that execute returned had seven parts. Each one is in
+     the contract, so no caller depends on execute's own text. */
+  it.each([
+    "built changes", "sprint contract", "approved plan", "component inventory",
+    "judgment and hybrid", "waivers applied", "evidence captured",
+  ])("the contract's review bundle carries %s", (part) => {
+    expect(contract, `the review bundle lost ${part}`).toContain(part);
+  });
+
+  it.each([EXECUTE, ORCHESTRATOR, PASS])("%s defines no payload field of its own", (file) => {
+    const text = flat(file);
+    expect(text.length, `${file} is missing or empty`).toBeGreaterThan(0);
+    for (const { name, pattern } of PAYLOAD) expect(text, `${file} lists ${name}`).not.toMatch(pattern);
+    expect(text, `${file} lists the review bundle`).not.toMatch(/component inventory, the in-scope judgment/i);
+  });
+
+  /* Five references point at execute's "Two ways in" and at pass.md's two
+     entries. They must still land on a section that exists. */
+  it("execute keeps the section its own references name", () => {
+    expect(read(EXECUTE)).toMatch(/^## Two ways in/m);
+  });
+
+  it("pass.md keeps the two entries the pass skills name", () => {
+    expect(read(PASS)).toMatch(/^## Two entries/m);
+  });
+});
