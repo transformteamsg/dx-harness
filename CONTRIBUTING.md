@@ -15,7 +15,7 @@ The checks need two tools that they reach as subprocesses rather than as imports
 | Tool | Version | Why |
 | --- | --- | --- |
 | Python 3 with PyYAML | 3.12 | `design-catalog-validate.py` reads the control catalogue, and every check runs its self-test under Python |
-| Pillow | Latest | The tests for `scripts/scale-capture.py` make and scale image files with it |
+| Pillow | Latest | The tests for `scripts/scale-capture.py` and `scripts/critique-report.py` make, scale, and crop image files with it |
 | ast-grep | Pinned in `package.json` | `token-audit.py`, `type-scan.py`, and `structure-scan.py` match source structure through it |
 
 ```sh
