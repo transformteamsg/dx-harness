@@ -256,6 +256,21 @@ CMP-1's review part for its v0-limit procedure, which adds 650 tokens.
 holds the detail command and its rules. Measured on 2026-10-23 with `cl100k_base`,
 on a product with no `DESIGN.md`.
 
+## Reviewer agent read
+
+The reviewer agent grades each rule from the review part of its detail, and carries no
+grading text for a single rule.
+
+| Change | Baseline | Before | After |
+| --- | --: | --: | --: |
+| `agents/dx-design-review.md` moves the grading text for single rules into their details ([#452](https://github.com/transformteamsg/dx-harness/issues/452)) | 4,641 | 4,759 | 3,283 |
+
+"Before" is the file on `main` directly before the change. It grew from the 4,641-token
+baseline because #466, #482, and #484 added the coverage file, the in-scope list, and
+the detail command to it. The change saves 1,476 tokens per read. The steps that moved
+now sit in the review part of each rule, so a review reads them only for the rules on
+its in-scope list. Measured on 2026-10-26 with `cl100k_base`.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
