@@ -314,6 +314,33 @@ taller than the viewport costs more in both columns.
 The image and output tokens of one `dx-design-execute` run, before and after this
 change, are not recorded yet. They need a live run against a product repository.
 
+## Critique report
+
+`scripts/critique-report.py` builds the critique report from a findings file that
+the agent writes ([#455](https://github.com/transformteamsg/dx-harness/issues/455)).
+The script crops each finding, writes the contact sheet, and embeds every image in
+the HTML. The agent writes no base64, and it checks the crops on the contact sheet
+alone.
+
+| One critique run, five findings | Before | After | Saved |
+| --- | --: | --: | --: |
+| Output tokens the agent writes | 452,992 | 3,124 | 449,868 |
+| Image tokens the agent reads | 2,100 | 1,120 | 980 |
+
+"Before" is the report step as it was: the agent writes the HTML, with the base64 of
+seven images in it, and reads each of the five crops (196 tokens each) and the
+contact sheet (1,120). The base64 is 449,035 of the 452,992 tokens, and the HTML
+around it is 3,957. "After" is the findings file (3,124) and one read of the contact
+sheet. Each fix to a misplaced box adds one more read of the sheet in both columns.
+`report.md` went from 1,343 to 1,446 tokens.
+
+These figures come from a synthetic run, not a live critique. The run had two
+captures at a device pixel ratio of 2, each 2,560 by 1,800 pixels, with five
+findings, five suggestions, and 56 coverage rows. Text tokens are counted with
+`cl100k_base`. Image tokens use the rule in [Capture image read](#capture-image-read).
+The base64 count grows with the size and the number of the captures. Measured on
+2026-10-26.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through

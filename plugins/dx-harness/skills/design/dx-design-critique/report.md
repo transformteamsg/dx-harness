@@ -18,39 +18,49 @@ every control that needed that page takes a "verify" verdict in the coverage tab
 (evidence incomplete, never "failed"), and the lede states which pages were not
 captured.
 
-## 2. Redlined crops
+## 2. Findings file
 
-PIL (Pillow) is a setup dependency, not a runtime surprise. Detect it before
-cropping: run `python3 -c "import PIL"`. If that fails, install it with
-`pip install Pillow` (or `pip3 install Pillow`), re-run the check, and only then
-proceed. The general environment checklist lives in `../dx-design-setup/setup.md`, but
-this step never depends on it: the check and the fix above are complete on their
-own. Never fake crops, and never ship a report with placeholder images.
+Write one JSON findings file for the run. It names each finding, its crops, the
+suggestions, the coverage verdicts, the preserve list, and the captures for the
+appendix. `../../../scripts/critique-report.py` states the format in its header.
 
 For each annotated finding:
 
-1. Choose the crop region by judgment from the capture: the element the finding
-   names, plus enough surrounding context to orient the reader.
-2. With PIL, crop from the full-res image, draw a 3px rounded rectangle (#e11d63)
-   on the specific element, and downscale the crop to ~760px wide.
-3. Comparison findings (for example header drift across pages) stack crops from
-   several pages into one image.
-4. Give each crop a figcaption naming the page it came from.
+1. Choose the crop region by judgment from the scaled copy you judged from: the
+   element the finding names, plus enough surrounding context to orient the reader.
+2. Give the region and the box around the element in the pixels of that scaled
+   copy. Name the full-size capture as the source. The script scales the
+   coordinates to it.
+3. Give a comparison finding, such as header drift across pages, one crop for each
+   page. The script stacks them into one image.
+4. Name the page each crop came from.
 
-## 3. Contact sheet (mandatory)
+Never write base64 or a data URI yourself. The script embeds every image.
 
-Assemble every crop into one contact-sheet image, render it, and re-read it
-visually before publishing. This self-check is mandatory before every publish,
-first run and re-runs alike, and it blocks publishing until it passes. When you
-find a misplaced box: fix the box, regenerate the crop and the sheet, and re-read
-the sheet again. Never publish unchecked crops.
+## 3. Build and contact sheet (mandatory)
+
+Run `python3 ../../../scripts/critique-report.py <findings file> --out <dir>`. It
+crops from the full-size captures, draws each redline box, writes the contact sheet
+of every crop, and assembles the report. It prints the path of each file.
+
+When `critique-report.py` exits with an error, stop and show the error. Do not
+publish. When Pillow is not installed, the error names the install step. Run that
+step, then rerun the script. Never fake crops, and never ship a report with
+placeholder images.
+
+Read the contact sheet before you publish. Do not read the crops again one by one:
+the sheet holds every crop. This self-check is mandatory before every publish, first
+run and re-runs alike, and it blocks publishing until it passes. When you find a
+misplaced box, fix its coordinates in the findings file, rerun the script, and read
+the new sheet. Never publish unchecked crops.
 
 ## 4. HTML assembly
 
-One self-contained file: every image embedded as a base64 data URI, tokens themed
-for light and dark via prefers-color-scheme plus data-theme overrides, no external
-requests. Style the suggestions table as the decision surface: quick-win rows get a
-green left edge, and the table states "approving 'quick wins' takes all N".
+The script writes one self-contained file: every image embedded as a base64 data
+URI, tokens themed for light and dark via prefers-color-scheme plus data-theme
+overrides, and no external requests. The suggestions table is the decision surface:
+quick-win rows get a green left edge, and the table states "approving 'quick wins'
+takes all N". Change the report by changing the findings file, not the HTML.
 
 ### Document structure (locked, in this order)
 

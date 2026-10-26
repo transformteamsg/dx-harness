@@ -42,9 +42,9 @@ When someone asks about or proposes a waiver, read `../../../standards/README.md
    protects a deliberate choice from restyling, never its compliance from the checks —
    verify every preserved element against its controls (the L0 floor, A11Y-1 especially).
 2. **Present the report.** Read and run `report.md` (beside this file) end to end:
-   redline the findings onto crops of this run's captures, pass the mandatory
-   contact-sheet self-check, assemble the self-contained HTML in the locked document
-   structure, and publish it. The report is the default output of every critique run,
+   write the findings file, build the report and the contact sheet with
+   `scripts/critique-report.py`, pass the mandatory contact-sheet self-check, and
+   publish the report. The report is the default output of every critique run,
    not an opt-in; a person who asked for a whole-page review with no dimension named
    gets it without asking. Only critique produces it; the five passes never do.
 3. **Record the findings and stop.** Write a Findings comment on the surface's design
