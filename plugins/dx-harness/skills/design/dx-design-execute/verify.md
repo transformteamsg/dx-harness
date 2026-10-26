@@ -54,6 +54,8 @@ Run in this order; do not present output to the user while a step is failing:
    Check each frame's *actual* rendered viewport before naming it — a screenshot
    named `768-*.png` taken at a stale viewport is mislabeled evidence.
    Capture with the mechanism order in step 2 of `../dx-design-critique/critique.md`.
+   Then scale every frame per Step 3 of `../../../procedures/capture.md`, and give
+   the reviewer the scaled copies.
    The evidence set is not optional, and unverified work is never presented as
    verified.
    - **Inventory checkoff**: walk the Phase-1 component inventory and tick each

@@ -61,8 +61,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install PyYAML
-        run: pip install pyyaml
+      - name: Install PyYAML and Pillow
+        run: pip install pyyaml Pillow
 
       # Vitest, then every check script's --self-test (test:checks).
       - name: Test

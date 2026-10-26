@@ -14,6 +14,13 @@ platform equivalent). In a headless or unattended run where no browser can open,
 print the file paths or artifact URLs and ask for the pick; NEVER silently choose a
 direction yourself.
 
+**Rough directions.** When the person asks for rough directions, low-fidelity
+options, or wireframes, each direction is a wireframe page, not a styled page. A
+wireframe page uses greyscale boxes and system type, with no colour, no brand type,
+and no imagery. It keeps everything else above: one self-contained file, the real
+headings and copy, and the components it composes. Its summary leaves out the visual
+thesis. The plan styles the picked direction from the product's system.
+
 **The accompanying summary.** Beside the rendered pages, give each direction a short
 text summary: layout structure, which existing components it composes, how the flow
 splits across steps, a one-line **visual thesis** (the mood and energy it carries,

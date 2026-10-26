@@ -292,6 +292,28 @@ the detail command to it. The change saves 1,476 tokens per read. The steps that
 now sit in the review part of each rule, so a review reads them only for the rules on
 its in-scope list. Measured on 2026-10-26 with `cl100k_base`.
 
+## Capture image read
+
+An agent judges each capture from a copy that `scripts/scale-capture.py` scales to
+1280 pixels wide ([#480](https://github.com/transformteamsg/dx-harness/issues/480)).
+A frame captured at a device pixel ratio of 1 is already within that width, so it
+gets no copy and costs the same. The saving is on a frame captured at a device pixel
+ratio of 2.
+
+| Frame, device pixel ratio 2 | Before | After | Saved per read |
+| --- | --: | --: | --: |
+| 1280 by 900 | 4,756 | 1,518 | 3,238 |
+| 768 by 1024 | 4,070 | 2,806 | 1,264 |
+| 360 by 800 | 1,508 | 1,508 | 0 |
+
+These figures are calculated, not measured. They use the image token rule for the
+high-resolution models, `ceil(width / 28) * ceil(height / 28)`, after the model
+downscales an image to a long edge of 2,576 pixels and 4,784 tokens. A frame that is
+taller than the viewport costs more in both columns.
+
+The image and output tokens of one `dx-design-execute` run, before and after this
+change, are not recorded yet. They need a live run against a product repository.
+
 ## Shared with the engineering team
 
 Ten design skills reach `procedures/house-style.md` (2,392) at depth 2, through
