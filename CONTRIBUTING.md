@@ -15,10 +15,11 @@ The checks need two tools that they reach as subprocesses rather than as imports
 | Tool | Version | Why |
 | --- | --- | --- |
 | Python 3 with PyYAML | 3.12 | `design-catalog-validate.py` reads the control catalogue, and every check runs its self-test under Python |
+| Pillow | Latest | The tests for `scripts/scale-capture.py` make and scale image files with it |
 | ast-grep | Pinned in `package.json` | `token-audit.py`, `type-scan.py`, and `structure-scan.py` match source structure through it |
 
 ```sh
-pip install pyyaml
+pip install pyyaml Pillow
 ```
 
 The pnpm scripts find ast-grep in `node_modules/.bin`. To run a check directly, prefix it with `pnpm exec`, as in `pnpm exec python3 plugins/dx-harness/checks/token-audit.py --self-test`. Without the prefix, the check cannot find ast-grep and stops with one `ERROR` line.
