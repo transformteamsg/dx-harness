@@ -107,8 +107,9 @@ is judged against a concrete alternative.
 
 **Do not flag:**
 
-- A mechanical failure already owned elsewhere — a passive construction (CNT-3), a filler
-  word (CNT-6), a buzzword or AI tell (SLP-9), Title Case (CNT-12), a misspelling
+- A mechanical failure already owned elsewhere — a person, voice, or length miss (CNT-3),
+  a filler word (CNT-6), a nominalisation (CNT-8), a buzzword or AI tell (SLP-9), Title
+  Case (CNT-12), a misspelling
   (CNT-13). CNT-14 owns the gestalt, not the specific token; do not double-flag.
 - The **behaviour** of a destructive action — whether it shows consequences and offers
   undo/confirm is CMP-2. CNT-14 governs only whether the *wording* is sober vs dramatic.

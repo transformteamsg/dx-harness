@@ -392,15 +392,14 @@ def l0_parity_errors(repo_root, catalog_by_id, xref_re):
 
 def lay_parity_errors(repo_root, catalog_by_id, xref_re):
     """
-    [LAY-SYNC] Each inline layout-controls list (the design skill's SKILL.md, the
-    evaluator agent's Layout grading paragraph, the layout skill's control subset)
-    must equal the catalog's LAY-* id set. Missing markers are an error. Set
-    comparison, so prose/order/detail around the IDs is free.
+    [LAY-SYNC] Each inline layout-controls list (the design skill's SKILL.md and
+    the layout skill's control subset) must equal the catalog's LAY-* id set.
+    Missing markers are an error. Set comparison, so prose/order/detail around
+    the IDs is free.
     """
     source = {cid for cid in catalog_by_id if cid.startswith("LAY-")}
     consumers = [
         os.path.join(repo_root, "skills", "design", "dx-design-execute", "SKILL.md"),
-        os.path.join(repo_root, "agents", "dx-design-review.md"),
         os.path.join(repo_root, "skills", "design", "dx-design-pattern", "SKILL.md"),
     ]
     present, errors = required_consumer_errors(repo_root, consumers, "LAY-SYNC")
@@ -684,6 +683,15 @@ SKILL_WIRING_GRANDFATHERED = {
     # TYP-6 came off this list in #161, the commit that shipped its check:
     # skills/design/dx-design-pattern/SKILL.md now names it beside LAY-4, the
     # control it shares a measure rule body with.
+    # The reviewer agent named these five only in the grading paragraphs that
+    # #452 moved into their details. The agent still grades each one from the
+    # in-scope list, so each is applied, but no file under skills/, agents/, or
+    # procedures/ names it.
+    "CMP-4": "graded by the reviewer agent from its detail (#452); no skill names it",
+    "CMP-9": "graded by the reviewer agent from its detail (#452); no skill names it",
+    "CMP-10": "graded by the reviewer agent from its detail (#452); no skill names it",
+    "CMP-11": "graded by the reviewer agent from its detail (#452); no skill names it",
+    "IDN-2": "graded by the reviewer agent from its detail (#452); no skill names it",
 }
 
 
@@ -2175,33 +2183,25 @@ def run_self_test():
         failures.append(f"FAIL the polish skill quotes SLP-6's live threshold: "
                         f"want: {want!r}; got: {got!r}")
 
-    # The reviewer agent states each control's label inline, and [SKILL-SYNC]
-    # compares ids rather than labels, so a relabel drifts here silently. Every
-    # "(<ID>, L<n>, <label>" the agent writes must match the catalog.
+    # The reviewer agent grades each rule from its detail (#452), so it states
+    # no rule's label. A "(<ID>, L<n>, <label>" in the agent is grading text for
+    # one rule, and a relabel in the catalog would leave it stale.
     case_count += 1
     agent_path = os.path.join(REPO_ROOT, "agents", "dx-design-review.md")
     with open(agent_path) as fh:
         agent_text = fh.read()
     want = []
-    got = []
-    for match in re.finditer(
-            r"\((?P<id>[A-Z0-9]+-\d+), L\d+, (?P<label>deterministic|judgment|hybrid)\b",
-            agent_text):
-        cid, stated = match.group("id"), match.group("label")
-        actual = live_by_id.get(cid, {}).get("check")
-        if stated != actual:
-            got.append(f"agents/dx-design-review.md calls {cid} {stated!r}, "
-                       f"catalog says {actual!r}")
+    got = [match.group(0) for match in re.finditer(
+        r"\([A-Z0-9]+-\d+, L\d+, (?:deterministic|judgment|hybrid)\b", agent_text)]
     if want != got:
-        failures.append(f"FAIL the reviewer agent's stated labels match the "
-                        f"catalog: want: {want!r}; got: {got!r}")
+        failures.append(f"FAIL the reviewer agent states no rule's label: "
+                        f"want: {want!r}; got: {got!r}")
 
-    # LAY-4's measure is restated inside three dx-sync:lay-controls fences, and
+    # LAY-4's measure is restated inside two dx-sync:lay-controls fences, and
     # [LAY-SYNC] compares only the LAY id set, so a one-sided edit passes it.
     # The fences differ in prose by design; the measure figure must not.
     case_count += 1
     fence_files = [
-        os.path.join(REPO_ROOT, "agents", "dx-design-review.md"),
         os.path.join(REPO_ROOT, "skills", "design", "dx-design-pattern", "SKILL.md"),
         os.path.join(REPO_ROOT, "skills", "design", "dx-design-execute", "SKILL.md"),
     ]
@@ -2215,7 +2215,7 @@ def run_self_test():
     want = (True, True)
     got = (all(m is not None for m in measures), len(set(measures)) == 1)
     if want != got:
-        failures.append(f"FAIL the three lay-controls fences agree on LAY-4's "
+        failures.append(f"FAIL the two lay-controls fences agree on LAY-4's "
                         f"measure: want: {want!r}; got: {got!r} ({measures!r})")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────

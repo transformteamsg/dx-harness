@@ -125,98 +125,10 @@ the evidence (quote the copy, name the screen region).
 during implementation is a finding even when the drifted version looks fine — the
 plan was the human-approved artifact.
 
-**3. Judgment controls.** Apply each in-scope control using the "Evaluator
-guidance" section of its `--for review` part. Quote the specific text or element you judged. Respect
-granted waivers; flag waivers that don't carry a specific reason.
-
-**Empty-state clarity (CMP-4, L1, judgment — controls/cmp-4.md).** For every empty-state
-view in scope: confirm no skeleton row, shimmer, or spinner is present alongside the
-empty-state heading, naming the state you put the surface in to see it, then read the
-heading + subtext pair and judge — could a first-time user mistake this for a loading
-state or a permissions error? Quote the heading/subtext text you judged.
-
-**Component consistency (CMP-7, L2 — controls/cmp-7.md).** Check the surface's components
-against their design-system defaults and against the same component on sibling pages: an
-override that changes a default's colour/contrast/shape, or a control group whose members
-don't share a resting affordance, is a finding unless recorded with a reason. Re-check any
-colour/contrast override under A11Y-1. This control is judgment: you are the enforcement,
-and no script grades any half of it.
-
-**Nested-child geometry (CMP-11, L2, judgment, proposed — controls/cmp-11.md).**
-Also check each component against **its own nested interactive child's geometry** —
-does a focus ring or active-state fill trace the component's own edge, or does it
-float inside a smaller box than the container it's meant to outline? This is a
-self-consistency read distinct from CMP-7's default/sibling-page checks, and distinct
-from A11Y-8 (state-tracking): a ring can correctly track `aria-pressed` and still sit in
-the wrong box — check the geometry itself, not just whether the ring is present. CMP-11
-is proposed, pending design-lead approval — report a violation as an advisory
-suggestion, not a blocking or advisory finding, until approved.
-
-**Draft safety / escapability (CMP-8, L1, judgment — controls/cmp-8.md).** For a
-multi-step or data-entry flow in scope: confirm every step has a reachable, visible
-cancel/back affordance, then walk
-the flow, interrupt it at a plausible point, and judge whether the teacher's
-in-progress input survives or was explicitly, confirmably discarded — never silently
-lost. Keep this distinct from CMP-2: grade CMP-8 for whether a non-silent exit/discard
-path exists, and separately grade any discard confirmation's copy under CMP-2. Don't
-double-count one defect under both.
-
-**Cross-user content sanitisation (CMP-9, L1, hybrid — controls/cmp-9.md).** Where
-content authored by one user renders to a different user, confirm a sanitiser sits in
-the render path (deterministic half — grep for `dangerouslySetInnerHTML`/`v-html` on
-the surface, manual until a script exists), then read the render boundary directly and
-judge whether the sanitisation guarantee holds there, not only at author/editor time.
-An in-code "schema-constrained" comment is not evidence of render-time sanitisation.
-
-**Input-validation error clearing (CMP-10, L1, hybrid, status proposed —
-controls/cmp-10.md).** For each in-scope field: enter an invalid value, confirm
-the error message renders, then correct it and confirm the error message is
-gone (deterministic half, manual until an interaction script exists). Where
-multiple fields are invalid at once, correct one and judge whether only that
-field's error clears while the others remain visible. Client-side validation
-only — a server-side/async validation error follows CMP-3 instead. Quote the
-field(s) and the before/after state you observed.
-
-<!-- dx-sync:lay-controls -->
-**Layout grading.** Seven LAY controls are in the catalog: LAY-1 (the product's
-declared column grid and gutter scale, L2 — controls/lay-1.md; N/A where no grid is
-declared in `.dx/design.json` `layout_system`), LAY-2 (reflow at 320 CSS px, L1 —
-controls/lay-2.md), LAY-3 (page-template fit, L2 — controls/lay-3.md), LAY-4
-(body-text measure ≤ 80ch, L2 — controls/lay-4.md), LAY-5 (density fits the task,
-L2 — controls/lay-5.md), LAY-6 (edge / optical alignment, L2 — controls/lay-6.md),
-and LAY-7 (one primary focal region; visual reading order matches the task's
-priority order — the squint test, L2 — controls/lay-7.md).
-<!-- /dx-sync:lay-controls -->
-Apply each when in scope.
-
-**Identity grading.** Grade IDN-3 (tone register per the calibration table in
-controls/idn-3.md) on all copy-bearing surfaces. Grade IDN-4 (no
-celebration/gamification around case data, L1 — controls/idn-4.md) only when the
-surface's product is CaseSync (`products: [casesync]` — check the run's declared
-product). Flag IDN-2 violations (product icons redrawn or regenerated outside the
-approved family, L1, hybrid) as findings; `checks/identity-scan.py` is built in #159 and
-covers the reference-resolution half, while the container-colour, gloss, and wordmark
-clauses stay yours.
-
-**Domain fidelity (CNT-4, L2, judgment — controls/cnt-4.md).** Where a surface models
-a real-world artifact (a curriculum, a form, a policy document), read its content
-against that artifact for scope, terminology, and structure. Where you lack the domain
-expertise to judge a detail directly — most curriculum specifics will be exactly
-this — say so and flag the item for a named domain reviewer rather than guessing.
-Confirm either a named domain reviewer's recorded sign-off before user testing, or an
-explicit illustrative/placeholder label in-product and in the decision record; a
-surface with neither is a finding.
-
-**Voice quality + tone-fit (CNT-14, L2, judgment — controls/cnt-14.md).** Read the copy
-against the voice attributes (Clear / Thoughtful / Approachable) and the tone-by-context
-table in `skills/design/dx-design-copy/SKILL.md`: name the surface's context
-(success, error, onboarding, destructive, empty state, permission) and judge whether the
-tone fits — affirming/brief success, calm/helpful error, sober/precise destructive,
-inviting empty state. This is the *gestalt* only: a mechanical miss belongs to its own
-control (CNT-3 person/voice/length, CNT-6 filler, CNT-8 nominalisations, CNT-12 case,
-SLP-9 AI tells) — do not double-flag it here. Boundary with CMP-2: CMP-2 owns the
-destructive-action *behaviour* (consequences + undo/confirm); CNT-14 owns only whether
-the *wording* is sober vs dramatic.
+**3. Judgment controls.** Grade each in-scope control with the steps in the
+"Evaluator guidance" and "How to verify" sections of its `--for review` part. This
+file holds no grading steps for a single control. Quote the specific text or element
+you judged. Respect granted waivers; flag waivers that don't carry a specific reason.
 
 **4. Design quality — four criteria**, each graded strong / acceptable / weak with
 one sentence of reasoning. These draw on Apple's HIG design principles as a

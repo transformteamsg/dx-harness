@@ -95,7 +95,9 @@ One check, two readings, both yours:
 2. **Interrupt the flow** at a plausible point
    (mid-step navigation away, a simulated timeout or network loss), and confirm the
    teacher's input is either still there on return, or the teacher was told plainly
-   what happened to it. Quote the specific step and the observed behaviour.
+   what happened to it. Judge whether the input survived or was explicitly,
+   confirmably discarded. On a pass, the input is never silently lost. Quote the
+   specific step and the observed behaviour.
 
 When grading an explicit discard action, confirm it is CMP-8-in-scope (the option to
 discard exists and is not a silent side effect) and separately confirm its

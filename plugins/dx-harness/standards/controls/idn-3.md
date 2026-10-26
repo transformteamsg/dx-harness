@@ -54,6 +54,8 @@ Posts / PG Staff Portal surface that should read as plain TW.
 
 ## Evaluator guidance
 
+Grade this control on every surface that carries copy.
+
 **Flag:** copy that adopts another product's register (a switched voice system); a
 TW-adjacent surface carrying nuance instead of plain TW voice.
 
