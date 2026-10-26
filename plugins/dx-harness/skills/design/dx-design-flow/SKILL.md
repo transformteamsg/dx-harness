@@ -29,7 +29,7 @@ and routed).
 - **A11Y-11** — each transition announces its change and manages focus.
 - **SLP-10** — a complex multi-section task gets a page, not a modal.
 
-**Reference:** the "A flow is not a stack of pages" section of `../dx-design-execute/SKILL.md` —
+**Reference:** `../dx-design-execute/references/flow.md` —
 entry points, the done state, every exit (back/cancel/abandon), and what happens to the
 teacher's work on interruption, partial completion, and resume. Escapability is
 structure, not polish.

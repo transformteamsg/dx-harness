@@ -45,7 +45,7 @@ const PHASES = [
 /* Phrases only the diverge or the flow text carries. Finding one in a file a
    modification reads means that run pays for the text it skips. */
 const DIVERGE_TERMS = ["visual thesis", "Compose, don't fill", "self-contained HTML"];
-const FLOW_TERMS = ["returns tomorrow", "Escapability", "A flow with only its happy path"];
+const FLOW_TERMS = ["returns tomorrow", "Escapability", "happy path mapped"];
 
 /* The files a modification with a fixed structure reads. */
 const MODIFICATION_READS = [SKILL, INTENT, PLAN, GRILL, IMPLEMENT, CRAFT, VERIFY, RULE_PROPOSAL];
