@@ -2050,10 +2050,9 @@ def run_self_test():
         for needle in ("layout-scan", "precedent CMP-7", "CMP-4/CMP-7"):
             if needle in text:
                 got.append(f"{rel} cites {needle!r}")
-        # The 'planned' sweep runs over the triaged detail files only. The
-        # catalog still carries CNT-12's note (content-lint.py ships, so it is
-        # the shipped-script error class, filed separately) and README.md's own
-        # "Planned for V1" heading, which names a table of real build targets.
+        # The 'planned' sweep runs over the triaged detail files only.
+        # README.md keeps its own "Planned for V1" heading, which names a
+        # table of real build targets.
         # A "planned in/for #NNN" note is exempt: it is traceable to a tracked
         # issue, unlike the bare "(planned)" notes this sweep exists to catch —
         # those never expire because nothing checks them against anything.

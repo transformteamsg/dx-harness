@@ -81,13 +81,13 @@ controls:
     check: deterministic
     phase: [implement, verify]
     applies_to: [component]
-    verify: "Every input has an associated visible label element; checks/a11y-static"
+    verify: "Every input has an associated visible label element; checks/a11y-eslint and checks/rendered-check"
     waiver: none
     fails_when:
       - placeholder used as the only label
       - icon-only button without aria-label
     enforced: partial
-    script: checks/a11y-static.py
+    script: [checks/a11y-eslint.py, checks/rendered-check.py]
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   - id: A11Y-4
@@ -166,7 +166,7 @@ controls:
       - visual state change with no ARIA state update
     detail: controls/a11y-8.md
     enforced: partial
-    script: checks/a11y-static.py
+    script: [checks/a11y-eslint.py, checks/rendered-check.py]
     refs: [https://a11y.tech.gov.sg/checklist/]
 
   - id: A11Y-9
@@ -427,7 +427,7 @@ controls:
       - small functional-colour text (≤12px) on a tint uses step-11 (or lower) and falls below 4.5:1
     detail: controls/col-2.md
     enforced: partial
-    script: [checks/token-audit.py, checks/contrast.py]
+    script: checks/token-audit.py
     refs: [https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb]
 
   # ── Components & patterns ─────────────────────────────────────────────
@@ -817,10 +817,10 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Lint copy for long-word substitutions (word-list clause); evaluator judges the remaining clauses, including whether each acronym or technical term has a reachable definition (inline, tooltip, help text, or glossary — checked on the rendered surface, not just the copy string)"
+    verify: "Evaluator checks copy for long-word substitutions (word-list clause) and judges the remaining clauses, including whether each acronym or technical term has a reachable definition (inline, tooltip, help text, or glossary — checked on the rendered surface, not just the copy string); no script, per this control's accepted gap"
     waiver: rationale
-    enforced: partial
-    script: checks/content-lint.py
+    enforced: manual
+    gap: "No script: a substitution-table word is a finding only where the plain form fits the context, and a precise technical term stands, so every word-list match is the evaluator's call."
     fails_when:
       - a sentence carries two or more ideas
       - past-perfect or passive constructions where simple present fits
@@ -880,9 +880,9 @@ controls:
   # step of the writing guide. Distinct from TYP-4: TYP-4 bans ALL-CAPS text; CNT-12
   # catches Title Case, which passes TYP-4 (no uppercase transform) yet still breaks
   # sentence case ("Submit Your Marks"). CNT-12 makes the grammar-mechanics "sentence
-  # case everywhere" rule enforceable. Hybrid: a Title-Case heading/label heuristic in
-  # content-lint is the deterministic half (planned); proper-noun and branded-term
-  # exemptions are judgment. Ships judgment-first; script half follows.
+  # case everywhere" rule enforceable. Hybrid: a Title-Case heading/label heuristic
+  # would be the deterministic half, but proper-noun and branded-term exemptions
+  # decide every match, so it ships with an accepted gap.
   - id: CNT-12
     source: DX-DS
     title: Copy uses sentence case — capitalise the first word and proper or branded nouns only
@@ -890,10 +890,10 @@ controls:
     check: hybrid
     phase: [implement, verify]
     applies_to: [content]
-    verify: "Lint headings/labels/buttons for Title-Case patterns (planned content-lint heuristic); evaluator judges sentence-case compliance and the proper-noun / branded-term exemptions"
+    verify: "Evaluator checks headings/labels/buttons for Title-Case patterns and judges sentence-case compliance and the proper-noun / branded-term exemptions; no script, per this control's accepted gap"
     waiver: rationale
-    enforced: partial
-    script: checks/content-lint.py
+    enforced: manual
+    gap: "No script: a capitalised word is a finding only when it is not a proper or branded noun, and copy does not mark which words those are, so every capitals match is the evaluator's call."
     fails_when:
       - Title Case in a heading, label, or button ("Submit Your Marks", "View Class Details")
       - a non-proper mid-sentence word capitalised for emphasis

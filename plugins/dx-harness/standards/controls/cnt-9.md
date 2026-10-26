@@ -6,10 +6,10 @@ tier: L2
 check: hybrid
 phase: [implement, verify]
 applies_to: [content]
-verify: "Lint copy for long-word substitutions (word-list clause); evaluator judges the remaining clauses, including whether each acronym or technical term has a reachable definition (inline, tooltip, help text, or glossary — checked on the rendered surface, not just the copy string)"
+verify: "Evaluator checks copy for long-word substitutions (word-list clause) and judges the remaining clauses, including whether each acronym or technical term has a reachable definition (inline, tooltip, help text, or glossary — checked on the rendered surface, not just the copy string); no script, per this control's accepted gap"
 waiver: rationale
-enforced: partial
-script: checks/content-lint.py
+enforced: manual
+gap: "No script: a substitution-table word is a finding only where the plain form fits the context, and a precise technical term stands, so every word-list match is the evaluator's call."
 refs:
   - https://moediva.notion.site/Tfx-design-standard-draft-37b970a387f2800e930ce0ee646c6cfb
 ---
@@ -63,8 +63,8 @@ acronym a teacher cannot decode stops the read as surely as a two-idea sentence,
 reachable-definition rule belongs in the same bundle.
 
 Bundled (not split) by analogy with CNT-3, which bundles second person, active voice,
-and the 25-word ceiling under one ID. The word-list clause is the only one with a
-deterministic half; the rest are judgment.
+and the 25-word ceiling under one ID. The word-list clause is the only one a word list
+can narrow; the rest are judgment.
 
 ## Passes when
 
@@ -89,11 +89,11 @@ deterministic half; the rest are judgment.
 
 ## How to verify
 
-Deterministic half — `checks/content-lint.py` (planned extension): scan copy strings
-for words in the substitution table and flag each match. Judgment half — the evaluator
-reads each sentence and checks clauses 1–5 in order, then checks clause 6 against the
-rendered surface (an affordance such as a tooltip counts, so the copy string alone is
-not enough to judge it), as described below.
+No script runs for this control; see its accepted gap. The evaluator scans copy
+strings for words in the substitution table and flags each match where the plain form
+fits. The evaluator then reads each sentence and checks clauses 1–5 in order, then
+checks clause 6 against the rendered surface (an affordance such as a tooltip counts,
+so the copy string alone is not enough to judge it), as described below.
 
 ## Evaluator guidance
 
