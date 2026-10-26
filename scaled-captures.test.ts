@@ -149,3 +149,40 @@ describe("2. rough directions are wireframe pages", () => {
     expect(diverge, "diverge lost its styled default").toContain("self-contained HTML");
   });
 });
+
+/* Contract item 3: no Pillow, no scaling, no judgment. */
+describe("3. scaling stops when Pillow is not installed", () => {
+  /* A PIL package that fails to import, ahead of the real one on the path. */
+  function withoutPillow() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "no-pillow-"));
+    fs.mkdirSync(path.join(dir, "PIL"));
+    fs.writeFileSync(path.join(dir, "PIL", "__init__.py"), 'raise ImportError("No module named PIL")\n');
+    return { ...process.env, PYTHONPATH: dir };
+  }
+
+  it("exits with an error that names the install step and writes nothing", () => {
+    const original = frame(2 * WIDTH, 400);
+    const run = python([SCRIPT, original], withoutPillow());
+    expect(run.status).not.toBe(0);
+    expect(run.status, "a missing Pillow is a tool failure, not success").not.toBeNull();
+    expect(run.out).toContain("python3 -m pip install --user Pillow");
+    expect(printed(run.stdout), "the command printed a path to read").toEqual([]);
+    expect(pngs(original)).toEqual([path.basename(original)]);
+  });
+
+  it("the capture procedure stops before any dimension judges an unscaled capture", () => {
+    const procedure = flat(PROCEDURE);
+    expect(procedure.length, `${PROCEDURE} is missing or empty`).toBeGreaterThan(0);
+    expect(procedure, "the procedure does not stop when scaling fails").toMatch(
+      /scale-capture\.py[^.]*exits with an error[^.]*stop/i,
+    );
+    expect(procedure, "the procedure lets an agent judge an unscaled capture").toMatch(
+      /no (agent|dimension) judges from a capture (it|the run) could not scale/i,
+    );
+  });
+
+  it("setup lists Pillow for the scaling step", () => {
+    const setup = flat(`${HARNESS}/skills/design/dx-design-setup/setup.md`);
+    expect(setup, "setup does not say that scaling needs Pillow").toMatch(/\| Pillow \|[^|]*scal/i);
+  });
+});
