@@ -58,8 +58,7 @@ How the dimensions run depends on how many there are:
 - **One or two dimensions**: judge each one in the run's own context, with steps 3
   and 4 of `pass.md`. Start no subagent.
 - **Three or more dimensions**: dispatch one propose-only subagent for each pass,
-  with `mode:return-to-caller`, the accepted issues for that pass, the capture set,
-  and that pass's subset.
+  with the pass input in `return-to-caller.md`, beside this file.
 
 ## Step 5: When a width does not capture
 

@@ -23,8 +23,8 @@ A pass keeps two entries:
 - **Dispatched.** The orchestrator (`dx-design`) dispatches the pass as a
   propose-only subagent in its improve-what-exists fan-out, or judges the pass in
   its own context when the run has one or two dimensions. Either way, the pass
-  receives the mode token `return-to-caller`, the run's capture set, and this
-  pass's subset of the rules, per `../../../procedures/capture.md`. The token
+  receives the pass input in `../../../procedures/return-to-caller.md`, and the
+  caller builds its capture set per `../../../procedures/capture.md`. The token
   suppresses the pass's own interview (no clarifying questions back to the human)
   and the pass's own accept/decline exchange (step 4's ask and marks): the pass
   judges from what it received and returns its ranked findings to the caller. The
@@ -73,8 +73,8 @@ A pass keeps two entries:
    nothing is silently dropped. In return-to-caller mode, skip the ask: return the
    ranked findings to the caller, which merges them and runs the one plan approval.
 5. **Hand off; never build.** Hand the accepted findings to `dx-design-execute` as a
-   specified-change run in `return-to-caller` mode: the handoff carries the mode
-   token, the accepted findings, and the design-ticket reference. The token makes
+   specified-change run in `return-to-caller` mode, with the pass handoff in
+   `../../../procedures/return-to-caller.md`. The token makes
    execute skip its own intent interview; the person already accepted each finding in
    step 4, and that acceptance is the approval context execute works from. Execute
    owns plan approval, implement, design review, and verify, through

@@ -44,17 +44,8 @@ Run in this order; do not present output to the user while a step is failing:
      control — *including loading*, the state most often coded-but-unphotographed
      (it slipped through both pilot runs before this rule existed). Use the
      demo-only hooks built in Phase 4. **MANDATORY when CMP-3 is in scope** (harness
-     rule, not a catalog control — see `docs/catalog-changes/evd-1-async-evidence.md`):
-     the evidence set must capture the loading state, the success state, and the
-     error state, not only the initial/empty state — a build can claim all three
-     exist in code while only the empty state is ever screenshotted, and code-level
-     reachability is not perceptibility. Acceptable substitutes for a frame: a video
-     walkthrough covering all three states, or a named human reviewer's attestation
-     that they witnessed the live render of all three. One more outcome is valid,
-     per state: `N/A — state does not exist: <reason>`, permitted **only** when
-     CMP-3's own "Do not flag" clause applies (an instant, < ~100 ms local
-     operation has no loading state to photograph) — a truthful outcome recorded
-     as fact, never a pass, exactly like the dark-mode N/A below.
+     rule, not a catalog control): `../../../procedures/design-review.md` holds
+     EVD-1, the async evidence gate. Meet it.
    - **Journey evidence** (flows and multi-step interactions): traverse the happy
      path end-to-end, one frame per step, **plus one recovery path** from the Phase
      3 flow map actually walked — e.g. abandon at step 2 and return, or fail
@@ -62,15 +53,9 @@ Run in this order; do not present output to the user while a step is failing:
      are page evidence, not flow evidence.
    Check each frame's *actual* rendered viewport before naming it — a screenshot
    named `768-*.png` taken at a stale viewport is mislabeled evidence.
-   Capture mechanism, in order of preference: (1) the `agent-browser` CLI if
-   installed (`agent-browser --help` to confirm; not installed → offer setup
-   once via `../dx-design-setup/setup.md` before falling through; it has intermittently
-   returned "os error 35" — if it misbehaves, fall through) — navigate to the
-   route, set the viewport to the target width, screenshot; (2) Claude-in-Chrome or the
-   user's installed browser agent; (3) the local Playwright fallback; (4) ask
-   the user to provide the screenshot. If capture still keeps failing after a
-   reasonable retry, any source is fine; the evidence set is not optional, and
-   unverified work is never presented as verified.
+   Capture with the mechanism order in step 2 of `../dx-design-critique/critique.md`.
+   The evidence set is not optional, and unverified work is never presented as
+   verified.
    - **Inventory checkoff**: walk the Phase-1 component inventory and tick each
      interactive control as operated — tab to it (focus visible per A11Y-2),
      activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).

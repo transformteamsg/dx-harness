@@ -74,14 +74,8 @@ priority order — L2).
 ## Two ways in: standalone and return-to-caller
 
 A caller (normally the `dx-design` orchestrator) can dispatch this skill with the
-token `mode:return-to-caller` plus a context payload:
-
-- the sprint contract, or the one-line intent for a modification, so Phase 1 is not
-  re-interviewed;
-- the approved plan or the accepted findings list (with any granted waivers and the
-  L1 approver), or the verbatim ask when it names a specific plan or chosen
-  direction, so plan approval is not re-asked;
-- the surface's design ticket reference (issue number or local markdown path).
+token `mode:return-to-caller` plus the build input in
+`../../../procedures/return-to-caller.md`.
 
 In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
 payload carries a real approval: an approved plan; an accepted-findings list from a
@@ -94,12 +88,8 @@ yet. In that case write the scoped
 plan and return it to the caller for approval; do not edit the product until the
 approval comes back. Do not spawn the design reviewer in this mode; whoever
 started the run spawns it, exactly once, per
-`../../../procedures/design-review.md`. Instead, return the full review bundle to
-the caller: the built changes, the sprint contract (or the one-line intent), the
-approved plan, the component inventory, the in-scope judgment and hybrid controls,
-the waivers applied, and the evidence captured. This is every input reviewer
-dispatch in `../../../procedures/design-review.md` requires; a return of changes
-and evidence alone leaves the caller unable to dispatch the reviewer.
+`../../../procedures/design-review.md`. Instead, return the full review bundle in
+`../../../procedures/return-to-caller.md` to the caller.
 
 Standalone invocation (no token) takes a plain ask and owns the whole run: the full
 front half, exactly one stop at plan approval, and spawning the reviewer. In BOTH
