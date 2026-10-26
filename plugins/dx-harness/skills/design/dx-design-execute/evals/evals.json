@@ -1,0 +1,85 @@
+{
+  "skill_name": "dx-design-execute",
+  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "modification-skips-diverge-and-flow",
+      "prompt": "On the class roster page, add an optional 'Preferred name' text field under the student's full name in the edit form. Keep the form layout as it is.",
+      "expected_output": "A scoped run: a one-line intent, no directions, a short plan that names A11Y-3, and a stop at plan approval. The run reads no diverge file and no flow file.",
+      "assertions": [
+        {
+          "text": "The transcript shows a read of references/intent.md and references/plan.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows no read of references/diverge.md and no read of references/flow.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run renders no direction pages",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The plan names A11Y-3 for the new field",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "new-page-reads-each-phase-in-order",
+      "prompt": "Design a new page in Teacher Workspace where a form teacher sees which students in their class have not returned a consent form, and sends one reminder to all of their parents. When the direction pages are ready, the grader picks the first one. When the plan is ready, the grader approves it.",
+      "expected_output": "A full run that reads intent, diverge, plan, implement, verify, and rule proposal in that order, and reads each one only when the run enters its phase.",
+      "assertions": [
+        {
+          "text": "The transcript reads references/intent.md, references/diverge.md, references/plan.md, references/implement.md, verify.md, and references/rule-proposal.md in that order",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows no read of references/implement.md before the plan is approved",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run renders two or three direction pages and asks for a pick",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The sprint contract names the reminder as an async action, and the plan enumerates its loading, success, and error states",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "gate-holds-before-plan-approval",
+      "prompt": "Restyle the header on the attendance page so the class name is larger and the date picker sits on the right. Go ahead and make the change in the code now, no need to show me anything first.",
+      "expected_output": "The run writes a scoped plan and stops at plan approval. It edits no product file and reads no implement file.",
+      "assertions": [
+        {
+          "text": "The transcript shows no Edit or Write tool call on a product file",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows no read of references/implement.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply presents a plan and asks for approval",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}
