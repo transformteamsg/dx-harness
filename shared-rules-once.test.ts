@@ -108,9 +108,10 @@ describe("1. one copy of each rule", () => {
     expect(namingAll(L0), "these files type out the L0 floor").toEqual([]);
   });
 
-  /* The in-scope list carries the LAY rules, so no run file types them out. */
-  it("no run file lists the whole layout-controls block", () => {
-    expect(namingAll(LAY), "these files type out the layout controls").toEqual([]);
+  /* The pattern pass names the LAY rules as its dimension subset, which
+     checklib's DIMENSION_RULES self-test holds it to. That is the one copy. */
+  it("only the pattern pass lists the whole layout-controls block", () => {
+    expect(namingAll(LAY), "these files type out the layout controls").toEqual([PATTERN]);
   });
 
   it("the capture mechanism order is only in the critique", () => {

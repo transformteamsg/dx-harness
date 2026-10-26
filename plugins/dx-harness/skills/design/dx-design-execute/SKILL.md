@@ -56,16 +56,6 @@ developer.apple.com/design/human-interface-guidelines/design-principles). A
 reference point like SGDS and GOV.UK, never a checkable standard: principles settle
 trade-offs; they are not used to "check" work.
 
-<!-- dx-sync:lay-controls -->
-**Layout controls.** Layout has seven controls: LAY-1 (the product's declared
-column grid and gutter scale — N/A where no grid is declared in `.dx/design.json`
-`layout_system`; L2), LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3
-(page-template fit, L2), LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2),
-LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
-LAY-7 (one primary focal region; visual reading order matches the task's
-priority order — L2).
-<!-- /dx-sync:lay-controls -->
-
 ## Two ways in: standalone and return-to-caller
 
 A caller (normally the `dx-design` orchestrator) can dispatch this skill with the
