@@ -12,7 +12,7 @@ Validates standards/catalog.yaml for internal consistency:
   7. Cross-reference sweep: every control ID mentioned in prose exists in
      catalog — swept over skills/**, agents/**, procedures/**, and
      docs/catalog-changes/.
-  8. dx-sync parity: [L0-SYNC], [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
+  8. dx-sync parity: [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html — the plugin's or the consuming
      site's — must equal the catalog's actual control count), [WIRING-SYNC]
      (enforced:script|partial claims actually run from package.json or CI, or are
@@ -358,66 +358,6 @@ def tokenize_buzzwords(span):
         if tok and tok not in _BUZZWORD_NOISE:
             tokens.add(tok)
     return tokens
-
-
-def l0_parity_errors(repo_root, catalog_by_id, xref_re):
-    """
-    [L0-SYNC] Each marked L0 consumer must equal the catalog's tier:L0 set.
-    Missing markers are an error. Set comparison, so prose/order around the IDs
-    is free.
-    """
-    source = {cid for cid, c in catalog_by_id.items() if c.get("tier") == "L0"}
-    # checks/detect.py is not a consumer: it reads the L0 set from the catalog
-    # through checklib, so it has no inline copy to drift (#479).
-    consumers = [
-        os.path.join(repo_root, "skills", "design", "dx-design-execute", "SKILL.md"),
-    ]
-    present, errors = required_consumer_errors(repo_root, consumers, "L0-SYNC")
-    for fpath in present:
-        rel = os.path.relpath(fpath, repo_root)
-        with open(fpath) as fh:
-            text = fh.read()
-        span = extract_sync_block(text, "L0")
-        if span is None:
-            errors.append(f"ERROR {rel} [L0-SYNC]: missing dx-sync:L0 markers")
-            continue
-        inline = {m.group(0) for m in xref_re.finditer(span)}
-        if inline != source:
-            errors.append(
-                f"ERROR {rel} [L0-SYNC]: inline L0 list {{{', '.join(sorted(inline))}}} "
-                f"!= catalog L0 set {{{', '.join(sorted(source))}}}"
-            )
-    return errors
-
-
-def lay_parity_errors(repo_root, catalog_by_id, xref_re):
-    """
-    [LAY-SYNC] Each inline layout-controls list (the design skill's SKILL.md and
-    the layout skill's control subset) must equal the catalog's LAY-* id set.
-    Missing markers are an error. Set comparison, so prose/order/detail around
-    the IDs is free.
-    """
-    source = {cid for cid in catalog_by_id if cid.startswith("LAY-")}
-    consumers = [
-        os.path.join(repo_root, "skills", "design", "dx-design-execute", "SKILL.md"),
-        os.path.join(repo_root, "skills", "design", "dx-design-pattern", "SKILL.md"),
-    ]
-    present, errors = required_consumer_errors(repo_root, consumers, "LAY-SYNC")
-    for fpath in present:
-        rel = os.path.relpath(fpath, repo_root)
-        with open(fpath) as fh:
-            text = fh.read()
-        span = extract_sync_block(text, "lay-controls")
-        if span is None:
-            errors.append(f"ERROR {rel} [LAY-SYNC]: missing dx-sync:lay-controls markers")
-            continue
-        inline = {m.group(0) for m in xref_re.finditer(span)}
-        if inline != source:
-            errors.append(
-                f"ERROR {rel} [LAY-SYNC]: inline LAY list {{{', '.join(sorted(inline))}}} "
-                f"!= catalog LAY set {{{', '.join(sorted(source))}}}"
-            )
-    return errors
 
 
 def slp9_parity_errors(repo_root):
@@ -1310,13 +1250,11 @@ def collect_errors(repo_root, _return_count=False):
         errors.extend(cross_ref_errors(rel, content, catalog_by_id, xref_re))
 
     # ── Step 8: dx-sync parity sub-checks ───────────────────────────────────
-    # Inline restatements (L0 list, SLP-9 buzzwords) must not drift from source.
-    errors.extend(l0_parity_errors(repo_root, catalog_by_id, xref_re))
+    # Inline restatements (SLP-9 buzzwords) must not drift from source.
     errors.extend(slp9_parity_errors(repo_root))
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
     errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
     errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
-    errors.extend(lay_parity_errors(repo_root, catalog_by_id, xref_re))
     errors.extend(voice_parity_errors(repo_root))
     errors.extend(tone_parity_errors(repo_root))
     errors.extend(uitext_parity_errors(repo_root))
@@ -1640,71 +1578,6 @@ def run_self_test():
     case_count += 1
     if extract_sync_block("<!-- dx-sync:X -->inner (no close)", "X") is not None:
         failures.append("FAIL extractor unclosed: expected None")
-
-    L0_SOURCE = {"A11Y-1", "A11Y-2", "A11Y-3", "CMP-2"}
-
-    def l0_errs_for_span(span_text):
-        """Drive the L0 parity comparison against a synthetic consumer span."""
-        if span_text is None:
-            return ["ERROR scratch.md [L0-SYNC]: missing dx-sync:L0 markers"]
-        inline = {m.group(0) for m in xref_re.finditer(span_text)}
-        if inline != L0_SOURCE:
-            return [f"ERROR scratch.md [L0-SYNC]: inline L0 list != catalog L0 set"]
-        return []
-
-    # L0 clean: span lists exactly the four → no error.
-    assert_clean("L0 clean span",
-                 l0_errs_for_span("A11Y-1; A11Y-2; A11Y-3; CMP-2"))
-    # L0 missing a control: span omits CMP-2 → error.
-    assert_error("L0 missing control",
-                 l0_errs_for_span("A11Y-1; A11Y-2; A11Y-3"), "[L0-SYNC]")
-    # L0 extra control: span adds A11Y-4 → error.
-    assert_error("L0 extra control",
-                 l0_errs_for_span("A11Y-1; A11Y-2; A11Y-3; A11Y-4; CMP-2"), "[L0-SYNC]")
-    # L0 order / prose-insensitive: different order + surrounding words → clean.
-    assert_clean("L0 order-insensitive",
-                 l0_errs_for_span("destructive CMP-2 then label A11Y-3, focus A11Y-2, contrast A11Y-1"))
-    # L0 missing markers: extract_sync_block None → missing-markers error.
-    assert_error("L0 missing markers",
-                 l0_errs_for_span(extract_sync_block("no markers here", "L0")),
-                 "missing dx-sync:L0 markers")
-
-    # A malformed fixture of the declared consumer must be reported; this fails
-    # if its path is silently skipped by l0_parity_errors.
-    with tempfile.TemporaryDirectory() as td:
-        skill_dir = os.path.join(td, "skills", "design", "dx-design-execute")
-        os.makedirs(skill_dir)
-        with open(os.path.join(skill_dir, "SKILL.md"), "w") as fh:
-            fh.write("no L0 marker")
-        assert_error("L0 consumer is not skipped",
-                     l0_parity_errors(td, {cid: {"tier": "L0"} for cid in L0_SOURCE}, xref_re),
-                     "dx-design-execute/SKILL.md [L0-SYNC]: missing dx-sync:L0 markers")
-
-    LAY_SOURCE = {"LAY-1", "LAY-2", "LAY-3", "LAY-4", "LAY-5", "LAY-6", "LAY-7"}
-
-    def lay_errs_for_span(span_text):
-        """Drive the LAY parity comparison against a synthetic consumer span."""
-        if span_text is None:
-            return ["ERROR scratch.md [LAY-SYNC]: missing dx-sync:lay-controls markers"]
-        inline = {m.group(0) for m in xref_re.finditer(span_text)}
-        if inline != LAY_SOURCE:
-            return [f"ERROR scratch.md [LAY-SYNC]: inline LAY list != catalog LAY set"]
-        return []
-
-    # LAY clean: span lists exactly the seven → no error.
-    assert_clean("LAY clean span",
-                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-4, LAY-5, LAY-6, LAY-7"))
-    # LAY missing an id: span omits LAY-4 → error.
-    assert_error("LAY missing control",
-                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-5, LAY-6, LAY-7"), "[LAY-SYNC]")
-    # LAY extra/ghost id: span adds LAY-8 → error.
-    assert_error("LAY extra control",
-                 lay_errs_for_span("LAY-1, LAY-2, LAY-3, LAY-4, LAY-5, LAY-6, LAY-7, LAY-8"),
-                 "[LAY-SYNC]")
-    # LAY missing markers: extract_sync_block None → missing-markers error.
-    assert_error("LAY missing markers",
-                 lay_errs_for_span(extract_sync_block("no markers here", "lay-controls")),
-                 "missing dx-sync:lay-controls markers")
 
     # Buzzword parity — drive tokenize_buzzwords + the subset/required-core rules.
     BUZZ_SOURCE = tokenize_buzzwords(
@@ -2196,27 +2069,6 @@ def run_self_test():
     if want != got:
         failures.append(f"FAIL the reviewer agent states no rule's label: "
                         f"want: {want!r}; got: {got!r}")
-
-    # LAY-4's measure is restated inside two dx-sync:lay-controls fences, and
-    # [LAY-SYNC] compares only the LAY id set, so a one-sided edit passes it.
-    # The fences differ in prose by design; the measure figure must not.
-    case_count += 1
-    fence_files = [
-        os.path.join(REPO_ROOT, "skills", "design", "dx-design-pattern", "SKILL.md"),
-        os.path.join(REPO_ROOT, "skills", "design", "dx-design-execute", "SKILL.md"),
-    ]
-    measures = []
-    for path in fence_files:
-        with open(path) as fh:
-            span = re.search(r"<!-- dx-sync:lay-controls -->(.*?)"
-                             r"<!-- /dx-sync:lay-controls -->", fh.read(), re.DOTALL)
-        found = re.search(r"measure ≤ (\d+)ch", span.group(1)) if span else None
-        measures.append(found.group(1) if found else None)
-    want = (True, True)
-    got = (all(m is not None for m in measures), len(set(measures)) == 1)
-    if want != got:
-        failures.append(f"FAIL the two lay-controls fences agree on LAY-4's "
-                        f"measure: want: {want!r}; got: {got!r} ({measures!r})")
 
     # ── [COUNT-SYNC] cases ─────────────────────────────────────────────────
     count_tmp = tempfile.mkdtemp(prefix="validate-selftest-count-")

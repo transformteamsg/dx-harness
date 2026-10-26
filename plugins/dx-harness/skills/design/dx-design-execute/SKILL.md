@@ -20,13 +20,8 @@ lives in its own file, named in "Run order".
 - An open-ended improvement ask that names one pass dimension (copy, flow, pattern, motion, or polish) and states no edit goes to the matching pass.
 
 
-<!-- dx-sync:L0 source=catalog -->
-**Non-negotiables (L0), binding even outside the loop:** AA contrast (A11Y-1); keyboard
-reach with visible focus (A11Y-2); a visible label on every field (A11Y-3); destructive
-actions show consequences and offer undo or confirm (CMP-2).
-<!-- /dx-sync:L0 -->
-These never bend — if one
-seems impossible, that is a blocking question for the user, not a judgment call.
+**The L0 floor binds even outside the loop**, per the L0 tier in
+`../../../procedures/catalogue-mechanics.md`.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md`. Once Phase 1 settles
 the product and audience, get the build's in-scope list with
@@ -61,27 +56,11 @@ developer.apple.com/design/human-interface-guidelines/design-principles). A
 reference point like SGDS and GOV.UK, never a checkable standard: principles settle
 trade-offs; they are not used to "check" work.
 
-<!-- dx-sync:lay-controls -->
-**Layout controls.** Layout has seven controls: LAY-1 (the product's declared
-column grid and gutter scale — N/A where no grid is declared in `.dx/design.json`
-`layout_system`; L2), LAY-2 (reflow at 320 px — WCAG 2.2 SC 1.4.10, L1), LAY-3
-(page-template fit, L2), LAY-4 (body-text measure ≤ 80ch, target ~66ch — L2),
-LAY-5 (density fits the task, L2), LAY-6 (edge / optical alignment, L2), and
-LAY-7 (one primary focal region; visual reading order matches the task's
-priority order — L2).
-<!-- /dx-sync:lay-controls -->
-
 ## Two ways in: standalone and return-to-caller
 
 A caller (normally the `dx-design` orchestrator) can dispatch this skill with the
-token `mode:return-to-caller` plus a context payload:
-
-- the sprint contract, or the one-line intent for a modification, so Phase 1 is not
-  re-interviewed;
-- the approved plan or the accepted findings list (with any granted waivers and the
-  L1 approver), or the verbatim ask when it names a specific plan or chosen
-  direction, so plan approval is not re-asked;
-- the surface's design ticket reference (issue number or local markdown path).
+token `mode:return-to-caller` plus the build input in
+`../../../procedures/return-to-caller.md`.
 
 In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
 payload carries a real approval: an approved plan; an accepted-findings list from a
@@ -94,12 +73,8 @@ yet. In that case write the scoped
 plan and return it to the caller for approval; do not edit the product until the
 approval comes back. Do not spawn the design reviewer in this mode; whoever
 started the run spawns it, exactly once, per
-`../../../procedures/design-review.md`. Instead, return the full review bundle to
-the caller: the built changes, the sprint contract (or the one-line intent), the
-approved plan, the component inventory, the in-scope judgment and hybrid controls,
-the waivers applied, and the evidence captured. This is every input reviewer
-dispatch in `../../../procedures/design-review.md` requires; a return of changes
-and evidence alone leaves the caller unable to dispatch the reviewer.
+`../../../procedures/design-review.md`. Instead, return the full review bundle in
+`../../../procedures/return-to-caller.md` to the caller.
 
 Standalone invocation (no token) takes a plain ask and owns the whole run: the full
 front half, exactly one stop at plan approval, and spawning the reviewer. In BOTH

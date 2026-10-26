@@ -16,9 +16,12 @@ propose changes before you have seen and judged the current state:
    (and 360 if the change is responsive). Capture mechanism, in order of
    preference: (1) the `agent-browser` CLI if installed (`agent-browser --help`
    to confirm; not installed → offer setup once via `../dx-design-setup/setup.md` before
-   falling through) — navigate to the route, set the viewport to the target
-   width, screenshot; (2) Claude-in-Chrome or the user's installed browser agent; (3)
-   the local Playwright fallback; (4) ask the user to provide the screenshot.
+   falling through; it has intermittently returned "os error 35" — if it
+   misbehaves, fall through) — navigate to the route, set the viewport to the
+   target width, screenshot; (2) Claude-in-Chrome or the user's installed browser
+   agent; (3) the local Playwright fallback; (4) ask the user to provide the
+   screenshot. If capture still keeps failing after a reasonable retry, any source
+   is fine.
    Never critique a page you cannot see, and never fabricate what it looks like.
    With the session still open, run
    `python3 ../../../checks/rendered-check.py --session <that session> --url <the URL>`:

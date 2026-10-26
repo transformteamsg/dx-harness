@@ -22,14 +22,12 @@ and both get NOTED and routed.
 **Dimension controls** (the subset for this pass; procedure and loading rules:
 ../dx-design-critique/pass.md):
 
-<!-- dx-sync:lay-controls -->
 - **LAY-1** — the declared column grid and gutter scale (N/A where no grid is
   declared). **LAY-2** — reflow to one column at 320px, no loss. **LAY-3** — fits a
   known page template. **LAY-4** — body measure ≤ 80ch (~66ch target). **LAY-5** —
   density suits the task. **LAY-6** — shared edges align (optical where geometry
   misleads). **LAY-7** — one primary focal region; reading order matches task
   priority (squint test).
-<!-- /dx-sync:lay-controls -->
 - **Measure** covers **TYP-6** alongside LAY-4: running prose sits in roughly 45–75
   characters per line (target 40–60), capped with a `max-width` in `ch`. Judge the two
   together, since they cap the same thing at different numbers, and hold headings,

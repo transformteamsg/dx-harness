@@ -37,7 +37,10 @@ only the initial or empty state. A build can claim all three states exist in cod
 while only the empty state is ever screenshotted; code-level reachability is not
 perceptibility. Acceptable substitutes for a frame: a video walkthrough that covers
 all three states, or a named human reviewer's attestation that they witnessed the
-live render of all three. An evidence set that misses this gate goes back to the
+live render of all three. One more outcome is valid, per state: `N/A — state does
+not exist: <reason>`, permitted **only** when CMP-3's own "Do not flag" clause
+applies (an instant, < ~100 ms local operation has no loading state to photograph).
+It is a truthful outcome recorded as fact, never a pass. An evidence set that misses this gate goes back to the
 builder; do not dispatch the reviewer on it.
 
 ## Verdict re-check from new screenshots

@@ -69,10 +69,8 @@ Route by what the grill (or menu) surfaced, and name the skill only now, at hand
 Every skill you dispatch runs in **return-to-caller mode**: pass the token
 `mode:return-to-caller` plus the context payload, so the routed skill skips its own
 interview and nobody answers the same question twice. The payload is what you already
-hold: the settled intent, and for **dx-design-execute** the sprint contract (or the
-one-line intent for a modification), the approved plan or accepted findings list (with
-any granted waivers and the L1 approver) or the explicit build ask verbatim, and the
-surface's design ticket reference. In this mode a routed skill also leaves the design
+hold: the settled intent, and for **dx-design-execute** the build input in
+`../../../procedures/return-to-caller.md`. In this mode a routed skill also leaves the design
 review to you: whoever started the run spawns the reviewer once.
 
 The routes:
@@ -112,17 +110,16 @@ When the intent is "improve this" across an existing surface:
    - One or two dimensions: judge each one yourself, with the pass procedure in
      `../dx-design-critique/pass.md`. Start no subagent.
    - Three or more dimensions: dispatch the passes as parallel propose-only
-     subagents, one per pass, each with `mode:return-to-caller`, its accepted issues,
-     the capture set, and its subset, so nobody is interviewed twice. Each pass
+     subagents, one per pass, each with the pass input in
+     `../../../procedures/return-to-caller.md`, so nobody is interviewed twice. Each pass
      proposes; none of them edits the product or talks to the person.
 4. **Merge the proposals into one ranked plan** and run the shared gate in
    `../../../procedures/plan-approval.md`: one plan approval per run, asked by you,
    because you started the run.
 5. **Hand the accepted fixes to dx-design-execute**, the single frontend-only
    implementer, per `../../../procedures/implement.md`. Dispatch it with
-   `mode:return-to-caller` and the full context payload from section 3: the sprint
-   contract, the approved plan or accepted findings list (with any granted waivers and
-   the L1 approver), and the surface's design ticket reference. It then skips its own
+   `mode:return-to-caller` and the build input in
+   `../../../procedures/return-to-caller.md`. It then skips its own
    interview and plan-approval stop, returns its run record to you, and does not spawn
    its own reviewer. You never apply a fix yourself.
 6. **One review of the full result**: dispatch the design reviewer once over the
