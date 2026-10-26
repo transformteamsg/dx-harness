@@ -78,8 +78,8 @@ with no mechanical form at all.
 One check, two readings, both yours:
 
 1. **Read the rendered view** at the moment the empty-state heading is visible. Confirm no
-   skeleton-row element and no loading-spinner element render alongside it. Name the state
-   you put the surface in to see it.
+   skeleton-row element, no shimmer, and no loading-spinner element render alongside it.
+   Name the state you put the surface in to see it.
 2. **Read the heading and subtext together** and ask, "could a first-time user mistake this
    for a loading state or a permissions error?" Pass = no plausible confusion; fail = any
    reasonable reading supports the loading-or-error interpretation. Quote the

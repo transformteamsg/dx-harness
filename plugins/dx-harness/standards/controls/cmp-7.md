@@ -73,8 +73,9 @@ geometry, proposed from a later incident.
 ## Evaluator guidance
 
 Read the surface's components against their design-system defaults and against the same
-component on sibling pages. When you find an override, check whether it is recorded with a
-reason; if it changes colour or contrast, re-check it under A11Y-1. Inspect every
+component on sibling pages. An override that changes a default's colour, contrast, or shape
+is a finding unless it is recorded with a reason. If it changes colour or contrast,
+re-check it under A11Y-1. Inspect every
 toggle/segmented group for a shared resting affordance.
 
 This control is judgment: the evaluator is the enforcement, and no script covers any half

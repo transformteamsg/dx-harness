@@ -65,6 +65,11 @@ rather than a legitimately new one. The evaluator holds both.
 
 ## Evaluator guidance
 
+No script checks either half yet, so grade both by hand. Resolve each product icon
+reference against the approved family. Then check each icon container for a
+per-product colour or gradient, and each mark for a wordmark, a photograph, a shadow,
+or a gloss.
+
 **Flag**:
 
 - Inline-drawn marks used where a product icon belongs.
