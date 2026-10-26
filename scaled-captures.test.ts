@@ -186,3 +186,14 @@ describe("3. scaling stops when Pillow is not installed", () => {
     expect(setup, "setup does not say that scaling needs Pillow").toMatch(/\| Pillow \|[^|]*scal/i);
   });
 });
+
+/* Written after the code: a path the command introduced. */
+describe("a frame the command cannot read", () => {
+  it("exits 4 and prints no path to read", () => {
+    const missing = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "scale-capture-")), "1280-gone.png");
+    const run = python([SCRIPT, missing]);
+    expect(run.status).toBe(4);
+    expect(run.out).toContain("cannot read");
+    expect(printed(run.stdout)).toEqual([]);
+  });
+});
