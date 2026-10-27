@@ -1,0 +1,18 @@
+{
+  "code": "TL-5a",
+  "describe": "Add a direct download as a distribution channel.",
+  "edits": [
+    {
+      "file": "tl/app/store-listing.json",
+      "find": "\"Google Play Store\"",
+      "replace": "\"Direct download\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/app/store-listing.json",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

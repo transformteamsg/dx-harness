@@ -1,0 +1,16 @@
+{
+  "code": "TX-11a",
+  "describe": "Remove the payment method from the success page.",
+  "edits": [
+    {
+      "file": "tx/success.html",
+      "find": "      <dt>Payment method</dt>\n      <dd>Credit card</dd>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/success.html"
+    }
+  ]
+}

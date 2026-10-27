@@ -1,0 +1,16 @@
+{
+  "code": "PR-3c",
+  "describe": "Replace the operational hours with text that has no hours.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "<p data-operational-hours>Operational hours: Monday to Friday, 8:30 to 17:30.</p>",
+      "replace": "<p data-operational-hours>Open on weekdays.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/"
+    }
+  ]
+}

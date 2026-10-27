@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "PR-7d": {
+      "maxImageBytes": 10000
+    }
+  }
+}

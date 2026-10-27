@@ -1,0 +1,16 @@
+{
+  "code": "PR-2d",
+  "describe": "Remove the WOGAA Sentiments script from the page.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "    <script src=\"/pr/wogaa-sentiments-demo.js\" defer></script>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "pr/performance.html"
+    }
+  ]
+}

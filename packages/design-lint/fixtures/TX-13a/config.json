@@ -1,0 +1,11 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "success": [
+      "/a.html",
+      "/b.html"
+    ]
+  }
+}

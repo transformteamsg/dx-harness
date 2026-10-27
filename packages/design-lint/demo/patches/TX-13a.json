@@ -1,0 +1,16 @@
+{
+  "code": "TX-13a",
+  "describe": "Say nothing about where the confirmation went.",
+  "edits": [
+    {
+      "file": "tx/success.html",
+      "find": "We sent a confirmation to your email.",
+      "replace": "We have a confirmation."
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/success.html"
+    }
+  ]
+}

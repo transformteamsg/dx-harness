@@ -1,0 +1,17 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/",
+      "/stretch.html",
+      "/blur.html"
+    ]
+  },
+  "rules": {
+    "TL-2b": {
+      "logoSelector": "img.logo"
+    }
+  }
+}

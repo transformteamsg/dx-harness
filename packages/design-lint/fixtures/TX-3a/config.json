@@ -1,0 +1,16 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "flowPages": [
+      "/"
+    ]
+  },
+  "rules": {
+    "TX-3a": {
+      "maxControlsPerStep": 2,
+      "stepSelector": "[data-step]"
+    }
+  }
+}

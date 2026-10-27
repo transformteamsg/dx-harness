@@ -1,0 +1,19 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/",
+      "/right.html",
+      "/far.html",
+      "/nolink.html",
+      "/none.html"
+    ]
+  },
+  "rules": {
+    "TL-2a": {
+      "logoSelector": "img.logo"
+    }
+  }
+}

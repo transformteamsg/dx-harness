@@ -1,0 +1,13 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "payment": [
+      "/"
+    ],
+    "start": [
+      "/start.html"
+    ]
+  }
+}

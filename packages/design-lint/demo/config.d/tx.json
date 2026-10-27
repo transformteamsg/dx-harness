@@ -1,3 +1,119 @@
 {
-  "select": []
+  "select": [
+    "TX-2a",
+    "TX-3a",
+    "TX-4a",
+    "TX-5a",
+    "TX-6a",
+    "TX-7a",
+    "TX-7b",
+    "TX-8a",
+    "TX-9a",
+    "TX-10a",
+    "TX-10b",
+    "TX-11a",
+    "TX-11b",
+    "TX-12a",
+    "TX-13a",
+    "TX-15a"
+  ],
+  "pages": {
+    "all": [
+      "/tx/",
+      "/tx/details.html",
+      "/tx/hall.html",
+      "/tx/payment.html",
+      "/tx/success.html",
+      "/tx/failure.html",
+      "/tx/track.html",
+      "/tx/payment-methods.html"
+    ],
+    "start": [
+      "/tx/"
+    ],
+    "payment": [
+      "/tx/payment.html"
+    ],
+    "success": [
+      "/tx/success.html"
+    ],
+    "failure": [
+      "/tx/failure.html"
+    ]
+  },
+  "product": {
+    "flowPages": [
+      "/tx/details.html",
+      "/tx/hall.html",
+      "/tx/payment.html"
+    ],
+    "storesPaymentDetails": true,
+    "outcomeImmediate": false,
+    "reasonWithheld": false
+  },
+  "rules": {
+    "TX-2a": {
+      "prerequisiteTopics": {
+        "eligibility": [
+          "who can apply",
+          "eligib"
+        ],
+        "time": [
+          "minutes"
+        ],
+        "documents": [
+          "documents? you need"
+        ],
+        "costs": [
+          "\\bfee\\b",
+          "\\bcost"
+        ],
+        "paymentModes": [
+          "pay by",
+          "credit card"
+        ]
+      }
+    },
+    "TX-3a": {
+      "maxControlsPerStep": 4,
+      "stepSelector": "[data-step]"
+    },
+    "TX-4a": {
+      "minStepsForIndicator": 3
+    },
+    "TX-5a": {
+      "minStepsForDraft": 3
+    },
+    "TX-7a": {
+      "amountSelector": "[data-amount]"
+    },
+    "TX-8a": {
+      "managePage": "/tx/payment-methods.html",
+      "updateSelector": "[data-action=\"update-card\"]",
+      "removeSelector": "[data-action=\"remove-card\"]"
+    },
+    "TX-10a": {
+      "reasonSelector": "[data-reason]"
+    },
+    "TX-10b": {
+      "alternativeActionSelector": "[data-alternative]"
+    },
+    "TX-11a": {
+      "paymentDetailFields": {
+        "referenceNumber": "reference number",
+        "date": "\\d{1,2} \\w+ \\d{4}",
+        "items": "\\bitem\\b",
+        "method": "payment method",
+        "amount": "S\\$\\d"
+      }
+    },
+    "TX-15a": {
+      "trackingPage": "/tx/track.html",
+      "statusSelector": "[data-status-label]",
+      "statusDescriptionSelector": "[data-status-description]"
+    },
+    "TX-13a": {
+      "acknowledgementControlSelector": "[data-acknowledgement]"
+    }
+  }
 }

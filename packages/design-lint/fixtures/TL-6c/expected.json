@@ -1,0 +1,17 @@
+[
+  {
+    "file": "app.json",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "file": "AndroidManifest.xml",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "file": "Info.plist",
+    "line": 1,
+    "column": 1
+  }
+]

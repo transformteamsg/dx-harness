@@ -1,0 +1,16 @@
+{
+  "code": "PR-1b",
+  "describe": "Set the last review date in the review record to the year 2000.",
+  "edits": [
+    {
+      "file": "pr/review.json",
+      "find": "2026-10-01",
+      "replace": "2000-01-01"
+    }
+  ],
+  "expect": [
+    {
+      "file": "."
+    }
+  ]
+}

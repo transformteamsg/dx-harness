@@ -1,0 +1,16 @@
+{
+  "code": "TL-4b",
+  "describe": "Change the year in the footer of the privacy page.",
+  "edits": [
+    {
+      "file": "tl/privacy.html",
+      "find": "© 2026, Government",
+      "replace": "© 2019, Government"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/privacy.html"
+    }
+  ]
+}

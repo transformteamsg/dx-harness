@@ -1,0 +1,16 @@
+{
+  "code": "TX-10b",
+  "describe": "Remove the retry link from the failure page.",
+  "edits": [
+    {
+      "file": "tx/failure.html",
+      "find": "    <p><a href=\"/tx/payment.html\" data-alternative>Try again with another card</a></p>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/failure.html"
+    }
+  ]
+}

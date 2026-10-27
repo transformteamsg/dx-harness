@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "PR-7c": {
+      "maxPageBytes": 100000
+    }
+  }
+}

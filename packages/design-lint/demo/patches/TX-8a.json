@@ -1,0 +1,18 @@
+{
+  "code": "TX-8a",
+  "describe": "Remove the button that removes the saved card.",
+  "edits": [
+    {
+      "file": "tx/payment-methods.html",
+      "find": "      <button type=\"button\" data-action=\"remove-card\">Remove card</button>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tx/payment-methods.html",
+      "line": 23,
+      "column": 3
+    }
+  ]
+}

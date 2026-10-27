@@ -1,0 +1,13 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "TL-2d": {
+      "logoFiles": "assets/logo*.svg",
+      "officialLogoHashes": [
+        "be34e0cfc91d62e1ddd2f3a8e9b247ec4e4dfdd18826e7915377ed3ce1aba4fa"
+      ]
+    }
+  }
+}

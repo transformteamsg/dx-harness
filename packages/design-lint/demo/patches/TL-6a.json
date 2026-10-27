@@ -1,0 +1,18 @@
+{
+  "code": "TL-6a",
+  "describe": "Publish the app under a different developer account name.",
+  "edits": [
+    {
+      "file": "tl/app/store-listing.json",
+      "find": "\"Community Grants Agency\"",
+      "replace": "\"Community Grants Studio\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/app/store-listing.json",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

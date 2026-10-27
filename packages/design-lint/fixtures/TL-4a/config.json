@@ -1,0 +1,27 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/",
+      "/order.html",
+      "/missing.html",
+      "/hash.html",
+      "/none.html",
+      "/exempt.html"
+    ]
+  },
+  "product": {
+    "productUrl": "https://example.gov.sg"
+  },
+  "rules": {
+    "TL-4a": {
+      "transactionalPages": [
+        "/exempt.html"
+      ],
+      "hasFaq": false,
+      "hasSitemap": false
+    }
+  }
+}

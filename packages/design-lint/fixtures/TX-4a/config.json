@@ -1,0 +1,16 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "flowPages": [
+      "/",
+      "/two.html"
+    ]
+  },
+  "rules": {
+    "TX-4a": {
+      "minStepsForIndicator": 2
+    }
+  }
+}

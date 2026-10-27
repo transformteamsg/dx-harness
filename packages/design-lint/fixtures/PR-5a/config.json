@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "PR-5a": {
+      "linkTimeoutMs": 2000
+    }
+  }
+}

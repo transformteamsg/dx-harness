@@ -1,0 +1,18 @@
+{
+  "code": "UU-1c",
+  "describe": "Empty the research record.",
+  "edits": [
+    {
+      "file": "uu/research-record.md",
+      "find": "# Research record\n\nResidents who run a community group need to know whether they can apply for a grant. They use a phone at home in the evening and want a clear answer in one visit.\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "uu/research-record.md",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

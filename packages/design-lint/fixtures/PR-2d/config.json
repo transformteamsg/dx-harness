@@ -1,0 +1,16 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/",
+      "/about.html"
+    ]
+  },
+  "rules": {
+    "PR-2d": {
+      "sentimentsScriptPattern": "sentiments\\.js$"
+    }
+  }
+}

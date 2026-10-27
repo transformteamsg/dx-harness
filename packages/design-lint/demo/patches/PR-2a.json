@@ -1,0 +1,16 @@
+{
+  "code": "PR-2a",
+  "describe": "Remove the WOGAA tracking script from the page.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "<script src=\"/pr/wogaa-demo.js\" defer></script>\n    ",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "pr/performance.html"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "code": "TX-9a",
+  "describe": "Reduce the status message of the success page to a symbol.",
+  "edits": [
+    {
+      "file": "tx/success.html",
+      "find": "Your payment was successful.",
+      "replace": "✓"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/success.html"
+    }
+  ]
+}

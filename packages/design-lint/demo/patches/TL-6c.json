@@ -1,0 +1,18 @@
+{
+  "code": "TL-6c",
+  "describe": "Set another developer name in the app manifest.",
+  "edits": [
+    {
+      "file": "tl/app/app.json",
+      "find": "\"Community Grants Agency\"",
+      "replace": "\"Grants Studio\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/app/app.json",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

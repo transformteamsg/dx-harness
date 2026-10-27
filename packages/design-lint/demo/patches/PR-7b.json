@@ -1,0 +1,16 @@
+{
+  "code": "PR-7b",
+  "describe": "Insert a tall banner after the first paint, so the layout shifts.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "</section>",
+      "replace": "</section>\n    <script>new PerformanceObserver(function () { setTimeout(function () { var d = document.createElement(\"div\"); d.style.height = \"500px\"; d.textContent = \"Late banner\"; var m = document.querySelector(\"main\"); m.insertBefore(d, m.firstChild); }, 50); }).observe({ type: \"paint\", buffered: true });</script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/pr/performance.html"
+    }
+  ]
+}

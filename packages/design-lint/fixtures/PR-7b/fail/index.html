@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fixture page</title>
+</head>
+<body>
+<h1>Shifting</h1>
+<div style="width:1000px;height:700px;background:#0b5fa5;color:#fff">A large block of content.</div>
+<script>new PerformanceObserver(function () { setTimeout(function () { var d = document.createElement("div"); d.style.height = "500px"; d.textContent = "Late banner"; document.body.insertBefore(d, document.body.firstChild); }, 50); }).observe({ type: "paint", buffered: true });</script>
+</body>
+</html>

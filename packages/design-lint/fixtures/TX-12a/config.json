@@ -1,0 +1,16 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "start": [
+      "/"
+    ],
+    "success": [
+      "/ok.html"
+    ]
+  },
+  "product": {
+    "outcomeImmediate": false
+  }
+}
