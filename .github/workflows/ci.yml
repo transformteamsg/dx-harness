@@ -54,6 +54,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The design-lint rendered tests drive a browser. The runner has no Chrome.
+      - name: Install Chromium
+        run: pnpm --filter design-lint exec playwright-core install --with-deps chromium
+
       - name: Typecheck
         run: pnpm typecheck
 

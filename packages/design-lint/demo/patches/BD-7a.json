@@ -1,0 +1,18 @@
+{
+  "code": "BD-7a",
+  "describe": "Remove the required marker from the email label.",
+  "edits": [
+    {
+      "file": "apply.html",
+      "find": "Email <span aria-hidden=\"true\">*</span>",
+      "replace": "Email"
+    }
+  ],
+  "expect": [
+    {
+      "file": "apply.html",
+      "line": 29,
+      "column": 7
+    }
+  ]
+}

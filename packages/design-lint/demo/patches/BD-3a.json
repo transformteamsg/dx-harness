@@ -1,0 +1,18 @@
+{
+  "code": "BD-3a",
+  "describe": "Point the Chinese language link of the about page at a missing page.",
+  "edits": [
+    {
+      "file": "about.html",
+      "find": "<a hreflang=\"zh\" href=\"/zh/\">",
+      "replace": "<a hreflang=\"zh\" href=\"/zh/missing/\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "about.html",
+      "line": 21,
+      "column": 71
+    }
+  ]
+}

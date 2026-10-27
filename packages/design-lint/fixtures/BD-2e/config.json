@@ -1,0 +1,13 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "serviceType": "website"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  }
+}

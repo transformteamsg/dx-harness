@@ -1,3 +1,6 @@
+packages:
+  - packages/*
+
 allowBuilds:
   # Its postinstall links the platform binary into place; without it every
   # call falls back to a slower runtime lookup and warns on stderr.

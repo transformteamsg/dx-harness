@@ -1,0 +1,16 @@
+{
+  "code": "BD-4a",
+  "describe": "Replace the first paragraph of the about page with dense text.",
+  "edits": [
+    {
+      "file": "about.html",
+      "find": "<p>We help local groups run projects. You can check if your group qualifies, fill in a short form, and send it to us online in one visit.</p>",
+      "replace": "<p>Notwithstanding the aforementioned considerations, prospective applicants demonstrating organisational capabilities must substantiate comprehensive documentation regarding programmatic accountability before administrative authorisation becomes available.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/about.html"
+    }
+  ]
+}

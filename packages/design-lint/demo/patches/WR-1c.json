@@ -1,0 +1,16 @@
+{
+  "code": "WR-1c",
+  "describe": "Misspell an ARIA attribute on the account page.",
+  "edits": [
+    {
+      "file": "account.html",
+      "find": "<p>Your application is with our team.</p>",
+      "replace": "<p aria-labeledby=\"x\">Your application is with our team.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/account.html"
+    }
+  ]
+}

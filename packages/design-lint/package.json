@@ -1,0 +1,28 @@
+{
+  "name": "design-lint",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A linter for the design standard of dx-harness. It enforces the lintable rules of the base layer.",
+  "type": "module",
+  "scripts": {
+    "design-lint": "node src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "demo": "node demo/demo.ts",
+    "new-page": "node demo/new-page.ts"
+  },
+  "dependencies": {
+    "axe-core": "^4.14.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "parse5": "^8.0.1",
+    "playwright-core": "^1.64.1",
+    "typescript-eslint": "^8.71.2",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

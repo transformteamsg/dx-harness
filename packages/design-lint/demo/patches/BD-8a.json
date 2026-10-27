@@ -1,0 +1,16 @@
+{
+  "code": "BD-8a",
+  "describe": "Remove the account name from the account page.",
+  "edits": [
+    {
+      "file": "account.html",
+      "find": "    <span data-account-name>Alex Tan</span>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/account.html"
+    }
+  ]
+}

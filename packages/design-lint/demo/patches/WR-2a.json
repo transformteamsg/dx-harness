@@ -1,0 +1,18 @@
+{
+  "code": "WR-2a",
+  "describe": "Remove the live region from the status message on the apply page.",
+  "edits": [
+    {
+      "file": "apply.html",
+      "find": "<p role=\"status\" aria-live=\"polite\" data-status></p>",
+      "replace": "<p data-status></p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "apply.html",
+      "line": 36,
+      "column": 5
+    }
+  ]
+}

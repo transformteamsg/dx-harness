@@ -1,0 +1,28 @@
+{
+  "code": "BD-2d",
+  "describe": "Move the search form of the about page out of the header.",
+  "edits": [
+    {
+      "file": "about.html",
+      "find": "    <form role=\"search\" action=\"/search.html\">\n      <label for=\"q\">Search</label>\n      <input id=\"q\" type=\"search\" name=\"q\">\n      <button type=\"submit\">Search</button>\n    </form>\n",
+      "replace": ""
+    },
+    {
+      "file": "about.html",
+      "find": "    <h1>About Community Grants</h1>\n",
+      "replace": "    <h1>About Community Grants</h1>\n    <form role=\"search\" action=\"/search.html\">\n      <label for=\"q\">Search</label>\n      <input id=\"q\" type=\"search\" name=\"q\">\n      <button type=\"submit\">Search</button>\n    </form>\n"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/about.html"
+    },
+    {
+      "file": "/about.html"
+    },
+    {
+      "file": "/about.html",
+      "code": "BD-2e"
+    }
+  ]
+}

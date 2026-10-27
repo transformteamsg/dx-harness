@@ -1,0 +1,16 @@
+{
+  "code": "BD-1b",
+  "describe": "Give the card a fixed width of 600 pixels.",
+  "edits": [
+    {
+      "file": "styles.css",
+      "find": ".card {\n  max-width: 100%;\n}",
+      "replace": ".card {\n  width: 600px;\n}"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/"
+    }
+  ]
+}

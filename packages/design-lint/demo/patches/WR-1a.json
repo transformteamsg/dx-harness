@@ -1,0 +1,16 @@
+{
+  "code": "WR-1a",
+  "describe": "Remove the label of the send button on the feedback page.",
+  "edits": [
+    {
+      "file": "feedback.html",
+      "find": "<button type=\"submit\">Send</button>",
+      "replace": "<button type=\"submit\"></button>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/feedback.html"
+    }
+  ]
+}

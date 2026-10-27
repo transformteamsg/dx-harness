@@ -1,0 +1,18 @@
+{
+  "code": "BD-3c",
+  "describe": "Remove the language switcher from the sign-in page.",
+  "edits": [
+    {
+      "file": "login.html",
+      "find": "    <nav data-language-switcher><a hreflang=\"en\" href=\"/\">English</a> <a hreflang=\"zh\" href=\"/zh/\">中文</a></nav>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "login.html",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Give us your feedback</title>
+  <meta name="description" content="Tell us how the grant application worked for you, so that we can improve the service.">
+  <link rel="canonical" href="https://example.gov.sg/feedback.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Give feedback</h1>
+    <form action="/feedback.html">
+      <label for="message">Your message <span aria-hidden="true">*</span></label>
+      <textarea id="message" name="message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <p role="status" aria-live="polite" data-status></p>
+  </main>
+</body>
+</html>

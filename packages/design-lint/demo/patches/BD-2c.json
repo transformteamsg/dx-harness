@@ -1,0 +1,21 @@
+{
+  "code": "BD-2c",
+  "describe": "Hide the search form of the home page behind a toggle.",
+  "edits": [
+    {
+      "file": "index.html",
+      "find": "    <form role=\"search\" action=\"/search.html\">",
+      "replace": "    <details><summary>Search</summary><form role=\"search\" action=\"/search.html\">"
+    },
+    {
+      "file": "index.html",
+      "find": "    </form>\n",
+      "replace": "    </form></details>\n"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/"
+    }
+  ]
+}

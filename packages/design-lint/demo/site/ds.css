@@ -1,0 +1,8 @@
+:root {
+  --color-text: #1a1a1a;
+  --color-bg: #ffffff;
+  --color-border: #cccccc;
+  --space-2: 8px;
+  --space-4: 16px;
+}
+body { color: var(--color-text); background: var(--color-bg); }

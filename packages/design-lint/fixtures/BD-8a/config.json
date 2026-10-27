@@ -1,0 +1,10 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "authenticated": [
+      "/account.html"
+    ]
+  }
+}

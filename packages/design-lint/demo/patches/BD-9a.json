@@ -1,0 +1,21 @@
+{
+  "code": "BD-9a",
+  "describe": "Require a phone line as the contact channel. The site has an email link and a contact page, but no phone number.",
+  "edits": [],
+  "expect": [
+    {
+      "file": ".",
+      "line": 1,
+      "column": 1
+    }
+  ],
+  "config": {
+    "rules": {
+      "BD-9a": {
+        "channels": [
+          "tel:"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+:root { --c: #123456; }
+/* dx-tokens */
+:root { --d: #abcdef; }
+/* /dx-tokens */
+a { color: var(--c); }
+.btn { background: var(--d, #fff); }

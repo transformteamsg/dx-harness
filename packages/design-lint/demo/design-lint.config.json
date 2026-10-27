@@ -1,0 +1,88 @@
+{
+  "extends": [
+    "config.d/wp-a.json",
+    "config.d/wp-b.json",
+    "config.d/wo.json",
+    "config.d/wu.json",
+    "config.d/pr.json",
+    "config.d/tx.json",
+    "config.d/tl.json",
+    "config.d/uu.json"
+  ],
+  "select": [
+    "BD-1a",
+    "BD-1b",
+    "BD-1d",
+    "BD-2a",
+    "BD-2c",
+    "BD-2d",
+    "BD-2e",
+    "BD-3a",
+    "BD-3c",
+    "BD-4a",
+    "BD-4b",
+    "BD-5a",
+    "BD-6a",
+    "BD-6b",
+    "BD-7a",
+    "BD-7b",
+    "BD-8a",
+    "BD-9a",
+    "WR-1a",
+    "WR-1b",
+    "WR-1c",
+    "WR-1d",
+    "WR-2a",
+    "WR-2b"
+  ],
+  "serve": "site",
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "serviceType": "website",
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "locale": "en",
+    "audience": "public",
+    "designSystem": "ds.css"
+  },
+  "pages": {
+    "all": [
+      "/",
+      "/search.html",
+      "/about.html",
+      "/apply.html",
+      "/feedback.html",
+      "/login.html",
+      "/account.html",
+      "/zh/"
+    ],
+    "entry": [
+      "/",
+      "/login.html"
+    ],
+    "authenticated": [
+      "/account.html"
+    ]
+  },
+  "rules": {
+    "WR-2a": {
+      "statusSelectors": [
+        "[data-status]"
+      ]
+    },
+    "BD-4a": {
+      "maxGrade": 10
+    },
+    "BD-4b": {
+      "complexWords": {
+        "utilise": "use",
+        "commence": "start",
+        "facilitate": "help"
+      }
+    }
+  }
+}

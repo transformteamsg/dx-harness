@@ -1,0 +1,18 @@
+{
+  "code": "BD-1a",
+  "describe": "Remove the viewport meta tag from the home page.",
+  "edits": [
+    {
+      "file": "index.html",
+      "find": "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "index.html",
+      "line": 3,
+      "column": 1
+    }
+  ]
+}
