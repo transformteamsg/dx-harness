@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hall booking: payment</title>
+  <meta name="description" content="Check the amount and pay the booking fee for your community hall by credit card.">
+  <link rel="canonical" href="https://example.gov.sg/tx/payment.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <nav aria-label="Progress">
+      <ol>
+        <li>Step 1 of 3: Your details</li>
+        <li>Step 2 of 3: Hall and date</li>
+        <li aria-current="step">Step 3 of 3: Payment</li>
+      </ol>
+    </nav>
+    <h1>Payment</h1>
+    <p data-amount>Amount payable: <strong>S$25.00</strong></p>
+    <p>Refund policy: we refund the fee if you cancel one week before the date.</p>
+    <form action="/tx/success.html">
+      <label for="cc-name">Name on card <span aria-hidden="true">*</span></label>
+      <input id="cc-name" name="cc-name" autocomplete="cc-name" required>
+      <label for="cc-number">Card number <span aria-hidden="true">*</span></label>
+      <input id="cc-number" name="cc-number" inputmode="numeric" autocomplete="cc-number" required>
+      <label for="cc-exp">Expiry date <span aria-hidden="true">*</span></label>
+      <input id="cc-exp" name="cc-exp" autocomplete="cc-exp" required>
+      <button type="submit">Pay now</button>
+      <button type="button">Save draft</button>
+    </form>
+    <p role="status" aria-live="polite" data-status></p>
+  </main>
+</body>
+</html>

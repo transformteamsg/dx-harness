@@ -1,0 +1,22 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "start": [
+      "/"
+    ]
+  },
+  "rules": {
+    "TX-2a": {
+      "prerequisiteTopics": {
+        "eligibility": [
+          "eligib"
+        ],
+        "time": [
+          "minutes"
+        ]
+      }
+    }
+  }
+}

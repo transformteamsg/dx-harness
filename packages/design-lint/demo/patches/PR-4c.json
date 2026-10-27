@@ -1,0 +1,16 @@
+{
+  "code": "PR-4c",
+  "describe": "Remove the duration from the downtime notice.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "      <p>Duration: 2 hours</p>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/pr/performance.html"
+    }
+  ]
+}

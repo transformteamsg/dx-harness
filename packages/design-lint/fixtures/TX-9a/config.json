@@ -1,0 +1,14 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "success": [
+      "/ok.html",
+      "/empty.html"
+    ],
+    "failure": [
+      "/fail.html"
+    ]
+  }
+}

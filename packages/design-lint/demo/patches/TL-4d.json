@@ -1,0 +1,18 @@
+{
+  "code": "TL-4d",
+  "describe": "Point the privacy link of the contact page footer at a page that does not exist.",
+  "edits": [
+    {
+      "file": "tl/contact.html",
+      "find": "<a href=\"/tl/privacy.html\">Privacy Statement</a>",
+      "replace": "<a href=\"/tl/gone.html\">Privacy Statement</a>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/contact.html",
+      "line": 34,
+      "column": 11
+    }
+  ]
+}

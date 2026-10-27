@@ -1,0 +1,16 @@
+{
+  "code": "TL-4a",
+  "describe": "Remove the privacy link from the footer of the trust page.",
+  "edits": [
+    {
+      "file": "tl/index.html",
+      "find": "      <li><a href=\"/tl/privacy.html\">Privacy Statement</a></li>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/"
+    }
+  ]
+}

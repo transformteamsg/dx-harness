@@ -1,3 +1,25 @@
 {
-  "select": []
+  "select": ["TL-1a", "TL-2a", "TL-2b", "TL-2d", "TL-3a", "TL-3b", "TL-4a", "TL-4b", "TL-4d", "TL-5a", "TL-5b", "TL-6a", "TL-6c"],
+  "pages": {
+    "all": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"]
+  },
+  "product": {
+    "productUrl": "https://example.gov.sg",
+    "institutionType": "agency",
+    "customisable": true,
+    "agencyName": "Community Grants Agency",
+    "bannerPages": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"]
+  },
+  "rules": {
+    "TL-2a": { "pages": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"], "logoSelector": "img.site-logo" },
+    "TL-2b": { "pages": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"], "logoSelector": "img.site-logo" },
+    "TL-2d": { "logoFiles": "tl/logo*.svg", "officialLogoHashes": ["94c1f8183142b9d85c040696674587bd8411816deb351f1bed6c4032f5931283"] },
+        "TL-3b": { "pages": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"] },
+    "TL-4a": { "pages": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"], "transactionalPages": [], "hasFaq": false, "hasSitemap": false },
+    "TL-4b": { "pages": ["/tl/", "/tl/contact.html", "/tl/privacy.html", "/tl/terms.html", "/tl/vulnerability.html"], "transactionalPages": [], "currentYear": 2026 },
+    "TL-5a": { "serviceType": "mobile-app", "storeListingFile": "tl/app/store-listing.json" },
+    "TL-5b": { "serviceType": "mobile-app", "manifestFile": "tl/app/package.json" },
+    "TL-6a": { "serviceType": "mobile-app", "storeListingFile": "tl/app/store-listing.json" },
+    "TL-6c": { "manifestFiles": ["tl/app/app.json"] }
+  }
 }

@@ -1,0 +1,8 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "PR-7e": {}
+  }
+}

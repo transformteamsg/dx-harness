@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hall booking: hall and date</title>
+  <meta name="description" content="Choose the hall, the date, and the number of guests for your community hall booking.">
+  <link rel="canonical" href="https://example.gov.sg/tx/hall.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <nav aria-label="Progress">
+      <ol>
+        <li>Step 1 of 3: Your details</li>
+        <li aria-current="step">Step 2 of 3: Hall and date</li>
+        <li>Step 3 of 3: Payment</li>
+      </ol>
+    </nav>
+    <h1>Hall and date</h1>
+    <form action="/tx/payment.html">
+      <label for="hall">Hall <span aria-hidden="true">*</span></label>
+      <select id="hall" name="hall" required>
+        <option value="north">North hall</option>
+        <option value="south">South hall</option>
+      </select>
+      <label for="date">Date <span aria-hidden="true">*</span></label>
+      <input id="date" name="date" type="date" required>
+      <label for="guests">Number of guests <span aria-hidden="true">*</span></label>
+      <input id="guests" name="guests" type="number" required>
+      <button type="submit">Next</button>
+      <button type="button">Save draft</button>
+    </form>
+    <p role="status" aria-live="polite" data-status></p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "code": "TX-3a",
+  "describe": "Add two more fields to the details step, which goes over the limit of four.",
+  "edits": [
+    {
+      "file": "tx/details.html",
+      "find": "<input id=\"phone\" name=\"phone\" type=\"tel\" autocomplete=\"tel\" required>",
+      "replace": "<input id=\"phone\" name=\"phone\" type=\"tel\" autocomplete=\"tel\" required>\n      <label for=\"extra1\">Extra one <span aria-hidden=\"true\">*</span></label>\n      <input id=\"extra1\" name=\"extra1\" required>\n      <label for=\"extra2\">Extra two <span aria-hidden=\"true\">*</span></label>\n      <input id=\"extra2\" name=\"extra2\" required>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "tx/details.html",
+      "line": 32,
+      "column": 5
+    }
+  ]
+}

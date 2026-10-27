@@ -1,0 +1,17 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "payment": [
+      "/",
+      "/b.html",
+      "/c.html"
+    ]
+  },
+  "rules": {
+    "TX-7a": {
+      "amountSelector": "[data-amount]"
+    }
+  }
+}

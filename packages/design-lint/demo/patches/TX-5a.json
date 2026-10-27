@@ -1,0 +1,16 @@
+{
+  "code": "TX-5a",
+  "describe": "Remove the save-draft button from the hall step.",
+  "edits": [
+    {
+      "file": "tx/hall.html",
+      "find": "      <button type=\"button\">Save draft</button>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/hall.html"
+    }
+  ]
+}

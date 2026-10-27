@@ -1,0 +1,32 @@
+{
+  "code": "PR-7d",
+  "describe": "Serve the hero as a PNG, show it at a third of its width, and swap the detail image for a heavy one.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "src=\"/pr/hero.webp\"",
+      "replace": "src=\"/pr/hero.png\""
+    },
+    {
+      "file": "pr/performance.html",
+      "find": "width=\"240\" height=\"140\" alt=\"A blue and yellow banner for Community Grants\"",
+      "replace": "width=\"80\" height=\"47\" alt=\"A blue and yellow banner for Community Grants\""
+    },
+    {
+      "file": "pr/performance.html",
+      "find": "src=\"/pr/detail.webp\"",
+      "replace": "src=\"/pr/heavy.webp\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/pr/performance.html"
+    },
+    {
+      "file": "/pr/performance.html"
+    },
+    {
+      "file": "/pr/performance.html"
+    }
+  ]
+}

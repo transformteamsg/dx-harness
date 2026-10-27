@@ -1,0 +1,21 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "PR-7a": {
+      "maxLoadSeconds": 1.5,
+      "networkProfile": {
+        "latencyMs": 20,
+        "downloadKbps": 10000,
+        "uploadKbps": 5000
+      },
+      "cpuThrottle": 2
+    }
+  }
+}

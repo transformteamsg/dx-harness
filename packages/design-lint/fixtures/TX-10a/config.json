@@ -1,0 +1,19 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "failure": [
+      "/a.html",
+      "/b.html"
+    ]
+  },
+  "product": {
+    "reasonWithheld": false
+  },
+  "rules": {
+    "TX-10a": {
+      "reasonSelector": "[data-reason]"
+    }
+  }
+}

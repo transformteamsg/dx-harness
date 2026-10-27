@@ -1,0 +1,16 @@
+{
+  "code": "PR-5a",
+  "describe": "Point the programme link at a page that does not exist.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "<a href=\"/about.html\">the programme</a>",
+      "replace": "<a href=\"/missing.html\">the programme</a>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/pr/performance.html"
+    }
+  ]
+}

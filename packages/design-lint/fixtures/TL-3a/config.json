@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "productUrl": "https://example.gov.sg",
+    "customisable": true,
+    "bannerPages": [
+      "/",
+      "/late.html",
+      "/hidden.html",
+      "/none.html"
+    ]
+  }
+}

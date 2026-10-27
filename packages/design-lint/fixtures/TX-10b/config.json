@@ -1,0 +1,16 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "failure": [
+      "/a.html",
+      "/b.html"
+    ]
+  },
+  "rules": {
+    "TX-10b": {
+      "alternativeActionSelector": "[data-alternative]"
+    }
+  }
+}

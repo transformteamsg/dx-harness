@@ -1,0 +1,18 @@
+{
+  "code": "TL-3b",
+  "describe": "Change the banner text of the trust page.",
+  "edits": [
+    {
+      "file": "tl/index.html",
+      "find": "A Singapore Government Agency Website",
+      "replace": "A Singapore Business Website"
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/index.html",
+      "line": 14,
+      "column": 3
+    }
+  ]
+}

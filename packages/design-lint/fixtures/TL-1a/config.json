@@ -1,0 +1,9 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "productUrl": "https://example.gov.sg",
+    "institutionType": "agency"
+  }
+}

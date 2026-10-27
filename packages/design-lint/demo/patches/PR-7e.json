@@ -1,0 +1,16 @@
+{
+  "code": "PR-7e",
+  "describe": "Remove loading=lazy from the image below the fold.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "height=\"140\" loading=\"lazy\" alt",
+      "replace": "height=\"140\" alt"
+    }
+  ],
+  "expect": [
+    {
+      "file": "pr/performance.html"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "code": "TL-2b",
+  "describe": "Stretch the logo of the terms page to twice its height.",
+  "edits": [
+    {
+      "file": "tl/terms.html",
+      "find": "width=\"120\" height=\"40\">",
+      "replace": "width=\"120\" height=\"40\" style=\"height: 80px\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/terms.html"
+    }
+  ]
+}

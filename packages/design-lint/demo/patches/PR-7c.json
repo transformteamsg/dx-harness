@@ -1,0 +1,16 @@
+{
+  "code": "PR-7c",
+  "describe": "Load a 260 KB script bundle.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "<title>Service status and hours</title>",
+      "replace": "<title>Service status and hours</title>\n  <script src=\"/pr/vendor.js\" defer></script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/pr/performance.html"
+    }
+  ]
+}

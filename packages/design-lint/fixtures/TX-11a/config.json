@@ -1,0 +1,18 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "success": [
+      "/"
+    ]
+  },
+  "rules": {
+    "TX-11a": {
+      "paymentDetailFields": {
+        "referenceNumber": "reference number",
+        "amount": "S\\$\\d"
+      }
+    }
+  }
+}

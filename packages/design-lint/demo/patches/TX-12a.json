@@ -1,0 +1,21 @@
+{
+  "code": "TX-12a",
+  "describe": "Remove the timeframe from the start page and the success page.",
+  "edits": [
+    {
+      "file": "tx/index.html",
+      "find": "    <p>We confirm your booking within 3 working days.</p>",
+      "replace": "    <p>We confirm your booking later.</p>"
+    },
+    {
+      "file": "tx/success.html",
+      "find": "We confirm your booking within 3 working days.",
+      "replace": "We confirm your booking later."
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "code": "TL-1a",
+  "describe": "Point the canonical link of the contact page at a .com domain.",
+  "edits": [
+    {
+      "file": "tl/contact.html",
+      "find": "href=\"https://example.gov.sg/tl/contact.html\"",
+      "replace": "href=\"https://example.com/tl/contact.html\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/contact.html",
+      "line": 8,
+      "column": 3
+    }
+  ]
+}

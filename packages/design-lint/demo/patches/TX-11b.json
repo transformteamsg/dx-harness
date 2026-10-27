@@ -1,0 +1,16 @@
+{
+  "code": "TX-11b",
+  "describe": "Remove the print button from the success page.",
+  "edits": [
+    {
+      "file": "tx/success.html",
+      "find": "    <p><button type=\"button\" data-print>Print receipt</button></p>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/success.html"
+    }
+  ]
+}

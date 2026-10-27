@@ -1,0 +1,16 @@
+{
+  "code": "PR-7f",
+  "describe": "Cut the cache lifetime of scripts to 60 seconds.",
+  "edits": [
+    {
+      "file": "pr/_headers",
+      "find": "/*.js\n  Cache-Control: public, max-age=31536000, immutable",
+      "replace": "/*.js\n  Cache-Control: public, max-age=60"
+    }
+  ],
+  "expect": [
+    {
+      "file": "pr/_headers"
+    }
+  ]
+}

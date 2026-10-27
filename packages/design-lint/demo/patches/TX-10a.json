@@ -1,0 +1,16 @@
+{
+  "code": "TX-10a",
+  "describe": "Remove the reason from the failure page.",
+  "edits": [
+    {
+      "file": "tx/failure.html",
+      "find": "    <p data-reason>Your bank declined the card. We did not take any money.</p>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/failure.html"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "storesPaymentDetails": true
+  },
+  "rules": {
+    "TX-8a": {
+      "managePage": "/cards.html",
+      "updateSelector": "[data-action=\"update\"]",
+      "removeSelector": "[data-action=\"remove\"]"
+    }
+  }
+}

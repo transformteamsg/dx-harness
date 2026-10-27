@@ -1,0 +1,18 @@
+{
+  "code": "TL-5b",
+  "describe": "Release the app under the MIT licence.",
+  "edits": [
+    {
+      "file": "tl/app/package.json",
+      "find": "\"UNLICENSED\"",
+      "replace": "\"MIT\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/app/package.json",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

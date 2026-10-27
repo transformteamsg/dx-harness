@@ -1,0 +1,18 @@
+{
+  "code": "TL-2d",
+  "describe": "Recolour the logo file, so that its hash changes.",
+  "edits": [
+    {
+      "file": "tl/logo.svg",
+      "find": "fill=\"#1a1a1a\"",
+      "replace": "fill=\"#ff0000\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "tl/logo.svg",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

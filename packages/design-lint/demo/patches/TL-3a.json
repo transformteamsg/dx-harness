@@ -1,0 +1,21 @@
+{
+  "code": "TL-3a",
+  "describe": "Move the banner of the vulnerability page below the header.",
+  "edits": [
+    {
+      "file": "tl/vulnerability.html",
+      "find": "  <section class=\"sgds-masthead\" aria-label=\"Official website notice\">A Singapore Government Agency Website</section>\n",
+      "replace": ""
+    },
+    {
+      "file": "tl/vulnerability.html",
+      "find": "  </header>\n",
+      "replace": "  </header>\n  <section class=\"sgds-masthead\" aria-label=\"Official website notice\">A Singapore Government Agency Website</section>\n"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/vulnerability.html"
+    }
+  ]
+}

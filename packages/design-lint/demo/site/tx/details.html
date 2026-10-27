@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hall booking: your details</title>
+  <meta name="description" content="Give your name, email, and phone number so that we can reach you about the hall booking.">
+  <link rel="canonical" href="https://example.gov.sg/tx/details.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <nav aria-label="Progress">
+      <ol>
+        <li aria-current="step">Step 1 of 3: Your details</li>
+        <li>Step 2 of 3: Hall and date</li>
+        <li>Step 3 of 3: Payment</li>
+      </ol>
+    </nav>
+    <h1>Your details</h1>
+    <form action="/tx/hall.html">
+      <label for="full-name">Full name <span aria-hidden="true">*</span></label>
+      <input id="full-name" name="name" autocomplete="name" required>
+      <label for="email">Email <span aria-hidden="true">*</span></label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <label for="phone">Phone <span aria-hidden="true">*</span></label>
+      <input id="phone" name="phone" type="tel" autocomplete="tel" required>
+      <button type="submit">Next</button>
+      <button type="button">Save draft</button>
+    </form>
+    <p role="status" aria-live="polite" data-status></p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "PR-1b": {
+      "lastReviewDate": "2026-10-01",
+      "reviewIntervalDays": 20000,
+      "reviewDateFile": "review.json"
+    }
+  }
+}

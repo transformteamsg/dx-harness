@@ -1,0 +1,16 @@
+{
+  "code": "PR-6a",
+  "describe": "Remove Safari and Edge from the browser support list.",
+  "edits": [
+    {
+      "file": "pr/.browserslistrc",
+      "find": "last 2 safari versions\nlast 2 edge versions\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "."
+    }
+  ]
+}

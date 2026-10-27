@@ -1,0 +1,16 @@
+{
+  "code": "TX-2a",
+  "describe": "Remove the time that the start page gives.",
+  "edits": [
+    {
+      "file": "tx/index.html",
+      "find": "      <li>Time: it takes about ten minutes to finish.</li>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/"
+    }
+  ]
+}

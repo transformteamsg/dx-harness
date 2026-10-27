@@ -1,0 +1,21 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "PR-7f": {
+      "cacheConfigFiles": [
+        "_headers",
+        "vercel.json",
+        "nginx.conf"
+      ],
+      "assetPatterns": [
+        "*.js",
+        "*.css",
+        "*.png",
+        "*.webp"
+      ],
+      "minCacheSeconds": 2592000
+    }
+  }
+}

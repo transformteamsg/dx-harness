@@ -1,0 +1,24 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/err.html",
+      "/wide.html",
+      "/crit.html"
+    ]
+  },
+  "rules": {
+    "PR-6b": {
+      "engines": [
+        "chromium"
+      ],
+      "runOn": "any",
+      "viewports": [
+        320,
+        1280
+      ]
+    }
+  }
+}

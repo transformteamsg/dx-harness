@@ -1,0 +1,10 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "PR-6a": {
+      "minBrowsers": 3
+    }
+  }
+}

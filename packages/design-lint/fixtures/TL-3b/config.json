@@ -1,0 +1,14 @@
+{
+  "pages": {
+    "all": [
+      "/",
+      "/text.html",
+      "/style.html",
+      "/none.html"
+    ]
+  },
+  "product": {
+    "productUrl": "https://example.gov.sg",
+    "customisable": true
+  }
+}

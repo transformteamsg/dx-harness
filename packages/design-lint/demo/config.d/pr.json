@@ -1,3 +1,24 @@
 {
-  "select": []
+  "select": ["PR-1b", "PR-2a", "PR-2d", "PR-3c", "PR-4c", "PR-5a", "PR-6a", "PR-6b", "PR-7a", "PR-7b", "PR-7c", "PR-7d", "PR-7e", "PR-7f"],
+  "pages": {
+    "all": ["/pr/performance.html"]
+  },
+  "rules": {
+    "PR-1b": { "lastReviewDate": "2026-10-01", "reviewIntervalDays": 3650, "reviewDateFile": "pr/review.json" },
+    "PR-2a": { "trackingScriptPattern": "wogaa-demo\\.js$", "customisable": true, "pages": ["/pr/performance.html"] },
+    "PR-2d": { "sentimentsScriptPattern": "wogaa-sentiments-demo\\.js$", "pages": ["/pr/performance.html"] },
+    "PR-3c": { "availability": "Monday to Friday, 8:30 to 17:30" },
+    "PR-6a": { "minBrowsers": 4, "browserSupportSource": ["pr/.browserslistrc"] },
+    "PR-6b": { "engines": ["chromium"], "runOn": "any", "pages": ["/", "/pr/performance.html"] },
+    "PR-7a": {
+      "pages": ["/", "/pr/performance.html"],
+      "maxLoadSeconds": 2.5,
+      "networkProfile": { "latencyMs": 100, "downloadKbps": 1500, "uploadKbps": 750 },
+      "cpuThrottle": 4
+    },
+    "PR-7b": { "pages": ["/", "/pr/performance.html"] },
+    "PR-7c": { "pages": ["/", "/pr/performance.html"], "maxPageBytes": 120000 },
+    "PR-7d": { "pages": ["/pr/performance.html"], "maxImageBytes": 10000 },
+    "PR-7f": { "cacheConfigFiles": ["pr/_headers"], "minCacheSeconds": 2592000 }
+  }
 }

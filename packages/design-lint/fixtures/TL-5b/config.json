@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "TL-5b": {
+      "serviceType": "mobile-app"
+    }
+  }
+}

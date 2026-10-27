@@ -1,0 +1,10 @@
+{
+  "product": {
+    "agencyName": "Agency"
+  },
+  "rules": {
+    "TL-6a": {
+      "serviceType": "mobile-app"
+    }
+  }
+}

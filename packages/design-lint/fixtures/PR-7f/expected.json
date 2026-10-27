@@ -1,0 +1,17 @@
+[
+  {
+    "file": "_headers",
+    "line": 1
+  },
+  {
+    "file": "vercel.json",
+    "line": 4
+  },
+  {
+    "file": "nginx.conf",
+    "line": 2
+  },
+  {
+    "file": "_headers"
+  }
+]

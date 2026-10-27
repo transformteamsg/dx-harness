@@ -1,0 +1,16 @@
+{
+  "code": "TX-7a",
+  "describe": "Replace the amount with text that has no currency amount.",
+  "edits": [
+    {
+      "file": "tx/payment.html",
+      "find": "<strong>S$25.00</strong>",
+      "replace": "<strong>to be confirmed</strong>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/payment.html"
+    }
+  ]
+}

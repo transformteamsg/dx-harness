@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "UU-2d": {
+      "findingsReportPath": "findings.md"
+    }
+  }
+}

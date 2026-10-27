@@ -1,0 +1,12 @@
+{
+  "code": "PR-6b",
+  "describe": "Add an inline script that throws an uncaught error. The rule runs only in CI, so test/pr-6b.test.ts checks this patch with ci set.",
+  "edits": [
+    {
+      "file": "pr/performance.html",
+      "find": "<h2 id=\"details\">Details</h2>",
+      "replace": "<h2 id=\"details\">Details</h2>\n    <script>throw new Error(\"Demo error\");</script>"
+    }
+  ],
+  "expect": []
+}

@@ -1,0 +1,18 @@
+{
+  "code": "UU-2d",
+  "describe": "Give a finding a severity that is not on the scale.",
+  "edits": [
+    {
+      "file": "uu/findings-report.md",
+      "find": "Severity: high",
+      "replace": "Severity: urgent"
+    }
+  ],
+  "expect": [
+    {
+      "file": "uu/findings-report.md",
+      "line": 3,
+      "column": 1
+    }
+  ]
+}

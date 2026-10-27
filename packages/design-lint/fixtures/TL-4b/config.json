@@ -1,0 +1,25 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/",
+      "/year.html",
+      "/owner.html",
+      "/none.html",
+      "/exempt.html"
+    ]
+  },
+  "product": {
+    "productUrl": "https://example.gov.sg"
+  },
+  "rules": {
+    "TL-4b": {
+      "transactionalPages": [
+        "/exempt.html"
+      ],
+      "currentYear": 2026
+    }
+  }
+}

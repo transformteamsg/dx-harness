@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "product": {
+    "outcomeImmediate": false
+  },
+  "rules": {
+    "TX-15a": {
+      "trackingPage": "/track.html",
+      "statusSelector": "[data-label]",
+      "statusDescriptionSelector": "[data-desc]"
+    }
+  }
+}

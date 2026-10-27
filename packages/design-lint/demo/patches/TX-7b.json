@@ -1,0 +1,16 @@
+{
+  "code": "TX-7b",
+  "describe": "Remove the refund policy from the payment page.",
+  "edits": [
+    {
+      "file": "tx/payment.html",
+      "find": "    <p>Refund policy: we refund the fee if you cancel one week before the date.</p>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/payment.html"
+    }
+  ]
+}

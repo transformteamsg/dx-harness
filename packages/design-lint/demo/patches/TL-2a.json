@@ -1,0 +1,16 @@
+{
+  "code": "TL-2a",
+  "describe": "Link the logo of the privacy page to the about page.",
+  "edits": [
+    {
+      "file": "tl/privacy.html",
+      "find": "<a href=\"/\"><img class=\"site-logo\"",
+      "replace": "<a href=\"/about.html\"><img class=\"site-logo\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/privacy.html"
+    }
+  ]
+}

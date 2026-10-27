@@ -1,0 +1,18 @@
+{
+  "code": "TX-4a",
+  "describe": "Take the current-step marker off the hall step.",
+  "edits": [
+    {
+      "file": "tx/hall.html",
+      "find": "<li aria-current=\"step\">Step 2 of 3: Hall and date</li>",
+      "replace": "<li>Step 2 of 3: Hall and date</li>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "tx/hall.html",
+      "line": 23,
+      "column": 3
+    }
+  ]
+}
