@@ -1,0 +1,17 @@
+[
+  {
+    "file": "index.html",
+    "line": 10,
+    "column": 29
+  },
+  {
+    "file": "app.js",
+    "line": 1,
+    "column": 15
+  },
+  {
+    "file": "App.tsx",
+    "line": 2,
+    "column": 8
+  }
+]

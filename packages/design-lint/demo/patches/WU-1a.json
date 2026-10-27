@@ -1,0 +1,22 @@
+{
+  "code": "WU-1a",
+  "describe": "Give the not-found page an invalid language tag.",
+  "edits": [
+    {
+      "file": "wu/not-found.html",
+      "find": "<html lang=\"en\">",
+      "replace": "<html lang=\"en_SG\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/not-found.html",
+      "line": 2,
+      "column": 1
+    },
+    {
+      "file": "/wu/not-found.html",
+      "code": "WU-1b"
+    }
+  ]
+}

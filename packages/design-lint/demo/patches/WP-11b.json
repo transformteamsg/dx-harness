@@ -1,0 +1,16 @@
+{
+  "code": "WP-11b",
+  "describe": "Empty the error message of the email field, so that the invalid input has no message.",
+  "edits": [
+    {
+      "file": "wp-b/forms.html",
+      "find": "<p class=\"error\" id=\"c-email-error\">Enter an email address such as name@example.sg.</p>",
+      "replace": "<p class=\"error\" id=\"c-email-error\"></p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/forms.html"
+    }
+  ]
+}

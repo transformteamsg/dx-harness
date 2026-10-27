@@ -1,0 +1,16 @@
+{
+  "code": "WU-4a",
+  "describe": "Remove the expansion of CPF at its first use.",
+  "edits": [
+    {
+      "file": "wu/language.html",
+      "find": "<abbr title=\"Central Provident Fund\">CPF</abbr>",
+      "replace": "CPF"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/language.html"
+    }
+  ]
+}

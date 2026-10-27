@@ -1,0 +1,16 @@
+{
+  "code": "WP-10a",
+  "describe": "Give the shipping street field an autocomplete token that does not exist.",
+  "edits": [
+    {
+      "file": "wp-b/forms.html",
+      "find": "autocomplete=\"shipping street-address\"",
+      "replace": "autocomplete=\"shipping streetaddress\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/forms.html"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "code": "WU-10a",
+  "describe": "Remove the error reference from the email field.",
+  "edits": [
+    {
+      "file": "wu/errors.html",
+      "find": " aria-describedby=\"e-email-error\"",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/errors.html"
+    }
+  ]
+}

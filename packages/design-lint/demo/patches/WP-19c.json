@@ -1,0 +1,16 @@
+{
+  "code": "WP-19c",
+  "describe": "Remove the focus-within selector from the hint rule.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".hint-wrap:hover .hint, .hint-wrap:focus-within .hint { display: inline; }",
+      "replace": ".hint-wrap:hover .hint { display: inline; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-b/wp-b.css"
+    }
+  ]
+}

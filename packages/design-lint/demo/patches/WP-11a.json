@@ -1,0 +1,16 @@
+{
+  "code": "WP-11a",
+  "describe": "Remove the underline from links in text.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".prose a { text-decoration: underline; }",
+      "replace": ".prose a { text-decoration: none; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/text.html"
+    }
+  ]
+}

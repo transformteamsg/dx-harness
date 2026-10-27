@@ -1,0 +1,18 @@
+{
+  "code": "WO-3b",
+  "describe": "Add a key handler for the single key s.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-3b -->",
+      "replace": "<script>\ndocument.onkeydown = function (e) { if (e.key === \"s\") { save(); } };\n</script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 35,
+      "column": 10
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "code": "WU-6a",
+  "describe": "Open a page when the language select changes.",
+  "edits": [
+    {
+      "file": "wu/sign-in.html",
+      "find": "<select id=\"pref\" name=\"pref\">",
+      "replace": "<select id=\"pref\" name=\"pref\" onchange=\"location.href=this.value\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/sign-in.html",
+      "line": 35,
+      "column": 5
+    }
+  ]
+}

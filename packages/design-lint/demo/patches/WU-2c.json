@@ -1,0 +1,16 @@
+{
+  "code": "WU-2c",
+  "describe": "Remove the lang attribute from the Chinese paragraph.",
+  "edits": [
+    {
+      "file": "wu/language.html",
+      "find": "<p lang=\"zh\">",
+      "replace": "<p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/language.html"
+    }
+  ]
+}

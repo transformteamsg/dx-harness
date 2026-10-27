@@ -1,0 +1,16 @@
+{
+  "code": "WP-18a",
+  "describe": "Force a tight letter spacing on the note with !important in a style attribute.",
+  "edits": [
+    {
+      "file": "wp-b/text.html",
+      "find": "<p class=\"note\">",
+      "replace": "<p class=\"note\" style=\"letter-spacing: 0.05em !important\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/text.html"
+    }
+  ]
+}

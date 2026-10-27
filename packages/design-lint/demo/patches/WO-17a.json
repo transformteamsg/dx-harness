@@ -1,0 +1,18 @@
+{
+  "code": "WO-17a",
+  "describe": "Add a devicemotion listener.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-17a -->",
+      "replace": "<script>window.addEventListener(\"devicemotion\", function () {});</script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 36,
+      "column": 37
+    }
+  ]
+}

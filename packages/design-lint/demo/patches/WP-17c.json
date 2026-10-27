@@ -1,0 +1,16 @@
+{
+  "code": "WP-17c",
+  "describe": "Change the declared edge token of the pair to a pale grey.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": "--wpb-edge: #767676;",
+      "replace": "--wpb-edge: #cccccc;"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-b/wp-b.css"
+    }
+  ]
+}

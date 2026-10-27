@@ -1,0 +1,16 @@
+{
+  "code": "WU-11a",
+  "describe": "Turn the heading of the not-found page into a paragraph.",
+  "edits": [
+    {
+      "file": "wu/not-found.html",
+      "find": "<h1>Page not found</h1>",
+      "replace": "<p>Page not found</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/not-found.html"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "code": "WP-7a",
+  "describe": "Set a positive tabindex on the widget button.",
+  "edits": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "find": "tabIndex={0}",
+      "replace": "tabIndex={2}"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "line": 9,
+      "column": 29
+    }
+  ]
+}

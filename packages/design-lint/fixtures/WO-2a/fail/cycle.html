@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>A page title</title>
+</head>
+<body>
+<main>
+<h1>Title</h1>
+<input id="a" aria-label="A" onkeydown="if (event.key === 'Tab') { event.preventDefault(); document.getElementById('b').focus(); }"><input id="b" aria-label="B" onkeydown="if (event.key === 'Tab') { event.preventDefault(); document.getElementById('a').focus(); }">
+</main>
+</body>
+</html>

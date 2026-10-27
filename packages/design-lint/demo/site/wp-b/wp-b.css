@@ -1,0 +1,25 @@
+/* Styles of the demo pages for WP-10 to WP-19. */
+:root {
+  --wpb-text: #1a1a1a;
+  --wpb-muted: #595959;
+  --wpb-faint: #bbbbbb;
+  --wpb-error: #b00020;
+  --wpb-pair-fg: #595959;
+  --wpb-pair-bg: #ffffff;
+  --wpb-edge: #767676;
+  --wpb-edge-bg: #ffffff;
+}
+.error { color: var(--wpb-error); margin: 0 0 var(--space-2); }
+.muted { color: var(--wpb-muted); }
+.prose a { text-decoration: underline; }
+.note { font-size: 0.875rem; }
+.tight { letter-spacing: 0.05em; }
+.badge { display: inline-block; }
+.chip { line-height: 1; }
+.wide { max-width: 100%; }
+.faint-edge { border: 1px solid var(--wpb-faint); }
+.tip-wrap { position: relative; display: inline-block; }
+.tip { position: absolute; top: 100%; left: 0; width: 16em; padding: var(--space-2); border: 1px solid var(--wpb-edge); background: var(--color-bg); }
+.hint { display: none; }
+.hint-wrap:hover .hint, .hint-wrap:focus-within .hint { display: inline; }
+fieldset { margin: var(--space-2) 0; }

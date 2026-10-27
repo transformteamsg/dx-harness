@@ -1,0 +1,4 @@
+a:focus { outline: none; box-shadow: 0 0 0 2px; }
+button { outline: none; }
+button:focus-visible { border: 2px solid; }
+h1 { outline: none; }

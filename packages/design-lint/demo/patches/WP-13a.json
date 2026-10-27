@@ -1,0 +1,16 @@
+{
+  "code": "WP-13a",
+  "describe": "Set the muted text in a pale grey.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".muted { color: var(--wpb-muted); }",
+      "replace": ".muted { color: var(--wpb-faint); }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/text.html"
+    }
+  ]
+}

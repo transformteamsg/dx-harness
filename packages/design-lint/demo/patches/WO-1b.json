@@ -1,0 +1,18 @@
+{
+  "code": "WO-1b",
+  "describe": "Add an anchor with role button that cannot take focus.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-1b -->",
+      "replace": "<a role=\"button\">Open</a>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 29,
+      "column": 5
+    }
+  ]
+}

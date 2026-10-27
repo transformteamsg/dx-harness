@@ -1,0 +1,16 @@
+{
+  "code": "WP-10c",
+  "describe": "Remove the autocomplete attribute from the phone number input.",
+  "edits": [
+    {
+      "file": "wp-b/forms.html",
+      "find": "<input id=\"c-tel\" name=\"tel\" type=\"tel\" autocomplete=\"tel\">",
+      "replace": "<input id=\"c-tel\" name=\"tel\" type=\"tel\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/forms.html"
+    }
+  ]
+}

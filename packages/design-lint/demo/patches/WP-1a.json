@@ -1,0 +1,16 @@
+{
+  "code": "WP-1a",
+  "describe": "Remove the alt text of the project image on the media page.",
+  "edits": [
+    {
+      "file": "wp-a/media.html",
+      "find": "alt=\"Volunteers planting a community garden\" width=\"240\"",
+      "replace": "width=\"240\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/media.html"
+    }
+  ]
+}

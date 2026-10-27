@@ -1,0 +1,16 @@
+{
+  "code": "WO-2a",
+  "describe": "Add a field that stops Tab.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-2a -->",
+      "replace": "<input aria-label=\"Trap\" onkeydown=\"if (event.key === 'Tab') { event.preventDefault(); }\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/controls.html"
+    }
+  ]
+}

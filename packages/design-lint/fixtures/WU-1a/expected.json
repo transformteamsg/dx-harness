@@ -1,0 +1,17 @@
+[
+  {
+    "file": "bad-lang.html",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "file": "no-lang.html",
+    "line": 2,
+    "column": 1
+  },
+  {
+    "file": "App.tsx",
+    "line": 1,
+    "column": 24
+  }
+]

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Share your feedback in a dialog</title>
+  <meta name="description" content="A page that opens a dialog and returns focus to its button when the dialog closes, used to test focus.">
+  <link rel="canonical" href="https://example.gov.sg/wo/dialog.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Share your feedback</h1>
+    <p><button type="button" id="open" aria-controls="share">Open the form</button></p>
+    <dialog id="share" aria-labelledby="share-title">
+      <h2 id="share-title">Share</h2>
+      <p>Tell us how the page worked for you.</p>
+      <button type="button" id="close">Close</button>
+    </dialog>
+    <p><a href="/about.html">About the programme</a></p>
+    <script>
+      var dialog = document.getElementById("share");
+      document.getElementById("open").addEventListener("click", function () { dialog.showModal(); });
+      document.getElementById("close").addEventListener("click", function () { dialog.close(); });
+    </script>
+  </main>
+</body>
+</html>

@@ -1,0 +1,5 @@
+:root {
+  --fg: #595959;
+  --bg: #ffffff;
+  --alias: var(--fg);
+}

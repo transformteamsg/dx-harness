@@ -1,0 +1,18 @@
+{
+  "code": "WO-14b",
+  "describe": "Add a touchmove handler.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-14b -->",
+      "replace": "<script>document.addEventListener(\"touchmove\", function () {});</script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 35,
+      "column": 39
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "code": "WP-10d",
+  "describe": "Give the shipping address fieldset the same legend as the billing address.",
+  "edits": [
+    {
+      "file": "wp-b/forms.html",
+      "find": "<legend>Shipping address</legend>",
+      "replace": "<legend>Billing address</legend>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/forms.html"
+    }
+  ]
+}

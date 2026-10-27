@@ -1,0 +1,16 @@
+{
+  "code": "WP-12b",
+  "describe": "Make the confirmation sound play automatically and remove its controls.",
+  "edits": [
+    {
+      "file": "wp-b/media-b.html",
+      "find": "<audio id=\"chime\" controls ",
+      "replace": "<audio id=\"chime\" autoplay "
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-b/media-b.html"
+    }
+  ]
+}

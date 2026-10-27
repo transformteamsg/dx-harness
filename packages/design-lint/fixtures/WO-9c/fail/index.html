@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>A page title</title>
+</head>
+<body>
+<main>
+<h1>Title</h1>
+<button type="button" id="open" aria-controls="d">Open</button>
+<dialog id="d"><p>Text</p><button type="button" id="close">Close</button></dialog>
+<a href="/x">After</a>
+<script>var d = document.getElementById("d"); document.getElementById("open").addEventListener("click", function () { d.show(); }); document.getElementById("close").addEventListener("click", function () { d.close(); });</script>
+</main>
+</body>
+</html>

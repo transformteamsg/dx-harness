@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "WP-16a": {
+      "twoDimensionalSelector": ".map"
+    }
+  }
+}

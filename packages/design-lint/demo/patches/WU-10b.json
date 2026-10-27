@@ -1,0 +1,16 @@
+{
+  "code": "WU-10b",
+  "describe": "Remove the alert role from the name error text.",
+  "edits": [
+    {
+      "file": "wu/errors.html",
+      "find": "<p id=\"e-name-error\" role=\"alert\">",
+      "replace": "<p id=\"e-name-error\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/errors.html"
+    }
+  ]
+}

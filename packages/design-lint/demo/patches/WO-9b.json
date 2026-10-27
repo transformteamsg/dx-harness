@@ -1,0 +1,16 @@
+{
+  "code": "WO-9b",
+  "describe": "Give the open button a positive tabindex with script.",
+  "edits": [
+    {
+      "file": "wo/dialog.html",
+      "find": "    </script>",
+      "replace": "      document.getElementById(\"open\").setAttribute(\"tabindex\", \"2\");\n    </script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/dialog.html"
+    }
+  ]
+}

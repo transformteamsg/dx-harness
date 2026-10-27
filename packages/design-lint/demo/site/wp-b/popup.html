@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Help and hints page</title>
+  <meta name="description" content="Open the help tip and the hint on this page to find out how to start an application.">
+  <link rel="canonical" href="https://example.gov.sg/wp-b/popup.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <link rel="stylesheet" href="/wp-b/wp-b.css">
+    <h1>Help and hints</h1>
+    <p>
+      <span class="tip-wrap" id="tip-wrap">
+        <button type="button" id="tip-button" aria-describedby="tip-text">Help with this page</button>
+        <span class="tip" id="tip-text" role="tooltip" hidden>Choose Apply to start a new application.</span>
+      </span>
+    </p>
+    <p>
+      <span class="hint-wrap"><a href="/about.html">Who can apply</a> <span class="hint">Groups of five or more neighbours.</span></span>
+    </p>
+    <script>
+      (function () {
+        var w = document.getElementById('tip-wrap');
+        var b = document.getElementById('tip-button');
+        var t = document.getElementById('tip-text');
+        function show() { t.hidden = false; }
+        function hide() { t.hidden = true; }
+        w.addEventListener('mouseenter', show);
+        w.addEventListener('mouseleave', hide);
+        b.addEventListener('focus', show);
+        b.addEventListener('blur', hide);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+      })();
+    </script>
+  </main>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "code": "WO-8d",
+  "describe": "Give the controls page the title of the home page.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<title>Controls and links</title>",
+      "replace": "<title>Apply for a Community Grant</title>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 6,
+      "column": 3
+    },
+    {
+      "file": "index.html",
+      "line": 6,
+      "column": 3
+    }
+  ]
+}

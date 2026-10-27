@@ -1,0 +1,20 @@
+{
+  "code": "WP-2b",
+  "describe": "Remove the captions track of the widget video.",
+  "edits": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "find": "        <track kind=\"captions\" src=\"/wp-a/film.vtt\" srcLang=\"en\" label=\"English\" />\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/Widget.tsx"
+    },
+    {
+      "file": "wp-a/Widget.tsx",
+      "code": "WP-3a"
+    }
+  ]
+}

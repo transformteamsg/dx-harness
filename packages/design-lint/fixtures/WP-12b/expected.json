@@ -1,0 +1,12 @@
+[
+  {
+    "file": "index.html",
+    "line": 8,
+    "column": 1
+  },
+  {
+    "file": "a.tsx",
+    "line": 1,
+    "column": 24
+  }
+]

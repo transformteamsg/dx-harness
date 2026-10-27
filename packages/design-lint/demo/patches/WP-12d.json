@@ -1,0 +1,16 @@
+{
+  "code": "WP-12d",
+  "describe": "Unmute the intro clip that plays automatically.",
+  "edits": [
+    {
+      "file": "wp-b/media-d.html",
+      "find": "autoplay muted controls",
+      "replace": "autoplay controls"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/media-d.html"
+    }
+  ]
+}

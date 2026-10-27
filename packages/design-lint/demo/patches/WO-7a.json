@@ -1,0 +1,20 @@
+{
+  "code": "WO-7a",
+  "describe": "Replace the page with a div that has a link, no heading, and no main landmark.",
+  "edits": [
+    {
+      "file": "wo/list.html",
+      "find": "  <header>\n    <a href=\"/\">Community Grants</a>\n    <form role=\"search\" action=\"/search.html\">\n      <label for=\"q\">Search</label>\n      <input id=\"q\" type=\"search\" name=\"q\">\n      <button type=\"submit\">Search</button>\n    </form>\n    <nav><a href=\"/apply.html\">Apply</a> <a href=\"/about.html\">About</a></nav>\n    <nav data-language-switcher><a hreflang=\"en\" href=\"/\">English</a> <a hreflang=\"zh\" href=\"/zh/\">\u4e2d\u6587</a></nav>\n  </header>\n  <main>\n    <h1>All grants</h1>\n    <p>Find a grant by its first letter.</p>\n    <ul>\n      <li><a href=\"/apply.html\">Apply for a community grant</a></li>\n      <li><a href=\"/feedback.html\">Give feedback on a grant</a></li>\n    </ul>\n  </main>",
+      "replace": "  <div>\n    A list of grants. <a href=\"/apply.html\">Apply</a>\n  </div>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/list.html"
+    },
+    {
+      "file": "/wo/list.html",
+      "code": "WO-7b"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "code": "WP-6b",
+  "describe": "Give the widget section an invalid role.",
+  "edits": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "find": "    <section>",
+      "replace": "    <section role=\"bogus\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "line": 3,
+      "column": 14
+    }
+  ]
+}

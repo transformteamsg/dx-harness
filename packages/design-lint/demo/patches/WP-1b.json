@@ -1,0 +1,18 @@
+{
+  "code": "WP-1b",
+  "describe": "Remove the alt text of the image in the widget.",
+  "edits": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "find": " alt=\"Volunteers planting a community garden\" />",
+      "replace": " />"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/Widget.tsx",
+      "line": 4,
+      "column": 7
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "code": "WO-8b",
+  "describe": "Give every view the same title.",
+  "edits": [
+    {
+      "file": "wo/spa.html",
+      "find": "document.title = titles[hash];",
+      "replace": "document.title = \"Grant views\";"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/spa.html#/details"
+    }
+  ]
+}

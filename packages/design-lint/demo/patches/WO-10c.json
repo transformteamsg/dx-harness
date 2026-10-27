@@ -1,0 +1,18 @@
+{
+  "code": "WO-10c",
+  "describe": "Add a link with the text Click here.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-10c -->",
+      "replace": "<a href=\"/about.html\">Click here</a>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 32,
+      "column": 5
+    }
+  ]
+}

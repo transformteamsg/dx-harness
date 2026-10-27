@@ -1,0 +1,12 @@
+[
+  {
+    "file": "app.js",
+    "line": 2,
+    "column": 10
+  },
+  {
+    "file": "manifest.webmanifest",
+    "line": 3,
+    "column": 3
+  }
+]

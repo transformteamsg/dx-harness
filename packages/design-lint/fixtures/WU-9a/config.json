@@ -1,0 +1,14 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "WU-9a": {
+      "helpSelector": "a.help",
+      "pages": [
+        "/",
+        "/b.html"
+      ]
+    }
+  }
+}

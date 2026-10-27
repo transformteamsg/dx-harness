@@ -1,0 +1,16 @@
+{
+  "code": "WO-9c",
+  "describe": "Open the dialog without a modal.",
+  "edits": [
+    {
+      "file": "wo/dialog.html",
+      "find": "dialog.showModal();",
+      "replace": "dialog.show();"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/dialog.html"
+    }
+  ]
+}

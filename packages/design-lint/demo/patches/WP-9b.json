@@ -1,0 +1,18 @@
+{
+  "code": "WP-9b",
+  "describe": "Lock the orientation in the player script.",
+  "edits": [
+    {
+      "file": "wp-a/player.js",
+      "find": "return `Playing ${player.title}`;",
+      "replace": "screen.orientation.lock(\"portrait\");\n  return `Playing ${player.title}`;"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/player.js",
+      "line": 3,
+      "column": 3
+    }
+  ]
+}

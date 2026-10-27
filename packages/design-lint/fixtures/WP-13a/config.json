@@ -1,0 +1,16 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "WP-13a": {
+      "decorativeSelector": "",
+      "inactiveSelector": ""
+    }
+  }
+}

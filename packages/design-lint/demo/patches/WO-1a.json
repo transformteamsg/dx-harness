@@ -1,0 +1,18 @@
+{
+  "code": "WO-1a",
+  "describe": "Add an anchor with no href and a click handler.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-1a -->",
+      "replace": "<a onclick=\"go()\">Start</a>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 28,
+      "column": 5
+    }
+  ]
+}

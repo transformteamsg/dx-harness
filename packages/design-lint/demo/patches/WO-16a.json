@@ -1,0 +1,16 @@
+{
+  "code": "WO-16a",
+  "describe": "Give a button an accessible name that omits its visible label.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-16a -->",
+      "replace": "<button type=\"button\" aria-label=\"Go\">Submit</button>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/controls.html"
+    }
+  ]
+}

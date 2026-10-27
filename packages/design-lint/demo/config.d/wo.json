@@ -1,3 +1,17 @@
 {
-  "select": []
+  "select": [
+    "WO-1a", "WO-1b", "WO-2a", "WO-3b", "WO-4a", "WO-5a", "WO-5b", "WO-7a", "WO-7b",
+    "WO-8a", "WO-8b", "WO-8d", "WO-9b", "WO-9c", "WO-9e", "WO-10a", "WO-10b",
+    "WO-10c", "WO-11b", "WO-13a", "WO-13b", "WO-14b", "WO-15a",
+    "WO-16a", "WO-17a", "WO-18a"
+  ],
+  "pages": {
+    "all": ["/wo/controls.html", "/wo/motion.html", "/wo/dialog.html", "/wo/spa.html", "/wo/list.html"]
+  },
+  "rules": {
+    "WO-4a": { "timeLimitExemption": "none" },
+    "WO-8b": { "spaRoutes": ["/wo/spa.html#/overview", "/wo/spa.html#/details"] },
+    "WO-11b": { "minWays": 2, "wayKinds": ["search", "index"] },
+    "WO-17a": { "motionEssential": false }
+  }
 }

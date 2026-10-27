@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "WP-2d": {
+      "captionFiles": [
+        "**/*.vtt"
+      ]
+    }
+  }
+}

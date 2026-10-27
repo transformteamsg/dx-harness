@@ -1,0 +1,16 @@
+{
+  "code": "WP-19e",
+  "describe": "Hide the help tip 500 milliseconds after it appears on focus.",
+  "edits": [
+    {
+      "file": "wp-b/popup.html",
+      "find": "b.addEventListener('focus', show);",
+      "replace": "b.addEventListener('focus', function () { show(); setTimeout(hide, 500); });"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/popup.html"
+    }
+  ]
+}

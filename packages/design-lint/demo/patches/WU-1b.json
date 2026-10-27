@@ -1,0 +1,22 @@
+{
+  "code": "WU-1b",
+  "describe": "Remove the lang attribute from step 2 of the form.",
+  "edits": [
+    {
+      "file": "wu/step-2.html",
+      "find": "<html lang=\"en\">",
+      "replace": "<html>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/step-2.html"
+    },
+    {
+      "file": "wu/step-2.html",
+      "line": 2,
+      "column": 1,
+      "code": "WU-1a"
+    }
+  ]
+}

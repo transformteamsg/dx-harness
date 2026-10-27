@@ -1,0 +1,18 @@
+{
+  "code": "WU-7a",
+  "describe": "Swap the two links of the main navigation on step 1.",
+  "edits": [
+    {
+      "file": "wu/step-1.html",
+      "find": "<nav><a href=\"/apply.html\">Apply</a> <a href=\"/about.html\">About</a></nav>",
+      "replace": "<nav><a href=\"/about.html\">About</a> <a href=\"/apply.html\">Apply</a></nav>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/step-1.html",
+      "line": 20,
+      "column": 5
+    }
+  ]
+}

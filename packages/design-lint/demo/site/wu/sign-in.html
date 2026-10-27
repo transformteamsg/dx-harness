@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in with a code</title>
+  <meta name="description" content="Sign in with your username, your password, and a code that we send to your phone by text message, to see your application.">
+  <link rel="canonical" href="https://example.gov.sg/wu/sign-in.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Sign in with a code</h1>
+    <form action="/wu/sign-in.html">
+      <label for="s-user">Username <span aria-hidden="true">*</span></label>
+      <input id="s-user" name="user" autocomplete="username" required>
+      <label for="s-pass">Password <span aria-hidden="true">*</span></label>
+      <input id="s-pass" name="pass" type="password" autocomplete="current-password" required>
+      <label for="s-otp">Code from your text message <span aria-hidden="true">*</span></label>
+      <input id="s-otp" name="otp" inputmode="numeric" autocomplete="one-time-code" required>
+      <button type="submit">Sign in</button>
+    </form>
+    <label for="pref">Letter language</label>
+    <select id="pref" name="pref"><option>English</option><option>Chinese</option></select>
+  </main>
+</body>
+</html>

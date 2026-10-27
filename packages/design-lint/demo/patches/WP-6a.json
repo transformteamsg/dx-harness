@@ -1,0 +1,16 @@
+{
+  "code": "WP-6a",
+  "describe": "Skip heading levels on the structure page.",
+  "edits": [
+    {
+      "file": "wp-a/structure.html",
+      "find": "<h2>Steps to apply</h2>",
+      "replace": "<h4>Steps to apply</h4>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/structure.html"
+    }
+  ]
+}

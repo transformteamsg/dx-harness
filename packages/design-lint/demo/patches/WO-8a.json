@@ -1,0 +1,16 @@
+{
+  "code": "WO-8a",
+  "describe": "Clear the title with script.",
+  "edits": [
+    {
+      "file": "wo/motion.html",
+      "find": "<p>We are checking your group details.</p>",
+      "replace": "<p>We are checking your group details.</p>\n    <script>document.title = \"\";</script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/motion.html"
+    }
+  ]
+}

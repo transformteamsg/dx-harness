@@ -1,0 +1,16 @@
+{
+  "code": "WP-9a",
+  "describe": "Rotate the page in landscape with CSS.",
+  "edits": [
+    {
+      "file": "wp-a/structure.html",
+      "find": "<link rel=\"stylesheet\" href=\"/styles.css\">",
+      "replace": "<link rel=\"stylesheet\" href=\"/styles.css\">\n  <style>@media (orientation: landscape) { main { transform: rotate(90deg); } }</style>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/structure.html"
+    }
+  ]
+}

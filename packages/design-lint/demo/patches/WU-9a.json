@@ -1,0 +1,16 @@
+{
+  "code": "WU-9a",
+  "describe": "Add a line above the help link in the footer of the review page.",
+  "edits": [
+    {
+      "file": "wu/review.html",
+      "find": "    <p>Questions? <a href=\"mailto:help@example.gov.sg\">help@example.gov.sg</a></p>",
+      "replace": "    <p>Tell us how we did.</p>\n    <p>Questions? <a href=\"mailto:help@example.gov.sg\">help@example.gov.sg</a></p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/review.html"
+    }
+  ]
+}

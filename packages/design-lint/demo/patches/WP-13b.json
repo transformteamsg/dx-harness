@@ -1,0 +1,16 @@
+{
+  "code": "WP-13b",
+  "describe": "Change the declared foreground token of the pair to a pale grey.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": "--wpb-pair-fg: #595959;",
+      "replace": "--wpb-pair-fg: #bbbbbb;"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-b/wp-b.css"
+    }
+  ]
+}

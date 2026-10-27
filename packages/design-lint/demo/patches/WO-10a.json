@@ -1,0 +1,22 @@
+{
+  "code": "WO-10a",
+  "describe": "Add a link with no text whose only name is its title.",
+  "edits": [
+    {
+      "file": "wo/spa.html",
+      "find": "<p><a href=\"#/overview\">Overview</a> <a href=\"#/details\">Details</a></p>",
+      "replace": "<p><a href=\"#/overview\">Overview</a> <a href=\"#/details\">Details</a></p>\n    <p><a href=\"/about.html\" title=\"About the grants\" style=\"display:inline-block;width:24px;height:24px\"></a></p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/spa.html"
+    },
+    {
+      "file": "wo/spa.html",
+      "line": 26,
+      "column": 8,
+      "code": "WO-10b"
+    }
+  ]
+}

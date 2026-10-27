@@ -1,0 +1,16 @@
+{
+  "code": "WP-1e",
+  "describe": "Use a file name as the alt text of the seedlings image.",
+  "edits": [
+    {
+      "file": "wp-a/media.html",
+      "find": "alt=\"Seedlings planted in even rows\"",
+      "replace": "alt=\"seedlings-01.jpg\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/media.html"
+    }
+  ]
+}

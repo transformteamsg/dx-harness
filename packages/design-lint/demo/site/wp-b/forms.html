@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact details form</title>
+  <meta name="description" content="Enter your contact details so that the team can reply to your grant application.">
+  <link rel="canonical" href="https://example.gov.sg/wp-b/forms.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <link rel="stylesheet" href="/wp-b/wp-b.css">
+    <h1>Contact details</h1>
+    <form action="/wp-b/forms.html">
+      <label for="c-email">Email address</label>
+      <input id="c-email" name="email" type="email" autocomplete="email" aria-invalid="true" aria-describedby="c-email-error">
+      <p class="error" id="c-email-error">Enter an email address such as name@example.sg.</p>
+      <label for="c-tel">Phone number</label>
+      <input id="c-tel" name="tel" type="tel" autocomplete="tel">
+      <fieldset>
+        <legend>Billing address</legend>
+        <label for="b-street">Street</label>
+        <input id="b-street" name="billing-street" autocomplete="billing street-address">
+      </fieldset>
+      <fieldset>
+        <legend>Shipping address</legend>
+        <label for="s-street">Street</label>
+        <input id="s-street" name="shipping-street" autocomplete="shipping street-address">
+      </fieldset>
+      <label><input type="checkbox" name="updates"> Send me updates</label>
+      <button type="submit">Send</button>
+    </form>
+  </main>
+</body>
+</html>

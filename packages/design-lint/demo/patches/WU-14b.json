@@ -1,0 +1,18 @@
+{
+  "code": "WU-14b",
+  "describe": "Block paste in the code field.",
+  "edits": [
+    {
+      "file": "wu/sign-in.html",
+      "find": "autocomplete=\"one-time-code\" required>",
+      "replace": "autocomplete=\"one-time-code\" required onpaste=\"return false\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/sign-in.html",
+      "line": 31,
+      "column": 7
+    }
+  ]
+}

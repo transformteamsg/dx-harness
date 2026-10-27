@@ -1,0 +1,18 @@
+{
+  "code": "WU-12a",
+  "describe": "Replace the answer summary on the review step with plain text.",
+  "edits": [
+    {
+      "file": "wu/review.html",
+      "find": "<dl><dt>Full name</dt><dd>Alex Tan</dd><dt>Email</dt><dd>alex@example.com</dd><dt>Group size</dt><dd>12</dd></dl>",
+      "replace": "<p>Check the details that you entered.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/step-2.html",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}
