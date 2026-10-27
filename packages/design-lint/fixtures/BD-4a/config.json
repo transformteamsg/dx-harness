@@ -1,0 +1,18 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "product": {
+    "locale": "en"
+  },
+  "rules": {
+    "BD-4a": {
+      "maxGrade": 10
+    }
+  }
+}

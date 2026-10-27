@@ -1,0 +1,16 @@
+{
+  "code": "BD-1d",
+  "describe": "Hide the long paragraph of the home page on small screens.",
+  "edits": [
+    {
+      "file": "styles.css",
+      "find": "/* mobile */",
+      "replace": "@media (max-width: 600px) { .extra { display: none; } }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/"
+    }
+  ]
+}

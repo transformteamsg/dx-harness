@@ -1,0 +1,12 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); max-width: 960px; margin: 0 auto; padding: var(--space-4); }
+main, footer { max-width: 960px; margin: 0 auto; padding: var(--space-4); }
+nav a { margin-right: var(--space-4); }
+input[type="search"] { width: 32ch; max-width: 100%; }
+form, input, textarea { max-width: 100%; }
+.card {
+  max-width: 100%;
+}
+/* mobile */
+/* colours */

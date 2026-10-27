@@ -1,0 +1,18 @@
+{
+  "code": "BD-5a",
+  "describe": "Remove the canonical link from the home page.",
+  "edits": [
+    {
+      "file": "index.html",
+      "find": "  <link rel=\"canonical\" href=\"https://example.gov.sg/\">\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "index.html",
+      "line": 3,
+      "column": 1
+    }
+  ]
+}

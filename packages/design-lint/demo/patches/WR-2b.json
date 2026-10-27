@@ -1,0 +1,16 @@
+{
+  "code": "WR-2b",
+  "describe": "Give the status message of the feedback page an assertive live value.",
+  "edits": [
+    {
+      "file": "feedback.html",
+      "find": "<p role=\"status\" aria-live=\"polite\" data-status></p>",
+      "replace": "<p role=\"status\" aria-live=\"assertive\" data-status></p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/feedback.html"
+    }
+  ]
+}

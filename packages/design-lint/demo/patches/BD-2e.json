@@ -1,0 +1,16 @@
+{
+  "code": "BD-2e",
+  "describe": "Make the search input of the search page narrow.",
+  "edits": [
+    {
+      "file": "search.html",
+      "find": "<input id=\"q\" type=\"search\" name=\"q\">",
+      "replace": "<input id=\"q\" type=\"search\" name=\"q\" style=\"width: 8ch\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/search.html"
+    }
+  ]
+}

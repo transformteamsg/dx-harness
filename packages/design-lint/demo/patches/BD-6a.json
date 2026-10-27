@@ -1,0 +1,18 @@
+{
+  "code": "BD-6a",
+  "describe": "Remove the design system stylesheet from every page.",
+  "edits": [
+    {
+      "files": "**/*.html",
+      "find": "  <link rel=\"stylesheet\" href=\"/ds.css\">\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": ".",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

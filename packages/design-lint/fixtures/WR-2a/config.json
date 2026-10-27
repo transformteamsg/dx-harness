@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "WR-2a": {
+      "statusSelectors": [
+        "[data-status]"
+      ]
+    }
+  }
+}

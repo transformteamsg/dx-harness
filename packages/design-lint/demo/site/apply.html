@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apply online for a grant</title>
+  <meta name="description" content="Fill in the short form to apply online for a community grant for your group.">
+  <link rel="canonical" href="https://example.gov.sg/apply.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Apply online</h1>
+    <form action="/apply.html">
+      <label for="name">Full name <span aria-hidden="true">*</span></label>
+      <input id="name" name="name" required>
+      <label for="email">Email <span aria-hidden="true">*</span></label>
+      <input id="email" name="email" type="email" required>
+      <label for="size">Group size <span aria-hidden="true">*</span></label>
+      <input id="size" name="size" type="number" required>
+      <label for="notes">Notes (optional)</label>
+      <textarea id="notes" name="notes"></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <p role="status" aria-live="polite" data-status></p>
+  </main>
+</body>
+</html>

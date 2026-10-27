@@ -1,0 +1,16 @@
+{
+  "code": "WR-1b",
+  "describe": "Give the sign-in button a role that does not exist.",
+  "edits": [
+    {
+      "file": "login.html",
+      "find": "<button type=\"submit\">Sign in</button>",
+      "replace": "<button type=\"submit\" role=\"buton\">Sign in</button>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/login.html"
+    }
+  ]
+}

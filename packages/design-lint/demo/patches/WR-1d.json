@@ -1,0 +1,18 @@
+{
+  "code": "WR-1d",
+  "describe": "Add a clickable div with no role to the home page.",
+  "edits": [
+    {
+      "file": "index.html",
+      "find": "    <h1>Apply for a Community Grant</h1>\n",
+      "replace": "    <h1>Apply for a Community Grant</h1>\n    <div onclick=\"openHelp()\">Help</div>\n"
+    }
+  ],
+  "expect": [
+    {
+      "file": "index.html",
+      "line": 25,
+      "column": 5
+    }
+  ]
+}

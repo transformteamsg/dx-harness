@@ -1,0 +1,18 @@
+{
+  "code": "BD-7b",
+  "describe": "Mark the feedback field as required in words.",
+  "edits": [
+    {
+      "file": "feedback.html",
+      "find": "Your message <span aria-hidden=\"true\">*</span>",
+      "replace": "Your message (required)"
+    }
+  ],
+  "expect": [
+    {
+      "file": "feedback.html",
+      "line": 27,
+      "column": 7
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "code": "BD-2a",
+  "describe": "Remove the search form from every page that has the standard header.",
+  "edits": [
+    {
+      "files": "**/*.html",
+      "find": "    <form role=\"search\" action=\"/search.html\">\n      <label for=\"q\">Search</label>\n      <input id=\"q\" type=\"search\" name=\"q\">\n      <button type=\"submit\">Search</button>\n    </form>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": ".",
+      "line": 1,
+      "column": 1
+    }
+  ],
+  "exclusive": true
+}

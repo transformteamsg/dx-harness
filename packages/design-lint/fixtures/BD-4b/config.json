@@ -1,0 +1,18 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "BD-4b": {
+      "complexWords": {
+        "utilise": "use",
+        "commence": "start"
+      }
+    }
+  }
+}
