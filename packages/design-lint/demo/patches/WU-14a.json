@@ -1,0 +1,21 @@
+{
+  "code": "WU-14a",
+  "describe": "Declare a password as the only login method. It needs memory, and no accessible method is offered.",
+  "edits": [],
+  "expect": [
+    {
+      "file": ".",
+      "line": 1,
+      "column": 1
+    }
+  ],
+  "config": {
+    "rules": {
+      "WU-14a": {
+        "authMethods": [
+          "password"
+        ]
+      }
+    }
+  }
+}

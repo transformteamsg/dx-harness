@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture</title>
+</head>
+<body>
+<p>
+<span class="wrap" id="wrap" style="position:relative;display:inline-block">
+<button type="button" id="btn" aria-describedby="tip">Help</button>
+<span id="tip" role="tooltip" hidden style="position:absolute;top:100%;left:0;width:12em;background:#ffffff;border:1px solid #767676">Choose Apply to start.</span>
+</span>
+</p>
+<script>
+(function () {
+  var w = document.getElementById('wrap'), b = document.getElementById('btn'), t = document.getElementById('tip');
+  function show() { t.hidden = false; }
+  function hide() { t.hidden = true; }
+  w.addEventListener('mouseenter', show);
+  w.addEventListener('mouseleave', hide);
+  b.addEventListener('focus', show);
+  b.addEventListener('blur', hide);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+})();
+</script>
+</body>
+</html>

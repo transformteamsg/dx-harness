@@ -1,0 +1,16 @@
+{
+  "code": "WU-7b",
+  "describe": "Hide the main navigation on the language page.",
+  "edits": [
+    {
+      "file": "wu/language.html",
+      "find": "<nav><a href=\"/apply.html\">Apply</a> <a href=\"/about.html\">About</a></nav>",
+      "replace": "<nav hidden><a href=\"/apply.html\">Apply</a> <a href=\"/about.html\">About</a></nav>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/language.html"
+    }
+  ]
+}

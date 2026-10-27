@@ -1,0 +1,18 @@
+{
+  "code": "WP-2d",
+  "describe": "Start the second cue before the first cue ends.",
+  "edits": [
+    {
+      "file": "wp-a/film.vtt",
+      "find": "00:03.500 --> 00:07.000",
+      "replace": "00:02.500 --> 00:07.000"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/film.vtt",
+      "line": 6,
+      "column": 1
+    }
+  ]
+}

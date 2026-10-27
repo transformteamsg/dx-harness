@@ -1,0 +1,18 @@
+{
+  "code": "WO-5a",
+  "describe": "Add a marquee element.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-5a -->",
+      "replace": "<marquee>News</marquee>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 30,
+      "column": 5
+    }
+  ]
+}

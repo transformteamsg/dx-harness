@@ -1,0 +1,22 @@
+[
+  {
+    "file": "index.html",
+    "line": 8,
+    "column": 6
+  },
+  {
+    "file": "index.html",
+    "line": 12,
+    "column": 1
+  },
+  {
+    "file": "styles.css",
+    "line": 2,
+    "column": 3
+  },
+  {
+    "file": "styles.css",
+    "line": 4,
+    "column": 6
+  }
+]

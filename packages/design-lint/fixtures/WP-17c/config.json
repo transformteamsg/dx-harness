@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "WP-17c": {
+      "boundaryTokenPairs": [
+        [
+          "--edge",
+          "--surface",
+          "text input"
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "code": "WU-14d",
+  "describe": "Load a reCAPTCHA script on the sign-in page.",
+  "edits": [
+    {
+      "file": "wu/sign-in.html",
+      "find": "<h1>Sign in with a code</h1>",
+      "replace": "<h1>Sign in with a code</h1>\n    <script src=\"/vendor/recaptcha.js\"></script>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/sign-in.html",
+      "line": 25,
+      "column": 5
+    }
+  ]
+}

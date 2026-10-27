@@ -1,0 +1,16 @@
+{
+  "code": "WO-7b",
+  "describe": "Add a paragraph after the main landmark.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "</main>",
+      "replace": "</main>\n  <p>Outside the landmarks</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/controls.html"
+    }
+  ]
+}

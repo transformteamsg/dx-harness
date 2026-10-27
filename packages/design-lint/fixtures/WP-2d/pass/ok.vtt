@@ -1,0 +1,14 @@
+WEBVTT
+
+00:00.000 --> 00:02.000
+Short line.
+
+cue-2
+00:02.000 --> 00:04.000
+Two lines here
+and here.
+
+NOTE a comment
+
+00:04.000 --> 00:05.000 align:start
+<i>Styled</i> text.

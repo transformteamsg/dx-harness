@@ -1,0 +1,16 @@
+{
+  "code": "WP-16a",
+  "describe": "Give the paragraph a fixed width of 600 pixels.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".wide { max-width: 100%; }",
+      "replace": ".wide { width: 600px; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/reflow.html"
+    }
+  ]
+}

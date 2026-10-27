@@ -1,0 +1,16 @@
+{
+  "code": "WO-4a",
+  "describe": "Add a meta refresh of 300 seconds.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<link rel=\"stylesheet\" href=\"/styles.css\">",
+      "replace": "<link rel=\"stylesheet\" href=\"/styles.css\">\n  <meta http-equiv=\"refresh\" content=\"300\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/controls.html"
+    }
+  ]
+}

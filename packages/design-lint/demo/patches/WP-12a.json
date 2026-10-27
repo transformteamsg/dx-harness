@@ -1,0 +1,20 @@
+{
+  "code": "WP-12a",
+  "describe": "Make the welcome message play automatically and remove its controls.",
+  "edits": [
+    {
+      "file": "wp-b/media.html",
+      "find": "<audio id=\"theme\" controls ",
+      "replace": "<audio id=\"theme\" autoplay "
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/media.html"
+    },
+    {
+      "file": "wp-b/media.html",
+      "code": "WP-12b"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "WP-2b": {
+      "mediaAlternativeSelector": ".transcript"
+    }
+  }
+}

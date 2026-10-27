@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grant views in one page</title>
+  <meta name="description" content="A single page that shows several views and sets a new title for each view, used to test view titles.">
+  <link rel="canonical" href="https://example.gov.sg/wo/spa.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1 id="view">Grant overview</h1>
+    <p><a href="#/overview">Overview</a> <a href="#/details">Details</a></p>
+    <script>
+      var titles = { "#/overview": "Grant overview", "#/details": "Grant details" };
+      function route() {
+        var hash = location.hash || "#/overview";
+        document.title = titles[hash];
+        document.getElementById("view").textContent = titles[hash];
+      }
+      window.addEventListener("hashchange", route);
+      route();
+    </script>
+  </main>
+</body>
+</html>

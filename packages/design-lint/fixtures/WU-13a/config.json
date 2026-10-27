@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "WU-13a": {
+      "flows": {
+        "apply": [
+          "/a.html",
+          "/b.html"
+        ]
+      }
+    }
+  }
+}

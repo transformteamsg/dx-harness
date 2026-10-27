@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Test page</title></head>
+<body>
+<input onfocus="document.forms[0].submit()">
+<script>
+var b = document.getElementById("b");
+b.addEventListener("focus", function () { window.open("/x"); });
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+[
+  {
+    "file": "bad-header.vtt",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "file": "long.vtt",
+    "line": 4,
+    "column": 1
+  },
+  {
+    "file": "long.vtt",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "file": "notiming.vtt",
+    "line": 3,
+    "column": 1
+  },
+  {
+    "file": "overlap.vtt",
+    "line": 6,
+    "column": 1
+  },
+  {
+    "file": "timing.vtt",
+    "line": 6,
+    "column": 1
+  }
+]

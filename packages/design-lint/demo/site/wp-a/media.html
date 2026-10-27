@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Programme media and film</title>
+  <meta name="description" content="Watch a short captioned film about a funded community project, and read the written summary of the film.">
+  <link rel="canonical" href="https://example.gov.sg/wp-a/media.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Programme media</h1>
+    <p>Watch the short film about a funded project, or read the summary under it.</p>
+    <img src="/wp-a/project.svg" alt="Volunteers planting a community garden" width="240" height="160">
+    <img src="/wp-a/project.svg" alt="Seedlings planted in even rows" width="120" height="80" loading="lazy">
+    <video controls width="280" aria-describedby="film-summary">
+      <source src="/wp-a/film.mp4" type="video/mp4">
+      <track kind="captions" src="/wp-a/film.vtt" srclang="en" label="English" default>
+    </video>
+    <audio controls>
+      <source src="/wp-a/clip.mp3" type="audio/mpeg">
+      <track kind="captions" src="/wp-a/film.vtt" srclang="en" label="English">
+    </audio>
+    <p id="film-summary">The film shows how a group of neighbours turned an empty plot into a garden.</p>
+  </main>
+</body>
+</html>

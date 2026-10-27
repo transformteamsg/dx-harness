@@ -1,0 +1,22 @@
+[
+  {
+    "file": "index.html",
+    "line": 10,
+    "column": 1
+  },
+  {
+    "file": "index.html",
+    "line": 11,
+    "column": 1
+  },
+  {
+    "file": "App.tsx",
+    "line": 2,
+    "column": 3
+  },
+  {
+    "file": "App.tsx",
+    "line": 2,
+    "column": 3
+  }
+]

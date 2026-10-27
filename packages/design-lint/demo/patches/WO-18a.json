@@ -1,0 +1,19 @@
+{
+  "code": "WO-18a",
+  "describe": "Add two adjacent links, to different pages, that are 10 pixels square.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-18a -->",
+      "replace": "<div><a href=\"/about.html\" style=\"display:inline-block;width:10px;height:10px\">a</a><a href=\"/apply.html\" style=\"display:inline-block;width:10px;height:10px\">b</a></div>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/controls.html"
+    },
+    {
+      "file": "/wo/controls.html"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "code": "WU-1d",
+  "describe": "Remove the language entry from the PDF catalogue.",
+  "edits": [
+    {
+      "file": "wu/grant-guide.pdf",
+      "find": " /Lang (en-SG)",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/grant-guide.pdf",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

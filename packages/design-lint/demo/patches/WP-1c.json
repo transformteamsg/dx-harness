@@ -1,0 +1,16 @@
+{
+  "code": "WP-1c",
+  "describe": "Give the garden image on the structure page a long alt text.",
+  "edits": [
+    {
+      "file": "wp-a/structure.html",
+      "find": "alt=\"Garden plot after planting\"",
+      "replace": "alt=\"A very long description of the garden that goes on and on about every seedling, every volunteer, every tool, and every cloud in the sky above the plot\""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/structure.html"
+    }
+  ]
+}

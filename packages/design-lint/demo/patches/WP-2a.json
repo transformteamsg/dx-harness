@@ -1,0 +1,16 @@
+{
+  "code": "WP-2a",
+  "describe": "Remove the captions track of the film.",
+  "edits": [
+    {
+      "file": "wp-a/media.html",
+      "find": "      <track kind=\"captions\" src=\"/wp-a/film.vtt\" srclang=\"en\" label=\"English\" default>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/media.html"
+    }
+  ]
+}

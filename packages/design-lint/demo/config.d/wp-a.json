@@ -1,3 +1,22 @@
 {
-  "select": []
+  "select": [
+    "WP-1a", "WP-1b", "WP-1c", "WP-1e",
+    "WP-2a", "WP-2b", "WP-2d",
+    "WP-3a",
+    "WP-6a", "WP-6b", "WP-6c", "WP-6e",
+    "WP-7a", "WP-7b",
+    "WP-8a",
+    "WP-9a", "WP-9b"
+  ],
+  "pages": {
+    "all": ["/wp-a/media.html", "/wp-a/structure.html"]
+  },
+  "rules": {
+    "WP-2a": { "mediaAlternativeSelector": "" },
+    "WP-2b": { "mediaAlternativeSelector": "" },
+    "WP-2d": { "captionFiles": ["**/*.vtt"] },
+    "WP-7b": { "direction": "ltr" },
+    "WP-9a": { "orientationRequired": false },
+    "WP-9b": { "orientationRequired": false }
+  }
 }

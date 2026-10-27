@@ -1,0 +1,16 @@
+{
+  "code": "WP-14a",
+  "describe": "Give the badge a fixed width and hide its overflow.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".badge { display: inline-block; }",
+      "replace": ".badge { display: inline-block; width: 100px; overflow: hidden; white-space: nowrap; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/text.html"
+    }
+  ]
+}

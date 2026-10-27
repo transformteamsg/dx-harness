@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "WO-15a": {
+      "essentialDownEventSelectors": [
+        ".drum"
+      ]
+    }
+  }
+}

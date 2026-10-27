@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apply, step 1: your details</title>
+  <meta name="description" content="Give your name and email address to start your grant application, then move on to the next step of the form.">
+  <link rel="canonical" href="https://example.gov.sg/wu/step-1.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Your details</h1>
+    <form action="/wu/step-2.html">
+      <label for="name">Full name <span aria-hidden="true">*</span></label>
+      <input id="name" name="name" autocomplete="name" required>
+      <label for="email">Email <span aria-hidden="true">*</span></label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <button type="submit">Next</button>
+    </form>
+  </main>
+</body>
+</html>

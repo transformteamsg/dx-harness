@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fix the errors in your answers</title>
+  <meta name="description" content="Some answers need a change before we can accept your grant application. Read each message and correct the field.">
+  <link rel="canonical" href="https://example.gov.sg/wu/errors.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Fix the errors</h1>
+    <form action="/wu/errors.html">
+      <label for="e-name">Full name <span aria-hidden="true">*</span></label>
+      <input id="e-name" name="name" autocomplete="name" required aria-invalid="true" aria-describedby="e-name-error">
+      <p id="e-name-error" role="alert">Enter your full name as it appears on your identity card.</p>
+      <label for="e-email">Email <span aria-hidden="true">*</span></label>
+      <input id="e-email" name="email" type="email" autocomplete="email" required aria-invalid="true" aria-describedby="e-email-error">
+      <p id="e-email-error" role="alert">Enter an email address in the format name@example.com.</p>
+      <button type="submit">Send</button>
+    </form>
+  </main>
+</body>
+</html>

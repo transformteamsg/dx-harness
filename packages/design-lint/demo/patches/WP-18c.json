@@ -1,0 +1,16 @@
+{
+  "code": "WP-18c",
+  "describe": "Force the letter spacing of the tight paragraph with !important.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".tight { letter-spacing: 0.05em; }",
+      "replace": ".tight { letter-spacing: 0.05em !important; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-b/wp-b.css"
+    }
+  ]
+}

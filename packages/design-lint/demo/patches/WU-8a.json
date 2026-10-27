@@ -1,0 +1,18 @@
+{
+  "code": "WU-8a",
+  "describe": "Rename one of two links to the apply page.",
+  "edits": [
+    {
+      "file": "wu/links.html",
+      "find": "<nav aria-label=\"Related pages\"><a href=\"/apply.html\">Apply</a></nav>",
+      "replace": "<nav aria-label=\"Related pages\"><a href=\"/apply.html\">Start</a></nav>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/links.html",
+      "line": 25,
+      "column": 37
+    }
+  ]
+}

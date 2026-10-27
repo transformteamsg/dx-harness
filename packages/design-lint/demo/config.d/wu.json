@@ -1,3 +1,44 @@
 {
-  "select": []
+  "select": [
+    "WU-1a", "WU-1b", "WU-1d",
+    "WU-2a", "WU-2c",
+    "WU-4a",
+    "WU-5a",
+    "WU-6a",
+    "WU-7a", "WU-7b",
+    "WU-8a", "WU-8c",
+    "WU-9a",
+    "WU-10a", "WU-10b", "WU-10d",
+    "WU-11a",
+    "WU-12a",
+    "WU-13a",
+    "WU-14a", "WU-14b", "WU-14d"
+  ],
+  "pages": {
+    "all": [
+      "/wu/step-1.html",
+      "/wu/step-2.html",
+      "/wu/review.html",
+      "/wu/errors.html",
+      "/wu/not-found.html",
+      "/wu/language.html",
+      "/wu/links.html",
+      "/wu/sign-in.html"
+    ],
+    "login": ["/login.html", "/wu/sign-in.html"],
+    "error": ["/wu/not-found.html"]
+  },
+  "rules": {
+    "WU-1d": { "pdfFiles": ["wu/**/*.pdf"] },
+    "WU-7a": { "navSelector": "nav" },
+    "WU-7b": { "navSelector": "nav" },
+    "WU-9a": {
+      "helpSelector": "a[href^=\"mailto:\"]",
+      "pages": ["/", "/wu/review.html", "/wu/not-found.html", "/wu/language.html"]
+    },
+    "WU-10d": { "failureFixtures": ["/wu/errors.html"] },
+    "WU-12a": { "flows": { "apply": ["/wu/step-1.html", "/wu/step-2.html", "/wu/review.html"] } },
+    "WU-13a": { "flows": { "apply": ["/wu/step-1.html", "/wu/step-2.html", "/wu/review.html"] } },
+    "WU-14a": { "authMethods": ["password", "otp-sms"] }
+  }
 }

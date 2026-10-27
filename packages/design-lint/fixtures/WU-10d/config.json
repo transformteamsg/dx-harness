@@ -1,0 +1,12 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "WU-10d": {
+      "failureFixtures": [
+        "/"
+      ]
+    }
+  }
+}

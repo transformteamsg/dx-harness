@@ -1,3 +1,140 @@
 {
-  "select": []
+  "select": [
+    "WP-10a",
+    "WP-10b",
+    "WP-10c",
+    "WP-10d",
+    "WP-11a",
+    "WP-11b",
+    "WP-12a",
+    "WP-12b",
+    "WP-12d",
+    "WP-13a",
+    "WP-13b",
+    "WP-14a",
+    "WP-14b",
+    "WP-16a",
+    "WP-17a",
+    "WP-17c",
+    "WP-18a",
+    "WP-18b",
+    "WP-18c",
+    "WP-19a",
+    "WP-19b",
+    "WP-19c",
+    "WP-19e"
+  ],
+  "rules": {
+    "WP-10a": {
+      "pages": [
+        "/wp-b/forms.html"
+      ]
+    },
+    "WP-10c": {
+      "pages": [
+        "/wp-b/forms.html"
+      ]
+    },
+    "WP-10d": {
+      "pages": [
+        "/wp-b/forms.html"
+      ]
+    },
+    "WP-11a": {
+      "pages": [
+        "/wp-b/text.html"
+      ]
+    },
+    "WP-11b": {
+      "pages": [
+        "/wp-b/forms.html"
+      ]
+    },
+    "WP-12a": {
+      "pages": [
+        "/wp-b/media.html"
+      ]
+    },
+    "WP-12d": {
+      "pages": [
+        "/wp-b/media-d.html"
+      ]
+    },
+    "WP-13a": {
+      "pages": [
+        "/wp-b/text.html",
+        "/wp-b/forms.html"
+      ],
+      "decorativeSelector": "",
+      "inactiveSelector": ""
+    },
+    "WP-13b": {
+      "tokenPairs": [
+        [
+          "--wpb-pair-fg",
+          "--wpb-pair-bg"
+        ],
+        [
+          "--color-text",
+          "--color-bg"
+        ]
+      ]
+    },
+    "WP-14a": {
+      "pages": [
+        "/wp-b/text.html",
+        "/wp-b/forms.html"
+      ]
+    },
+    "WP-16a": {
+      "pages": [
+        "/wp-b/reflow.html"
+      ],
+      "twoDimensionalSelector": ""
+    },
+    "WP-17a": {
+      "pages": [
+        "/wp-b/forms.html",
+        "/wp-b/popup.html"
+      ]
+    },
+    "WP-17c": {
+      "boundaryTokenPairs": [
+        [
+          "--wpb-edge",
+          "--wpb-edge-bg",
+          "text input"
+        ]
+      ]
+    },
+    "WP-18a": {
+      "pages": [
+        "/wp-b/text.html"
+      ]
+    },
+    "WP-18b": {
+      "pages": [
+        "/wp-b/text.html",
+        "/wp-b/forms.html"
+      ]
+    },
+    "WP-19a": {
+      "pages": [
+        "/wp-b/popup.html",
+        "/wp-b/popup-a.html"
+      ]
+    },
+    "WP-19b": {
+      "pages": [
+        "/wp-b/popup.html"
+      ],
+      "minVisibleMs": 1500
+    },
+    "WP-19e": {
+      "pages": [
+        "/wp-b/popup.html"
+      ],
+      "waitMs": 1500
+    }
+  }
 }

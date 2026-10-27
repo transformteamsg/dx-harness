@@ -1,0 +1,16 @@
+{
+  "code": "WP-14b",
+  "describe": "Set the font size of the note in pixels.",
+  "edits": [
+    {
+      "file": "wp-b/wp-b.css",
+      "find": ".note { font-size: 0.875rem; }",
+      "replace": ".note { font-size: 14px; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-b/wp-b.css"
+    }
+  ]
+}

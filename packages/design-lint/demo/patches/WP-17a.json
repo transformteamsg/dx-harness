@@ -1,0 +1,16 @@
+{
+  "code": "WP-17a",
+  "describe": "Give the billing street input a pale border.",
+  "edits": [
+    {
+      "file": "wp-b/forms.html",
+      "find": "<input id=\"b-street\" ",
+      "replace": "<input id=\"b-street\" class=\"faint-edge\" "
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/forms.html"
+    }
+  ]
+}

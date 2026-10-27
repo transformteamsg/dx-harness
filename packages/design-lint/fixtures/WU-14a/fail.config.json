@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "WU-14a": {
+      "authMethods": [
+        "password",
+        "security-question"
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "code": "WP-19a",
+  "describe": "Remove the Escape handler from the help tip.",
+  "edits": [
+    {
+      "file": "wp-b/popup-a.html",
+      "find": "document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/popup-a.html"
+    }
+  ]
+}

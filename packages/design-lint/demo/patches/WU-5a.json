@@ -1,0 +1,19 @@
+{
+  "code": "WU-5a",
+  "describe": "Submit the form when the username field gets focus.",
+  "edits": [
+    {
+      "file": "wu/sign-in.html",
+      "find": "<input id=\"s-user\" name=\"user\" autocomplete=\"username\" required>",
+      "replace": "<input id=\"s-user\" name=\"user\" autocomplete=\"username\" required onfocus=\"document.forms[0].submit()\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/sign-in.html",
+      "line": 27,
+      "column": 7
+    }
+  ],
+  "exclusive": true
+}

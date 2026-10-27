@@ -1,0 +1,16 @@
+{
+  "code": "WO-5b",
+  "describe": "Remove the pause button.",
+  "edits": [
+    {
+      "file": "wo/motion.html",
+      "find": "<p><button type=\"button\" id=\"pause\">Pause</button></p>",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/motion.html"
+    }
+  ]
+}

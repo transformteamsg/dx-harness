@@ -1,0 +1,16 @@
+{
+  "code": "WU-2a",
+  "describe": "Give the French paragraph an invalid language code.",
+  "edits": [
+    {
+      "file": "wu/language.html",
+      "find": "<p lang=\"fr\">",
+      "replace": "<p lang=\"xx\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/language.html"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "code": "WP-6e",
+  "describe": "Give a div the role of a navigation landmark.",
+  "edits": [
+    {
+      "file": "wp-a/structure.html",
+      "find": "<div class=\"note\">",
+      "replace": "<div class=\"note\" role=\"navigation\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wp-a/structure.html"
+    }
+  ]
+}

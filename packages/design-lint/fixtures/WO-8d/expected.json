@@ -1,0 +1,17 @@
+[
+  {
+    "file": "a.html",
+    "line": 5,
+    "column": 3
+  },
+  {
+    "file": "b.html",
+    "line": 5,
+    "column": 3
+  },
+  {
+    "file": "c.html",
+    "line": 5,
+    "column": 3
+  }
+]

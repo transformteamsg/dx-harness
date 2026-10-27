@@ -1,0 +1,16 @@
+{
+  "code": "WP-8a",
+  "describe": "Name the Send button by its colour.",
+  "edits": [
+    {
+      "file": "wp-a/structure.html",
+      "find": "<p>Select the \"Send\" button when you are done.</p>",
+      "replace": "<p>Select the green button when you are done.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/structure.html"
+    }
+  ]
+}

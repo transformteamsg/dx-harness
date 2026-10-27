@@ -1,0 +1,18 @@
+{
+  "code": "WU-13a",
+  "describe": "Ask for the email address again on step 2.",
+  "edits": [
+    {
+      "file": "wu/step-2.html",
+      "find": "      <button type=\"submit\">Review</button>",
+      "replace": "      <label for=\"email2\">Email <span aria-hidden=\"true\">*</span></label>\n      <input id=\"email2\" name=\"email2\" type=\"email\" autocomplete=\"email\" required>\n      <button type=\"submit\">Review</button>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wu/step-2.html",
+      "line": 29,
+      "column": 7
+    }
+  ]
+}

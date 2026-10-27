@@ -1,0 +1,16 @@
+{
+  "code": "WP-19b",
+  "describe": "Hide the help tip when the pointer moves onto it.",
+  "edits": [
+    {
+      "file": "wp-b/popup.html",
+      "find": "w.addEventListener('mouseleave', hide);",
+      "replace": "w.addEventListener('mouseleave', hide);\n        t.addEventListener('mouseenter', hide);"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/popup.html"
+    }
+  ]
+}

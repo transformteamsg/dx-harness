@@ -1,0 +1,3 @@
+.hint { display: none; }
+.wrap:hover .hint { display: block; }
+a:hover { opacity: 0.8; }

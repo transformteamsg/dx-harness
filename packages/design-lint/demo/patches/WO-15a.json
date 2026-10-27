@@ -1,0 +1,18 @@
+{
+  "code": "WO-15a",
+  "describe": "Run the save action on mousedown.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<button type=\"button\" id=\"save\">Save draft</button>",
+      "replace": "<button type=\"button\" id=\"save\" onmousedown=\"save()\">Save draft</button>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "wo/controls.html",
+      "line": 27,
+      "column": 8
+    }
+  ]
+}

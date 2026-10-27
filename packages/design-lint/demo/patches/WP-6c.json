@@ -1,0 +1,16 @@
+{
+  "code": "WP-6c",
+  "describe": "Remove the legend of the contact fieldset.",
+  "edits": [
+    {
+      "file": "wp-a/structure.html",
+      "find": "        <legend>How should we contact you?</legend>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-a/structure.html"
+    }
+  ]
+}

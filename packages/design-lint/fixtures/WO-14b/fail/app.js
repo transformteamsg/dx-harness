@@ -1,0 +1,1 @@
+import Hammer from "hammerjs";

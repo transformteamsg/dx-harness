@@ -1,0 +1,16 @@
+{
+  "code": "WU-10d",
+  "describe": "Replace the email error text with a generic message.",
+  "edits": [
+    {
+      "file": "wu/errors.html",
+      "find": "Enter an email address in the format name@example.com.",
+      "replace": "Invalid input"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wu/errors.html"
+    }
+  ]
+}

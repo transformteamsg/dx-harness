@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "WO-17a": {
+      "motionEssential": false
+    }
+  }
+}

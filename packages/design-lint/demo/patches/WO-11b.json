@@ -1,0 +1,18 @@
+{
+  "code": "WO-11b",
+  "describe": "Rename the index page so that the site has one way fewer.",
+  "edits": [
+    {
+      "file": "wo/list.html",
+      "find": "<title>A-Z index of grants</title>",
+      "replace": "<title>All grants</title>"
+    }
+  ],
+  "expect": [
+    {
+      "file": ".",
+      "line": 1,
+      "column": 1
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progress of your application</title>
+  <meta name="description" content="A progress page with a moving indicator that you can pause, used to test the moving content rule.">
+  <link rel="canonical" href="https://example.gov.sg/wo/motion.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Progress</h1>
+    <style>
+      .spinner { width: 2rem; height: 2rem; border-width: 4px; border-style: solid; border-radius: 50%; border-top-style: dotted; animation: spin 1s linear infinite; }
+      .paused .spinner { animation-play-state: paused; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+    <p>We are checking your group details.</p>
+    <div class="spinner" role="presentation"></div>
+    <p><button type="button" id="pause">Pause</button></p>
+    <script>
+      document.getElementById("pause").addEventListener("click", function () {
+        document.body.classList.toggle("paused");
+      });
+    </script>
+  </main>
+</body>
+</html>

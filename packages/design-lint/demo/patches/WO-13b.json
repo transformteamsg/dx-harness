@@ -1,0 +1,16 @@
+{
+  "code": "WO-13b",
+  "describe": "Fix a small box over the first link of the header.",
+  "edits": [
+    {
+      "file": "wo/controls.html",
+      "find": "<!-- wo-13b -->",
+      "replace": "<div style=\"position:fixed;top:0;left:0;width:60px;height:40px\"></div>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wo/controls.html"
+    }
+  ]
+}
