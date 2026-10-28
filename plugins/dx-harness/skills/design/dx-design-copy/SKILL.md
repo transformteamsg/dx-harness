@@ -5,11 +5,6 @@ description: 'Use when the ask names the copy of an existing product surface but
 
 # Copy for Teacher & School products
 
-The DX-DS voice & tone (§4.1) and naming (§4.2) guidelines, applied at generation
-time. The intent: copy arrives already on-voice, so no builder — least of all
-non-native English speakers — carries the UX-writing burden personally. The content
-catalog controls CNT-1 through CNT-14 and SLP-9 (AI-writing tells) bind this skill.
-
 **When the ask belongs to another skill:**
 
 - A review of the whole page with no dimension named goes to `dx-design-critique`.
@@ -23,15 +18,8 @@ of the surface for the wording only, and records up to five ranked findings on t
 surface's design ticket; it proposes only and never edits the product. A stated
 exact edit ("change the label to Save") is a dx-design-execute intent, not a pass
 run. The dimension subset: **CNT-1, CNT-2, CNT-3,
-CNT-4 (domain fidelity — content modeling a real-world artifact is faithful to it or
-labelled illustrative), CNT-5 (device-agnostic action verbs), CNT-6 (low-informational-value
-words), CNT-7 (lead with purpose), CNT-8 (plain action verbs, not nominalisations),
-CNT-9 (clarity — one idea per sentence, simple present tense, no noun stacks, acronyms
-defined on the surface), CNT-10 (one term per thing within a product), CNT-11 (match the
-UI term teachers already know — "Search" not "Find"), CNT-12 (sentence case), CNT-13
-(Singapore English spelling, proofread), CNT-14 (voice quality + tone-fit — the copy sounds
-Clear/Thoughtful/Approachable and its tone matches the surface context), SLP-9, and IDN-3
-(IDN-4 on CaseSync surfaces)**. Before you judge the copy,
+CNT-4, CNT-5, CNT-6, CNT-7, CNT-8, CNT-9, CNT-10, CNT-11, CNT-12, CNT-13, CNT-14,
+SLP-9, and IDN-3 (IDN-4 on CaseSync surfaces)**. Before you judge the copy,
 read the writing rules in `../../../procedures/copy-rules.md`: they say what
 "on-voice" means. The rest of this file is the review method. Catalogue mechanics (filtering, tiers, plain-title naming):
 `../../../procedures/catalogue-mechanics.md`. Findings are recorded per
@@ -44,10 +32,7 @@ generated copy arrives on-voice. Uncovered gaps become rule proposals per
 
 ## The editing sequence (method, not a control)
 
-Good microcopy is edited into shape, not written in one go. The controls and the
-writing rules say what "good" is; this is the working order that gets you there. It
-is a method — none of these passes is itself a control, and none fails a check.
-Draft first, then edit in passes:
+No step is a control, and none fails a check. Draft first, then edit in passes:
 
 <!-- dx-sync:uitext-sequence source -->
 1. **Draft.** Write what you want to say to the teacher. Don't polish yet.
@@ -65,18 +50,11 @@ Draft first, then edit in passes:
    spelling and a proofread (CNT-13), plain error anatomy (CNT-1), and a last
    pass for AI-writing tells (SLP-9).
 
-## Per-product tone calibration (§6)
+## Per-product tone
 
-Same character everywhere; calibrate weight, never switch systems. This table is the
-register IDN-3 checks (normative table in `standards/controls/idn-3.md`); the
-CaseSync row is hardened by IDN-4 (L1, CaseSync-scoped: no celebration/gamification
-around case data):
-
-- **Teacher Workspace** — calm daily command centre: neutral, steady, quietly confident.
-- **CaseSync** — higher gravity: more reserved, restrained celebration, privacy-forward
-  (sensitive casework).
-- **Glow** — lighter, more encouraging: warmer accents, more celebratory moments.
-- **Posts / PG Staff Portal** — pure TW, no nuance.
+Judge the copy against the product's row in the
+[IDN-3 tone register](../../../standards/controls/idn-3.md). On a CaseSync surface,
+IDN-4 applies too.
 
 ## What to do on conflict
 
