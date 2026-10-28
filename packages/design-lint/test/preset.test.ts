@@ -61,4 +61,11 @@ describe("a domain preset", () => {
     expect(r.stdout).toMatch(/WU-1a.*teacher\.md:4/);
     expect(r.stdout).toMatch(/WU-1a.*teacher\.md:7/);
   });
+
+  it("4. a preset that no file defines stops the command with exit code 2 and names it", () => {
+    const presets = presetDir("teacher", "name: teacher\n");
+    const r = designLint([WU_1A_FAIL, "--presets", presets], { preset: "nursery" });
+    expect(r.status).toBe(2);
+    expect(r.stderr).toMatch(/nursery/);
+  });
 });
