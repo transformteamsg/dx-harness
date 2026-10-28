@@ -49,7 +49,6 @@ figure throughout.
 | `docs/harness-feedback.md` | 1,066 | 8 | 8,528 | Depth 2 from 8 |
 | `procedures/issue-contract.md` | 2,064 | 4 | 8,256 | Depth 1 from 3, depth 2 from 1 |
 | `procedures/commit-discipline.md` | 1,158 | 5 | 5,790 | Depth 1 from 2, depth 2 from 3 |
-| `skills/design/dx-design/issue-intake.md` | 2,203 | 2 | 4,406 | Depth 1 from 2 |
 | `CHANGELOG.md` | 3,979 | 1 | 3,979 | Depth 1 from 1 |
 | `skills/engineering/dx-code-review/references/agent-pattern-standard.md` | 897 | 4 | 3,588 | Depth 1 from 1, depth 2 from 3 |
 
@@ -83,7 +82,6 @@ graph LR
   DOD["procedures/definition-of-done.md<br/>724"]
   SKP["procedures/skill-prose.md<br/>1,913"]
   CHG["CHANGELOG.md<br/>3,979"]
-  INTAKE["dx-design/issue-intake.md<br/>2,203<br/>owned by design"]
   CRREF["dx-code-review/references/<br/>six files, 6,241"]
   ADRREF["madr-templates.md<br/>+ supersede.md<br/>3,298"]
   TPL["four issue templates<br/>+ pr-template.md<br/>+ sprint-log-template.md<br/>1,801"]
@@ -101,7 +99,6 @@ graph LR
   PR --> TPL
   ISSUES --> HS
   ISSUES --> TPL
-  ISSUES --> INTAKE
   SPRINT --> HS
   SPRINT --> TPL
   IMPL --> ISSC
@@ -116,10 +113,8 @@ graph LR
   classDef warm fill:#fed,stroke:#e80
   classDef cool fill:#eee,stroke:#999
   classDef skill fill:#e8f0ff,stroke:#0064ff
-  classDef ext fill:#f4ecff,stroke:#8855cc
   class HS,HSM,PRM,ISSC,CHG,CRREF,ADRREF,TRIMREF warm
   class FDBK,COMMIT,DOD,SKP,TPL cool
-  class INTAKE ext
   class CR,ADR,PR,ISSUES,SPRINT,IMPL,MKSKILL,TRIM,SELF skill
 ```
 
@@ -210,10 +205,10 @@ The list is ordered by saving per unit of work. Items 1 to 3 are [#379](https://
    All three read no references, so the whole `SKILL.md` loads on every trigger. #346
    already tracks them by word count, and carries these token figures as a comment.
 5. **Extract the reviewer-routing table into a procedure**. Done. `dx-create-story` and
-   `dx-create-task` read all 2,203 tokens of `skills/design/dx-design/issue-intake.md` to
+   `dx-create-task` read all 2,203 tokens of an intake file under `skills/design/` to
    reach one routing table. Both now read `procedures/reviewer-routing.md` at 412 tokens,
    saving 1,791 per run, and no engineering skill reads a file under `skills/design/`.
-   `dx-design` reads both files and pays 182 tokens for the deduplication.
+   No skill read the intake file after that, and it is deleted.
 6. **Re-measure after each change**. Rebuild this table before you trim anything else.
    The ranking, not the absolute figure, tells you where to work.
 
@@ -227,9 +222,9 @@ lint left to catch them.
 `procedures/house-style.md` is read at depth 1 by nine skills here and reached at depth 2
 by 10 design skills. Any change to it lands on both teams.
 
-`dx-create-story` and `dx-create-task` no longer read
-`skills/design/dx-design/issue-intake.md`. Item 5 above moved the routing table they
-needed into `procedures/reviewer-routing.md`, which all three skills read.
+`dx-create-story` and `dx-create-task` read no file under `skills/design/`. Item 5 above
+moved the routing table they needed into `procedures/reviewer-routing.md`, which both
+read.
 
 Three design-owned files reach this cluster through `dx-create-skill` alone, all at depth
 2: `standards/README.md` (2,700), `procedures/catalogue-mechanics.md` (816), and

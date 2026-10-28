@@ -354,5 +354,3 @@ lint yield of about one unambiguous finding per artifact. See
 the mechanics file, so it gains 688 tokens on each of the 10 paths that reach the
 parent.
 
-`skills/design/dx-design/issue-intake.md` (2,203) sits in this cluster's directory, but
-`dx-create-story` and `dx-create-task` read it at depth 1. Treat it as shared.
