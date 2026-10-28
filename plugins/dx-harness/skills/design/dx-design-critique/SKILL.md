@@ -37,22 +37,20 @@ When someone asks about or proposes a waiver, read `../../../standards/README.md
    inventory (`../../../standards/layout-patterns.md`, beside the catalogue), write
    what works and should be preserved and what genuinely
    underperforms, then produce **up to five ranked suggestions**. Each suggestion carries
-   its score — impact on the teacher's task (the ranking) and cost (S/M) — and names the
-   control or layout pattern it serves. **Preserved is not waived:** a "preserve" call
+   its score — impact on the teacher's task (the ranking) and cost (Small or Medium) — and
+   names the control or layout pattern it serves. **Preserved is not waived:** a "preserve" call
    protects a deliberate choice from restyling, never its compliance from the checks —
    verify every preserved element against its controls (the L0 floor, A11Y-1 especially).
 2. **Present the report.** Read and run `report.md` (beside this file) end to end:
    write the findings file, build the report and the contact sheet with
    `scripts/critique-report.py`, pass the mandatory contact-sheet self-check, and
-   publish the report. The report is the default output of every critique run,
-   not an opt-in; a person who asked for a whole-page review with no dimension named
-   gets it without asking. Only critique produces it; the five passes never do.
+   publish the report. Every critique run produces it without being asked; the five
+   passes never do.
 3. **Record the findings and stop.** Write a Findings comment on the surface's design
    ticket, in the typed-heading format from `../../../procedures/design-tickets.md`
    (the Findings heading carries the date and this skill's name), and link the report
-   URL from it. Then stop. Suggestions are offers, not a plan; do not implement
-   anything. At this point every suggestion is pending: do not mark anything
-   `accepted` or `not accepted` before the human replies in step 4.
+   URL from it. Then stop, and implement nothing. Every suggestion stays pending until
+   the human replies in step 4.
 4. **Approval happens on the ticket, later.** When the human replies with S-numbers,
    each approved S# marks the F-findings it fixes as `accepted`, and suggestions the
    reply does not pick are marked `not accepted` then, never silently dropped
@@ -60,8 +58,7 @@ When someone asks about or proposes a waiver, read `../../../standards/README.md
    response); the suggestions
    table's Fixes column (S# to F#) is the mapping. `dx-design-execute` builds accepted
    findings in a later run, its plan gate still applies, and each accepted finding then
-   links to the run record of the execute run that built it. Nothing is built inside a
-   critique run.
+   links to the run record of the execute run that built it.
 
 Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds
 this prose too.
