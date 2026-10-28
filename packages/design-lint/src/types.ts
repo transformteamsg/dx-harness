@@ -33,8 +33,10 @@ export interface Finding {
 export interface Note {
   code: string;
   /* "no-module" means that the rule has no code yet. It marks the scaffold
-     and is ignored by the exit code. Remove it when every rule has a module. */
-  kind: "not-configured" | "not-run" | "no-module";
+     and is ignored by the exit code. Remove it when every rule has a module.
+     "skipped" names the preset lines that an L0 rule ignored. The rule still
+     runs, so the note does not change the exit code. */
+  kind: "not-configured" | "not-run" | "no-module" | "skipped";
   detail: string[];
 }
 

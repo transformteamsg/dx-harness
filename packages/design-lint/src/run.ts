@@ -2,7 +2,7 @@ import { resolveParameters } from "./config.ts";
 import type { Browser } from "playwright-core";
 import { startSession } from "./rendered.ts";
 import type { Session } from "./rendered.ts";
-import type { Config, Finding, Note, RuleMeta, RuleModule, Surface } from "./types.ts";
+import type { Config, Finding, Note, Preset, RuleMeta, RuleModule, Surface } from "./types.ts";
 
 export interface RunOptions {
   surfaces: Surface[];
@@ -14,6 +14,8 @@ export interface RunOptions {
   root: string;
   waitUntil?: "load" | "networkidle";
   browser?: Browser;
+  /* The domain preset that the config names. */
+  preset?: Preset | null;
 }
 
 export interface RunResult {
@@ -51,12 +53,19 @@ export async function run(
 
   for (const rule of rules) {
     if (options.select.length > 0 && !matches(rule.code, options.select)) continue;
-    /* An L0 rule ignores --ignore. */
-    if (rule.tier !== "L0" && matches(rule.code, options.ignore)) continue;
+    /* An L0 rule ignores --ignore and the ignore list of the preset. */
+    const preset = options.preset;
+    const presetIgnores = preset ? preset.ignore.filter((s) => matches(rule.code, [s])) : [];
+    if (rule.tier !== "L0" && (matches(rule.code, options.ignore) || presetIgnores.length > 0)) continue;
     if (!options.surfaces.includes(rule.surface)) continue;
     if (rule.parameters.runOn === "ci" && !options.ci) continue;
 
-    const { values, unset } = resolveParameters(rule, config);
+    const { values, unset, skippedPresetLines } = resolveParameters(rule, config, preset);
+    const skippedLines = [
+      ...presetIgnores.map((s) => `${preset!.file}:${preset!.lines[`ignore ${s}`]} ignore ${s}`),
+      ...skippedPresetLines,
+    ];
+    if (skippedLines.length > 0) result.notes.push({ code: rule.code, kind: "skipped", detail: skippedLines });
     if (unset.length > 0) {
       result.notes.push({ code: rule.code, kind: "not-configured", detail: unset });
       continue;

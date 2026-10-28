@@ -8,6 +8,7 @@ const KIND: Record<Note["kind"], string> = {
   "not-configured": "not configured",
   "not-run": "not run",
   "no-module": "has no linter module yet",
+  skipped: "is L0 and still runs. It skipped these preset lines",
 };
 
 export function formatNote(n: Note): string {
@@ -16,11 +17,13 @@ export function formatNote(n: Note): string {
 }
 
 /* Exit 1 when an L0 or L1 rule found a violation, or has no verdict. An L2
-   finding or note only warns. A tool failure exits 2 before this runs. */
+   finding or note only warns. A skipped note does not count, because the rule
+   still ran. A tool failure exits 2 before this runs. */
 export function exitCode(findings: Finding[], notes: Note[], tiers: Map<string, Tier>): 0 | 1 {
   const blocks = (tier: Tier | undefined) => tier !== "L2";
   if (findings.some((f) => blocks(f.tier))) return 1;
-  if (notes.some((n) => n.kind !== "no-module" && blocks(tiers.get(n.code)))) return 1;
+  const noVerdict = (n: Note) => n.kind !== "no-module" && n.kind !== "skipped";
+  if (notes.some((n) => noVerdict(n) && blocks(tiers.get(n.code)))) return 1;
   return 0;
 }
 

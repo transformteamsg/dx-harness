@@ -2,6 +2,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { loadConfig, resolveParameters } from "./config.ts";
 import { lint } from "./lint.ts";
+import { loadPreset } from "./preset.ts";
 import { modules } from "./registry.ts";
 import { exitCode, formatFinding, formatNote, summariseUnset } from "./report.ts";
 import { loadRules } from "./rules/load.ts";
@@ -12,6 +13,10 @@ const DEFAULT_RULES = path.resolve(
   import.meta.dirname,
   "../../../plugins/dx-harness/skills/design-restructure/base",
 );
+const DEFAULT_PRESETS = path.resolve(
+  import.meta.dirname,
+  "../../../plugins/dx-harness/skills/design-restructure/presets",
+);
 
 const USAGE = `design-lint [path...]          Run the source and project rules
 design-lint --rendered         Add the rendered rules
@@ -20,7 +25,7 @@ design-lint list               List the rules and their status
 design-lint init               Write design-lint.config.json (not built yet)
 
 Options: --json  --select <code|category>  --ignore <code|category>
-         --config <file>  --rules <dir>  --help`;
+         --config <file>  --rules <dir>  --presets <dir>  --help`;
 
 async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
@@ -34,6 +39,7 @@ async function main(argv: string[]): Promise<number> {
       ignore: { type: "string", multiple: true, default: [] },
       config: { type: "string", default: "design-lint.config.json" },
       rules: { type: "string", default: DEFAULT_RULES },
+      presets: { type: "string", default: DEFAULT_PRESETS },
       help: { type: "boolean", default: false },
     },
   });
@@ -54,11 +60,12 @@ async function main(argv: string[]): Promise<number> {
     return 2;
   }
   const config = loadConfig(values.config);
+  const preset = config?.preset ? loadPreset(config.preset, values.presets) : null;
 
   if (first === "list") {
     const registered = new Set(modules.map((m) => m.code));
     for (const rule of rules) {
-      const { unset } = resolveParameters(rule, config);
+      const { unset } = resolveParameters(rule, config, preset);
       const status = registered.has(rule.code) ? "module" : "no module";
       const need = unset.length > 0 ? `  unset: ${unset.join(", ")}` : "";
       console.log(`${rule.code.padEnd(8)}${rule.tier}  ${rule.surface.padEnd(9)}${status}${need}`);
@@ -71,6 +78,7 @@ async function main(argv: string[]): Promise<number> {
   const result = await lint({
     rules,
     config,
+    preset,
     configDir: path.dirname(path.resolve(values.config)),
     paths: first === undefined ? ["."] : [first, ...rest],
     surfaces,
