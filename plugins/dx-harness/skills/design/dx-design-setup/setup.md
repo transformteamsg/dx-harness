@@ -10,8 +10,9 @@ plugin).
 Two rules bind every row:
 
 - **Ask before installing.** Show the exact command, get a yes, then run it.
-  In an unattended run, install nothing — list what is missing with the
-  commands a human should run, marked "missing, not installed".
+  In an unattended run, install nothing and ask nothing — list what is
+  missing with the commands a human should run, marked "missing, not
+  installed", and end with that report, not a question.
 - **Verify, then say so.** A tool is set up when its check command passes;
   report the actual output. Never claim more than the check shows — the same
   honesty line the checks hold (`../../../checks/COVERAGE.md`).

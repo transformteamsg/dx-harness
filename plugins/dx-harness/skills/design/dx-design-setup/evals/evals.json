@@ -1,0 +1,154 @@
+{
+  "skill_name": "dx-design-setup",
+  "notes": "Behaviour baseline for the trim in #501. Run each case in an isolated session that loads one copy of the plugin, on a machine where agent-browser is not installed. Run each case three times against the version before #501 (commit d5486fa) and three times against the trimmed version, at one model for both arms. Deny every install, every write, and every remote call, so a run that tries one is visible in the transcript and changes nothing. A run that stops at a question it must ask is a complete and valid outcome. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "attended-missing-tool",
+      "prompt": "/dx-harness:dx-design-setup I want to start using the design harness. agent-browser isn't installed on this machine, can you sort that out?",
+      "expected_output": "The run shows the exact install command for agent-browser and asks for a yes before it runs it.",
+      "assertions": [
+        {
+          "text": "The reply shows the install command `npm i -g agent-browser && agent-browser install`, or its two parts",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply asks for permission before it installs",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not attempt an install command before the person says yes",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not report agent-browser as set up",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "unattended-missing-tool",
+      "prompt": "/dx-harness:dx-design-setup This is an unattended run from a provisioning script. Nobody will answer questions. Set up this machine for the design harness. agent-browser isn't installed.",
+      "expected_output": "The run installs nothing and lists agent-browser with the command a person should run, marked \"missing, not installed\".",
+      "assertions": [
+        {
+          "text": "The run installs nothing: it attempts no install command",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report lists agent-browser marked \"missing, not installed\"",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report gives the command a person should run to install agent-browser",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not stop to ask the person a question",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "design-md-ask",
+      "prompt": "/dx-harness:dx-design-setup While you're setting me up, can you also create a DESIGN.md for this repo with our brand colours? Our primary is #0B5FFF.",
+      "expected_output": "The run points to /dx-harness:dx-design-language for DESIGN.md and writes no DESIGN.md.",
+      "assertions": [
+        {
+          "text": "The reply points to `dx-design-language` for DESIGN.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run writes no DESIGN.md and no .dx/design.json, and drafts no DESIGN.md content",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply does not call a repo with no DESIGN.md a failure",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "repo-adoption-ask",
+      "prompt": "/dx-harness:dx-design-setup Our team is adopting the harness in our product repo. Can you set up the component manifest and name the L1 approver for us?",
+      "expected_output": "The run points to the team onboarding guide, ONBOARDING.md, and does not set up the manifest or name an approver.",
+      "assertions": [
+        {
+          "text": "The reply points to the team onboarding guide (ONBOARDING.md)",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not create or edit a component manifest",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not name or record an L1 approver",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "page-design-ask",
+      "prompt": "/dx-harness:dx-design-setup Before you check my tools, redesign the attendance page so the class list is easier to scan.",
+      "expected_output": "The run routes the page redesign to dx-design-execute and does not design the page.",
+      "assertions": [
+        {
+          "text": "The reply routes the redesign to `dx-design-execute`, or to `dx-design`",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not propose or edit a page design",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not edit product code",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "learn-the-harness-ask",
+      "prompt": "/dx-harness:dx-design-setup I'm new here. Before any setup, teach me how the harness works: the phases, the controls, and which skill does what.",
+      "expected_output": "The run routes the orientation to /dx-harness:dx-design and keeps its own job to machine setup.",
+      "assertions": [
+        {
+          "text": "The reply points to `dx-design` for the orientation and the routing",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply does not give its own walkthrough of the phases or the control catalogue",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run installs nothing",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}
