@@ -56,6 +56,14 @@ describe("item 3: an unattended run installs nothing and reports the tool as mis
     expect(setup).toMatch(/marked "missing, not installed"/);
   });
 
+  /* Added with the implementation: the baseline showed the trimmed skill ends an
+     unattended run on a question unless setup.md says not to. */
+  it("setup.md tells an unattended run to ask nothing and end on the report", () => {
+    const setup = flat(SETUP);
+    expect(setup).toMatch(/In an unattended run, install nothing and ask nothing/);
+    expect(setup).toMatch(/end with that report, not a question/);
+  });
+
   it("SKILL.md sends the run to the setup.md checklist", () => {
     expect(read(SKILL)).toMatch(/`setup\.md`/);
   });
