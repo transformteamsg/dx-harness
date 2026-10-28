@@ -48,6 +48,4 @@ repo is healthy. I will mine the code and you confirm or correct each section."
   itself yet.
 
 **The person can overrule either verdict.** Ask once ("scan says evidence-first;
-happy with that?") and follow their answer. In interview-first mode, decisions with
-no code target are recorded with a "not yet implemented" note plus a fix-todo; you
-never write the code yourself.
+happy with that?") and follow their answer.

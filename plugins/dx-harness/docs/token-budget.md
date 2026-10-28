@@ -80,11 +80,10 @@ other team, so raise it with them first.
 `procedures/house-style-mechanics.md` is deleted with the lint that read it. The tables
 above predate that change, so rebuild them before you trim anything else.
 
-Two reads cross the directory boundary at depth 1, where the owning team is not the
+No read crosses the directory boundary at depth 1, where the owning team is not the
 reading team:
 
-- `dx-create-story` and `dx-create-task` read
-  `skills/design/dx-design/issue-intake.md` (2,203).
+- No engineering skill reads a file under `skills/design/`.
 - No design skill reads a file under `skills/engineering/`. The design cluster reaches
   `procedures/house-style.md` at depth 2 only, through `procedures/design-tickets.md`.
 

@@ -1,6 +1,6 @@
-# Phase 5 — Verify (procedure)
+# Phase 5: Design review
 
-Run in this order; do not present output to the user while a step is failing:
+Run these steps in order, under "Gates" in `SKILL.md`:
 
 1. **Deterministic controls** — all L0/L1 `deterministic` controls. Run the built
    `checks/` scripts first — `checks/COVERAGE.md` is the authority for the full set
@@ -35,14 +35,11 @@ Run in this order; do not present output to the user while a step is failing:
    pass. Everything without a script: verify by hand against the control's review
    part, from `rule-detail.py <detail path> --for review`, and label it "verified manually" (see "Gates" in `SKILL.md`).
    For the manual accessibility pass, work through the catalog's A11Y controls in id
-   order — they mirror the GovTech checklist's Essential tier
-   (a11y.tech.gov.sg/checklist), which addresses ~96% of common web accessibility
-   errors. L0 failure blocks everything; L1 failure sends you back to Phase 4.
+   order. L0 failure blocks everything; L1 failure sends you back to Phase 4.
 2. **Render and screenshot.** Evidence sets, all that apply required:
    - **Width evidence**: the primary state at 360/768/1280.
    - **State evidence**: one frame per state asserted by each in-scope hybrid
-     control — *including loading*, the state most often coded-but-unphotographed
-     (it slipped through both pilot runs before this rule existed). Use the
+     control — *including loading*. Use the
      demo-only hooks built in Phase 4. **MANDATORY when CMP-3 is in scope** (harness
      rule, not a catalog control): `../../../procedures/design-review.md` holds
      EVD-1, the async evidence gate. Meet it.
@@ -91,13 +88,8 @@ Run in this order; do not present output to the user while a step is failing:
    - It covers no part of A11Y-2 (no axe rule checks a visible focus indicator)
      and no part of A11Y-11 (that needs interaction, and this check interacts
      with nothing). Both stay with the inventory checkoff above.
-4. **Evaluator review** — run the reviewer dispatch in
-   `../../../procedures/design-review.md`: it holds who spawns the `dx-design-review`
-   subagent, the inputs to pass (contract, approved plan, screenshots, component
-   inventory, in-scope judgment/hybrid controls, and the absolute `standards/` path),
-   the cannot-spawn rule, the verbatim-verdict rule, and the verdict re-check from
-   new screenshots. You never write the verdict yourself, and never present
-   unverified work as verified while waiting.
+4. **Reviewer dispatch** — run the reviewer dispatch in
+   `../../../procedures/design-review.md`.
 5. **E2E suite.** If the product repo has an existing E2E suite, run it in full —
    not just the tests for this change — and triage every failure before proceeding:
 
@@ -110,22 +102,17 @@ Run in this order; do not present output to the user while a step is failing:
    Do not consider this phase complete with a failing suite. If the product repo has
    no E2E suite, record **N/A — product has no E2E suite** in the decision record
    (same honesty rule as the dark-mode check above) — never treat the absence as a
-   pass. The accessibility scan itself runs in step 3, not here — do not also reach
-   for an ad hoc `@axe-core/playwright` run in this suite; `rendered-check.py` is the
-   one accessibility scan and covers a wider viewport/theme/motion matrix than a
-   single Playwright run would.
-6. Address findings, then decide how to re-verify — a full evaluator re-grade is not
-   always the right weight for what changed:
+   pass. The accessibility scan runs in step 3, not here — do not also reach for an
+   ad hoc `@axe-core/playwright` run in this suite.
+6. Address findings, then decide how to re-verify:
    - **Direct recheck** (re-screenshot the specific finding, re-check its control by
-     hand, no new evaluator spawn) is enough when the prior verdict was
+     hand, no new reviewer spawn) is enough when the prior verdict was
      pass-with-findings (zero BLOCKING) and the fix is small and targeted — touches
      only the flagged element, not structure or plan fidelity.
-   - **Full evaluator re-grade** (back to step 2 to recapture evidence for whatever
+   - **Full reviewer re-grade** (back to step 2 to recapture evidence for whatever
      changed, then step 4) is required when: any BLOCKING finding was addressed, the
      fix touched structure or plan fidelity, or several findings were fixed together
-     (harder to isolate whether one fix regressed another). Never spawn the evaluator
-     against evidence captured before the fix — stale screenshots being re-graded as
-     if they showed the fix is exactly the "unverified work presented as verified"
-     failure this phase exists to prevent.
+     (harder to isolate whether one fix regressed another). Never spawn the reviewer
+     against evidence captured before the fix.
    - Record which path was taken and why in the decision record — a judgment call,
      but not a silent one.

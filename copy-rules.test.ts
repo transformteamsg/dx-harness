@@ -53,7 +53,7 @@ const WRITING_TERMS = [
 const REVIEW_TERMS = [
   "**Purposeful.**",
   "**Conversational.**",
-  "calm daily command centre",
+  "IDN-3 tone register",
   "Mandated programme names",
   "dimension subset",
   "return-to-caller",

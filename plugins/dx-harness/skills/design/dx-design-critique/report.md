@@ -1,10 +1,8 @@
 # The annotated-evidence report (present step)
 
 Every critique run ends with a shareable, self-contained HTML report: each finding
-sits beside a redlined crop of the live surface. The report is the default output of
-every critique run, not an opt-in. Only critique produces it; the five passes never
-do. The report proposes only. Critique never edits the product, and the report says
-so in its lede.
+sits beside a redlined crop of the live surface. `../../../scripts/critique-report.py`
+builds it, and you control it through the findings file alone.
 
 Run this step after `critique.md` (beside this file) completes, with the findings
 and ranked suggestions in hand.
@@ -20,9 +18,28 @@ captured.
 
 ## 2. Findings file
 
-Write one JSON findings file for the run. It names each finding, its crops, the
-suggestions, the coverage verdicts, the preserve list, and the captures for the
-appendix. `../../../scripts/critique-report.py` states the format in its header.
+Write one JSON findings file for the run. `../../../scripts/critique-report.py`
+states the format in its header. Change the report by changing the findings file,
+not the HTML. Fill it in as follows:
+
+- **Facts**: the run URL or mocks, the pages captured and their widths, the
+  deterministic checks run, and the catalogue coverage.
+- **Uncaptured**: each page or width that did not capture, so the lede names it.
+- **Verdict**: one sentence that leads with the dominant theme.
+- **Suggestions**: each with its S#, the F-ids it fixes, its controls, an impact of
+  High, Med, or Low only, and a cost of Small or Medium. Mark a quick win as one.
+- **Declined**: a "considered and declined" line for anything the lead rejects. A
+  declined suggestion keeps its S-number and is never silently dropped.
+- **Upstream**: design-system-owned debt, kept apart from local findings.
+- **Findings**: each annotated finding with its tier, controls, the S# that fixes
+  it, and its crops. A finding with no crop is a code-level finding, with its
+  `file:line` location.
+- **Coverage**: every rule on the run's in-scope list with a verdict of
+  pass/fail/partial/verify/N-A plus a one-line note. "Verify" means evidence
+  incomplete; it is never a "failed".
+- **Preserve**: the deliberate choices protected from restyling. Their compliance
+  is still checked.
+- **Captures**: the full captures for the appendix.
 
 For each annotated finding:
 
@@ -54,47 +71,7 @@ run and re-runs alike, and it blocks publishing until it passes. When you find a
 misplaced box, fix its coordinates in the findings file, rerun the script, and read
 the new sheet. Never publish unchecked crops.
 
-## 4. HTML assembly
-
-The script writes one self-contained file: every image embedded as a base64 data
-URI, tokens themed for light and dark via prefers-color-scheme plus data-theme
-overrides, and no external requests. The suggestions table is the decision surface:
-quick-win rows get a green left edge, and the table states "approving 'quick wins'
-takes all N". Change the report by changing the findings file, not the HTML.
-
-### Document structure (locked, in this order)
-
-The structure below is locked on the reference-format comment of
-[tfx-design-standard#39](https://github.com/transformteamsg/tfx-design-standard/issues/39).
-Do not restructure or reorder it.
-
-1. **Title + one-line lede.** Product, catalogue version, explicit "no code
-   changed".
-2. **Fact grid** (not prose): run URL or mocks, pages captured + widths,
-   deterministic checks run, catalogue coverage, date.
-3. **Summary block**: a one-sentence verdict leading with the dominant theme;
-   finding counts by tier (L0/L1/L2/craft/passing/N-A); a "how to respond" line
-   ("reply with S-numbers to approve"); a tier legend (L0 floor-no-waiver / L1
-   documented / L2 rationale); a linked table of contents.
-4. **Suggestions table first**: it is the decision surface. Columns: S#,
-   suggestion, Fixes (links to F#), controls, impact (High/Med/Low only), cost
-   (S/M). Below the table: a "considered and declined" line for anything the lead
-   rejects (a declined suggestion keeps its S-number and is never silently
-   dropped), and an "upstream, not local" note for design-system-owned debt.
-5. **Annotated findings (F1..Fn)**: grid rows, redlined crop left (~400px column),
-   text right. Each carries the F-id + title, a tier pill, control IDs, a
-   "Fix: S#" chip linking to the table, and a figcaption naming the page the crop
-   came from.
-6. **Code-level findings** as a numbered table; F-ids continue the same series.
-   Columns: tier, location (file:line), fix S#.
-7. **Coverage table**: every rule on the run's in-scope list with a verdict of
-   pass/fail/partial/verify/N-A plus a one-line note. "Verify" means evidence
-   incomplete; it is never counted or styled as "failed".
-8. **What works, preserve**: deliberate choices protected from restyling;
-   compliance still checked.
-9. **Appendix**: full captures.
-
-## 5. Numbering rules
+## 4. Numbering rules
 
 - F-ids are one series across annotated and code-level findings.
 - F- and S-numbers are stable across revisions of the same surface's report: a
@@ -102,7 +79,7 @@ Do not restructure or reorder it.
   working.
 - New findings on a re-run take fresh numbers after the highest number ever used.
 
-## 6. Publish
+## 5. Publish
 
 Publish the HTML as an artifact. On every re-run for the same surface, republish
 to the same artifact URL with a version label; a new URL is a defect. If artifact
@@ -112,5 +89,3 @@ file path instead of a URL.
 
 Then link the report URL (or the fallback file path) from the Findings comment on
 the surface's design ticket (`../../../procedures/design-tickets.md`) and stop.
-Approval happens on the ticket: the human replies with S-numbers, and each
-approved S# marks the F-findings it fixes as `accepted` for `dx-design-execute`.
