@@ -13,15 +13,15 @@ is **Kind Utility**: useful first, kind at the surface. Keep turns short.
 
 A sharp ask never belongs here. When the person has already named a skill or a single
 pass dimension ("polish the spacing on /marks"), that specialist handles it directly;
-if such an ask still reaches you, hand it straight over without an interview.
+if such an ask still reaches you, hand it straight over, with no interview and no entry
+check.
 
 ## 1. Entry context check
 
 These checks gate product-shaping work only. Classify the ask before you apply them:
 rule and waiver questions (section 6), git-shaped asks, harness feedback, and tool
 problems need no capture and no design language, so answer or route those first,
-without either gate. A sharp ask that already names its skill or dimension skips you
-entirely, gates included.
+without either gate.
 
 For an ask that shapes the product, confirm the machine and repo are ready:
 
@@ -37,12 +37,11 @@ If both check out, move straight to the grill.
 
 ## 2. Grill first
 
-Open with targeted questions, one at a time. Follow the vendored grilling procedure in
-`grilling.md` (beside this file, with its provenance header): map the ask as a design
-tree, ask only frontier questions, recommend an answer with each question, and look up
-facts yourself instead of asking for them. Pace it one question per turn; this person
-is mid-task, not in a plan review. Stop grilling the moment the intent is sharp enough
-to route: two or three questions usually suffice. Re-invoke the grill mid-flow
+Open with targeted questions. Follow the vendored grilling procedure in `grilling.md`
+(beside this file, with its provenance header): map the ask as a design tree, ask the
+whole frontier in one round, recommend an answer with each question, and look up facts
+yourself instead of asking for them. Stop grilling the moment the intent is sharp
+enough to route: two or three questions usually suffice. Re-invoke the grill mid-flow
 whenever a gap appears (a triage finding that could mean two different things, a
 brainstorm direction that hides an assumption).
 
@@ -66,12 +65,9 @@ waiver questions are handled off-menu: never add them as entries.
 ## 3. Route
 
 Route by what the grill (or menu) surfaced, and name the skill only now, at handoff.
-Every skill you dispatch runs in **return-to-caller mode**: pass the token
-`mode:return-to-caller` plus the context payload, so the routed skill skips its own
-interview and nobody answers the same question twice. The payload is what you already
-hold: the settled intent, and for **dx-design-execute** the build input in
-`../../../procedures/return-to-caller.md`. In this mode a routed skill also leaves the design
-review to you: whoever started the run spawns the reviewer once.
+Dispatch every skill in return-to-caller mode, per
+`../../../procedures/return-to-caller.md`. The payload is the settled intent, and for
+**dx-design-execute** the build input that procedure gives.
 
 The routes:
 
@@ -117,11 +113,8 @@ When the intent is "improve this" across an existing surface:
    `../../../procedures/plan-approval.md`: one plan approval per run, asked by you,
    because you started the run.
 5. **Hand the accepted fixes to dx-design-execute**, the single frontend-only
-   implementer, per `../../../procedures/implement.md`. Dispatch it with
-   `mode:return-to-caller` and the build input in
-   `../../../procedures/return-to-caller.md`. It then skips its own
-   interview and plan-approval stop, returns its run record to you, and does not spawn
-   its own reviewer. You never apply a fix yourself.
+   implementer, per `../../../procedures/implement.md`. Dispatch it in
+   return-to-caller mode with the build input. You never apply a fix yourself.
 6. **One review of the full result**: dispatch the design reviewer once over the
    combined outcome, per `../../../procedures/design-review.md`.
 
@@ -158,14 +151,10 @@ answer, off-menu, and you never build in response to one.
 
 ## Shared back half
 
-You join the shared back half of the run at plan approval. The procedure docs live in
-`../../../procedures/` (relative to this file): `plan-approval.md`, `implement.md`,
-`design-review.md`, `rule-proposal.md`, `catalogue-mechanics.md`, and
-`design-tickets.md`. A run reads its rules from the in-scope list that
-`catalogue-mechanics.md` gives, never the whole catalogue. The tier table and waiver
-syntax are in `../../../standards/README.md`, read only on a waiver. Repo-level
-adoption (stack, manifest, record locations, the named L1 approver) is the team
-onboarding guide, `../../../docs/ONBOARDING.md`.
+A run reads its rules from the in-scope list that
+`../../../procedures/catalogue-mechanics.md` gives, never the whole catalogue.
+Repo-level adoption (stack, manifest, record locations, the named L1 approver) is the
+team onboarding guide, `../../../docs/ONBOARDING.md`.
 
 Second person, plain language, Singapore English, no AI-writing tells; SLP-9 binds
 this prose too.
