@@ -85,3 +85,25 @@ describe("4. the orphaned intake file is deleted", () => {
     expect(files, "a plugin file still names issue-intake").toEqual([]);
   });
 });
+
+/* Also true when done 2: the return-to-caller mechanics have one home. */
+describe("5. the return-to-caller mechanics are only in the procedure", () => {
+  const MECHANICS = [
+    { name: "the interview suppression", pattern: /skips? (its|their) own interview|answers the same question twice/i },
+    { name: "who spawns the reviewer", pattern: /spawns? (the design reviewer|its own reviewer|the reviewer) once|does not spawn its own reviewer/i },
+  ];
+
+  it.each(MECHANICS)("the procedure holds $name", ({ pattern }) => {
+    expect(flat(CONTRACT), `${CONTRACT} lost a mechanic`).toMatch(pattern);
+  });
+
+  it.each(MECHANICS)("the orchestrator does not restate $name", ({ pattern }) => {
+    const text = flat(ORCHESTRATOR);
+    expect(text.length, `${ORCHESTRATOR} is missing or empty`).toBeGreaterThan(0);
+    expect(text, "the orchestrator restates the mechanic").not.toMatch(pattern);
+  });
+
+  it("the orchestrator links to the procedure", () => {
+    expect(flat(ORCHESTRATOR)).toContain("../../../procedures/return-to-caller.md");
+  });
+});
