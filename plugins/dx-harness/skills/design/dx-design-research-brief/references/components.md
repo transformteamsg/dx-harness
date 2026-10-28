@@ -36,13 +36,13 @@ List everyone involved and their role. Use the RACI model where it helps:
 
 ### 3. Hypotheses and assumptions
 
-List them separately, because they are different things.
+List them separately.
 
 - **Hypotheses**: ideas the team is unsure about and open to being wrong about. These drive exploration.
-- **Assumptions**: ideas the team believes are true. Surface them, because an unexamined assumption leads to research designed to confirm rather than learn.
+- **Assumptions**: ideas the team believes are true. Surface them, so the research does not set out to confirm them.
 
 Never write that the research validates an assumption. User research explores and
-evaluates assumptions, because its sample sizes are too small for validation.
+evaluates assumptions.
 
 ### 4. Research statement and goals
 
@@ -127,15 +127,14 @@ Over-recruit by at least 20%. Take the sample size from the study-type reference
 ### 9. Deliverables and next steps
 
 State what the research will produce. Be specific about each format, and say why you
-chose it over the alternatives. A journey map with no reason often ends up unused.
+chose it over the alternatives.
 
 Common deliverables: a research report, a topline summary, an annotated prototype, a
 journey map, a mental model diagram, a research readout presentation, and an affinity
 diagram.
 
-Name any planned workshops: ideation, co-design, or synthesis. Qualitative research
-almost always needs an ideation session after the findings are shared, so plan it from
-the start.
+Name any planned workshops: ideation, co-design, or synthesis. For qualitative
+research, plan an ideation session after the findings are shared.
 
 ### 10. Approximate timeline
 
@@ -147,12 +146,8 @@ after the first.
 
 ### 11. Discussion guide or task script
 
-The guide can live in the plan or in a separate document. In the plan, it is the
-interview guide or the task script: the introduction, the questions or tasks, and the
-wrap-up.
-
-Where the guide is a separate document, link to it here, so the plan stays the single
-reference for the whole project.
+Link to the interview guide or the task script, which the researcher writes as a
+separate document. Write `[Link to the guide]` where it does not exist yet.
 
 ### 12. Resources
 
@@ -232,7 +227,7 @@ Workshops: [X days]
 Total: Approximately [X weeks]
 
 DISCUSSION GUIDE / TASK SCRIPT
-[Included here, or a link to a separate document]
+[Link to the guide]
 
 RESOURCES
 - Intake document: [link]
