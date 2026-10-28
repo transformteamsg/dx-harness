@@ -118,4 +118,7 @@ export interface Preset {
   parameters: Params;
   rules: Record<string, Params>;
   ignore: string[];
+  /* The line in the file of each ignore entry and each rule override, keyed
+     "ignore CODE" and "rules.CODE.PARAM". The skipped-line report reads it. */
+  lines: Record<string, number>;
 }
