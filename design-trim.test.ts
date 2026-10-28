@@ -117,3 +117,25 @@ describe("approval on the ticket is explained once in dx-design-critique", () =>
     expect(holders(files, /\(S\/M\)/)).toEqual([]);
   });
 });
+
+describe("dx-design-language states each rule once", () => {
+  it("only SKILL.md says the skill never writes product code", () => {
+    expect(holders(LANGUAGE, /never write (product |the )?code/i)).toEqual([LANGUAGE[0]]);
+  });
+
+  it("only walkthrough.md carries the ten-section pass and the rejected-line rule", () => {
+    expect(holders(LANGUAGE, /ten sections/i)).toEqual([LANGUAGE[1]]);
+    expect(holders(LANGUAGE, /past a rejected line/i)).toEqual([LANGUAGE[1]]);
+  });
+});
+
+describe("dx-design-feedback states each rule once", () => {
+  it("the unattended rule appears once", () => {
+    expect(flat(FEEDBACK).match(/unattended/gi) ?? []).toHaveLength(1);
+  });
+
+  it("step 1 does not restate the hold-and-finish rule", () => {
+    expect(flat(FEEDBACK)).not.toMatch(/die with the session/i);
+    expect(flat(FEEDBACK)).not.toMatch(/file paperwork/i);
+  });
+});
