@@ -65,3 +65,23 @@ describe("3. one question-pacing rule", () => {
     );
   });
 });
+
+/* Also true when done 1: the orphaned intake file is gone, and the token
+   budget no longer counts it as a dx-design read. */
+describe("4. the orphaned intake file is deleted", () => {
+  it("issue-intake.md does not exist", () => {
+    expect(fs.existsSync(path.join(process.cwd(), INTAKE)), `${INTAKE} still exists`).toBe(false);
+  });
+
+  it("the engineering token budget no longer says dx-design reads it", () => {
+    const text = flat(ENGINEERING_BUDGET);
+    expect(text.length, `${ENGINEERING_BUDGET} is missing or empty`).toBeGreaterThan(0);
+    expect(text, "the budget still names issue-intake.md").not.toContain("issue-intake");
+  });
+
+  it("no plugin file outside the changelog names it", () => {
+    const run = spawnSync("git", ["grep", "-l", "issue-intake", "--", HARNESS], { encoding: "utf8" });
+    const files = run.stdout.split("\n").filter((file) => file && !file.endsWith("CHANGELOG.md"));
+    expect(files, "a plugin file still names issue-intake").toEqual([]);
+  });
+});
