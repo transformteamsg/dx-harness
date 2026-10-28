@@ -19,9 +19,7 @@ to this SKILL.md, three levels up — it ships with the plugin).
 
 1. **Recognise and hold, don't derail.** If you're mid-task (e.g. inside the design
    loop), acknowledge the feedback in one line, capture it (step 2) into a note,
-   finish the current gate/step, then run steps 3–5 before the turn ends. Never let
-   the capture die with the session; never abandon the user's main task to go file
-   paperwork.
+   finish the current gate/step, then run steps 3–5 before the turn ends.
 2. **Capture context while fresh**: what the user said (quote them), which
    skill/phase/check/control surfaced it, the evidence (command output, control id,
    or gate in question), and the session's product repo. This becomes the issue body
@@ -50,5 +48,3 @@ to this SKILL.md, three levels up — it ships with the plugin).
 
 - Restate no label lists or the marker string here — `../../../docs/harness-feedback.md`
   and the helper own them; read the doc, don't rely on memory.
-- Never file a real issue in an unattended run, and never file without the user's
-  explicit approval of the shown title/labels/body.
