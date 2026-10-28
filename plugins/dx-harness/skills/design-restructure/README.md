@@ -7,7 +7,7 @@ A target-state mock-up of the base layer of the design standard. Nothing here ru
 Standards resolve in this order. A later layer overrides an earlier one.
 
 1. **Base.** The Digital Service Standards (DSS). Every product follows it.
-2. **Domain.** Not designed yet.
+2. **Domain.** A domain preset in `presets/`. It sets values for every product in one domain. See [`presets/`](presets/README.md).
 3. **Custom.** Not designed yet.
 
 The base runs with no domain and no `DESIGN.md`.
@@ -19,6 +19,7 @@ The base runs with no domain and no `DESIGN.md`.
 | `base/<prefix>/README.md` | One category: the rule index, the decisions, and the open items |
 | `base/<prefix>/MAPPING.md` | For each DSS control: the rules, the surface, the engine, the parameters, and the judged part |
 | `base/<prefix>/<rule>.md` | One rule file |
+| `presets/<name>.md` | One domain preset |
 | `lint/config.md` | The config file: shape, resolution order, and page groups |
 | `lint/run.md` | The `design-lint` command: flags, output, exit codes, and hooks |
 | `lint/testing.md` | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |

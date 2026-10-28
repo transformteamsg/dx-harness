@@ -29,6 +29,7 @@ The tests and the typecheck run from the repository root with `pnpm test` and `p
 | `src/types.ts` | The shapes that the other files share |
 | `src/rules/load.ts` | Reads and validates the rule files |
 | `src/config.ts` | Loads the config and resolves each parameter |
+| `src/preset.ts` | Loads the domain preset that the config names |
 | `src/run.ts` | Selects the rules, resolves them, and runs their modules |
 | `src/registry.ts` | The rule modules |
 | `src/modules/` | One file for each rule that has a check |
@@ -57,4 +58,4 @@ A module implements one rule. It has a `code`, a `surface`, a `locate` function 
 - Mixed projects: the JSX and TSX path (`eslint-plugin-jsx-a11y` with ESLint 9) is built, and a source rule that names a jsx-a11y rule checks plain HTML and JSX together. Vue and Svelte templates are not read.
 - A JSON Schema for the config file.
 - A build step. Node strips types only outside `node_modules`, so the package must compile before it is published.
-- Shipping the rule files inside the package. Today the command reads them from the mock-up.
+- Shipping the rule files and the presets inside the package. Today the command reads them from the mock-up.

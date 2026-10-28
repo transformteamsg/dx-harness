@@ -32,13 +32,19 @@ note: BD-4a not configured: maxGrade, locale
 note: WP-15a not run: OCR is not installed
 ```
 
+When the domain preset tries to override or ignore an L0 rule, the rule runs, and a note names each line of the preset that it skipped. This note does not change the exit code:
+
+```
+note: WU-1a is L0 and still runs. It skipped these preset lines: presets/teacher.md:4 ignore WU-1a
+```
+
 ## Exit codes
 
 | Code | Meaning |
 | --- | --- |
 | 0 | Every selected rule passed. |
 | 1 | A rule found a violation, or a rule is "not configured" or "not run". |
-| 2 | The tool failed. |
+| 2 | The tool failed. For example, the config names a preset that no file defines. |
 
 A rule that is "not configured" or "not run" never passes (D13). L2 findings are warnings. They print and do not change the exit code. A "not configured" or "not run" note on an L2 rule also does not change the exit code.
 
