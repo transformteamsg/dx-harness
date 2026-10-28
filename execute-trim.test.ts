@@ -76,7 +76,7 @@ describe("also true: the gates are stated once", () => {
      Gates section of SKILL.md and nowhere else in the skill. */
   const GATE_STATEMENTS = [
     { name: "the approval forms in return-to-caller mode", pattern: /only these forms count as approval|payload carries (a real|an) approval/i },
-    { name: "the branch guard in both modes", pattern: /branch guard[^.]*both modes|both modes[^.]*branch guard/i },
+    { name: "the branch guard in both modes", pattern: /branch guard.{0,80}both modes|both modes.{0,80}branch guard/i },
     { name: "the stop-once rule", pattern: /never stop twice|exactly one stop at plan approval/i },
     { name: "the no-output-while-failing rule", pattern: /do not present output to the user while/i },
   ];

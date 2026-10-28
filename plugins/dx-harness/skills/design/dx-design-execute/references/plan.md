@@ -1,13 +1,9 @@
 # Phase 3: Plan (human gate)
 
-The gate protocol is shared: read `../../../../procedures/plan-approval.md` now and
-run it. It holds the stop-once rule (plan approval occurs one time per run; an
-explicit ask to build a specific plan or chosen direction counts as approval), the
-three gate stages, L1 waiver approval, the unattended-run proxy rules, and where
-the approved plan is recorded. The grilling procedure its stage 2 runs is
-`../grill.md`. In return-to-caller mode the gate is satisfied only
-when the payload carries an approval; without one, return the plan to the caller
-per "Two ways in" in `../SKILL.md`, and never stop twice in one run.
+Plan approval binds as "Gates" in `../SKILL.md` states it. Read
+`../../../../procedures/plan-approval.md` now and run it: it holds the three gate
+stages, L1 waiver approval, the unattended-run proxy rules, and where the approved
+plan is recorded. The grilling procedure its stage 2 runs is `../grill.md`.
 
 Expand the chosen direction into a plan:
 
