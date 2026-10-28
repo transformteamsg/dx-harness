@@ -40,4 +40,15 @@ describe("a domain preset", () => {
     const preset = loadPreset("teacher", presetDir("teacher", "name: teacher\nrules:\n  BD-4a:\n    maxGrade: 9\n"));
     expect(resolveParameters(bd4a, null, preset).values.maxGrade).toBe(9);
   });
+
+  it("2. loses to a value that the product sets in product", () => {
+    const preset = loadPreset("teacher", presetDir("teacher", "name: teacher\nparameters:\n  maxGrade: 9\n"));
+    expect(resolveParameters(bd4a, { product: { maxGrade: 7 } }, preset).values.maxGrade).toBe(7);
+  });
+
+  it("2. loses to a value that the product sets for the rule", () => {
+    const preset = loadPreset("teacher", presetDir("teacher", "name: teacher\nrules:\n  BD-4a:\n    maxGrade: 9\n"));
+    const r = resolveParameters(bd4a, { rules: { "BD-4a": { maxGrade: 7 } } }, preset);
+    expect(r.values.maxGrade).toBe(7);
+  });
 });
