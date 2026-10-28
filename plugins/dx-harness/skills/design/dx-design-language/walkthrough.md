@@ -18,7 +18,7 @@ Figma wins, or a hybrid split per part. The election guides elicitation only; co
 stays the runtime authority. Where the elected source beats shipped code, file a
 fix-todo: title `Design fix: <what>`, label `design-fix-todo`, body citing the
 elected source and the code it beats (`../../../procedures/design-tickets.md`; with
-no tracker, append to `docs/design-tickets/TODO.md`). You never write product code.
+no tracker, append to `docs/design-tickets/TODO.md`).
 
 ## Per-section mechanics
 
@@ -76,8 +76,9 @@ no tracker, append to `docs/design-tickets/TODO.md`). You never write product co
 3. Write `DESIGN.md` at the product repo root, regenerate the projection
    (`python3 <harness>/scripts/generate-design-json.py <repo-root>`, with
    `<harness>` the resolved harness root from SKILL.md's path note), and offer to
-   commit both files. If the generator rejects a line, fix it with the person and
-   regenerate; nothing ships past a rejected line.
+   commit both files. If the generator rejects a line, show its plain-language
+   error, fix the line with the person, and regenerate. Nothing is written past a
+   rejected line.
 
 ## Re-runs
 

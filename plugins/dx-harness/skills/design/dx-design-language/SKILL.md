@@ -71,23 +71,10 @@ clean check.
 
 ## The procedure
 
-1. **Health scan.** Run `health-scan.md` (beside this file). State the verdict with
-   its evidence: **evidence-first** on a healthy repo (mine the code, then confirm or
-   correct each minable section), **interview-first** on an inconsistent or token-less
-   one. The person can overrule either verdict.
-2. **Walkthrough.** Run `walkthrough.md` (beside this file). First run: one ordered
-   pass through the ten sections. Re-runs default to a targeted single-section edit;
-   the two guided entry points are a human-asked change and a waiver promotion.
-3. **Preview and write.** The per-section confirm-or-correct is the approval. Render
-   one preview of the assembled file, get a yes, then write `DESIGN.md`, regenerate
-   the projection, and offer the commit:
-
-```
-python3 <harness>/scripts/generate-design-json.py <repo-root>
-```
-
-   If the generator rejects an Overrides line, show its plain-language error, fix the
-   line with the person, and regenerate. Nothing is written past a rejected line.
+1. **Health scan.** Run `health-scan.md` (beside this file). It ends with an
+   evidence-first or interview-first verdict.
+2. **Walkthrough.** Run `walkthrough.md` (beside this file), from the sections to the
+   preview and the write.
 
 ## Promoting a waiver into a standing override
 
