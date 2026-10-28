@@ -37,12 +37,11 @@ If both check out, move straight to the grill.
 
 ## 2. Grill first
 
-Open with targeted questions, one at a time. Follow the vendored grilling procedure in
-`grilling.md` (beside this file, with its provenance header): map the ask as a design
-tree, ask only frontier questions, recommend an answer with each question, and look up
-facts yourself instead of asking for them. Pace it one question per turn; this person
-is mid-task, not in a plan review. Stop grilling the moment the intent is sharp enough
-to route: two or three questions usually suffice. Re-invoke the grill mid-flow
+Open with targeted questions. Follow the vendored grilling procedure in `grilling.md`
+(beside this file, with its provenance header): map the ask as a design tree, ask the
+whole frontier in one round, recommend an answer with each question, and look up facts
+yourself instead of asking for them. Stop grilling the moment the intent is sharp
+enough to route: two or three questions usually suffice. Re-invoke the grill mid-flow
 whenever a gap appears (a triage finding that could mean two different things, a
 brainstorm direction that hides an assumption).
 
