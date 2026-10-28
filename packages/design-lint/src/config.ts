@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Config, Params, RuleMeta } from "./types.ts";
+import type { Config, Params, Preset, RuleMeta } from "./types.ts";
 
 /* A page parameter in a rule file reads the page group of the same meaning in
    the config. See lint/config.md. */
@@ -76,7 +76,7 @@ export interface Resolved {
 
 /* The first value wins, in this order: rules.R.P, product.P, the page group,
    the default in the rule file. A default of null is not a value. */
-export function resolveParameters(rule: RuleMeta, config: Config | null): Resolved {
+export function resolveParameters(rule: RuleMeta, config: Config | null, preset?: Preset | null): Resolved {
   const values: Params = {};
   const unset: string[] = [];
   const skippedOverrides: string[] = [];

@@ -103,8 +103,19 @@ export interface Config {
   /* How a rendered page counts as loaded. The default, "networkidle", suits an app
      that fetches data. A static site can set "load". */
   render?: { waitUntil?: "load" | "networkidle" };
+  /* The domain preset, by name. It sits between the rule defaults and this file. */
+  preset?: string;
   product?: Params;
   pages?: Record<string, string[]>;
   flows?: Record<string, string[]>;
   rules?: Record<string, Params>;
+}
+
+/* The values of a domain preset. See lint/config.md. */
+export interface Preset {
+  name: string;
+  file: string;
+  parameters: Params;
+  rules: Record<string, Params>;
+  ignore: string[];
 }
