@@ -126,6 +126,34 @@
           "evidence": ""
         }
       ]
+    },
+    {
+      "id": 5,
+      "name": "discussion-guide-linked-not-written",
+      "prompt": "Write me a research plan for an interview study. The school admin team wants to learn how form teachers chase parents for unsigned consent forms before a school trip, and where the follow-up breaks down. Goal: learn how form teachers track and chase outstanding consent forms. Eight one-hour remote interviews with form teachers. The ops lead, Mei Ling, owns it and the vice-principal is accountable. Four weeks.",
+      "expected_output": "A generative plan whose DISCUSSION GUIDE / TASK SCRIPT component links to a separate guide and writes no interview questions.",
+      "assertions": [
+        {
+          "text": "The plan carries the DISCUSSION GUIDE / TASK SCRIPT heading",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The discussion guide component holds a link or a placeholder for a separate document, not a written guide",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The plan holds no interview questions for participants anywhere",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The plan holds no screener survey questions, and its Screener line is a link or a placeholder",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
     }
   ]
 }

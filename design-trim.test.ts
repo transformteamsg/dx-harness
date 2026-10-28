@@ -1,0 +1,78 @@
+import fs from "node:fs";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+
+/* Structural checks for the trim of dx-design-critique, dx-design-language,
+   dx-design-research-brief, and dx-design-feedback. A skill run does the
+   reading, so nothing here exercises a live run; the behaviour baseline that
+   dx-trim-doc builds does that. These guard what would silently regress
+   instead: a second copy of a rule, and the one contradiction the trim
+   settles. See issue #505. */
+
+const DESIGN = "plugins/dx-harness/skills/design";
+const CRITIQUE_DIR = `${DESIGN}/dx-design-critique`;
+const CRITIQUE_SKILL = `${CRITIQUE_DIR}/SKILL.md`;
+const CRITIQUE = `${CRITIQUE_DIR}/critique.md`;
+const REPORT = `${CRITIQUE_DIR}/report.md`;
+const LANGUAGE_DIR = `${DESIGN}/dx-design-language`;
+const LANGUAGE = ["SKILL.md", "walkthrough.md", "health-scan.md"].map((f) => `${LANGUAGE_DIR}/${f}`);
+const BRIEF = `${DESIGN}/dx-design-research-brief`;
+const COMPONENTS = `${BRIEF}/references/components.md`;
+const BRIEF_EVALS = `${BRIEF}/evals/evals.json`;
+const FEEDBACK = `${DESIGN}/dx-design-feedback/SKILL.md`;
+
+function read(file: string) {
+  const full = path.join(process.cwd(), file);
+  return fs.existsSync(full) ? fs.readFileSync(full, "utf8") : "";
+}
+
+function flat(file: string) {
+  return read(file).replace(/\s+/g, " ");
+}
+
+/* The files among `files` whose flattened text matches a pattern. */
+function holders(files: string[], pattern: RegExp) {
+  return files.filter((file) => pattern.test(flat(file)));
+}
+
+/* The text of one `### ` section of components.md, up to the next heading. */
+function component(number: number) {
+  const text = read(COMPONENTS);
+  const start = text.search(new RegExp(`^### ${number}\\. `, "m"));
+  if (start < 0) return "";
+  const rest = text.slice(start);
+  const body = rest.indexOf("\n");
+  const end = body < 0 ? -1 : rest.slice(body).search(/^##/m) + body;
+  return end < 0 ? rest : rest.slice(0, end);
+}
+
+describe("the research brief settles the discussion guide", () => {
+  it("component 11 links to the guide and never puts it in the plan", () => {
+    const guide = component(11).replace(/\s+/g, " ");
+    expect(guide).not.toBe("");
+    expect(guide).toMatch(/link/i);
+    expect(guide, "component 11 still offers to hold the guide in the plan").not.toMatch(/in the plan|introduction, the questions/i);
+  });
+
+  it("the output format leaves the guide as a link, not as included text", () => {
+    const format = read(COMPONENTS).split("DISCUSSION GUIDE / TASK SCRIPT\n")[1]?.split("\n")[0] ?? "";
+    expect(format).toMatch(/link/i);
+    expect(format, "the output format still offers to include the guide").not.toMatch(/included here/i);
+  });
+
+  it("SKILL.md states the same rule: no guide written, and component 11 links to it", () => {
+    const rule = flat(`${BRIEF}/SKILL.md`);
+    expect(rule).toMatch(/do not write[^.]*discussion guide/i);
+    expect(rule).toMatch(/component 11 links to the guide/i);
+  });
+
+  it("components.md states rules without arguing for them", () => {
+    expect(read(COMPONENTS)).not.toMatch(/\bbecause\b/i);
+  });
+
+  it("ships an eval case for an interview study's discussion guide", () => {
+    const evals = JSON.parse(read(BRIEF_EVALS) || "{}");
+    const names: string[] = (evals.evals ?? []).map((e: { name: string }) => e.name);
+    expect(names).toContain("discussion-guide-linked-not-written");
+  });
+});
