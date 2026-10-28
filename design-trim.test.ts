@@ -76,3 +76,44 @@ describe("the research brief settles the discussion guide", () => {
     expect(names).toContain("discussion-guide-linked-not-written");
   });
 });
+
+describe("the critique report is described by what the agent controls", () => {
+  it("report.md does not describe the HTML the script builds", () => {
+    const report = flat(REPORT);
+    expect(report).not.toBe("");
+    for (const layout of [
+      /embedded as a base64/i,
+      /prefers-color-scheme/i,
+      /green left edge/i,
+      /~?400px/i,
+      /figcaption/i,
+      /grid rows/i,
+      /locked, in this order/i,
+    ]) {
+      expect(report, `report.md still describes the layout: ${layout}`).not.toMatch(layout);
+    }
+  });
+
+  it("report.md keeps the agent's side: the findings file is what changes the report", () => {
+    const report = flat(REPORT);
+    expect(report).toMatch(/changing the findings file, not the HTML/i);
+    expect(report).toMatch(/considered and declined/i);
+    expect(report).toMatch(/keeps its S-number/i);
+  });
+});
+
+describe("approval on the ticket is explained once in dx-design-critique", () => {
+  const files = [CRITIQUE_SKILL, CRITIQUE, REPORT];
+
+  it("only SKILL.md says how the human approves by S-number", () => {
+    expect(holders(files, /(replies|approves?)[^.]*S-numbers?|S-numbers?[^.]*approv/i)).toEqual([CRITIQUE_SKILL]);
+  });
+
+  it("only SKILL.md sets the not accepted state", () => {
+    expect(holders(files, /not accepted/i)).toEqual([CRITIQUE_SKILL]);
+  });
+
+  it("S names only a suggestion number, never a cost", () => {
+    expect(holders(files, /\(S\/M\)/)).toEqual([]);
+  });
+});
