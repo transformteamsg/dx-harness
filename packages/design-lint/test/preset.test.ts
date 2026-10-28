@@ -51,4 +51,14 @@ describe("a domain preset", () => {
     const r = resolveParameters(bd4a, { rules: { "BD-4a": { maxGrade: 7 } } }, preset);
     expect(r.values.maxGrade).toBe(7);
   });
+
+  it("3. cannot ignore or override an L0 rule: the rule runs and the command reports the skipped line", () => {
+    /* Line 1 is the opening ---. The ignore entry is on line 4, and the override on line 7. */
+    const presets = presetDir("teacher", "name: teacher\nignore:\n  - WU-1a\nrules:\n  WU-1a:\n    strict: false\n");
+    const r = designLint([WU_1A_FAIL, "--presets", presets, "--select", "WU-1a"], { preset: "teacher" });
+    expect(r.status).toBe(1);
+    expect(r.stdout).toMatch(/no-lang\.html:2:1: WU-1a \[L0\]/);
+    expect(r.stdout).toMatch(/WU-1a.*teacher\.md:4/);
+    expect(r.stdout).toMatch(/WU-1a.*teacher\.md:7/);
+  });
 });
