@@ -5,7 +5,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { resolveParameters } from "../src/config.ts";
 import { loadPreset } from "../src/preset.ts";
+import { exitCode } from "../src/report.ts";
 import { loadRules } from "../src/rules/load.ts";
+import { run } from "../src/run.ts";
+import type { RuleMeta } from "../src/types.ts";
 import { BASE } from "./helpers.ts";
 
 const CLI = path.resolve(import.meta.dirname, "../src/cli.ts");
@@ -67,5 +70,44 @@ describe("a domain preset", () => {
     const r = designLint([WU_1A_FAIL, "--presets", presets], { preset: "nursery" });
     expect(r.status).toBe(2);
     expect(r.stderr).toMatch(/nursery/);
+  });
+});
+
+/* The paths below came with the implementation. They are not contract items of #512. */
+describe("the preset ignore list", () => {
+  const rule = (code: string, tier: RuleMeta["tier"]): RuleMeta => ({ ...bd4a, code, tier, surface: "source", parameters: {} });
+  const options = { surfaces: ["source" as const], select: [], ignore: [], ci: false, files: [], root: "." };
+
+  it("removes an L1 rule by code or by category, and keeps an L0 rule with a skipped note", async () => {
+    const preset = loadPreset("teacher", presetDir("teacher", "name: teacher\nignore:\n  - XX\n  - YY-1a\n"));
+    const rules = [rule("XX-1a", "L1"), rule("YY-1a", "L2"), rule("XX-2a", "L0")];
+    const r = await run(rules, [], null, { ...options, preset });
+    expect(r.notes.map((n) => [n.code, n.kind])).toEqual([
+      ["XX-2a", "skipped"],
+      ["XX-2a", "no-module"],
+    ]);
+    expect(r.notes[0].detail).toEqual([`${preset.file}:4 ignore XX`]);
+  });
+
+  it("does not change the exit code with a skipped note", () => {
+    const note = { code: "XX-2a", kind: "skipped" as const, detail: ["teacher.md:4 ignore XX"] };
+    expect(exitCode([], [note], new Map([["XX-2a", "L0"]]))).toBe(0);
+  });
+});
+
+describe("a preset that is not valid", () => {
+  it("fails on a key that a preset does not have", () => {
+    const dir = presetDir("teacher", "name: teacher\nadd: [TCH-1]\n");
+    expect(() => loadPreset("teacher", dir)).toThrow(/"add" is not a preset key/);
+  });
+
+  it("fails when the name does not match the file", () => {
+    expect(() => loadPreset("teacher", presetDir("teacher", "name: school\n"))).toThrow(/does not match the file name/);
+  });
+
+  it("fails when a rule override is not a map", () => {
+    expect(() => loadPreset("teacher", presetDir("teacher", "name: teacher\nrules:\n  BD-4a: 9\n"))).toThrow(
+      /rules is not a map/,
+    );
   });
 });
