@@ -24,15 +24,14 @@ and both get NOTED and routed.
 
 - **LAY-1** — the declared column grid and gutter scale (N/A where no grid is
   declared). **LAY-2** — reflow to one column at 320px, no loss. **LAY-3** — fits a
-  known page template. **LAY-4** — body measure ≤ 80ch (~66ch target). **LAY-5** —
+  known page template. **LAY-4** — body measure, judged under Measure. **LAY-5** —
   density suits the task. **LAY-6** — shared edges align (optical where geometry
   misleads). **LAY-7** — one primary focal region; reading order matches task
   priority (squint test).
-- **Measure** covers **TYP-6** alongside LAY-4: running prose sits in roughly 45–75
-  characters per line (target 40–60), capped with a `max-width` in `ch`. Judge the two
-  together, since they cap the same thing at different numbers, and hold headings,
-  table cells, data grids, and short labels out of both. A cap under 45ch is display
-  type, not prose.
+- **Measure** covers **TYP-6** alongside LAY-4: running prose sits in 45–75
+  characters per line, with a target of about 66, capped with a `max-width` in `ch`.
+  Judge the two together against this one range, and hold headings, table cells, data
+  grids, and short labels out of both. A cap under 45ch is display type, not prose.
 - **Structural anti-slop** — SLP-4 (no nested cards; flatten with space/type/dividers),
   SLP-5 (no identical-card grids as default), SLP-11 (a card is only for an interactive
   unit; group static content with space and dividers).
@@ -41,19 +40,13 @@ and both get NOTED and routed.
 pattern inventory: diagnose a wrong pattern and propose the swap (cards to list,
 table to cards, list to master-detail, add an empty state), up to a whole-page rebuild to
 a different pattern when the page shows the same information and functionality after
-the change. A whole-page rebuild always stops at plan approval before
-dx-design-execute builds it; a smaller accepted finding counts as approved and
-proceeds without a second stop. A change that adds or removes information, features,
-or screens is never a pattern finding; it is a dx-design-execute intent. A pattern
-swap ask stays with this pass even when stated as an edit ("these cards should be a
-list"); other stated structural edits go to dx-design-execute.
+the change. A change that adds or removes information, features, or screens is never
+a pattern finding; it is a dx-design-execute intent.
 
 **Reference:** the pattern inventory at `../../../standards/layout-patterns.md`: the
 regions, squint-test, alignment, density, and grouping read, plus the named patterns
-(list vs cards, master-detail, wizard presentation, empty-state structure). The
-inventory is guidance, not controls; a control always wins on conflict. When the
-product ships one, `.dx/design.json` `layout_system` declares its column grid; where
-declared, LAY-1 makes the grid checkable; treat it as layout context otherwise.
+(list vs cards, master-detail, wizard presentation, empty-state structure). When the
+product ships one, `.dx/design.json` `layout_system` declares its column grid.
 
 **Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
 mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
