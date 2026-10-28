@@ -62,24 +62,13 @@ A caller (normally the `dx-design` orchestrator) can dispatch this skill with th
 token `mode:return-to-caller` plus the build input in
 `../../../procedures/return-to-caller.md`.
 
-In this mode, skip the Phase 1 interview. Skip the plan-approval stop only when the
-payload carries a real approval: an approved plan; an accepted-findings list from a
-pass or critique, which counts as approval for a smaller finding (a whole-page
-rebuild always stops once at plan approval before any edit, per the pattern pass
-rules); or a verbatim ask that names a specific plan or chosen direction (only
-these forms count as approval per `../../../procedures/plan-approval.md`). A
-generic named change such as "add a field" is NOT approval: no one has seen a plan
-yet. In that case write the scoped
-plan and return it to the caller for approval; do not edit the product until the
-approval comes back. Do not spawn the design reviewer in this mode; whoever
-started the run spawns it, exactly once, per
-`../../../procedures/design-review.md`. Instead, return the full review bundle in
-`../../../procedures/return-to-caller.md` to the caller.
+In this mode, skip the Phase 1 interview, and take plan approval as "Gates" states
+it. Do not spawn the design reviewer in this mode; whoever started the run spawns
+it, exactly once, per `../../../procedures/design-review.md`. Instead, return the
+full review bundle in `../../../procedures/return-to-caller.md` to the caller.
 
 Standalone invocation (no token) takes a plain ask and owns the whole run: the full
-front half, exactly one stop at plan approval, and spawning the reviewer. In BOTH
-modes the branch guard from `../../../procedures/implement.md` runs before any edit,
-and it hands off to `dx-design-git` when it trips.
+front half, the plan-approval stop, and spawning the reviewer.
 
 ## New page vs. modification
 
@@ -102,8 +91,8 @@ This loop covers both. Choose the entry depth by change size, never skip the gat
 
 Whenever the surface **already exists** and the ask is broader than a narrowly
 scoped named change (a restyle, an "improve / polish this", or a catalog
-re-audit), the evaluate step belongs to the `critique` skill — **invoke
-`critique` first** and continue here once the user approves its suggestions. Do
+re-audit), the evaluate step belongs to the `dx-design-critique` skill — **invoke
+`dx-design-critique` first** and continue here once the user approves its suggestions. Do
 not propose changes before the current state has been captured and judged. The
 critique returns ranked suggestions whose "what underperforms" list sets the scope
 of the polish; the procedure lives in `../dx-design-critique/critique.md`. **Preserved is not waived** — a "preserve" call still
@@ -114,7 +103,13 @@ has to pass its controls, it only means don't restyle a deliberate choice.
 These rules bind in every phase, including a phase whose file the run has not read:
 
 - Work through the phases in order. Do not skip a gate, even when the request seems simple.
-- Edit no product file before plan approval. Plan approval occurs one time per run, per `../../../procedures/plan-approval.md`. In return-to-caller mode, only an approval that the payload carries counts, per "Two ways in".
+- Edit no product file before plan approval. Plan approval occurs one time per run, per `../../../procedures/plan-approval.md`, so never stop twice.
+- In return-to-caller mode, skip the plan-approval stop only when the payload carries a real approval. Only these forms count as approval:
+  - An approved plan.
+  - An accepted-findings list from a pass or `dx-design-critique`, for a smaller finding. A whole-page rebuild always stops once at plan approval before any edit, per the pattern pass rules.
+  - A verbatim ask that names a specific plan or chosen direction.
+
+  A generic named change such as "add a field" is NOT approval: no one has seen a plan yet. Write the scoped plan, return it to the caller for approval, and edit no product file until the approval comes back.
 - Run the branch guard in `../../../procedures/implement.md` before the first product edit, in both modes. When it trips, hand off to `dx-design-git`.
 - Never report a `checks/`-backed control as "passed" when no script ran. Say "verified manually" or "could not verify mechanically", and list what a human should re-check. Every built script covers only a static subset of its control. `checks/COVERAGE.md` names what each script does not cover.
 - Do not present output to the user while a verify step fails. The `dx-design-review` agent writes the verdict, never you.

@@ -1,22 +1,5 @@
 # Grill the plan — sharpen it before the gate
 
-Read this at Phase 3, once the plan is exposed and before you ask for approval. The
-plan gate is the cheapest place to catch a structural or intent mistake — a rebuild
-costs a session, a sharp question costs a sentence. Grilling makes sure the human
-signs off on a *sharpened* plan, not a first draft, and that the approval rests on
-**shared understanding**: they know what they are approving, you know what they meant.
-Adapted from the `grilling` interview skill
-(<https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md>):
-interrogate relentlessly, one question at a time, a recommended answer each time, facts
-looked up rather than asked — with the harness's guardrails layered on.
-
-## What grilling is for
-
-Intent without loss is the harness's one promise, and a plan drifts from intent
-quietly: a done-criterion silently dropped, an async state hand-waved, a waiver taken
-because it was the easy way out. Grilling is the adversarial read of your own plan
-that surfaces the drift while it is still cheap to fix.
-
 Grilling sharpens; it does not restyle and does not relax a control. It cannot waive
 an L0 or L1 control, and it cannot add scope the Phase-1 contract does not carry. If a
 question's answer changes the chosen structure, go back to Phase 2 — do not patch it
@@ -89,7 +72,4 @@ rule for the approval gate).
 Record each resolved decision with enough concrete specificity to stand on its own
 after compaction — not just the topic ("action-column placement resolved") but the
 actual recommendation and answer ("recommended: a dedicated action column beside the
-status column, not embedded under the student name — approved"). A label that only
-names the topic is not sufficient: a future turn, or a different agent picking up the
-decision record, must be able to reconstruct *what was decided* without re-deriving it
-from the conversation — compaction is not guaranteed to preserve that.
+status column, not embedded under the student name — approved").

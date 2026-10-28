@@ -2,7 +2,7 @@
 
 The small details that read as care (HIG: Craft). `design` Phase 4 points here
 during build. These **refine** the in-scope controls; they never replace them, and the
-evaluator grades Craft on whether they were applied. Apply the ones the surface calls
+design reviewer grades Craft on whether they were applied. Apply the ones the surface calls
 for as you build — not as a cleanup pass.
 
 - **Tabular figures** on any column of numbers or any number that updates in place —

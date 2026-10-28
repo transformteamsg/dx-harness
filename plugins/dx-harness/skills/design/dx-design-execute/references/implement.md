@@ -1,9 +1,9 @@
 # Phase 4: Implement
 
-The implement procedure is shared: read `../../../../procedures/implement.md` now. It
-holds the **branch guard** (run it before any edit, in both modes; when it trips,
-hand off to `dx-design-git`), the frontend-only boundary, and the non-negotiable
-build constraints. Build exactly the approved plan under them.
+The branch guard binds as "Gates" in `../SKILL.md` states it. Read
+`../../../../procedures/implement.md` now: it holds the branch guard, the
+frontend-only boundary, and the non-negotiable build constraints. Build exactly the
+approved plan under them.
 
 Skill-specific notes while building:
 
