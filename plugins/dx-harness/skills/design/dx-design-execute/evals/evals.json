@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-design-execute",
-  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in.",
+  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in. Issue #500 trimmed the skill without a change to what it does: run all four cases once against d5486fa and once against the trimmed version, and compare the outcome of each case.",
   "evals": [
     {
       "id": 0,
@@ -76,6 +76,29 @@
         },
         {
           "text": "The reply presents a plan and asks for approval",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "restyle-existing-routes-to-critique",
+      "prompt": "Restyle the attendance page in Teacher Workspace so it feels lighter and less cluttered.",
+      "expected_output": "The page exists and the ask is broader than a named change, so the run invokes dx-design-critique before it proposes a change, and edits no product file.",
+      "assertions": [
+        {
+          "text": "The transcript invokes the dx-design-critique skill, or reads ../dx-design-critique/critique.md, before the run writes a plan",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply proposes no change to the page before the critique returns",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows no Edit or Write tool call on a product file",
           "passed": null,
           "evidence": ""
         }
