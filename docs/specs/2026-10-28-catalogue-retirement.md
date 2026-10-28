@@ -108,7 +108,7 @@ Mapped against `main` at `357c9de`.
 
 ### Anti-slop (SLP)
 
-The DSS have no matching control for any SLP control. All 11 stay in `catalog.yaml` for evaluation: SLP-1 to SLP-11.
+The DSS have no matching control for any SLP control, so none ports to the base layer: SLP-1 to SLP-11. [ADR-0001](../adr/0001-rule-set-and-presets.md) already decides that SLP is not a category and that each anti-slop rule moves to the category it grades (D10). Each SLP control therefore stays in `catalog.yaml` only until it moves under D10.
 
 ### Layout (LAY)
 
@@ -140,11 +140,28 @@ The DSS have no matching control for any SLP control. All 11 stay in `catalog.ya
 | `design-catalog-validate.py`, `checklib.py` | None: the catalogue validator and its library | Stay while `catalog.yaml` exists |
 | `skill-audit.py`, `skill-locators.py` | None: they check every skill | Stay. They do not depend on the catalogue |
 
+## End state
+
+After the migration, `skills/design-restructure/` no longer exists. [ADR-0001](../adr/0001-rule-set-and-presets.md) places each part:
+
+| Part | Location after the migration |
+| --- | --- |
+| Base rules | `plugins/dx-harness/standards/rules/<category>/<slug>.md` |
+| Presets | `plugins/dx-harness/standards/presets/` |
+| Renamed and retired rule codes | `plugins/dx-harness/standards/rules/redirects.yaml` |
+| Design skills | `plugins/dx-harness/skills/design/`, reading the base rules |
+| `design-lint` | `packages/design-lint/`, unchanged |
+
+Two placements are open:
+
+- ADR-0001 names a rule file by its slug, and the base layer names each file by its code, such as `BD-1a.md`. The migration settles one convention.
+- No document places the `lint/` documents: `building-a-rule.md`, `config.md`, `run.md`, and `testing.md`.
+
 ## What stays in `catalog.yaml`
 
 After the ports, `catalog.yaml` keeps the 44 controls with no base rule, the 14 remainders of controls that port in part, and TOK-2 and TOK-3 until `BD-6b` ports them. Each one needs a decision: move it to a domain or custom layer, propose it as a base rule, or retire it.
 
-The controls that name a product or its voice fit a domain or custom layer: COL-1, TYP-1, CNT-14, IDN-2, IDN-3, and IDN-4. CMP-9 is a security rule, outside the design standard. TYP-6 and LAY-4 are one control stated twice.
+The controls that name a product or its voice fit a domain or custom layer: COL-1, TYP-1, CNT-14, IDN-2, IDN-3, and IDN-4. CMP-9 is a security rule, outside the design standard. TYP-6 and LAY-4 are one control stated twice. The 11 SLP controls move to the categories they grade, under ADR-0001 D10.
 
 ## Owner and timing
 
