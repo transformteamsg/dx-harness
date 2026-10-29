@@ -65,11 +65,11 @@ parameters:
 describe("loadRules on a directory with a duplicate code", () => {
   it("reports the second file", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-"));
-    const text = "---\ncode: XX-1a\ndss: XX-1\ntier: L1\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n";
+    const text = "---\ncode: BD-1a\ndss: BD-1\ntier: L1\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n";
     fs.mkdirSync(path.join(dir, "a"));
     fs.mkdirSync(path.join(dir, "b"));
-    fs.writeFileSync(path.join(dir, "a", "XX-1a.md"), text);
-    fs.writeFileSync(path.join(dir, "b", "XX-1a.md"), text);
+    fs.writeFileSync(path.join(dir, "a", "BD-1a.md"), text);
+    fs.writeFileSync(path.join(dir, "b", "BD-1a.md"), text);
     const { rules, errors } = loadRules(dir);
     expect(rules).toHaveLength(1);
     expect(errors).toEqual([expect.stringContaining("is also in")]);
@@ -106,5 +106,19 @@ describe("loadRules on a rule with a catalogue prefix", () => {
     expect(failed.findings).toEqual([expect.objectContaining({ code: "CMP-4a", file: fail, message: "the page has no lang" })]);
     const passed = await run(rules, [noLang], null, { ...options, files: [pass] });
     expect(passed.findings).toEqual([]);
+  });
+});
+
+describe("loadRules on a rule file with a prefix that is not a category", () => {
+  it("reports the file, and not the README or the MAPPING beside it", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-"));
+    const text = "---\ncode: XX-1a\ndss: XX-1\ntier: L1\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n";
+    fs.mkdirSync(path.join(dir, "xx"));
+    fs.writeFileSync(path.join(dir, "xx", "XX-1a.md"), text);
+    fs.writeFileSync(path.join(dir, "xx", "README.md"), "# xx\n");
+    fs.writeFileSync(path.join(dir, "xx", "MAPPING.md"), "# xx\n");
+    const { rules, errors } = loadRules(dir);
+    expect(rules).toEqual([]);
+    expect(errors).toEqual([expect.stringContaining("XX-1a.md")]);
   });
 });
