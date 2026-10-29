@@ -6,6 +6,8 @@ import type { RuleMeta, Surface, Tier } from "../types.ts";
 /* The category prefixes of ADR-0002: the nine of the DSS, then the eight of the catalogue. */
 const PREFIXES = ["BD", "WP", "WO", "WU", "WR", "PR", "TX", "TL", "UU", "A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"];
 const RULE_FILE = new RegExp(`^(?:${PREFIXES.join("|")})-\\d+[a-z]\\.md$`);
+/* A category folder also holds these. They are not rules. */
+const CATEGORY_DOCS = new Set(["README.md", "MAPPING.md"]);
 const TIERS: Tier[] = ["L0", "L1", "L2"];
 const SURFACES: Surface[] = ["source", "rendered", "project"];
 
@@ -54,11 +56,17 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   };
 }
 
-function walk(dir: string): string[] {
+/* Collects the rule files, and reports each other markdown file that is not a
+   category document, so that a misnamed rule is not skipped without a word. */
+function walk(dir: string, errors: string[]): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walk(full);
-    return RULE_FILE.test(entry.name) ? [full] : [];
+    if (entry.isDirectory()) return walk(full, errors);
+    if (RULE_FILE.test(entry.name)) return [full];
+    if (entry.name.endsWith(".md") && !CATEGORY_DOCS.has(entry.name)) {
+      errors.push(`${full}: the name is not a rule code with a prefix of ${PREFIXES.join(", ")}`);
+    }
+    return [];
   });
 }
 
@@ -66,7 +74,7 @@ export function loadRules(dir: string): LoadResult {
   const rules: RuleMeta[] = [];
   const errors: string[] = [];
   const seen = new Map<string, string>();
-  for (const file of walk(dir).sort()) {
+  for (const file of walk(dir, errors).sort()) {
     const result = parseRuleFile(fs.readFileSync(file, "utf8"), file);
     if (Array.isArray(result)) {
       errors.push(...result);

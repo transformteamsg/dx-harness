@@ -122,3 +122,11 @@ describe("loadRules on a rule file with a prefix that is not a category", () => 
     expect(errors).toEqual([expect.stringContaining("XX-1a.md")]);
   });
 });
+
+describe("loadRules on a file that is not markdown", () => {
+  it("does not report it, so redirects.yaml can sit beside the categories", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-"));
+    fs.writeFileSync(path.join(dir, "redirects.yaml"), "{}\n");
+    expect(loadRules(dir)).toEqual({ rules: [], errors: [] });
+  });
+});
