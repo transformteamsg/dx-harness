@@ -8,6 +8,7 @@
     "config.d/tx.json",
     "config.d/tl.json",
     "config.d/uu.json",
+    "config.d/mot.json",
     "config.d/lay.json"
   ],
   "select": [
