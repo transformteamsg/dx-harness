@@ -3,7 +3,7 @@
 The base layer of the design standard. Every product follows it. It holds two sets of rules:
 
 - **The DSS rules.** Each implements a control of the Digital Service Standards (DSS). Their folders take the nine DSS prefixes, such as `bd/` and `wp/`.
-- **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cmp/` and `cnt/`. None is written yet: the tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write them.
+- **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cmp/` and `cnt/`. The A11Y rules are written. The other tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write the rest.
 
 [ADR-0002](../../../docs/adr/0002-rule-categories-and-file-names.md) lists the 17 categories and the file-name convention. The live `dx-design-*` skills and `checks/` do not read these rules yet.
 
@@ -25,16 +25,16 @@ The base runs with no domain and no `DESIGN.md`.
 | `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part |
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
 | `presets/<name>.md` | One domain preset |
-| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now |
+| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now. Its `codes` map lists, for each retired catalogue control, every rule that replaces it |
 | [`packages/design-lint/docs/config.md`](../../../packages/design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
 | [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
 | [`packages/design-lint/docs/building-a-rule.md`](../../../packages/design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
-| `packages/design-lint/` | The linter: 157 of the 158 lint rules have a module, a fixture pair, and a break patch |
+| `packages/design-lint/` | The linter: 161 of the 162 lint rules have a module, a fixture pair, and a break patch |
 
 ## Categories
 
-The DSS categories. The catalogue categories get a row when their first rule is written.
+The DSS categories. The catalogue categories have their own table, and each gets a row when its first rule is written.
 
 | Category | DSS section | Controls | Rules | Lintable | Judged | Out of scope |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -49,9 +49,13 @@ The DSS categories. The catalogue categories get a row when their first rule is 
 | [UU](rules/uu/README.md) | Understand Users | 2 | 7 | 2 | 3 | 2 |
 | Total | | 92 | 243 | 158 | 76 | 9 |
 
+| Category | Source | Controls | Rules | Lintable | Judged | Out of scope |
+| --- | --- | --- | --- | --- | --- | --- |
+| [A11Y](rules/a11y/README.md) | Accessibility, in `catalog.yaml` | 3 | 6 | 4 | 2 | 0 |
+
 ## Metrics
 
-How much of the base a linter enforces. The first table counts DSS controls. The second counts rules. Both come from the `MAPPING.md` file of each category.
+How much of the DSS rules a linter enforces. The first table counts DSS controls. The second counts rules. Both come from the `MAPPING.md` file of each category. The catalogue rules are not in these counts. Of the three A11Y controls, `A11Y-3` is fully linted, and `A11Y-5` and `A11Y-11` are hybrid.
 
 ### Controls
 
@@ -89,7 +93,8 @@ Frontmatter fields:
 | --- | --- |
 | `code` | The rule code, for example `BD-1a` |
 | `slug` | The kebab-case name of the rule, for example `viewport-meta`. It is also the file name |
-| `dss` | The DSS control that the rule implements |
+| `dss` | The DSS control that the rule implements. A DSS rule has it |
+| `control` | The catalogue control that the rule implements. A catalogue rule has it instead of `dss` |
 | `tier` | `L0`, `L1`, or `L2` |
 | `check` | `lint` or `judged` |
 | `surface` | `source`, `rendered`, or `project`. Present when `check` is `lint` |

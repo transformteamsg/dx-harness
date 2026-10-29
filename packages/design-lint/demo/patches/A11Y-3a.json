@@ -1,0 +1,12 @@
+{
+  "code": "A11Y-3a",
+  "describe": "Remove the label of the phone field and keep only its placeholder.",
+  "edits": [
+    {
+      "file": "a11y/details.html",
+      "find": "        <p><label for=\"phone\">Phone number</label></p>\n        <p><input id=\"phone\" type=\"tel\" name=\"phone\" autocomplete=\"tel\" placeholder=\"9123 4567\"></p>\n",
+      "replace": "        <p><input id=\"phone\" type=\"tel\" name=\"phone\" autocomplete=\"tel\" placeholder=\"Phone number\"></p>\n"
+    }
+  ],
+  "expect": [{ "file": "/a11y/details.html" }]
+}

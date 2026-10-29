@@ -1,0 +1,9 @@
+{
+  "select": ["A11Y-3a", "A11Y-5a", "A11Y-11a", "A11Y-11b"],
+  "pages": {
+    "all": ["/a11y/details.html"]
+  },
+  "rules": {
+    "A11Y-11b": { "actions": [{ "page": "/a11y/details.html", "click": "#save" }] }
+  }
+}

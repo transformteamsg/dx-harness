@@ -1,4 +1,4 @@
-# Old rule file names, mapped to where each file is now (ADR-0001 D11, ADR-0002).
+# Old rule file names and retired control codes, mapped to where each is now (ADR-0001 D11, ADR-0002).
 # `files` maps a file name from skills/design-restructure/base/ to its path under
 # standards/rules/. When a file is renamed again, its old entry points to the newest path.
 files:
@@ -160,3 +160,10 @@ files:
   WU-14a.md: wu/accessible-login.md
   WU-14b.md: wu/credential-paste-and-autofill.md
   WU-14d.md: wu/no-captcha.md
+# `codes` maps a retired catalogue control to every rule that replaces it: the DSS
+# rules that it ports to, and the base rules that hold the rest. A waiver of the
+# control resolves to the full list.
+codes:
+  A11Y-3: [WR-1a, WP-6c, WO-16a, A11Y-3a]
+  A11Y-5: [A11Y-5a, A11Y-5b]
+  A11Y-11: [WR-2a, WR-2b, WR-2c, WO-9c, A11Y-11a, A11Y-11b, A11Y-11c]
