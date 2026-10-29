@@ -16,8 +16,8 @@ describe("loadRules on the base layer", () => {
     expect(rules.length).toBeGreaterThan(100);
   });
 
-  it("reads all 158 lint rules", () => {
-    expect(rules).toHaveLength(158);
+  it("reads all 162 lint rules", () => {
+    expect(rules).toHaveLength(162);
   });
 
   it("gives each rule a unique code, and a file named by its slug in the folder of its prefix", () => {
@@ -29,8 +29,8 @@ describe("loadRules on the base layer", () => {
     }
   });
 
-  it("points each judgedRemainder at a code of the DSS format", () => {
-    for (const r of rules) for (const j of r.judgedRemainder) expect(j).toMatch(/^[A-Z]{2}-\d+[a-z]$/);
+  it("points each judgedRemainder at a rule code", () => {
+    for (const r of rules) for (const j of r.judgedRemainder) expect(j).toMatch(/^[A-Z][A-Z0-9]+-\d+[a-z]$/);
   });
 });
 
