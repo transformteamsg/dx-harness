@@ -9,3 +9,11 @@ Source: the catalogue controls `MOT-1`, `MOT-2`, and `MOT-3` in `catalog.yaml`. 
 | MOT-2 Motion values from tokens | [`MOT-2a`](motion-values-from-tokens.md) Motion durations and easings come from the motion tokens | lint | source | custom | `tokenPrefixes` (`--motion-`, `--ease-`), `tokenFiles`, `componentFiles` |
 | | `MOT-2b` A surface that animates declares a token set, and the narrative tier stays off task UI | judged | | | |
 | MOT-3 Motion never carries meaning alone | `MOT-3a` An animated surface gives the same information with animations off | judged | | | |
+
+## From the SLP controls
+
+SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
+
+| Source control | Rule | Check | Surface | Engine | Parameters |
+| --- | --- | --- | --- | --- | --- |
+| SLP-8 No bounce or elastic easing | [`MOT-4a`](no-overshoot-easing.md) No bounce, elastic, or overshoot easing | lint | source | custom | `namePatterns` |
