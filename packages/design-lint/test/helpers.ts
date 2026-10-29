@@ -1,7 +1,7 @@
 import path from "node:path";
 import type { Finding, RuleMeta } from "../src/types.ts";
 
-export const BASE = path.resolve(import.meta.dirname, "../../../plugins/dx-harness/skills/design-restructure/base");
+export const BASE = path.resolve(import.meta.dirname, "../../../plugins/dx-harness/standards/rules");
 
 export interface Expected {
   file: string;
