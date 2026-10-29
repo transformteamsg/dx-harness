@@ -6,6 +6,8 @@
   "rules": {
     "CMP-2a": { "pages": ["/cmp/records.html"] },
     "CMP-5a": { "primarySelector": ".cmp-primary" },
+    "CMP-6a": { "pages": ["/cmp/records.html"] },
+    "CMP-6b": { "pages": ["/cmp/records.html"] },
     "CMP-8a": { "flows": { "grant": ["/cmp/step-1.html", "/cmp/step-2.html"] } },
     "CMP-10a": {
       "validationCases": [

@@ -162,6 +162,8 @@ files:
   WU-14a.md: wu/accessible-login.md
   WU-14b.md: wu/credential-paste-and-autofill.md
   WU-14d.md: wu/no-captcha.md
+notMoved:
+  CMP-9: A security rule, outside the design standard. It stays in catalog.yaml until #540 decides where it goes.
 codes:
   LAY-1: [LAY-1a, LAY-1b]
   LAY-3: [LAY-3a]
@@ -199,5 +201,3 @@ codes:
   CMP-8: [CMP-8a, CMP-8b]
   CMP-10: [CMP-10a, CMP-10b]
   CMP-11: [CMP-11a]
-notMoved:
-  CMP-9: A security rule, outside the design standard. It stays in catalog.yaml until #540 decides where it goes.
