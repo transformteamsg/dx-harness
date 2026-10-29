@@ -1,0 +1,18 @@
+{
+  "code": "MOT-1a",
+  "describe": "Animate every property of the saved forms note.",
+  "edits": [
+    {
+      "file": "mot/saved.html",
+      "find": ".saved { transition: opacity",
+      "replace": ".saved { transition: all"
+    }
+  ],
+  "expect": [
+    {
+      "file": "mot/saved.html",
+      "line": 27,
+      "column": 28
+    }
+  ]
+}

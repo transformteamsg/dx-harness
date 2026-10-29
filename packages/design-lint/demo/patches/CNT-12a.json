@@ -1,0 +1,16 @@
+{
+  "code": "CNT-12a",
+  "describe": "Set the heading of the vulnerability page in Title Case.",
+  "edits": [
+    {
+      "file": "tl/vulnerability.html",
+      "find": "<h1>Report a vulnerability</h1>",
+      "replace": "<h1>Report a Vulnerability</h1>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/vulnerability.html"
+    }
+  ]
+}

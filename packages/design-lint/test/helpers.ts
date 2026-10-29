@@ -40,11 +40,12 @@ export function compare(findings: Finding[], root: string, rules: RuleMeta[], ex
   return { missing, extra: left };
 }
 
-/* The codes that have no fixture pair: a pass/ and a fail/ directory and an
-   expected.json under fixtures/<CODE>/. The exceptions are left out. */
-export function withoutFixtures(codes: string[], fixtures: string, exceptions: string[]): string[] {
-  const has = (code: string) =>
-    ["pass", "fail"].every((site) => fs.existsSync(path.join(fixtures, code, site))) &&
-    fs.existsSync(path.join(fixtures, code, "expected.json"));
-  return codes.filter((code) => !exceptions.includes(code) && !has(code));
+/* The codes of the lint rules that have no fixture pair under fixturesDir: a
+   directory named by the code that holds pass/, fail/, and expected.json. The
+   loader reads lint rules only, so each rule needs a pair. */
+export function missingFixturePairs(rules: RuleMeta[], fixturesDir: string): string[] {
+  const has = (code: string, part: string) => fs.existsSync(path.join(fixturesDir, code, part));
+  return rules
+    .map((r) => r.code)
+    .filter((code) => !["pass", "fail", "expected.json"].every((part) => has(code, part)));
 }
