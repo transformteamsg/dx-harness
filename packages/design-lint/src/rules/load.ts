@@ -3,7 +3,9 @@ import path from "node:path";
 import { parse } from "yaml";
 import type { RuleMeta, Surface, Tier } from "../types.ts";
 
-const RULE_FILE = /^[A-Z]{2}-\d+[a-z]\.md$/;
+/* The category prefixes of ADR-0002: the nine of the DSS, then the eight of the catalogue. */
+const PREFIXES = ["BD", "WP", "WO", "WU", "WR", "PR", "TX", "TL", "UU", "A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"];
+const RULE_FILE = new RegExp(`^(?:${PREFIXES.join("|")})-\\d+[a-z]\\.md$`);
 const TIERS: Tier[] = ["L0", "L1", "L2"];
 const SURFACES: Surface[] = ["source", "rendered", "project"];
 
@@ -37,7 +39,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   }
   if (errors.length > 0) return errors;
 
-  const heading = /^# [A-Z]{2}-\d+[a-z]: (.+)$/m.exec(text);
+  const heading = /^# [A-Z][A-Z0-9]+-\d+[a-z]: (.+)$/m.exec(text);
   return {
     code: fm.code as string,
     dss: fm.dss as string,
