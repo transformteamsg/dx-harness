@@ -16,8 +16,8 @@ describe("loadRules on the base layer", () => {
     expect(rules.length).toBeGreaterThan(100);
   });
 
-  it("reads all 163 lint rules", () => {
-    expect(rules).toHaveLength(163);
+  it("reads all 164 lint rules", () => {
+    expect(rules).toHaveLength(164);
   });
 
   it("gives each rule a unique code, and a file named by its slug in the folder of its prefix", () => {

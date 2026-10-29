@@ -1,0 +1,6 @@
+{
+  "select": ["LAY-1a"],
+  "rules": {
+    "LAY-1a": { "gridColumns": 12 }
+  }
+}

@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import type { Finding, RuleMeta } from "../src/types.ts";
 
@@ -37,4 +38,14 @@ export function compare(findings: Finding[], root: string, rules: RuleMeta[], ex
     else left.splice(i, 1);
   }
   return { missing, extra: left };
+}
+
+/* The codes of the lint rules that have no fixture pair under fixturesDir: a
+   directory named by the code that holds pass/, fail/, and expected.json. The
+   loader reads lint rules only, so each rule needs a pair. */
+export function missingFixturePairs(rules: RuleMeta[], fixturesDir: string): string[] {
+  const has = (code: string, part: string) => fs.existsSync(path.join(fixturesDir, code, part));
+  return rules
+    .map((r) => r.code)
+    .filter((code) => !["pass", "fail", "expected.json"].every((part) => has(code, part)));
 }
