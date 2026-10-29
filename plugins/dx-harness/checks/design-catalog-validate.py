@@ -2868,9 +2868,17 @@ def run_self_test():
              "files:\n  BD-1a.md: bd/zoom.md\n", "'BD-1a.md' redirects to 'bd/zoom.md'"),
             ("a redirects.yaml with no files map fails", "BD-1a.md: bd/viewport-meta.md\n",
              "needs a 'files' map"),
+            ("a code redirect to a lint rule and a judged rule passes",
+             "files: {}\ncodes:\n  BD-1: [BD-1a, BD-1c]\n", None),
+            ("a code redirect to a rule that does not exist fails",
+             "files: {}\ncodes:\n  BD-1: [BD-1a, BD-1z]\n", "'BD-1' redirects to 'BD-1z'"),
+            ("a code redirect that is not a list fails",
+             "files: {}\ncodes:\n  BD-1: BD-1a\n", "'BD-1' needs a list of rule codes"),
         ]:
             case_count += 1
             rule_errors_for(["bd/viewport-meta.md"])
+            with open(os.path.join(rules_root, "standards", "rules", "bd", "MAPPING.md"), "w") as fh:
+                fh.write("| BD-1 | `BD-1c` A judged rule | judged | | | |\n")
             with open(redirects, "w") as fh:
                 fh.write(text)
             errs = rule_file_errors(rules_root)

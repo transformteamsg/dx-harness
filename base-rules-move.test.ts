@@ -79,9 +79,11 @@ describe("3. a reference by the old file name resolves through redirects.yaml", 
     expect(codeOf(path.join(RULES, target))).toBe(code);
   });
 
+  /* A catalogue rule is new, so no old file name redirects to it. */
   it("is the target of exactly one redirect for each moved rule file", () => {
-    expect(ruleFiles.length).toBe(158);
-    expect(Object.values(files).sort()).toEqual([...ruleFiles].sort());
+    const moved = ruleFiles.filter((rel) => codeOf(path.join(RULES, rel))?.match(/^[A-Z]{2}-/));
+    expect(moved.length).toBe(158);
+    expect(Object.values(files).sort()).toEqual([...moved].sort());
   });
 });
 

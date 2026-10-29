@@ -16,8 +16,9 @@ describe("loadRules on the base layer", () => {
     expect(rules.length).toBeGreaterThan(100);
   });
 
-  it("reads all 158 lint rules", () => {
-    expect(rules).toHaveLength(158);
+  it("reads all 162 lint rules: 158 of the DSS and 4 of the catalogue", () => {
+    expect(rules).toHaveLength(162);
+    expect(rules.filter((r) => r.code.startsWith("A11Y-"))).toHaveLength(4);
   });
 
   it("gives each rule a unique code, and a file named by its slug in the folder of its prefix", () => {
@@ -29,8 +30,8 @@ describe("loadRules on the base layer", () => {
     }
   });
 
-  it("points each judgedRemainder at a code of the DSS format", () => {
-    for (const r of rules) for (const j of r.judgedRemainder) expect(j).toMatch(/^[A-Z]{2}-\d+[a-z]$/);
+  it("points each judgedRemainder at a rule code", () => {
+    for (const r of rules) for (const j of r.judgedRemainder) expect(j).toMatch(/^[A-Z][A-Z0-9]+-\d+[a-z]$/);
   });
 });
 
@@ -76,6 +77,35 @@ parameters:
     ]);
   });
 
+  it("reports a DSS rule with no dss", () => {
+    expect(parseRuleFile(valid.replace("dss: BD-1\n", ""), "a-title.md")).toEqual([expect.stringContaining("dss is missing")]);
+  });
+
+  it("reports a DSS rule that names a catalogue control", () => {
+    expect(parseRuleFile(valid.replace("dss: BD-1", "control: BD-1"), "a-title.md")).toEqual([
+      expect.stringContaining("dss is missing"),
+    ]);
+  });
+
+  /* A catalogue rule names the control that it replaces, and a DSS rule the DSS control. */
+  const catalogue = valid.replace("code: BD-1a", "code: A11Y-3a").replace("dss: BD-1", "control: A11Y-3").replace("# BD-1a:", "# A11Y-3a:");
+
+  it("parses a catalogue rule that names its control", () => {
+    expect(parseRuleFile(catalogue, "a-title.md")).toMatchObject({ code: "A11Y-3a", control: "A11Y-3", title: "a title" });
+  });
+
+  it("reports a catalogue rule with no control", () => {
+    expect(parseRuleFile(catalogue.replace("control: A11Y-3\n", ""), "a-title.md")).toEqual([
+      expect.stringContaining("control is missing"),
+    ]);
+  });
+
+  it("reports a catalogue rule that names a DSS control in place of its own", () => {
+    expect(parseRuleFile(catalogue.replace("control: A11Y-3", "dss: A11Y-3"), "a-title.md")).toEqual([
+      expect.stringContaining("control is missing"),
+    ]);
+  });
+
   it("reports a judged rule, which has no file", () => {
     const judged = valid.replace("check: lint", "check: judged");
     expect(parseRuleFile(judged, "a-title.md")).toEqual([expect.stringContaining("only a lint rule has a file")]);
@@ -114,7 +144,7 @@ describe("loadRules on a rule with a catalogue prefix", () => {
     fs.mkdirSync(path.join(dir, "cmp"));
     fs.writeFileSync(
       path.join(dir, "cmp", "page-language.md"),
-      "---\ncode: CMP-4a\nslug: page-language\ndss: CMP-4\ntier: L1\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# CMP-4a: a page sets its language\n",
+      "---\ncode: CMP-4a\nslug: page-language\ncontrol: CMP-4\ntier: L1\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# CMP-4a: a page sets its language\n",
     );
     const fail = path.join(dir, "fail.html");
     const pass = path.join(dir, "pass.html");
