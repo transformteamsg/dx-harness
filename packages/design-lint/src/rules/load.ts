@@ -5,7 +5,9 @@ import type { RuleMeta, Surface, Tier } from "../types.ts";
 
 /* The category prefixes of ADR-0002: the nine of the DSS, then the eight of the catalogue. */
 const PREFIXES = ["BD", "WP", "WO", "WU", "WR", "PR", "TX", "TL", "UU", "A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"];
-const RULE_FILE = new RegExp(`^(?:${PREFIXES.join("|")})-\\d+[a-z]\\.md$`);
+const CODE = new RegExp(`^(?:${PREFIXES.join("|")})-\\d+[a-z]$`);
+/* A rule file is named by its kebab-case slug (ADR-0002). */
+const RULE_FILE = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 /* A category folder also holds these. They are not rules. */
 const CATEGORY_DOCS = new Set(["README.md", "MAPPING.md"]);
 const TIERS: Tier[] = ["L0", "L1", "L2"];
@@ -29,8 +31,10 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   if (!fm || typeof fm !== "object") return [`${file}: frontmatter is not a map`];
 
   const errors: string[] = [];
-  const expected = path.basename(file, ".md");
-  if (fm.code !== expected) errors.push(`${file}: code "${String(fm.code)}" does not match the file name`);
+  if (typeof fm.code !== "string") errors.push(`${file}: code is missing`);
+  else if (!CODE.test(fm.code)) errors.push(`${file}: code "${fm.code}" does not have a prefix of ${PREFIXES.join(", ")}`);
+  if (typeof fm.slug !== "string") errors.push(`${file}: slug is missing`);
+  else if (fm.slug !== path.basename(file, ".md")) errors.push(`${file}: slug "${fm.slug}" does not match the file name`);
   if (typeof fm.dss !== "string") errors.push(`${file}: dss is missing`);
   if (!TIERS.includes(fm.tier as Tier)) errors.push(`${file}: tier "${String(fm.tier)}" is not L0, L1, or L2`);
   if (fm.check !== "lint") errors.push(`${file}: check is "${String(fm.check)}", and only a lint rule has a file`);
@@ -44,6 +48,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   const heading = /^# [A-Z][A-Z0-9]+-\d+[a-z]: (.+)$/m.exec(text);
   return {
     code: fm.code as string,
+    slug: fm.slug as string,
     dss: fm.dss as string,
     tier: fm.tier as Tier,
     surface: fm.surface as Surface,
@@ -62,10 +67,9 @@ function walk(dir: string, errors: string[]): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) return walk(full, errors);
+    if (CATEGORY_DOCS.has(entry.name)) return [];
     if (RULE_FILE.test(entry.name)) return [full];
-    if (entry.name.endsWith(".md") && !CATEGORY_DOCS.has(entry.name)) {
-      errors.push(`${full}: the name is not a rule code with a prefix of ${PREFIXES.join(", ")}`);
-    }
+    if (entry.name.endsWith(".md")) errors.push(`${full}: the name is not a kebab-case slug`);
     return [];
   });
 }

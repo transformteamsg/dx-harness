@@ -1,11 +1,11 @@
 {
   "code": "PR-7a",
-  "describe": "Block the load event for six seconds.",
+  "describe": "Block the load event for six seconds, and block the page for a second after the first paint.",
   "edits": [
     {
       "file": "pr/performance.html",
       "find": "<h1>Service status and hours</h1>",
-      "replace": "<h1>Service status and hours</h1>\n    <script>window.addEventListener(\"load\", function () { var t = Date.now(); while (Date.now() - t < 6000) {} });</script>"
+      "replace": "<h1>Service status and hours</h1>\n    <script>window.addEventListener(\"load\", function () { var t = Date.now(); while (Date.now() - t < 6000) {} }); requestAnimationFrame(function () { requestAnimationFrame(function () { setTimeout(function () { var t = Date.now(); while (Date.now() - t < 1000) {} }); }); });</script>"
     }
   ],
   "expect": [
