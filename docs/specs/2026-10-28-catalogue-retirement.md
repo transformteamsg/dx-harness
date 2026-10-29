@@ -220,7 +220,3 @@ Four placements are open:
 - `design-lint` loads only files that match `^[A-Z]{2}-\d+[a-z]\.md$`, in `packages/design-lint/src/rules/load.ts`. The pattern rejects a prefix that is not two letters, such as `A11Y` or `CMP`. It must change before a catalogue rule can load.
 - These files read `catalog.yaml` and change with it: `scripts/in-scope-rules.py`, `scripts/generate-design-json.py`, `procedures/catalogue-mechanics.md`, `docs/DESIGN-CONTEXT.md`, and the design skills that call them.
 - The design standard website renders `catalog.yaml` as it is. A control that leaves the file leaves the website, unless the website also reads the base folders.
-
-## Owner and timing
-
-Not decided: who owns the migration, and when the live `dx-design-*` skills stop being the default.
