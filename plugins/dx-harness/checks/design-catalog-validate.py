@@ -25,6 +25,8 @@ Validates standards/catalog.yaml for internal consistency:
      reason saying why no script exists, or a temporary GAP_GRANDFATHERED
      allowance. 'gap:' is forbidden on L0 and on any control a script or the
      evaluator already covers.
+ 10. Rule files: every file under standards/rules/ sits in a category
+     folder and takes its slug as its name, per ADR-0002.
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -708,6 +710,43 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re):
     return errors
 
 
+# ── Rule files: standards/rules/<category>/<slug>.md (ADR-0002) ──────────────
+# The nine DSS prefixes and the eight catalogue prefixes, in lower case. A
+# category folder also holds its README.md and MAPPING.md.
+RULE_CATEGORIES = {
+    "bd", "wp", "wo", "wu", "wr", "pr", "tx", "tl", "uu",
+    "a11y", "tok", "col", "typ", "cmp", "cnt", "lay", "mot",
+}
+RULE_CATEGORY_DOCS = {"README.md", "MAPPING.md"}
+RULE_TOP_LEVEL = {"redirects.yaml"}
+RULE_SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
+
+
+def rule_file_errors(repo_root):
+    """Error lines for each file under standards/rules/ that breaks ADR-0002:
+    a folder that is not a category, or a rule file not named by its slug."""
+    rules_dir = os.path.join(repo_root, "standards", "rules")
+    if not os.path.isdir(rules_dir):
+        return []
+    errors = []
+    for root, dirs, fnames in os.walk(rules_dir):
+        dirs.sort()
+        for fname in sorted(fnames):
+            rel = os.path.relpath(os.path.join(root, fname), repo_root).replace(os.sep, "/")
+            parts = os.path.relpath(os.path.join(root, fname), rules_dir).split(os.sep)
+            if len(parts) == 1:
+                if fname not in RULE_TOP_LEVEL:
+                    errors.append(f"ERROR {rel}: a rule file goes in a category folder, "
+                                  f"standards/rules/<category>/<slug>.md")
+            elif len(parts) > 2 or parts[0] not in RULE_CATEGORIES:
+                errors.append(f"ERROR {rel}: '{'/'.join(parts[:-1])}' is not a category folder; "
+                              f"ADR-0002 lists {', '.join(sorted(RULE_CATEGORIES))}")
+            elif fname not in RULE_CATEGORY_DOCS and not RULE_SLUG_RE.match(fname):
+                errors.append(f"ERROR {rel}: a rule file takes its kebab-case slug as its "
+                              f"name, not its code (ADR-0002)")
+    return errors
+
+
 # ── Accepted gaps: the `gap:` reason ────────────────────────────────────────
 # A deterministic or hybrid control whose effective enforcement is manual
 # promises a machine check that nothing delivers. `enforced: manual` stays
@@ -1258,6 +1297,9 @@ def collect_errors(repo_root, _return_count=False):
     errors.extend(voice_parity_errors(repo_root))
     errors.extend(tone_parity_errors(repo_root))
     errors.extend(uitext_parity_errors(repo_root))
+
+    # ── Step 10: Rule files ──────────────────────────────────────────────────
+    errors.extend(rule_file_errors(repo_root))
 
     return result(len(catalog_by_id))
 
@@ -2738,6 +2780,46 @@ def run_self_test():
     except Exception as exc:
         failures.append(f"FAIL coverage: every live check declares its coverage: "
                         f"generator raised {type(exc).__name__}: {exc}")
+
+    # ── Rule files (ADR-0002) ────────────────────────────────────────────────
+    rules_root = tempfile.mkdtemp()
+    try:
+        def rule_errors_for(files):
+            rules_dir = os.path.join(rules_root, "standards", "rules")
+            shutil.rmtree(rules_dir, ignore_errors=True)
+            for rel in files:
+                full = os.path.join(rules_dir, rel)
+                os.makedirs(os.path.dirname(full), exist_ok=True)
+                with open(full, "w") as fh:
+                    fh.write("---\ncode: BD-1a\n---\n")
+            return rule_file_errors(rules_root)
+
+        for name, files, bad in [
+            ("a slug in a DSS folder passes", ["bd/viewport-meta.md"], None),
+            ("a slug in a catalogue folder passes", ["a11y/reduced-motion.md"], None),
+            ("a category README and MAPPING pass", ["bd/README.md", "bd/MAPPING.md"], None),
+            ("redirects.yaml at the top passes", ["redirects.yaml"], None),
+            ("a file named by its code fails", ["bd/BD-1a.md"], "standards/rules/bd/BD-1a.md"),
+            ("a catalogue code fails", ["cmp/CMP-4a.md"], "standards/rules/cmp/CMP-4a.md"),
+            ("a folder that is not a category fails", ["slp/no-gradient-text.md"],
+             "standards/rules/slp/no-gradient-text.md"),
+            ("an upper-case folder fails", ["BD/viewport-meta.md"], "standards/rules/BD/viewport-meta.md"),
+            ("a nested folder fails", ["bd/extra/viewport-meta.md"],
+             "standards/rules/bd/extra/viewport-meta.md"),
+            ("a rule file at the top fails", ["viewport-meta.md"], "standards/rules/viewport-meta.md"),
+        ]:
+            case_count += 1
+            errs = rule_errors_for(files)
+            if bad is None and errs:
+                failures.append(f"FAIL rule files: {name}; got {errs!r}")
+            elif bad is not None and not any(e.startswith(f"ERROR {bad}: ") for e in errs):
+                failures.append(f"FAIL rule files: {name} and names {bad}; got {errs!r}")
+
+        case_count += 1
+        if rule_file_errors(os.path.join(rules_root, "absent")):
+            failures.append("FAIL rule files: no standards/rules/ folder passes")
+    finally:
+        shutil.rmtree(rules_root, ignore_errors=True)
 
     # ── Report ───────────────────────────────────────────────────────────────
     checklib.report_self_test(failures, case_count)
