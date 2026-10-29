@@ -3,9 +3,13 @@ import path from "node:path";
 import { parse } from "yaml";
 import type { RuleMeta, Surface, Tier } from "../types.ts";
 
-/* A rule file is named by its kebab-case slug (ADR-0002). The README.md and
-   MAPPING.md of a category folder do not match. */
+/* The category prefixes of ADR-0002: the nine of the DSS, then the eight of the catalogue. */
+const PREFIXES = ["BD", "WP", "WO", "WU", "WR", "PR", "TX", "TL", "UU", "A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"];
+const CODE = new RegExp(`^(?:${PREFIXES.join("|")})-\\d+[a-z]$`);
+/* A rule file is named by its kebab-case slug (ADR-0002). */
 const RULE_FILE = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
+/* A category folder also holds these. They are not rules. */
+const CATEGORY_DOCS = new Set(["README.md", "MAPPING.md"]);
 const TIERS: Tier[] = ["L0", "L1", "L2"];
 const SURFACES: Surface[] = ["source", "rendered", "project"];
 
@@ -28,6 +32,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
 
   const errors: string[] = [];
   if (typeof fm.code !== "string") errors.push(`${file}: code is missing`);
+  else if (!CODE.test(fm.code)) errors.push(`${file}: code "${fm.code}" does not have a prefix of ${PREFIXES.join(", ")}`);
   if (typeof fm.slug !== "string") errors.push(`${file}: slug is missing`);
   else if (fm.slug !== path.basename(file, ".md")) errors.push(`${file}: slug "${fm.slug}" does not match the file name`);
   if (typeof fm.dss !== "string") errors.push(`${file}: dss is missing`);
@@ -40,7 +45,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   }
   if (errors.length > 0) return errors;
 
-  const heading = /^# [A-Z]{2}-\d+[a-z]: (.+)$/m.exec(text);
+  const heading = /^# [A-Z][A-Z0-9]+-\d+[a-z]: (.+)$/m.exec(text);
   return {
     code: fm.code as string,
     slug: fm.slug as string,
@@ -56,11 +61,16 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   };
 }
 
-function walk(dir: string): string[] {
+/* Collects the rule files, and reports each other markdown file that is not a
+   category document, so that a misnamed rule is not skipped without a word. */
+function walk(dir: string, errors: string[]): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return walk(full);
-    return RULE_FILE.test(entry.name) ? [full] : [];
+    if (entry.isDirectory()) return walk(full, errors);
+    if (CATEGORY_DOCS.has(entry.name)) return [];
+    if (RULE_FILE.test(entry.name)) return [full];
+    if (entry.name.endsWith(".md")) errors.push(`${full}: the name is not a kebab-case slug`);
+    return [];
   });
 }
 
@@ -68,7 +78,7 @@ export function loadRules(dir: string): LoadResult {
   const rules: RuleMeta[] = [];
   const errors: string[] = [];
   const seen = new Map<string, string>();
-  for (const file of walk(dir).sort()) {
+  for (const file of walk(dir, errors).sort()) {
     const result = parseRuleFile(fs.readFileSync(file, "utf8"), file);
     if (Array.isArray(result)) {
       errors.push(...result);
