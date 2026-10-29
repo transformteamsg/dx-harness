@@ -70,7 +70,7 @@ describe("2. a rule left at the old path fails the gate", () => {
     });
     const out = `${run.stdout ?? ""}${run.stderr ?? ""}`;
     expect(run.status, out).toBe(1);
-    expect(out).toContain("'OLD-1' redirects to 'TYP-99z', which no MAPPING.md lists");
+    expect(out).toContain("'OLD-1' redirects to 'TYP-99z', which has no row in standards/rules/typ/MAPPING.md");
   });
 });
 

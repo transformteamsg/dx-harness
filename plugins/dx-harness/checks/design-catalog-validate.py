@@ -780,7 +780,8 @@ RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
 def rule_code_redirect_errors(rules_dir, codes):
     """Error lines for each entry of the `codes` map of redirects.yaml that does
     not name a list of rule codes, or names a code that the MAPPING.md of its
-    category does not list."""
+    category does not list. A code can redirect to a rule of another control,
+    as LAY-4 does to the TYP-6 rules."""
     loc = "standards/rules/redirects.yaml"
     if not isinstance(codes, dict):
         return [f"ERROR {loc}: 'codes' is a map of old control code to a list of rule codes"]
@@ -791,13 +792,17 @@ def rule_code_redirect_errors(rules_dir, codes):
             continue
         for code in new:
             m = RULE_CODE_RE.match(str(code))
-            mapping = os.path.join(rules_dir, m.group(1).lower(), "MAPPING.md") if m else ""
-            listed = False
-            if mapping and os.path.isfile(mapping):
+            if not m:
+                errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which is not a rule code")
+                continue
+            mapping = os.path.join(rules_dir, m.group(1).lower(), "MAPPING.md")
+            text = ""
+            if os.path.isfile(mapping):
                 with open(mapping) as fh:
-                    listed = f"`{code}`" in fh.read()
-            if not listed:
-                errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which no MAPPING.md lists")
+                    text = fh.read()
+            if f"`{code}`" not in text:
+                errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which has no row "
+                              f"in {os.path.relpath(mapping, os.path.dirname(os.path.dirname(rules_dir)))}")
     return errors
 
 
@@ -2903,8 +2908,12 @@ def run_self_test():
              "files: {}\ncodes:\n  BD-1: [BD-1a]\n", None),
             ("a code redirect to a rule with no MAPPING.md row fails",
              "files: {}\ncodes:\n  BD-1: [BD-1z]\n", "'BD-1' redirects to 'BD-1z', which has no row"),
-            ("a code redirect to a code of another control fails",
-             "files: {}\ncodes:\n  BD-1: [BD-2a]\n", "'BD-1' redirects to 'BD-2a', which is not"),
+            ("a code redirect to a listed rule of another control passes",
+             "files: {}\ncodes:\n  BD-2: [BD-1a]\n", None),
+            ("a code redirect to a code of another control with no row fails",
+             "files: {}\ncodes:\n  BD-1: [BD-2a]\n", "'BD-1' redirects to 'BD-2a', which has no row"),
+            ("a code redirect to a value that is not a rule code fails",
+             "files: {}\ncodes:\n  BD-1: [BD-1]\n", "'BD-1' redirects to 'BD-1', which is not a rule code"),
             ("a code redirect with no rule codes fails",
              "files: {}\ncodes:\n  BD-1: []\n", "'BD-1' needs a list"),
         ]:
