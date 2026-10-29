@@ -72,3 +72,12 @@ describe("5. a hybrid control's lint rule names its judged rule", () => {
     }
   });
 });
+
+describe("6. no motion rule names a teacher where it means any user", () => {
+  it("no file in standards/rules/mot/ says teacher", () => {
+    expect(fs.existsSync(MOT)).toBe(true);
+    for (const name of fs.readdirSync(MOT)) {
+      expect(read(path.join(MOT, name)), name).not.toMatch(/\bteachers?\b/i);
+    }
+  });
+});
