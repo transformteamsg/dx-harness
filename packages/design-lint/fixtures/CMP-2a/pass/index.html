@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test page</title>
+</head>
+<body>
+<main>
+<ul><li id="item">Draft one <button type="button" id="del">Delete draft</button></li></ul>
+<dialog id="ask"><p>Delete this draft? You cannot get it back.</p><button type="button">Cancel</button></dialog>
+<p><button type="button" id="rm">Remove filter</button> <span id="toast" hidden>Filter removed. <button type="button">Undo</button></span></p>
+<p><button type="button" id="discard">Discard changes</button></p>
+<script>
+document.getElementById("del").addEventListener("click", () => document.getElementById("ask").showModal());
+document.getElementById("rm").addEventListener("click", () => { document.getElementById("toast").hidden = false; });
+document.getElementById("discard").addEventListener("click", () => { if (window.confirm("Discard your changes?")) document.body.textContent = ""; });
+</script>
+</main>
+</body>
+</html>

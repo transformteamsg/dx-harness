@@ -1,0 +1,25 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "CMP-10a": {
+      "validationCases": [
+        {
+          "page": "/",
+          "field": "#email",
+          "invalid": "name",
+          "valid": "name@example.com",
+          "error": "#email-error"
+        },
+        {
+          "page": "/",
+          "field": "#phone",
+          "invalid": "12",
+          "valid": "61234567",
+          "error": "#phone-error"
+        }
+      ]
+    }
+  }
+}

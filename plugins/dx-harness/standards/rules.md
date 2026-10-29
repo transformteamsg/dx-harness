@@ -30,7 +30,7 @@ The base runs with no domain and no `DESIGN.md`.
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
 | [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
 | [`packages/design-lint/docs/building-a-rule.md`](../../../packages/design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
-| `packages/design-lint/` | The linter: 157 of the 158 lint rules have a module, a fixture pair, and a break patch |
+| `packages/design-lint/` | The linter: 163 of the 164 lint rules have a module, a fixture pair, and a break patch |
 
 ## Categories
 

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test page</title>
+</head>
+<body>
+<main>
+<ul><li id="item">Draft one <button type="button" id="del">Delete draft</button></li></ul>
+<p><button type="button" id="save">Save</button></p>
+<script>
+document.getElementById("del").addEventListener("click", () => document.getElementById("item").remove());
+</script>
+</main>
+</body>
+</html>

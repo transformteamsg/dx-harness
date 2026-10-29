@@ -1,0 +1,16 @@
+{
+  "code": "CMP-2a",
+  "describe": "Delete the record at once, with no confirmation dialog.",
+  "edits": [
+    {
+      "file": "cmp/records.html",
+      "find": "addEventListener(\"click\", () => ask.showModal());",
+      "replace": "addEventListener(\"click\", () => document.querySelector(\".cmp-table tbody tr\").remove());"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/cmp/records.html"
+    }
+  ]
+}

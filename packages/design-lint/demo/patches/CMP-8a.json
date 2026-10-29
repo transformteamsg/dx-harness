@@ -1,0 +1,16 @@
+{
+  "code": "CMP-8a",
+  "describe": "Remove the Cancel link from the first step of the grant flow.",
+  "edits": [
+    {
+      "file": "cmp/step-1.html",
+      "find": "    <p><a href=\"/\">Cancel application</a></p>\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/cmp/step-1.html"
+    }
+  ]
+}

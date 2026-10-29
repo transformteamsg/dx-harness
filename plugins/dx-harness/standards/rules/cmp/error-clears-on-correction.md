@@ -22,7 +22,7 @@ A field's error message clears as soon as the user corrects the field. Each fiel
 
 `validationCases` lists the fields to test. Each case has a `page`, a `field` selector, an `invalid` value, a `valid` value, and an `error` selector for the field's error message. On its own copy of each page, the rule does these steps:
 
-1. Enters the `invalid` value of each case, and activates the first element that matches `submitSelector`.
+1. Enters the `invalid` value of each case, and activates the first element that matches `submitSelector` in the form of the first case's field. When that field has no form, the rule uses the first match on the page.
 2. Fails a case whose error message is not shown, because the rule cannot then test the case.
 3. Enters the `valid` value of each case in turn, with an `input` event only.
 4. Fails the case when its error message is still shown, or when another case's error message is gone before that case is corrected.

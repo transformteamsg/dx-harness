@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "CMP-8a": {
+      "flows": {
+        "apply": [
+          "/",
+          "/two.html"
+        ]
+      }
+    }
+  }
+}

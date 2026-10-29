@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "CMP-5a": {
+      "primarySelector": ".btn-primary"
+    }
+  }
+}

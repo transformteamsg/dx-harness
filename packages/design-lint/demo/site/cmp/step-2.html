@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apply for a grant: contact details</title>
+  <meta name="description" content="Step 2 of 2 of the grant application. Give us an email address and a phone number to contact you.">
+  <link rel="canonical" href="https://example.gov.sg/cmp/step-2.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Step 2 of 2: contact details</h1>
+    <form id="cmp-form" action="/cmp/records.html" novalidate>
+      <label for="cmp-email">Email</label>
+      <input id="cmp-email" name="email" type="email" autocomplete="email" aria-describedby="cmp-email-error">
+      <p id="cmp-email-error" class="cmp-error" hidden>Enter an email address in the format name@example.com.</p>
+      <label for="cmp-phone">Phone number</label>
+      <input id="cmp-phone" name="phone" type="tel" autocomplete="tel" aria-describedby="cmp-phone-error">
+      <p id="cmp-phone-error" class="cmp-error" hidden>Enter an 8-digit phone number, such as 61234567.</p>
+      <button type="submit" class="cmp-primary">Submit</button>
+    </form>
+    <p><a href="/cmp/step-1.html">Back</a></p>
+    <script>
+      const checks = { email: (v) => /@/.test(v), phone: (v) => /^\d{8}$/.test(v) };
+      const show = (name) => {
+        const error = document.getElementById("cmp-" + name + "-error");
+        error.hidden = checks[name](document.getElementById("cmp-" + name).value);
+        document.getElementById("cmp-" + name).setAttribute("aria-invalid", String(!error.hidden));
+      };
+      document.getElementById("cmp-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        Object.keys(checks).forEach(show);
+      });
+      Object.keys(checks).forEach((name) =>
+        document.getElementById("cmp-" + name).addEventListener("input", () => {
+          if (!document.getElementById("cmp-" + name + "-error").hidden) show(name);
+        }),
+      );
+    </script>
+  </main>
+</body>
+</html>
