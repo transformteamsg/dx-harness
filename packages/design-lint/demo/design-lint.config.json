@@ -7,7 +7,8 @@
     "config.d/pr.json",
     "config.d/tx.json",
     "config.d/tl.json",
-    "config.d/uu.json"
+    "config.d/uu.json",
+    "config.d/typ.json"
   ],
   "select": [
     "BD-1a",
