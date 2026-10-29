@@ -35,8 +35,10 @@ export interface Finding {
 export interface Note {
   code: string;
   /* "no-module" means that the rule has no code yet. It marks the scaffold
-     and is ignored by the exit code. Remove it when every rule has a module. */
-  kind: "not-configured" | "not-run" | "no-module";
+     and is ignored by the exit code. Remove it when every rule has a module.
+     "skipped" names the preset lines that an L0 rule ignored. The rule still
+     runs, so the note does not change the exit code. */
+  kind: "not-configured" | "not-run" | "no-module" | "skipped";
   detail: string[];
 }
 
@@ -105,8 +107,22 @@ export interface Config {
   /* How a rendered page counts as loaded. The default, "networkidle", suits an app
      that fetches data. A static site can set "load". */
   render?: { waitUntil?: "load" | "networkidle" };
+  /* The domain preset, by name. It sits between the rule defaults and this file. */
+  preset?: string;
   product?: Params;
   pages?: Record<string, string[]>;
   flows?: Record<string, string[]>;
   rules?: Record<string, Params>;
+}
+
+/* The values of a domain preset. See lint/config.md. */
+export interface Preset {
+  name: string;
+  file: string;
+  parameters: Params;
+  rules: Record<string, Params>;
+  ignore: string[];
+  /* The line in the file of each ignore entry and each rule override, keyed
+     "ignore CODE" and "rules.CODE.PARAM". The skipped-line report reads it. */
+  lines: Record<string, number>;
 }

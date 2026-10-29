@@ -5,11 +5,13 @@ import { modules } from "./registry.ts";
 import type { Browser } from "playwright-core";
 import { run } from "./run.ts";
 import type { RunResult } from "./run.ts";
-import type { Config, RuleMeta, Surface } from "./types.ts";
+import type { Config, Preset, RuleMeta, Surface } from "./types.ts";
 
 export interface LintInput {
   rules: RuleMeta[];
   config: Config | null;
+  /* The domain preset that config.preset names, already loaded. */
+  preset?: Preset | null;
   /* The directory of the config file. config.serve is relative to it. */
   configDir: string;
   paths: string[];
@@ -39,5 +41,6 @@ export function lint(input: LintInput): Promise<RunResult> {
     root: projectRoot(input),
     waitUntil: input.config?.render?.waitUntil,
     browser: input.browser,
+    preset: input.preset,
   });
 }

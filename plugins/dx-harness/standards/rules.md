@@ -12,7 +12,7 @@ The base layer of the design standard. Every product follows it. It holds two se
 Standards resolve in this order. A later layer overrides an earlier one.
 
 1. **Base.** The DSS rules and the catalogue rules.
-2. **Domain.** Not designed yet.
+2. **Domain.** A domain preset in `presets/`. It sets values for every product in one domain. See [Domain presets](presets/README.md).
 3. **Custom.** Not designed yet.
 
 The base runs with no domain and no `DESIGN.md`.
@@ -24,6 +24,7 @@ The base runs with no domain and no `DESIGN.md`.
 | `rules/<category>/README.md` | One category: the rule index, the decisions, and the open items |
 | `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part |
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
+| `presets/<name>.md` | One domain preset |
 | `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now |
 | [`packages/design-lint/docs/config.md`](../../../packages/design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |

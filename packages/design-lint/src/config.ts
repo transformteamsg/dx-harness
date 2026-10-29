@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Config, Params, RuleMeta } from "./types.ts";
+import type { Config, Params, Preset, RuleMeta } from "./types.ts";
 
 /* A page parameter in a rule file reads the page group of the same meaning in
    the config. See lint/config.md. */
@@ -72,17 +72,27 @@ export interface Resolved {
   unset: string[];
   /* Overrides that the runner ignored because the rule is L0. */
   skippedOverrides: string[];
+  /* The same for the preset, as "<file>:<line> rules.R.P". */
+  skippedPresetLines: string[];
 }
 
 /* The first value wins, in this order: rules.R.P, product.P, the page group,
-   the default in the rule file. A default of null is not a value. */
-export function resolveParameters(rule: RuleMeta, config: Config | null): Resolved {
+   the preset's rules.R.P, the preset's parameters.P, the default in the rule
+   file. A default of null is not a value. */
+export function resolveParameters(rule: RuleMeta, config: Config | null, preset?: Preset | null): Resolved {
   const values: Params = {};
   const unset: string[] = [];
   const skippedOverrides: string[] = [];
   const override = config?.rules?.[rule.code] ?? {};
+  const presetOverride = preset?.rules[rule.code] ?? {};
   const l0 = rule.tier === "L0";
   if (l0) skippedOverrides.push(...Object.keys(override));
+  const skippedPresetLines = l0
+    ? Object.keys(presetOverride).map((name) => {
+        const key = `rules.${rule.code}.${name}`;
+        return `${preset!.file}:${preset!.lines[key]} ${key}`;
+      })
+    : [];
 
   for (const [name, fallback] of Object.entries(rule.parameters)) {
     let value: unknown;
@@ -90,10 +100,12 @@ export function resolveParameters(rule: RuleMeta, config: Config | null): Resolv
     else if (config?.product && name in config.product) value = config.product[name];
     else if (name in PAGE_GROUPS && config?.pages?.[PAGE_GROUPS[name]] !== undefined) {
       value = config.pages[PAGE_GROUPS[name]];
-    } else value = fallback;
+    } else if (!l0 && name in presetOverride) value = presetOverride[name];
+    else if (preset && name in preset.parameters) value = preset.parameters[name];
+    else value = fallback;
 
     if (value === null || value === undefined) unset.push(name);
     else values[name] = value;
   }
-  return { values, unset, skippedOverrides };
+  return { values, unset, skippedOverrides, skippedPresetLines };
 }

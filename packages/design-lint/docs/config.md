@@ -7,6 +7,7 @@ Status: draft. A product sets the values that its rules read in one file, `desig
 ```json
 {
   "$schema": "https://example.invalid/design-lint.config.schema.json",
+  "preset": "teacher",
   "product": {
     "serviceType": "website",
     "productUrl": "https://example.gov.sg",
@@ -29,6 +30,7 @@ Status: draft. A product sets the values that its rules read in one file, `desig
 
 | Key | Holds |
 | --- | --- |
+| `preset` | The domain preset, by name. The command reads it from `plugins/dx-harness/standards/presets/<name>.md`. A name that no file defines stops the command with exit code 2. See [Domain presets](../../../plugins/dx-harness/standards/presets/README.md). |
 | `select` | The rules to run, as codes or category prefixes. A `--select` flag overrides it. |
 | `serve` | The directory that the rendered rules serve, relative to the config file. It defaults to the first path that the command receives. |
 | `render` | `waitUntil`, either `networkidle` (the default) or `load`. A static site can use `load`, which is faster. |
@@ -46,12 +48,14 @@ For a parameter `P` of rule `R`, the runner takes the first value that it finds,
 1. `rules.R.P`
 2. `product.P`
 3. The page group that `P` names, when `P` is a page parameter (see the table below)
-4. The default in the rule file
-5. Nothing. The rule reports "not configured" and does not pass.
+4. `rules.R.P` in the domain preset
+5. `parameters.P` in the domain preset
+6. The default in the rule file
+7. Nothing. The rule reports "not configured" and does not pass.
 
-This is the order of ADR 0001 for the product layer. The domain preset and the custom layer slot in between steps 3 and 4 when they exist.
+The product config wins over the domain preset, and the preset wins over the rule default. The custom layer is not designed yet.
 
-A product cannot override an L0 rule through `rules`. The runner reports the skipped line and applies the rule.
+A product cannot override an L0 rule through `rules`. The runner applies the rule with its own values. A preset cannot override or ignore an L0 rule either. The runner reports each skipped line of the preset and applies the rule.
 
 ## Page parameters
 
