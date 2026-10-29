@@ -1,0 +1,16 @@
+{
+  "code": "CNT-15a",
+  "describe": "Add a buzzword to the copy.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- cnt-15a -->",
+      "replace": "<p>We streamline the review.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/slp/"
+    }
+  ]
+}

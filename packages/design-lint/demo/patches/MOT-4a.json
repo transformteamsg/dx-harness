@@ -1,0 +1,18 @@
+{
+  "code": "MOT-4a",
+  "describe": "Give a transition an easing that overshoots.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- mot-4a -->",
+      "replace": "<p style=\"transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)\">Start</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "slp/index.html",
+      "line": 31,
+      "column": 5
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "code": "CMP-12a",
+  "describe": "Add a thick left accent border to a rounded note.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- cmp-12a -->",
+      "replace": "<p style=\"border-radius: 8px; border-left: 4px solid var(--color-border)\">Check your email.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "slp/index.html",
+      "line": 28,
+      "column": 5
+    }
+  ]
+}

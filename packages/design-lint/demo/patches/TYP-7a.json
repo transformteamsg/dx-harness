@@ -1,0 +1,16 @@
+{
+  "code": "TYP-7a",
+  "describe": "Add text at a size close to the body size.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- typ-7a -->",
+      "replace": "<p style=\"font-size: 1.05rem\">Each review has two steps.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/slp/"
+    }
+  ]
+}
