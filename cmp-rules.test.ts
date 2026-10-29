@@ -81,3 +81,16 @@ describe("1. each control becomes rules, and redirects.yaml maps it to them", ()
   });
 });
 
+describe("2. each lint rule has a fixture pair and a break patch", () => {
+  it("writes the lint rules of the plan", () => {
+    expect([...lintCodes.keys()].sort()).toEqual(["CMP-10a", "CMP-2a", "CMP-5a", "CMP-6a", "CMP-6b", "CMP-8a"]);
+  });
+
+  it.each(["CMP-2a", "CMP-5a", "CMP-6a", "CMP-6b", "CMP-8a", "CMP-10a"])("has a fixture pair and a patch for %s", (code) => {
+    for (const part of ["pass", "fail", "expected.json"]) {
+      expect(fs.existsSync(path.join(FIXTURES, code, part)), `fixtures/${code}/${part}`).toBe(true);
+    }
+    expect(fs.existsSync(path.join(PATCHES, `${code}.json`)), `demo/patches/${code}.json`).toBe(true);
+  });
+});
+
