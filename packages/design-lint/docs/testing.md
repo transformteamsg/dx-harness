@@ -1,6 +1,6 @@
 # Testing and demonstrating the rules
 
-Status: built for 163 lint rules. The formats below are the ones in use.
+Status: built for 165 lint rules. The formats below are the ones in use.
 
 A rule is proven by a case that fails it, a case that passes it, and a run of the linter over both. The same cases serve the tests, the live demo, and the rule documentation.
 

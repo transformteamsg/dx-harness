@@ -1,0 +1,6 @@
+.panel { transition: opacity 450ms ease-out; }
+.menu { transition: all 200ms ease-out; }
+.toast { animation: arrive 50ms ease-out; }
+.drawer { transition-duration: 0.5s; }
+.badge { transition: transform 200ms cubic-bezier(0.3, 1.6, 0.5, 1); }
+.list { transition-property: all; }

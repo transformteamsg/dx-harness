@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your saved forms</title>
+  <meta name="description" content="A page with a short transition that reads its duration and easing from motion tokens.">
+  <link rel="canonical" href="https://example.gov.sg/mot/saved.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Your saved forms</h1>
+    <style>
+      :root { --motion-fast: 200ms; --ease-standard: cubic-bezier(0.2, 0, 0, 1); }
+      .saved { transition: opacity var(--motion-fast) var(--ease-standard); }
+      .saved:hover { opacity: 0.8; }
+    </style>
+    <p class="saved">You have two saved forms.</p>
+    <p class="note">Each form stays saved for 30 days.</p>
+  </main>
+</body>
+</html>

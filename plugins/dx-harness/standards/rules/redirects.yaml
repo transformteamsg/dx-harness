@@ -167,6 +167,9 @@ codes:
   LAY-5: [LAY-5a]
   LAY-6: [LAY-6a]
   LAY-7: [LAY-7a]
+  MOT-1: [MOT-1a, MOT-1b]
+  MOT-2: [MOT-2a, MOT-2b]
+  MOT-3: [MOT-3a]
   # LAY-4 does not move: it states the measure of TYP-6, so it maps to the TYP-6 rules (#545).
   LAY-4: [TYP-6a, TYP-6b]
   TYP-2: [TYP-2a, TYP-2b]
