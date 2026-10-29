@@ -38,3 +38,9 @@ export function compare(findings: Finding[], root: string, rules: RuleMeta[], ex
   }
   return { missing, extra: left };
 }
+
+/* The codes of the lint rules that have no fixture pair under fixturesDir: a
+   directory named by the code that holds pass/, fail/, and expected.json. */
+export function missingFixturePairs(rules: RuleMeta[], fixturesDir: string): string[] {
+  throw new Error(`missingFixturePairs is not written yet: ${rules.length} rules, ${fixturesDir}`);
+}
