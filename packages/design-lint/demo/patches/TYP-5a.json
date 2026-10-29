@@ -1,0 +1,16 @@
+{
+  "code": "TYP-5a",
+  "describe": "Remove the tabular figures from the funding table.",
+  "edits": [
+    {
+      "file": "typ/typ.css",
+      "find": ".typ-figures { font-variant-numeric: tabular-nums; }",
+      "replace": ".typ-figures { }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/typ/"
+    }
+  ]
+}

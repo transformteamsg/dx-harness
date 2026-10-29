@@ -1,0 +1,16 @@
+{
+  "code": "TYP-2a",
+  "describe": "Set the note at 13 pixels.",
+  "edits": [
+    {
+      "file": "typ/typ.css",
+      "find": ".typ-note { font-size: 0.875rem; }",
+      "replace": ".typ-note { font-size: 13px; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/typ/"
+    }
+  ]
+}

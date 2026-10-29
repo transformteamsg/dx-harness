@@ -1,0 +1,3 @@
+/* The demo product declares a 12-column grid. Each grid uses a count that divides it. */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); }
+.split { display: grid; grid-template-columns: 2fr 1fr; }

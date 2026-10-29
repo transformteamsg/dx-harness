@@ -1,0 +1,13 @@
+{
+  "select": ["TYP-2a", "TYP-2b", "TYP-4a", "TYP-5a", "TYP-6a"],
+  "pages": {
+    "all": ["/typ/"]
+  },
+  "rules": {
+    "TYP-2a": { "pages": ["/typ/"], "labelSelector": "label, legend, caption, figcaption, small, button, th, .typ-caption" },
+    "TYP-2b": { "pages": ["/typ/"] },
+    "TYP-4a": { "pages": ["/typ/"] },
+    "TYP-5a": { "pages": ["/typ/"] },
+    "TYP-6a": { "pages": ["/typ/"] }
+  }
+}

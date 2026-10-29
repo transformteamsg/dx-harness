@@ -1,0 +1,6 @@
+.panel { transition: opacity 200ms ease-out, transform 0.25s ease-in-out 50ms; }
+.toast { animation: arrive 150ms cubic-bezier(0.2, 0, 0, 1); }
+.spinner { animation: spin 1.2s linear infinite; }
+.instant { transition-duration: 0s; }
+.tokened { transition: opacity var(--motion-fast) var(--ease-standard); }
+/* transition: all 900ms is a comment, not a value */

@@ -21,10 +21,14 @@ function codeOf(file: string) {
   return fm && typeof fm.code === "string" ? fm.code : null;
 }
 
+/* The moved files are the DSS rules. The catalogue rules are new, so no old
+   file name redirects to them. */
+const DSS = ["bd", "wp", "wo", "wu", "wr", "pr", "tx", "tl", "uu"];
 const ruleFiles = fs.existsSync(RULES)
   ? fs
       .readdirSync(RULES, { recursive: true, encoding: "utf8" })
       .filter((rel) => rel.endsWith(".md") && !["README.md", "MAPPING.md"].includes(path.basename(rel)))
+      .filter((rel) => DSS.includes(rel.split(path.sep)[0]))
   : [];
 
 describe("2. a rule left at the old path fails the gate", () => {
@@ -51,6 +55,22 @@ describe("2. a rule left at the old path fails the gate", () => {
     const out = `${run.stdout ?? ""}${run.stderr ?? ""}`;
     expect(run.status, out).toBe(1);
     expect(out).toMatch(/ERROR skills\/design-restructure\/base\/bd\/BD-1a\.md: /);
+  });
+
+  /* Written after the code: the `codes` map of redirects.yaml came with #545. */
+  it("fails pnpm check on a code redirect to a rule that no MAPPING.md lists, and names it", () => {
+    const plugin = path.join(work, "dx-harness");
+    fs.rmSync(path.join(plugin, "skills"), { recursive: true, force: true });
+    fs.cpSync(path.join(PLUGIN, "skills"), path.join(plugin, "skills"), { recursive: true });
+    const file = path.join(plugin, "standards/rules/redirects.yaml");
+    fs.writeFileSync(file, `${fs.readFileSync(file, "utf8")}  OLD-1: [TYP-99z]\n`);
+    const run = spawnSync("python3", [path.join(plugin, "checks/design-catalog-validate.py")], {
+      cwd: plugin,
+      encoding: "utf8",
+    });
+    const out = `${run.stdout ?? ""}${run.stderr ?? ""}`;
+    expect(run.status, out).toBe(1);
+    expect(out).toContain("'OLD-1' redirects to 'TYP-99z', which has no row in standards/rules/typ/MAPPING.md");
   });
 });
 

@@ -1,0 +1,5 @@
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); }
+.split { display: grid; grid-template-columns: [main] 2fr [aside] 1fr; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); }
+.page { display: grid; grid-template-columns: var(--page-columns); }
+/* grid-template-columns: repeat(5, 1fr); */
