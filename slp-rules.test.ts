@@ -140,3 +140,17 @@ describe("5. each hybrid control's lint rule names its judged rule in judgedRema
     expect(mappingRow(EXPECTED[id].judged[0])).toContain(`\`${lint}\``);
   });
 });
+
+describe("6. no rule names a teacher where it means any user", () => {
+  const written = Object.values(EXPECTED).flatMap((e) => [...e.lint, ...e.judged]);
+
+  it.each(written.filter((code) => fileFor(code)))("keeps the word teacher out of %s", (code) => {
+    expect(fileFor(code)?.text).not.toMatch(/teacher/i);
+  });
+
+  it.each(written)("keeps the word teacher out of the MAPPING.md row of %s", (code) => {
+    const row = mappingRow(code);
+    expect(row, `no MAPPING.md row for ${code}`).not.toBe("");
+    expect(row).not.toMatch(/teacher/i);
+  });
+});
