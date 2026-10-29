@@ -1,7 +1,7 @@
 ---
 code: CMP-8a
 slug: exit-on-each-step
-dss: CMP-8
+control: CMP-8
 tier: L1
 check: lint
 surface: rendered

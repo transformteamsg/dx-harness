@@ -1,0 +1,12 @@
+{
+  "code": "A11Y-5a",
+  "describe": "Remove the reduced-motion query, so the saving indicator still turns.",
+  "edits": [
+    {
+      "file": "a11y/details.html",
+      "find": "      @media (prefers-reduced-motion: reduce) { .saving { animation: none; } }\n",
+      "replace": ""
+    }
+  ],
+  "expect": [{ "file": "/a11y/details.html" }]
+}

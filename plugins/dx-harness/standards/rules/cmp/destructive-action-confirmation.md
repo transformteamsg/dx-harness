@@ -1,7 +1,7 @@
 ---
 code: CMP-2a
 slug: destructive-action-confirmation
-dss: CMP-2
+control: CMP-2
 tier: L1
 check: lint
 surface: rendered

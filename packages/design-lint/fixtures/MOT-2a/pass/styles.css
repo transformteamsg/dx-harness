@@ -1,0 +1,5 @@
+/* dx-tokens */
+.legacy { transition: opacity 200ms ease-out; }
+/* /dx-tokens */
+.panel { transition: opacity var(--motion-fast) var(--ease-standard); }
+.instant { transition-duration: 0ms; }

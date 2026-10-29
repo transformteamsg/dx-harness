@@ -1,0 +1,13 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "rules": {
+    "A11Y-11b": {
+      "actions": [
+        { "page": "/", "click": "#next" },
+        { "page": "/", "click": "#close" }
+      ]
+    }
+  }
+}

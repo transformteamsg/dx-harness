@@ -9,7 +9,8 @@ export interface RuleMeta {
   code: string;
   /* The kebab-case name of the rule, which is also its file name. */
   slug: string;
-  dss: string;
+  /* The control that the rule implements: dss in a DSS rule file, control in a catalogue rule file. */
+  control: string;
   tier: Tier;
   surface: Surface;
   engine: string;
@@ -72,6 +73,8 @@ export interface RenderedPage {
 export interface OpenOptions {
   /* A page of its own, not shared with other rules. Use it when the rule interacts. */
   fresh?: boolean;
+  /* Opens the page with prefers-reduced-motion: reduce, as a user who asks for less motion sees it. */
+  reducedMotion?: boolean;
 }
 
 export interface RenderedSession {

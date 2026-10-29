@@ -34,8 +34,10 @@ export function summariseUnset(notes: Note[], rules: RuleMeta[]): string[] {
   const known = new Set(rules.map((r) => r.code));
   const noun = missing.length === 1 ? "rule needs" : "rules need";
   const lines = [`${missing.length} ${noun} configuration. Run design-lint init, or set these values:`];
-  for (const n of missing.filter((m) => known.has(m.code))) {
-    lines.push(`  ${n.code.padEnd(8)}${n.detail.join(", ")}`);
+  const shown = missing.filter((m) => known.has(m.code));
+  const width = Math.max(8, ...shown.map((n) => n.code.length + 1));
+  for (const n of shown) {
+    lines.push(`  ${n.code.padEnd(width)}${n.detail.join(", ")}`);
   }
   return lines;
 }

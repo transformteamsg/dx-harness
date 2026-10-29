@@ -1,7 +1,7 @@
 ---
 code: CMP-10a
 slug: error-clears-on-correction
-dss: CMP-10
+control: CMP-10
 tier: L2
 check: lint
 surface: rendered

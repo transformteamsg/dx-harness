@@ -1,0 +1,16 @@
+{
+  "code": "CNT-5a",
+  "describe": "Name the input device in the hint on the search page.",
+  "edits": [
+    {
+      "file": "search.html",
+      "find": "<p>Type a few words to find a grant.</p>",
+      "replace": "<p>Tap the field and type a few words to find a grant.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/search.html"
+    }
+  ]
+}

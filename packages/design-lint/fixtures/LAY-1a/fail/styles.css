@@ -1,0 +1,5 @@
+.cards { display: grid; grid-template-columns: repeat(5, 1fr); }
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}

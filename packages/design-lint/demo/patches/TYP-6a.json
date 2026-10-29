@@ -1,0 +1,16 @@
+{
+  "code": "TYP-6a",
+  "describe": "Remove the measure cap from the first paragraph.",
+  "edits": [
+    {
+      "file": "typ/typ.css",
+      "find": ".typ-prose { max-width: 65ch; line-height: 1.5; }",
+      "replace": ".typ-prose { line-height: 1.5; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/typ/"
+    }
+  ]
+}

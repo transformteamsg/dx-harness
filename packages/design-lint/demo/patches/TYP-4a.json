@@ -1,0 +1,16 @@
+{
+  "code": "TYP-4a",
+  "describe": "Set the status message in capitals.",
+  "edits": [
+    {
+      "file": "typ/typ.css",
+      "find": ".typ-status { font-weight: 700; }",
+      "replace": ".typ-status { font-weight: 700; text-transform: uppercase; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/typ/"
+    }
+  ]
+}

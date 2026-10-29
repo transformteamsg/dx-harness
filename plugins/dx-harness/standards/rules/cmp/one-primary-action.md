@@ -1,7 +1,7 @@
 ---
 code: CMP-5a
 slug: one-primary-action
-dss: CMP-5
+control: CMP-5
 tier: L2
 check: lint
 surface: source

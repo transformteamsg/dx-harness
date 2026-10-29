@@ -1,0 +1,47 @@
+[
+  {
+    "file": "index.html",
+    "line": 5,
+    "column": 18
+  },
+  {
+    "file": "index.html",
+    "line": 6,
+    "column": 15
+  },
+  {
+    "file": "index.html",
+    "line": 7,
+    "column": 31
+  },
+  {
+    "file": "styles.css",
+    "line": 1,
+    "column": 30
+  },
+  {
+    "file": "styles.css",
+    "line": 2,
+    "column": 21
+  },
+  {
+    "file": "styles.css",
+    "line": 3,
+    "column": 28
+  },
+  {
+    "file": "styles.css",
+    "line": 4,
+    "column": 32
+  },
+  {
+    "file": "styles.css",
+    "line": 5,
+    "column": 38
+  },
+  {
+    "file": "styles.css",
+    "line": 6,
+    "column": 30
+  }
+]

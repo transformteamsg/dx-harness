@@ -1,7 +1,7 @@
 ---
 code: CMP-6b
 slug: sticky-table-header
-dss: CMP-6
+control: CMP-6
 tier: L2
 check: lint
 surface: rendered
