@@ -26,7 +26,9 @@ Validates standards/catalog.yaml for internal consistency:
      allowance. 'gap:' is forbidden on L0 and on any control a script or the
      evaluator already covers.
  10. Rule files: every file under standards/rules/ sits in a category
-     folder and takes its slug as its name, per ADR-0002.
+     folder and takes its slug as its name, per ADR-0002. Every target in
+     standards/rules/redirects.yaml exists. No file remains under the
+     retired skills/design-restructure/ (#536).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -744,6 +746,45 @@ def rule_file_errors(repo_root):
             elif fname not in RULE_CATEGORY_DOCS and not RULE_SLUG_RE.match(fname):
                 errors.append(f"ERROR {rel}: a rule file takes its kebab-case slug as its "
                               f"name, not its code (ADR-0002)")
+    errors.extend(rule_redirect_errors(repo_root))
+    errors.extend(retired_rule_path_errors(repo_root))
+    return errors
+
+
+def rule_redirect_errors(repo_root):
+    """Error lines for each entry of standards/rules/redirects.yaml whose
+    target is not a file under standards/rules/."""
+    rules_dir = os.path.join(repo_root, "standards", "rules")
+    path = os.path.join(rules_dir, "redirects.yaml")
+    if not os.path.isfile(path):
+        return []
+    loc = "standards/rules/redirects.yaml"
+    try:
+        with open(path) as fh:
+            data = yaml.safe_load(fh) or {}
+    except yaml.YAMLError as exc:
+        return [f"ERROR {loc}: does not parse: {exc}"]
+    files = data.get("files") if isinstance(data, dict) else None
+    if not isinstance(files, dict):
+        return [f"ERROR {loc}: needs a 'files' map of old file name to rule file path"]
+    return [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
+            for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
+            if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+
+
+# The base rules moved from here to standards/rules/ (#536).
+RETIRED_RULE_DIR = os.path.join("skills", "design-restructure")
+
+
+def retired_rule_path_errors(repo_root):
+    """Error lines for each file left under the retired skills/design-restructure/."""
+    errors = []
+    for root, dirs, fnames in os.walk(os.path.join(repo_root, RETIRED_RULE_DIR)):
+        dirs.sort()
+        for fname in sorted(fnames):
+            rel = os.path.relpath(os.path.join(root, fname), repo_root).replace(os.sep, "/")
+            errors.append(f"ERROR {rel}: skills/design-restructure/ is retired; a rule file "
+                          f"goes in standards/rules/<category>/<slug>.md (ADR-0002)")
     return errors
 
 
@@ -2791,7 +2832,7 @@ def run_self_test():
                 full = os.path.join(rules_dir, rel)
                 os.makedirs(os.path.dirname(full), exist_ok=True)
                 with open(full, "w") as fh:
-                    fh.write("---\ncode: BD-1a\n---\n")
+                    fh.write("files: {}\n" if rel.endswith(".yaml") else "---\ncode: BD-1a\n---\n")
             return rule_file_errors(rules_root)
 
         for name, files, bad in [
@@ -2818,6 +2859,36 @@ def run_self_test():
         case_count += 1
         if rule_file_errors(os.path.join(rules_root, "absent")):
             failures.append("FAIL rule files: no standards/rules/ folder passes")
+
+        redirects = os.path.join(rules_root, "standards", "rules", "redirects.yaml")
+        for name, text, bad in [
+            ("a redirect to a rule file that exists passes",
+             "files:\n  BD-1a.md: bd/viewport-meta.md\n", None),
+            ("a redirect to a missing file fails",
+             "files:\n  BD-1a.md: bd/zoom.md\n", "'BD-1a.md' redirects to 'bd/zoom.md'"),
+            ("a redirects.yaml with no files map fails", "BD-1a.md: bd/viewport-meta.md\n",
+             "needs a 'files' map"),
+        ]:
+            case_count += 1
+            rule_errors_for(["bd/viewport-meta.md"])
+            with open(redirects, "w") as fh:
+                fh.write(text)
+            errs = rule_file_errors(rules_root)
+            if bad is None and errs:
+                failures.append(f"FAIL rule redirects: {name}; got {errs!r}")
+            elif bad is not None and not any(
+                    e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
+                failures.append(f"FAIL rule redirects: {name}; got {errs!r}")
+
+        case_count += 1
+        rule_errors_for(["bd/viewport-meta.md"])
+        left = os.path.join(rules_root, "skills", "design-restructure", "base", "bd", "BD-1a.md")
+        os.makedirs(os.path.dirname(left), exist_ok=True)
+        with open(left, "w") as fh:
+            fh.write("---\ncode: BD-1a\n---\n")
+        if not any(e.startswith("ERROR skills/design-restructure/base/bd/BD-1a.md: ")
+                   for e in rule_file_errors(rules_root)):
+            failures.append("FAIL rule files: a file left under skills/design-restructure/ fails")
     finally:
         shutil.rmtree(rules_root, ignore_errors=True)
 

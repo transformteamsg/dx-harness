@@ -3,7 +3,9 @@ import path from "node:path";
 import { parse } from "yaml";
 import type { RuleMeta, Surface, Tier } from "../types.ts";
 
-const RULE_FILE = /^[A-Z]{2}-\d+[a-z]\.md$/;
+/* A rule file is named by its kebab-case slug (ADR-0002). The README.md and
+   MAPPING.md of a category folder do not match. */
+const RULE_FILE = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 const TIERS: Tier[] = ["L0", "L1", "L2"];
 const SURFACES: Surface[] = ["source", "rendered", "project"];
 
@@ -25,8 +27,9 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   if (!fm || typeof fm !== "object") return [`${file}: frontmatter is not a map`];
 
   const errors: string[] = [];
-  const expected = path.basename(file, ".md");
-  if (fm.code !== expected) errors.push(`${file}: code "${String(fm.code)}" does not match the file name`);
+  if (typeof fm.code !== "string") errors.push(`${file}: code is missing`);
+  if (typeof fm.slug !== "string") errors.push(`${file}: slug is missing`);
+  else if (fm.slug !== path.basename(file, ".md")) errors.push(`${file}: slug "${fm.slug}" does not match the file name`);
   if (typeof fm.dss !== "string") errors.push(`${file}: dss is missing`);
   if (!TIERS.includes(fm.tier as Tier)) errors.push(`${file}: tier "${String(fm.tier)}" is not L0, L1, or L2`);
   if (fm.check !== "lint") errors.push(`${file}: check is "${String(fm.check)}", and only a lint rule has a file`);
@@ -40,7 +43,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   const heading = /^# [A-Z]{2}-\d+[a-z]: (.+)$/m.exec(text);
   return {
     code: fm.code as string,
-    slug: "",
+    slug: fm.slug as string,
     dss: fm.dss as string,
     tier: fm.tier as Tier,
     surface: fm.surface as Surface,
