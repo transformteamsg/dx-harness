@@ -1,0 +1,16 @@
+{
+  "code": "CNT-6a",
+  "describe": "Add a filler word to the intro of the tracking page.",
+  "edits": [
+    {
+      "file": "tx/track.html",
+      "find": "<p>Check the status of your hall booking.</p>",
+      "replace": "<p>Just check the status of your hall booking.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tx/track.html"
+    }
+  ]
+}

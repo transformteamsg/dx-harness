@@ -10,7 +10,8 @@
     "config.d/uu.json",
     "config.d/mot.json",
     "config.d/lay.json",
-    "config.d/typ.json"
+    "config.d/typ.json",
+    "config.d/cnt.json"
   ],
   "select": [
     "BD-1a",

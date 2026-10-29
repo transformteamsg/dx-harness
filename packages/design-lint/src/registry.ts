@@ -16,6 +16,7 @@ import { bd7a } from "./modules/bd-7a.ts";
 import { bd7b } from "./modules/bd-7b.ts";
 import { bd8a } from "./modules/bd-8a.ts";
 import { bd9a } from "./modules/bd-9a.ts";
+import { cntModules } from "./modules/cnt/index.ts";
 import { wr1a, wr1b, wr1c } from "./modules/wr-1.ts";
 import { wr1d } from "./modules/wr-1d.ts";
 import { wr2a } from "./modules/wr-2a.ts";
@@ -57,4 +58,5 @@ export const modules: RuleModule[] = [
   ...motModules,
   ...layModules,
   ...typModules,
+  ...cntModules,
 ];

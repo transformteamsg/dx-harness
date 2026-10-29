@@ -57,7 +57,8 @@ describe("every lint rule", () => {
   });
 });
 
-for (const code of fs.readdirSync(FIXTURES).sort()) {
+/* A dot entry, such as a folder that a local tool leaves, is not a fixture. */
+for (const code of fs.readdirSync(FIXTURES).filter((name) => !name.startsWith(".")).sort()) {
   const dir = path.join(FIXTURES, code);
   const meta = rules.find((r) => r.code === code);
   const config = loadConfig(path.join(dir, "config.json"));

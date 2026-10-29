@@ -1,0 +1,6 @@
+{
+  "select": ["CNT-5a", "CNT-6a", "CNT-12a", "CNT-13a"],
+  "rules": {
+    "CNT-12a": { "properNouns": ["Community Grants", "Community Grant", "Trust Page"] }
+  }
+}
