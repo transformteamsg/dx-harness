@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import type { Finding, RuleMeta } from "../src/types.ts";
 
@@ -37,4 +38,13 @@ export function compare(findings: Finding[], root: string, rules: RuleMeta[], ex
     else left.splice(i, 1);
   }
   return { missing, extra: left };
+}
+
+/* The codes that have no fixture pair: a pass/ and a fail/ directory and an
+   expected.json under fixtures/<CODE>/. The exceptions are left out. */
+export function withoutFixtures(codes: string[], fixtures: string, exceptions: string[]): string[] {
+  const has = (code: string) =>
+    ["pass", "fail"].every((site) => fs.existsSync(path.join(fixtures, code, site))) &&
+    fs.existsSync(path.join(fixtures, code, "expected.json"));
+  return codes.filter((code) => !exceptions.includes(code) && !has(code));
 }

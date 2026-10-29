@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { loadConfig, mergeConfig } from "../src/config.ts";
@@ -6,7 +7,7 @@ import { lint } from "../src/lint.ts";
 import { loadRules } from "../src/rules/load.ts";
 import { launchBrowser } from "../src/rendered.ts";
 import type { Browser } from "playwright-core";
-import { BASE, compare } from "./helpers.ts";
+import { BASE, compare, withoutFixtures } from "./helpers.ts";
 import type { Expected } from "./helpers.ts";
 
 /* Each directory under fixtures/ holds a site that passes one rule, a site that
@@ -25,7 +26,8 @@ afterAll(async () => {
 });
 const browser = shared !== null;
 
-for (const code of fs.readdirSync(FIXTURES).sort()) {
+/* A hidden entry, such as a folder that an editor makes, is not a fixture. */
+for (const code of fs.readdirSync(FIXTURES).filter((name) => !name.startsWith(".")).sort()) {
   const dir = path.join(FIXTURES, code);
   const meta = rules.find((r) => r.code === code);
   const config = loadConfig(path.join(dir, "config.json"));
@@ -72,3 +74,28 @@ for (const code of fs.readdirSync(FIXTURES).sort()) {
     });
   });
 }
+
+/* The loop above walks the fixture directories, so a rule with no directory
+   would not show up there. This walks the rules. WP-15a needs text recognition
+   in an image, and no engine for it is installed, so it has no module and no
+   fixture. */
+const NO_FIXTURE = ["WP-15a"];
+
+describe("every lint rule", () => {
+  it("has a fixture pair", () => {
+    expect(withoutFixtures(rules.map((r) => r.code), FIXTURES, NO_FIXTURE)).toEqual([]);
+  });
+
+  it("names a new rule that has no fixture pair", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-fixtures-"));
+    for (const site of ["pass", "fail"]) fs.mkdirSync(path.join(dir, "BD-1a", site), { recursive: true });
+    fs.writeFileSync(path.join(dir, "BD-1a", "expected.json"), "[]\n");
+    fs.mkdirSync(path.join(dir, "BD-1b", "pass"), { recursive: true });
+    expect(withoutFixtures(["BD-1a", "BD-1b", "BD-1d"], dir, [])).toEqual(["BD-1b", "BD-1d"]);
+  });
+
+  it("leaves out only rules that still have no fixture pair", () => {
+    const listed = rules.filter((r) => NO_FIXTURE.includes(r.code)).map((r) => r.code);
+    expect(withoutFixtures(listed, FIXTURES, [])).toEqual(NO_FIXTURE);
+  });
+});
