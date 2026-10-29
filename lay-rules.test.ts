@@ -5,7 +5,7 @@ import { parse } from "yaml";
 
 /* The generic LAY controls of catalog.yaml become base rules in
    standards/rules/lay/, and redirects.yaml maps each old code to its new codes.
-   LAY-4 waits for the decision of #545, which moves TYP-6 or LAY-4. See issue
+   LAY-4 does not move: #545 maps it to the TYP-6 rules. See issue
    #549. */
 
 const RULES = path.join(process.cwd(), "plugins/dx-harness/standards/rules");
@@ -69,8 +69,8 @@ describe("4. each listed control has rules, or a recorded decision not to move",
     }
   });
 
-  it("records that LAY-4 waits for the decision of #545, and maps no code for it", () => {
-    expect(codes["LAY-4"]).toBeUndefined();
+  it("records that LAY-4 does not move and maps it to the TYP-6 rules, per the decision of #545", () => {
+    expect(codes["LAY-4"]).toEqual(["TYP-6a", "TYP-6b"]);
     const readme = read(path.join(LAY, "README.md"));
     const line = readme.split("\n").find((l) => l.includes("LAY-4")) ?? "";
     expect(line, "lay/README.md does not mention LAY-4").not.toBe("");

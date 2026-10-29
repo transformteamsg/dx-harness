@@ -2,7 +2,7 @@
 
 Source: the LAY controls of [`catalog.yaml`](../../catalog.yaml), from the DX design standard. Status: draft. The decisions and open items are in the [category README](README.md).
 
-The LAY controls list no "Not required for" text, so no row has an exemption parameter. `LAY-4` waits for [#545](https://github.com/transformteamsg/dx-harness/issues/545) and has no row.
+The LAY controls list no "Not required for" text, so no row has an exemption parameter. `LAY-4` has no row: it maps to the `TYP-6` rules ([#545](https://github.com/transformteamsg/dx-harness/issues/545)).
 
 | Control | Rule | Check | Surface | Engine | Parameters |
 | --- | --- | --- | --- | --- | --- |

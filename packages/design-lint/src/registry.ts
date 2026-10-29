@@ -25,6 +25,7 @@ import { prModules } from "./modules/pr/index.ts";
 import { tlModules } from "./modules/tl/index.ts";
 import { txModules } from "./modules/tx/index.ts";
 import { layModules } from "./modules/lay/index.ts";
+import { typModules } from "./modules/typ/index.ts";
 import { uuModules } from "./modules/uu/index.ts";
 import { woModules } from "./modules/wo/index.ts";
 import { wpModules } from "./modules/wp/index.ts";
@@ -55,4 +56,5 @@ export const modules: RuleModule[] = [
   ...uuModules,
   ...motModules,
   ...layModules,
+  ...typModules,
 ];

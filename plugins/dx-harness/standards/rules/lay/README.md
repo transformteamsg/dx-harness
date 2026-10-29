@@ -24,12 +24,11 @@ A rule file exists only for a lintable rule.
 - A product that declares no grid does not set `gridColumns`. The rule then reports "not configured", which takes the place of the N/A grade of the control.
 - `LAY-3`, `LAY-5`, `LAY-6`, and `LAY-7` are judgment controls, so each becomes one judged rule.
 - The rules name the user of the product, so that they apply to any product.
-- `LAY-4` waits for the decision of [#545](https://github.com/transformteamsg/dx-harness/issues/545), which moves `TYP-6` or `LAY-4`. It has no rule and no redirect yet.
+- `LAY-4` does not move. It states the measure of `TYP-6` again, so `redirects.yaml` maps it to the `TYP-6` rules, `TYP-6a` and `TYP-6b`. See [#545](https://github.com/transformteamsg/dx-harness/issues/545).
 - `LAY-2` is not in this folder. It ports to the existing rules `WP-16a`, `WP-16b`, `BD-1b`, and `WP-7b`, per the [retirement spec](../../../../../docs/specs/2026-10-28-catalogue-retirement.md).
 
 ## Open
 
-- `LAY-4`: write its rules, or record that it does not move, after #545 decides.
 - The judged rules need rubrics from `dx-design-judge`: `LAY-1b`, `LAY-3a`, `LAY-5a`, `LAY-6a`, and `LAY-7a`.
 
 ## Built

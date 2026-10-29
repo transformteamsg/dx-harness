@@ -1,4 +1,4 @@
-# Old rule file names, mapped to where each file is now (ADR-0001 D11, ADR-0002).
+# Old rule file names and old codes, mapped to where each is now (ADR-0001 D11, ADR-0002).
 # `files` maps a file name from skills/design-restructure/base/ to its path under
 # standards/rules/. When a file is renamed again, its old entry points to the newest path.
 # `codes` maps a control code from catalog.yaml to the base rule codes that replace it.
@@ -170,3 +170,9 @@ codes:
   MOT-1: [MOT-1a, MOT-1b]
   MOT-2: [MOT-2a, MOT-2b]
   MOT-3: [MOT-3a]
+  # LAY-4 does not move: it states the measure of TYP-6, so it maps to the TYP-6 rules (#545).
+  LAY-4: [TYP-6a, TYP-6b]
+  TYP-2: [TYP-2a, TYP-2b]
+  TYP-4: [TYP-4a, TYP-4b]
+  TYP-5: [TYP-5a, TYP-5b]
+  TYP-6: [TYP-6a, TYP-6b]

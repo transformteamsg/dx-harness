@@ -1,0 +1,6 @@
+/* Styles of the demo page for TYP-2 to TYP-6. */
+.typ-prose { max-width: 65ch; line-height: 1.5; }
+.typ-note { font-size: 0.875rem; }
+.typ-caption { font-size: 0.75rem; }
+.typ-status { font-weight: 700; }
+.typ-figures { font-variant-numeric: tabular-nums; }
