@@ -56,3 +56,19 @@ describe("1. each motion control becomes rules", () => {
     }
   });
 });
+
+describe("5. a hybrid control's lint rule names its judged rule", () => {
+  /* MOT-1 and MOT-2 are hybrid in catalog.yaml. */
+  it.each(["MOT-1", "MOT-2"])("the lint rule of %s names a judged rule of the same control in judgedRemainder", (control) => {
+    const lint = lintRules.filter((r) => r.fm.dss === control);
+    expect(lint.length, `${control} has no lint rule`).toBeGreaterThan(0);
+    for (const rule of lint) {
+      const remainder = [rule.fm.judgedRemainder].flat().filter(Boolean).map(String);
+      expect(remainder.length, `${rule.name} has no judgedRemainder`).toBeGreaterThan(0);
+      for (const code of remainder) {
+        expect(code).toMatch(new RegExp(`^${control}[a-z]$`));
+        expect(mappedCheck(code), `${code} is not a judged rule in MAPPING.md`).toBe("judged");
+      }
+    }
+  });
+});
