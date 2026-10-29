@@ -69,6 +69,14 @@ describe("summariseUnset", () => {
     ];
     expect(summariseUnset(notes, rules)[0]).toBe("2 rules need configuration. Run design-lint init, or set these values:");
   });
+  it("keeps a space after a code of eight characters or more, and aligns the rest to it", () => {
+    const rules = [{ code: "BD-4a" }, { code: "A11Y-11b" }] as RuleMeta[];
+    const notes: Note[] = [
+      { code: "BD-4a", kind: "not-configured", detail: ["maxGrade"] },
+      { code: "A11Y-11b", kind: "not-configured", detail: ["actions"] },
+    ];
+    expect(summariseUnset(notes, rules).slice(1)).toEqual(["  BD-4a    maxGrade", "  A11Y-11b actions"]);
+  });
   it("prints nothing when every rule is configured", () => {
     expect(summariseUnset([], [])).toEqual([]);
   });
