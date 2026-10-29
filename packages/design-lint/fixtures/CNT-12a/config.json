@@ -1,0 +1,15 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "CNT-12a": {
+      "properNouns": ["Example Portal"]
+    }
+  }
+}
