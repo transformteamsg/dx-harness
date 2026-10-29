@@ -1,0 +1,18 @@
+{
+  "code": "LAY-1a",
+  "describe": "Give the cards grid five columns, which do not divide 12.",
+  "edits": [
+    {
+      "file": "lay/grid.css",
+      "find": "repeat(3, 1fr)",
+      "replace": "repeat(5, 1fr)"
+    }
+  ],
+  "expect": [
+    {
+      "file": "lay/grid.css",
+      "line": 2,
+      "column": 48
+    }
+  ]
+}
