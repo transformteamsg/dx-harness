@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Home</title>
+</head>
+<body>
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner, .progress { width: 2rem; height: 2rem; animation: spin 1s linear infinite; }
+  .fade { width: 2rem; height: 2rem; animation: spin 2s linear infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; }
+    .fade { animation-duration: 0.01ms !important; }
+  }
+</style>
+<div class="spinner" role="presentation"></div>
+<div class="fade" role="presentation"></div>
+<!-- The product names this one as essential. -->
+<div class="progress" role="presentation"></div>
+</body>
+</html>

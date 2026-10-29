@@ -1,0 +1,17 @@
+{
+  "render": {
+    "waitUntil": "load"
+  },
+  "pages": {
+    "all": [
+      "/"
+    ]
+  },
+  "rules": {
+    "A11Y-5a": {
+      "essentialSelectors": [
+        ".progress"
+      ]
+    }
+  }
+}
