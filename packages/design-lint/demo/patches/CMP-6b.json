@@ -1,0 +1,16 @@
+{
+  "code": "CMP-6b",
+  "describe": "Let the header row of the records table scroll out of view.",
+  "edits": [
+    {
+      "file": "cmp/cmp.css",
+      "find": ".cmp-table thead th { position: sticky; top: 0; background: var(--color-bg); }\n",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/cmp/records.html"
+    }
+  ]
+}

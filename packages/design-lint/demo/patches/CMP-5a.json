@@ -1,0 +1,19 @@
+{
+  "code": "CMP-5a",
+  "describe": "Make the Delete record button a second primary action.",
+  "edits": [
+    {
+      "file": "cmp/records.html",
+      "find": "<button type=\"button\" id=\"cmp-delete\">",
+      "replace": "<button type=\"button\" id=\"cmp-delete\" class=\"cmp-primary\">"
+    }
+  ],
+  "expect": [
+    {
+      "file": "cmp/records.html"
+    },
+    {
+      "file": "cmp/records.html"
+    }
+  ]
+}

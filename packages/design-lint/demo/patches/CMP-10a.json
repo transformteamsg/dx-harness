@@ -1,0 +1,16 @@
+{
+  "code": "CMP-10a",
+  "describe": "Hide every error message when the email field changes.",
+  "edits": [
+    {
+      "file": "cmp/step-2.html",
+      "find": "if (!document.getElementById(\"cmp-\" + name + \"-error\").hidden) show(name);",
+      "replace": "document.querySelectorAll(\".cmp-error\").forEach((el) => { el.hidden = true; });"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/cmp/step-2.html"
+    }
+  ]
+}

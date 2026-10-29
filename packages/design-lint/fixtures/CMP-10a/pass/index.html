@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test page</title>
+</head>
+<body>
+<main>
+<form id="f" novalidate>
+<label for="email">Email</label>
+<input id="email" name="email">
+<p id="email-error" class="error" hidden>Enter an email address, such as name@example.com</p>
+<label for="phone">Phone</label>
+<input id="phone" name="phone">
+<p id="phone-error" class="error" hidden>Enter an 8-digit phone number</p>
+<button type="submit">Submit</button>
+</form>
+<script>
+const rules = { email: (v) => /@/.test(v), phone: (v) => /^\d{8}$/.test(v) };
+const show = (name) => { document.getElementById(name + "-error").hidden = rules[name](document.getElementById(name).value); };
+document.getElementById("f").addEventListener("submit", (e) => { e.preventDefault(); Object.keys(rules).forEach(show); });
+Object.keys(rules).forEach((name) => document.getElementById(name).addEventListener("input", () => { if (!document.getElementById(name + "-error").hidden) show(name); }));
+</script>
+</main>
+</body>
+</html>

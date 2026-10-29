@@ -1,0 +1,16 @@
+{
+  "code": "CMP-6a",
+  "describe": "Align the numeric column of the records table left.",
+  "edits": [
+    {
+      "file": "cmp/cmp.css",
+      "find": ".cmp-num { text-align: right; font-variant-numeric: tabular-nums; }",
+      "replace": ".cmp-num { text-align: left; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/cmp/records.html"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "select": ["CMP-2a", "CMP-5a", "CMP-6a", "CMP-6b", "CMP-8a", "CMP-10a"],
+  "pages": {
+    "all": ["/cmp/records.html", "/cmp/step-1.html", "/cmp/step-2.html"]
+  },
+  "rules": {
+    "CMP-2a": { "pages": ["/cmp/records.html"] },
+    "CMP-5a": { "primarySelector": ".cmp-primary" },
+    "CMP-6a": { "pages": ["/cmp/records.html"] },
+    "CMP-6b": { "pages": ["/cmp/records.html"] },
+    "CMP-8a": { "flows": { "grant": ["/cmp/step-1.html", "/cmp/step-2.html"] } },
+    "CMP-10a": {
+      "validationCases": [
+        { "page": "/cmp/step-2.html", "field": "#cmp-email", "invalid": "name", "valid": "name@example.com", "error": "#cmp-email-error" },
+        { "page": "/cmp/step-2.html", "field": "#cmp-phone", "invalid": "12", "valid": "61234567", "error": "#cmp-phone-error" }
+      ]
+    }
+  }
+}

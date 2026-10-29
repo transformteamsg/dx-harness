@@ -27,8 +27,10 @@ Validates standards/catalog.yaml for internal consistency:
      evaluator already covers.
  10. Rule files: every file under standards/rules/ sits in a category
      folder and takes its slug as its name, per ADR-0002. Every target in
-     standards/rules/redirects.yaml exists. No file remains under the
-     retired skills/design-restructure/ (#536).
+     standards/rules/redirects.yaml exists. Each code under its 'codes'
+     map has a row in a MAPPING.md, and each control under 'notMoved' has a
+     reason and no codes (#546). No file remains under the retired
+     skills/design-restructure/ (#536).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -771,20 +773,23 @@ def rule_redirect_errors(repo_root):
     errors = [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
               for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
               if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
-    return errors + rule_code_redirect_errors(rules_dir, data.get("codes", {}))
+    return errors + rule_code_redirect_errors(rules_dir, data.get("codes", {}), data.get("notMoved", {}))
 
 
 RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
 
 
-def rule_code_redirect_errors(rules_dir, codes):
+def rule_code_redirect_errors(rules_dir, codes, not_moved):
     """Error lines for each entry of the `codes` map of redirects.yaml that does
     not name a list of rule codes, or names a code that the MAPPING.md of its
     category does not list. A code can redirect to a rule of another control,
-    as LAY-4 does to the TYP-6 rules."""
+    as LAY-4 does to the TYP-6 rules. A control under `notMoved` has a reason
+    and no codes."""
     loc = "standards/rules/redirects.yaml"
     if not isinstance(codes, dict):
         return [f"ERROR {loc}: 'codes' is a map of old control code to a list of rule codes"]
+    if not isinstance(not_moved, dict):
+        return [f"ERROR {loc}: 'notMoved' is a map of control code to the reason it does not move"]
     errors = []
     for old, new in sorted(codes.items(), key=lambda kv: str(kv[0])):
         if not isinstance(new, list) or not new:
@@ -803,6 +808,11 @@ def rule_code_redirect_errors(rules_dir, codes):
             if f"`{code}`" not in text:
                 errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which has no row "
                               f"in {os.path.relpath(mapping, os.path.dirname(os.path.dirname(rules_dir)))}")
+    for control, reason in sorted(not_moved.items(), key=lambda kv: str(kv[0])):
+        if control in codes:
+            errors.append(f"ERROR {loc}: '{control}' is in both 'codes' and 'notMoved'")
+        if not isinstance(reason, str) or not reason.strip():
+            errors.append(f"ERROR {loc}: '{control}' in 'notMoved' needs a reason")
     return errors
 
 
@@ -2928,9 +2938,30 @@ def run_self_test():
                     e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
                 failures.append(f"FAIL rule redirects: {name}; got {errs!r}")
 
+        for name, text, bad in [
+            ("a control not moved with a reason passes",
+             "files: {}\ncodes:\n  BD-1: [BD-1a]\nnotMoved:\n  BD-9: Security.\n", None),
+            ("a control both mapped and not moved fails",
+             "files: {}\ncodes:\n  BD-1: [BD-1a]\nnotMoved:\n  BD-1: Why.\n", "in both 'codes' and 'notMoved'"),
+            ("a control not moved with no reason fails",
+             "files: {}\nnotMoved:\n  BD-9: ''\n", "needs a reason"),
+            ("a notMoved that is not a map fails",
+             "files: {}\nnotMoved: [BD-9]\n", "'notMoved' is a map"),
+        ]:
+            case_count += 1
+            rule_errors_for(["bd/viewport-meta.md", "bd/MAPPING.md"])
+            with open(redirects, "w") as fh:
+                fh.write(text)
+            errs = rule_file_errors(rules_root)
+            if bad is None and errs:
+                failures.append(f"FAIL rule not moved: {name}; got {errs!r}")
+            elif bad is not None and not any(
+                    e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
+                failures.append(f"FAIL rule not moved: {name}; got {errs!r}")
+
         case_count += 1
         rule_errors_for(["bd/viewport-meta.md"])
-        left = os.path.join(rules_root, "skills", "design-restructure", "base", "bd", "BD-1a.md")
+        left =os.path.join(rules_root, "skills", "design-restructure", "base", "bd", "BD-1a.md")
         os.makedirs(os.path.dirname(left), exist_ok=True)
         with open(left, "w") as fh:
             fh.write("---\ncode: BD-1a\n---\n")

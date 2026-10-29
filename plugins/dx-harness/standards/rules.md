@@ -25,12 +25,12 @@ The base runs with no domain and no `DESIGN.md`.
 | `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part |
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
 | `presets/<name>.md` | One domain preset |
-| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now, and each moved catalogue control, mapped to its rule codes |
+| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now. Each catalogue control, mapped to the codes of its rules, or to the reason it does not move |
 | [`packages/design-lint/docs/config.md`](../../../packages/design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
 | [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
 | [`packages/design-lint/docs/building-a-rule.md`](../../../packages/design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
-| `packages/design-lint/` | The linter: 173 of the 174 lint rules have a module, a fixture pair, and a break patch |
+| `packages/design-lint/` | The linter: 179 of the 180 lint rules have a module, a fixture pair, and a break patch |
 
 ## Categories
 
@@ -52,11 +52,8 @@ The DSS categories, then the catalogue categories. A catalogue category gets a r
 | [TYP](rules/typ/README.md) | Catalogue: Typography | 4 | 8 | 5 | 3 | 0 |
 | [CNT](rules/cnt/README.md) | Catalogue: Content | 11 | 15 | 4 | 11 | 0 |
 | [A11Y](rules/a11y/README.md) | Catalogue: Accessibility | 3 | 6 | 4 | 2 | 0 |
-| Total | | 118 | 283 | 174 | 100 | 9 |
-
-| Category | Source | Controls | Rules | Lintable | Judged | Out of scope |
-| --- | --- | --- | --- | --- | --- | --- |
-| [A11Y](rules/a11y/README.md) | Accessibility, in `catalog.yaml` | 3 | 6 | 4 | 2 | 0 |
+| [CMP](rules/cmp/README.md) | Catalogue: Components | 8 | 14 | 6 | 8 | 0 |
+| Total | | 126 | 297 | 180 | 108 | 9 |
 
 ## Metrics
 
@@ -82,16 +79,17 @@ A control is **fully linted** when every rule under it is a lint rule. It is **h
 | [TYP](rules/typ/README.md) | 4 | 1 | 3 | 0 | 0 |
 | [CNT](rules/cnt/README.md) | 11 | 0 | 4 | 7 | 0 |
 | [A11Y](rules/a11y/README.md) | 3 | 1 | 2 | 0 | 0 |
-| Total | 118 | 15 | 84 | 18 | 1 |
-| Share | 100% | 12.7% | 71.2% | 15.3% | 0.8% |
+| [CMP](rules/cmp/README.md) | 8 | 0 | 5 | 3 | 0 |
+| Total | 126 | 15 | 89 | 21 | 1 |
+| Share | 100% | 11.9% | 70.6% | 16.7% | 0.8% |
 
-99 of 118 controls (83.9%) have at least one lint rule. The controls with no lint rule are `WP-4`, `WP-5`, `WO-6`, `WO-12`, `WU-3`, `TX-1`, `TX-14`, `LAY-3`, `LAY-5`, `LAY-6`, `LAY-7`, `MOT-3`, `CNT-2`, `CNT-3`, `CNT-4`, `CNT-7`, `CNT-8`, `CNT-9`, and `CNT-11`. `WP-5` has none because its lint part moved into `WP-3a`, and `WO-12` has none because its lint parts are covered by `WP-6a` and `WR-1a`.
+104 of 126 controls (82.5%) have at least one lint rule. The controls with no lint rule are `WP-4`, `WP-5`, `WO-6`, `WO-12`, `WU-3`, `TX-1`, `TX-14`, `LAY-3`, `LAY-5`, `LAY-6`, `LAY-7`, `MOT-3`, `CNT-2`, `CNT-3`, `CNT-4`, `CNT-7`, `CNT-8`, `CNT-9`, `CNT-11`, `CMP-3`, `CMP-4`, and `CMP-11`. `WP-5` has none because its lint part moved into `WP-3a`, and `WO-12` has none because its lint parts are covered by `WP-6a` and `WR-1a`.
 
 ### Rules
 
 | Lintable | Judged | Out of scope | Total |
 | --- | --- | --- | --- |
-| 174 (61.5%) | 100 (35.3%) | 9 (3.2%) | 283 |
+| 180 (60.6%) | 108 (36.4%) | 9 (3.0%) | 297 |
 
 The judged rules and the hybrid controls are where `dx-design-judge` carries the load. A lint rule that is tier L2 only warns, so the share of rules that can block a commit is lower than the lintable share.
 

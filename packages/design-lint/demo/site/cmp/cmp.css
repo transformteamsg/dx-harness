@@ -1,0 +1,4 @@
+/* The CMP demo pages: a numeric column, a sticky table header, and the error text. */
+.cmp-num { text-align: right; font-variant-numeric: tabular-nums; }
+.cmp-table thead th { position: sticky; top: 0; background: var(--color-bg); }
+.cmp-error { color: var(--color-text); font-weight: bold; }
