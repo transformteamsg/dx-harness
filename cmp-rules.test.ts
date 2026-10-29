@@ -94,3 +94,32 @@ describe("2. each lint rule has a fixture pair and a break patch", () => {
   });
 });
 
+describe("each hybrid control's lint rule names its judged rule", () => {
+  it("has a lint rule for a hybrid control", () => {
+    expect([...lintCodes.values()].some((r) => HYBRID.includes(String(r.fm.dss)))).toBe(true);
+  });
+
+  it("points each lint rule of a hybrid control at a judged rule of the same control", () => {
+    for (const { file, fm } of lintCodes.values()) {
+      if (!HYBRID.includes(String(fm.dss))) continue;
+      const remainder = ([] as unknown[]).concat(fm.judgedRemainder ?? []).map(String);
+      expect(remainder.length, `${file} has no judgedRemainder`).toBeGreaterThan(0);
+      for (const code of remainder) {
+        expect(judgedCodes.has(code), `${file}: ${code} is not a judged rule`).toBe(true);
+        expect(codes[String(fm.dss)]).toContain(code);
+      }
+    }
+  });
+});
+
+describe("no CMP rule names a teacher where it means any user", () => {
+  it("has rule documents to read", () => {
+    expect(fs.existsSync(path.join(CMP, "README.md"))).toBe(true);
+    expect(fs.existsSync(path.join(CMP, "MAPPING.md"))).toBe(true);
+  });
+
+  it("says user, not teacher", () => {
+    const files = fs.existsSync(CMP) ? fs.readdirSync(CMP).filter((f) => f.endsWith(".md")) : [];
+    for (const f of files) expect(read(path.join(CMP, f)), f).not.toMatch(/\bteachers?\b/i);
+  });
+});
