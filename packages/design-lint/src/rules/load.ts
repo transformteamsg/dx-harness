@@ -40,6 +40,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   const heading = /^# [A-Z]{2}-\d+[a-z]: (.+)$/m.exec(text);
   return {
     code: fm.code as string,
+    slug: "",
     dss: fm.dss as string,
     tier: fm.tier as Tier,
     surface: fm.surface as Surface,
