@@ -1,6 +1,9 @@
 # Old rule file names, mapped to where each file is now (ADR-0001 D11, ADR-0002).
 # `files` maps a file name from skills/design-restructure/base/ to its path under
 # standards/rules/. When a file is renamed again, its old entry points to the newest path.
+# `codes` maps a catalogue control to the codes of its base rules. A judged rule has no
+# file, and the MAPPING.md of its category lists it. `notMoved` maps a catalogue control
+# that has no base rule to the reason it does not move.
 files:
   BD-1a.md: bd/viewport-meta.md
   BD-1b.md: bd/no-horizontal-scroll.md
@@ -160,3 +163,14 @@ files:
   WU-14a.md: wu/accessible-login.md
   WU-14b.md: wu/credential-paste-and-autofill.md
   WU-14d.md: wu/no-captcha.md
+codes:
+  CMP-2: [CMP-2a, CMP-2b]
+  CMP-3: [CMP-3a]
+  CMP-4: [CMP-4a]
+  CMP-5: [CMP-5a, CMP-5b]
+  CMP-6: [CMP-6a, CMP-6b, CMP-6c]
+  CMP-8: [CMP-8a, CMP-8b]
+  CMP-10: [CMP-10a, CMP-10b]
+  CMP-11: [CMP-11a]
+notMoved:
+  CMP-9: A security rule, outside the design standard. It stays in catalog.yaml until #540 decides where it goes.

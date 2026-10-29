@@ -3,7 +3,7 @@
 The base layer of the design standard. Every product follows it. It holds two sets of rules:
 
 - **The DSS rules.** Each implements a control of the Digital Service Standards (DSS). Their folders take the nine DSS prefixes, such as `bd/` and `wp/`.
-- **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cmp/` and `cnt/`. None is written yet: the tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write them.
+- **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cmp/` and `cnt/`. The tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write them. `cmp/` is the first.
 
 [ADR-0002](../../../docs/adr/0002-rule-categories-and-file-names.md) lists the 17 categories and the file-name convention. The live `dx-design-*` skills and `checks/` do not read these rules yet.
 
@@ -25,7 +25,7 @@ The base runs with no domain and no `DESIGN.md`.
 | `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part |
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
 | `presets/<name>.md` | One domain preset |
-| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now |
+| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now. Each catalogue control, mapped to the codes of its rules, or to the reason it does not move |
 | [`packages/design-lint/docs/config.md`](../../../packages/design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
 | [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
@@ -49,9 +49,15 @@ The DSS categories. The catalogue categories get a row when their first rule is 
 | [UU](rules/uu/README.md) | Understand Users | 2 | 7 | 2 | 3 | 2 |
 | Total | | 92 | 243 | 158 | 76 | 9 |
 
+The catalogue categories. A control that does not move is not counted.
+
+| Category | Source | Controls | Rules | Lintable | Judged | Out of scope |
+| --- | --- | --- | --- | --- | --- | --- |
+| [CMP](rules/cmp/README.md) | Components | 8 | 14 | 6 | 8 | 0 |
+
 ## Metrics
 
-How much of the base a linter enforces. The first table counts DSS controls. The second counts rules. Both come from the `MAPPING.md` file of each category.
+How much of the DSS rules a linter enforces. The first table counts DSS controls. The second counts rules. Both come from the `MAPPING.md` file of each DSS category. The catalogue rules are not counted here.
 
 ### Controls
 

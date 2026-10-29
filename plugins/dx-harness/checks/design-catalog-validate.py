@@ -27,8 +27,10 @@ Validates standards/catalog.yaml for internal consistency:
      evaluator already covers.
  10. Rule files: every file under standards/rules/ sits in a category
      folder and takes its slug as its name, per ADR-0002. Every target in
-     standards/rules/redirects.yaml exists. No file remains under the
-     retired skills/design-restructure/ (#536).
+     standards/rules/redirects.yaml exists. Each code under its 'codes'
+     map is a rule of its control, and each control under 'notMoved' has a
+     reason (#546). No file remains under the retired
+     skills/design-restructure/ (#536).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
 """
@@ -767,9 +769,78 @@ def rule_redirect_errors(repo_root):
     files = data.get("files") if isinstance(data, dict) else None
     if not isinstance(files, dict):
         return [f"ERROR {loc}: needs a 'files' map of old file name to rule file path"]
-    return [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
-            for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
-            if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+    errors = [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
+              for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
+              if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+    return errors + rule_code_redirect_errors(rules_dir, data.get("codes"), data.get("notMoved"))
+
+
+RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
+# A judged rule has no file. Its row in MAPPING.md carries its code and `judged`.
+MAPPING_JUDGED_RE = re.compile(r"`([A-Z][A-Z0-9]*-\d+[a-z])`[^|]*\|\s*judged\s*\|")
+
+
+def rule_codes_in(rules_dir, category):
+    """The codes of a category: {code: dss} for each lint rule file, and
+    {code: None} for each judged row in its MAPPING.md."""
+    folder = os.path.join(rules_dir, category)
+    found = {}
+    if not os.path.isdir(folder):
+        return found
+    for fname in sorted(os.listdir(folder)):
+        full = os.path.join(folder, fname)
+        if fname == "MAPPING.md":
+            with open(full) as fh:
+                for line in fh:
+                    for code in MAPPING_JUDGED_RE.findall(line):
+                        found.setdefault(code, None)
+        elif fname.endswith(".md") and fname not in RULE_CATEGORY_DOCS:
+            with open(full) as fh:
+                match = re.match(r"^---\n(.*?)\n---\n", fh.read(), re.S)
+            try:
+                fm = yaml.safe_load(match.group(1)) if match else None
+            except yaml.YAMLError:
+                fm = None
+            if isinstance(fm, dict) and isinstance(fm.get("code"), str):
+                found[fm["code"]] = fm.get("dss")
+    return found
+
+
+def rule_code_redirect_errors(rules_dir, codes, not_moved):
+    """Error lines for the `codes` map of redirects.yaml: each catalogue control
+    maps to rules of its own number, and each rule is a lint file of that control
+    or a judged row in MAPPING.md. A control in `notMoved` has no codes."""
+    loc = "standards/rules/redirects.yaml"
+    if codes is None and not_moved is None:
+        return []
+    if not isinstance(codes or {}, dict) or not isinstance(not_moved or {}, dict):
+        return [f"ERROR {loc}: 'codes' and 'notMoved' are maps keyed by control"]
+    errors = []
+    known = {}
+    for control, targets in sorted((codes or {}).items(), key=lambda kv: str(kv[0])):
+        if not isinstance(targets, list) or not targets:
+            errors.append(f"ERROR {loc}: '{control}' needs a list of one or more rule codes")
+            continue
+        for code in targets:
+            match = RULE_CODE_RE.match(str(code))
+            if not match or not re.fullmatch(rf"{re.escape(str(control))}[a-z]", str(code)):
+                errors.append(f"ERROR {loc}: '{control}' maps to '{code}', which is not a rule of that control")
+                continue
+            category = match.group(1).lower()
+            if category not in known:
+                known[category] = rule_codes_in(rules_dir, category)
+            if code not in known[category]:
+                errors.append(f"ERROR {loc}: '{control}' maps to '{code}', which is neither a lint rule "
+                              f"file nor a judged row in {category}/MAPPING.md")
+            elif known[category][code] not in (None, control):
+                errors.append(f"ERROR {loc}: '{control}' maps to '{code}', whose dss is "
+                              f"'{known[category][code]}'")
+    for control, reason in sorted((not_moved or {}).items(), key=lambda kv: str(kv[0])):
+        if control in (codes or {}):
+            errors.append(f"ERROR {loc}: '{control}' is in both 'codes' and 'notMoved'")
+        if not isinstance(reason, str) or not reason.strip():
+            errors.append(f"ERROR {loc}: '{control}' in 'notMoved' needs a reason")
+    return errors
 
 
 # The base rules moved from here to standards/rules/ (#536).
@@ -2880,9 +2951,43 @@ def run_self_test():
                     e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
                 failures.append(f"FAIL rule redirects: {name}; got {errs!r}")
 
+        cmp_files = "files: {}\n"
+        for name, text, bad in [
+            ("a control mapped to a lint file and a judged row passes",
+             cmp_files + "codes:\n  CMP-2: [CMP-2a, CMP-2b]\nnotMoved:\n  CMP-9: Security.\n", None),
+            ("a code of another control fails",
+             cmp_files + "codes:\n  CMP-2: [CMP-3a]\n", "'CMP-2' maps to 'CMP-3a'"),
+            ("a code with no file and no judged row fails",
+             cmp_files + "codes:\n  CMP-2: [CMP-2c]\n", "neither a lint rule file nor a judged row"),
+            ("a lint file of another control fails",
+             cmp_files + "codes:\n  CMP-5: [CMP-5a]\n", "whose dss is 'CMP-2'"),
+            ("a control with no codes fails",
+             cmp_files + "codes:\n  CMP-2: []\n", "needs a list of one or more rule codes"),
+            ("a control both mapped and not moved fails",
+             cmp_files + "codes:\n  CMP-2: [CMP-2a]\nnotMoved:\n  CMP-2: Why.\n", "in both 'codes' and 'notMoved'"),
+            ("a control not moved with no reason fails",
+             cmp_files + "notMoved:\n  CMP-9: ''\n", "needs a reason"),
+        ]:
+            case_count += 1
+            rule_errors_for(["cmp/MAPPING.md"])
+            cmp_dir = os.path.join(rules_root, "standards", "rules", "cmp")
+            with open(os.path.join(cmp_dir, "MAPPING.md"), "w") as fh:
+                fh.write("| Rule | Check |\n|---|---|\n| `CMP-2b` | judged |\n")
+            with open(os.path.join(cmp_dir, "confirm.md"), "w") as fh:
+                fh.write("---\ncode: CMP-5a\ndss: CMP-2\n---\n" if "dss is" in str(bad)
+                         else "---\ncode: CMP-2a\ndss: CMP-2\n---\n")
+            with open(redirects, "w") as fh:
+                fh.write(text)
+            errs = rule_file_errors(rules_root)
+            if bad is None and errs:
+                failures.append(f"FAIL rule codes: {name}; got {errs!r}")
+            elif bad is not None and not any(
+                    e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
+                failures.append(f"FAIL rule codes: {name}; got {errs!r}")
+
         case_count += 1
         rule_errors_for(["bd/viewport-meta.md"])
-        left = os.path.join(rules_root, "skills", "design-restructure", "base", "bd", "BD-1a.md")
+        left =os.path.join(rules_root, "skills", "design-restructure", "base", "bd", "BD-1a.md")
         os.makedirs(os.path.dirname(left), exist_ok=True)
         with open(left, "w") as fh:
             fh.write("---\ncode: BD-1a\n---\n")

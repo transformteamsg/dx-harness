@@ -21,10 +21,14 @@ function codeOf(file: string) {
   return fm && typeof fm.code === "string" ? fm.code : null;
 }
 
+/* The rule files that moved from skills/design-restructure/base/: the nine DSS
+   categories. A catalogue category, such as cmp/, was written in place. */
+const DSS_CATEGORIES = ["bd", "pr", "tl", "tx", "uu", "wo", "wp", "wr", "wu"];
 const ruleFiles = fs.existsSync(RULES)
   ? fs
       .readdirSync(RULES, { recursive: true, encoding: "utf8" })
       .filter((rel) => rel.endsWith(".md") && !["README.md", "MAPPING.md"].includes(path.basename(rel)))
+      .filter((rel) => DSS_CATEGORIES.includes(rel.split(path.sep)[0]))
   : [];
 
 describe("2. a rule left at the old path fails the gate", () => {
