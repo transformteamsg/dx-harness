@@ -7,6 +7,8 @@ export type Tier = "L0" | "L1" | "L2";
 /* The frontmatter of a lint rule file. A judged rule has no file. */
 export interface RuleMeta {
   code: string;
+  /* The kebab-case name of the rule, which is also its file name. */
+  slug: string;
   dss: string;
   tier: Tier;
   surface: Surface;

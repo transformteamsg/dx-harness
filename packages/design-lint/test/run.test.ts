@@ -6,6 +6,7 @@ import type { RuleMeta, RuleModule } from "../src/types.ts";
 function rule(code: string, over: Partial<RuleMeta> = {}): RuleMeta {
   return {
     code,
+    slug: "a-rule",
     dss: code.slice(0, 4),
     tier: "L1",
     surface: "source",
