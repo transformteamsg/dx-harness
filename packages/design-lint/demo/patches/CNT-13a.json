@@ -1,0 +1,16 @@
+{
+  "code": "CNT-13a",
+  "describe": "Use a US spelling on the terms page.",
+  "edits": [
+    {
+      "file": "tl/terms.html",
+      "find": "use this service to apply.</p>",
+      "replace": "use this service to apply, and to honor these terms.</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/tl/terms.html"
+    }
+  ]
+}
