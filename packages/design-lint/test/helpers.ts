@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import type { Finding, RuleMeta } from "../src/types.ts";
 
@@ -42,5 +43,7 @@ export function compare(findings: Finding[], root: string, rules: RuleMeta[], ex
 /* The code of each rule that has no fixture pair under dir, except the codes in
    exempt. A fixture pair is pass/, fail/, and expected.json. */
 export function missingFixtures(rules: RuleMeta[], dir: string, exempt: string[] = []): string[] {
-  throw new Error("not implemented");
+  const complete = (code: string) =>
+    ["pass", "fail", "expected.json"].every((part) => fs.existsSync(path.join(dir, code, part)));
+  return rules.map((r) => r.code).filter((code) => !exempt.includes(code) && !complete(code));
 }
