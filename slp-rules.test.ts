@@ -2,11 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
+import { modules } from "./packages/design-lint/src/registry.ts";
+import { loadRules } from "./packages/design-lint/src/rules/load.ts";
+import { BASE, missingFixtures } from "./packages/design-lint/test/helpers.ts";
 
 /* The anti-slop controls SLP-1 to SLP-11 become base rules in the folder of the
    category that each one grades. SLP is not a category (ADR-0001 D10). See issue #550. */
 
 const ROOT = process.cwd();
+const FIXTURES = path.join(ROOT, "packages/design-lint/fixtures");
+const PATCHES = path.join(ROOT, "packages/design-lint/demo/patches");
 const PLUGIN = path.join(ROOT, "plugins/dx-harness");
 const RULES = path.join(PLUGIN, "standards/rules");
 
@@ -95,5 +100,27 @@ describe("1. each control becomes rules, and redirects.yaml maps it to them", ()
     expect(row, `no MAPPING.md row for ${code}`).not.toBe("");
     expect(row).toContain(`[\`${code}\`](${path.basename(fileFor(code)?.rel ?? "")})`);
     expect(cells(row)).toContain("lint");
+  });
+});
+
+describe("2. each lint rule proves itself with a fixture pair", () => {
+  const lint = Object.values(EXPECTED).flatMap((e) => e.lint);
+  const { rules } = loadRules(BASE);
+
+  it.each(lint)("gives %s a pass site, a fail site, and expected.json", (code) => {
+    const rule = rules.filter((r) => r.code === code);
+    expect(rule, `the linter does not load ${code}`).toHaveLength(1);
+    expect(missingFixtures(rule, FIXTURES)).toEqual([]);
+  });
+
+  it.each(lint)("registers a module for %s, with a break patch for the demo", (code) => {
+    expect(modules.map((m) => m.code)).toContain(code);
+    expect(fs.existsSync(path.join(PATCHES, `${code}.json`))).toBe(true);
+  });
+
+  it.each(lint)("expects at least one finding from the fail site of %s", (code) => {
+    const file = path.join(FIXTURES, code, "expected.json");
+    const expected = fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as unknown[]) : [];
+    expect(expected.length).toBeGreaterThan(0);
   });
 });
