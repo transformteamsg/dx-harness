@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Home</title>
+</head>
+<body>
+<section id="step">
+  <h2>Step 1 of 2</h2>
+  <button type="button" id="next">Next</button>
+</section>
+<div id="banner">
+  <p>Your draft is saved.</p>
+  <button type="button" id="close">Close</button>
+</div>
+<p><a id="after" href="#step">Back to the form</a></p>
+<script>
+  document.getElementById("next").addEventListener("click", function () {
+    const step = document.getElementById("step");
+    step.innerHTML = "<h2 tabindex=\"-1\">Step 2 of 2</h2>";
+    step.querySelector("h2").focus();
+  });
+  document.getElementById("close").addEventListener("click", function () {
+    document.getElementById("banner").hidden = true;
+    document.getElementById("after").focus();
+  });
+</script>
+</body>
+</html>

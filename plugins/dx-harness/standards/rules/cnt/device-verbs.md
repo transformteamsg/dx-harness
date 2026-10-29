@@ -1,7 +1,7 @@
 ---
 code: CNT-5a
 slug: device-verbs
-dss: CNT-5
+control: CNT-5
 tier: L2
 check: lint
 surface: rendered

@@ -1,0 +1,12 @@
+{
+  "code": "A11Y-11a",
+  "describe": "Add a status message that is also a focus target, so a screen reader reads it twice.",
+  "edits": [
+    {
+      "file": "a11y/details.html",
+      "find": "    <section id=\"details\">\n",
+      "replace": "    <section id=\"details\">\n      <div role=\"status\" tabindex=\"-1\"></div>\n"
+    }
+  ],
+  "expect": [{ "file": "a11y/details.html", "line": 31, "column": 7 }]
+}

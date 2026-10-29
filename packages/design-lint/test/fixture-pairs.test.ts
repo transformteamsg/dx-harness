@@ -30,7 +30,7 @@ describe("a new lint rule with no fixture pair", () => {
   fs.mkdirSync(path.join(dir, "rules", "lay"), { recursive: true });
   fs.writeFileSync(
     path.join(dir, "rules", "lay", "a-title.md"),
-    "---\ncode: LAY-9a\nslug: a-title\ndss: LAY-9\ntier: L2\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# LAY-9a: a title\n",
+    "---\ncode: LAY-9a\nslug: a-title\ncontrol: LAY-9\ntier: L2\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# LAY-9a: a title\n",
   );
   const fixtures = path.join(dir, "fixtures");
   fs.mkdirSync(path.join(fixtures, "LAY-8a", "pass"), { recursive: true });

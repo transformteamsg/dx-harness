@@ -1,7 +1,7 @@
 ---
 code: CNT-13a
 slug: spelling
-dss: CNT-13
+control: CNT-13
 tier: L2
 check: lint
 surface: rendered

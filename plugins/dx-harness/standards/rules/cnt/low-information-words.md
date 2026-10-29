@@ -1,7 +1,7 @@
 ---
 code: CNT-6a
 slug: low-information-words
-dss: CNT-6
+control: CNT-6
 tier: L2
 check: lint
 surface: rendered

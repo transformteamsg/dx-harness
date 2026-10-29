@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Home</title>
+</head>
+<body>
+<style>.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }</style>
+<form>
+  <label for="name">Full name</label>
+  <input id="name" type="text" name="name" placeholder="Tan Wei Ling">
+  <label>Email <input type="email" name="email"></label>
+  <h2 id="phone-label">Phone</h2>
+  <input type="tel" name="phone" aria-labelledby="phone-label">
+  <input type="hidden" name="token" value="1">
+  <button type="submit">Send</button>
+  <!-- No name at all. WR-1a reports it, so this rule does not. -->
+  <input type="text" name="unnamed">
+</form>
+</body>
+</html>

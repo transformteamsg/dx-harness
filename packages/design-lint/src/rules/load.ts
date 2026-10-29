@@ -4,7 +4,8 @@ import { parse } from "yaml";
 import type { RuleMeta, Surface, Tier } from "../types.ts";
 
 /* The category prefixes of ADR-0002: the nine of the DSS, then the eight of the catalogue. */
-const PREFIXES = ["BD", "WP", "WO", "WU", "WR", "PR", "TX", "TL", "UU", "A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"];
+const DSS_PREFIXES = ["BD", "WP", "WO", "WU", "WR", "PR", "TX", "TL", "UU"];
+const PREFIXES = [...DSS_PREFIXES, "A11Y", "TOK", "COL", "TYP", "CMP", "CNT", "LAY", "MOT"];
 const CODE = new RegExp(`^(?:${PREFIXES.join("|")})-\\d+[a-z]$`);
 /* A rule file is named by its kebab-case slug (ADR-0002). */
 const RULE_FILE = /^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
@@ -35,7 +36,10 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   else if (!CODE.test(fm.code)) errors.push(`${file}: code "${fm.code}" does not have a prefix of ${PREFIXES.join(", ")}`);
   if (typeof fm.slug !== "string") errors.push(`${file}: slug is missing`);
   else if (fm.slug !== path.basename(file, ".md")) errors.push(`${file}: slug "${fm.slug}" does not match the file name`);
-  if (typeof fm.dss !== "string") errors.push(`${file}: dss is missing`);
+  /* A DSS rule names its DSS control in dss. A catalogue rule names the control that it replaces in control. */
+  const prefix = typeof fm.code === "string" ? fm.code.split("-")[0] : "";
+  const source = DSS_PREFIXES.includes(prefix) ? "dss" : "control";
+  if (PREFIXES.includes(prefix) && typeof fm[source] !== "string") errors.push(`${file}: ${source} is missing`);
   if (!TIERS.includes(fm.tier as Tier)) errors.push(`${file}: tier "${String(fm.tier)}" is not L0, L1, or L2`);
   if (fm.check !== "lint") errors.push(`${file}: check is "${String(fm.check)}", and only a lint rule has a file`);
   if (!SURFACES.includes(fm.surface as Surface)) errors.push(`${file}: surface "${String(fm.surface)}" is not valid`);
@@ -49,7 +53,7 @@ export function parseRuleFile(text: string, file: string): RuleMeta | string[] {
   return {
     code: fm.code as string,
     slug: fm.slug as string,
-    dss: fm.dss as string,
+    control: fm[source] as string,
     tier: fm.tier as Tier,
     surface: fm.surface as Surface,
     engine: fm.engine as string,

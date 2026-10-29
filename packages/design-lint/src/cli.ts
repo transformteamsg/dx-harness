@@ -58,11 +58,12 @@ async function main(argv: string[]): Promise<number> {
 
   if (first === "list") {
     const registered = new Set(modules.map((m) => m.code));
+    const width = Math.max(8, ...rules.map((r) => r.code.length + 1));
     for (const rule of rules) {
       const { unset } = resolveParameters(rule, config, preset);
       const status = registered.has(rule.code) ? "module" : "no module";
       const need = unset.length > 0 ? `  unset: ${unset.join(", ")}` : "";
-      console.log(`${rule.code.padEnd(8)}${rule.tier}  ${rule.surface.padEnd(9)}${status}${need}`);
+      console.log(`${rule.code.padEnd(width)}${rule.tier}  ${rule.surface.padEnd(9)}${status}${need}`);
     }
     return 0;
   }

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Update your contact details</title>
+  <meta name="description" content="A form to update your phone number, used to test the visible label, motion, and focus rules.">
+  <link rel="canonical" href="https://example.gov.sg/a11y/details.html">
+  <link rel="stylesheet" href="/ds.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <a href="/">Community Grants</a>
+    <form role="search" action="/search.html">
+      <label for="q">Search</label>
+      <input id="q" type="search" name="q">
+      <button type="submit">Search</button>
+    </form>
+    <nav><a href="/apply.html">Apply</a> <a href="/about.html">About</a></nav>
+    <nav data-language-switcher><a hreflang="en" href="/">English</a> <a hreflang="zh" href="/zh/">中文</a></nav>
+  </header>
+  <main>
+    <h1>Update your contact details</h1>
+    <style>
+      .saving { width: 1rem; height: 1rem; border-radius: 50%; border: 3px solid currentColor; border-top-color: transparent; animation: turn 300ms linear 10; }
+      @keyframes turn { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .saving { animation: none; } }
+    </style>
+    <section id="details">
+      <form action="/a11y/details.html">
+        <p><label for="phone">Phone number</label></p>
+        <p><input id="phone" type="tel" name="phone" autocomplete="tel" placeholder="9123 4567"></p>
+        <p><button type="button" id="save">Save</button></p>
+      </form>
+    </section>
+    <div class="saving" role="presentation"></div>
+    <script>
+      document.getElementById("save").addEventListener("click", function () {
+        var details = document.getElementById("details");
+        details.innerHTML = "<h2 tabindex=\"-1\" id=\"done\">Your details are saved</h2>";
+        document.getElementById("done").focus();
+      });
+    </script>
+  </main>
+</body>
+</html>

@@ -1,7 +1,7 @@
 ---
 code: TYP-4a
 slug: no-uppercase-transform
-dss: TYP-4
+control: TYP-4
 tier: L2
 check: lint
 surface: rendered

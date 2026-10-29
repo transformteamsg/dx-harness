@@ -56,7 +56,7 @@ describe("1. a typography control becomes rules, and redirects.yaml maps it", ()
       const lint = lintRules.get(code);
       if (lint) {
         expect(lint.check, `${code} check`).toBe("lint");
-        expect(lint.dss, `${code} dss`).toBe(control);
+        expect(lint.control, `${code} control`).toBe(control);
       } else {
         expect(judged.has(code), `${code} is neither a lint rule file nor a judged row of MAPPING.md`).toBe(true);
       }

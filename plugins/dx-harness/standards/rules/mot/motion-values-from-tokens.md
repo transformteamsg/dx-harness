@@ -1,7 +1,7 @@
 ---
 code: MOT-2a
 slug: motion-values-from-tokens
-dss: MOT-2
+control: MOT-2
 tier: L2
 check: lint
 surface: source

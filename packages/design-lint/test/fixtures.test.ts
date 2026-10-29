@@ -47,7 +47,7 @@ describe("every lint rule", () => {
     fs.mkdirSync(path.join(dir, "mot"));
     fs.writeFileSync(
       path.join(dir, "mot", "a-new-rule.md"),
-      "---\ncode: MOT-9a\nslug: a-new-rule\ndss: MOT-9\ntier: L2\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# MOT-9a: a new rule\n",
+      "---\ncode: MOT-9a\nslug: a-new-rule\ncontrol: MOT-9\ntier: L2\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# MOT-9a: a new rule\n",
     );
     expect(unproven(loadRules(dir).rules.map((r) => r.code))).toEqual(["MOT-9a"]);
   });

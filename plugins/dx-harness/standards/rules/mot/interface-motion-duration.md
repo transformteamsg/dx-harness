@@ -1,7 +1,7 @@
 ---
 code: MOT-1a
 slug: interface-motion-duration
-dss: MOT-1
+control: MOT-1
 tier: L2
 check: lint
 surface: source

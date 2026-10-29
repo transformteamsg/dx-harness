@@ -55,7 +55,7 @@ describe("1. LAY-1 becomes rules", () => {
   it("gives the lint rule LAY-1a a rule file with the base code and a check of lint", () => {
     const file = fileOf("LAY-1a");
     expect(file, "no rule file in lay/ carries LAY-1a").toBeDefined();
-    expect(frontmatter(file!)).toMatchObject({ code: "LAY-1a", check: "lint", dss: "LAY-1" });
+    expect(frontmatter(file!)).toMatchObject({ code: "LAY-1a", check: "lint", control: "LAY-1" });
   });
 });
 

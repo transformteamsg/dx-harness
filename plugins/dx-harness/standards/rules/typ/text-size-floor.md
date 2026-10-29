@@ -1,7 +1,7 @@
 ---
 code: TYP-2a
 slug: text-size-floor
-dss: TYP-2
+control: TYP-2
 tier: L1
 check: lint
 surface: rendered

@@ -1,7 +1,7 @@
 ---
 code: LAY-1a
 slug: declared-column-count
-dss: LAY-1
+control: LAY-1
 tier: L2
 check: lint
 surface: source

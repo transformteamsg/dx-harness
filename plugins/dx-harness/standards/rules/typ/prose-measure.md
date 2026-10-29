@@ -1,7 +1,7 @@
 ---
 code: TYP-6a
 slug: prose-measure
-dss: TYP-6
+control: TYP-6
 tier: L2
 check: lint
 surface: rendered

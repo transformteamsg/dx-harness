@@ -1,7 +1,7 @@
 ---
 code: CNT-12a
 slug: sentence-case
-dss: CNT-12
+control: CNT-12
 tier: L2
 check: lint
 surface: rendered

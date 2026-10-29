@@ -1,7 +1,7 @@
 ---
 code: TYP-5a
 slug: tabular-figures-in-columns
-dss: TYP-5
+control: TYP-5
 tier: L2
 check: lint
 surface: rendered

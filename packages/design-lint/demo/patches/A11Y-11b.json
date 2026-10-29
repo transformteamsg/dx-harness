@@ -1,0 +1,12 @@
+{
+  "code": "A11Y-11b",
+  "describe": "Stop moving focus to the new heading after the save, so focus drops to the page.",
+  "edits": [
+    {
+      "file": "a11y/details.html",
+      "find": "        document.getElementById(\"done\").focus();\n",
+      "replace": ""
+    }
+  ],
+  "expect": [{ "file": "/a11y/details.html" }]
+}

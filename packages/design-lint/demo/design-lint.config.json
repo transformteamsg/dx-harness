@@ -11,7 +11,8 @@
     "config.d/mot.json",
     "config.d/lay.json",
     "config.d/typ.json",
-    "config.d/cnt.json"
+    "config.d/cnt.json",
+    "config.d/a11y.json"
   ],
   "select": [
     "BD-1a",

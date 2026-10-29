@@ -82,7 +82,8 @@ export async function startSession(
   return {
     async open(pagePath, viewport, options?: OpenOptions): Promise<RenderedPage> {
       const key = `${viewport.width}x${viewport.height}`;
-      const cached = options?.fresh ? undefined : pages.get(`${key} ${pagePath}`);
+      const cacheKey = `${key}${options?.reducedMotion ? " reduce" : ""} ${pagePath}`;
+      const cached = options?.fresh ? undefined : pages.get(cacheKey);
       if (cached) return cached;
       let context = contexts.get(key);
       if (!context) {
@@ -90,6 +91,7 @@ export async function startSession(
         contexts.set(key, context);
       }
       const page = await context.newPage();
+      if (options?.reducedMotion) await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto(`${baseUrl}${pagePath}`, { waitUntil });
       const opened: RenderedPage = {
         evaluate: (fn, arg) => page.evaluate(fn as (a: unknown) => unknown, arg) as Promise<never>,
@@ -102,7 +104,7 @@ export async function startSession(
         focus: (selector) => page.focus(selector),
         screenshot: async (selector) => new Uint8Array(selector ? await page.locator(selector).first().screenshot() : await page.screenshot()),
       };
-      if (!options?.fresh) pages.set(`${key} ${pagePath}`, opened);
+      if (!options?.fresh) pages.set(cacheKey, opened);
       return opened;
     },
     async close() {

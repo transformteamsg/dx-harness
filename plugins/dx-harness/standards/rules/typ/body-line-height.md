@@ -1,7 +1,7 @@
 ---
 code: TYP-2b
 slug: body-line-height
-dss: TYP-2
+control: TYP-2
 tier: L1
 check: lint
 surface: rendered

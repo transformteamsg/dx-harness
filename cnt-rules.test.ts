@@ -80,7 +80,7 @@ describe("4. each listed control has one or more rules", () => {
   it.each(HYBRIDS)("gives the lint rule of $control a rule file with its base code", ({ control, lint }) => {
     const file = fileOf(lint!);
     expect(file, `no rule file in cnt/ carries ${lint}`).toBeDefined();
-    expect(frontmatter(file!)).toMatchObject({ code: lint, check: "lint", dss: control });
+    expect(frontmatter(file!)).toMatchObject({ code: lint, check: "lint", control });
   });
 });
 
