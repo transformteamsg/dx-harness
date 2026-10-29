@@ -767,9 +767,37 @@ def rule_redirect_errors(repo_root):
     files = data.get("files") if isinstance(data, dict) else None
     if not isinstance(files, dict):
         return [f"ERROR {loc}: needs a 'files' map of old file name to rule file path"]
-    return [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
-            for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
-            if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+    errors = [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
+              for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
+              if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+    return errors + rule_code_redirect_errors(rules_dir, data.get("codes", {}))
+
+
+RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
+
+
+def rule_code_redirect_errors(rules_dir, codes):
+    """Error lines for each entry of the `codes` map of redirects.yaml that does
+    not name a list of rule codes, or names a code that the MAPPING.md of its
+    category does not list."""
+    loc = "standards/rules/redirects.yaml"
+    if not isinstance(codes, dict):
+        return [f"ERROR {loc}: 'codes' needs a map of old code to a list of rule codes"]
+    errors = []
+    for old, new in sorted(codes.items(), key=lambda kv: str(kv[0])):
+        if not isinstance(new, list) or not new:
+            errors.append(f"ERROR {loc}: '{old}' needs a list of one or more rule codes")
+            continue
+        for code in new:
+            m = RULE_CODE_RE.match(str(code))
+            mapping = os.path.join(rules_dir, m.group(1).lower(), "MAPPING.md") if m else ""
+            listed = False
+            if mapping and os.path.isfile(mapping):
+                with open(mapping) as fh:
+                    listed = f"`{code}`" in fh.read()
+            if not listed:
+                errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which no MAPPING.md lists")
+    return errors
 
 
 # The base rules moved from here to standards/rules/ (#536).

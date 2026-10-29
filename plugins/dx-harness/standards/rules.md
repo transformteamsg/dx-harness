@@ -3,7 +3,7 @@
 The base layer of the design standard. Every product follows it. It holds two sets of rules:
 
 - **The DSS rules.** Each implements a control of the Digital Service Standards (DSS). Their folders take the nine DSS prefixes, such as `bd/` and `wp/`.
-- **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cmp/` and `cnt/`. None is written yet: the tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write them.
+- **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cmp/` and `typ/`. The tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write them, and `typ/` is the first.
 
 [ADR-0002](../../../docs/adr/0002-rule-categories-and-file-names.md) lists the 17 categories and the file-name convention. The live `dx-design-*` skills and `checks/` do not read these rules yet.
 
@@ -25,12 +25,12 @@ The base runs with no domain and no `DESIGN.md`.
 | `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part |
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
 | `presets/<name>.md` | One domain preset |
-| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now |
+| `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now, and under `codes`, each catalogue control mapped to the rules that replace it |
 | [`packages/design-lint/docs/config.md`](../../../packages/design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
 | [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
 | [`packages/design-lint/docs/building-a-rule.md`](../../../packages/design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
-| `packages/design-lint/` | The linter: 157 of the 158 lint rules have a module, a fixture pair, and a break patch |
+| `packages/design-lint/` | The linter: 162 of the 163 lint rules have a module, a fixture pair, and a break patch |
 
 ## Categories
 
@@ -47,15 +47,16 @@ The DSS categories. The catalogue categories get a row when their first rule is 
 | [TX](rules/tx/README.md) | Transactions and Payments | 15 | 29 | 16 | 11 | 2 |
 | [TL](rules/tl/README.md) | Trust and Legitimacy | 6 | 18 | 13 | 5 | 0 |
 | [UU](rules/uu/README.md) | Understand Users | 2 | 7 | 2 | 3 | 2 |
-| Total | | 92 | 243 | 158 | 76 | 9 |
+| [TYP](rules/typ/README.md) | Catalogue: Typography | 4 | 8 | 5 | 3 | 0 |
+| Total | | 96 | 251 | 163 | 79 | 9 |
 
 ## Metrics
 
-How much of the base a linter enforces. The first table counts DSS controls. The second counts rules. Both come from the `MAPPING.md` file of each category.
+How much of the base a linter enforces. The first table counts source controls: the DSS controls and the catalogue controls that became rules. The second counts rules. Both come from the `MAPPING.md` file of each category.
 
 ### Controls
 
-A DSS control is **fully linted** when every rule under it is a lint rule. It is **hybrid** when it has a lint rule and also a judged or out-of-scope rule. It is **judged only** when it has no lint rule and has a judged rule. It is **out of scope** when it has neither.
+A source control is **fully linted** when every rule under it is a lint rule. It is **hybrid** when it has a lint rule and also a judged or out-of-scope rule. It is **judged only** when it has no lint rule and has a judged rule. It is **out of scope** when it has neither.
 
 | Category | Controls | Fully linted | Hybrid | Judged only | Out of scope |
 | --- | --- | --- | --- | --- | --- |
@@ -68,16 +69,17 @@ A DSS control is **fully linted** when every rule under it is a lint rule. It is
 | [TX](rules/tx/README.md) | 15 | 2 | 11 | 1 | 1 |
 | [TL](rules/tl/README.md) | 6 | 1 | 5 | 0 | 0 |
 | [UU](rules/uu/README.md) | 2 | 0 | 2 | 0 | 0 |
-| Total | 92 | 13 | 72 | 6 | 1 |
-| Share | 100% | 14.1% | 78.3% | 6.5% | 1.1% |
+| [TYP](rules/typ/README.md) | 4 | 1 | 3 | 0 | 0 |
+| Total | 96 | 14 | 75 | 6 | 1 |
+| Share | 100% | 14.6% | 78.1% | 6.3% | 1.0% |
 
-85 of 92 controls (92.4%) have at least one lint rule. The controls with no lint rule are `WP-4`, `WP-5`, `WO-6`, `WO-12`, `WU-3`, `TX-1`, `TX-14`. `WP-5` has none because its lint part moved into `WP-3a`, and `WO-12` has none because its lint parts are covered by `WP-6a` and `WR-1a`.
+89 of 96 controls (92.7%) have at least one lint rule. The controls with no lint rule are `WP-4`, `WP-5`, `WO-6`, `WO-12`, `WU-3`, `TX-1`, `TX-14`. `WP-5` has none because its lint part moved into `WP-3a`, and `WO-12` has none because its lint parts are covered by `WP-6a` and `WR-1a`.
 
 ### Rules
 
 | Lintable | Judged | Out of scope | Total |
 | --- | --- | --- | --- |
-| 158 (65.0%) | 76 (31.3%) | 9 (3.7%) | 243 |
+| 163 (64.9%) | 79 (31.5%) | 9 (3.6%) | 251 |
 
 The judged rules and the hybrid controls are where `dx-design-judge` carries the load. A lint rule that is tier L2 only warns, so the share of rules that can block a commit is lower than the lintable share.
 

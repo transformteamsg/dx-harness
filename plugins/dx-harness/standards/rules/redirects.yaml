@@ -1,4 +1,4 @@
-# Old rule file names, mapped to where each file is now (ADR-0001 D11, ADR-0002).
+# Old rule file names and old codes, mapped to where each is now (ADR-0001 D11, ADR-0002).
 # `files` maps a file name from skills/design-restructure/base/ to its path under
 # standards/rules/. When a file is renamed again, its old entry points to the newest path.
 files:
@@ -160,3 +160,12 @@ files:
   WU-14a.md: wu/accessible-login.md
   WU-14b.md: wu/credential-paste-and-autofill.md
   WU-14d.md: wu/no-captcha.md
+# `codes` maps a control code from catalog.yaml to the codes of the rules that
+# replace it. A control that does not move maps to the rules of the control that
+# states it (LAY-4 to TYP-6, #545).
+codes:
+  TYP-2: [TYP-2a, TYP-2b]
+  TYP-4: [TYP-4a, TYP-4b]
+  TYP-5: [TYP-5a, TYP-5b]
+  TYP-6: [TYP-6a, TYP-6b]
+  LAY-4: [TYP-6a, TYP-6b]
