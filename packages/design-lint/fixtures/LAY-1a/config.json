@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "LAY-1a": {
+      "gridColumns": 12
+    }
+  }
+}
