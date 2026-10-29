@@ -27,8 +27,7 @@ Validates standards/catalog.yaml for internal consistency:
      evaluator already covers.
  10. Rule files: every file under standards/rules/ sits in a category
      folder and takes its slug as its name, per ADR-0002. Every target in
-     standards/rules/redirects.yaml exists: a file for 'files', and a rule
-     code for 'codes'. No file remains under the
+     standards/rules/redirects.yaml exists. No file remains under the
      retired skills/design-restructure/ (#536).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
@@ -754,7 +753,8 @@ def rule_file_errors(repo_root):
 
 def rule_redirect_errors(repo_root):
     """Error lines for each entry of standards/rules/redirects.yaml whose
-    target is not a file under standards/rules/."""
+    target is not a file under standards/rules/, or whose new rule code has no
+    row in the MAPPING.md of its category."""
     rules_dir = os.path.join(repo_root, "standards", "rules")
     path = os.path.join(rules_dir, "redirects.yaml")
     if not os.path.isfile(path):
@@ -773,34 +773,22 @@ def rule_redirect_errors(repo_root):
               if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
     codes = data.get("codes", {})
     if not isinstance(codes, dict):
-        return errors + [f"ERROR {loc}: 'codes' must map a control to a list of rule codes"]
-    known = rule_codes(rules_dir)
-    for control, targets in sorted(codes.items(), key=lambda kv: str(kv[0])):
-        if not isinstance(targets, list) or not targets:
-            errors.append(f"ERROR {loc}: '{control}' needs a list of one or more rule codes")
+        return errors + [f"ERROR {loc}: 'codes' is a map of old control code to a list of rule codes"]
+    for old, new in sorted(codes.items(), key=lambda kv: str(kv[0])):
+        if not isinstance(new, list) or not new:
+            errors.append(f"ERROR {loc}: '{old}' needs a list of one or more rule codes")
             continue
-        errors.extend(f"ERROR {loc}: '{control}' redirects to '{code}', which no rule file "
-                      f"or MAPPING.md names" for code in targets if code not in known)
-    return errors
-
-
-def rule_codes(rules_dir):
-    """The codes of the rules under rules_dir: the code of each rule file, and each
-    code in backticks in a MAPPING.md, which is where a judged rule is listed."""
-    codes = set()
-    for root, _dirs, fnames in os.walk(rules_dir):
-        for fname in fnames:
-            if not fname.endswith(".md"):
+        for code in new:
+            if not isinstance(code, str) or not re.fullmatch(re.escape(str(old)) + r"[a-z]", code):
+                errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which is not "
+                              f"'{old}' and a letter")
                 continue
-            with open(os.path.join(root, fname)) as fh:
-                text = fh.read()
-            if fname == "MAPPING.md":
-                codes.update(re.findall(r"`([A-Z][A-Z0-9]*-\d+[a-z])`", text))
-            else:
-                m = re.match(r"---\n[\s\S]*?^code:\s*(\S+)", text, re.M)
-                if m:
-                    codes.add(m.group(1))
-    return codes
+            mapping = os.path.join(rules_dir, str(old).split("-")[0].lower(), "MAPPING.md")
+            text = open(mapping).read() if os.path.isfile(mapping) else ""
+            if f"`{code}`" not in text:
+                errors.append(f"ERROR {loc}: '{old}' redirects to '{code}', which has no row "
+                              f"in {os.path.relpath(mapping, repo_root)}")
+    return errors
 
 
 # The base rules moved from here to standards/rules/ (#536).
@@ -2863,7 +2851,9 @@ def run_self_test():
                 full = os.path.join(rules_dir, rel)
                 os.makedirs(os.path.dirname(full), exist_ok=True)
                 with open(full, "w") as fh:
-                    fh.write("files: {}\n" if rel.endswith(".yaml") else "---\ncode: BD-1a\n---\n")
+                    fh.write("files: {}\n" if rel.endswith(".yaml")
+                             else "| BD-1 | `BD-1a` |\n" if rel.endswith("MAPPING.md")
+                             else "---\ncode: BD-1a\n---\n")
             return rule_file_errors(rules_root)
 
         for name, files, bad in [
@@ -2899,15 +2889,17 @@ def run_self_test():
              "files:\n  BD-1a.md: bd/zoom.md\n", "'BD-1a.md' redirects to 'bd/zoom.md'"),
             ("a redirects.yaml with no files map fails", "BD-1a.md: bd/viewport-meta.md\n",
              "needs a 'files' map"),
-            ("a control that redirects to a rule code that exists passes",
+            ("a code redirect to a rule in MAPPING.md passes",
              "files: {}\ncodes:\n  BD-1: [BD-1a]\n", None),
-            ("a control that redirects to a missing rule code fails",
-             "files: {}\ncodes:\n  BD-1: [BD-1a, BD-1z]\n", "'BD-1' redirects to 'BD-1z'"),
-            ("a control that redirects to no rule code fails",
+            ("a code redirect to a rule with no MAPPING.md row fails",
+             "files: {}\ncodes:\n  BD-1: [BD-1z]\n", "'BD-1' redirects to 'BD-1z', which has no row"),
+            ("a code redirect to a code of another control fails",
+             "files: {}\ncodes:\n  BD-1: [BD-2a]\n", "'BD-1' redirects to 'BD-2a', which is not"),
+            ("a code redirect with no rule codes fails",
              "files: {}\ncodes:\n  BD-1: []\n", "'BD-1' needs a list"),
         ]:
             case_count += 1
-            rule_errors_for(["bd/viewport-meta.md"])
+            rule_errors_for(["bd/viewport-meta.md", "bd/MAPPING.md"])
             with open(redirects, "w") as fh:
                 fh.write(text)
             errs = rule_file_errors(rules_root)

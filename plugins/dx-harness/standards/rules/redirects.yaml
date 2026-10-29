@@ -1,7 +1,7 @@
 # Old rule file names, mapped to where each file is now (ADR-0001 D11, ADR-0002).
 # `files` maps a file name from skills/design-restructure/base/ to its path under
 # standards/rules/. When a file is renamed again, its old entry points to the newest path.
-# `codes` maps a control of catalog.yaml to the base rules that replace it.
+# `codes` maps a control code from catalog.yaml to the base rule codes that replace it.
 files:
   BD-1a.md: bd/viewport-meta.md
   BD-1b.md: bd/no-horizontal-scroll.md
@@ -162,6 +162,11 @@ files:
   WU-14b.md: wu/credential-paste-and-autofill.md
   WU-14d.md: wu/no-captcha.md
 codes:
+  LAY-1: [LAY-1a, LAY-1b]
+  LAY-3: [LAY-3a]
+  LAY-5: [LAY-5a]
+  LAY-6: [LAY-6a]
+  LAY-7: [LAY-7a]
   MOT-1: [MOT-1a, MOT-1b]
   MOT-2: [MOT-2a, MOT-2b]
   MOT-3: [MOT-3a]

@@ -17,7 +17,7 @@ describe("design-lint list with the default rules folder", () => {
     const run = spawnSync(process.execPath, ["src/cli.ts", "list"], { cwd: PACKAGE, encoding: "utf8" });
     const listed = run.stdout.split("\n").filter(Boolean).map((line) => line.split(/\s+/)[0]);
     const codes = fs.existsSync(BASE) ? loadRules(BASE).rules.map((r) => r.code) : [];
-    expect(codes).toHaveLength(160);
+    expect(codes).toHaveLength(161);
     expect(listed).toEqual(codes);
   });
 });
