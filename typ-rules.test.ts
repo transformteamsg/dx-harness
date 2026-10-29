@@ -27,12 +27,16 @@ const lintRules = new Map<string, Record<string, unknown>>(
   (fs.existsSync(TYP) ? fs.readdirSync(TYP) : [])
     .filter((f) => f.endsWith(".md") && !["README.md", "MAPPING.md"].includes(f))
     .map((f) => frontmatter(path.join(TYP, f)))
+    /* The rules from the SLP controls are in this folder too (#550). */
+    .filter((fm) => !String(fm.control).startsWith("SLP-"))
     .map((fm) => [String(fm.code), fm]),
 );
 
-/* The judged rules have no file. MAPPING.md lists each in a row whose check is judged. */
+/* The judged rules have no file. MAPPING.md lists each in a row whose check is judged.
+   The section for the SLP controls is left out. */
 const judged = new Set(
   read(path.join(TYP, "MAPPING.md"))
+    .split("## From the SLP controls")[0]
     .split("\n")
     .filter((line) => /\|\s*judged\s*\|/.test(line))
     .flatMap((line) => [...line.matchAll(/`(TYP-\d+[a-z])`/g)].map((m) => m[1])),

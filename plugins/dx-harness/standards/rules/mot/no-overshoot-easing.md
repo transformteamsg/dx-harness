@@ -1,7 +1,7 @@
 ---
 code: MOT-4a
 slug: no-overshoot-easing
-dss: SLP-8
+control: SLP-8
 tier: L1
 check: lint
 surface: source

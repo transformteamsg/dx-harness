@@ -1,7 +1,7 @@
 ---
 code: TYP-7a
 slug: adjacent-size-ratio
-dss: SLP-6
+control: SLP-6
 tier: L2
 check: lint
 surface: rendered

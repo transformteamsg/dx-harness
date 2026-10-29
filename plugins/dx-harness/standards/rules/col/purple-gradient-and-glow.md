@@ -1,7 +1,7 @@
 ---
 code: COL-3a
 slug: purple-gradient-and-glow
-dss: SLP-1
+control: SLP-1
 tier: L1
 check: lint
 surface: source

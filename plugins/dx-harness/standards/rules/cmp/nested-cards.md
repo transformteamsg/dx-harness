@@ -1,7 +1,7 @@
 ---
 code: CMP-13a
 slug: nested-cards
-dss: SLP-4
+control: SLP-4
 tier: L1
 check: lint
 surface: rendered

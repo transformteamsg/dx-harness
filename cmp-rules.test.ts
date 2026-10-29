@@ -27,6 +27,8 @@ const lintRules = fs.existsSync(CMP)
       .readdirSync(CMP)
       .filter((f) => f.endsWith(".md") && !["README.md", "MAPPING.md"].includes(f))
       .map((f) => ({ file: f, fm: frontmatter(path.join(CMP, f)) }))
+      /* The rules from the SLP controls are in this folder too (#550). */
+      .filter((r) => !String(r.fm.control).startsWith("SLP-"))
   : [];
 const lintCodes = new Map(lintRules.map((r) => [String(r.fm.code), r]));
 

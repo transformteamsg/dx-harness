@@ -1,7 +1,7 @@
 ---
 code: COL-4a
 slug: gradient-text
-dss: SLP-2
+control: SLP-2
 tier: L1
 check: lint
 surface: source

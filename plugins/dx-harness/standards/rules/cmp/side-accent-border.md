@@ -1,7 +1,7 @@
 ---
 code: CMP-12a
 slug: side-accent-border
-dss: SLP-3
+control: SLP-3
 tier: L1
 check: lint
 surface: source

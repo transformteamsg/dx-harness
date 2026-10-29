@@ -2,14 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
-import { modules } from "./packages/design-lint/src/registry.ts";
-import { loadRules } from "./packages/design-lint/src/rules/load.ts";
-import { BASE, missingFixtures } from "./packages/design-lint/test/helpers.ts";
+import { modules } from "../src/registry.ts";
+import { loadRules } from "../src/rules/load.ts";
+import { BASE, missingFixturePairs } from "./helpers.ts";
 
 /* The anti-slop controls SLP-1 to SLP-11 become base rules in the folder of the
    category that each one grades. SLP is not a category (ADR-0001 D10). See issue #550. */
 
-const ROOT = process.cwd();
+const ROOT = path.resolve(import.meta.dirname, "../../..");
 const FIXTURES = path.join(ROOT, "packages/design-lint/fixtures");
 const PATCHES = path.join(ROOT, "packages/design-lint/demo/patches");
 const PLUGIN = path.join(ROOT, "plugins/dx-harness");
@@ -79,11 +79,11 @@ describe("1. each control becomes rules, and redirects.yaml maps it to them", ()
   });
 
   const lint = Object.entries(EXPECTED).flatMap(([id, e]) => e.lint.map((code) => [code, id]));
-  it.each(lint)("gives the lint rule %s a file with check lint and dss %s", (code, id) => {
+  it.each(lint)("gives the lint rule %s a file with check lint and control %s", (code, id) => {
     const file = fileFor(code);
     expect(file, `no rule file carries ${code}`).toBeDefined();
     expect(file?.fm.check).toBe("lint");
-    expect(file?.fm.dss).toBe(id);
+    expect(file?.fm.control).toBe(id);
     expect(path.dirname(file?.rel ?? "")).toBe(folderOf(code));
   });
 
@@ -110,7 +110,7 @@ describe("2. each lint rule proves itself with a fixture pair", () => {
   it.each(lint)("gives %s a pass site, a fail site, and expected.json", (code) => {
     const rule = rules.filter((r) => r.code === code);
     expect(rule, `the linter does not load ${code}`).toHaveLength(1);
-    expect(missingFixtures(rule, FIXTURES)).toEqual([]);
+    expect(missingFixturePairs(rule, FIXTURES)).toEqual([]);
   });
 
   it.each(lint)("registers a module for %s, with a break patch for the demo", (code) => {

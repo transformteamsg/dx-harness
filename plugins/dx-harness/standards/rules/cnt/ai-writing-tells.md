@@ -1,7 +1,7 @@
 ---
 code: CNT-15a
 slug: ai-writing-tells
-dss: SLP-9
+control: SLP-9
 tier: L2
 check: lint
 surface: rendered

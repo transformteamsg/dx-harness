@@ -23,7 +23,10 @@ function frontmatter(text: string): Record<string, unknown> {
 const ruleFiles = fs.existsSync(MOT)
   ? fs.readdirSync(MOT).filter((name) => name.endsWith(".md") && !["README.md", "MAPPING.md"].includes(name))
   : [];
-const lintRules = ruleFiles.map((name) => ({ name, text: read(path.join(MOT, name)), fm: frontmatter(read(path.join(MOT, name))) }));
+/* The rules from the SLP controls are in this folder too (#550). */
+const lintRules = ruleFiles
+  .map((name) => ({ name, text: read(path.join(MOT, name)), fm: frontmatter(read(path.join(MOT, name))) }))
+  .filter((r) => !String(r.fm.control).startsWith("SLP-"));
 const mapping = read(path.join(MOT, "MAPPING.md"));
 
 /* The check of a rule, read from its row in MAPPING.md: `| ... | CODE ... | check | ...`. */
