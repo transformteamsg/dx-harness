@@ -16,8 +16,8 @@ describe("loadRules on the base layer", () => {
     expect(rules.length).toBeGreaterThan(100);
   });
 
-  it("reads all 180 lint rules: 158 of the DSS and 22 of the catalogue", () => {
-    expect(rules).toHaveLength(180);
+  it("reads all 187 lint rules: 158 of the DSS and 29 of the catalogue", () => {
+    expect(rules).toHaveLength(187);
     expect(rules.filter((r) => r.code.startsWith("A11Y-"))).toHaveLength(4);
   });
 

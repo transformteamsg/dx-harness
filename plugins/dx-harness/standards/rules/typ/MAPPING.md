@@ -14,3 +14,12 @@ The catalogue lists no "Not required for" text for these controls. Each rule fil
 | | `TYP-5b` Figures that align or update outside a table, such as a live counter, use tabular figures | judged | | | |
 | TYP-6 Comfortable measure | [`TYP-6a`](prose-measure.md) A line of running prose is no wider than 75ch | lint | rendered | custom | `pages`, `proseSelector`, `maxMeasure` |
 | | `TYP-6b` Running prose outside `proseSelector` keeps to the measure, and a wider block is a deliberate exception | judged | | | |
+
+## From the SLP controls
+
+SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
+
+| Source control | Rule | Check | Surface | Engine | Parameters |
+| --- | --- | --- | --- | --- | --- |
+| SLP-6 Adjacent type sizes differ by 1.10 or more | [`TYP-7a`](adjacent-size-ratio.md) Adjacent text sizes on a page differ by the minimum ratio. | lint | rendered | custom | `pages`, `minRatio`, `ignoreSelector` |
+| | `TYP-7b` The heading, subheading, and body text read as separate levels, by weight, spacing, and position as well as size. Lint part: [`TYP-7a`](adjacent-size-ratio.md). | judged | | | |

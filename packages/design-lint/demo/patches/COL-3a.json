@@ -1,0 +1,18 @@
+{
+  "code": "COL-3a",
+  "describe": "Add a purple gradient background.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- col-3a -->",
+      "replace": "<div style=\"background: linear-gradient(90deg, #7c3aed, #a855f7)\">Apply</div>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "slp/index.html",
+      "line": 26,
+      "column": 5
+    }
+  ]
+}

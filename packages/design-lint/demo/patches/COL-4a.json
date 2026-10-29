@@ -1,0 +1,18 @@
+{
+  "code": "COL-4a",
+  "describe": "Give a heading a gradient text fill.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- col-4a -->",
+      "replace": "<p style=\"background: linear-gradient(90deg, #0b5, #05b); -webkit-background-clip: text; background-clip: text; color: transparent\">Apply now</p>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "slp/index.html",
+      "line": 27,
+      "column": 5
+    }
+  ]
+}

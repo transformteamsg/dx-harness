@@ -1,0 +1,16 @@
+{
+  "code": "CMP-13a",
+  "describe": "Put a card inside a card.",
+  "edits": [
+    {
+      "file": "slp/index.html",
+      "find": "<!-- cmp-13a -->",
+      "replace": "<div style=\"border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-bg); padding: var(--space-4)\"><div style=\"border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-bg)\">Step 1</div></div>"
+    }
+  ],
+  "expect": [
+    {
+      "file": "/slp/"
+    }
+  ]
+}

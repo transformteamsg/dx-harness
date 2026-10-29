@@ -13,7 +13,8 @@
     "config.d/typ.json",
     "config.d/cnt.json",
     "config.d/a11y.json",
-    "config.d/cmp.json"
+    "config.d/cmp.json",
+    "config.d/slp.json"
   ],
   "select": [
     "BD-1a",

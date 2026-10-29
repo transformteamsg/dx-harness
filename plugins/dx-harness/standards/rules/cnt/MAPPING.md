@@ -37,3 +37,12 @@ The CNT controls list no "Not required for" text, so no row has an exemption par
 | `CNT-11a` | The established term for an element comes from other products, not from the page. |
 | `CNT-12b` | Prose holds names that no list knows, so each capital in prose is a judgment. |
 | `CNT-13b` | A homophone or a wrong word is spelled correctly, so only the meaning shows the error. |
+
+## From the SLP controls
+
+SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
+
+| Source control | Rule | Check | Surface | Engine | Parameters |
+| --- | --- | --- | --- | --- | --- |
+| SLP-9 Copy carries no AI-writing tells | [`CNT-15a`](ai-writing-tells.md) Copy has no buzzword, filler, chatbot phrase, or em dash chain. | lint | rendered | custom | `pages`, `buzzwords`, `aiVocabulary`, `filler`, `chatbot`, `maxEmDashes` |
+| | `CNT-15b` Copy has no structural tells: negative parallelism, forced triads, copula avoidance, significance inflation, a label and a helper text that say the same thing, or a marketing tone. Lint part: [`CNT-15a`](ai-writing-tells.md). | judged | | | |

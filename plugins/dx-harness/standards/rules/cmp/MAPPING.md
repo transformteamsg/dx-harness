@@ -22,3 +22,14 @@ A judged rule has no file. `dx-design-judge` judges it.
 | CMP-11 Nested child traces the container | `CMP-11a` A nested ring, fill, or icon traces the edge and radius of its container | judged | | | |
 
 CMP-9 does not move. The [category README](README.md) records why.
+
+## From the SLP controls
+
+SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
+
+| Source control | Rule | Check | Surface | Engine | Parameters |
+| --- | --- | --- | --- | --- | --- |
+| SLP-3 No thick side accent borders on rounded cards | [`CMP-12a`](side-accent-border.md) A rounded box has no thick side accent border | lint | source | custom | `minWidth` |
+| SLP-4 No nested cards | [`CMP-13a`](nested-cards.md) No card inside a card | lint | rendered | custom | `pages`, `ignoreSelector` |
+| SLP-10 A complex task gets a page, not a modal | `CMP-14a` A task with more than one section, its own scrolling, or a column layout is a page, not a modal | judged | | | |
+| SLP-11 A card is only for an interactive unit | `CMP-15a` A card-styled container is a unit that the user clicks, selects, or drags as a whole. Static content is grouped with spacing, type, and dividers | judged | | | |

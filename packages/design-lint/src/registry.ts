@@ -33,6 +33,7 @@ import { uuModules } from "./modules/uu/index.ts";
 import { woModules } from "./modules/wo/index.ts";
 import { wpModules } from "./modules/wp/index.ts";
 import { wuModules } from "./modules/wu/index.ts";
+import { slpModules } from "./modules/slp/index.ts";
 import type { RuleModule } from "./types.ts";
 
 /* The rule modules. A module registers here when its rule has a check. The
@@ -63,4 +64,5 @@ export const modules: RuleModule[] = [
   ...cntModules,
   ...a11yModules,
   ...cmpModules,
+  ...slpModules,
 ];

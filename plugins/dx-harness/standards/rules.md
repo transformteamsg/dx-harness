@@ -30,11 +30,11 @@ The base runs with no domain and no `DESIGN.md`.
 | [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
 | [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
 | [`packages/design-lint/docs/building-a-rule.md`](../../../packages/design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
-| `packages/design-lint/` | The linter: 179 of the 180 lint rules have a module, a fixture pair, and a break patch |
+| `packages/design-lint/` | The linter: 186 of the 187 lint rules have a module, a fixture pair, and a break patch |
 
 ## Categories
 
-The DSS categories, then the catalogue categories. A catalogue category gets a row when its first rule is written.
+The DSS categories, then the catalogue categories. A catalogue category gets a row when its first rule is written. The rows count the SLP controls in the category that each one grades, because SLP is not a category.
 
 | Category | DSS section | Controls | Rules | Lintable | Judged | Out of scope |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -47,13 +47,14 @@ The DSS categories, then the catalogue categories. A catalogue category gets a r
 | [TX](rules/tx/README.md) | Transactions and Payments | 15 | 29 | 16 | 11 | 2 |
 | [TL](rules/tl/README.md) | Trust and Legitimacy | 6 | 18 | 13 | 5 | 0 |
 | [UU](rules/uu/README.md) | Understand Users | 2 | 7 | 2 | 3 | 2 |
-| [LAY](rules/lay/README.md) | Catalogue: Layout | 5 | 6 | 1 | 5 | 0 |
-| [MOT](rules/mot/README.md) | Catalogue: Motion | 3 | 5 | 2 | 3 | 0 |
-| [TYP](rules/typ/README.md) | Catalogue: Typography | 4 | 8 | 5 | 3 | 0 |
-| [CNT](rules/cnt/README.md) | Catalogue: Content | 11 | 15 | 4 | 11 | 0 |
+| [LAY](rules/lay/README.md) | Catalogue: Layout | 7 | 8 | 1 | 7 | 0 |
+| [MOT](rules/mot/README.md) | Catalogue: Motion | 4 | 6 | 3 | 3 | 0 |
+| [TYP](rules/typ/README.md) | Catalogue: Typography | 5 | 10 | 6 | 4 | 0 |
+| [CNT](rules/cnt/README.md) | Catalogue: Content | 12 | 17 | 5 | 12 | 0 |
 | [A11Y](rules/a11y/README.md) | Catalogue: Accessibility | 3 | 6 | 4 | 2 | 0 |
-| [CMP](rules/cmp/README.md) | Catalogue: Components | 8 | 14 | 6 | 8 | 0 |
-| Total | | 126 | 297 | 180 | 108 | 9 |
+| [CMP](rules/cmp/README.md) | Catalogue: Components | 12 | 18 | 8 | 10 | 0 |
+| [COL](rules/col/MAPPING.md) | Catalogue: Colour | 2 | 3 | 2 | 1 | 0 |
+| Total | | 137 | 311 | 187 | 115 | 9 |
 
 ## Metrics
 
@@ -74,22 +75,23 @@ A control is **fully linted** when every rule under it is a lint rule. It is **h
 | [TX](rules/tx/README.md) | 15 | 2 | 11 | 1 | 1 |
 | [TL](rules/tl/README.md) | 6 | 1 | 5 | 0 | 0 |
 | [UU](rules/uu/README.md) | 2 | 0 | 2 | 0 | 0 |
-| [LAY](rules/lay/README.md) | 5 | 0 | 1 | 4 | 0 |
-| [MOT](rules/mot/README.md) | 3 | 0 | 2 | 1 | 0 |
-| [TYP](rules/typ/README.md) | 4 | 1 | 3 | 0 | 0 |
-| [CNT](rules/cnt/README.md) | 11 | 0 | 4 | 7 | 0 |
+| [LAY](rules/lay/README.md) | 7 | 0 | 1 | 6 | 0 |
+| [MOT](rules/mot/README.md) | 4 | 1 | 2 | 1 | 0 |
+| [TYP](rules/typ/README.md) | 5 | 1 | 4 | 0 | 0 |
+| [CNT](rules/cnt/README.md) | 12 | 0 | 5 | 7 | 0 |
 | [A11Y](rules/a11y/README.md) | 3 | 1 | 2 | 0 | 0 |
-| [CMP](rules/cmp/README.md) | 8 | 0 | 5 | 3 | 0 |
-| Total | 126 | 15 | 89 | 21 | 1 |
-| Share | 100% | 11.9% | 70.6% | 16.7% | 0.8% |
+| [CMP](rules/cmp/README.md) | 12 | 2 | 5 | 5 | 0 |
+| [COL](rules/col/MAPPING.md) | 2 | 1 | 1 | 0 | 0 |
+| Total | 137 | 19 | 92 | 25 | 1 |
+| Share | 100% | 13.9% | 67.2% | 18.2% | 0.7% |
 
-104 of 126 controls (82.5%) have at least one lint rule. The controls with no lint rule are `WP-4`, `WP-5`, `WO-6`, `WO-12`, `WU-3`, `TX-1`, `TX-14`, `LAY-3`, `LAY-5`, `LAY-6`, `LAY-7`, `MOT-3`, `CNT-2`, `CNT-3`, `CNT-4`, `CNT-7`, `CNT-8`, `CNT-9`, `CNT-11`, `CMP-3`, `CMP-4`, and `CMP-11`. `WP-5` has none because its lint part moved into `WP-3a`, and `WO-12` has none because its lint parts are covered by `WP-6a` and `WR-1a`.
+111 of 137 controls (81.0%) have at least one lint rule. The controls with no lint rule are `WP-4`, `WP-5`, `WO-6`, `WO-12`, `WU-3`, `TX-1`, `TX-14`, `LAY-3`, `LAY-5`, `LAY-6`, `LAY-7`, `MOT-3`, `CNT-2`, `CNT-3`, `CNT-4`, `CNT-7`, `CNT-8`, `CNT-9`, `CNT-11`, `CMP-3`, `CMP-4`, `CMP-11`, `SLP-5`, `SLP-7`, `SLP-10`, and `SLP-11`. `WP-5` has none because its lint part moved into `WP-3a`, and `WO-12` has none because its lint parts are covered by `WP-6a` and `WR-1a`.
 
 ### Rules
 
 | Lintable | Judged | Out of scope | Total |
 | --- | --- | --- | --- |
-| 180 (60.6%) | 108 (36.4%) | 9 (3.0%) | 297 |
+| 187 (60.1%) | 115 (37.0%) | 9 (2.9%) | 311 |
 
 The judged rules and the hybrid controls are where `dx-design-judge` carries the load. A lint rule that is tier L2 only warns, so the share of rules that can block a commit is lower than the lintable share.
 

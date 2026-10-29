@@ -22,3 +22,12 @@ The LAY controls list no "Not required for" text, so no row has an exemption par
 | `LAY-5a` | The right density depends on the task the user does. No single spacing value is correct for all tasks. |
 | `LAY-6a` | Optical alignment can differ from geometric alignment on purpose, so a measurement cannot decide it. |
 | `LAY-7a` | The focal region and the task's priority order come from the task, not from the source. |
+
+## From the SLP controls
+
+SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
+
+| Source control | Rule | Check | Surface | Engine | Parameters |
+| --- | --- | --- | --- | --- | --- |
+| SLP-5 No icon-tile feature-card template as the default layout | `LAY-8a` A page does not use a grid of identical cards, each an icon tile above a heading and two lines of text, as its default layout. A grid of real peers passes | judged | | | |
+| SLP-7 Spacing has rhythm | `LAY-9a` Related items sit closer together than unrelated items, and one spacing value is not used everywhere | judged | | | |

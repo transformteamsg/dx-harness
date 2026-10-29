@@ -1,0 +1,6 @@
+{
+  "select": ["COL-3a", "COL-4a", "CMP-12a", "CMP-13a", "TYP-7a", "MOT-4a", "CNT-15a"],
+  "pages": {
+    "all": ["/slp/"]
+  }
+}
