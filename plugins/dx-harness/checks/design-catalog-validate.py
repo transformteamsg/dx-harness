@@ -751,9 +751,29 @@ def rule_file_errors(repo_root):
     return errors
 
 
+RULE_CODE_RE = re.compile(r"^code:\s*([A-Z][A-Z0-9]+-\d+[a-z])\s*$", re.M)
+JUDGED_ROW_RE = re.compile(r"`([A-Z][A-Z0-9]+-\d+[a-z])`[^|\n]*\|\s*judged\s*\|")
+
+
+def rule_codes(rules_dir):
+    """Every rule code under standards/rules/: the code of each rule file, and
+    each judged rule that a MAPPING.md row records, since a judged rule has no file."""
+    found = set()
+    for root, _dirs, fnames in os.walk(rules_dir):
+        for fname in fnames:
+            if not fname.endswith(".md"):
+                continue
+            with open(os.path.join(root, fname)) as fh:
+                text = fh.read()
+            pattern = JUDGED_ROW_RE if fname == "MAPPING.md" else RULE_CODE_RE
+            found.update(pattern.findall(text))
+    return found
+
+
 def rule_redirect_errors(repo_root):
     """Error lines for each entry of standards/rules/redirects.yaml whose
-    target is not a file under standards/rules/."""
+    target does not exist: a file under standards/rules/ for a `files` entry,
+    and a rule code for each code that a `codes` entry lists."""
     rules_dir = os.path.join(repo_root, "standards", "rules")
     path = os.path.join(rules_dir, "redirects.yaml")
     if not os.path.isfile(path):
@@ -767,9 +787,20 @@ def rule_redirect_errors(repo_root):
     files = data.get("files") if isinstance(data, dict) else None
     if not isinstance(files, dict):
         return [f"ERROR {loc}: needs a 'files' map of old file name to rule file path"]
-    return [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
-            for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
-            if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+    errors = [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
+              for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
+              if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
+    codes = data.get("codes", {})
+    if not isinstance(codes, dict):
+        return errors + [f"ERROR {loc}: 'codes' needs a map of control to the rule codes that replace it"]
+    known = rule_codes(rules_dir) if codes else set()
+    for control, targets in sorted(codes.items(), key=lambda kv: str(kv[0])):
+        if not isinstance(targets, list) or not targets:
+            errors.append(f"ERROR {loc}: '{control}' needs a list of rule codes")
+            continue
+        errors.extend(f"ERROR {loc}: '{control}' redirects to '{code}', which is not a rule"
+                      for code in targets if code not in known)
+    return errors
 
 
 # The base rules moved from here to standards/rules/ (#536).
