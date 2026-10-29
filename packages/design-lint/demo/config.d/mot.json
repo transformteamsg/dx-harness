@@ -1,0 +1,9 @@
+{
+  "select": ["MOT-1a", "MOT-2a"],
+  "pages": {
+    "all": ["/mot/saved.html"]
+  },
+  "rules": {
+    "MOT-2a": { "componentFiles": ["mot/**"] }
+  }
+}

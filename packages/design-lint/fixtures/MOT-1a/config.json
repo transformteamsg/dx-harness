@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "MOT-1a": { "narrativeFiles": ["story/**"] }
+  }
+}

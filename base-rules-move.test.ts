@@ -79,9 +79,14 @@ describe("3. a reference by the old file name resolves through redirects.yaml", 
     expect(codeOf(path.join(RULES, target))).toBe(code);
   });
 
+  /* The DSS folders held every rule that #536 moved. A catalogue folder, such as
+     mot/, holds new rules with no old file name. */
+  const DSS = ["bd", "wp", "wo", "wu", "wr", "pr", "tx", "tl", "uu"];
+  const moved = ruleFiles.filter((rel) => DSS.includes(rel.split(path.sep)[0]));
+
   it("is the target of exactly one redirect for each moved rule file", () => {
-    expect(ruleFiles.length).toBe(158);
-    expect(Object.values(files).sort()).toEqual([...ruleFiles].sort());
+    expect(moved.length).toBe(158);
+    expect(Object.values(files).sort()).toEqual([...moved].sort());
   });
 });
 

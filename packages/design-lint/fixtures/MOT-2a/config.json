@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "MOT-2a": { "tokenFiles": ["tokens.css"] }
+  }
+}

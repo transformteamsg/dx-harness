@@ -1,0 +1,18 @@
+{
+  "code": "MOT-2a",
+  "describe": "Give the hover state a raw duration.",
+  "edits": [
+    {
+      "file": "mot/saved.html",
+      "find": ".saved:hover { opacity: 0.8; }",
+      "replace": ".saved:hover { opacity: 0.8; transition-duration: 250ms; }"
+    }
+  ],
+  "expect": [
+    {
+      "file": "mot/saved.html",
+      "line": 28,
+      "column": 57
+    }
+  ]
+}
