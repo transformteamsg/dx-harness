@@ -25,6 +25,19 @@ afterAll(async () => {
 });
 const browser = shared !== null;
 
+/* A lint rule proves itself with a fixture pair, so a rule file with no fixture
+   directory fails here and names the rule. WP-15a has no module: it needs an OCR
+   library that the package does not have. */
+const NO_FIXTURE = new Set(["WP-15a"]);
+
+describe("every lint rule has a fixture pair", () => {
+  it.each(rules.filter((r) => !NO_FIXTURE.has(r.code)).map((r) => r.code))("%s has a fixture pair", (code) => {
+    for (const part of ["pass", "fail", "expected.json"]) {
+      expect(fs.existsSync(path.join(FIXTURES, code, part)), `${code} has no fixtures/${code}/${part}`).toBe(true);
+    }
+  });
+});
+
 for (const code of fs.readdirSync(FIXTURES).sort()) {
   const dir = path.join(FIXTURES, code);
   const meta = rules.find((r) => r.code === code);
