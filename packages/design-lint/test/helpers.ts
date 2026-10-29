@@ -38,3 +38,9 @@ export function compare(findings: Finding[], root: string, rules: RuleMeta[], ex
   }
   return { missing, extra: left };
 }
+
+/* The code of each rule that has no fixture pair under dir, except the codes in
+   exempt. A fixture pair is pass/, fail/, and expected.json. */
+export function missingFixtures(rules: RuleMeta[], dir: string, exempt: string[] = []): string[] {
+  throw new Error("not implemented");
+}
