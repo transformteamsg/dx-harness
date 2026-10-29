@@ -3,6 +3,8 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { loadRules, parseRuleFile } from "../src/rules/load.ts";
+import { run } from "../src/run.ts";
+import type { RuleModule } from "../src/types.ts";
 
 const BASE = path.resolve(import.meta.dirname, "../../../plugins/dx-harness/skills/design-restructure/base");
 
@@ -71,5 +73,38 @@ describe("loadRules on a directory with a duplicate code", () => {
     const { rules, errors } = loadRules(dir);
     expect(rules).toHaveLength(1);
     expect(errors).toEqual([expect.stringContaining("is also in")]);
+  });
+});
+
+describe("loadRules on a rule with a catalogue prefix", () => {
+  /* A module that flags every HTML file with no lang attribute. */
+  const noLang: RuleModule = {
+    code: "CMP-4a",
+    surface: "source",
+    locate: ({ files }) => files.map((file) => ({ file, line: 1, column: 1 })),
+    decide: (c) => (/<html lang=/.test(fs.readFileSync(c.file, "utf8")) ? null : "the page has no lang"),
+  };
+
+  it("loads the rule and reports its finding on the failing fixture", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-"));
+    fs.mkdirSync(path.join(dir, "cmp"));
+    fs.writeFileSync(
+      path.join(dir, "cmp", "CMP-4a.md"),
+      "---\ncode: CMP-4a\ndss: CMP-4\ntier: L1\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# CMP-4a: a page sets its language\n",
+    );
+    const fail = path.join(dir, "fail.html");
+    const pass = path.join(dir, "pass.html");
+    fs.writeFileSync(fail, "<html><body></body></html>\n");
+    fs.writeFileSync(pass, "<html lang=\"en\"><body></body></html>\n");
+
+    const { rules, errors } = loadRules(path.join(dir, "cmp"));
+    expect(errors).toEqual([]);
+    expect(rules).toEqual([expect.objectContaining({ code: "CMP-4a", title: "a page sets its language" })]);
+
+    const options = { surfaces: ["source" as const], select: [], ignore: [], ci: false, root: dir };
+    const failed = await run(rules, [noLang], null, { ...options, files: [fail] });
+    expect(failed.findings).toEqual([expect.objectContaining({ code: "CMP-4a", file: fail, message: "the page has no lang" })]);
+    const passed = await run(rules, [noLang], null, { ...options, files: [pass] });
+    expect(passed.findings).toEqual([]);
   });
 });
