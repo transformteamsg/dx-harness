@@ -74,3 +74,15 @@ describe("1. a typography control becomes rules, and redirects.yaml maps it", ()
     expect([...lintRules.keys(), ...judged].sort()).toEqual(mapped);
   });
 });
+
+describe("2. each new lint rule has a fixture pair", () => {
+  it("has lint rules", () => {
+    expect([...lintRules.keys()]).not.toEqual([]);
+  });
+
+  it.each([...lintRules.keys()])("%s has a passing site, a failing site, and the expected findings", (code) => {
+    for (const part of ["pass", "fail", "expected.json"]) {
+      expect(fs.existsSync(path.join(FIXTURES, code, part)), `${code}: no ${part}`).toBe(true);
+    }
+  });
+});
