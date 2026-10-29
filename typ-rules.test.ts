@@ -86,3 +86,23 @@ describe("2. each new lint rule has a fixture pair", () => {
     }
   });
 });
+
+describe("also true when done", () => {
+  it.each(HYBRID)("the lint rule of the hybrid control %s names its judged rule in judgedRemainder", (control) => {
+    const lint = codesOf(control).filter((code) => lintRules.has(code));
+    expect(lint, `${control} has no lint rule`).not.toEqual([]);
+    for (const code of lint) {
+      const remainder = lintRules.get(code)!.judgedRemainder;
+      const list = Array.isArray(remainder) ? remainder.map(String) : remainder ? [String(remainder)] : [];
+      expect(list, `${code} names no judged rule`).not.toEqual([]);
+      for (const j of list) expect(judged.has(j), `${code} names ${j}, which is not a judged rule`).toBe(true);
+    }
+  });
+
+  it("names no teacher where it means any user", () => {
+    const files = fs.existsSync(TYP) ? fs.readdirSync(TYP).map((f) => path.join(TYP, f)) : [];
+    expect(files).not.toEqual([]);
+    const named = files.filter((f) => /teacher/i.test(read(f))).map((f) => path.basename(f));
+    expect(named).toEqual([]);
+  });
+});
