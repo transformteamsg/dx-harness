@@ -124,3 +124,19 @@ describe("2. each lint rule proves itself with a fixture pair", () => {
     expect(expected.length).toBeGreaterThan(0);
   });
 });
+
+describe("5. each hybrid control's lint rule names its judged rule in judgedRemainder", () => {
+  const hybrid = controls.filter((c) => c.check === "hybrid").map((c) => c.id);
+
+  it("finds the three hybrid controls in catalog.yaml", () => {
+    expect(hybrid).toEqual(["SLP-1", "SLP-6", "SLP-9"]);
+  });
+
+  it.each(hybrid)("gives the lint rule of %s the judged rule as its judgedRemainder", (id) => {
+    const [lint] = EXPECTED[id].lint;
+    const remainder = fileFor(lint)?.fm.judgedRemainder;
+    expect(remainder, `${lint} has no judgedRemainder`).toBeDefined();
+    expect([remainder].flat()).toEqual(EXPECTED[id].judged);
+    expect(mappingRow(EXPECTED[id].judged[0])).toContain(`\`${lint}\``);
+  });
+});
