@@ -57,15 +57,22 @@ export const run = (site: string, select: string[], over: Config = config) =>
     browser: shared ?? undefined,
   });
 
-/* The codes of the rules in one category folder, such as bd. */
+/* The codes of the rules in one category folder, such as bd, that have a break
+   patch. The folder of the rule file decides, so a new folder needs no change here. */
 export function categoryCodes(category: string): string[] {
-  throw new Error(`categoryCodes(${category}) is not implemented`);
+  const inFolder = new Set(rules.filter((r) => path.basename(path.dirname(r.file)) === category).map((r) => r.code));
+  return everyCode.filter((c) => inFolder.has(c));
 }
 
 /* The whole-site test of one category: every rule of the category passes on
    every page of the site. The message names the category and each failing rule. */
 export async function checkSite(category: string, site: string = copySite()): Promise<void> {
-  throw new Error(`checkSite(${category}, ${site}) is not implemented`);
+  const result = await run(site, categoryCodes(category));
+  const failing = [...new Set([...result.findings, ...result.notes].map((f) => f.code))];
+  expect({ findings: result.findings, notes: result.notes }, `${category}: rules that fail on the demo site: ${failing.join(", ")}`).toEqual({
+    findings: [],
+    notes: [],
+  });
 }
 
 export const everyCode = patches.map((p) => p.code);
