@@ -2,7 +2,7 @@
 
 **Status:** Proposed
 **Date:** 2026-10-20
-**Amended by:** [ADR-0002](0002-rule-categories-and-file-names.md), for the category list of D12 and the file path in decision 3
+**Amended by:** [ADR-0002](0002-rule-categories-and-file-names.md), for the category list of D12 and the file path in decision 3. [ADR-0003](0003-rule-selection-for-a-design-run.md), for the file that selects the rules in decision 5
 **Epic:** [#413](https://github.com/transformteamsg/dx-harness/issues/413) (C1 in the [design revamp spec](../specs/2026-10-05-design-revamp/README.md#catalogue))
 
 ## Context
