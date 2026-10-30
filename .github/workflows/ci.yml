@@ -124,9 +124,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Each playwright-core version pins one Chromium build, so the version
+      # keys the browser cache.
+      - name: Read the playwright-core version
+        id: playwright
+        working-directory: packages/design-lint
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+
       # The design-lint rendered tests drive a browser. The runner has no Chrome.
+      # The browser comes from the cache when the version is unchanged; the
+      # system packages are not in the cache, so their step always runs.
       - name: Install Chromium
-        run: pnpm --filter design-lint exec playwright-core install --with-deps chromium
+        run: pnpm --filter design-lint exec playwright-core install chromium
+
+      - name: Install Chromium system packages
+        run: pnpm --filter design-lint exec playwright-core install-deps chromium
 
       - name: Test
         run: pnpm run test:design-lint
