@@ -4,23 +4,17 @@ import type { Config } from "../src/types.ts";
 import { applyPatch, patchedConfig } from "../src/patch.ts";
 import { modules } from "../src/registry.ts";
 import { BASE, compare } from "./helpers.ts";
-import { browser, checkPatch, config, copySite, everyCode, needsBrowser, patches, rules, run } from "./demo-site.ts";
+import { browser, categoryCodes, checkPatch, checkSite, config, copySite, everyCode, needsBrowser, patches, rules, run } from "./demo-site.ts";
 import packageConfig from "../vitest.config.ts";
 
 /* The tests of each break patch are in category.test.ts. */
 
-/* A test that runs every rule on the whole site shares the machine with the
-   projects of every category, so it gets more than the 120 seconds of
-   testTimeout. #567 splits it by category. */
+/* The failing site runs every rule on the whole site, and shares the machine
+   with the projects of every category, so it gets more than the 120 seconds of
+   testTimeout. */
 const WHOLE_SITE = 240000;
 
 describe("the demo site", () => {
-  it.skipIf(!browser)("passes every rule that exists", async () => {
-    const result = await run(copySite(), everyCode);
-    expect(result.findings).toEqual([]);
-    expect(result.notes).toEqual([]);
-  }, WHOLE_SITE);
-
   it("has a break patch for each rule that has a module", () => {
     const withModule = modules.map((m) => m.code).sort();
     expect([...everyCode].sort()).toEqual(withModule);
@@ -40,6 +34,35 @@ describe("the config of the package", () => {
     expect(categories.sort()).toEqual(folders.sort());
     const prefixes = [...new Set(everyCode.map((c) => c.split("-")[0].toLowerCase()))];
     expect(prefixes.filter((p) => !folders.includes(p))).toEqual([]);
+  });
+});
+
+/* The whole-site test of each category is in category.test.ts. */
+describe("the whole-site tests of the categories", () => {
+  const folders = fs
+    .readdirSync(BASE, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+
+  it("give each category folder the rules whose code has its prefix", () => {
+    for (const folder of folders) {
+      const byPrefix = everyCode.filter((c) => c.split("-")[0].toLowerCase() === folder);
+      expect(categoryCodes(folder).sort(), folder).toEqual(byPrefix.sort());
+    }
+  });
+
+  it("together check every rule once, as the single whole-site test did", () => {
+    const all = folders.flatMap((f) => categoryCodes(f));
+    expect(all.sort()).toEqual([...everyCode].sort());
+  });
+
+  it("name the failing rule and its category", async () => {
+    const sourceOnly = (folder: string) => !categoryCodes(folder).some(needsBrowser);
+    const patch = patches.find((p) => !p.config && sourceOnly(p.code.split("-")[0].toLowerCase()))!;
+    const category = patch.code.split("-")[0].toLowerCase();
+    const site = copySite();
+    applyPatch(site, patch);
+    await expect(checkSite(category, site)).rejects.toThrow(new RegExp(`${category}[\\s\\S]*${patch.code}`));
   });
 });
 
