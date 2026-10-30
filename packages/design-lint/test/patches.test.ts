@@ -8,6 +8,8 @@ import { browser, checkPatch, config, copySite, everyCode, needsBrowser, patches
 import rootConfig from "../../../vitest.config.ts";
 import packageConfig from "../vitest.config.ts";
 
+/* The tests of each break patch are in category.test.ts. */
+
 describe("the demo site", () => {
   it.skipIf(!browser)("passes every rule that exists", async () => {
     const result = await run(copySite(), everyCode);
@@ -40,12 +42,7 @@ describe.each([
   });
 });
 
-/* The patches run side by side. Each works on its own copy of the site. */
-describe.concurrent("a break patch", () => {
-  for (const patch of patches) {
-    it.skipIf(needsBrowser(patch.code) && !browser)(`${patch.code} makes exactly that rule fail: ${patch.describe}`, () => checkPatch(patch));
-  }
-
+describe("a break patch", () => {
   it("names the patch and its findings when it makes a finding that it does not expect", async () => {
     const patch = patches.find((p) => !needsBrowser(p.code) && p.expect.length > 0)!;
     const finding = patch.expect[0];
