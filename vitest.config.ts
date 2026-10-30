@@ -1,16 +1,14 @@
 import { defineConfig } from "vitest/config";
-import { designLintProjects } from "./packages/design-lint/vitest.projects";
 
 /* Node environment only: the tests read the repository from disk and need no
-   DOM. They live at the repository root, and the design-lint package keeps its
-   own under packages/design-lint/test. */
+   DOM. They live at the repository root. The design-lint package runs its own
+   tests with its own config, through pnpm run test:design-lint. */
 export default defineConfig({
   test: {
     environment: "node",
-    /* The rendered tests start a browser. */
+    /* Some tests start a check script in a child process. */
     testTimeout: 120000,
-    /* Closing a browser can wait on a busy machine. */
     hookTimeout: 60000,
-    projects: [{ extends: true, test: { name: "repository", include: ["*.test.ts"] } }, ...designLintProjects("packages/design-lint")],
+    include: ["*.test.ts"],
   },
 });

@@ -9,6 +9,6 @@ export default defineConfig({
     testTimeout: 120000,
     /* Closing a browser can wait on a busy machine. */
     hookTimeout: 60000,
-    projects: designLintProjects("."),
+    projects: designLintProjects(),
   },
 });

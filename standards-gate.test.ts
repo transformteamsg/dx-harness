@@ -46,7 +46,7 @@ describe("the check scripts' self-tests", () => {
   });
 
   it("all run from test:checks, which pnpm test calls after vitest", () => {
-    expect(scripts.test).toBe("vitest run && pnpm run test:checks");
+    expect(scripts.test).toBe("pnpm run test:root && pnpm run test:design-lint && pnpm run test:checks");
     const listed = scripts["test:checks"]?.split(" && ") ?? [];
     const missing = SELF_TESTS.filter((command) => !listed.includes(command));
     expect(missing, `test:checks leaves out: ${missing.join(", ")}`).toEqual([]);
@@ -59,7 +59,7 @@ describe("the check scripts' self-tests", () => {
 
   it("run in CI after Python and PyYAML are set up", () => {
     const ci = readRoot(".github/workflows/ci.yml");
-    const test = ci.indexOf("run: pnpm test\n");
+    const test = ci.indexOf("run: pnpm run test:checks\n");
     expect(test).toBeGreaterThan(-1);
     for (const setup of ["uses: actions/setup-python", "run: pip install pyyaml"]) {
       expect(ci.indexOf(setup)).toBeGreaterThan(-1);

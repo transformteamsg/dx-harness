@@ -11,19 +11,19 @@ declare module "vitest" {
 
 const RULES = path.resolve(import.meta.dirname, "../../plugins/dx-harness/standards/rules");
 
-/* The projects of the design-lint tests, for a config whose root is dir. Vitest runs
-   the files of each project in a worker of their own, so each category folder gets
-   a project that runs test/category.test.ts for that category, and with it a browser
-   of its own. A new category folder gets a project with no change here. */
-export function designLintProjects(dir: string): TestProjectInlineConfiguration[] {
+/* The projects of the design-lint tests. Vitest runs the files of each project
+   in a worker of their own, so each category folder gets a project that runs
+   test/category.test.ts for that category, and with it a browser of its own. A
+   new category folder gets a project with no change here. */
+export function designLintProjects(): TestProjectInlineConfiguration[] {
   const categories = fs
     .readdirSync(RULES, { withFileTypes: true })
     .filter((e) => e.isDirectory())
     .map((e) => e.name)
     .sort();
-  const file = path.posix.join(dir, "test/category.test.ts");
+  const file = "test/category.test.ts";
   return [
-    { extends: true, test: { name: "design-lint", include: [path.posix.join(dir, "test/**/*.test.ts")], exclude: [file] } },
+    { extends: true, test: { name: "design-lint", include: ["test/**/*.test.ts"], exclude: [file] } },
     ...categories.map((category) => ({
       extends: true as const,
       test: { name: `design-lint:${category}`, include: [file], provide: { category } },

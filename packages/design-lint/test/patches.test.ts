@@ -5,7 +5,6 @@ import { applyPatch, patchedConfig } from "../src/patch.ts";
 import { modules } from "../src/registry.ts";
 import { BASE, compare } from "./helpers.ts";
 import { browser, checkPatch, config, copySite, everyCode, needsBrowser, patches, rules, run } from "./demo-site.ts";
-import rootConfig from "../../../vitest.config.ts";
 import packageConfig from "../vitest.config.ts";
 
 /* The tests of each break patch are in category.test.ts. */
@@ -25,16 +24,13 @@ describe("the demo site", () => {
 
 /* Vitest runs the file of each project in a worker of its own, which starts a
    browser of its own, so the categories run side by side. */
-describe.each([
-  ["the repository", rootConfig],
-  ["the package", packageConfig],
-])("the config of %s", (_, userConfig) => {
+describe("the config of the package", () => {
   it("runs the break patches of each category in a project of its own", () => {
     const folders = fs
       .readdirSync(BASE, { withFileTypes: true })
       .filter((e) => e.isDirectory())
       .map((e) => e.name);
-    const projects = (userConfig.test?.projects ?? []) as { test?: { include?: string[]; provide?: { category?: string } } }[];
+    const projects = (packageConfig.test?.projects ?? []) as { test?: { include?: string[]; provide?: { category?: string } } }[];
     const categories = projects.filter((p) => p.test?.include?.some((f) => f.endsWith("test/category.test.ts"))).map((p) => p.test?.provide?.category);
     expect(categories.sort()).toEqual(folders.sort());
     const prefixes = [...new Set(everyCode.map((c) => c.split("-")[0].toLowerCase()))];

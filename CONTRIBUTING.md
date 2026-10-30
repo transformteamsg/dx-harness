@@ -84,12 +84,12 @@ Run these before you push. CI runs the same set, so a green local run predicts a
 | Command | What it covers |
 | --- | --- |
 | `pnpm typecheck` | `tsc --noEmit` over the tests |
-| `pnpm test` | Vitest tests, then every check script's own self-test (`test:checks`) |
+| `pnpm test` | The root Vitest tests (`test:root`), the `design-lint` tests (`test:design-lint`), then every check script's own self-test (`test:checks`) |
 | `pnpm check` | The standards gate: `design-catalog-validate.py`, which checks the control catalogue and the plugin files that restate it |
 
 **No git hook runs any of this.** The repository has no `lefthook.yml` and no `.husky/`, so nothing checks your work on commit or on push. CI runs on pushes to `main` and on pull requests targeting `main`, which means an unchecked commit reaches CI before it reaches a reviewer. Run the commands yourself.
 
-CI skips a change that touches only files no check reads, such as `docs/ROADMAP.md` or `review/`. The `paths-ignore` list in `.github/workflows/ci.yml` names them.
+CI skips a change that touches only files no check reads, such as `docs/ROADMAP.md` or `review/`. The `paths-ignore` list in `.github/workflows/ci.yml` names them. On a pull request, CI runs the `design-lint` tests only when the change touches `packages/design-lint/`, `plugins/dx-harness/standards/rules/`, the lockfile, the workspace file, or the workflow. A push to `main` always runs them. The `gate` job reports one result for the whole run.
 
 ## Work through an issue
 
