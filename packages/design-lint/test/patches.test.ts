@@ -14,6 +14,8 @@ import { modules } from "../src/registry.ts";
 import { loadRules } from "../src/rules/load.ts";
 import { BASE, compare } from "./helpers.ts";
 import { checkPatch } from "./demo-site.ts";
+import rootConfig from "../../../vitest.config.ts";
+import packageConfig from "../vitest.config.ts";
 
 /* The demo site passes every rule that exists. Each break patch makes one rule
    fail, and the failing site is the passing site with every patch applied. */
@@ -105,6 +107,25 @@ describe("the demo site", () => {
   it("has a break patch for each rule that has a module", () => {
     const withModule = modules.map((m) => m.code).sort();
     expect([...everyCode].sort()).toEqual(withModule);
+  });
+});
+
+/* Vitest runs the file of each project in a worker of its own, which starts a
+   browser of its own, so the categories run side by side. */
+describe.each([
+  ["the repository", rootConfig],
+  ["the package", packageConfig],
+])("the config of %s", (_, userConfig) => {
+  it("runs the break patches of each category in a project of its own", () => {
+    const folders = fs
+      .readdirSync(BASE, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name);
+    const projects = (userConfig.test?.projects ?? []) as { test?: { include?: string[]; provide?: { category?: string } } }[];
+    const categories = projects.filter((p) => p.test?.include?.some((f) => f.endsWith("test/category.test.ts"))).map((p) => p.test?.provide?.category);
+    expect(categories.sort()).toEqual(folders.sort());
+    const prefixes = [...new Set(everyCode.map((c) => c.split("-")[0].toLowerCase()))];
+    expect(prefixes.filter((p) => !folders.includes(p))).toEqual([]);
   });
 });
 
