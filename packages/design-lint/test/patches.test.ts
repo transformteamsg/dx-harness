@@ -13,6 +13,7 @@ import type { Browser } from "playwright-core";
 import { modules } from "../src/registry.ts";
 import { loadRules } from "../src/rules/load.ts";
 import { BASE, compare } from "./helpers.ts";
+import { checkPatch } from "./demo-site.ts";
 
 /* The demo site passes every rule that exists. Each break patch makes one rule
    fail, and the failing site is the passing site with every patch applied. */
@@ -117,6 +118,12 @@ describe.concurrent("a break patch", () => {
       expect(compare(result.findings, site, rules, patch.expect, patch.code)).toEqual({ missing: [], extra: [] });
     });
   }
+
+  it("names the patch and its findings when it makes a finding that it does not expect", async () => {
+    const patch = patches.find((p) => !needsBrowser(p.code) && p.expect.length > 0)!;
+    const finding = patch.expect[0];
+    await expect(checkPatch({ ...patch, expect: [] })).rejects.toThrow(new RegExp(`${patch.code}[\\s\\S]*${finding.file}`));
+  });
 
   it("fails when the text to replace is not found exactly once", () => {
     const site = copySite();
