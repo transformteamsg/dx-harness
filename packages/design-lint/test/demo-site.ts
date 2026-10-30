@@ -57,6 +57,17 @@ export const run = (site: string, select: string[], over: Config = config) =>
     browser: shared ?? undefined,
   });
 
+/* The codes of the rules in one category folder, such as bd. */
+export function categoryCodes(category: string): string[] {
+  throw new Error(`categoryCodes(${category}) is not implemented`);
+}
+
+/* The whole-site test of one category: every rule of the category passes on
+   every page of the site. The message names the category and each failing rule. */
+export async function checkSite(category: string, site: string = copySite()): Promise<void> {
+  throw new Error(`checkSite(${category}, ${site}) is not implemented`);
+}
+
 export const everyCode = patches.map((p) => p.code);
 
 /* A patch edits one or two files. Its test runs the rules of the same DSS control
