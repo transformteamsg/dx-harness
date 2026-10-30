@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
@@ -13,7 +14,7 @@ function readRoot(file: string) {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
-type Step = { name?: string; id?: string; uses?: string; run?: string; with?: Record<string, string>; env?: Record<string, string> };
+type Step = { name?: string; id?: string; "working-directory"?: string; uses?: string; run?: string; with?: Record<string, string>; env?: Record<string, string> };
 type Job = { if?: string; needs?: string[]; outputs?: Record<string, string>; steps?: Step[] };
 const ci: { jobs?: Record<string, Job> } = parse(readRoot(".github/workflows/ci.yml"));
 const jobs = ci.jobs ?? {};
@@ -65,7 +66,7 @@ describe("a pull request that changes a rule", () => {
   });
   it("runs the design-lint tests in the design-lint job, after Chromium is installed", () => {
     const runs = runsOf(jobs["design-lint"]);
-    const chromium = runs.findIndex((run) => /playwright-core install --with-deps chromium/.test(run));
+    const chromium = runs.findIndex((run) => /playwright-core install( --with-deps)? chromium/.test(run));
     const tests = runs.findIndex((run) => run.includes("pnpm run test:design-lint"));
     expect(chromium).toBeGreaterThanOrEqual(0);
     expect(tests).toBeGreaterThan(chromium);
@@ -82,6 +83,66 @@ describe("a pull request whose design-lint tests fail", () => {
   });
   it("makes the gate report failure when the checks job fails", () => {
     expect(gate(["success", "failure", "skipped"]).status).toBe(1);
+  });
+});
+
+/* The design-lint job caches the Playwright browser folder, keyed on the
+   playwright-core version. These run the version step and render the key;
+   the time a cache hit saves is confirmed on the pull request. See issue #568. */
+const designLintSteps = jobs["design-lint"]?.steps ?? [];
+const cacheStep = designLintSteps.find((step) => step.uses?.startsWith("actions/cache"));
+const versionStep = designLintSteps.find((step) => step.id !== undefined && cacheStep?.with?.key?.includes(`steps.${step.id}.outputs.`));
+const lock: { importers: Record<string, { dependencies: Record<string, { version: string }> }> } = parse(readRoot("pnpm-lock.yaml"));
+const lockedPlaywright = lock.importers["packages/design-lint"].dependencies["playwright-core"].version;
+
+/* Runs the version step in a repository root and renders the cache key from
+   what it writes to GITHUB_OUTPUT. */
+function cacheKeyIn(root: string) {
+  const output = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "ci-cache-")), "output");
+  fs.writeFileSync(output, "");
+  const step = spawnSync("bash", ["-e", "-c", versionStep?.run ?? "exit 2"], {
+    cwd: path.join(root, versionStep?.["working-directory"] ?? "."),
+    env: { PATH: process.env.PATH, GITHUB_OUTPUT: output },
+    encoding: "utf8",
+  });
+  expect(step.status, step.stderr).toBe(0);
+  const outputs = Object.fromEntries(fs.readFileSync(output, "utf8").trim().split("\n").map((line) => line.split("=", 2)));
+  return (cacheStep?.with?.key ?? "").replace(/\$\{\{\s*steps\.[\w-]+\.outputs\.([\w-]+)\s*\}\}/g, (_, name: string) => outputs[name] ?? "");
+}
+
+describe("a run after one that cached Chromium", () => {
+  const stepIndex = (name: string) => designLintSteps.findIndex((step) => step.name === name);
+  it("restores the Playwright browser folder before Install Chromium", () => {
+    expect(cacheStep?.with?.path).toBe("~/.cache/ms-playwright");
+    expect(designLintSteps.indexOf(cacheStep as Step)).toBeGreaterThan(stepIndex("Install dependencies"));
+    expect(designLintSteps.indexOf(cacheStep as Step)).toBeLessThan(stepIndex("Install Chromium"));
+  });
+  it("installs no system packages in Install Chromium, so a restored browser needs no download", () => {
+    const install = designLintSteps[stepIndex("Install Chromium")]?.run ?? "";
+    expect(install).toMatch(/playwright-core install chromium/);
+    expect(install).not.toContain("--with-deps");
+  });
+  it("still installs the system packages Chromium needs before the tests", () => {
+    const runs = runsOf(jobs["design-lint"]);
+    const deps = runs.findIndex((run) => /playwright-core install-deps chromium/.test(run));
+    expect(deps).toBeGreaterThanOrEqual(0);
+    expect(deps).toBeLessThan(runs.findIndex((run) => run.includes("pnpm run test:design-lint")));
+  });
+});
+
+describe("a lockfile with a new playwright-core version", () => {
+  it("keys the cache on the playwright-core version in the lockfile", () => {
+    expect(versionStep).toBeDefined();
+    expect(cacheKeyIn(process.cwd())).toContain(lockedPlaywright);
+  });
+  it("gives the new version a new cache key", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "ci-cache-"));
+    const playwright = path.join(root, "packages/design-lint/node_modules/playwright-core");
+    fs.mkdirSync(playwright, { recursive: true });
+    fs.writeFileSync(path.join(playwright, "package.json"), JSON.stringify({ name: "playwright-core", version: "9.9.9" }));
+    const newKey = cacheKeyIn(root);
+    expect(newKey).toContain("9.9.9");
+    expect(newKey).not.toBe(cacheKeyIn(process.cwd()));
   });
 });
 
