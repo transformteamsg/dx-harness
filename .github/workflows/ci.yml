@@ -7,8 +7,9 @@ name: CI
 # no check reads any file on it. That is safe only while main has
 # no required status check: today branch protection requires a review, not a
 # check. A skipped run reports nothing, so a required check would wait forever.
-# If one is ever added, replace paths-ignore with a gate job that always runs
-# and reports success on the skip path.
+# The gate job below reports for the jobs inside a run, but it cannot report
+# for a run that paths-ignore skipped. If a required check is ever added, point
+# it at the gate job and remove paths-ignore.
 on:
   push:
     branches: [main]
@@ -31,6 +32,33 @@ permissions:
   contents: read
 
 jobs:
+  # Decides whether the design-lint job runs. Most pull requests change skills
+  # or documents and no file the design-lint tests read.
+  changes:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # paths-filter reads a pull request's changed files through the API.
+      pull-requests: read
+    outputs:
+      design-lint: ${{ steps.filter.outputs.design-lint }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          # The lockfile, the workspace, and this workflow change what the
+          # design-lint tests run against, so a change to one runs them too.
+          filters: |
+            design-lint:
+              - packages/design-lint/**
+              - plugins/dx-harness/standards/rules/**
+              - pnpm-lock.yaml
+              - pnpm-workspace.yaml
+              - .github/workflows/ci.yml
+
   checks:
     # Pinned to the arm64 image rather than ubuntu-latest, which is x64. ARM images
     # are only published version-pinned, so there is no -latest to track: moving to a
@@ -54,10 +82,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # The design-lint rendered tests drive a browser. The runner has no Chrome.
-      - name: Install Chromium
-        run: pnpm --filter design-lint exec playwright-core install --with-deps chromium
-
       - name: Typecheck
         run: pnpm typecheck
 
@@ -68,9 +92,61 @@ jobs:
       - name: Install PyYAML and Pillow
         run: pip install pyyaml Pillow
 
-      # Vitest, then every check script's --self-test (test:checks).
+      # pnpm test without the design-lint tests, which run in their own job.
       - name: Test
-        run: pnpm test
+        run: pnpm run test:root
+
+      - name: Check self-tests
+        run: pnpm run test:checks
 
       - name: Standards gate
         run: pnpm check
+
+  # Runs the design-lint tests when a file they read changes, and on every push
+  # to main.
+  design-lint:
+    needs: changes
+    if: github.event_name == 'push' || needs.changes.outputs.design-lint == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The design-lint rendered tests drive a browser. The runner has no Chrome.
+      - name: Install Chromium
+        run: pnpm --filter design-lint exec playwright-core install --with-deps chromium
+
+      - name: Test
+        run: pnpm run test:design-lint
+
+  # A skipped job reports nothing, so a required check on it would wait
+  # forever. The gate always runs and reports one result for the whole run: it
+  # passes when every job passed or was skipped.
+  gate:
+    needs: [changes, checks, design-lint]
+    if: always()
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Report the result of every job
+        env:
+          RESULTS: ${{ needs.changes.result }} ${{ needs.checks.result }} ${{ needs.design-lint.result }}
+        run: |
+          for result in $RESULTS; do
+            case "$result" in
+              success | skipped) ;;
+              *) echo "A job reported $result."; exit 1 ;;
+            esac
+          done
