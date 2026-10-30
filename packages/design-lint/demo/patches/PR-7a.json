@@ -1,20 +1,16 @@
 {
   "code": "PR-7a",
-  "describe": "Block the load event for six seconds, and block the page for a second after the first paint.",
+  "describe": "Load 40 small scripts one after another, so the load event waits out the network latency of each.",
   "edits": [
     {
       "file": "pr/performance.html",
       "find": "<h1>Service status and hours</h1>",
-      "replace": "<h1>Service status and hours</h1>\n    <script>window.addEventListener(\"load\", function () { var t = Date.now(); while (Date.now() - t < 6000) {} }); requestAnimationFrame(function () { requestAnimationFrame(function () { setTimeout(function () { var t = Date.now(); while (Date.now() - t < 1000) {} }); }); });</script>"
+      "replace": "<h1>Service status and hours</h1>\n    <script>(function () { var n = 0; (function next() { if (n === 40) return; var s = document.createElement(\"script\"); s.src = \"/pr/wogaa-demo.js?\" + n++; s.onload = next; document.head.appendChild(s); })(); })();</script>"
     }
   ],
   "expect": [
     {
       "file": "/pr/performance.html"
-    },
-    {
-      "file": "/pr/performance.html",
-      "code": "PR-7b"
     }
   ]
 }
