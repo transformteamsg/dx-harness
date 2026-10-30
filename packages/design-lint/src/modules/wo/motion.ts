@@ -67,6 +67,8 @@ export const wo5b: RuleModule = {
             }),
           { seconds, names },
         );
+        /* The page still moves, so close it now, not when the session closes. */
+        await page.close();
         return { pagePath, ...found };
       }),
     );

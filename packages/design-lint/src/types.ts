@@ -68,6 +68,8 @@ export interface RenderedPage {
   focus(selector: string): Promise<void>;
   /* A PNG of the page, or of the first element that matches the selector. */
   screenshot(selector?: string): Promise<Uint8Array>;
+  /* Closes a page opened with fresh: true. A shared page stays open for the session. */
+  close(): Promise<void>;
 }
 
 export interface OpenOptions {

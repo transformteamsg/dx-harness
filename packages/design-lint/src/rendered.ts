@@ -103,6 +103,9 @@ export async function startSession(
         click: (selector) => page.click(selector),
         focus: (selector) => page.focus(selector),
         screenshot: async (selector) => new Uint8Array(selector ? await page.locator(selector).first().screenshot() : await page.screenshot()),
+        close: async () => {
+          if (options?.fresh) await page.close();
+        },
       };
       if (!options?.fresh) pages.set(cacheKey, opened);
       return opened;
