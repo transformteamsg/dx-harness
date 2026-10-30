@@ -103,10 +103,17 @@ jobs:
         run: pnpm check
 
   # Runs the design-lint tests when a file they read changes, and on every push
-  # to main.
+  # to main. Each shard runs on a runner of its own, so the browsers of the
+  # categories do not compete for the same CPUs. A shard that fails leaves the
+  # others running, so the run reports every shard that fails.
   design-lint:
     needs: changes
     if: github.event_name == 'push' || needs.changes.outputs.design-lint == 'true'
+    name: design-lint ${{ matrix.shard }}/4
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
@@ -145,25 +152,38 @@ jobs:
       - name: Install Chromium system packages
         run: pnpm --filter design-lint exec playwright-core install-deps chromium
 
+      # The package config splits the spec files by project, so the categories
+      # spread across the shards.
       - name: Test
-        run: pnpm run test:design-lint
+        run: pnpm run test:design-lint --shard=${{ matrix.shard }}/4
 
   # A skipped job reports nothing, so a required check on it would wait
   # forever. The gate always runs and reports one result for the whole run: it
-  # passes when every job passed or was skipped.
+  # passes when every job passed or was skipped. needs gives one result for
+  # all the shards of design-lint, so on a failure the gate reads the names of
+  # the failed jobs, such as a shard, from the API.
   gate:
     needs: [changes, checks, design-lint]
     if: always()
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
+    permissions:
+      actions: read
     steps:
       - name: Report the result of every job
         env:
           RESULTS: ${{ needs.changes.result }} ${{ needs.checks.result }} ${{ needs.design-lint.result }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           for result in $RESULTS; do
             case "$result" in
               success | skipped) ;;
-              *) echo "A job reported $result."; exit 1 ;;
+              *)
+                echo "A job reported $result."
+                gh run view "$RUN_ID" --json jobs --jq '.jobs[] | select(.conclusion == "failure" or .conclusion == "cancelled") | .name' || true
+                exit 1
+                ;;
             esac
           done

@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
+import { shardSpecs } from "./packages/design-lint/vitest.projects";
 
 /* The design-lint tests run in their own job, only when a file they read
    changes, and a gate job reports for the whole run. These act out the path
@@ -149,5 +150,78 @@ describe("a lockfile with a new playwright-core version", () => {
 describe("a push to main", () => {
   it("runs the design-lint job whatever the filter reports", () => {
     expect(jobs["design-lint"]?.if).toContain("github.event_name == 'push'");
+  });
+});
+
+/* The design-lint job runs as a matrix of shards, each on a runner of its own,
+   and the gate names a shard that fails. These split the spec files that vitest
+   list collects with the package's own shard function, and run the gate's
+   script with a stand-in gh; the time of each shard is confirmed on the pull
+   request. See issue #574. */
+type Matrix = { name?: string; strategy?: { "fail-fast"?: boolean; matrix?: { shard?: number[] } }; permissions?: Record<string, string> };
+const designLintJob: Job & Matrix = jobs["design-lint"] ?? {};
+const shards = designLintJob.strategy?.matrix?.shard ?? [];
+const designLintDir = path.join(process.cwd(), "packages/design-lint");
+
+/* The spec files of one unsharded run, as the project name and the file. */
+function listSpecs() {
+  const list = spawnSync("pnpm", ["exec", "vitest", "list", "--filesOnly", "--json"], { cwd: designLintDir, encoding: "utf8" });
+  expect(list.status, list.stderr).toBe(0);
+  const specs: { file: string; projectName: string }[] = JSON.parse(list.stdout.slice(list.stdout.indexOf("[")));
+  return specs.map((s) => ({ project: s.projectName, file: path.relative(designLintDir, s.file) }));
+}
+
+describe("a pull request that changes a file under packages/design-lint", () => {
+  it("runs the design-lint tests as more than one shard", () => {
+    expect(shards.length).toBeGreaterThan(1);
+    expect(shards).toEqual(shards.map((_, i) => i + 1));
+  });
+  it("passes each shard its index and the count to vitest", () => {
+    const test = runsOf(designLintJob).find((run) => run.includes("pnpm run test:design-lint")) ?? "";
+    expect(test).toContain(`--shard=\${{ matrix.shard }}/${shards.length}`);
+  });
+  it("names each shard in the job name", () => {
+    expect(designLintJob.name).toContain("${{ matrix.shard }}");
+  });
+});
+
+describe("the shards together", () => {
+  it("run the same spec files as one unsharded run, none twice", () => {
+    const whole = listSpecs();
+    const key = (s: { project: string; file: string }) => `${s.project} ${s.file}`;
+    const sharded = shards.flatMap((shard) => shardSpecs(whole, shard, shards.length));
+    expect(whole.length).toBeGreaterThan(shards.length);
+    expect(sharded.map(key).sort()).toEqual(whole.map(key).sort());
+  }, 120000);
+  it("put the projects of the categories on more than one shard", () => {
+    const categories = listSpecs().filter((s) => s.project.startsWith("design-lint:"));
+    expect(shards.length).toBeGreaterThan(1);
+    const used = shards.filter((shard) => shardSpecs(categories, shard, shards.length).length > 0);
+    expect(used.length).toBe(shards.length);
+  }, 120000);
+});
+
+/* Runs the gate's script with a gh on PATH that prints the given job names,
+   as gh does for the failed jobs of the run. */
+function gateWithJobs(results: string[], failedJobs: string[]) {
+  const bin = fs.mkdtempSync(path.join(os.tmpdir(), "ci-gate-"));
+  fs.writeFileSync(path.join(bin, "gh"), `#!/bin/sh\nprintf '%s\\n' ${failedJobs.map((j) => `'${j}'`).join(" ")}\n`, { mode: 0o755 });
+  return spawnSync("bash", ["-e", "-c", gateStep?.run ?? "exit 2"], {
+    env: { PATH: `${bin}:${process.env.PATH}`, RESULTS: results.join(" ") },
+    encoding: "utf8",
+  });
+}
+
+describe("a shard whose tests fail", () => {
+  it("keeps the other shards running", () => {
+    expect(designLintJob.strategy?.["fail-fast"]).toBe(false);
+  });
+  it("makes the gate report failure and name that shard", () => {
+    const result = gateWithJobs(["success", "success", "failure"], ["design-lint 2/4"]);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain("design-lint 2/4");
+  });
+  it("lets the gate read the jobs of the run", () => {
+    expect((jobs.gate as Job & Matrix)?.permissions?.actions).toBe("read");
   });
 });

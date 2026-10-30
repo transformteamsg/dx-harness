@@ -30,3 +30,13 @@ export function designLintProjects(): TestProjectInlineConfiguration[] {
     })),
   ];
 }
+
+/* The spec files of one shard, such as shard 2 of 4. Vitest's own --shard
+   splits by file path, which would put every project of
+   test/category.test.ts on one shard, so this splits by project and file. The
+   specs go round the shards in sorted order, so the categories spread across
+   them, and every spec lands on exactly one shard. */
+export function shardSpecs<T extends { project: string; file: string }>(specs: T[], index: number, count: number): T[] {
+  const key = (s: T) => `${s.project}:${s.file}`;
+  return [...specs].sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0)).filter((_, i) => i % count === index - 1);
+}
