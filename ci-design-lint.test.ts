@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
-import { shardSpecs } from "./packages/design-lint/vitest.projects.ts";
+import { shardSpecs } from "./packages/design-lint/vitest.projects";
 
 /* The design-lint tests run in their own job, only when a file they read
    changes, and a gate job reports for the whole run. These act out the path
