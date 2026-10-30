@@ -30,3 +30,8 @@ export function designLintProjects(): TestProjectInlineConfiguration[] {
     })),
   ];
 }
+
+/* The spec files of one shard, such as shard 2 of 4. */
+export function shardSpecs<T extends { project: string; file: string }>(specs: T[], index: number, count: number): T[] {
+  throw new Error(`shardSpecs is not implemented: ${specs.length} specs, shard ${index}/${count}`);
+}
