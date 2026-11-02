@@ -10,7 +10,8 @@ import type { Candidate, RuleModule } from "../../types.ts";
    executable override in DESIGN_LINT_FIREFOX and DESIGN_LINT_WEBKIT. An engine
    that cannot start is reported as "not run" and the rule does not pass. The
    WebKit build of Playwright is not Safari. The runner has no channel for a
-   note from a module, so "not run" is a finding that starts with "Not run". */
+   note from a module, so "not run" is a finding that starts with "Not run" and
+   carries notRun, which blocks the exit code although the rule is tier L2. */
 
 const require_ = createRequire(import.meta.url);
 const AXE_SOURCE = fs.readFileSync(require_.resolve("axe-core/axe.min.js"), "utf8");
@@ -45,7 +46,7 @@ export const pr6b: RuleModule = {
         browser = await launchEngine(engine);
       } catch (error) {
         const why = (error instanceof Error ? error.message : String(error)).split("\n")[0];
-        out.push({ file: pages[0], line: 0, column: 0, data: { message: `Not run: the engine ${engine} did not start (${why}). Install it with "playwright-core install ${engine}". A page that did not run does not pass.` } });
+        out.push({ file: pages[0], line: 0, column: 0, notRun: true, data: { message: `Not run: the engine ${engine} did not start (${why}). Install it with "playwright-core install ${engine}". A page that did not run does not pass.` } });
         continue;
       }
       try {

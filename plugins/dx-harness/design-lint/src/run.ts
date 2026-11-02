@@ -97,6 +97,7 @@ export async function run(
           line: candidate.line,
           column: candidate.column,
           message,
+          ...(candidate.notRun ? { notRun: true as const } : {}),
         });
       }
     }

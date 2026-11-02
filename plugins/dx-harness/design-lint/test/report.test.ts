@@ -46,6 +46,13 @@ describe("exitCode", () => {
     const n: Note = { code: "BD-4a", kind: "not-configured", detail: ["x"] };
     expect(exitCode([], [n], tiers)).toBe(0);
   });
+  it("is 1 for an L2 finding that did not run, because a check that did not run does not pass", () => {
+    expect(exitCode([{ ...finding("L2"), notRun: true }], [], tiers)).toBe(1);
+  });
+  it("is 1 for an L2 rule that did not run", () => {
+    const n: Note = { code: "BD-4a", kind: "not-run", detail: ["no browser"] };
+    expect(exitCode([], [n], tiers)).toBe(1);
+  });
   it("ignores a rule that has no module yet", () => {
     const n: Note = { code: "BD-1a", kind: "no-module", detail: [] };
     expect(exitCode([], [n], tiers)).toBe(0);
