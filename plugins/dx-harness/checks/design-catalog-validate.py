@@ -1658,17 +1658,17 @@ def run_self_test():
         if not any(needle in e for e in errs):
             failures.append(f"FAIL {name}: expected an error containing {needle!r} — got: {errs}")
 
-    def assert_xref_clean(name, text, catalog_ids):
+    def assert_xref_clean(name, text, catalog_ids, redirects=None):
         nonlocal case_count
         case_count += 1
-        errs = cross_ref_errors("scratch.md", text, catalog_ids, xref_re)
+        errs = cross_ref_errors("scratch.md", text, catalog_ids, xref_re, redirects)
         if errs:
             failures.append(f"FAIL {name}: expected no errors — got: {errs}")
 
-    def assert_xref_error(name, text, catalog_ids, needle):
+    def assert_xref_error(name, text, catalog_ids, needle, redirects=None):
         nonlocal case_count
         case_count += 1
-        errs = cross_ref_errors("scratch.md", text, catalog_ids, xref_re)
+        errs = cross_ref_errors("scratch.md", text, catalog_ids, xref_re, redirects)
         if not any(needle in e for e in errs):
             failures.append(f"FAIL {name}: expected an error containing {needle!r} — got: {errs}")
 
@@ -1731,6 +1731,46 @@ def run_self_test():
                                  catalog_ids, xref_re)
     if not any(e.startswith("ERROR scratch.md:2:") for e in line_errs):
         failures.append(f"FAIL unknown id line number: expected line 2 — got: {line_errs}")
+
+    # A removed control (#540): redirects.yaml maps the old code, and a file
+    # that names it fails with the codes that replace it. A file outside the
+    # skills, such as a check or a dated catalogue-change record, can name it.
+    removed = {"A11Y-1": ["WP-13a", "WP-13b"], "CMP-9": "A security rule."}
+    assert_xref_error("a removed control in a skill file names its new codes",
+                      "Check contrast (A11Y-1).\n", catalog_ids - {"A11Y-1"},
+                      "names removed control 'A11Y-1'; use WP-13a, WP-13b", removed)
+    assert_xref_error("a retired control in a skill file names its reason",
+                      "Sanitise it (CMP-9).\n", catalog_ids,
+                      "names removed control 'CMP-9': A security rule.", removed)
+    case_count += 1
+    kept = cross_ref_errors("checks/README.md", "Old A11Y-1, CMP-9, and A11Y-999.\n",
+                            catalog_ids - {"A11Y-1"}, xref_re, redirects=removed,
+                            allow_redirected=True)
+    if kept != ["ERROR checks/README.md:1: references unknown control id 'A11Y-999'"]:
+        failures.append(f"FAIL outside the skills, a redirected code passes and an unknown "
+                        f"one fails: got {kept!r}")
+
+    # catalog.yaml keeps no control that redirects.yaml maps.
+    case_count += 1
+    got = redirected_catalog_errors({"TOK-1": {}, "A11Y-1": {}, "CMP-9": {}}, removed)
+    if (len(got) != 2 or not all(e.startswith("ERROR standards/catalog.yaml: ") for e in got)
+            or not any("'A11Y-1'" in e for e in got) or not any("'CMP-9'" in e for e in got)):
+        failures.append(f"FAIL a control that redirects.yaml maps fails in catalog.yaml: "
+                        f"got {got!r}")
+
+    # load_code_redirects reads both maps of redirects.yaml.
+    case_count += 1
+    redirect_root = tempfile.mkdtemp(prefix="validate-selftest-redirects-")
+    try:
+        os.makedirs(os.path.join(redirect_root, "standards", "rules"))
+        with open(os.path.join(redirect_root, "standards", "rules", "redirects.yaml"), "w") as fh:
+            fh.write("files: {}\ncodes:\n  CNT-12: [CNT-12a, CNT-12b]\n"
+                     "notMoved:\n  CMP-9: A security rule.\n")
+        got = load_code_redirects(redirect_root)
+        if got != {"CNT-12": ["CNT-12a", "CNT-12b"], "CMP-9": "A security rule."}:
+            failures.append(f"FAIL a removed code resolves through redirects.yaml: got {got!r}")
+    finally:
+        shutil.rmtree(redirect_root, ignore_errors=True)
 
     # ── dx-sync parity cases (pure helpers) ─────────────────────────────────
 
@@ -2428,6 +2468,16 @@ def run_self_test():
             fh.write("Apply TOK-1 and A11Y-1 only.")
         assert_clean("skill-sync grandfathered orphans clean",
                      skill_sync_errors(skillsync_tmp, full_catalog, xref_re))
+
+        # Case 6: a skill names a removed control. The error names the file,
+        # the control, and the codes that replace it (#540).
+        with open(skill_path, "w") as fh:
+            fh.write("Apply TOK-1, A11Y-1, and CNT-12 in every component.")
+        assert_error("skill-sync removed control names its new codes",
+                     skill_sync_errors(skillsync_tmp, full_catalog, xref_re,
+                                       {"CNT-12": ["CNT-12a", "CNT-12b"]}),
+                     "ERROR skills/x/SKILL.md [SKILL-SYNC]: names removed control "
+                     "'CNT-12'; use CNT-12a, CNT-12b")
 
         # Case 5: dead grandfather entry — a grandfathered id removed from the
         # catalog (simulating "no longer a catalog id at all") → error.
