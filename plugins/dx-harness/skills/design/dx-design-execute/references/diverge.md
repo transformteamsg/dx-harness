@@ -38,10 +38,10 @@ here on). If the product has no manifest yet, fall back to the v0-limit procedur
 in CMP-1's `--for review` part and note "asserted, no manifest".
 Progressive disclosure is the default pattern: show the core path, reveal complexity
 on demand. Three anti-slop controls bind at this altitude: a complex multi-section
-task gets a page, never a modal (SLP-10) — if an option puts tabs, columns, or its
+task gets a page, never a modal (CMP-14a) — if an option puts tabs, columns, or its
 own scrolling inside a dialog, it is not an option; a grid of identical cards is
-not a default layout (SLP-5) — structure should come from the task's hierarchy, not
-a template; and a card is only for an interactive unit (SLP-11) — if an option boxes
+not a default layout (LAY-8a) — structure should come from the task's hierarchy, not
+a template; and a card is only for an interactive unit (CMP-15a) — if an option boxes
 static content in card chrome where spacing, type, and a divider would group it, that
 is a finding, not a layout. Two lenses bind here too: simplicity is not minimalism (HIG: Simplicity) —
 keep the important things close and let the rest fall away, never hide what the task
@@ -50,11 +50,11 @@ into a guided flow or mode must make it easy to skip or escape.
 
 **Compose, don't fill.** Treat the first screen as a composition, not a container to
 pack: one clear focal point — the teacher's primary task and its single primary action
-(CMP-5) — with related content grouped by proximity and a shared region rather than
-boxed in cards (SLP-11), and everything else stepped down so hierarchy does the
-explaining (SLP-6). Each option's layout is graded at verify against LAY-3 (does it fit
-a known page template for its type?), LAY-5 (does its density fit the task?), LAY-6
-(do shared edges align?), and LAY-7 (one primary focal region; does the visual reading
+(CMP-5a) — with related content grouped by proximity and a shared region rather than
+boxed in cards (CMP-15a), and everything else stepped down so hierarchy does the
+explaining (TYP-7a). Each option's layout is graded at verify against LAY-3a (does it fit
+a known page template for its type?), LAY-5a (does its density fit the task?), LAY-6a
+(do shared edges align?), and LAY-7a (one primary focal region; does the visual reading
 order match the task's priority order — the squint test) — design to them now, not as
 a cleanup pass.
 

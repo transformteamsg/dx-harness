@@ -14,14 +14,14 @@ Expand the chosen direction into a plan:
 - **Interaction plan**: name the 2–3 specific motions the chosen option uses — one
   entrance, one state transition, one hover/reveal — described concretely (what moves,
   from what to what), not "add animations". Reuse the product's existing motion
-  conventions; every motion is bound by MOT-1 (100–300ms, standard easing, none on
-  critical paths beyond functional feedback), SLP-8 (no bounce/elastic), and A11Y-5
+  conventions; every motion is bound by MOT-1a (100–300ms, standard easing, none on
+  critical paths beyond functional feedback), MOT-4a (no bounce/elastic), and A11Y-5a
   (a reduced-motion variant). Motion that improves neither hierarchy nor feedback is cut.
 - The controls in scope for this page (filtered catalog), with any proposed waivers
   and their rationale — waivers are decided here, not improvised during implementation.
-- Content outline: headings, key copy, names checked against CNT-2, error states
-  (CMP-3: enumerate loading/success/error states per async action — and for each
-  state, its A11Y-11 announcement channel: live region or focus move; CMP-2: every
+- Content outline: headings, key copy, names checked against CNT-2a, error states
+  (CMP-3a: enumerate loading/success/error states per async action — and for each
+  state, its A11Y-11c announcement channel: live region or focus move; CMP-2a: every
   destructive action's consequence + undo/confirm, decided now).
 - **Flow map** (when the surface is a flow or hosts a multi-step interaction, from `flow.md`): entry
   points, done state, every exit, and the edge cases — interruption, partial
@@ -30,7 +30,7 @@ Expand the chosen direction into a plan:
 - **Tradeoffs, named**: what this design sacrifices and why that's acceptable.
 - **Plan summary table**: end the plan with a compact table the reader can scan in one
   pass — one row per plan dimension (structure; components; interaction & motion; async
-  states + each one's A11Y-11 channel; controls in scope; waivers; tradeoffs; evidence
+  states + each one's A11Y-11c channel; controls in scope; waivers; tradeoffs; evidence
   to capture), each cell a tight phrase, not prose. It is a summary the grill and the
   approver read first, never a substitute for the plan above it.
 

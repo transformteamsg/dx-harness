@@ -6,7 +6,7 @@ design reviewer grades Craft on whether they were applied. Apply the ones the su
 for as you build — not as a cleanup pass.
 
 - **Tabular figures** on any column of numbers or any number that updates in place —
-  `tabular-nums` (TYP-5). Grade tables, attendance counts, and live totals must hold
+  `tabular-nums` (TYP-5a). Grade tables, attendance counts, and live totals must hold
   still, not jitter as digits change.
 - **Concentric radius**: a nested control's radius is the parent's minus the padding
   (`inner = outer − padding`), snapped to the scale (TOK-3).
@@ -14,21 +14,21 @@ for as you build — not as a cleanup pass.
   (`transition-property: opacity, transform`), never `transition: all`; reserve
   keyframes for one-shot staged sequences. Direction carries meaning — entrances
   `ease-out`, exits `ease-in` and softer than the entrance, state/view changes
-  `ease-in-out`. Duration and easing per MOT-1, no bounce (SLP-8), always a
-  reduced-motion variant (A11Y-5). Keyboard navigation is instant — no animation on
+  `ease-in-out`. Duration and easing per MOT-1a, no bounce (MOT-4a), always a
+  reduced-motion variant (A11Y-5a). Keyboard navigation is instant — no animation on
   tab/arrow movement.
 - **Press feedback**: a subtle `scale(0.96)` on press where a tactile cue helps —
-  never below 0.95, never a bounce, disabled under reduced motion (A11Y-5).
-- **Hit targets**: where a control reads smaller than its A11Y-4 floor (24px, 44px on
+  never below 0.95, never a bounce, disabled under reduced motion (A11Y-5a).
+- **Hit targets**: where a control reads smaller than its WO-18a floor (24px, 44px on
   mobile), expand the hit area with padding or a pseudo-element rather than enlarging
   the visible glyph.
 - **Feels-instant feedback**: respond within ~400ms; when the real work takes longer,
-  show a skeleton or an optimistic result, not a bare spinner — CMP-3's loading state,
+  show a skeleton or an optimistic result, not a bare spinner — CMP-3a's loading state,
   built to feel fast (Doherty threshold).
 - **Shadows for depth, not decoration**: layer two or three low-alpha shadows rather
   than one hard one; keep a single consistent light direction across the surface; tint
   toward a neutral, never pure black; size the shadow to the elevation. This is
-  constructive depth — distinct from the SLP-1 glow/aura tell, which stays banned.
+  constructive depth — distinct from the COL-3a glow/aura tell, which stays banned.
 - **Type polish**: `text-wrap: balance` on headings and `text-wrap: pretty` on body to
   remove orphans; `-webkit-font-smoothing: antialiased` set once at the root;
   `font-synthesis: none` so no weight is ever faked (TYP-1 ships 400/500/600 only).

@@ -44,7 +44,7 @@ into the plan.
   happens to the teacher's work in each case; "your draft is saved" is a behaviour to
   design, not a phrase to assume.
 - **The ducked decision** — what did the plan leave vague? An unenumerated async
-  state, an announcement channel not chosen (A11Y-11), an edge case named but not
+  state, an announcement channel not chosen (A11Y-11c), an edge case named but not
   resolved, a name that needs a waiver.
 - **The cheaper design** — is there a smaller structure that still meets the contract
   (HIG: Simplicity)? Make the case to shrink or cut before committing to the larger

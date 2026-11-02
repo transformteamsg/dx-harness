@@ -54,17 +54,11 @@ function evaluator(rule: string) {
     .join(" ");
 }
 
-const CODE = /\b[A-Z][A-Z0-9]*-\d+\b/g;
+const CODE = /\b[A-Z][A-Z0-9]*-\d+[a-z]?\b/g;
 
-/* Contract item 1: CMP-8's grading steps come from its detail. */
-describe("1. the reviewer grades CMP-8 from its detail", () => {
-  it("the CMP-8 evaluator part walks the flow, interrupts it, and judges whether the input survives", () => {
-    const part = evaluator("cmp-8");
-    expect(part).toMatch(/Walk the flow map/);
-    expect(part).toMatch(/Interrupt the flow/);
-    expect(part).toMatch(/never silently lost/i);
-  });
-
+/* Contract item 1: the agent carries no grading text for a rule. CMP-8 left the
+   catalogue in #540, and its judged rule CMP-8b is graded from its MAPPING.md row. */
+describe("1. the reviewer carries no CMP-8 grading text", () => {
   it("the agent carries no CMP-8 grading text", () => {
     const agent = flat(gradingText());
     expect(agent).not.toContain("CMP-8");
@@ -84,12 +78,11 @@ describe("2. an out-of-scope CMP-9 costs the reviewer nothing", () => {
 /* Contract item 3: each step the agent held and the detail did not moves to
    the detail's review part, and leaves no copy in the agent. */
 describe("3. no grading text is lost", () => {
+  /* The CMP-4 and CMP-7 steps left with their detail files in #540. */
   const MOVED = [
-    { rule: "cmp-4", step: /shimmer/i, why: "a shimmer is loading chrome" },
-    { rule: "cmp-7", step: /colour, contrast, or shape/i, why: "a shape override is a finding" },
     { rule: "idn-2", step: /no script checks either half/i, why: "both halves are graded by hand" },
     { rule: "idn-3", step: /every surface that carries copy/i, why: "IDN-3 applies to every copy-bearing surface" },
-    { rule: "cnt-14", step: /nominalisation \(CNT-8\)/i, why: "a CNT-8 nominalisation is not double-flagged" },
+    { rule: "cnt-14", step: /nominalisation \(CNT-8a\)/i, why: "a CNT-8a nominalisation is not double-flagged" },
   ];
 
   it.each(MOVED)("the $rule evaluator part holds the step: $why", ({ rule, step }) => {
@@ -115,7 +108,7 @@ describe("4. no section of the reviewer agent grades a single rule", () => {
   it("keeps the rule codes in the output format examples", () => {
     const agent = read(AGENT);
     const format = agent.slice(agent.indexOf("## Output format"));
-    expect(format.match(CODE)).toEqual(expect.arrayContaining(["TOK-1", "A11Y-1"]));
+    expect(format.match(CODE)).toEqual(expect.arrayContaining(["TOK-1", "WP-13a"]));
   });
 });
 

@@ -93,5 +93,5 @@ Every L0 rule binds every pass whatever its dimension, per the L0 tier in
 record an L0 failure as a finding (say so when it exceeds strict dimension scope)
 or route it explicitly to the right skill.
 
-Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds this
+Second person, plain language, Singapore English, no AI-writing tells — CNT-15a binds this
 prose too.

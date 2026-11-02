@@ -791,6 +791,16 @@ def emit_rendered_error(route, cell, ctl, found, suggest, extra=None):
 
 
 CATALOG_PATH = os.path.join(os.path.dirname(_CHECKS_DIR), "standards", "catalog.yaml")
+# The catalogue before #540 removed the ported and generic controls. Only a
+# self-test reads it, for a check that still names a removed control.
+SELF_TEST_CATALOG_PATH = os.path.join(_CHECKS_DIR, "fixtures", "catalog", "catalog-before-540.yaml")
+
+
+def use_self_test_catalog():
+    """Point every catalogue read in this process at SELF_TEST_CATALOG_PATH.
+    A check's self-test calls it first; a scan never does."""
+    global CATALOG_PATH
+    CATALOG_PATH = SELF_TEST_CATALOG_PATH
 
 _CATALOG_ID_RE = re.compile(r"^\s*-\s+id:\s*([A-Z][A-Z0-9]*-\d+)\s*$")
 # A control's own top-level field: four spaces of indent, then `key: value`.
@@ -868,6 +878,29 @@ def _frontmatter_fields(text):
         if m and m.group(2):
             fields[m.group(1)] = _catalog_value(m.group(2))
     return fields
+
+
+def rule_parameters(path):
+    """The `parameters` map of a rule file's frontmatter, or None when the file
+    has no frontmatter or PyYAML is not installed. A parameter value can be a
+    nested list or map, so this reads the frontmatter with PyYAML, unlike the
+    one-line fields that base_rules() reads. Raises OSError when the file
+    cannot be read."""
+    with open(path, encoding="utf-8") as fh:
+        text = fh.read()
+    m = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
+    if not m:
+        return None
+    try:
+        import yaml
+    except ImportError:
+        return None
+    try:
+        data = yaml.safe_load(m.group(1)) or {}
+    except yaml.YAMLError:
+        return None
+    params = data.get("parameters") if isinstance(data, dict) else None
+    return params if isinstance(params, dict) else None
 
 
 def _code_key(code):
@@ -1886,7 +1919,8 @@ def _self_test():
     )
     check(
         "rule_tiers: reads a rule's tier without yaml",
-        rule_tiers().get("A11Y-2") == "L0",
+        rule_tiers(SELF_TEST_CATALOG_PATH).get("A11Y-2") == "L0"
+        and rule_tiers().get("TOK-1") == "L1",
     )
     _missing = os.path.join("no", "such", "catalog.yaml")
     for _name, _door in (("rules_that_apply", rules_that_apply),
@@ -1919,7 +1953,8 @@ def _self_test():
              ("Colour", "Colour"), (_by_id.get("COL-2"), _by_prefix.get("COL")))
     check(
         "l0_subset: keeps only the L0 controls, in order",
-        l0_subset(["A11Y-6", "A11Y-2", "A11Y-3"]) == ["A11Y-2", "A11Y-3"],
+        l0_subset(["A11Y-6", "A11Y-2", "A11Y-3"], rule_tiers(SELF_TEST_CATALOG_PATH))
+        == ["A11Y-2", "A11Y-3"],
     )
     _by_cid = {c["id"]: c for c in catalog_controls()}
     check_eq("catalog_controls: reads enforced and script",
@@ -2058,13 +2093,13 @@ def _self_test():
 
     # Each dimension's rules against the SKILL.md that names them, so the
     # list and the pass cannot drift apart. A pass SKILL.md names a rule by
-    # its own code, or by the old catalogue code that redirects.yaml maps to it.
+    # its own code, such as CMP-2a, or names a placeholder control.
     _skills_dir = os.path.join(os.path.dirname(_CHECKS_DIR), "skills", "design")
     for _dimension, _wanted in DIMENSION_RULES.items():
         with open(os.path.join(_skills_dir, f"dx-design-{_dimension}", "SKILL.md"),
                   encoding="utf-8") as fh:
-            _named = control_ids_in(fh.read())
-        _reached = _named | {c for old in _named for c in _redirects.get(old, [])}
+            _text = fh.read()
+        _reached = control_ids_in(_text) | set(re.findall(r"\b[A-Z][A-Z0-9]*-\d+[a-z]\b", _text))
         check_eq(f"dimension rules: dx-design-{_dimension} names every rule",
                  [], [c for c in _wanted if c not in _reached])
     _placeholders = {c["id"] for c in placeholder_controls(catalog_controls(), _redirects)}

@@ -1,6 +1,6 @@
 ---
 name: dx-design
-description: 'Front door for design work when the ask is unclear, mixed, or names no dimension: "improve my app", "where do I start?", several issues at once, or brainstorming directions. Grills for intent, then routes to the matching design skill, or runs light triage and propose-only passes behind one plan approval. Also answers control-catalogue rule and waiver questions ("can I waive TOK-1?", "does CMP-3 apply here?"). A sharp ask that already names its skill or dimension goes there directly.'
+description: 'Front door for design work when the ask is unclear, mixed, or names no dimension: "improve my app", "where do I start?", several issues at once, or brainstorming directions. Grills for intent, then routes to the matching design skill, or runs light triage and propose-only passes behind one plan approval. Also answers control-catalogue rule and waiver questions ("can I waive TOK-1?", "does CMP-3a apply here?"). A sharp ask that already names its skill or dimension goes there directly.'
 ---
 
 # Orchestrate a design run
@@ -133,7 +133,7 @@ Brainstorm mode lives here, inside the orchestrator:
 
 ## 6. Rule and waiver questions
 
-"Can I waive TOK-1?", "who approves?", "does CMP-3 apply here?": these are yours to
+"Can I waive TOK-1?", "who approves?", "does CMP-3a apply here?": these are yours to
 answer, off-menu, and you never build in response to one.
 
 - **Read before you answer, in that turn**: `../../../standards/README.md` on a waiver, and
@@ -156,5 +156,5 @@ A run reads its rules from the in-scope list that
 Repo-level adoption (stack, manifest, record locations, the named L1 approver) is the
 team onboarding guide, `../../../docs/ONBOARDING.md`.
 
-Second person, plain language, Singapore English, no AI-writing tells; SLP-9 binds
+Second person, plain language, Singapore English, no AI-writing tells; CNT-15a binds
 this prose too.

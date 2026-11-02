@@ -17,8 +17,8 @@ just each screen:
   draft is saved" must be a designed behaviour before it can be honest copy.
 - **Interactions carry the flow.** Transitions preserve context — content and
   controls stay in predictable positions across steps (HIG: Flexibility); keyboard
-  traversal works across the whole journey, not just within each screen (A11Y-2 at
-  flow scope); focus lands somewhere sensible after every step change (A11Y-11
+  traversal works across the whole journey, not just within each screen (WO-1c at
+  flow scope); focus lands somewhere sensible after every step change (A11Y-11c
   applies at each transition, not only at async states).
 - **Escapability is part of the structure** (HIG: Agency): the teacher can leave at
   any step without losing work, and the route out is visible, not discovered.

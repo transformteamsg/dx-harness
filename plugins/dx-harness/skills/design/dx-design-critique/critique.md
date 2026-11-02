@@ -11,7 +11,7 @@ propose changes before you have seen and judged the current state:
    it names. If the user gives no URL, say so plainly and carry on with the
    steps below from a screenshot alone: the rendered check in step 2 cannot run,
    so every control it would have decided goes to manual verification, never a
-   pass, and A11Y-1 and A11Y-3 still block until verified by some path.
+   pass, and WP-13a and A11Y-3a still block until verified by some path.
 2. **Capture the current page.** Take a screenshot of the live surface at 1280
    (and 360 if the change is responsive). Capture mechanism, in order of
    preference: (1) the `agent-browser` CLI if installed (`agent-browser --help`
@@ -54,7 +54,7 @@ propose changes before you have seen and judged the current state:
    (call out established iconography, radius, layout, and copy that are
    deliberate; do not "fix" them) **but verify, do not assume: every element you list as
    "preserve" stays in scope for its controls, so check it against the L0 floor
-   (A11Y-1 contrast especially) before calling it good. Preserved is not waived:
+   (WP-13a contrast especially) before calling it good. Preserved is not waived:
    "preserve" means do not restyle a deliberate choice, it never means skip the
    check** — and what
    genuinely underperforms (control violations, hierarchy,
@@ -62,7 +62,7 @@ propose changes before you have seen and judged the current state:
 5. **Layout suggestions (ranked).** Up to 5, ordered by impact on the
    teacher's task. Each names: the concrete change ("merge the two summary
    cards into one calm header row"), the pattern or control it serves
-   (layout-patterns.md #4, LAY-5), and the cost (Small or Medium). Suggestions
+   (layout-patterns.md #4, LAY-5a), and the cost (Small or Medium). Suggestions
    are offers, and SKILL.md step 4 says how the human approves them. A
    suggestion never bypasses `dx-design-execute`'s plan gate.
 6. The critique's findings and suggestions feed the report step (`report.md`,

@@ -78,8 +78,8 @@ This loop covers both. Choose the entry depth by change size, never skip the gat
   scoped loop: a one-line intent, skip diverge if the structure is fixed, a short plan
   naming the controls the *changed surface* pulls in, then implement and verify the
   changed surface. A modification still binds its controls — adding a field still
-  triggers A11Y-3, restyling still triggers TOK-1..3, touching an async action still
-  triggers CMP-3. The common failure is treating "just add a field" as outside the
+  triggers A11Y-3a, restyling still triggers TOK-1..3, touching an async action still
+  triggers CMP-3a. The common failure is treating "just add a field" as outside the
   harness; it is not.
 - **Catalog update re-audit** — when controls are ADDED to the catalog, existing
   shipped surfaces are silently out of date until re-audited. Run each affected

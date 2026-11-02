@@ -21,18 +21,17 @@ and both get NOTED and routed.
 
 **Dimension controls** (the subset for this pass):
 
-- **LAY-1** — the declared column grid and gutter scale (N/A where no grid is
-  declared). **LAY-2** — reflow to one column at 320px, no loss. **LAY-3** — fits a
-  known page template. **LAY-4** — body measure, judged under Measure. **LAY-5** —
-  density suits the task. **LAY-6** — shared edges align (optical where geometry
-  misleads). **LAY-7** — one primary focal region; reading order matches task
-  priority (squint test).
-- **Measure** covers **TYP-6** alongside LAY-4: running prose sits in 45–75
+- **LAY-1a, LAY-1b** — the declared column grid and gutter scale (N/A where no grid is
+  declared). **WP-16a, WP-16b, BD-1b, WP-7b** — reflow to one column at 320px, no loss.
+  **LAY-3a** — fits a known page template. **LAY-5a** — density suits the task.
+  **LAY-6a** — shared edges align (optical where geometry misleads). **LAY-7a** — one
+  primary focal region; reading order matches task priority (squint test).
+- **Measure** covers **TYP-6a** and **TYP-6b**: running prose sits in 45–75
   characters per line, with a target of about 66, capped with a `max-width` in `ch`.
   Judge the two together against this one range, and hold headings, table cells, data
   grids, and short labels out of both. A cap under 45ch is display type, not prose.
-- **Structural anti-slop** — SLP-4 (no nested cards; flatten with space/type/dividers),
-  SLP-5 (no identical-card grids as default), SLP-11 (a card is only for an interactive
+- **Structural anti-slop** — CMP-13a (no nested cards; flatten with space/type/dividers),
+  LAY-8a (no identical-card grids as default), CMP-15a (a card is only for an interactive
   unit; group static content with space and dividers).
 
 **Named-pattern fit.** Beyond the structural controls, judge each region against the

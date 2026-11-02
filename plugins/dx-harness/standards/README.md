@@ -6,6 +6,13 @@ Every standard the harness enforces is a **control**: one YAML entry in
 disclosure: the agent always knows *what* controls exist; it reads *how to satisfy
 one* only when relevant.
 
+`catalog.yaml` is a placeholder catalogue. It holds only the stack, domain, and
+product controls, until the stack is decided and the domain presets exist. Every
+other control is a base rule in [`rules/`](rules/), and
+[`rules/redirects.yaml`](rules/redirects.yaml) maps each removed control code to the
+rules that replace it. `pnpm check` fails a skill, agent, or procedure file that
+names a removed control.
+
 The normative source is the **DX Design Standard (DX-DS)**. The litmus test for
 what belongs here: *if you can't check it, it's a principle or a guideline — not a
 standard.* Standards are the only layer the harness can enforce automatically. Run `python3 checks/design-catalog-validate.py` to verify the catalog, detail files, and all cross-references are consistent.

@@ -88,5 +88,5 @@ relayed "approver: J. Tan" is legitimate), append it to the Overrides section, a
 regenerate. An L0 can never be promoted: the generator rejects it; offer a rule
 proposal instead (`../../../procedures/rule-proposal.md`).
 
-Second person, plain language, Singapore English, no AI-writing tells; SLP-9 binds
+Second person, plain language, Singapore English, no AI-writing tells; CNT-15a binds
 this prose too.

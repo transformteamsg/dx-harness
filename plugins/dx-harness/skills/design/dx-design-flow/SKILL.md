@@ -18,15 +18,17 @@ and routed).
 
 **Dimension controls** (the subset for this pass):
 
-- **CMP-2** — destructive actions show consequences and offer undo/confirm (L0).
-- **CMP-3** — every async transaction has loading, success, and error states.
-- **CMP-8** — a non-destructive exit exists at every step, and in-progress work is
-  preserved or explicitly discarded on interruption — never silently lost. (CMP-2 keeps
-  the destructive-action consequence/undo mechanics; CMP-8 covers the work itself and
-  the ability to leave.)
-- **A11Y-2** — keyboard traversal works across the whole journey, not just per screen.
-- **A11Y-11** — each transition announces its change and manages focus.
-- **SLP-10** — a complex multi-section task gets a page, not a modal.
+- **CMP-2a, CMP-2b** — destructive actions show consequences and offer undo/confirm.
+- **CMP-3a** — every async transaction has loading, success, and error states.
+- **CMP-8a, CMP-8b** — a non-destructive exit exists at every step, and in-progress work
+  is preserved or explicitly discarded on interruption — never silently lost. (CMP-2a
+  and CMP-2b keep the destructive-action consequence/undo mechanics; CMP-8a and CMP-8b
+  cover the work itself and the ability to leave.)
+- **WO-1a, WO-1b, WO-1c, WO-13a, WO-13b** — keyboard traversal works across the whole
+  journey, not just per screen, with a visible focus indicator.
+- **WR-2a, WR-2b, WR-2c, WO-9c, A11Y-11a, A11Y-11b, A11Y-11c** — each transition
+  announces its change and manages focus.
+- **CMP-14a** — a complex multi-section task gets a page, not a modal.
 
 **Reference:** `../dx-design-execute/references/flow.md` —
 entry points, the done state, every exit (back/cancel/abandon), and what happens to the

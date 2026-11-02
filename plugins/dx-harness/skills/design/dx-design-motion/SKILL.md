@@ -17,13 +17,13 @@ and flow structure are out of scope and get NOTED and routed.
 
 **Dimension controls** (the subset for this pass):
 
-- **MOT-1** — 100–300ms, standard easing, no decorative motion on critical paths.
-- **MOT-2** — motion values come from the declared motion token set; durations and
+- **MOT-1a, MOT-1b** — 100–300ms, standard easing, no decorative motion on critical paths.
+- **MOT-2a, MOT-2b** — motion values come from the declared motion token set; durations and
   easings are never hardcoded in component code.
-- **MOT-3** — motion may emphasise meaning but never carry it alone; the surface
+- **MOT-3a** — motion may emphasise meaning but never carry it alone; the surface
   communicates the same information with animations off.
-- **A11Y-5** — a `prefers-reduced-motion` variant disables non-essential animation.
-- **SLP-8** — no bounce or elastic easing on interface elements.
+- **A11Y-5a, A11Y-5b** — a `prefers-reduced-motion` variant disables non-essential animation.
+- **MOT-4a** — no bounce or elastic easing on interface elements.
 
 **Reference:** the motion bullets of `../dx-design-execute/implement-craft.md` — property-scoped
 interruptible transitions (`transition-property`, never `transition: all`), direction of

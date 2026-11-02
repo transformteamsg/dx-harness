@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
@@ -76,11 +77,16 @@ function bullet(file: string, label: string, next: string) {
   return end === -1 ? text.slice(start) : text.slice(start, end);
 }
 
-/* The rule sets come from the catalogue, not from the files under test. */
-type Control = { id: string; tier: string };
-const controls: Control[] = parse(read(`${HARNESS}/standards/catalog.yaml`)).controls;
-const L0 = controls.filter((c) => c.tier === "L0").map((c) => c.id);
-const LAY = controls.filter((c) => c.id.startsWith("LAY-")).map((c) => c.id);
+/* The rule sets come from the rule list and redirects.yaml, not from the files
+   under test. The L0 floor is every L0 rule on the list. The layout-controls
+   block is the LAY rules that the LAY controls map to. */
+const LIST = spawnSync("python3", [path.join(ROOT, HARNESS, "scripts/in-scope-rules.py"),
+  fs.mkdtempSync(path.join(os.tmpdir(), "shared-rules-"))], { cwd: ROOT, encoding: "utf8" });
+const L0 = [...(LIST.stdout ?? "").matchAll(/^- ([A-Z][A-Z0-9]*-\d+[a-z]?) \(L0,/gm)].map((m) => m[1]);
+const codes: Record<string, string[]> = parse(read(`${HARNESS}/standards/rules/redirects.yaml`)).codes;
+const LAY = Object.entries(codes)
+  .filter(([control]) => control.startsWith("LAY-"))
+  .flatMap(([, rules]) => rules.filter((rule) => rule.startsWith("LAY-")));
 
 /* A field list that each copy of the return-to-caller payload carried. */
 const PAYLOAD = [
@@ -91,16 +97,17 @@ const PAYLOAD = [
 ];
 
 describe("the rule sets the tests compare against", () => {
-  it("come from the catalogue", () => {
-    expect(L0.length, "the catalogue has no L0 rule").toBeGreaterThan(0);
-    expect(LAY.length, "the catalogue has no LAY rule").toBeGreaterThan(0);
+  it("come from the rule list and redirects.yaml", () => {
+    expect(LIST.status, LIST.stderr).toBe(0);
+    expect(L0.length, "the rule list has no L0 rule").toBeGreaterThan(0);
+    expect(LAY.length, "redirects.yaml maps no LAY control to a LAY rule").toBeGreaterThan(0);
   });
 });
 
 /* Contract item 1: each rule has its text in one file, and every other file
    that needs it names that file. */
 describe("1. one copy of each rule", () => {
-  /* The L0 floor is the catalogue's L0 set, so no run file types it out. */
+  /* The L0 floor is the L0 set of the rule list, so no run file types it out. */
   it("no run file lists the whole L0 floor", () => {
     expect(namingAll(L0), "these files type out the L0 floor").toEqual([]);
   });

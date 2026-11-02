@@ -245,6 +245,9 @@ def run_self_test():
     success; prints failures and exits 1. Builds temp source + record files;
     reads the REAL catalogue tiers through checklib.rule_tiers() (read-only,
     like audit-record's path-referencing cases)."""
+    # The removed controls this self-test names keep their tiers in a fixture
+    # catalogue until #539 retires or narrows this check (#540).
+    checklib.use_self_test_catalog()
     import tempfile
 
     failures = []

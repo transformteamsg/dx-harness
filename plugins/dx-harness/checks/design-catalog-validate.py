@@ -11,7 +11,8 @@ Validates standards/catalog.yaml for internal consistency:
   6. Reverse check: every standards/controls/*.md frontmatter matches catalog.
   7. Cross-reference sweep: every control ID mentioned in prose exists in
      catalog — swept over skills/**, agents/**, procedures/**, and
-     docs/catalog-changes/.
+     docs/catalog-changes/. A removed control fails with the codes that
+     replace it, except in checks/README.md and docs/catalog-changes/ (#540).
   8. dx-sync parity: [SLP9-SYNC], [COUNT-SYNC] (every "<N> controls"
      claim in README.md or docs/index.html — the plugin's or the consuming
      site's — must equal the catalog's actual control count), [WIRING-SYNC]
@@ -29,8 +30,8 @@ Validates standards/catalog.yaml for internal consistency:
      folder and takes its slug as its name, per ADR-0002. Every target in
      standards/rules/redirects.yaml exists. Each code under its 'codes'
      map has a row in a MAPPING.md, and each control under 'notMoved' has a
-     reason and no codes (#546). Each generic control in catalog.yaml has
-     an entry under 'codes' or 'notMoved' (#541). No file remains under the retired
+     reason and no codes (#546). No control in catalog.yaml is under 'codes'
+     or 'notMoved' (#540). No file remains under the retired
      skills/design-restructure/ (#536).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
@@ -308,17 +309,32 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re, redirects=None,
                      allow_redirected=False):
     """
     Step 7's per-file sweep: for every XREF_RE match in `text` whose id is not
-    in `catalog_ids`, emit a "references unknown control id" error with the
-    computed line number. No I/O (the caller reads the file).
+    in `catalog_ids`, emit an error with the computed line number. An id that
+    `redirects` maps is a removed control, and its error names the codes that
+    replace it. With `allow_redirected`, a removed control passes: a check or a
+    dated record can name an old code. No I/O (the caller reads the file).
     """
     errors = []
+    redirects = redirects or {}
     for match in xref_re.finditer(text):
         ref_id = match.group(0)
-        if ref_id not in catalog_ids:
-            # Find line number for better reporting
-            line_no = text[:match.start()].count("\n") + 1
+        if ref_id in catalog_ids or (allow_redirected and ref_id in redirects):
+            continue
+        line_no = text[:match.start()].count("\n") + 1
+        if ref_id in redirects:
+            errors.append(f"ERROR {rel_path}:{line_no}: {removed_control_message(ref_id, redirects)}")
+        else:
             errors.append(f"ERROR {rel_path}:{line_no}: references unknown control id '{ref_id}'")
     return errors
+
+
+def removed_control_message(ref_id, redirects):
+    """The error text for a control that left catalog.yaml: the codes that
+    replace it, or the reason it was retired."""
+    target = redirects[ref_id]
+    if isinstance(target, list):
+        return f"names removed control '{ref_id}'; use {', '.join(map(str, target))}"
+    return f"names removed control '{ref_id}': {target}"
 
 
 # ── dx-sync parity sub-checks ──────────────────────────────────────────────────
@@ -329,10 +345,12 @@ def cross_ref_errors(rel_path, text, catalog_ids, xref_re, redirects=None,
 # markers and compared against its source here. See docs/SYNC.md.
 
 # REQUIRED_CORE — a hard-coded floor of buzzwords that must appear in BOTH the
-# canonical slp-9.md list and the copy rules' summary. NOT synced from
-# slp-9.md by design, so the check keeps an anchor even if both lists are edited.
+# canonical buzzword list and the copy rules' summary. NOT synced from
+# the source list by design, so the check keeps an anchor even if both lists are edited.
 # If the canonical list ever drops one of these, update this set too (see SYNC.md).
 REQUIRED_CORE = {"streamline", "empower", "supercharge"}
+# The SLP-9 buzzword list moved to the CNT-15a rule with SLP-9 (#540).
+SLP9_SOURCE = "standards/rules/cnt/ai-writing-tells.md"
 
 # Connector / noise tokens dropped during buzzword tokenization.
 _BUZZWORD_NOISE = {"and", "kin", "the", "plus", "list", "buzzword", ""}
@@ -371,22 +389,23 @@ def tokenize_buzzwords(span):
 def slp9_parity_errors(repo_root):
     """
     [SLP9-SYNC] The copy rules' buzzword summary must be a SUBSET of the
-    canonical slp-9.md buzzword list (the rules may show fewer words, never more),
-    and REQUIRED_CORE must appear in both. Missing markers are an error.
+    `buzzwords` parameter of the CNT-15a rule file, which holds the SLP-9 list
+    since #540 (the rules may show fewer words, never more), and REQUIRED_CORE
+    must appear in both. A missing marker or a missing parameter is an error.
     """
-    src_path = os.path.join(repo_root, "standards", "controls", "slp-9.md")
+    src_path = os.path.join(repo_root, *SLP9_SOURCE.split("/"))
     con_path = os.path.join(repo_root, "procedures", "copy-rules.md")
     present, errors = required_consumer_errors(repo_root, [src_path, con_path],
                                                "SLP9-SYNC")
 
     source = None
     if src_path in present:
-        with open(src_path) as fh:
-            src_span = extract_sync_block(fh.read(), "slp9-buzzwords")
-        if src_span is None:
-            errors.append("ERROR standards/controls/slp-9.md [SLP9-SYNC]: missing source marker")
+        words = (checklib.rule_parameters(src_path) or {}).get("buzzwords")
+        if not isinstance(words, list) or not words:
+            errors.append(f"ERROR {SLP9_SOURCE} [SLP9-SYNC]: needs a 'buzzwords' list "
+                          f"under 'parameters'")
         else:
-            source = tokenize_buzzwords(src_span)
+            source = {str(w).lower() for w in words}
 
     consumer = None
     if con_path in present:
@@ -404,7 +423,7 @@ def slp9_parity_errors(repo_root):
         if extra:
             errors.append(
                 f"ERROR {rel} [SLP9-SYNC]: copy-rules buzzword(s) "
-                f"{{{', '.join(sorted(extra))}}} not in canonical slp-9.md list"
+                f"{{{', '.join(sorted(extra))}}} not in the canonical list in {SLP9_SOURCE}"
             )
 
     # Required-core floor: must appear in both lists.
@@ -420,7 +439,7 @@ def slp9_parity_errors(repo_root):
         missing = REQUIRED_CORE - source
         if missing:
             errors.append(
-                f"ERROR standards/controls/slp-9.md [SLP9-SYNC]: required core "
+                f"ERROR {SLP9_SOURCE} [SLP9-SYNC]: required core "
                 f"buzzword(s) {{{', '.join(sorted(missing))}}} absent"
             )
     return errors
@@ -536,7 +555,6 @@ def count_parity_errors(repo_root, catalog_count, relpaths=COUNT_SYNC_PATHS,
 # run in neither a package.json script nor CI, with a one-line honest reason each. Keep this
 # in sync with the "Wiring status" prose in checks/README.md.
 WIRING_EXEMPT = {
-    "checks/contrast.py": "blocks for manual A11Y-1 verification until a product declares colour.pairs; build wiring is deferred to the catalogue recount",
     "checks/component-manifest.py": "validates a product's .dx/component-manifest.json; this repo has none to validate",
 }
 
@@ -628,17 +646,8 @@ def wiring_parity_errors(repo_root, catalog_by_id):
 # wired) are free — shrink-only in practice.
 SKILL_WIRING_GRANDFATHERED = {
     "IDN-1": "identity check (logo/lockup) is planned but unbuilt, so checks/COVERAGE.md lists IDN-1 as covered by no check, and no skill names it yet",
-    # TYP-6 came off this list in #161, the commit that shipped its check:
-    # skills/design/dx-design-pattern/SKILL.md now names it beside LAY-4, the
-    # control it shares a measure rule body with.
-    # The reviewer agent named these five only in the grading paragraphs that
-    # #452 moved into their details. The agent still grades each one from the
-    # in-scope list, so each is applied, but no file under skills/, agents/, or
-    # procedures/ names it.
-    "CMP-4": "graded by the reviewer agent from its detail (#452); no skill names it",
-    "CMP-9": "graded by the reviewer agent from its detail (#452); no skill names it",
-    "CMP-10": "graded by the reviewer agent from its detail (#452); no skill names it",
-    "CMP-11": "graded by the reviewer agent from its detail (#452); no skill names it",
+    # The reviewer agent grades IDN-2 from the in-scope list and its detail
+    # (#452), but no file under skills/, agents/, or procedures/ names it.
     "IDN-2": "graded by the reviewer agent from its detail (#452); no skill names it",
 }
 
@@ -682,7 +691,12 @@ def skill_sync_errors(repo_root, catalog_by_id, xref_re, redirects=None):
         for m in xref_re.finditer(text):
             ref_id = m.group(0)
             mentioned.add(ref_id)
-            if ref_id not in catalog_by_id:
+            if ref_id in catalog_by_id:
+                continue
+            if redirects and ref_id in redirects:
+                errors.append(f"ERROR {rel} [SKILL-SYNC]: "
+                              f"{removed_control_message(ref_id, redirects)}")
+            else:
                 errors.append(
                     f"ERROR {rel} [SKILL-SYNC]: names {ref_id} which is not in the catalog"
                 )
@@ -776,53 +790,35 @@ def rule_redirect_errors(repo_root):
               for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
               if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
     codes, not_moved = data.get("codes", {}), data.get("notMoved", {})
-    return (errors + rule_code_redirect_errors(rules_dir, codes, not_moved)
-            + generic_control_coverage_errors(repo_root, codes, not_moved))
-
-
-# The 13 stack, domain, and product controls stay in catalog.yaml as the
-# placeholder catalogue. The 12 controls that port in full retire to DSS rules,
-# and #540 removes them from catalog.yaml. Every other control is generic.
-PLACEHOLDER_CONTROLS = {
-    "TOK-1", "TOK-2", "TOK-3", "COL-2", "TYP-3", "CMP-1",
-    "CNT-14",
-    "COL-1", "TYP-1", "IDN-1", "IDN-2", "IDN-3", "IDN-4",
-}
-PORTED_CONTROLS = {
-    "A11Y-1", "A11Y-2", "A11Y-4", "A11Y-6", "A11Y-7", "A11Y-8", "A11Y-9", "A11Y-10",
-    "CMP-7", "CNT-1", "CNT-10", "LAY-2",
-}
-
-
-def generic_control_coverage_errors(repo_root, codes, not_moved):
-    """Error lines for each generic control in catalog.yaml with no entry under
-    `codes` or `notMoved` in redirects.yaml (#541)."""
-    path = os.path.join(repo_root, "standards", "catalog.yaml")
-    if not os.path.isfile(path) or not isinstance(codes, dict) or not isinstance(not_moved, dict):
-        return []
-    try:
-        with open(path) as fh:
-            catalog = yaml.safe_load(fh) or {}
-    except yaml.YAMLError:
-        return []
-    controls = catalog.get("controls") if isinstance(catalog, dict) else None
-    ids = [c.get("id") for c in controls or [] if isinstance(c, dict)]
-    return [f"ERROR standards/rules/redirects.yaml: generic control '{cid}' has no entry "
-            f"under 'codes' or 'notMoved'"
-            for cid in ids
-            if isinstance(cid, str) and cid not in PLACEHOLDER_CONTROLS
-            and cid not in PORTED_CONTROLS and cid not in codes and cid not in not_moved]
+    return errors + rule_code_redirect_errors(rules_dir, codes, not_moved)
 
 
 def load_code_redirects(repo_root):
     """{old catalogue code: [new rule codes] or the reason it was not moved},
-    from the `codes` and `notMoved` maps of standards/rules/redirects.yaml."""
-    return {}
+    from the `codes` and `notMoved` maps of standards/rules/redirects.yaml.
+    Returns {} when the file is absent or does not parse; rule_redirect_errors
+    reports a file that does not parse."""
+    path = os.path.join(repo_root, "standards", "rules", "redirects.yaml")
+    try:
+        with open(path) as fh:
+            data = yaml.safe_load(fh) or {}
+    except (OSError, yaml.YAMLError):
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    redirects = {}
+    for key in ("notMoved", "codes"):
+        if isinstance(data.get(key), dict):
+            redirects.update(data[key])
+    return redirects
 
 
 def redirected_catalog_errors(catalog_by_id, redirects):
-    """Error lines for each control in catalog.yaml that redirects.yaml maps."""
-    return []
+    """Error lines for each control in catalog.yaml that redirects.yaml maps.
+    A mapped control has left the catalogue (#540), so it must not come back."""
+    return [f"ERROR standards/catalog.yaml: '{cid}' is in redirects.yaml, so it "
+            f"has left the catalogue; remove it or its redirect"
+            for cid in sorted(catalog_by_id) if cid in redirects]
 
 
 RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
@@ -900,43 +896,11 @@ def retired_rule_path_errors(repo_root):
 # build; an entry that is not a catalog id at all is an ERROR. The list is
 # temporary: #162 removes the last entries and deletes it.
 GAP_GRANDFATHERED = {
-    # #150 is done: its four judgment relabels closed their gaps by derivation,
-    # and CMP-5, LAY-1 and TYP-5 now carry written reasons, so all seven of its
-    # entries are gone.
-    # #155, the rendered runner's anti-slop rules.
-    "SLP-4": "rendered nested-card rule pending in #155",
-    "SLP-6": "rendered type-ramp rule pending in #155",
-    # #156, checks/slop-scan.py.
-    "SLP-1": "script pending in #156",
-    "SLP-2": "script pending in #156",
-    "SLP-3": "script pending in #156",
-    # #157, checks/motion-scan.py.
-    "MOT-1": "script pending in #157",
-    "SLP-8": "script pending in #157",
-    # #158, checks/cmp-scan.py. CMP-2 is L0, so a gap: reason can never
-    # legalise it: its only exit is the script, which is why the candidate
-    # lister has to be built.
-    "CMP-2": "L0, so no gap: reason can ever stand in; script pending in #158",
-    "CMP-3": "script pending in #158",
-    "CMP-9": "script pending in #158",
+    # #540 removed every other entry with its control. Each removed control
+    # is a base rule now, so its gap moved with it.
     # #159, checks/identity-scan.py.
     "IDN-1": "script pending in #159",
     "IDN-2": "script pending in #159",
-    # #160 is done: checks/structure-scan.py ships the table-headers rule under
-    # both A11Y-7 and CMP-6, so both now carry enforced: partial and need no
-    # allowance.
-    # #161 is done: type-scan.py's measure rule ships, so LAY-4 and TYP-6 carry
-    # enforced: partial with a script and no longer need the allowance.
-    # #162, the coverage recount. Each of these is decided by the rendered
-    # runner or the static accessibility config (#151, #154), and its label is
-    # corrected in the recount; A11Y-11 needs interaction, so it has no script
-    # half at all and takes a written reason there.
-    "A11Y-4": "rendered target-size check; label recount pending in #162",
-    "A11Y-5": "rendered reduced-motion check; label recount pending in #162",
-    "A11Y-6": "static and rendered alt-text checks; label recount pending in #162",
-    "A11Y-9": "rendered title and lang checks; label recount pending in #162",
-    "A11Y-10": "rendered bypass check, report-only; label recount pending in #162",
-    "A11Y-11": "needs interaction, so no script half exists; reason pending in #162",
 }
 
 
@@ -1413,6 +1377,10 @@ def collect_errors(repo_root, _return_count=False):
                                 catalog_changes_dir)
 
     all_xref_files = cross_ref_files + swept_files
+    # A check and a dated catalogue-change record can name a removed control:
+    # #539 retires the checks, and a record keeps the code it was written with.
+    redirects = load_code_redirects(repo_root)
+    redirect_ok = (os.path.join(repo_root, "checks", "README.md"), catalog_changes_dir + os.sep)
 
     for fpath in all_xref_files:
         if not os.path.isfile(fpath):
@@ -1420,14 +1388,16 @@ def collect_errors(repo_root, _return_count=False):
         rel = os.path.relpath(fpath, repo_root)
         with open(fpath) as fh:
             content = fh.read()
-        errors.extend(cross_ref_errors(rel, content, catalog_by_id, xref_re))
+        errors.extend(cross_ref_errors(rel, content, catalog_by_id, xref_re, redirects,
+                                       allow_redirected=fpath.startswith(redirect_ok)))
+    errors.extend(redirected_catalog_errors(catalog_by_id, redirects))
 
     # ── Step 8: dx-sync parity sub-checks ───────────────────────────────────
     # Inline restatements (SLP-9 buzzwords) must not drift from source.
     errors.extend(slp9_parity_errors(repo_root))
     errors.extend(count_parity_errors(repo_root, len(catalog_by_id)))
     errors.extend(wiring_parity_errors(repo_root, catalog_by_id))
-    errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re))
+    errors.extend(skill_sync_errors(repo_root, catalog_by_id, xref_re, redirects))
     errors.extend(voice_parity_errors(repo_root))
     errors.extend(tone_parity_errors(repo_root))
     errors.extend(uitext_parity_errors(repo_root))
@@ -1521,13 +1491,17 @@ def _script_names(control):
     return [os.path.basename(s) for s in scripts if isinstance(s, str)]
 
 
-def coverage_markdown(checks_dir, controls):
+def coverage_markdown(checks_dir, controls, redirects=None):
     """(COVERAGE.md text, errors) from the declarations in `checks_dir` and the
     catalogue `controls`. On any error the text is empty. A catalogue `script:`
     claim that the named check does not declare is listed, not failed: the
-    declaration is what the check decides."""
+    declaration is what the check decides. A declared control that
+    `redirects` maps has left the catalogue; its tier reads "Removed" until
+    #539 retires or narrows the check."""
     declarations, errors = read_check_coverage(checks_dir)
     by_id = {c["id"]: c for c in controls if isinstance(c, dict) and "id" in c}
+    for cid in redirects or {}:
+        by_id.setdefault(cid, {"id": cid, "tier": "Removed"})
     rule_checks = {f: d for f, d in declarations.items() if d["kind"] == "rule"}
     for fname, decl in rule_checks.items():
         for cid in decl["controls"]:
@@ -1596,7 +1570,7 @@ def write_coverage(repo_root):
     with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
         controls = yaml.safe_load(fh)["controls"]
     checks_dir = os.path.join(repo_root, "checks")
-    text, errors = coverage_markdown(checks_dir, controls)
+    text, errors = coverage_markdown(checks_dir, controls, load_code_redirects(repo_root))
     if errors:
         return errors
     with open(os.path.join(checks_dir, COVERAGE_FILENAME), "w", encoding="utf-8") as fh:
@@ -1610,7 +1584,7 @@ def coverage_drift_errors(repo_root):
     with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
         controls = yaml.safe_load(fh)["controls"]
     checks_dir = os.path.join(repo_root, "checks")
-    text, errors = coverage_markdown(checks_dir, controls)
+    text, errors = coverage_markdown(checks_dir, controls, load_code_redirects(repo_root))
     if errors:
         return errors
     try:
@@ -2005,117 +1979,9 @@ def run_self_test():
         failures.append(f"FAIL gap allowance resolved prints a NOTE: want: {want!r}; "
                         f"got: {got!r}")
 
-    # MOT-2 is the control this rule was written around. Assert against the
-    # real catalog that its reason is there, that it still claims no script,
-    # and that the rule passes it, so an edit deleting the reason fails here.
-    case_count += 1
     with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
         live_controls = yaml.safe_load(fh)["controls"]
-    mot2 = next((c for c in live_controls if c.get("id") == "MOT-2"), {})
-    want = (True, False, [])
-    got = (bool(str(mot2.get("gap", "")).strip()), "script" in mot2,
-           gap_rule_errors(mot2, schema_bits))
-    if want != got:
-        failures.append(f"FAIL MOT-2 carries a reason and no script: want: {want!r}; "
-                        f"got: {got!r}")
-
-    # ── The 11 relabels (#150) ───────────────────────────────────────────
-    # The triage found 11 controls whose label promised a check no script can
-    # deliver. Asserted against the live catalog, with the detail file each
-    # relabel forces, because both requirements have to hold in the same run:
-    # a judgment or hybrid control with no detail file fails design-catalog-validate.py AND
-    # check-standards.mjs, and the .mjs gate runs first in `pnpm check`. Reverting
-    # one half of the pair fails here rather than in a red build.
-    relabelled = {
-        "SLP-1": "hybrid", "SLP-6": "hybrid", "IDN-1": "hybrid",
-        "IDN-2": "hybrid", "LAY-4": "hybrid", "MOT-1": "hybrid",
-        "MOT-2": "hybrid",
-        "SLP-5": "judgment", "SLP-7": "judgment", "CMP-4": "judgment",
-        "CMP-8": "judgment",
-    }
     live_by_id = {c.get("id"): c for c in live_controls}
-    case_count += 1
-    want = (7, 4, [])
-    off_label, missing_detail = [], []
-    for cid, expected in sorted(relabelled.items()):
-        control = live_by_id.get(cid, {})
-        if control.get("check") != expected:
-            off_label.append(f"{cid}={control.get('check')!r} want {expected!r}")
-        detail = control.get("detail")
-        if not detail or not os.path.isfile(
-                os.path.join(REPO_ROOT, "standards", detail)):
-            missing_detail.append(f"{cid} detail={detail!r}")
-    got = (sum(1 for v in relabelled.values() if v == "hybrid"),
-           sum(1 for v in relabelled.values() if v == "judgment"),
-           off_label + missing_detail)
-    if want != got:
-        failures.append(f"FAIL the 11 relabels carry their label and a detail "
-                        f"file: want: {want!r}; got: {got!r}")
-
-    # The four judgment relabels close their gap by derivation: with no
-    # enforced: written, effective_enforcement resolves judgment to evaluator,
-    # so gap_required is False and no reason is owed. Asserting the derivation
-    # rather than the absence catches an 'enforced: evaluator' written back
-    # into the catalog, which standards/README.md forbids.
-    case_count += 1
-    want = [(cid, "evaluator", True, False) for cid in
-            ("CMP-4", "CMP-8", "SLP-5", "SLP-7")]
-    got = []
-    for cid in ("CMP-4", "CMP-8", "SLP-5", "SLP-7"):
-        control = live_by_id.get(cid, {})
-        enforced, defaulted = effective_enforcement(control)
-        got.append((cid, enforced, defaulted, gap_required(control)))
-    if want != got:
-        failures.append(f"FAIL the judgment relabels derive evaluator and owe no "
-                        f"gap: want: {want!r}; got: {got!r}")
-
-    # The three accepted gaps (#150). Each is hybrid and effectively manual, so
-    # each owes a reason, and the reason is what makes the label legal. Asserted
-    # against the live catalog so deleting one fails here rather than being
-    # caught only by the allowance list it no longer sits on.
-    case_count += 1
-    accepted_gaps = ("CMP-5", "LAY-1", "TYP-5")
-    want = [(cid, True, True, []) for cid in accepted_gaps]
-    got = []
-    for cid in accepted_gaps:
-        control = live_by_id.get(cid, {})
-        got.append((cid, gap_required(control),
-                    bool(str(control.get("gap", "")).strip()),
-                    gap_rule_errors(control, schema_bits)))
-    if want != got:
-        failures.append(f"FAIL the three accepted gaps carry their reasons: "
-                        f"want: {want!r}; got: {got!r}")
-
-    # The allowance list shrank by exactly the seven entries #150 resolves, plus
-    # the two #161 resolves, and by nothing else. The controls still waiting on a
-    # script stay on it: an entry leaves only in the commit that ships what it
-    # was waiting for.
-    case_count += 1
-    want = (set(), set(), {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "MOT-1"})
-    resolved_by_150 = {"CMP-4", "CMP-8", "SLP-5", "SLP-7", "CMP-5", "LAY-1", "TYP-5"}
-    resolved_by_161 = {"LAY-4", "TYP-6"}
-    still_pending = {"SLP-1", "SLP-6", "IDN-1", "IDN-2", "MOT-1"}
-    got = (resolved_by_150 & set(GAP_GRANDFATHERED),
-           resolved_by_161 & set(GAP_GRANDFATHERED),
-           still_pending & set(GAP_GRANDFATHERED))
-    if want != got:
-        failures.append(f"FAIL GAP_GRANDFATHERED lost exactly #150's seven and "
-                        f"#161's two entries: want: {want!r}; got: {got!r}")
-
-    # #161's two measure controls left the allowance list because they now carry
-    # a script, not because the rule was relaxed: both must resolve to
-    # enforced:partial with checks/type-scan.py, which is what makes the gap
-    # rule stop asking them for a reason.
-    case_count += 1
-    want = [(cid, "partial", "checks/type-scan.py", False) for cid in ("LAY-4", "TYP-6")]
-    got = []
-    for cid in ("LAY-4", "TYP-6"):
-        control = live_by_id.get(cid, {})
-        enforced, _defaulted = effective_enforcement(control)
-        got.append((cid, enforced, control.get("script"), gap_required(control)))
-    if want != got:
-        failures.append(f"FAIL the measure controls carry type-scan.py: "
-                        f"want: {want!r}; got: {got!r}")
 
     # No file cites a check that does not exist (#150). A "planned script" note
     # is the drift class this closes: nothing verified those notes and nothing
@@ -2124,13 +1990,13 @@ def run_self_test():
     # it as a deterministic precedent invented one; and slop-layout's row planned
     # for three controls that no longer need it.
     #
-    # Scoped to the catalog, the triaged detail files, five stale notes whose
+    # Scoped to the catalog, the triaged detail files, the stale notes whose
     # exact checks already ship, and the planned-check table. A11Y controls are
     # excluded by this issue; CNT-9 and CNT-12 keep honest planned-extension
     # notes because content-lint does not implement those two heuristics yet.
-    triaged = ["cmp-2", "cmp-3", "cmp-5", "cmp-6", "cmp-7", "cmp-8", "cmp-9",
-               "lay-1", "lay-4", "typ-5", "typ-6"]
-    shipped_notes = ["cmp-1", "cnt-1", "cnt-3", "tok-1", "typ-2"]
+    # #540 removed every triaged control but CMP-1 and TOK-1 from the catalogue.
+    triaged = []
+    shipped_notes = ["cmp-1", "tok-1"]
     scoped = {"standards/catalog.yaml": os.path.join(REPO_ROOT, "standards",
                                                      "catalog.yaml"),
               "checks/README.md": os.path.join(REPO_ROOT, "checks", "README.md")}
@@ -2240,12 +2106,17 @@ def run_self_test():
                   and min(ratios) >= float(threshold.group(1)))
         return result, (f"{min(ratios):.4f}" if ratios else "unavailable")
 
+    # SLP-6 is the TYP-7a rule since #540, so its threshold is TYP-7a's
+    # `minRatio`. The title states the same figure.
+    with open(os.path.join(REPO_ROOT, "standards", "rules", "typ", "adjacent-size-ratio.md")) as fh:
+        typ7a = yaml.safe_load(re.match(r"^---\n(.*?)\n---\n", fh.read(), re.DOTALL).group(1))
+    slp6 = {"verify": f">= {typ7a['parameters']['minRatio']}",
+            "title": f"{typ7a['parameters']['minRatio']}x"}
     case_count += 1
     want = (True, True, True, True, True)
-    got, tightest = type_ramp_invariant(live_by_id.get("SLP-6", {}),
-                                        live_by_id.get("TYP-3", {}))
+    got, tightest = type_ramp_invariant(slp6, live_by_id.get("TYP-3", {}))
     if want != got:
-        failures.append(f"FAIL SLP-6's threshold clears TYP-3's whole scale: "
+        failures.append(f"FAIL TYP-7a's minRatio clears TYP-3's whole scale: "
                         f"want: {want!r}; got: {got!r} "
                         f"(tightest adjacent pair {tightest})")
 
@@ -2255,21 +2126,20 @@ def run_self_test():
     if any(malformed):
         failures.append("FAIL malformed SLP-6/TYP-3 text reports an invariant failure")
 
-    # The polish skill restates SLP-6's threshold, and no sync check compares a
-    # figure. Read it against the catalog so the two cannot drift apart.
+    # The polish skill restates TYP-7a's threshold, and no sync check compares a
+    # figure. Read it against the rule so the two cannot drift apart.
     case_count += 1
     polish = os.path.join(REPO_ROOT, "skills", "design", "dx-design-polish",
                           "SKILL.md")
     with open(polish) as fh:
-        polish_figure = re.search(r"SLP-6 \(type hierarchy [^\d]*([\d.]+)x\)", fh.read())
-    live_threshold = re.search(r">=\s*([\d.]+)",
-                               str(live_by_id.get("SLP-6", {}).get("verify", "")))
+        polish_figure = re.search(r"TYP-7a \(type hierarchy [^\d]*([\d.]+)x\)", fh.read())
+    live_threshold = re.search(r">=\s*([\d.]+)", slp6["verify"])
     want = (True, True)
     got = (polish_figure is not None,
            polish_figure is not None and live_threshold is not None
            and float(polish_figure.group(1)) == float(live_threshold.group(1)))
     if want != got:
-        failures.append(f"FAIL the polish skill quotes SLP-6's live threshold: "
+        failures.append(f"FAIL the polish skill quotes TYP-7a's live threshold: "
                         f"want: {want!r}; got: {got!r}")
 
     # The reviewer agent grades each rule from its detail (#452), so it states
@@ -2958,7 +2828,8 @@ def run_self_test():
     try:
         with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
             live_controls = yaml.safe_load(fh)["controls"]
-        _live_text, live_errs = coverage_markdown(_CHECKS_DIR, live_controls)
+        _live_text, live_errs = coverage_markdown(_CHECKS_DIR, live_controls,
+                                                  load_code_redirects(REPO_ROOT))
         if live_errs:
             failures.append(f"FAIL coverage: every live check declares its coverage: {live_errs!r}")
     except Exception as exc:
@@ -3058,31 +2929,6 @@ def run_self_test():
                     e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
                 failures.append(f"FAIL rule not moved: {name}; got {errs!r}")
 
-        catalog = os.path.join(rules_root, "standards", "catalog.yaml")
-        with open(catalog, "w") as fh:
-            fh.write("controls:\n  - id: TOK-1\n  - id: A11Y-1\n  - id: CNT-12\n  - id: CMP-9\n")
-        for name, text, bad in [
-            ("a generic control with a codes entry passes",
-             "files: {}\ncodes:\n  CNT-12: [BD-1a]\nnotMoved:\n  CMP-9: Security.\n", None),
-            ("a generic control with no entry fails",
-             "files: {}\nnotMoved:\n  CMP-9: Security.\n", "generic control 'CNT-12' has no entry"),
-            ("a generic control in neither map fails",
-             "files: {}\ncodes:\n  CNT-12: [BD-1a]\n", "generic control 'CMP-9' has no entry"),
-        ]:
-            case_count += 1
-            rule_errors_for(["bd/viewport-meta.md", "bd/MAPPING.md"])
-            with open(redirects, "w") as fh:
-                fh.write(text)
-            errs = rule_file_errors(rules_root)
-            if bad is None and errs:
-                failures.append(f"FAIL generic control coverage: {name}; got {errs!r}")
-            elif bad is not None and not any(
-                    e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
-                failures.append(f"FAIL generic control coverage: {name}; got {errs!r}")
-            elif any("'TOK-1'" in e or "'A11Y-1'" in e for e in errs):
-                failures.append(f"FAIL generic control coverage: {name} flags a placeholder "
-                                f"or ported control; got {errs!r}")
-        os.remove(catalog)
 
         case_count += 1
         rule_errors_for(["bd/viewport-meta.md"])

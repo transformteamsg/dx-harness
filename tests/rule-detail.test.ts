@@ -64,7 +64,7 @@ const REVIEW_FILES = [
 
 /* Contract item 1: the builder reads the rule only. */
 describe("1. a build reads the normative part of a rule", () => {
-  const build = detail(path.join(CONTROLS, "cmp-8.md"), "build");
+  const build = detail(path.join(CONTROLS, "col-2.md"), "build");
 
   it("prints the requirement and the pass and fail conditions", () => {
     expect(build.status, build.out).toBe(0);
@@ -74,10 +74,10 @@ describe("1. a build reads the normative part of a rule", () => {
   it("leaves out the rationale, the evaluator guidance, and the Do not flag list", () => {
     expect(build.status, build.out).toBe(0);
     const got = headings(build.stdout);
-    for (const left of ["Rationale", "Evaluator guidance", "Do not flag", "Why this is judgment"]) {
+    for (const left of ["Rationale", "Evaluator guidance", "Do not flag"]) {
       expect(got, `the build part prints ${left}`).not.toContain(left);
     }
-    expect(build.stdout).not.toMatch(/Walk the flow map/);
+    expect(build.stdout).not.toMatch(/step-11-on-tint/);
   });
 
   it("keeps a section that states part of the rule itself", () => {
@@ -100,15 +100,15 @@ describe("1. a build reads the normative part of a rule", () => {
 /* Contract item 2: the reviewer reads the evaluator part. */
 describe("2. a review reads the evaluator part of a rule", () => {
   it("prints the rule, the evaluator guidance, and the Do not flag list", () => {
-    const review = detail(path.join(CONTROLS, "cmp-8.md"), "review");
+    const review = detail(path.join(CONTROLS, "col-2.md"), "review");
     expect(review.status, review.out).toBe(0);
     expect(headings(review.stdout)).toEqual(
       expect.arrayContaining(["Requirement", "Fails when", "Evaluator guidance", "Do not flag"]));
-    expect(review.stdout).toMatch(/Walk the flow map/);
+    expect(review.stdout).toMatch(/step-11-on-tint/);
   });
 
   it("takes How to verify as the evaluator part where a rule has no guidance section", () => {
-    const review = detail(path.join(CONTROLS, "cmp-2.md"), "review");
+    const review = detail(path.join(CONTROLS, "col-1.md"), "review");
     expect(review.status, review.out).toBe(0);
     expect(headings(review.stdout)).toContain("How to verify");
   });
@@ -189,7 +189,10 @@ describe("the detail command", () => {
   });
 
   it("keeps the status note that sits before the first section", () => {
-    const build = detail(path.join(CONTROLS, "mot-2.md"), "build");
+    const file = detailFile("hybrid", ["Requirement", "Evaluator guidance"]);
+    const text = fs.readFileSync(file, "utf8");
+    fs.writeFileSync(file, text.replace("\n---\n\n", "\n---\n\n> Status: proposed.\n\n"));
+    const build = detail(file, "build");
     expect(build.status, build.out).toBe(0);
     expect(build.stdout).toMatch(/Status: proposed/);
   });

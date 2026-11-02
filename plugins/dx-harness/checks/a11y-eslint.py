@@ -495,6 +495,9 @@ def _load_detect():
 
 
 def run_self_test():
+    # The removed controls this self-test names keep their tiers in a fixture
+    # catalogue until #539 retires or narrows this check (#540).
+    checklib.use_self_test_catalog()
     import tempfile
 
     failures = []
