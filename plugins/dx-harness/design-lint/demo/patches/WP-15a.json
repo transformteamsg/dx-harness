@@ -1,0 +1,16 @@
+{
+  "code": "WP-15a",
+  "describe": "Remove the exemption from the logo, which is an image of text.",
+  "edits": [
+    {
+      "file": "wp-b/text.html",
+      "find": " data-image-of-text=\"logo\"",
+      "replace": ""
+    }
+  ],
+  "expect": [
+    {
+      "file": "/wp-b/text.html"
+    }
+  ]
+}

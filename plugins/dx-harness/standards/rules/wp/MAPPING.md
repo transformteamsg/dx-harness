@@ -49,7 +49,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | | [`WP-13b`](token-text-contrast.md) Declared colour token pairs meet the minimum contrast ratio | lint | project | custom | `tokenPairs`, `normalRatio` (4.5) | |
 | WP-14 Text scaling | [`WP-14a`](text-resize.md) Text scaled to 200 percent loses no content | lint | rendered | custom | `scalePercent` (200), `viewports`, `pages` | |
 | | [`WP-14b`](relative-font-units.md) Font sizes use relative units | lint | source | custom | `allowedUnits` | |
-| WP-15 Images of text | [`WP-15a`](no-images-of-text.md) Images do not hold text. Lint part of `WP-15b`. | lint | rendered | custom | `minWords` (4), `ocrLanguages`, `exemptSelector` | |
+| WP-15 Images of text | [`WP-15a`](no-images-of-text.md) Images do not hold text. Lint part of `WP-15b`. | lint | rendered | custom | `minWords` (4), `minConfidence` (70), `ocrLanguages`, `exemptSelector`, `pages` | |
 | | `WP-15b` A necessary image of text has a text equivalent. Lint part: [`WP-15a`](no-images-of-text.md). | judged | | | | L2 |
 | WP-16 Content reflow | [`WP-16a`](reflow.md) Content reflows at the reflow width | lint | rendered | custom | `reflowWidth` (320), `twoDimensionalSelector` (exemption), `pages` | |
 | | `WP-16b` Two-dimensional content stays usable | judged | | | | L1 |
