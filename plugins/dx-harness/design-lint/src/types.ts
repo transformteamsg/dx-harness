@@ -30,6 +30,9 @@ export interface Finding {
   line: number;
   column: number;
   message: string;
+  /* The rule did not run where the finding points, so it has no verdict there.
+     It blocks at every tier, because a check that did not run does not pass. */
+  notRun?: true;
 }
 
 /* A rule that did not produce a verdict. A note never counts as a pass. */
@@ -48,6 +51,9 @@ export interface Candidate {
   line: number;
   column: number;
   data?: unknown;
+  /* Set when the module could not run the check here, such as an engine that did
+     not start. The runner copies it to the finding. */
+  notRun?: true;
 }
 
 export type Params = Record<string, unknown>;
