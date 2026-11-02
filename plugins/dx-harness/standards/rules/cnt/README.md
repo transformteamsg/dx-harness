@@ -45,7 +45,6 @@ A rule file exists only for a lintable rule.
 ## Open
 
 - The judged rules need rubrics from `dx-design-judge`: `CNT-2a`, `CNT-3a`, `CNT-4a`, `CNT-5b`, `CNT-6b`, `CNT-7a`, `CNT-8a`, `CNT-9a`, `CNT-11a`, `CNT-12b`, and `CNT-13b`.
-- `checks/content-lint.py` still reads the word lists from `standards/controls/`. It retires with the catalogue controls in [#540](https://github.com/transformteamsg/dx-harness/issues/540).
 
 ## Built
 

@@ -13,16 +13,12 @@ const CHECKS = path.join(ROOT, "plugins/dx-harness/checks");
 
 const read = (file: string) => fs.readFileSync(path.join(CHECKS, file), "utf8");
 
-/* The ten checks that read the catalogue, named in the issue. */
+/* The checks that read the catalogue. */
 const CHECKS_THAT_READ_RULES = [
-  "a11y-eslint.py",
   "audit-record.py",
-  "content-lint.py",
-  "contrast.py",
   "detect.py",
   "reaudit-scope.py",
   "rendered-check.py",
-  "structure-scan.py",
   "type-scan.py",
   "waiver-reconcile.py",
 ];
@@ -70,8 +66,7 @@ describe("a check that reads which rules apply", () => {
 
 /* Contract item 2: an unreadable catalogue stops the check. Each check runs
    from a copy of checks/ with no standards/ beside it, so the catalogue
-   cannot be read. structure-scan.py is not here: it reads tiers only in its
-   self-test, and never asks which rules apply when it scans. */
+   cannot be read. */
 describe("a check whose catalogue cannot be read", () => {
   let work = "";
   let checks = "";
@@ -81,7 +76,6 @@ describe("a check whose catalogue cannot be read", () => {
     checks = path.join(work, "checks");
     fs.cpSync(CHECKS, checks, { recursive: true });
     fs.writeFileSync(path.join(work, "page.tsx"), "export const Page = () => <p>Hello</p>;\n");
-    fs.writeFileSync(path.join(work, "copy.md"), "Click the button to continue.\n");
     fs.mkdirSync(path.join(work, "docs", "decisions"), { recursive: true });
     fs.writeFileSync(path.join(work, "docs", "decisions", "0001-page.md"),
       "# 0001 page\n\n## Controls in scope\n\nA11Y-2, TOK-1.\n\n## Verify verdict\n\n" +
@@ -96,10 +90,7 @@ describe("a check whose catalogue cannot be read", () => {
   }
 
   const cases: [string, string[]][] = [
-    ["a11y-eslint.py", ["--repo-root", "<work>", "<work>/page.tsx"]],
     ["audit-record.py", ["--repo-root", "<work>", "<work>/docs/decisions/0001-page.md"]],
-    ["content-lint.py", ["<work>/copy.md"]],
-    ["contrast.py", ["--repo-root", "<work>"]],
     ["detect.py", ["<work>/page.tsx"]],
     ["reaudit-scope.py", ["--repo-root", "<work>", "A11Y-2"]],
     ["rendered-check.py", []],

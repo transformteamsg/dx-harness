@@ -46,7 +46,7 @@ changed or the swap changed a decision, and the second is not allowed.
 | `known-positive/inline-style.html` | a `style="…"` attribute |
 | `known-positive/attribute.vue` | `.vue`, which is not an ast-grep language at 0.44.1 and is reached only through `languageGlobs` |
 | `known-positive/type-assertion.ts` | `.ts` is matched by `language: ts` rules; aliased to tsx this file measurably returns zero findings at exit 0 |
-| `known-positive/heading-scope.css` | TYP-2's band is body-scoped: an `h1` rule is excluded, `.lead` and a mixed `.lead, h2` group are not |
+| `known-positive/heading-scope.css` | sizes inside an `h1` rule, a `.lead` rule, and a mixed `.lead, h2` group all reach TYP-3 |
 | `known-positive/dx-tokens-region.css` | the comment-delimited exemption, which stays a Python line filter |
 | `known-positive/waiver-claimed.css` | the L1 `[waiver-claimed]` downgrade, read from the raw source line |
 | `known-positive/line-boundary-first.css` | ast-grep's 0-based line converted exactly once: the only finding is on line 1 |

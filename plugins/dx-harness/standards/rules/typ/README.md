@@ -32,7 +32,7 @@ The three judged rules have no file yet. Each needs a rubric from `dx-design-jud
 
 - `TYP-2a` and `TYP-2b` read the page at one viewport of 1280 by 800. A size that a media query sets for a small screen is not read.
 - `TYP-6a` reads the elements that match `proseSelector`. Prose in a `<div>` with no paragraph is not read, and `TYP-6b` judges it.
-- `checks/type-scan.py` still decides TYP-2, TYP-4, and TYP-6 for the live design skills. The catalogue retirement spec narrows it to TYP-1 and TYP-3 once these rules replace it.
+- `checks/type-scan.py` decides TYP-1 and TYP-3 only. These rules replace its TYP-2, TYP-4, and TYP-6 rules ([#539](https://github.com/transformteamsg/dx-harness/issues/539)).
 
 ## Built
 

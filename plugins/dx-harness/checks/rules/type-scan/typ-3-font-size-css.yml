@@ -1,0 +1,14 @@
+# A font size, for TYP-3's on-scale test. The type scale, read from TYP-3's
+# catalogue verify field, and the rule that a fractional pixel size is off-scale
+# by definition stay in Python.
+id: type-scan-typ-3-font-size-css
+language: css
+severity: warning
+message: candidate typ 3 font size
+metadata:
+  control: TYP-3
+  check: type-scan
+  surface: code
+rule:
+  matches: css-code-node
+  regex: '(?i)(font-size\s*:|\btext-\[)'

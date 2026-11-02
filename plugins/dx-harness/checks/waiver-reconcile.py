@@ -118,7 +118,7 @@ def _load_checklib():
 
 
 checklib = _load_checklib()
-# Reuse a11y-static's source-file extension set so the same tree is scanned.
+# Reuse the shared source-file extension set so the same tree is scanned.
 TARGET_EXTENSIONS = checklib.TARGET_EXTENSIONS
 split_sections = _AR.split_sections
 find_section = _AR.find_section
@@ -522,7 +522,7 @@ def main():
         print(exc.line("waiver-reconcile"))
         sys.exit(1)
 
-    # Report missing source paths, like a11y-static does.
+    # Report missing source paths, like the other checks do.
     path_errors = []
     for p in src_paths:
         if not os.path.exists(p):

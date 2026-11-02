@@ -1837,7 +1837,7 @@ def run_self_test():
     # Valid: enforced=partial + a list of script paths → clean.
     assert_control_clean("enforced partial + script list",
                          dict(valid_control, enforced="partial",
-                              script=[real_script, "checks/contrast.py"]))
+                              script=[real_script, "checks/type-scan.py"]))
     # Invalid enforced value → error.
     assert_control_error("invalid enforced value",
                          dict(valid_control, enforced="bogus", script=real_script),
@@ -1993,7 +1993,7 @@ def run_self_test():
     # Scoped to the catalog, the triaged detail files, the stale notes whose
     # exact checks already ship, and the planned-check table. A11Y controls are
     # excluded by this issue; CNT-9 and CNT-12 keep honest planned-extension
-    # notes because content-lint does not implement those two heuristics yet.
+    # notes.
     # #540 removed every triaged control but CMP-1 and TOK-1 from the catalogue.
     triaged = []
     shipped_notes = ["cmp-1", "tok-1"]

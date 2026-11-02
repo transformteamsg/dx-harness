@@ -63,32 +63,25 @@ function declaredControls(script: string): string[] {
 /* The controls that a base rule replaces: the keys of `codes` in redirects.yaml. */
 const replaced = new Set(Object.keys(parse(fs.readFileSync(path.join(RULES, "redirects.yaml"), "utf8")).codes ?? {}));
 
-/* The checks whose every control a base rule replaces, so design-lint decides
-   them. rendered-check.py stays for the live page until design-lint can open
-   one, by the decision recorded on #538. */
+/* rendered-check.py stays for the live page until design-lint can open one, by
+   the decision recorded on #538. */
 const KEPT_FOR_THE_LIVE_PAGE = new Set(["rendered-check.py"]);
-const covered = fs
-  .readdirSync(path.join(PLUGIN, "checks"))
-  .filter((file) => file.endsWith(".py") && !KEPT_FOR_THE_LIVE_PAGE.has(file))
-  .filter((file) => {
-    const controls = declaredControls(path.join(PLUGIN, "checks", file));
-    return controls.length > 0 && controls.every((id) => replaced.has(id));
-  });
+const CHECKS = fs.readdirSync(path.join(PLUGIN, "checks")).filter((file) => file.endsWith(".py"));
 
 describe("a design run decides the replaced controls with design-lint", () => {
-  it("finds checks whose controls a base rule replaces, so the test has checks to look for", () => {
-    expect(replaced.size).toBeGreaterThan(0);
-    expect(covered.length).toBeGreaterThan(0);
-  });
-
-  it("no design run file runs a check that design-lint covers", () => {
+  /* A check retires when design-lint replaces it, so a run file that still
+     names it would run nothing. */
+  it("every check script a design run file names exists", () => {
     const files = runFiles();
     expect(files.length).toBeGreaterThan(0);
-    const offenders = files.flatMap((file) => {
-      const text = fs.readFileSync(file, "utf8");
-      return covered.filter((check) => text.includes(check)).map((check) => `${path.relative(ROOT, file)} names ${check}`);
-    });
-    expect(offenders).toEqual([]);
+    const named = files.flatMap((file) =>
+      [...fs.readFileSync(file, "utf8").matchAll(/checks\/([\w-]+\.py)/g)].map((m) => ({ file, check: m[1] })),
+    );
+    expect(named.length).toBeGreaterThan(0);
+    const missing = named
+      .filter(({ check }) => !CHECKS.includes(check))
+      .map(({ file, check }) => `${path.relative(ROOT, file)} names ${check}`);
+    expect(missing).toEqual([]);
   });
 
   /* The command is in one procedure, and each step that runs it names that
@@ -110,9 +103,8 @@ describe("a design run decides the replaced controls with design-lint", () => {
    exception, above. See issue #539. */
 describe("a check that design-lint replaces", () => {
   it("no check that stays decides a control that a base rule replaces", () => {
-    const checks = fs
-      .readdirSync(path.join(PLUGIN, "checks"))
-      .filter((file) => file.endsWith(".py") && !KEPT_FOR_THE_LIVE_PAGE.has(file));
+    expect(replaced.size).toBeGreaterThan(0);
+    const checks = CHECKS.filter((file) => !KEPT_FOR_THE_LIVE_PAGE.has(file));
     expect(checks.length).toBeGreaterThan(0);
     const offenders = checks.flatMap((file) =>
       declaredControls(path.join(PLUGIN, "checks", file))
