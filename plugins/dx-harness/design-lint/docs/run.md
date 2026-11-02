@@ -23,7 +23,15 @@ One finding per line:
 path/to/file.html:12:5: BD-1a [L1] Viewport meta tag blocks zoom. Remove user-scalable=no.
 ```
 
-For a rendered finding, the path is the page and the line and column are the element position.
+A rendered finding names the page and the element, not a line and a column:
+
+```
+/ form[role=search]: BD-2d [L2] The search form is not in the header.
+/ input (2nd on the page): BD-2e [L2] The search input is 59px wide. It needs 200px to fit 27 characters.
+/: PR-7a [L2] The page takes 4.2 s to load under the network profile and CPU throttle, above the limit of 3 s.
+```
+
+The element name is the tag with its id, or the tag with up to two classes and its role. An element with no id, class, or role, or a name that more than one element shares, also gets its order on the page. A finding about the whole page names the page only. In the `--json` output, a rendered finding has an `element` with the `name` and the box of the element: `top`, `left`, `width`, and `height`, in CSS pixels from the top left of the page.
 
 A rule that cannot run prints a note, not a finding:
 

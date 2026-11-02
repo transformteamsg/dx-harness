@@ -1,4 +1,5 @@
-import type { Candidate, RenderedPage, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RenderedPage, RuleModule } from "../../types.ts";
 import { VIEWPORT, message } from "./util.ts";
 
 /* The rendered rules of WO that press Tab: WO-2a, WO-9c, WO-9e, and WO-13b. Each
@@ -13,6 +14,7 @@ export interface Stop {
   left: number;
   width: number;
   height: number;
+  element: ElementRef;
 }
 
 /* The focused element, or null when focus is on the page itself, which is where
@@ -29,6 +31,7 @@ function focused(page: RenderedPage): Promise<Stop | null> {
       left: Math.round(r.left + window.scrollX),
       width: Math.round(r.width),
       height: Math.round(r.height),
+      element: window.__designLint.element(a),
     };
   });
 }
@@ -91,7 +94,7 @@ export const wo2a: RuleModule = {
         if (after === null || !members.has(after.index)) escaped = true;
       }
       if (escaped) continue;
-      out.push({ file: pagePath, line: trapped.top, column: trapped.left, data: { message: `Focus is trapped at a <${trapped.tag}>. Tab and Escape do not move it out. Let Tab leave the component.` } });
+      out.push(atElement(pagePath, trapped.element, { message: `Focus is trapped at a <${trapped.tag}>. Tab and Escape do not move it out. Let Tab leave the component.` }));
     }
     return out;
   },
@@ -119,7 +122,7 @@ export const wo9e: RuleModule = {
         const left = a.left - b.left;
         const below = b.top >= a.top + a.height;
         if (up > max || (left > max && !below)) {
-          out.push({ file: pagePath, line: b.top, column: b.left, data: { message: `Focus moves ${up > max ? `${up}px up` : `${left}px left`} from a <${a.tag}> to a <${b.tag}>. Check that the source order matches the visual order.` } });
+          out.push(atElement(pagePath, b.element, { message: `Focus moves ${up > max ? `${up}px up` : `${left}px left`} from a <${a.tag}> to a <${b.tag}>. Check that the source order matches the visual order.` }));
         }
       }
     }
@@ -161,12 +164,11 @@ export const wo13b: RuleModule = {
           });
           if (covered && covered.ratio > maxRatio && !reported.has(stop.index)) {
             reported.add(stop.index);
-            out.push({
-              file: pagePath,
-              line: stop.top,
-              column: stop.left,
-              data: { message: `A fixed or sticky element covers ${Math.round(covered.ratio * 100)}% of the focused <${stop.tag}> at ${width}px wide. Keep focused elements in view, for example with scroll-padding.` },
-            });
+            out.push(
+              atElement(pagePath, stop.element, {
+                message: `A fixed or sticky element covers ${Math.round(covered.ratio * 100)}% of the focused <${stop.tag}> at ${width}px wide. Keep focused elements in view, for example with scroll-padding.`,
+              }),
+            );
           }
         });
       }
@@ -202,9 +204,9 @@ export const wo9c: RuleModule = {
         const page = await rendered.open(pagePath, VIEWPORT, { fresh: true });
         const trigger = await page.evaluate((n: string): any => {
           const t: any = document.querySelectorAll("[aria-controls]")[Number(n)];
-          const r = t.getBoundingClientRect();
+          const element = window.__designLint.element(t);
           t.setAttribute("data-wo-trigger", n);
-          return { top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) };
+          return element;
         }, id);
         await page.focus(`[data-wo-trigger="${id}"]`);
         await page.press("Enter");
@@ -246,7 +248,7 @@ export const wo9c: RuleModule = {
           if (after.open) problem = "Neither Escape nor a close control closes the modal.";
           else if (!after.onTrigger) problem = "Focus does not return to the trigger when the modal closes.";
         }
-        if (problem) out.push({ file: pagePath, line: trigger.top, column: trigger.left, data: { message: problem } });
+        if (problem) out.push(atElement(pagePath, trigger as ElementRef, { message: problem }));
       }
     }
     return out;

@@ -1,11 +1,11 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, strings } from "../tx/util.ts";
 
 /* The table rules of CMP: CMP-6a and CMP-6b. A finding sits on the table. */
 
 interface TableFact {
-  top: number;
-  left: number;
+  element: ElementRef;
   problems: string[];
 }
 
@@ -24,7 +24,7 @@ export const cmp6a: RuleModule = {
       const tables = await page.evaluate(
         (arg: { pattern: string; skip: string }) => {
           const numeric = new RegExp(arg.pattern, "u");
-          const facts: { top: number; left: number; problems: string[] }[] = [];
+          const facts: { element: unknown; problems: string[] }[] = [];
           for (const table of Array.from(document.querySelectorAll("table")) as any[]) {
             const bodyRows = (Array.from(table.querySelectorAll("tbody tr")) as any[]).filter((tr: any) => !Array.from(tr.children).every((c: any) => c.tagName === "TH"));
             const head = table.querySelector("thead tr") ?? (Array.from(table.rows) as any[]).find((tr: any) => Array.from(tr.children).every((c: any) => c.tagName === "TH"));
@@ -51,14 +51,13 @@ export const cmp6a: RuleModule = {
                 if (!aligned || !tabular) break;
               }
             }
-            const r = table.getBoundingClientRect();
-            facts.push({ top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX), problems });
+            facts.push({ element: window.__designLint.element(table), problems });
           }
           return facts;
         },
         { pattern: String(params.numericPattern), skip: String(params.identifierColumnSelector) },
       );
-      for (const t of tables as TableFact[]) out.push({ file: pagePath, line: t.top, column: t.left, data: t });
+      for (const t of tables as TableFact[]) out.push(atElement(pagePath, t.element, t));
     }
     return out;
   },
@@ -82,12 +81,11 @@ export const cmp6b: RuleModule = {
     for (const pagePath of strings(params.pages)) {
       const page = await rendered.open(pagePath, VIEWPORT, { fresh: true });
       const tables = await page.evaluate(() => {
-        const facts: { top: number; left: number; problems: string[] }[] = [];
+        const facts: { element: unknown; problems: string[] }[] = [];
         for (const table of Array.from(document.querySelectorAll("table")) as any[]) {
           const head = table.querySelector("thead tr") ?? (Array.from(table.rows) as any[]).find((tr: any) => Array.from(tr.children).every((c: any) => c.tagName === "TH"));
           const box = table.getBoundingClientRect();
           const top = Math.round(box.top + window.scrollY);
-          const left = Math.round(box.left + window.scrollX);
           if (!head || box.height <= window.innerHeight) continue;
           window.scrollTo(0, top + 400);
           const inView = (Array.from(head.children) as any[]).some((c: any) => {
@@ -95,11 +93,11 @@ export const cmp6b: RuleModule = {
             return r.height > 0 && r.bottom > 0 && r.top < window.innerHeight;
           });
           window.scrollTo(0, 0);
-          facts.push({ top, left, problems: inView ? [] : ["no header cell is in view"] });
+          facts.push({ element: window.__designLint.element(table), problems: inView ? [] : ["no header cell is in view"] });
         }
         return facts;
       });
-      for (const t of tables as TableFact[]) out.push({ file: pagePath, line: t.top, column: t.left, data: t });
+      for (const t of tables as TableFact[]) out.push(atElement(pagePath, t.element, t));
     }
     return out;
   },

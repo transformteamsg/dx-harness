@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 const VIEWPORT = { width: 1280, height: 800 };
 
@@ -52,12 +53,11 @@ export const pr4c: RuleModule = {
               const labelled = new RegExp(`${label}\\s*:\\s*\\S`, "i").test(text);
               return !marked && !labelled;
             });
-            const b = el.getBoundingClientRect();
-            return { missing, top: Math.round(b.top), left: Math.round(b.left) };
+            return { missing, element: window.__designLint.element(el) as ElementRef };
           }),
         { sel: String(params.noticeSelector), fields: params.requiredFields as string[] },
       );
-      for (const n of notices) if (n.missing.length > 0) out.push({ file: pagePath, line: n.top, column: n.left, data: { missing: n.missing } });
+      for (const n of notices) if (n.missing.length > 0) out.push(atElement(pagePath, n.element, { missing: n.missing }));
     }
     return out;
   },

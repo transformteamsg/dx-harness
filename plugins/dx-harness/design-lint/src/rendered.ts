@@ -3,7 +3,7 @@ import http from "node:http";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import type { Browser, BrowserContext } from "playwright-core";
-import type { OpenOptions, RenderedPage, RenderedSession } from "./types.ts";
+import type { Candidate, ElementRef, OpenOptions, RenderedPage, RenderedSession } from "./types.ts";
 
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -40,6 +40,52 @@ function serve(root: string): Promise<{ server: http.Server; baseUrl: string }> 
       resolve({ server, baseUrl: `http://127.0.0.1:${port}` });
     });
   });
+}
+
+/* Runs in each page before its own scripts. It gives a rule function
+   window.__designLint.element(el), which returns the ElementRef of el: a name
+   that a person can find in the page, and its box in page coordinates.
+
+   The name is the tag with its id when the id is unique, or the tag with up to
+   two classes and the role. An element with no id, class, or role, or a name
+   that matches more than one element, also gets its order on the page among
+   the elements that match the name. */
+function installElementNames(): void {
+  const ordinal = (n: number) => {
+    const teen = n % 100 >= 11 && n % 100 <= 13;
+    const suffix = teen ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th");
+    return `${n}${suffix}`;
+  };
+  const UNIQUE = ["html", "head", "body"];
+  const element = (el: any) => {
+    const tag = String(el.tagName).toLowerCase();
+    const r = el.getBoundingClientRect();
+    const box = {
+      top: Math.round(r.top + window.scrollY),
+      left: Math.round(r.left + window.scrollX),
+      width: Math.round(r.width),
+      height: Math.round(r.height),
+    };
+    const id = el.getAttribute("id");
+    if (id && document.querySelectorAll(`#${window.CSS.escape(id)}`).length === 1) return { name: `${tag}#${id}`, ...box };
+    const classes = Array.from(el.classList as Iterable<string>).slice(0, 2);
+    const role = el.getAttribute("role");
+    const name = `${tag}${classes.map((c) => `.${c}`).join("")}${role ? `[role=${role}]` : ""}`;
+    const selector = `${tag}${classes.map((c) => `.${window.CSS.escape(c)}`).join("")}${role ? `[role="${window.CSS.escape(role)}"]` : ""}`;
+    const bare = classes.length === 0 && !role;
+    if (bare && UNIQUE.includes(tag)) return { name, ...box };
+    const same = Array.from(document.querySelectorAll(selector));
+    if (!bare && same.length <= 1) return { name, ...box };
+    return { name: `${name} (${ordinal(same.indexOf(el) + 1)} on the page)`, ...box };
+  };
+  Object.defineProperty(window, "__designLint", { value: { element }, configurable: true });
+}
+
+/* A candidate at an element, from the ElementRef that a rule function returned.
+   The line and the column carry the box position, so a caller that reads only
+   those still sorts the findings in page order. */
+export function atElement(file: string, element: ElementRef, data?: unknown): Candidate {
+  return { file, line: element.top, column: element.left, element, data };
 }
 
 /* The order: an explicit executable, the Chromium that Playwright pins, then an
@@ -88,6 +134,7 @@ export async function startSession(
       let context = contexts.get(key);
       if (!context) {
         context = await browser.newContext({ viewport });
+        await context.addInitScript(installElementNames);
         contexts.set(key, context);
       }
       const page = await context.newPage();

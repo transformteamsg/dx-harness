@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 /* The rendered rules of WU about abbreviations (WU-4a) and errors (WU-10a,
    WU-10b, WU-10d, WU-11a). Each opens the page in the browser and reads the DOM. */
@@ -6,10 +7,10 @@ import type { Candidate, RuleModule } from "../../types.ts";
 const VIEWPORT = { width: 1280, height: 800 };
 const strings = (v: unknown) => (v as string[]).map(String);
 
+/* A hit with no element is about the whole page. */
 interface Hit {
   message: string;
-  top: number;
-  left: number;
+  element?: ElementRef;
 }
 
 /* A rendered rule that finds, on each page of a list, the places that
@@ -30,7 +31,7 @@ function pageRule<A>(
       for (const pagePath of list(params)) {
         const page = await rendered.open(pagePath, VIEWPORT);
         for (const h of await page.evaluate(inspect as (a: A) => Hit[], arg(params))) {
-          out.push({ file: pagePath, line: h.top, column: h.left, data: { message: h.message } });
+          out.push(h.element ? atElement(pagePath, h.element, { message: h.message }) : { file: pagePath, line: 0, column: 0, data: { message: h.message } });
         }
       }
       return out;
@@ -90,8 +91,7 @@ export const wu4a = pageRule(
       const described = parent.closest("[aria-describedby]");
       const help = described && described.getAttribute("aria-describedby").split(/\s+/).some((id: string) => document.getElementById(id));
       if (titled || inText || help) continue;
-      const r = parent.getBoundingClientRect();
-      found.push({ message: `The abbreviation ${token} has no expansion at its first use. Write it out in full, or wrap it in <abbr title>.`, top: Math.round(r.top), left: Math.round(r.left) });
+      found.push({ message: `The abbreviation ${token} has no expansion at its first use. Write it out in full, or wrap it in <abbr title>.`, element: window.__designLint.element(parent) });
     }
     return found;
   },
@@ -112,11 +112,9 @@ export const wu10a = pageRule(
       const present = attrs.filter((a) => el.hasAttribute(a));
       const points = present.some((a) => String(el.getAttribute(a)).split(/\s+/).some((id: string) => id && document.getElementById(id)));
       if (points) continue;
-      const r = el.getBoundingClientRect();
       found.push({
         message: present.length === 0 ? `This control is invalid and has none of ${attrs.join(", ")}. Point it to its error text.` : `This control is invalid, but ${present.join(" and ")} points to no element on the page. Point it to its error text.`,
-        top: Math.round(r.top),
-        left: Math.round(r.left),
+        element: window.__designLint.element(el),
       });
     }
     return found;
@@ -137,8 +135,7 @@ export const wu10b = pageRule(
     const add = (el: any, message: string) => {
       if (reported.has(el)) return;
       reported.add(el);
-      const r = el.getBoundingClientRect();
-      found.push({ message, top: Math.round(r.top), left: Math.round(r.left) });
+      found.push({ message, element: window.__designLint.element(el) });
     };
     for (const control of Array.from(document.querySelectorAll('[aria-invalid="true"]')) as any[]) {
       const refs: any[] = [];
@@ -177,8 +174,7 @@ export const wu10d = pageRule(
     for (const el of Array.from(document.querySelectorAll(arg.selector)) as any[]) {
       const text = String(el.textContent ?? "");
       if (!list.includes(clean(text))) continue;
-      const r = el.getBoundingClientRect();
-      found.push({ message: `The error message "${text.trim()}" is generic. Say what is wrong and how to fix it.`, top: Math.round(r.top), left: Math.round(r.left) });
+      found.push({ message: `The error message "${text.trim()}" is generic. Say what is wrong and how to fix it.`, element: window.__designLint.element(el) });
     }
     return found;
   },
@@ -193,14 +189,14 @@ export const wu11a = pageRule(
   (p) => ({ heading: p.requireHeading === true, recovery: p.requireRecoveryLink === true }),
   (arg: { heading: boolean; recovery: boolean }): Hit[] => {
     const found: Hit[] = [];
-    if (arg.heading && !document.querySelector("h1")) found.push({ message: "The error page has no <h1> that states the error.", top: 0, left: 0 });
+    if (arg.heading && !document.querySelector("h1")) found.push({ message: "The error page has no <h1> that states the error." });
     if (arg.recovery) {
       const way = Array.from(document.querySelectorAll("a[href]")).some((a: any) => {
         if (/^(mailto|tel):/i.test(a.getAttribute("href"))) return true;
         const u = new URL(a.href);
         return u.origin === window.location.origin && (u.pathname === "/" || u.pathname === "/index.html" || /search|contact/i.test(u.pathname));
       }) || document.querySelector("form[role=search], input[type=search]") !== null;
-      if (!way) found.push({ message: "The error page has no link to the home page, to search, or to a contact channel.", top: 0, left: 0 });
+      if (!way) found.push({ message: "The error page has no link to the home page, to search, or to a contact channel." });
     }
     return found;
   },

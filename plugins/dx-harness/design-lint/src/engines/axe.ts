@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
-import type { Candidate, RenderedPage, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RenderedPage, RuleModule } from "../types.ts";
 
 /* The axe-core wrapper. A rule names axe rules by id. The wrapper injects axe
    into the page once, runs only those rules, and turns each failing element
@@ -21,6 +22,13 @@ export interface AxeNode {
   html: string;
   top: number;
   left: number;
+  /* The element that the target names. Absent when the page cannot find it. */
+  element?: ElementRef;
+}
+
+/* The candidate of an axe node: at its element, or at the whole page. */
+export function axeCandidate(pagePath: string, n: AxeNode): Candidate {
+  return n.element ? atElement(pagePath, n.element, n) : { file: pagePath, line: 0, column: 0, data: n };
 }
 
 export async function runAxe(page: RenderedPage, ruleIds: string[]): Promise<AxeNode[]> {
@@ -34,17 +42,19 @@ export async function runAxe(page: RenderedPage, ruleIds: string[]): Promise<Axe
         const target = Array.isArray(n.target) ? n.target[0] : n.target;
         let top = 0;
         let left = 0;
+        let element: any;
         try {
           const el = document.querySelector(target);
           if (el) {
             const b = el.getBoundingClientRect();
             top = Math.round(b.top);
             left = Math.round(b.left);
+            element = window.__designLint.element(el);
           }
         } catch {
           /* a selector that the page cannot use keeps the position 0,0 */
         }
-        out.push({ ruleId: v.id, help: v.help, target: String(target), html: String(n.html || "").slice(0, 100), top, left });
+        out.push({ ruleId: v.id, help: v.help, target: String(target), html: String(n.html || "").slice(0, 100), top, left, element });
       }
     }
     return out;
@@ -65,7 +75,7 @@ export function axeRule(code: string, ruleIds: string[]): RuleModule {
       for (const pagePath of params.pages as string[]) {
         const page = await rendered.open(pagePath, VIEWPORT);
         for (const n of await runAxe(page, ruleIds)) {
-          out.push({ file: pagePath, line: n.top, column: n.left, data: n });
+          out.push(axeCandidate(pagePath, n));
         }
       }
       return out;

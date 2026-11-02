@@ -1,7 +1,8 @@
 import { matches } from "../../html.ts";
 import type { HtmlElement } from "../../html.ts";
 import { readPages } from "../../project.ts";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, perPage, strings, unique } from "../tx/util.ts";
 
 /* The action rules of CMP: CMP-2a, CMP-5a, and CMP-8a. */
@@ -44,8 +45,7 @@ export const cmp2a: RuleModule = {
             const el = hits[arg.i];
             if (!el) return null;
             el.setAttribute("data-dxl-destructive", "");
-            const r = el.getBoundingClientRect();
-            return { href: window.location.href, name: name(el), top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) };
+            return { href: window.location.href, name: name(el), element: window.__designLint.element(el) as ElementRef };
           },
           { selector: BUTTONS, patterns, i },
         );
@@ -76,12 +76,7 @@ export const cmp2a: RuleModule = {
             }) as Promise<{ href: string; confirmed: boolean; dialog: boolean; undo: boolean }>,
           { confirmSelector: String(params.confirmSelector), undo: strings(params.undoPatterns).map((p) => p.toLowerCase()), controls: CONTROLS },
         ).catch(() => ({ href: "", confirmed: false, dialog: false, undo: false }));
-        out.push({
-          file: pagePath,
-          line: before.top,
-          column: before.left,
-          data: { name: before.name, navigated: after.href !== before.href, ...after },
-        });
+        out.push(atElement(pagePath, before.element, { name: before.name, navigated: after.href !== before.href, ...after }));
       }
     }
     return out;

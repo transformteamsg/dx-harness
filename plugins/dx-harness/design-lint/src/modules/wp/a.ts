@@ -1,13 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import { isHtml } from "../../files.ts";
-import { axeRule, runAxe } from "../../engines/axe.ts";
+import { axeCandidate, axeRule, runAxe } from "../../engines/axe.ts";
+import { atElement } from "../../rendered.ts";
 import { combineRules } from "../../engines/combine.ts";
 import { jsxRule, runJsxA11y } from "../../engines/jsx-a11y.ts";
 import { elements, matches } from "../../html.ts";
 import type { AxeNode } from "../../engines/axe.ts";
 import type { HtmlElement } from "../../html.ts";
-import type { Candidate, Params, RenderedPage, RuleContext, RuleModule } from "../../types.ts";
+import type { Candidate, Params, RenderedPage, RuleContext, RuleModule, ElementRef } from "../../types.ts";
 import { asHtml, JSX_FILE, jsxElements } from "./a-jsx.ts";
 import type { JsxEl } from "./a-jsx.ts";
 
@@ -95,7 +96,8 @@ async function incompleteNodes(page: RenderedPage, ids: string[]): Promise<AxeNo
         const target = Array.isArray(n.target) ? n.target[0] : n.target;
         const el = document.querySelector(target);
         const b = el ? el.getBoundingClientRect() : { top: 0, left: 0 };
-        out.push({ ruleId: v.id, help: v.help, target: String(target), html: String(n.html || "").slice(0, 100), top: Math.round(b.top), left: Math.round(b.left) });
+        const element = el ? window.__designLint.element(el) : undefined;
+        out.push({ ruleId: v.id, help: v.help, target: String(target), html: String(n.html || "").slice(0, 100), top: Math.round(b.top), left: Math.round(b.left), element });
       }
     }
     return out;
@@ -130,7 +132,7 @@ function axeWithSkip(code: string, ids: string[], skip: (params: Params) => stri
             );
             if (exempt) continue;
           }
-          out.push({ file: pagePath, line: n.top, column: n.left, data: n });
+          out.push(axeCandidate(pagePath, n));
         }
       }
       return out;
@@ -177,17 +179,16 @@ export const wp1c: RuleModule = {
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
       const found = await page.evaluate((max: number) => {
-        const list: { top: number; left: number; length: number }[] = [];
+        const list: { element: ElementRef; length: number }[] = [];
         for (const img of Array.from(document.querySelectorAll("img[alt]")) as any[]) {
           const length = img.getAttribute("alt").length;
           if (length > max) {
-            const r = img.getBoundingClientRect();
-            list.push({ top: Math.round(r.top), left: Math.round(r.left), length });
+            list.push({ element: window.__designLint.element(img), length });
           }
         }
         return list;
       }, Number(params.maxAltLength));
-      for (const f of found) out.push({ file: pagePath, line: f.top, column: f.left, data: { length: f.length, max: Number(params.maxAltLength) } });
+      for (const f of found) out.push(atElement(pagePath, f.element, { length: f.length, max: Number(params.maxAltLength) }));
     }
     return out;
   },
@@ -407,14 +408,12 @@ export const wp6c: RuleModule = {
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
       for (const n of await runAxe(page, WP_AXE_IDS["WP-6c"])) {
-        out.push({ file: pagePath, line: n.top, column: n.left, data: { message: `${n.help} (axe ${n.ruleId}) at ${n.target}: ${n.html}` } });
+        const message = `${n.help} (axe ${n.ruleId}) at ${n.target}: ${n.html}`;
+        out.push(n.element ? atElement(pagePath, n.element, { message }) : { file: pagePath, line: 0, column: 0, data: { message } });
       }
       const custom = await page.evaluate(() => {
-        const list: { message: string; top: number; left: number }[] = [];
-        const pos = (el: any) => {
-          const r = el.getBoundingClientRect();
-          return { top: Math.round(r.top), left: Math.round(r.left) };
-        };
+        const list: { message: string; element: ElementRef }[] = [];
+        const pos = (el: any) => ({ element: window.__designLint.element(el) as ElementRef });
         for (const fs of Array.from(document.querySelectorAll("fieldset")) as any[]) {
           const legend = Array.from(fs.children).find((c: any) => c.tagName === "LEGEND") as any;
           if (!legend || (legend.textContent || "").trim() === "") {
@@ -429,7 +428,7 @@ export const wp6c: RuleModule = {
         }
         return list;
       });
-      for (const c of custom) out.push({ file: pagePath, line: c.top, column: c.left, data: { message: c.message } });
+      for (const c of custom) out.push(atElement(pagePath, c.element, { message: c.message }));
     }
     return out;
   },
@@ -495,7 +494,7 @@ export const wp7b: RuleModule = {
           );
           if (!hasBlockChild) blocks.push(el);
         }
-        const list: { top: number; left: number; message: string }[] = [];
+        const list: { element: ElementRef; message: string }[] = [];
         for (let i = 1; i < blocks.length; i++) {
           const p = blocks[i - 1].getBoundingClientRect();
           const b = blocks[i].getBoundingClientRect();
@@ -505,8 +504,7 @@ export const wp7b: RuleModule = {
           const aside = sameRow && (a.rtl ? b.left > p.left + a.tol : b.left < p.left - a.tol);
           if (above || aside) {
             list.push({
-              top: Math.round(b.top),
-              left: Math.round(b.left),
+              element: window.__designLint.element(blocks[i]),
               message: above
                 ? "This text block comes after the previous one in the code but is shown above it. Order the code in the reading order."
                 : `This text block comes after the previous one in the code but is shown on its ${a.rtl ? "right" : "left"}. Order the code in the reading order.`,
@@ -515,7 +513,7 @@ export const wp7b: RuleModule = {
         }
         return list;
       }, { tol: Number(params.orderTolerancePx), rtl: String(params.direction).toLowerCase() === "rtl" });
-      for (const f of found) out.push({ file: pagePath, line: f.top, column: f.left, data: { message: f.message } });
+      for (const f of found) out.push(atElement(pagePath, f.element, { message: f.message }));
     }
     return out;
   },
@@ -536,7 +534,7 @@ export const wp8a: RuleModule = {
         const inline = (el: any) => /^(inline|contents|none)/.test(getComputedStyle(el).display);
         const words = (s: string) => s.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
         const quoted = /"[^"]+"|“[^”]+”|‘[^’]+’|(?<!\w)'[^']+'(?!\w)/;
-        const list: { top: number; left: number; sensory: string; control: string; text: string }[] = [];
+        const list: { element: ElementRef; sensory: string; control: string; text: string }[] = [];
         for (const el of Array.from(document.body.querySelectorAll("*")) as any[]) {
           if (["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE"].includes(el.tagName) || inline(el)) continue;
           const r = el.getBoundingClientRect();
@@ -548,13 +546,13 @@ export const wp8a: RuleModule = {
             const sensory = a.sensory.find((t) => w.includes(t.toLowerCase()));
             const control = a.control.find((t) => w.includes(t.toLowerCase()));
             if (sensory && control && !quoted.test(sentence)) {
-              list.push({ top: Math.round(r.top), left: Math.round(r.left), sensory, control, text: sentence.trim().slice(0, 80) });
+              list.push({ element: window.__designLint.element(el), sensory, control, text: sentence.trim().slice(0, 80) });
             }
           }
         }
         return list;
       }, { sensory: (params.sensoryTerms as string[]).map(String), control: (params.controlTerms as string[]).map(String) });
-      for (const f of found) out.push({ file: pagePath, line: f.top, column: f.left, data: f });
+      for (const f of found) out.push(atElement(pagePath, f.element, f));
     }
     return out;
   },

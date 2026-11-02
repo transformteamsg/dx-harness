@@ -1,7 +1,12 @@
 import type { Finding, Note, RuleMeta, Tier } from "./types.ts";
 
+/* A finding about a rendered element names the page and the element. A
+   rendered finding about the whole page has line 0 and column 0, and names the
+   page only. Any other finding names a file, a line, and a column. */
 export function formatFinding(f: Finding): string {
-  return `${f.file}:${f.line}:${f.column}: ${f.code} [${f.tier}] ${f.message}`;
+  const page = f.line === 0 && f.column === 0;
+  const at = f.element ? `${f.file} ${f.element.name}` : page ? f.file : `${f.file}:${f.line}:${f.column}`;
+  return `${at}: ${f.code} [${f.tier}] ${f.message}`;
 }
 
 const KIND: Record<Note["kind"], string> = {

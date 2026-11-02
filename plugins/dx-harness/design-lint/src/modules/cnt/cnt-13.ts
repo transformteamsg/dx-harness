@@ -1,3 +1,4 @@
+import { atElement } from "../../rendered.ts";
 import type { Candidate, RuleModule } from "../../types.ts";
 import { visibleText, wordsPattern } from "./text.ts";
 
@@ -20,7 +21,7 @@ export const cnt13a: RuleModule = {
     const pattern = wordsPattern(words);
     for (const b of await visibleText(rendered, params.pages as string[])) {
       for (const m of b.text.matchAll(pattern)) {
-        out.push({ file: b.page, line: b.top, column: b.left, data: { word: m[0], right: right[m[0].toLowerCase()] } });
+        out.push(atElement(b.page, b.element, { word: m[0], right: right[m[0].toLowerCase()] }));
       }
     }
     return out;

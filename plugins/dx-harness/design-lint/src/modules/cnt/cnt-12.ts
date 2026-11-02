@@ -1,3 +1,4 @@
+import { atElement } from "../../rendered.ts";
 import type { Candidate, RuleModule } from "../../types.ts";
 import { visibleText } from "./text.ts";
 
@@ -28,7 +29,7 @@ export const cnt12a: RuleModule = {
     const names = params.properNouns as string[];
     for (const b of await visibleText(rendered, params.pages as string[], { selector: params.labelSelector as string })) {
       const word = titleCaseWord(b.text, names);
-      if (word) out.push({ file: b.page, line: b.top, column: b.left, data: { word, text: b.text } });
+      if (word) out.push(atElement(b.page, b.element, { word, text: b.text }));
     }
     return out;
   },

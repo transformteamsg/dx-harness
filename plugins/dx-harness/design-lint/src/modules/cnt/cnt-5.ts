@@ -1,3 +1,4 @@
+import { atElement } from "../../rendered.ts";
 import type { Candidate, RuleModule } from "../../types.ts";
 import { visibleText, wordsPattern } from "./text.ts";
 
@@ -13,7 +14,7 @@ export const cnt5a: RuleModule = {
     if (!rendered || verbs.length === 0) return out;
     const pattern = wordsPattern(verbs);
     for (const b of await visibleText(rendered, params.pages as string[], { skipLinks: true })) {
-      for (const m of b.text.matchAll(pattern)) out.push({ file: b.page, line: b.top, column: b.left, data: { word: m[0] } });
+      for (const m of b.text.matchAll(pattern)) out.push(atElement(b.page, b.element, { word: m[0] }));
     }
     return out;
   },

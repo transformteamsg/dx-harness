@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
+import { axeCandidate } from "../../engines/axe.ts";
 import type { AxeNode } from "../../engines/axe.ts";
 import type { Candidate, Params, RuleModule } from "../../types.ts";
 
@@ -68,17 +69,19 @@ export function axeRuleWith(code: string, ruleIds: string[], setup: (params: Par
               const target = Array.isArray(n.target) ? n.target[0] : n.target;
               let top = 0;
               let left = 0;
+              let element: any;
               try {
                 const el = document.querySelector(target);
                 if (el) {
                   const b = el.getBoundingClientRect();
                   top = Math.round(b.top);
                   left = Math.round(b.left);
+                  element = window.__designLint.element(el);
                 }
               } catch {
                 /* a selector that the page cannot use keeps the position 0,0 */
               }
-              found.push({ ruleId: id, help, target: String(target), html: String(n.html || "").slice(0, 100), top, left });
+              found.push({ ruleId: id, help, target: String(target), html: String(n.html || "").slice(0, 100), top, left, element });
             };
             for (const v of result.violations) for (const n of v.nodes) add(v.id, v.help, n);
             for (const v of result.incomplete) {
@@ -95,7 +98,7 @@ export function axeRuleWith(code: string, ruleIds: string[], setup: (params: Par
             axe.reset();
           }
         }, arg)) as AxeNode[];
-        for (const n of nodes) out.push({ file: pagePath, line: n.top, column: n.left, data: n });
+        for (const n of nodes) out.push(axeCandidate(pagePath, n));
       }
       return out;
     },

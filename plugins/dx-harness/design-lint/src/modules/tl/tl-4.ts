@@ -1,7 +1,8 @@
 import path from "node:path";
 import { hasAncestor, matches } from "../../html.ts";
 import { fileForPath, readPages } from "../../project.ts";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { isGovSg, norm, VIEWPORT } from "./shared.ts";
 
 /* TL-4: the Official Government Footer. TL-4a and TL-4b apply to a .gov.sg host
@@ -9,11 +10,14 @@ import { isGovSg, norm, VIEWPORT } from "./shared.ts";
 
 interface FooterData {
   found: boolean;
-  top: number;
-  left: number;
+  element: ElementRef | null;
   text: string;
-  links: { text: string; href: string; top: number; left: number }[];
+  links: { text: string; href: string; element: ElementRef }[];
 }
+
+/* A footer finding sits on the element when there is one, and on the page when there is none. */
+const at = (pagePath: string, e: { element: ElementRef | null }): Candidate =>
+  e.element ? atElement(pagePath, e.element) : { file: pagePath, line: 0, column: 0 };
 
 async function readFooters(
   ctx: Parameters<RuleModule["locate"]>[0],
@@ -29,20 +33,16 @@ async function readFooters(
       const all = Array.from(document.querySelectorAll(sel)) as any[];
       /* A page footer is not inside an article, section, aside, main, or nav. */
       const footer = all.find((e) => !e.parentElement?.closest("article, section, aside, main, nav")) ?? all[0];
-      if (!footer) return { found: false, top: 0, left: 0, text: "", links: [] };
-      const r = footer.getBoundingClientRect();
+      if (!footer) return { found: false, element: null, text: "", links: [] };
       return {
         found: true,
-        top: Math.round(r.top + window.scrollY),
-        left: Math.round(r.left),
+        element: window.__designLint.element(footer),
         text: footer.textContent.replace(/\s+/g, " ").trim(),
         links: (Array.from(footer.querySelectorAll("a")) as any[]).map((a) => {
-          const b = a.getBoundingClientRect();
           return {
             text: a.textContent.replace(/\s+/g, " ").trim(),
             href: a.getAttribute("href") ?? "",
-            top: Math.round(b.top + window.scrollY),
-            left: Math.round(b.left),
+            element: window.__designLint.element(a),
           };
         }),
       };
@@ -72,22 +72,21 @@ export const tl4a: RuleModule = {
         out.push({ file: pagePath, line: 0, column: 0, data: { message: `No element matches ${String(ctx.params.footerSelector)}. Add the footer.` } });
         continue;
       }
-      const at = (e: { top: number; left: number }) => ({ file: pagePath, line: e.top, column: e.left });
       const texts = data.links.map((l) => norm(l.text));
       const positions = links.map((l) => texts.indexOf(norm(l)));
       for (const l of required) {
-        if (positions[links.indexOf(l)] === -1) out.push({ ...at(data), data: { message: `The footer lacks the link "${l}".` } });
+        if (positions[links.indexOf(l)] === -1) out.push({ ...at(pagePath, data), data: { message: `The footer lacks the link "${l}".` } });
       }
       const present = links.map((l, i) => ({ l, p: positions[i] })).filter((x) => x.p !== -1);
       for (let i = 1; i < present.length; i++) {
         if (present[i].p < present[i - 1].p) {
-          out.push({ ...at(data), data: { message: `The footer link "${present[i].l}" comes before "${present[i - 1].l}". Follow the order ${links.join(", ")}.` } });
+          out.push({ ...at(pagePath, data), data: { message: `The footer link "${present[i].l}" comes before "${present[i - 1].l}". Follow the order ${links.join(", ")}.` } });
           break;
         }
       }
       for (const l of data.links) {
         if (l.href.trim() === "" || l.href.trim() === "#") {
-          out.push({ ...at(l), data: { message: `The footer link "${l.text}" has no destination. Set its href.` } });
+          out.push({ ...at(pagePath, l), data: { message: `The footer link "${l.text}" has no destination. Set its href.` } });
         }
       }
     }
@@ -110,7 +109,7 @@ export const tl4b: RuleModule = {
     for (const { pagePath, data } of await readFooters(ctx)) {
       const ok = data.found && data.text.includes(wanted);
       const message = data.found ? `The footer does not contain "${wanted}".` : `No element matches ${String(ctx.params.footerSelector)}. Add the footer.`;
-      out.push({ file: pagePath, line: data.top, column: data.left, data: { message: ok ? null : message } });
+      out.push({ ...at(pagePath, data), data: { message: ok ? null : message } });
     }
     return out;
   },

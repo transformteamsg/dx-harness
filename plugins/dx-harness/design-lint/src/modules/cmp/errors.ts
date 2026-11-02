@@ -1,4 +1,5 @@
-import type { Candidate, RenderedPage, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RenderedPage, RuleModule } from "../../types.ts";
 import { VIEWPORT } from "../tx/util.ts";
 
 /* CMP-10a: a corrected field clears its own error, and no other error. Each page
@@ -73,11 +74,10 @@ function shown(page: RenderedPage, errors: string[], wait: number): Promise<bool
   );
 }
 
-function position(page: RenderedPage, field: string): Promise<{ top: number; left: number }> {
+function position(page: RenderedPage, field: string): Promise<ElementRef> {
   return page.evaluate((sel: string) => {
     const el = document.querySelector(sel) ?? document.querySelector("main") ?? document.body;
-    const r = el.getBoundingClientRect();
-    return { top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) };
+    return window.__designLint.element(el) as ElementRef;
   }, field);
 }
 
@@ -93,7 +93,7 @@ export const cmp10a: RuleModule = {
       const list = cases.filter((c) => c.page === pagePath);
       const page = await rendered.open(pagePath, VIEWPORT, { fresh: true });
       const at = await Promise.all(list.map((c) => position(page, c.field)));
-      const push = (i: number, message: string) => out.push({ file: pagePath, line: at[i].top, column: at[i].left, data: { message } });
+      const push = (i: number, message: string) => out.push(atElement(pagePath, at[i], { message }));
       const entered: boolean[] = [];
       for (const c of list) entered.push(await enter(page, c.field, c.invalid));
       /* The submit control of the form of the first field, so that a search form in the header is not the one submitted. */

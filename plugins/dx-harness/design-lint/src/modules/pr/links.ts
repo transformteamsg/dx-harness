@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 const VIEWPORT = { width: 1280, height: 800 };
 
@@ -8,8 +9,7 @@ interface Link {
   anchor: string | null;
   anchorMissing: boolean;
   internal: boolean;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 /* PR-5a: no link on a page is broken. The page supplies its links. An internal
@@ -44,7 +44,6 @@ export const pr5a: RuleModule = {
           const href = a.getAttribute("href") ?? "";
           const url = new URL(href, document.location.href);
           if (url.protocol !== "http:" && url.protocol !== "https:") return [];
-          const b = a.getBoundingClientRect();
           const samePage = url.origin === document.location.origin && url.pathname === document.location.pathname && url.search === document.location.search && url.hash !== "";
           const id = samePage ? decodeURIComponent(url.hash.slice(1)) : null;
           return [{
@@ -53,8 +52,7 @@ export const pr5a: RuleModule = {
             anchor: id,
             anchorMissing: id !== null && id !== "" && !/^[\/!]/.test(id) && !document.getElementById(id) && document.getElementsByName(id).length === 0,
             internal: url.origin === document.location.origin,
-            top: Math.round(b.top),
-            left: Math.round(b.left),
+            element: window.__designLint.element(a),
           }];
         }),
       );
@@ -85,7 +83,7 @@ export const pr5a: RuleModule = {
           }
           problem = await cache.get(target)!;
         }
-        if (problem) out.push({ file: pagePath, line: link.top, column: link.left, data: { href: link.href, problem } });
+        if (problem) out.push(atElement(pagePath, link.element, { href: link.href, problem }));
       }
     }
     return out;

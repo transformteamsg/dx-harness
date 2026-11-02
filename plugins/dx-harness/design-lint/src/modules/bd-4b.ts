@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* BD-4b: words from the complex-word list are flagged. The list is a map from a
    complex word to a simpler one, or a plain list. */
@@ -19,20 +20,19 @@ export const bd4b: RuleModule = {
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
       const hits = await page.evaluate((list: string[]) => {
-        const found: { word: string; top: number; left: number }[] = [];
+        const found: { word: string; element: ElementRef }[] = [];
         const walker = document.createTreeWalker(document.body, 4);
         let node: any;
         while ((node = walker.nextNode())) {
           const parent = node.parentElement;
           if (!parent || /^(script|style|noscript)$/i.test(parent.tagName) || !parent.checkVisibility()) continue;
-          const r = parent.getBoundingClientRect();
           for (const m of (node.textContent || "").toLowerCase().match(/[a-z']+/g) || []) {
-            if (list.includes(m)) found.push({ word: m, top: Math.round(r.top), left: Math.round(r.left) });
+            if (list.includes(m)) found.push({ word: m, element: window.__designLint.element(parent) });
           }
         }
         return found;
       }, words);
-      for (const h of hits) out.push({ file: pagePath, line: h.top, column: h.left, data: { word: h.word, simpler: simpler[h.word] } });
+      for (const h of hits) out.push(atElement(pagePath, h.element, { word: h.word, simpler: simpler[h.word] }));
     }
     return out;
   },

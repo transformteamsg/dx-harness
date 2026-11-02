@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import type { AxeNode } from "../../engines/axe.ts";
-import { runAxe } from "../../engines/axe.ts";
+import { axeCandidate, runAxe } from "../../engines/axe.ts";
 import type { Candidate, RenderedPage, RuleModule } from "../../types.ts";
 
 /* Helpers that the rules of WO share. */
@@ -49,7 +49,7 @@ export function axeWithParams(
       for (const pagePath of params.pages as string[]) {
         const page = await rendered.open(pagePath, VIEWPORT);
         for (const n of await runAxeWith(page, ruleIds, options.checks?.(params) ?? [], options.reviewOnFail)) {
-          out.push({ file: pagePath, line: n.top, column: n.left, data: n });
+          out.push(axeCandidate(pagePath, n));
         }
       }
       return out;

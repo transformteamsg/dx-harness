@@ -3,7 +3,8 @@ import path from "node:path";
 import { elements, hasAncestor, matches } from "../../html.ts";
 import type { HtmlElement } from "../../html.ts";
 import { fileForPath } from "../../project.ts";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 /* The consistency rules of WU: navigation order and visibility (WU-7a, WU-7b),
    names of links and buttons (WU-8a, WU-8c), and the place of help (WU-9a). */
@@ -129,7 +130,7 @@ export const wu7b: RuleModule = {
       const page = await rendered.open(pagePath, viewport);
       const result = await page.evaluate((arg: { selector: string; width: number; height: number }) => {
         const nav = document.querySelector(arg.selector) as any;
-        if (!nav) return { found: false, hidden: 0, total: 0, top: 0, left: 0 };
+        if (!nav) return { found: false, hidden: 0, total: 0, element: null };
         const links = Array.from(nav.querySelectorAll("a[href]")) as any[];
         let hidden = 0;
         for (const a of links) {
@@ -138,10 +139,10 @@ export const wu7b: RuleModule = {
           const seen = a.getClientRects().length > 0 && s.visibility !== "hidden" && s.opacity !== "0" && r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < arg.height && r.right > 0 && r.left < arg.width;
           if (!seen) hidden++;
         }
-        const b = nav.getBoundingClientRect();
-        return { found: true, hidden, total: links.length, top: Math.round(b.top), left: Math.round(b.left) };
+        return { found: true, hidden, total: links.length, element: window.__designLint.element(nav) as ElementRef };
       }, { selector: String(params.navSelector), ...viewport });
-      if (!result.found || result.total === 0 || result.hidden > 0) out.push({ file: pagePath, line: result.top, column: result.left, data: result });
+            if (result.found && result.total > 0 && result.hidden === 0) continue;
+      out.push(result.element ? atElement(pagePath, result.element, result) : { file: pagePath, line: 0, column: 0, data: result });
     }
     return out;
   },
@@ -248,8 +249,7 @@ interface HelpPlace {
   landmark: string;
   x: number;
   y: number;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 export const wu9a: RuleModule = {
@@ -273,7 +273,7 @@ export const wu9a: RuleModule = {
           const r = el.getBoundingClientRect();
           const b = lm ? lm.getBoundingClientRect() : { top: -window.scrollY, left: -window.scrollX };
           const landmark = lm ? (lm.getAttribute("role") ?? lm.tagName.toLowerCase()) : "none";
-          return { landmark, x: Math.round(r.left - b.left), y: Math.round(r.top - b.top), top: Math.round(r.top), left: Math.round(r.left) };
+          return { landmark, x: Math.round(r.left - b.left), y: Math.round(r.top - b.top), element: window.__designLint.element(el) };
         }, String(params.helpSelector));
         if (!place) {
           problems.push(`no element matches the help selector at ${width} pixels`);
@@ -287,7 +287,7 @@ export const wu9a: RuleModule = {
           problems.push(`the help entry sits ${Math.abs(ref.place.x - place.x)} and ${Math.abs(ref.place.y - place.y)} pixels from where it sits on ${ref.path} at ${width} pixels`);
         }
       }
-      if (problems.length > 0) out.push({ file: pagePath, line: at?.top ?? 0, column: at?.left ?? 0, data: { problems } });
+      if (problems.length > 0) out.push(at ? atElement(pagePath, at.element, { problems }) : { file: pagePath, line: 0, column: 0, data: { problems } });
     }
     return out;
   },

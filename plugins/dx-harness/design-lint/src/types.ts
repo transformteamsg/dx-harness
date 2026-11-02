@@ -23,12 +23,24 @@ export interface RuleMeta {
   file: string;
 }
 
+/* The element that a rendered finding is about: a name that a person can find
+   in the page, and its box in page coordinates, in CSS pixels. */
+export interface ElementRef {
+  name: string;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
 export interface Finding {
   code: string;
   tier: Tier;
   file: string;
   line: number;
   column: number;
+  /* Present on a rendered finding about one element. */
+  element?: ElementRef;
   message: string;
   /* The rule did not run where the finding points, so it has no verdict there.
      It blocks at every tier, because a check that did not run does not pass. */
@@ -50,6 +62,7 @@ export interface Candidate {
   file: string;
   line: number;
   column: number;
+  element?: ElementRef;
   data?: unknown;
   /* Set when the module could not run the check here, such as an engine that did
      not start. The runner copies it to the finding. */

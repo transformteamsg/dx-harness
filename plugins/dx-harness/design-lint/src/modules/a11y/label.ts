@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, message } from "./util.ts";
 
 /* A11Y-3a: every form field has a visible label. WR-1a reports a field with no
@@ -7,8 +8,7 @@ import { VIEWPORT, message } from "./util.ts";
 
 interface Issue {
   message: string;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 export const a11y3a: RuleModule = {
@@ -50,11 +50,11 @@ export const a11y3a: RuleModule = {
           const why = hidden
             ? `its label "${text(hidden)}" is visually hidden`
             : `its name comes from ${["aria-label", "placeholder", "title"].filter((a) => el.hasAttribute(a)).join(" and ")} only`;
-          found.push({ message: `The <${tag}> has no visible label: ${why}. Show a <label> beside the field.`, top: Math.round(r.top), left: Math.round(r.left) });
+          found.push({ message: `The <${tag}> has no visible label: ${why}. Show a <label> beside the field.`, element: window.__designLint.element(el) });
         }
         return found;
       });
-      for (const i of issues) out.push({ file: pagePath, line: i.top, column: i.left, data: { message: i.message } });
+      for (const i of issues) out.push(atElement(pagePath, i.element, { message: i.message }));
     }
     return out;
   },

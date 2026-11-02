@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* BD-1d: content that is disabled on mobile has a notice with a way to reach
    it. It compares each page at the mobile and desktop widths, finds candidates,
@@ -9,7 +10,7 @@ const HEIGHT = 800;
 interface Snapshot {
   mainWords: number;
   /* Smallest content blocks with minWords or more words, by position in main. */
-  blocks: { index: number; words: number; visible: boolean; top: number; left: number }[];
+  blocks: { index: number; words: number; visible: boolean; element: ElementRef }[];
   interstitial: boolean;
   notice: { visible: boolean; hasText: boolean; hasLink: boolean } | null;
 }
@@ -22,8 +23,7 @@ function snapshot(arg: { content: string; minWords: number; notice: string; skip
   const heavy = all.filter((e) => count(e.textContent || "") >= arg.minWords);
   const smallest = heavy.filter((e) => !heavy.some((o) => o !== e && e.contains(o)));
   const blocks = smallest.map((e) => {
-    const r = e.getBoundingClientRect();
-    return { index: all.indexOf(e), words: count(e.textContent || ""), visible: e.checkVisibility(), top: Math.round(r.top), left: Math.round(r.left) };
+    return { index: all.indexOf(e), words: count(e.textContent || ""), visible: e.checkVisibility(), element: window.__designLint.element(e) as ElementRef };
   });
   const n: any = document.querySelector(arg.notice);
   return {
@@ -53,21 +53,23 @@ export const bd1d: RuleModule = {
       const mobile = await (await rendered.open(pagePath, { width: params.mobileViewport as number, height: HEIGHT })).evaluate(snapshot, arg);
 
       const hidden = desktop.blocks.filter((b) => b.visible && !mobile.blocks.find((m) => m.index === b.index)?.visible);
-      const reasons: { top: number; left: number; reason: string }[] = hidden.map((b) => ({
-        top: b.top,
-        left: b.left,
+      const reasons: { element: ElementRef | null; reason: string }[] = hidden.map((b) => ({
+        element: b.element,
         reason: `a block of ${b.words} words is hidden at the mobile width`,
       }));
       /* A whole-page block is reported only when no single block explains it. */
       if (reasons.length === 0 && mobile.mainWords < desktop.mainWords / 2 && desktop.mainWords - mobile.mainWords >= minWords) {
-        reasons.push({ top: 0, left: 0, reason: `the content drops from ${desktop.mainWords} to ${mobile.mainWords} words at the mobile width` });
+        reasons.push({ element: null, reason: `the content drops from ${desktop.mainWords} to ${mobile.mainWords} words at the mobile width` });
       }
       if (reasons.length === 0 && mobile.interstitial) {
-        reasons.push({ top: 0, left: 0, reason: "the page asks the user to use a desktop or a larger screen" });
+        reasons.push({ element: null, reason: "the page asks the user to use a desktop or a larger screen" });
       }
       const noticeOk = mobile.notice !== null && mobile.notice.visible && mobile.notice.hasText && mobile.notice.hasLink;
       if (!noticeOk) {
-        for (const r of reasons) out.push({ file: pagePath, line: r.top, column: r.left, data: { reason: r.reason } });
+        for (const r of reasons) {
+          const data = { reason: r.reason };
+          out.push(r.element ? atElement(pagePath, r.element, data) : { file: pagePath, line: 0, column: 0, data });
+        }
       }
     }
     return out;

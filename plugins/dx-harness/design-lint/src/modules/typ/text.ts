@@ -1,16 +1,16 @@
-import type { Candidate, RenderedSession, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RenderedSession, RuleModule } from "../../types.ts";
 import { strings } from "../tx/util.ts";
 
 /* TYP-2a, TYP-2b, TYP-4a, TYP-5a, and TYP-6a: rendered checks on the computed
    style of text. Each reads the computed value, so a value set in any unit,
    through var(), or by a utility class is read the same way. A finding sits on
-   the element, at its top and left in CSS pixels. */
+   the element, which the finding names. */
 
 const VIEWPORT = { width: 1280, height: 800 };
 
 interface Hit {
-  top: number;
-  left: number;
+  element: ElementRef;
   message: string;
 }
 
@@ -29,7 +29,7 @@ async function perElement<A>(
   for (const pagePath of strings(pages)) {
     const page = await rendered.open(pagePath, VIEWPORT);
     for (const hit of await page.evaluate(probe, arg)) {
-      out.push({ file: pagePath, line: hit.top, column: hit.left, data: { message: hit.message } });
+      out.push(atElement(pagePath, hit.element, { message: hit.message }));
     }
   }
   return out;
@@ -45,7 +45,7 @@ export const typ2a: RuleModule = {
       rendered,
       params.pages,
       (a: { body: number; label: number; labelSelector: string }) => {
-        const out: { top: number; left: number; message: string }[] = [];
+        const out: { element: ElementRef; message: string }[] = [];
         const inside = (el: any, sel: string) => {
           try {
             return sel !== "" && el.closest(sel) !== null;
@@ -63,7 +63,7 @@ export const typ2a: RuleModule = {
           const label = inside(el, a.labelSelector);
           const floor = label ? a.label : a.body;
           if (size < floor - 0.01) {
-            out.push({ top: Math.round(r.top), left: Math.round(r.left), message: `The <${el.tagName.toLowerCase()}> text is ${size}px. ${label ? "Label" : "Body"} text is at least ${floor}px.` });
+            out.push({ element: window.__designLint.element(el), message: `The <${el.tagName.toLowerCase()}> text is ${size}px. ${label ? "Label" : "Body"} text is at least ${floor}px.` });
           }
         }
         return out;
@@ -84,7 +84,7 @@ export const typ2b: RuleModule = {
       rendered,
       params.pages,
       (a: { selector: string; min: number; max: number }) => {
-        const out: { top: number; left: number; message: string }[] = [];
+        const out: { element: ElementRef; message: string }[] = [];
         let list: any[] = [];
         try {
           list = Array.from(document.body.querySelectorAll(a.selector));
@@ -96,7 +96,7 @@ export const typ2b: RuleModule = {
           const cs = getComputedStyle(el);
           const r = el.getBoundingClientRect();
           if (cs.display === "none" || cs.visibility === "hidden" || (r.width === 0 && r.height === 0)) continue;
-          const at = { top: Math.round(r.top), left: Math.round(r.left) };
+          const at = { element: window.__designLint.element(el) };
           const tag = el.tagName.toLowerCase();
           if (cs.lineHeight === "normal") {
             out.push({ ...at, message: `The <${tag}> text has a line height of normal. Set it from ${a.min} to ${a.max}.` });
@@ -126,7 +126,7 @@ export const typ4a: RuleModule = {
       rendered,
       params.pages,
       (a: { exempt: string }) => {
-        const out: { top: number; left: number; message: string }[] = [];
+        const out: { element: ElementRef; message: string }[] = [];
         const reported: any[] = [];
         const exempt = (el: any) => {
           try {
@@ -143,7 +143,7 @@ export const typ4a: RuleModule = {
           if (cs.textTransform !== "uppercase" || exempt(el)) continue;
           if (reported.some((p) => p.contains(el))) continue;
           reported.push(el);
-          out.push({ top: Math.round(r.top), left: Math.round(r.left), message: `The <${el.tagName.toLowerCase()}> text is set in capitals by text-transform: uppercase. Use sentence case.` });
+          out.push({ element: window.__designLint.element(el), message: `The <${el.tagName.toLowerCase()}> text is set in capitals by text-transform: uppercase. Use sentence case.` });
         }
         return out;
       },
@@ -164,7 +164,7 @@ export const typ5a: RuleModule = {
       rendered,
       params.pages,
       (a: { selector: string; minRows: number }) => {
-        const out: { top: number; left: number; message: string }[] = [];
+        const out: { element: ElementRef; message: string }[] = [];
         const isNumber = (t: string) => /\d/.test(t) && /^[-+−]?(?:[A-Z]{1,3}\$|[$€£¥])?\s?[-+−]?[\d.,\s]+%?$/.test(t);
         const tabular = (el: any) =>
           [el, ...Array.from(el.querySelectorAll("*"))].every((x: any) => getComputedStyle(x).fontVariantNumeric.includes("tabular-nums"));
@@ -186,8 +186,7 @@ export const typ5a: RuleModule = {
             if (cells.length < a.minRows) continue;
             if (!cells.every((cell: any) => isNumber(String(cell.innerText).trim()))) continue;
             if (cells.every(tabular)) continue;
-            const r = cells[0].getBoundingClientRect();
-            out.push({ top: Math.round(r.top), left: Math.round(r.left), message: `Column ${c + 1} of the table holds numbers in proportional figures. Set font-variant-numeric: tabular-nums.` });
+            out.push({ element: window.__designLint.element(cells[0]), message: `Column ${c + 1} of the table holds numbers in proportional figures. Set font-variant-numeric: tabular-nums.` });
           }
         }
         return out;
@@ -210,7 +209,7 @@ export const typ6a: RuleModule = {
       rendered,
       params.pages,
       (a: { selector: string; max: number }) => {
-        const out: { top: number; left: number; message: string }[] = [];
+        const out: { element: ElementRef; message: string }[] = [];
         let list: any[] = [];
         try {
           list = Array.from(document.body.querySelectorAll(a.selector));
@@ -241,7 +240,7 @@ export const typ6a: RuleModule = {
           }
           const widest = Math.max(0, ...lines.map((l) => l.right - l.left));
           if (widest > a.max * ch + 1) {
-            out.push({ top: Math.round(r.top), left: Math.round(r.left), message: `A line of the <${el.tagName.toLowerCase()}> text is ${Math.round(widest / ch)}ch wide. Keep running prose to ${a.max}ch, with a max-width in ch.` });
+            out.push({ element: window.__designLint.element(el), message: `A line of the <${el.tagName.toLowerCase()}> text is ${Math.round(widest / ch)}ch wide. Keep running prose to ${a.max}ch, with a max-width in ch.` });
           }
         }
         return out;
