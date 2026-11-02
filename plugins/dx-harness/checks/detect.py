@@ -122,6 +122,8 @@ def l0_control_ids():
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
 #   ERROR <route>:<cell> [<CTL>] <message>                  (rendered-check)
+# <CTL> is a catalogue control such as TOK-1 or a base rule code such as
+# WP-13a, whose lowercase suffix the control group accepts.
 # Operational ERRORs (path-not-found, unreadable file) have no <file>:<line>[CTL]
 # shape and are kept as control-less findings — never dropped, never a silent pass.
 #
@@ -133,7 +135,7 @@ def l0_control_ids():
 # together (checklib.py's emit_error docstring says so too).
 _FINDING_RE = re.compile(
     r"^ERROR\s+(?P<file>.+?):(?P<pos>[^\s\[]+)\s+"
-    r"\[(?P<control>[A-Z0-9-]+)\](?:\[[^\]]*\])?\s+(?P<message>.*)$"
+    r"\[(?P<control>[A-Z0-9][A-Za-z0-9-]*)\](?:\[[^\]]*\])?\s+(?P<message>.*)$"
 )
 
 TRACEBACK_MARKER = "Traceback (most recent call last)"
