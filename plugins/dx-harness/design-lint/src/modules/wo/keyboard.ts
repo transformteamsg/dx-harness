@@ -57,6 +57,7 @@ export async function tabSequence(page: RenderedPage, limit: number, onStop?: (s
 export const wo2a: RuleModule = {
   code: "WO-2a",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
@@ -107,6 +108,7 @@ export const wo2a: RuleModule = {
 export const wo9e: RuleModule = {
   code: "WO-9e",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
@@ -135,6 +137,7 @@ export const wo9e: RuleModule = {
 export const wo13b: RuleModule = {
   code: "WO-13b",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
@@ -183,6 +186,7 @@ export const wo13b: RuleModule = {
 export const wo9c: RuleModule = {
   code: "WO-9c",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

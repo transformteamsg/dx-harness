@@ -16,6 +16,7 @@ const BUTTONS = "button, input[type=button], input[type=submit], [role=button]";
 export const cmp2a: RuleModule = {
   code: "CMP-2a",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

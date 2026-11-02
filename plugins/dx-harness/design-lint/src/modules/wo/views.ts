@@ -10,6 +10,7 @@ import { VIEWPORT, message } from "./util.ts";
 export const wo8b: RuleModule = {
   code: "WO-8b",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

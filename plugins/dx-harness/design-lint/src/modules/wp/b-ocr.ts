@@ -158,6 +158,7 @@ interface Read {
 export const wp15a: RuleModule = {
   code: "WP-15a",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

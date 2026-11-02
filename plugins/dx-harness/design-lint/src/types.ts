@@ -123,6 +123,13 @@ export interface RuleModule {
      that its formula does not support. The rule reports them as not configured
      and does not run. */
   unconfigured?(params: Params): string[];
+  /* The rule presses keys, hovers, clicks, or waits on pages of its own, so it
+     takes longer than a rule that only reads. The runner starts it first, so
+     that the lanes finish at about the same time. */
+  interacts?: true;
+  /* The rule measures time, such as how long a page takes to load. It runs after
+     the other rendered rules, when nothing else loads the machine. */
+  runsAlone?: true;
 }
 
 export interface Config {

@@ -46,6 +46,7 @@ interface Action {
 export const a11y11b: RuleModule = {
   code: "A11Y-11b",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

@@ -1,8 +1,9 @@
+import os from "node:os";
 import { resolveParameters } from "./config.ts";
 import type { Browser } from "playwright-core";
 import { startSession } from "./rendered.ts";
 import type { Session } from "./rendered.ts";
-import type { Config, Finding, Note, Preset, RuleMeta, RuleModule, Surface } from "./types.ts";
+import type { Config, Finding, Note, Params, Preset, RenderedSession, RuleMeta, RuleModule, Surface } from "./types.ts";
 
 export interface RunOptions {
   surfaces: Surface[];
@@ -16,6 +17,8 @@ export interface RunOptions {
   browser?: Browser;
   /* The domain preset that the config names. */
   preset?: Preset | null;
+  /* How many rendered rules run at the same time. The default suits the machine. */
+  lanes?: number;
 }
 
 export interface RunResult {
@@ -28,6 +31,20 @@ export interface RunResult {
 /* A selector is a rule code, or a category prefix such as "BD". */
 function matches(code: string, selectors: string[]): boolean {
   return selectors.some((s) => code === s || code.startsWith(`${s}-`));
+}
+
+/* A rule that passed its checks and runs, with the findings that it makes. */
+interface Job {
+  rule: RuleMeta;
+  module: RuleModule;
+  values: Params;
+  findings: Finding[];
+}
+
+/* Half the cores, from two to four. On the demo site, six lanes were no faster
+   than four, because the browser processes then compete for the cores. */
+function defaultLanes(): number {
+  return Math.max(2, Math.min(4, Math.floor(os.availableParallelism() / 2)));
 }
 
 export async function run(
@@ -51,6 +68,7 @@ export async function run(
     return session;
   };
 
+  const jobs: Job[] = [];
   for (const rule of rules) {
     if (options.select.length > 0 && !matches(rule.code, options.select)) continue;
     /* An L0 rule ignores --ignore and the ignore list of the preset. */
@@ -77,22 +95,22 @@ export async function run(
       result.skipped.push(rule.code);
       continue;
     }
-    let rendered: Session | undefined;
-    if (rule.surface === "rendered") {
-      rendered = (await getSession()) ?? undefined;
-      if (!rendered) {
-        result.notes.push({ code: rule.code, kind: "not-run", detail: [sessionError ?? "no browser"] });
-        continue;
-      }
+    if (rule.surface === "rendered" && !(await getSession())) {
+      result.notes.push({ code: rule.code, kind: "not-run", detail: [sessionError ?? "no browser"] });
+      continue;
     }
     result.ran.push(rule.code);
-    const context = { files: options.files, root: options.root, params: values, rendered };
-    for (const candidate of await module.locate(context)) {
-      const message = module.decide(candidate, values);
+    jobs.push({ rule, module, values, findings: [] });
+  }
+
+  const check = async (job: Job, rendered?: RenderedSession) => {
+    const context = { files: options.files, root: options.root, params: job.values, rendered };
+    for (const candidate of await job.module.locate(context)) {
+      const message = job.module.decide(candidate, job.values);
       if (message !== null) {
-        result.findings.push({
-          code: rule.code,
-          tier: rule.tier,
+        job.findings.push({
+          code: job.rule.code,
+          tier: job.rule.tier,
           file: candidate.file,
           line: candidate.line,
           column: candidate.column,
@@ -102,7 +120,26 @@ export async function run(
         });
       }
     }
-  }
+  };
+  const rendered = jobs.filter((j) => j.rule.surface === "rendered");
+  for (const job of jobs.filter((j) => j.rule.surface !== "rendered")) await check(job);
+  /* The rendered rules run in lanes, and each lane takes the next rule when it
+     is free. The rules that interact go first, because they take the longest. */
+  const queue = rendered.filter((j) => !j.module.runsAlone);
+  queue.sort((a, b) => Number(Boolean(b.module.interacts)) - Number(Boolean(a.module.interacts)));
+  const lanes = Math.min(options.lanes ?? defaultLanes(), queue.length);
+  await Promise.all(
+    Array.from({ length: lanes }, async () => {
+      const lane = session!.lane();
+      for (let job = queue.shift(); job; job = queue.shift()) {
+        await check(job, lane);
+        await lane.release();
+      }
+    }),
+  );
+  for (const job of rendered.filter((j) => j.module.runsAlone)) await check(job, session!);
+  /* The findings keep the order of the rules, whatever order the rules finished in. */
+  for (const job of jobs) result.findings.push(...job.findings);
   if (session) await (session as Session).close();
   return result;
 }
