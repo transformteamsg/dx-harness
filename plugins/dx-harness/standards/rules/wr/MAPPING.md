@@ -10,7 +10,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | | [`WR-1b`](valid-roles.md) Roles are valid and carry their required properties | lint | rendered | axe `aria-roles`, `aria-allowed-role`, `aria-required-attr`, `aria-required-children`, `aria-required-parent`; source twin jsx-a11y `aria-role`, `role-has-required-aria-props` | `pages` | |
 | | [`WR-1c`](valid-aria-attributes.md) ARIA attributes are valid and supported | lint | rendered | axe `aria-valid-attr`, `aria-valid-attr-value`, `aria-allowed-attr`, `aria-prohibited-attr`, `aria-hidden-body`, `aria-hidden-focus`; source twin jsx-a11y `aria-props`, `aria-proptypes`, `role-supports-aria-props` | `pages` | |
 | | [`WR-1d`](custom-control-role-and-focus.md) A custom interactive element has a role and is focusable | lint | source | jsx-a11y `interactive-supports-focus`, `click-events-have-key-events`, `no-static-element-interactions`, `no-noninteractive-element-interactions` | None | |
-| | `WR-1e` The name describes the purpose, and states update on change | judged | | | | L2 |
+| | `WR-1e` The name describes the purpose, and states update on change | judged | | | | L1 |
 | WR-2 Status Messages | [`WR-2a`](status-message-live-region.md) A status message sits in a live region | lint | source | custom | `statusSelectors`, `liveRoles` | |
 | | [`WR-2b`](valid-live-region.md) Live region values are valid | lint | rendered | custom. `WR-1c` covers the general ARIA validity | `allowedLiveValues`, `pages` | |
-| | `WR-2c` The message content and timing suit the user | judged | | | | L2 |
+| | `WR-2c` The message content and timing suit the user | judged | | | | L1 |

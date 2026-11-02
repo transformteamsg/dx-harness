@@ -8,7 +8,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | --- | --- | --- | --- | --- | --- | --- |
 | WO-1 Keyboard equivalent | [`WO-1a`](pointer-handler-keyboard-equivalent.md) Pointer handlers have a keyboard handler | lint | source | jsx-a11y `click-events-have-key-events`, `no-static-element-interactions` | None | |
 | | [`WO-1b`](interactive-elements-focusable.md) Interactive elements are focusable | lint | source | jsx-a11y `interactive-supports-focus` | None | |
-| | `WO-1c` Every function works by keyboard, with no timing demands | judged | | | | L2 |
+| | `WO-1c` Every function works by keyboard, with no timing demands | judged | | | | L0 |
 | WO-2 No keyboard trap | [`WO-2a`](no-keyboard-trap.md) Keyboard focus leaves every component | lint | rendered | custom | `tabLimit` (200), `pages` | |
 | | `WO-2b` A component that holds focus tells users how to leave | judged | | | | L2 |
 | WO-3 Character key shortcuts | `WO-3a` Single-key shortcuts can be disabled or remapped. Lint part: [`WO-3b`](single-character-shortcuts.md). | judged | | | | L2 |
@@ -39,7 +39,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | WO-12 Headings and labels | `WO-12a` Retired. Covered by [`WP-6a`](../wp/semantic-structure.md) | retired | | | | |
 | | `WO-12b` Retired. Covered by [`WP-6a`](../wp/semantic-structure.md) | retired | | | | |
 | | `WO-12c` Retired. Covered by [`WR-1a`](../wr/control-accessible-name.md) | retired | | | | |
-| | `WO-12d` Headings and labels are descriptive | judged | | | | L2 |
+| | `WO-12d` Headings and labels are descriptive | judged | | | | L1 |
 | WO-13 Focus visible and not obscured | [`WO-13a`](focus-indicator-kept.md) The focus indicator is not removed | lint | source | custom, ported from `a11y-static.py` | `replacementProperties` | |
 | | [`WO-13b`](focus-not-obscured.md) Focused elements are not covered | lint | rendered | custom | `viewports` (320, 1280), `maxObscuredRatio` (0), `pages` | |
 | WO-14 Simple pointer alternatives | `WO-14a` A single-point alternative exists for each multipoint or path-based gesture. Lint part: [`WO-14b`](gesture-handlers.md). | judged | | | | L2 |

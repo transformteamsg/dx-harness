@@ -52,7 +52,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | WP-15 Images of text | [`WP-15a`](no-images-of-text.md) Images do not hold text. Lint part of `WP-15b`. | lint | rendered | custom | `minWords` (4), `ocrLanguages`, `exemptSelector` | |
 | | `WP-15b` A necessary image of text has a text equivalent. Lint part: [`WP-15a`](no-images-of-text.md). | judged | | | | L2 |
 | WP-16 Content reflow | [`WP-16a`](reflow.md) Content reflows at the reflow width | lint | rendered | custom | `reflowWidth` (320), `twoDimensionalSelector` (exemption), `pages` | |
-| | `WP-16b` Two-dimensional content stays usable | judged | | | | L2 |
+| | `WP-16b` Two-dimensional content stays usable | judged | | | | L1 |
 | WP-17 Non-text contrast | [`WP-17a`](boundary-contrast.md) Input and button boundaries meet the minimum contrast ratio | lint | rendered | custom | `minRatio` (3), `inputSelector`, `buttonSelector`, `stateSelector`, `pages` | |
 | | `WP-17b` Graphical objects that convey information meet the ratio | judged | | | | L2 |
 | | [`WP-17c`](token-boundary-contrast.md) Declared boundary token pairs meet the minimum contrast ratio | lint | project | custom | `minRatio` (3), `boundaryTokenPairs` | |

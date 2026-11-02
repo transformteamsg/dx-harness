@@ -54,7 +54,18 @@ function ruleFiles() {
     });
 }
 
-const L0 = ruleFiles().filter((rule) => rule.tier === "L0").map((rule) => rule.code);
+/* The judged rules that the Tier column of a MAPPING.md marks L0. */
+function judgedL0() {
+  return fs
+    .readdirSync(RULES, { recursive: true, encoding: "utf8" })
+    .filter((file) => file.endsWith("MAPPING.md"))
+    .flatMap((file) => fs.readFileSync(path.join(RULES, file), "utf8").split("\n"))
+    .map((line) => line.split("|").map((cell) => cell.trim()))
+    .filter((cells) => cells[3] === "judged" && cells[cells.length - 2] === "L0")
+    .map((cells) => /([A-Z][A-Z0-9]*-\d+[a-z])/.exec(cells[2])?.[1] ?? "");
+}
+
+const L0 = [...ruleFiles().filter((rule) => rule.tier === "L0").map((rule) => rule.code), ...judgedL0()];
 
 /* Contract item 1: a run gets base rules. */
 describe("a run on a product with no DESIGN.md", () => {
