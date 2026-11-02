@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.0 (2026-11-03)
+
 ### Added
 
 - **CNT rules in the base**: `standards/rules/cnt/` holds the rules of CNT-2, CNT-3, CNT-4, CNT-5, CNT-6, CNT-7, CNT-8, CNT-9, CNT-11, CNT-12, and CNT-13. The new lint rules `CNT-5a`, `CNT-6a`, `CNT-12a`, and `CNT-13a` check rendered copy for device verbs, empty openers and filler words, Title Case labels, and US spellings and common misspellings. and `redirects.yaml` maps each moved control to its rule codes ([#547](https://github.com/transformteamsg/dx-harness/issues/547)).
