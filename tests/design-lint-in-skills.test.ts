@@ -91,15 +91,18 @@ describe("a design run decides the replaced controls with design-lint", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("the verify step, the critique, and the reviewer each run design-lint from the plugin", () => {
-    for (const file of [
-      "skills/design/dx-design-execute/verify.md",
-      "skills/design/dx-design-critique/critique.md",
-      "agents/dx-design-review.md",
-    ]) {
-      expect(fs.readFileSync(path.join(PLUGIN, file), "utf8"), file).toMatch(/design-lint\/src\/cli\.ts/);
-    }
+  /* The command is in one procedure, and each step that runs it names that
+     procedure. */
+  it("the design-lint procedure runs the plugin's own design-lint", () => {
+    expect(fs.readFileSync(path.join(PLUGIN, "procedures/design-lint.md"), "utf8")).toMatch(/<harness>\/design-lint\/src\/cli\.ts/);
   });
+
+  it.each(["skills/design/dx-design-execute/verify.md", "skills/design/dx-design-critique/critique.md", "agents/dx-design-review.md"])(
+    "%s runs design-lint through the procedure",
+    (file) => {
+      expect(fs.readFileSync(path.join(PLUGIN, file), "utf8")).toMatch(/procedures\/design-lint\.md/);
+    },
+  );
 });
 
 describe("design-lint inside the plugin", () => {

@@ -110,7 +110,7 @@ These rules bind in every phase, including a phase whose file the run has not re
 
   A generic named change such as "add a field" is NOT approval: no one has seen a plan yet. Write the scoped plan, return it to the caller for approval, and edit no product file until the approval comes back.
 - Run the branch guard in `../../../procedures/implement.md` before the first product edit, in both modes. When it trips, hand off to `dx-design-git`.
-- Never report a `checks/`-backed control as "passed" when no script ran. Say "verified manually" or "could not verify mechanically", and list what a human should re-check. Every built script covers only a static subset of its control. `checks/COVERAGE.md` names what each script does not cover.
+- Never report a lint rule or a `checks/`-backed control as "passed" when `design-lint` or its script did not run. Say "verified manually" or "could not verify mechanically", and list what a human should re-check. `checks/COVERAGE.md` names what each script does not cover.
 - Do not present output to the user while a verify step fails. The `dx-design-review` agent writes the verdict, never you.
 
 ## Run order

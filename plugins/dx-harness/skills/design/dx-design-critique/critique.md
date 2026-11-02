@@ -28,8 +28,11 @@ propose changes before you have seen and judged the current state:
    it attaches to the page you just captured, runs axe across both viewports and
    both themes plus one reduced-motion cell, and restores the session so the
    frames you already took stay valid evidence. Its `NOTE` lines are items for
-   the manual accessibility pass, not gates. The frames, each width that did not
-   capture, and the rendered check output are this run's capture set; the steps
+   the manual accessibility pass, not gates. Then run `design-lint` on the
+   product per `../../../procedures/design-lint.md`. When that procedure stops,
+   say so: every lint rule is unverified, never a pass, and the run goes on with
+   the capture alone. The frames, each width that did not capture, the rendered
+   check output, and the `design-lint` result are this run's capture set; the steps
    below and `report.md` judge from it and take no second capture. Scale every
    frame per Step 3 of `../../../procedures/capture.md` before you judge: the
    steps below judge from the scaled copies, and `report.md` crops from the

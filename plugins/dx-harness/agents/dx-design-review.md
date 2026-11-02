@@ -83,21 +83,20 @@ say-so. The most expensive misses hide here — a default that was overridden, o
 long-standing element nobody re-checks. Read the element against its L0/L1 controls
 directly.
 
-Deterministic controls are primarily the `checks/` scripts' job, not yours — but do
-not *assume* they ran; for any control whose script is unbuilt or wasn't run, ask
+Lint rules are `design-lint`'s job, and the catalogue controls that no base rule
+replaces are the `checks/` scripts' job, not yours. Do not *assume* either ran. Read
+the `design-lint` result in the evidence. When it is missing, run `design-lint`
+yourself per `../procedures/design-lint.md`, one level up from this agent file. When
+that procedure stops, every lint rule is unverified: say so and name what is missing,
+and never record a lint rule as passed. For a control whose script did not run, ask
 whether it was verified manually, and if neither, say the control is unverified
 rather than passed. When you record "verified manually", state what you
 checked and how — it becomes a `manual` row in the VERIFICATION LEDGER (below) that
 the record audit validates, so "verified manually" carries evidence rather than being
-an unauditable claim. Any deterministic violation you can see — in a screenshot or in
-the code — is a finding regardless, belt and braces. Which scripts exist and the
-static subset each covers: `checks/COVERAGE.md`.
-**Locating the scripts:** `checks/` ships with this harness, not with the product
-repo — resolve it relative to this agent file, one level up:
-`<this-agent-dir>/../checks/` (the same path works in the harness dev repo and when
-installed as the `dx-harness` plugin; do not expect a `checks/` directory in the
-product cwd, which is where you run). `checks/…` paths in this file are written
-repo-relative for brevity; prefix them with that resolved path when running one.
+an unauditable claim. Any lint or deterministic violation you can see — in a
+screenshot or in the code — is a finding regardless, belt and braces. Which scripts
+exist and the static subset each covers: `checks/COVERAGE.md`. `checks/` ships with
+this harness at `<this-agent-dir>/../checks/`, not in the product cwd where you run.
 
 **Findings sort by tier and waiver status, never by how you found them:**
 
@@ -127,10 +126,15 @@ the evidence (quote the copy, name the screen region).
 during implementation is a finding even when the drifted version looks fine — the
 plan was the human-approved artifact.
 
-**3. Judgment controls.** Grade each in-scope control with the steps in the
-"Evaluator guidance" and "How to verify" sections of its `--for review` part. This
-file holds no grading steps for a single control. Quote the specific text or element
-you judged. Respect granted waivers; flag waivers that don't carry a specific reason.
+**3. Judgment controls and judged rules.** Grade each in-scope control with the steps
+in the "Evaluator guidance" and "How to verify" sections of its `--for review` part.
+Grade each in-scope judged rule against its row in the `MAPPING.md` of its category,
+the detail path the list gives: the rule title is the whole requirement, so judge the
+page against that title and invent no further rubric. A judged rule that a lint rule
+names in `judgedRemainder` covers only what the lint rule cannot decide: do not repeat
+the lint check. This file holds no grading steps for a single rule. Quote the specific
+text or element you judged. Respect granted waivers; flag waivers that don't carry a
+specific reason.
 
 **4. Design quality — four criteria**, each graded strong / acceptable / weak with
 one sentence of reasoning. These draw on Apple's HIG design principles as a
@@ -196,7 +200,7 @@ SUGGESTIONS (not violations — layout/pattern improvements the builder may take
 
 QUALITY GRADES: design quality / originality / craft / functionality — with reasons
 
-JUDGMENT CONTROL NOTES (one line per in-scope judgment/hybrid control):
+JUDGMENT CONTROL NOTES (one line per in-scope judged rule and judgment/hybrid control):
 - plain rule title (control-id) pass | pass-with-caveat | fail — the evidence you
   judged, quoted.
   For CMP-1, always name your evidence source (manifest diff / product codebase
@@ -207,6 +211,8 @@ VERIFICATION LEDGER (one row per in-scope control — the record pastes this ver
 |---------|--------|----------|
 | A11Y-1  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
 | TOK-1   | script | `checks/token-audit.py` clean |
+| WP-13a  | script | `design-lint --rendered`: one finding on `.hint` |
+| WO-10d  | manual | read each link out of context — "click here" names no purpose |
 | A11Y-4  | unverified | needs computed layout — flag for a human |
   Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what
   was checked and how; a `script` row names the script/command; an `unverified` row

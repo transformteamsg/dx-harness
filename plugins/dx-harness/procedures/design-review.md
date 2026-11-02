@@ -9,7 +9,8 @@ positive, which is why the role exists separately.
 - **Whoever started the run spawns the reviewer, one time per run.** Spawn the
   `dx-design-review` subagent (a genuinely separate agent; do not write the verdict
   yourself) with: the sprint contract, the approved plan, the screenshots, the
-  component inventory, the run's in-scope list as the command printed it, and the
+  component inventory, the run's in-scope list as the command printed it, the
+  `design-lint` result or the reason it did not run, and the
   absolute path to the harness's `standards/` directory (the reviewer cannot
   resolve it from the product cwd).
 - **If you cannot spawn subagents** (you are yourself a subagent, or running
