@@ -12,11 +12,13 @@
     "new-page": "node demo/new-page.ts"
   },
   "dependencies": {
+    "@tesseract.js-data/eng": "1.0.0",
     "axe-core": "^4.14.0",
     "eslint": "^9.39.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "parse5": "^8.0.1",
     "playwright-core": "^1.64.1",
+    "tesseract.js": "7.0.0",
     "typescript-eslint": "^8.71.2",
     "yaml": "^2.9.0"
   },
