@@ -7,14 +7,17 @@ check it, it is a principle or guideline, not a standard.** The tier table, the
 `dx-waive` syntax, and the authoring rules live in `../standards/README.md`. Read it
 only when someone asks about or proposes a waiver, and read it in that turn, before
 you answer. **Never answer a waiver question from memory** or from a summary.
-Applicability comes from the catalogue's scope fields and the product's DESIGN.md.
+Applicability comes from the product's `design-lint.config.json` and, for a catalogue
+control, the catalogue's scope fields.
 
 ## The in-scope list
 
-A run reads the rules it applies from the in-scope list, never from the catalogue
-file. Do not open `../standards/catalog.yaml`. The catalogue ships with the harness,
-not the product repo, so resolve the harness root to an absolute path and substitute
-it for `<harness>`:
+A run reads the rules it applies from the in-scope list, never from the rule files
+or the catalogue file. Do not open `../standards/catalog.yaml`. The list holds the
+base rules in `../standards/rules/`, then the catalogue controls that no base rule
+replaces yet, such as `TOK-2`. The rules ship with the harness, not the product
+repo, so resolve the harness root to an absolute path and substitute it for
+`<harness>`:
 
 ```bash
 python3 <harness>/scripts/in-scope-rules.py <repo-root> [flags]
@@ -23,22 +26,28 @@ python3 <harness>/scripts/in-scope-rules.py <repo-root> [flags]
 Pass only the flags your skill names. A flag you leave out does not narrow the list:
 
 - `--dimension <pass>` keeps one pass dimension's rules.
-- `--phase <phase>` keeps the rules for one phase.
-- `--surface <type>` keeps the rules for one surface type: `page`, `component`,
-  `flow`, or `content`.
-- `--product <product>` and `--audience <audience>` keep the scoped rules for the
-  product and audience that the run settled. Audience defaults to teachers.
+- `--product <product>` and `--audience <audience>` keep the catalogue controls
+  scoped to the product and audience that the run settled. Audience defaults to
+  teachers.
 
-Every L0 rule is on every list. Each rule line gives the id, tier, title, `verify`
-text, the check that covers the rule fully when one does, and the absolute path to
-its detail file when it has one.
+The product's `design-lint.config.json` selects its rules, with the `select` key and
+the `ignore` key of its preset. A product with no configuration gets every rule. A
+selection in the `DESIGN.md` frontmatter selects nothing, and the list prints a note
+that names it.
 
-- **Read the detail of no rule outside the list.** A rule with no `Detail:` is
-  self-sufficient: its title and `verify` text are the whole rule. A `judgment` or
-  `hybrid` rule with no detail is a catalogue defect. Raise it, and do not improvise
-  a rubric.
+Every L0 rule is on every list. Each rule line gives the code, the tier, the check
+(`lint` or `judged`, or the catalogue check), the title, and the absolute path to its
+detail. A catalogue control also gives its `verify` text, and the check that covers it
+fully when one does.
+
+- **Read the detail of no rule outside the list.** The detail of a lint rule is its
+  rule file. The detail of a judged rule is the `MAPPING.md` of its category: grade
+  it from the title in its row, and do not improvise a rubric. A catalogue control
+  with no `Detail:` is self-sufficient: its title and `verify` text are the whole
+  rule. A `judgment` or `hybrid` control with no detail is a catalogue defect. Raise
+  it.
 - **Read only the part of the detail that your role needs.** Print it from the path
-  the list gives, before you apply or grade the rule:
+  the list gives, before you apply or grade a lint rule or a catalogue control:
 
   ```bash
   python3 <harness>/scripts/rule-detail.py <detail path> --for build
@@ -56,13 +65,15 @@ its detail file when it has one.
   for the rule, read no detail for that rule. When it reports a finding, read the
   rule's `--for build` part before you fix it.
 - **Report its `Selection:` line to the person**, in plain words, before you apply
-  any rule. The line names the filters and the `DESIGN.md` the list came from. On a
-  product with no `DESIGN.md`, it says the portfolio defaults apply.
+  any rule. The line names the filters, the configuration file, and the preset the
+  list came from. On a product with no `design-lint.config.json`, it says every rule
+  applies.
 - **When the command exits with an error, stop before you review or build
   anything.** Show the error to the person as the command printed it. An unknown
-  rule code in `DESIGN.md` is fixed there, through `dx-design-language`.
-- Get the list again when the run's product, audience, or surface type changes. A
-  content-only change passes `--surface content`.
+  rule code in `design-lint.config.json` is fixed there. An old catalogue code
+  still works: `redirects.yaml` maps it to its base rules.
+- Get the list again when the run's product or audience changes. A content-only
+  change passes `--dimension copy`.
 
 One set of rules covers the whole portfolio. Per-product difference is nuance
 calibration or a standing override in that product's DESIGN.md, never separate

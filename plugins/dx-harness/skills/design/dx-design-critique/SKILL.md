@@ -19,8 +19,8 @@ judged the current state, and you never restyle a deliberate choice without aski
 - Grading a build's own output belongs to the design reviewer agent inside the `dx-design-execute` loop.
 
 **Load first:** `../../../procedures/catalogue-mechanics.md`, then get the critique's
-in-scope list with `python3 <harness>/scripts/in-scope-rules.py <repo-root> --phase
-verify --product <product> --audience <audience>`, where `<harness>` is the absolute
+in-scope list with `python3 <harness>/scripts/in-scope-rules.py <repo-root>
+--product <product> --audience <audience>`, where `<harness>` is the absolute
 path three levels above this file. Report the `Selection:` line to the person. When
 the command exits with an error, stop before you capture or grade, and show the
 error. Before you grade a listed rule, read its review part with `python3

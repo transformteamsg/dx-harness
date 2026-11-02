@@ -240,19 +240,25 @@ once. The file is 2,962 tokens, against the 22,160-token baseline above, a savin
 ## Rule list read
 
 A design run reads its in-scope list from `scripts/in-scope-rules.py` instead of
-`standards/catalog.yaml`, which is 19,051 tokens in the baseline above.
+the rule files and `standards/catalog.yaml`. The catalogue is 19,140 tokens. The list
+holds the 302 base rules, lint and judged, and the catalogue controls that no base
+rule replaces ([ADR-0003](../../../docs/adr/0003-rule-selection-for-a-design-run.md)).
 
-| Run | Flags | List tokens | Saved per run |
+| Run | Flags | List tokens | Against the catalogue |
 | --- | --- | --: | --: |
-| One build, `tw` | `--product tw --audience teachers` | 7,028 | 12,023 |
-| One build, `casesync` | `--product casesync --audience teachers` | 7,148 | 11,903 |
-| One critique | `--phase verify --product tw` | 7,028 | 12,023 |
-| One pass, `polish` | `--dimension polish --phase verify` | 1,512 | 17,539 |
-| One pass, smallest to largest | `--dimension <pass> --phase verify` | 621 `motion` to 2,015 `copy` | 17,036 to 18,430 |
+| One build, `tw` | `--product tw --audience teachers` | 21,724 | 2,584 more |
+| One build, `casesync` | `--product casesync --audience teachers` | 21,852 | 2,712 more |
+| One critique | `--product tw --audience teachers` | 21,724 | 2,584 more |
+| One pass, `polish` | `--dimension polish` | 2,283 | 16,857 fewer |
+| One pass, smallest to largest | `--dimension <pass>` | 1,147 `motion` to 2,745 `copy` | 16,395 to 17,993 fewer |
 
-`procedures/catalogue-mechanics.md` grew from 837 to 988 tokens, because it now holds
-the list command and its rules. Measured on 2026-10-23 with `cl100k_base`, on a
-product with no `DESIGN.md`.
+A build and a critique read more than the catalogue, because the list names every
+base rule. Each row carries the absolute path to its detail. A pass reads its own
+rules and the L0 floor only.
+
+`procedures/catalogue-mechanics.md` grew from 1,300 to 1,464 tokens, because it now
+says how a judged rule and the product configuration work. Measured on 2026-11-02
+with `cl100k_base`, on a product with no `design-lint.config.json`.
 
 ## Rule detail read
 

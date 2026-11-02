@@ -4,14 +4,14 @@ Source: the LAY controls of [`catalog.yaml`](../../catalog.yaml), from the DX de
 
 The LAY controls list no "Not required for" text, so no row has an exemption parameter. `LAY-4` has no row: it maps to the `TYP-6` rules ([#545](https://github.com/transformteamsg/dx-harness/issues/545)).
 
-| Control | Rule | Check | Surface | Engine | Parameters |
-| --- | --- | --- | --- | --- | --- |
-| LAY-1 Declared column grid | [`LAY-1a`](declared-column-count.md) Column counts fit the declared grid. Lint part of LAY-1b. | lint | source | custom | `gridColumns` (unset) |
-| | `LAY-1b` The column structure reads as coherent. Lint part: [LAY-1a](declared-column-count.md). | judged | | | |
-| LAY-3 Known page template | `LAY-3a` A surface follows the page template of its page type, or says why no template fits | judged | | | |
-| LAY-5 Density suits the task | `LAY-5a` Density suits the task: tight for data entry, open for reading and scanning | judged | | | |
-| LAY-6 Shared edges align | `LAY-6a` Shared edges align, and optical alignment is used where geometry misleads | judged | | | |
-| LAY-7 One focal region | `LAY-7a` The page has one primary focal region, and its reading order matches the task's priority order | judged | | | |
+| Control | Rule | Check | Surface | Engine | Parameters | Tier |
+| --- | --- | --- | --- | --- | --- | --- |
+| LAY-1 Declared column grid | [`LAY-1a`](declared-column-count.md) Column counts fit the declared grid. Lint part of LAY-1b. | lint | source | custom | `gridColumns` (unset) | |
+| | `LAY-1b` The column structure reads as coherent. Lint part: [LAY-1a](declared-column-count.md). | judged | | | | L2 |
+| LAY-3 Known page template | `LAY-3a` A surface follows the page template of its page type, or says why no template fits | judged | | | | L2 |
+| LAY-5 Density suits the task | `LAY-5a` Density suits the task: tight for data entry, open for reading and scanning | judged | | | | L2 |
+| LAY-6 Shared edges align | `LAY-6a` Shared edges align, and optical alignment is used where geometry misleads | judged | | | | L2 |
+| LAY-7 One focal region | `LAY-7a` The page has one primary focal region, and its reading order matches the task's priority order | judged | | | | L2 |
 
 ## Judged reasons
 
@@ -27,7 +27,7 @@ The LAY controls list no "Not required for" text, so no row has an exemption par
 
 SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
 
-| Source control | Rule | Check | Surface | Engine | Parameters |
-| --- | --- | --- | --- | --- | --- |
-| SLP-5 No icon-tile feature-card template as the default layout | `LAY-8a` A page does not use a grid of identical cards, each an icon tile above a heading and two lines of text, as its default layout. A grid of real peers passes | judged | | | |
-| SLP-7 Spacing has rhythm | `LAY-9a` Related items sit closer together than unrelated items, and one spacing value is not used everywhere | judged | | | |
+| Source control | Rule | Check | Surface | Engine | Parameters | Tier |
+| --- | --- | --- | --- | --- | --- | --- |
+| SLP-5 No icon-tile feature-card template as the default layout | `LAY-8a` A page does not use a grid of identical cards, each an icon tile above a heading and two lines of text, as its default layout. A grid of real peers passes | judged | | | | L2 |
+| SLP-7 Spacing has rhythm | `LAY-9a` Related items sit closer together than unrelated items, and one spacing value is not used everywhere | judged | | | | L2 |

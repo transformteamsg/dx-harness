@@ -160,8 +160,8 @@ describe("4. a rule a clean check covers fully needs no detail", () => {
     expect(run.status, run.stderr).toBe(0);
     expect(row("TOK-1")).toContain("Covered by: checks/token-audit.py");
     expect(row("TYP-3")).toContain("Covered by: checks/type-scan.py");
-    expect(row("TYP-2")).not.toBe("");
-    expect(row("TYP-2")).not.toContain("Covered by");
+    expect(row("TYP-2a")).not.toBe("");
+    expect(row("TYP-2a")).not.toContain("Covered by");
   });
 
   it("the mechanics tell the builder to read no detail when that check is clean", () => {

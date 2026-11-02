@@ -83,9 +83,11 @@ primary action.
 <!-- Standing, product-level deviations from the Control Catalogue. Starts empty:
      a deviation earns its place through the waiver promotion flow, or is
      volunteered. Format, one line per override:
-       - <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
+       - <RULE-CODE> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
+     The code is a rule on the in-scope list, such as CNT-12a or TOK-2. An old
+     catalogue code that base rules replace is rejected.
      L0: never allowed (the generator rejects the line). L1: approver required.
-     L2: reason required. One line per control id; duplicates are rejected.
+     L2: reason required. One line per code; duplicates are rejected.
      The design reviewer grades against the adjusted rule within its stated scope;
      the deterministic checks cannot judge scope, so they keep findings on an
      overridden control visible and blocking, annotated for a manual check against

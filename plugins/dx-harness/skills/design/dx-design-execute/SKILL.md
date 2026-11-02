@@ -27,9 +27,8 @@ lives in its own file, named in "Run order".
 the product and audience, get the build's in-scope list with
 `python3 <harness>/scripts/in-scope-rules.py <repo-root> --product <product>
 --audience <audience>`, where `<harness>` is the absolute path three levels above
-this file. Pass no `--phase` or `--surface`: a build runs every phase, and a page
-with an async or destructive action also takes the flow rules. Report the
-`Selection:` line to the person. When the command exits with an error, stop before
+this file. Pass no `--dimension`: a page with an async or destructive action
+also takes the flow rules. Report the `Selection:` line to the person. When the command exits with an error, stop before
 you plan or build, and show the error. Before you apply a listed rule, read its
 build part with `python3 <harness>/scripts/rule-detail.py <detail path> --for
 build`. A rule with `Covered by:` needs no detail when its check runs clean. Also read the product's `DESIGN.md` (repo root)

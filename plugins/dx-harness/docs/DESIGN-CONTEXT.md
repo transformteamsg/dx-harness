@@ -17,8 +17,10 @@ for "what makes this product this product":
 Both are **optional**. A repo with neither gets portfolio defaults everywhere; that
 is a valid, complete state. Never grade a missing context file as a failure.
 
-**Precedence:** the catalogue governs portfolio rules; code governs implemented
-primitives; `DESIGN.md` carries this product's decisions and deviations.
+**Precedence:** the base rules in `standards/rules/` and the controls that stay in the
+catalogue govern portfolio rules; code governs implemented primitives; `DESIGN.md`
+carries this product's decisions and deviations. `DESIGN.md` selects no rules:
+`design-lint.config.json` does, per ADR-0003.
 
 ## The one rule: decisions, never catalog-rule restatements
 
@@ -61,7 +63,7 @@ The legacy heading `Tone weighting` still maps to `tone`.
 One structured line per standing override:
 
 ```
-- <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
+- <RULE-CODE> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
 ```
 
 The generator enforces the tier rules and refuses to write past a rejected line
@@ -70,9 +72,13 @@ The generator enforces the tier rules and refuses to write past a rejected line
 - **L0** lines are always rejected. If the rule seems wrong, start a rule proposal.
 - **L1** needs a reason and a named approver (`; approver: <name>`).
 - **L2** needs a reason.
-- The control id must exist in `standards/catalog.yaml`, and the stated tier must
-  match the catalogue's tier for that control.
-- One control id may appear on at most one line; duplicate lines are rejected.
+- The code must name a rule that a design run lists: a base rule in
+  `standards/rules/`, such as `CNT-12a`, or a control that stays in
+  `standards/catalog.yaml`, such as `TOK-2`. The stated tier must match that rule's
+  tier.
+- An old catalogue code that base rules replace, such as `CNT-12`, is rejected. The
+  error names the codes that `standards/rules/redirects.yaml` maps it to.
+- One code may appear on at most one line; duplicate lines are rejected.
 
 Checks (`checks/detect.py`) and the design reviewer load the overrides from
 `.dx/design.json` and surface every active override. The design reviewer grades

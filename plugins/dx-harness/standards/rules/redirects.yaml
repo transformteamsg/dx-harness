@@ -2,6 +2,7 @@
 # `files` maps a file name from skills/design-restructure/base/ to its path under
 # standards/rules/. When a file is renamed again, its old entry points to the newest path.
 # `codes` maps a control code from catalog.yaml to the base rule codes that replace it.
+# A control that ports in full maps to the DSS rules that the catalogue retirement spec names for it.
 # `notMoved` maps a catalogue control that has no base rule to the reason it does not move.
 files:
   BD-1a.md: bd/viewport-meta.md
@@ -165,6 +166,19 @@ files:
 notMoved:
   CMP-9: A security rule, outside the design standard. It stays in catalog.yaml until #540 decides where it goes.
 codes:
+  # The controls that port in full map to the DSS rules that replace them (#537).
+  A11Y-1: [WP-13a, WP-13b, WP-17a, WP-17c]
+  A11Y-2: [WO-1a, WO-1b, WO-1c, WO-13a, WO-13b]
+  A11Y-4: [WO-18a]
+  A11Y-6: [WP-1a, WP-1b, WP-1c, WP-1d, WP-1e]
+  A11Y-7: [WP-6a, WP-6b, WP-6d, WP-6e, WO-12d]
+  A11Y-8: [WR-1a, WR-1b, WR-1c, WR-1d, WR-1e]
+  A11Y-9: [WO-8a, WO-8b, WO-8c, WO-8d, WU-1a, WU-1b]
+  A11Y-10: [WO-7a, WO-7b]
+  CMP-7: [BD-6c]
+  CNT-1: [WU-10c, WU-10d, WU-11a, WU-11b, TX-10a, TX-10b]
+  CNT-10: [WU-8a, WU-8b, WU-8c]
+  LAY-2: [WP-16a, WP-16b, BD-1b, WP-7b]
   LAY-1: [LAY-1a, LAY-1b]
   LAY-3: [LAY-3a]
   LAY-5: [LAY-5a]
