@@ -108,3 +108,23 @@ describe("a rule above the limit of false findings", () => {
   });
 });
 
+describe("a corpus page that cannot be loaded", () => {
+  const pages = [
+    { id: "short-a", file: "short-a.html" },
+    { id: "unreachable", url: "http://127.0.0.1:1/" },
+    { id: "missing", file: "no-such-page.html" },
+    { id: "short-b", file: "short-b.html" },
+  ];
+
+  it("is reported with its error, and the run continues to the next pages", async () => {
+    const corpus = loadCorpus(writeCorpus({}, pages));
+    const report = await calibrate({ corpus, verdicts: [], rules, surfaces: ["source", "project"] });
+    const failed = report.pages.filter((p) => p.error);
+    expect(failed.map((p) => p.id).sort()).toEqual(["missing", "unreachable"]);
+    expect(failed.every((p) => (p.error ?? "").length > 0)).toBe(true);
+    expect(report.rules.find((r) => r.code === "BD-5a")?.findings).toBe(2);
+    const printed = formatCalibration(report).join("\n");
+    expect(printed).toMatch(/unreachable/);
+    expect(printed).toMatch(/missing/);
+  });
+});
