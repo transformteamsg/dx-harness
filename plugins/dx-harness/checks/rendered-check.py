@@ -883,6 +883,11 @@ def payload_records(payload, rule_map, controls=(), suppression=None):
     return rows
 
 
+def codes_without_tier(coverage, tiers):
+    """The codes in a COVERAGE declaration that have no tier in `tiers`."""
+    return None
+
+
 # ── Self-test ──────────────────────────────────────────────────────────────────
 
 def strip_js_comments(source):
