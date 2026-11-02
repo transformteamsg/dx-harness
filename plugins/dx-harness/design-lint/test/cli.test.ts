@@ -87,4 +87,13 @@ describe("a finding from a rendered rule", async () => {
     expect(run.stdout.trim().split("\n")).toEqual([expect.stringMatching(/^\/ input \(2nd on the page\): BD-2e \[L2\] /)]);
   });
 
+  it.skipIf(skip)("keeps the position and the size of the element in the JSON", () => {
+    const run = lint(`<form role="search"><input class="search-box" type="search" ${narrow}></form>`, "--json");
+    expect(run.stderr).toBe("");
+    const findings = (JSON.parse(run.stdout || "{}") as { findings?: { element?: Record<string, unknown> }[] }).findings ?? [];
+    expect(findings).toHaveLength(1);
+    const element = findings[0].element ?? {};
+    for (const key of ["top", "left", "width", "height"]) expect(typeof element[key], key).toBe("number");
+    expect(element.width as number).toBeGreaterThan(0);
+  });
 });
