@@ -38,7 +38,7 @@ helpful but not overbearing; approachable but not careless; reassuring but not s
 | Success | Affirming, brief | Acknowledge, don't gush |
 | Error | Calm, helpful | What happened → what it means → what to do next |
 | Onboarding | Encouraging | Lower the stakes; show the quick win |
-| Destructive action | Sober, precise | Plain consequences, no drama (CMP-2) |
+| Destructive action | Sober, precise | Plain consequences, no drama (CMP-2b) |
 | Empty state | Inviting | Lead with the next action |
 | Permission / data request | Transparent, respectful | Say what's collected, why, and how it's used — before asking |
 
@@ -48,15 +48,15 @@ states, success states, confirmations, onboarding.
 ## Rationale
 
 The mechanical slices of voice are already owned by other controls — person, active
-voice, and sentence length (CNT-3), filler words (CNT-6), nominalisations (CNT-8),
-sentence case (CNT-12), spelling (CNT-13), and AI-writing tells (SLP-9). But copy can
+voice, and sentence length (CNT-3a), filler words (CNT-6a), nominalisations (CNT-8a),
+sentence case (CNT-12a), spelling (CNT-13a), and AI-writing tells (CNT-15a). But copy can
 pass every one of those and still be *tonally wrong*: an error that reads as alarmist, a
 success that gushes, an empty state that patronises, a destructive confirmation written
 for drama. That failure is the **gestalt** — how the copy sounds and whether its tone
 matches the moment — and no static signal decides it.
 
 This control makes that gestalt control-backed, the same move SLP made for slop and
-CNT-7 made for lead-with-purpose: a quality that was previously only a soft
+CNT-7a made for lead-with-purpose: a quality that was previously only a soft
 design-quality grade becomes a named, waivable finding pointing at a written standard
 (the Voice and Tone sections of `procedures/copy-rules.md`).
 
@@ -67,7 +67,7 @@ design-quality grade becomes a named, waivable finding pointing at a written sta
 - An error stays calm and points forward: "Sync failed. Check your connection and try
   again." — plain cause, clear next step, no alarm.
 - A destructive confirmation states the consequence soberly: "Deleting this class
-  removes its marks for everyone. This can't be undone." — plain, no drama (CMP-2 governs
+  removes its marks for everyone. This can't be undone." — plain, no drama (CMP-2b governs
   the undo/confirm behaviour).
 - An empty state invites the next action: "No classes yet. Add your first class to get
   started." — inviting, not apologetic.
@@ -87,7 +87,7 @@ design-quality grade becomes a named, waivable finding pointing at a written sta
 ## How to verify
 
 Judgment only — there is no deterministic half. The mechanical voice controls
-(CNT-3/6/8/12/13, SLP-9) carry the lintable slices; this control is the holistic read the
+(CNT-3a, CNT-6a, CNT-8a, CNT-12a, CNT-13a, and CNT-15a) carry the lintable slices; this control is the holistic read the
 evaluator performs against the voice attributes and the tone-by-context table.
 
 ## Evaluator guidance
@@ -107,12 +107,12 @@ is judged against a concrete alternative.
 
 **Do not flag:**
 
-- A mechanical failure already owned elsewhere — a person, voice, or length miss (CNT-3),
-  a filler word (CNT-6), a nominalisation (CNT-8), a buzzword or AI tell (SLP-9), Title
-  Case (CNT-12), a misspelling
-  (CNT-13). CNT-14 owns the gestalt, not the specific token; do not double-flag.
+- A mechanical failure already owned elsewhere — a person, voice, or length miss (CNT-3a),
+  a filler word (CNT-6a), a nominalisation (CNT-8a), a buzzword or AI tell (CNT-15a), Title
+  Case (CNT-12a), a misspelling
+  (CNT-13a). CNT-14 owns the gestalt, not the specific token; do not double-flag.
 - The **behaviour** of a destructive action — whether it shows consequences and offers
-  undo/confirm is CMP-2. CNT-14 governs only whether the *wording* is sober vs dramatic.
+  undo/confirm is CMP-2b. CNT-14 governs only whether the *wording* is sober vs dramatic.
 - Copy where a raised or firm tone is doing real work: a genuine warning that *should* be
   firm, a data/permission request that must be direct. Tone-fit is context-relative, not
   "always gentle" — Kind Utility is useful first.

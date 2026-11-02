@@ -4,6 +4,7 @@
 # `codes` maps a control code from catalog.yaml to the base rule codes that replace it.
 # A control that ports in full maps to the DSS rules that the catalogue retirement spec names for it.
 # `notMoved` maps a catalogue control that has no base rule to the reason it does not move.
+# A control under `codes` or `notMoved` has left catalog.yaml, and pnpm check fails a skill file that names it.
 files:
   BD-1a.md: bd/viewport-meta.md
   BD-1b.md: bd/no-horizontal-scroll.md
@@ -164,7 +165,7 @@ files:
   WU-14b.md: wu/credential-paste-and-autofill.md
   WU-14d.md: wu/no-captcha.md
 notMoved:
-  CMP-9: A security rule, outside the design standard. It stays in catalog.yaml until #540 decides where it goes.
+  CMP-9: A security rule, outside the design standard. It is retired with no base rule (#540).
 codes:
   # The controls that port in full map to the DSS rules that replace them (#537).
   A11Y-1: [WP-13a, WP-13b, WP-17a, WP-17c]

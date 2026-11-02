@@ -1,7 +1,7 @@
 ---
 id: COL-2
 source: DX-DS
-title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc; small functional-colour text (≤12px chips/labels) uses the scale's step-12 on a tinted background so it clears AA (A11Y-1)
+title: Functional colours (success/warning/danger) come from the shared Radix Colors scales, never ad-hoc; small functional-colour text (≤12px chips/labels) uses the scale's step-12 on a tinted background so it clears AA (WP-13a)
 tier: L1
 check: deterministic
 phase: [implement, verify]
@@ -83,7 +83,7 @@ grass-12/amber-12/red-12. Recompute with `checks/contrast` if the scale or tint 
 For functional chips, badges, and labels with small text on a tinted background, confirm
 the text resolves to step-12 (not step-11) and clears 4.5:1. Compute the ratio with
 `checks/contrast` against the product's tokens, or verify manually and say so. This
-enforces A11Y-1 (the contrast floor) inside the functional palette — a step-11-on-tint
+enforces WP-13a (the contrast floor) inside the functional palette — a step-11-on-tint
 chip is the most common way small functional text slips under AA.
 
 ## Do not flag

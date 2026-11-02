@@ -8,8 +8,9 @@ judgement.
 
 The SLP-9 word lists, the CNT-5 device-verb list, the CNT-6 opener/filler lists,
 and the CNT-13 spelling maps are NOT embedded here. They are read at runtime from
-standards/controls/slp-9.md, cnt-5.md, cnt-6.md, and cnt-13.md (resolved relative
-to this file), so the lint and the catalog can never diverge — if a list grows,
+the parameters of the rule files in standards/rules/cnt/: ai-writing-tells.md,
+device-verbs.md, low-information-words.md, and spelling.md (resolved relative to
+this file), so the lint and the rules can never diverge — if a list grows,
 this check picks it up. If a file cannot be found or parsed, the check falls back
 to a small embedded copy and prints a NOTE saying so — never silently.
 
@@ -18,7 +19,7 @@ Detection rules (line-local only)
 Rule            Control   What is caught
 BUZZWORD        SLP-9     A word-boundaried, case-insensitive hit on the
                 (L2)      buzzword list or the AI-vocabulary list, read from
-                          slp-9.md (e.g. streamline, empower, supercharge,
+                          ai-writing-tells.md (e.g. streamline, empower, supercharge,
                           delve, robust, foster, testament).
 FILLER          SLP-9     A case-insensitive hit on the filler-phrase list
                 (L2)      ("in order to", "it is important to note", …).
@@ -35,16 +36,16 @@ CNT-1           CNT-1     A user-facing string that is ONLY a raw error code
                           actionable next step on the same or next line.
 CNT-5           CNT-5     A device-bound action verb (click, tap, swipe, and
                 (L2)      inflections) inside a multi-word user-facing string or
-                          MDX prose line, read from cnt-5.md. Names the input
+                          MDX prose line, read from device-verbs.md. Names the input
                           device instead of the action.
 CNT-6           CNT-6     A low-informational-value word in a user-facing string
-                (L2)      or MDX prose line, read from cnt-6.md: a sentence-
+                (L2)      or MDX prose line, read from low-information-words.md: a sentence-
                           INITIAL empty opener ("There is", "There are", "It is",
                           "This is") or a safe-subset filler word (just, really,
                           very, please) at any position.
 CNT-13          CNT-13    A US spelling or common misspelling in a multi-word
                 (L2)      user-facing string or MDX prose line, read from
-                          cnt-13.md (color→colour, organize→organise,
+                          spelling.md (color→colour, organize→organise,
                           recieve→receive). Suggests the British / correct form.
 
 Files that are never scanned
@@ -170,13 +171,13 @@ COVERAGE = {
             ),
         },
         "CNT-13": {
-            "covers": "US spellings and common misspellings, from `cnt-13.md`",
+            "covers": "US spellings and common misspellings, from `spelling.md`",
             "misses": "",
         },
         "SLP-9": {
             "covers": (
                 "The lint half: the buzzword, AI-vocabulary, filler, and "
-                "chatbot-artifact lists from `slp-9.md`, and two or more em "
+                "chatbot-artifact lists from `ai-writing-tells.md`, and two or more em "
                 "dashes in one sentence"
             ),
             "misses": (
@@ -325,21 +326,21 @@ def skip_reason(filepath, head_lines):
 
 
 # ── SLP-9 word-list source ───────────────────────────────────────────────────
-# Resolved relative to this file: ../standards/controls/slp-9.md from checks/.
+# The parameters of the CNT-15a rule, which holds the SLP-9 lists since #540.
 SLP9_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "controls", "slp-9.md",
+    "standards", "rules", "cnt", "ai-writing-tells.md",
 )
 
 # ── CNT-5 device-verb-list source ──────────────────────────────────────────────
-# Resolved relative to this file: ../standards/controls/cnt-5.md from checks/.
+# The parameters of the CNT-5a rule (#540).
 CNT5_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "controls", "cnt-5.md",
+    "standards", "rules", "cnt", "device-verbs.md",
 )
 
-# Embedded fallback device-verb list — used only if cnt-5.md can't be read/parsed.
-# A NOTE is printed whenever this fallback is used. cnt-5.md is the single source
+# Embedded fallback device-verb list — used only if device-verbs.md can't be read/parsed.
+# A NOTE is printed whenever this fallback is used. device-verbs.md is the single source
 # of truth; this is the escape hatch for product repos without the full controls dir.
 # Scoped to the unambiguous verbs (click/tap/swipe); "press" and "see" are left to
 # the evaluator half because they collide with innocent prose.
@@ -350,14 +351,14 @@ FALLBACK_DEVICE_VERBS = [
 ]
 
 # ── CNT-6 opener/filler-list source ────────────────────────────────────────────
-# Resolved relative to this file: ../standards/controls/cnt-6.md from checks/.
+# The parameters of the CNT-6a rule (#540).
 CNT6_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "controls", "cnt-6.md",
+    "standards", "rules", "cnt", "low-information-words.md",
 )
 
-# Embedded fallback CNT-6 lists — used only if cnt-6.md can't be read/parsed.
-# cnt-6.md is the single source of truth; a NOTE is printed on fallback. Openers
+# Embedded fallback CNT-6 lists — used only if low-information-words.md can't be read/parsed.
+# low-information-words.md is the single source of truth; a NOTE is printed on fallback. Openers
 # are matched sentence-initially only; filler is word-boundaried at any position.
 # "in order to" is deliberately absent (SLP-9's filler-phrase list owns it);
 # "such", "that", and articles/conjunctions are evaluator-only.
@@ -365,14 +366,14 @@ FALLBACK_CNT6_OPENERS = ["there is", "there are", "it is", "this is"]
 FALLBACK_CNT6_FILLER = ["just", "really", "very", "please"]
 
 # ── CNT-13 spelling/misspelling-map source ─────────────────────────────────────
-# Resolved relative to this file: ../standards/controls/cnt-13.md from checks/.
+# The parameters of the CNT-13a rule (#540).
 CNT13_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "standards", "controls", "cnt-13.md",
+    "standards", "rules", "cnt", "spelling.md",
 )
 
-# Embedded fallback CNT-13 maps — used only if cnt-13.md can't be read/parsed.
-# cnt-13.md is the single source of truth; a NOTE is printed on fallback. Each map
+# Embedded fallback CNT-13 maps — used only if spelling.md can't be read/parsed.
+# spelling.md is the single source of truth; a NOTE is printed on fallback. Each map
 # is {wrong_spelling: correct_spelling}; hits are word-boundaried, any position.
 FALLBACK_CNT13_USUK = {
     "color": "colour", "colors": "colours", "organize": "organise",
@@ -383,8 +384,8 @@ FALLBACK_CNT13_TYPOS = {
     "teh": "the",
 }
 
-# ── Embedded fallback word lists (used only if slp-9.md can't be read/parsed) ──
-# A NOTE is printed whenever this fallback is used. Kept in sync with slp-9.md
+# ── Embedded fallback word lists (used only if ai-writing-tells.md can't be read/parsed) ──
+# A NOTE is printed whenever this fallback is used. Kept in sync with ai-writing-tells.md
 # "How to verify"; the file is the single source of truth, this is the escape
 # hatch for product repos without the full controls dir.
 FALLBACK_BUZZWORDS = [
@@ -406,61 +407,14 @@ FALLBACK_CHATBOT = [
 ]
 
 
-def _expand_parenthetical(token):
-    """
-    Expand a list token like "streamline(d)" / "effortless(ly)" into both the
-    base form and the suffixed form: ["streamline", "streamlined"].
-    A plain token returns a single-element list.
-    """
-    m = re.match(r"^(.*?)\(([^)]*)\)(.*)$", token)
-    if not m:
-        return [token]
-    pre, suffix, post = m.group(1), m.group(2), m.group(3)
-    return [pre + post, pre + suffix + post]
-
-
-def _split_list_items(text):
-    """
-    Split a comma-separated buzzword/vocab span into clean lowercase tokens,
-    stripping surrounding quotes, "as an abstract noun" qualifiers, and markup.
-    """
-    # Drop any leftover HTML comments / markdown emphasis.
-    text = re.sub(r"<!--.*?-->", " ", text, flags=re.DOTALL)
-    items = []
-    for raw in text.split(","):
-        tok = raw.strip()
-        if not tok:
-            continue
-        # Strip surrounding quotes (straight or curly).
-        tok = tok.strip('"“”‘’')
-        # Drop trailing qualifier like "landscape" as an abstract noun → landscape
-        # (the quoted word is already captured above; this catches the inline form).
-        tok = re.sub(r"\s+as an abstract noun.*$", "", tok)
-        tok = tok.strip().strip('"“”‘’').strip()
-        # Skip residue like "plus the AI-vocabulary list:" connective text.
-        if not tok or " " in tok and ":" in tok:
-            # Phrases (filler/chatbot) are handled by dedicated parsers; here we
-            # only want single words. A token with an embedded ":" is connective.
-            if ":" in tok:
-                continue
-        if not tok:
-            continue
-        for expanded in _expand_parenthetical(tok.lower()):
-            expanded = expanded.strip()
-            if expanded:
-                items.append(expanded)
-    return items
-
-
-def _parse_quoted_phrases(text):
-    """Return the lowercase contents of every "double-quoted" phrase in text."""
-    return [m.group(1).strip().lower() for m in re.finditer(r'"([^"]+)"', text)]
+def _str_list(value):
+    return [str(v).strip().lower() for v in value] if isinstance(value, list) else []
 
 
 def load_slp9_lists(path=SLP9_PATH):
     """
-    Parse the buzzword, AI-vocabulary, filler, and chatbot-artifact lists from
-    slp-9.md's "## How to verify" section.
+    Read the buzzword, AI-vocabulary, filler, and chatbot-artifact lists from
+    the `parameters` of the CNT-15a rule file.
 
     Returns (lists_dict, used_fallback, note). `lists_dict` has keys
     "buzzwords", "ai_vocab", "filler", "chatbot". `used_fallback` is True if the
@@ -474,56 +428,18 @@ def load_slp9_lists(path=SLP9_PATH):
         "chatbot": FALLBACK_CHATBOT,
     }
     try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
+        params = checklib.rule_parameters(path)
     except OSError:
         return (
             fallback, True,
             f"NOTE content-lint: could not read {path}; using embedded "
             f"fallback SLP-9 word lists",
         )
-
-    # Isolate the "How to verify" section so we don't pick up the Fails-when
-    # examples elsewhere in the file.
-    verify_idx = text.find("## How to verify")
-    section = text[verify_idx:] if verify_idx != -1 else text
-    # Stop at the next "## " heading after How to verify.
-    nxt = section.find("\n## ", 4)
-    if nxt != -1:
-        section = section[:nxt]
-
-    buzzwords = []
-    # Prefer the marked span if present (post plan-035). The opening marker may
-    # carry extra text (e.g. "source") after the name; the span may cross lines.
-    marker = re.search(
-        r"<!--\s*dx-sync:slp9-buzzwords\b[^>]*-->(.*?)<!--\s*/dx-sync:slp9-buzzwords\s*-->",
-        section, flags=re.DOTALL,
-    )
-    if marker:
-        buzzwords = _split_list_items(marker.group(1))
-    else:
-        # Fall back to the bullet beginning "the buzzword list —".
-        bm = re.search(r"the buzzword list\s*[—-]\s*(.*?)(?:—|$)", section, flags=re.DOTALL)
-        if bm:
-            buzzwords = _split_list_items(bm.group(1))
-
-    # AI-vocabulary list — the bullet "AI-vocabulary list: delve, robust, …".
-    ai_vocab = []
-    am = re.search(r"AI-vocabulary list:\s*(.*?)(?:;|\n\n|$)", section, flags=re.DOTALL)
-    if am:
-        ai_vocab = _split_list_items(am.group(1))
-
-    # Filler list — quoted phrases after "the filler list —".
-    filler = []
-    fm = re.search(r"the filler list\s*[—-]\s*(.*?)(?:;|\n\n|$)", section, flags=re.DOTALL)
-    if fm:
-        filler = _parse_quoted_phrases(fm.group(1))
-
-    # Chatbot-artifact list — quoted phrases after "the chatbot-artifact list —".
-    chatbot = []
-    cm = re.search(r"the chatbot-artifact list\s*[—-]\s*(.*?)(?:;|\n\n|$)", section, flags=re.DOTALL)
-    if cm:
-        chatbot = _parse_quoted_phrases(cm.group(1))
+    params = params or {}
+    buzzwords = _str_list(params.get("buzzwords"))
+    ai_vocab = _str_list(params.get("aiVocabulary"))
+    filler = _str_list(params.get("filler"))
+    chatbot = _str_list(params.get("chatbot"))
 
     # If any list came back empty, the parse is unreliable — fall back wholesale
     # and say so, rather than half-cover.
@@ -549,30 +465,24 @@ def load_slp9_lists(path=SLP9_PATH):
 
 def load_cnt5_verbs(path=CNT5_PATH):
     """
-    Parse the CNT-5 device-verb list from cnt-5.md's <!-- dx-sync:cnt5-verbs -->
-    span. Returns (verbs_list, used_fallback, note) — mirrors load_slp9_lists so
-    the lint and the catalog can never diverge. Falls back to the embedded copy
-    (with a NOTE) if the file is missing, the marker is absent, or the list is empty.
+    Read the CNT-5 device-verb list from the `deviceVerbs` parameter of the
+    CNT-5a rule file. Returns (verbs_list, used_fallback, note) — mirrors
+    load_slp9_lists so the lint and the rule can never diverge. Falls back to the
+    embedded copy (with a NOTE) if the file is missing or the list is empty.
     """
     try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
+        params = checklib.rule_parameters(path)
     except OSError:
         return (
             FALLBACK_DEVICE_VERBS, True,
             f"NOTE content-lint: could not read {path}; using embedded "
             f"fallback CNT-5 device-verb list",
         )
-
-    marker = re.search(
-        r"<!--\s*dx-sync:cnt5-verbs\b[^>]*-->(.*?)<!--\s*/dx-sync:cnt5-verbs\s*-->",
-        text, flags=re.DOTALL,
-    )
-    verbs = _split_list_items(marker.group(1)) if marker else []
+    verbs = _str_list((params or {}).get("deviceVerbs"))
     if not verbs:
         return (
             FALLBACK_DEVICE_VERBS, True,
-            f"NOTE content-lint: parsed {path} but the cnt5-verbs list was empty; "
+            f"NOTE content-lint: parsed {path} but the deviceVerbs list was empty; "
             f"using embedded fallback",
         )
     return (verbs, False, None)
@@ -580,34 +490,26 @@ def load_cnt5_verbs(path=CNT5_PATH):
 
 def load_cnt6_lists(path=CNT6_PATH):
     """
-    Parse the CNT-6 empty-opener and filler-word lists from cnt-6.md's
-    <!-- dx-sync:cnt6-openers --> and <!-- dx-sync:cnt6-filler --> spans.
-    Returns (lists_dict, used_fallback, note) with keys "openers" and "filler" —
-    mirrors load_cnt5_verbs so the lint and the catalog can never diverge.
+    Read the CNT-6 empty-opener and filler-word lists from the `openers` and
+    `fillerWords` parameters of the CNT-6a rule file. Returns (lists_dict,
+    used_fallback, note) with keys "openers" and "filler" — mirrors
+    load_cnt5_verbs so the lint and the rule can never diverge.
     """
     fallback = {
         "openers": FALLBACK_CNT6_OPENERS,
         "filler": FALLBACK_CNT6_FILLER,
     }
     try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
+        params = checklib.rule_parameters(path)
     except OSError:
         return (
             fallback, True,
             f"NOTE content-lint: could not read {path}; using embedded "
             f"fallback CNT-6 lists",
         )
-
-    def _span(name):
-        m = re.search(
-            r"<!--\s*dx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/dx-sync:" + name + r"\s*-->",
-            text, flags=re.DOTALL,
-        )
-        return _split_list_items(m.group(1)) if m else []
-
-    openers = _span("cnt6-openers")
-    filler = _span("cnt6-filler")
+    params = params or {}
+    openers = _str_list(params.get("openers"))
+    filler = _str_list(params.get("fillerWords"))
     if not (openers and filler):
         return (
             fallback, True,
@@ -617,37 +519,16 @@ def load_cnt6_lists(path=CNT6_PATH):
     return ({"openers": openers, "filler": filler}, False, None)
 
 
-def _parse_spelling_map(text):
-    """
-    Parse a "wrong -> right, wrong2 -> right2" span into a {wrong: right} dict.
-    Keys are lowercased (matching is case-insensitive); values keep their case so
-    the suggestion is the correctly-cased British/correct spelling.
-    """
-    text = re.sub(r"<!--.*?-->", " ", text, flags=re.DOTALL)
-    mapping = {}
-    for raw in text.split(","):
-        tok = raw.strip()
-        if not tok or "->" not in tok:
-            continue
-        wrong, right = tok.split("->", 1)
-        wrong = wrong.strip().strip('"“”‘’').lower()
-        right = right.strip().strip('"“”‘’')
-        if wrong and right:
-            mapping[wrong] = right
-    return mapping
-
-
 def load_cnt13_lists(path=CNT13_PATH):
     """
-    Parse the CNT-13 US→British spelling map and common-misspelling map from
-    cnt-13.md's <!-- dx-sync:cnt13-usuk --> and <!-- dx-sync:cnt13-typos -->
-    spans. Returns (lists_dict, used_fallback, note) with keys "usuk" and "typos"
-    — mirrors load_cnt6_lists so the lint and the catalog can never diverge.
+    Read the CNT-13 US→British spelling map and common-misspelling map from the
+    `usToUk` and `typos` parameters of the CNT-13a rule file. Returns
+    (lists_dict, used_fallback, note) with keys "usuk" and "typos" — mirrors
+    load_cnt6_lists so the lint and the rule can never diverge.
     """
     fallback = {"usuk": FALLBACK_CNT13_USUK, "typos": FALLBACK_CNT13_TYPOS}
     try:
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read()
+        params = checklib.rule_parameters(path)
     except OSError:
         return (
             fallback, True,
@@ -655,15 +536,13 @@ def load_cnt13_lists(path=CNT13_PATH):
             f"fallback CNT-13 spelling maps",
         )
 
-    def _span(name):
-        m = re.search(
-            r"<!--\s*dx-sync:" + name + r"\b[^>]*-->(.*?)<!--\s*/dx-sync:" + name + r"\s*-->",
-            text, flags=re.DOTALL,
-        )
-        return _parse_spelling_map(m.group(1)) if m else {}
+    def _map(value):
+        if not isinstance(value, dict):
+            return {}
+        return {str(k).strip().lower(): str(v).strip() for k, v in value.items() if k and v}
 
-    usuk = _span("cnt13-usuk")
-    typos = _span("cnt13-typos")
+    usuk = _map((params or {}).get("usToUk"))
+    typos = _map((params or {}).get("typos"))
     if not (usuk and typos):
         return (
             fallback, True,
@@ -1821,7 +1700,7 @@ def _check_cnt1_text(text, lineno, all_lines, emit, origin=ORIGIN_MDX_PROSE):
 
 def scan_paths(paths):
     """Walk the given paths and collect all violations. Prints the fallback NOTE
-    once if the SLP-9 lists could not be read from slp-9.md. Raises
+    once if the SLP-9 lists could not be read from ai-writing-tells.md. Raises
     checklib.RulesUnresolvedError when the waiver tiers cannot be resolved,
     before it reads or reports any word list."""
     tiers = checklib.rule_tiers()
@@ -1868,6 +1747,9 @@ def run_self_test():
     Embedded self-test. Prints SELF-TEST OK (N cases) and exits 0 on success, or
     prints failures and exits 1.
     """
+    # The removed controls this self-test names keep their tiers in a fixture
+    # catalogue until #539 retires or narrows this check (#540).
+    checklib.use_self_test_catalog()
     import tempfile
 
     # Use the live lists (so the loader path is exercised); fall back is fine.
@@ -2425,7 +2307,7 @@ def run_self_test():
             f"got {sorted(all_buzz)} (used_fallback={used_fallback})"
         )
 
-    # CNT-5 loader: the device-verb list must carry the core verbs (from cnt-5.md
+    # CNT-5 loader: the device-verb list must carry the core verbs (from device-verbs.md
     # or the embedded fallback).
     case_count += 1
     all_verbs = set(device_verbs)
@@ -2462,20 +2344,19 @@ def run_self_test():
         )
 
     # ── Runtime coupling to the detail files ──────────────────────────────────
-    # A word added to a list in a detail file must be enforced with no change to
-    # this script. Write a slp-9.md-shaped file carrying a nonce buzzword, load
+    # A word added to a list in a rule file must be enforced with no change to
+    # this script. Write a CNT-15a-shaped file carrying a nonce buzzword, load
     # it the way every scan does, and lint prose that uses the word.
     case_count += 1
     with tempfile.TemporaryDirectory() as td:
-        detail = os.path.join(td, "slp-9.md")
+        detail = os.path.join(td, "ai-writing-tells.md")
         with open(detail, "w", encoding="utf-8") as fh:
             fh.write(
-                "# SLP-9\n\n## How to verify\n\n"
-                "- the buzzword list — <!-- dx-sync:slp9-buzzwords source --> "
-                "zorbify, streamline <!-- /dx-sync:slp9-buzzwords --> — plus the\n"
-                "  AI-vocabulary list: delve, robust;\n"
-                '- the filler list — "in order to";\n'
-                '- the chatbot-artifact list — "great question";\n'
+                "---\ncode: CNT-15a\nparameters:\n"
+                "  buzzwords: [zorbify, streamline]\n"
+                "  aiVocabulary: [delve, robust]\n"
+                "  filler: [in order to]\n"
+                "  chatbot: [great question]\n---\n\n# CNT-15a\n"
             )
         grown, grown_fallback, _grown_note = load_slp9_lists(detail)
         grown_words = {
@@ -2494,7 +2375,7 @@ def run_self_test():
         want = 'zorbify'
         if grown_fallback or not any(want in e and "[SLP-9]" in e for e in got):
             failures.append(
-                f"FAIL coupling: a word added to slp-9.md must be enforced "
+                f"FAIL coupling: a word added to the CNT-15a rule must be enforced "
                 f"with no code change. want: {want!r}; got: {got!r} "
                 f"(used_fallback={grown_fallback})"
             )
@@ -2519,7 +2400,7 @@ def run_self_test():
         if not (fb_used and fb_note and fb_note.startswith(
                 "NOTE content-lint: could not read")):
             failures.append(
-                f"FAIL fallback: an unreadable cnt-13.md must fall back "
+                f"FAIL fallback: an unreadable spelling.md must fall back "
                 f"loudly. want: a NOTE; got: {fb_note!r} (used_fallback={fb_used})"
             )
         if trimmed != want:

@@ -70,8 +70,8 @@ The standing overrides are the one exception: fetch them yourself as described a
 component inventory **and** from reading the route's code (you have Read/Grep/
 Glob/Bash). Do not grade only the screenshots you were handed: a control that was
 never photographed is still in scope. Spot-check each interactive control for a
-visible focus state (A11Y-2), role + accessible name (A11Y-8/A11Y-3), and that
-its ARIA state tracks the visual (A11Y-8, per controls/a11y-8.md). A control the
+visible focus state (WO-1c), role + accessible name (WR-1a, WR-1e, and A11Y-3a), and that
+its ARIA state tracks the visual (WR-1e). A control the
 builder's evidence omits, found this way, is a finding — not an excuse.
 
 **Preserved is not waived.** "Preserved" and "established" are not exemptions. When
@@ -148,14 +148,14 @@ reference lens (a judgment aid, not a checkable standard):
   this is inverted from consumer work: flag *unwarranted* novelty (a custom pattern
   where a stack component exists is a finding) as readily as generic slop. Slop is
   control-backed since the catalog consolidation: where the generic-AI tell matches
-  an SLP control (SLP-1..11), cite the control id as a graded finding rather than
+  an anti-slop rule (COL-3a, COL-4a, CMP-12a to CMP-15a, LAY-8a, LAY-9a, TYP-7a, MOT-4a, and CNT-15a), cite the control id as a graded finding rather than
   marking it down only in this grade. Apple's
   test applies (HIG: Delight): don't mistake delight for decoration — character that
   gets between the teacher and the task is a finding, not a flourish.
   **Do not flag** deliberate semantic colour-coding as slop: per-section or
   per-status colour that is decorative (`aria-hidden`) wayfinding, or functional
   status colour from the Radix scales (COL-2), is intentional design — it is not
-  the SLP-1 "rainbow"/gradient AI tell. Flag *unmotivated* multi-hue decoration,
+  the COL-3a "rainbow"/gradient AI tell. Flag *unmotivated* multi-hue decoration,
   not a deliberate colour system.
 - **Craft** — quality sets the tone (HIG: Craft): is each decision deliberate?
   States designed (empty, loading, error, focus), edge content lengths,
@@ -209,11 +209,11 @@ JUDGMENT CONTROL NOTES (one line per in-scope judged rule and judgment/hybrid co
 VERIFICATION LEDGER (one row per in-scope control — the record pastes this verbatim):
 | Control | Method | Evidence |
 |---------|--------|----------|
-| A11Y-1  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
+| WP-13b  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
 | TOK-1   | script | `checks/token-audit.py` clean |
 | WP-13a  | script | `design-lint --rendered`: one finding on `.hint` |
 | WO-10d  | manual | read each link out of context — "click here" names no purpose |
-| A11Y-4  | unverified | needs computed layout — flag for a human |
+| WO-18a  | unverified | needs computed layout — flag for a human |
   Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what
   was checked and how; a `script` row names the script/command; an `unverified` row
   says why. When a control was verified more than one way — e.g. a script ran and you

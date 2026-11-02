@@ -6,7 +6,7 @@ tier: L1
 check: hybrid
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Deterministic half: primary-action and brand-moment colours resolve to the active product's primary token or its ramp (checks/token-audit). Judgment half: the evaluator confirms the view's single primary action is the product primary (dovetails CMP-5) and no other product's primary appears for emphasis; see controls/col-1.md for the per-product table and the foreground pairing"
+verify: "Deterministic half: primary-action and brand-moment colours resolve to the active product's primary token or its ramp (checks/token-audit). Judgment half: the evaluator confirms the view's single primary action is the product primary (dovetails CMP-5a) and no other product's primary appears for emphasis; see controls/col-1.md for the per-product table and the foreground pairing"
 waiver: documented
 enforced: partial
 script: checks/token-audit.py
@@ -35,10 +35,10 @@ see `docs/catalog-changes/glow-pilot-col1-typ1-tok3.md`). A product still marked
 "(proposed)" awaits the design lead's settle; each consuming product mirrors the
 confirmed value in its own token layer (`--primary`).
 
-## Foreground pairing (A11Y-1)
+## Foreground pairing (WP-13a)
 
 A product's primary is a **background** for its label text, so the primary and its
-paired foreground must clear A11Y-1 together — this is not automatic, and a light or
+paired foreground must clear WP-13a together — this is not automatic, and a light or
 mid-luminance primary cannot carry white text.
 
 - **Glow orange-9 `#F76B15` takes a dark foreground, not white.** White on `#F76B15`
@@ -51,9 +51,9 @@ mid-luminance primary cannot carry white text.
 When a product adopts a light-hue primary, the brand variant's `--primary-foreground`
 must be the dark contrast colour, and the evaluator re-checks label contrast.
 
-## Same-hue collision (A11Y-1)
+## Same-hue collision (WP-13a)
 
-Applying COL-1 can *create* an A11Y-1 failure: when the product primary would sit on a
+Applying COL-1 can *create* an WP-13a failure: when the product primary would sit on a
 **same-hue field**, the button's fill can lose the 3:1 boundary against its background.
 The foreseeable case is Glow's orange primary on an orange tint or splash
 (orange-on-orange — e.g. a `tag-*-50` topic tint or the login splash). Before
@@ -85,9 +85,9 @@ from its CSS — see plan 011 for the project-token-aware mechanism.
 
 **Judgment half (why this control is `hybrid`, not `deterministic`):** the colour
 resolving to *a* valid token passes the mechanical half trivially — the real question
-is whether the view's **single primary action** (per CMP-5) carries the product
+is whether the view's **single primary action** (per CMP-5a) carries the product
 primary, or a legitimately-tokenised *neutral* is sitting where the brand belongs. The
 evaluator confirms: (1) the one primary action per view resolves to the product
-primary; (2) its label/background pairing clears A11Y-1 (see Foreground pairing);
+primary; (2) its label/background pairing clears WP-13a (see Foreground pairing);
 (3) no *other* product's primary appears for emphasis (Glow orange on a Teacher
 Workspace screen is a finding; Teacher & School Blue on a Glow CTA is a finding).

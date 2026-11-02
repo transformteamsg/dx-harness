@@ -40,7 +40,7 @@ When someone asks about or proposes a waiver, read `../../../standards/README.md
    its score — impact on the teacher's task (the ranking) and cost (Small or Medium) — and
    names the control or layout pattern it serves. **Preserved is not waived:** a "preserve" call
    protects a deliberate choice from restyling, never its compliance from the checks —
-   verify every preserved element against its controls (the L0 floor, A11Y-1 especially).
+   verify every preserved element against its controls (the L0 floor, WP-13a especially).
 2. **Present the report.** Read and run `report.md` (beside this file) end to end:
    write the findings file, build the report and the contact sheet with
    `scripts/critique-report.py`, pass the mandatory contact-sheet self-check, and
@@ -60,5 +60,5 @@ When someone asks about or proposes a waiver, read `../../../standards/README.md
    findings in a later run, its plan gate still applies, and each accepted finding then
    links to the run record of the execute run that built it.
 
-Second person, plain language, Singapore English, no AI-writing tells — SLP-9 binds
+Second person, plain language, Singapore English, no AI-writing tells — CNT-15a binds
 this prose too.

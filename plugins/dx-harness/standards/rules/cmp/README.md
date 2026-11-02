@@ -19,7 +19,7 @@ The 8 judged rules have no file. Each needs a rubric from `dx-design-judge`: `CM
 
 ## Decisions
 
-- CMP-9 does not move. It requires that content one user writes is sanitised before another user sees it. That is a security rule, outside the design standard, and no base rule takes it. CMP-9 stays in `catalog.yaml` until [#540](https://github.com/transformteamsg/dx-harness/issues/540) decides where it goes. `redirects.yaml` records it under `notMoved`.
+- CMP-9 does not move. It requires that content one user writes is sanitised before another user sees it. That is a security rule, outside the design standard, and no base rule takes it. CMP-9 is retired, and `redirects.yaml` records it under `notMoved`.
 - Each control was re-evaluated before it moved, as the [catalogue retirement spec](../../../../../docs/specs/2026-10-28-catalogue-retirement.md) sets out. The catalogue check is where the re-evaluation starts, not its result.
 - CMP-2, CMP-3, and CMP-6 port in part to DSS rules. A CMP rule covers only the remainder. `WU-12a` checks the review step, `WO-15b` judges cancellation, `TX-9a` and `WR-2a` check the outcome message, and `WP-6a` checks the table semantics. No CMP rule checks them again.
 - CMP-3 is judged only. Its remainder is a loading state with a minimum display time. A static page shows no loading state, and the linter cannot slow the network for one request, so no script can see it.

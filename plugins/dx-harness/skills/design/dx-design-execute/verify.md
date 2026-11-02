@@ -26,7 +26,7 @@ Run these steps in order, under "Gates" in `SKILL.md`:
    - **Width evidence**: the primary state at 360/768/1280.
    - **State evidence**: one frame per state asserted by each in-scope hybrid
      control — *including loading*. Use the
-     demo-only hooks built in Phase 4. **MANDATORY when CMP-3 is in scope** (harness
+     demo-only hooks built in Phase 4. **MANDATORY when CMP-3a is in scope** (harness
      rule, not a catalog control): `../../../procedures/design-review.md` holds
      EVD-1, the async evidence gate. Meet it.
    - **Journey evidence** (flows and multi-step interactions): traverse the happy
@@ -42,8 +42,8 @@ Run these steps in order, under "Gates" in `SKILL.md`:
    The evidence set is not optional, and unverified work is never presented as
    verified.
    - **Inventory checkoff**: walk the Phase-1 component inventory and tick each
-     interactive control as operated — tab to it (focus visible per A11Y-2),
-     activate by keyboard, confirm role + accessible name + state (A11Y-8/A11Y-3).
+     interactive control as operated — tab to it (focus visible per WO-1c),
+     activate by keyboard, confirm role + accessible name + state (WR-1a, WR-1e, and A11Y-3a).
      The `design-lint` run in step 1 is the static pre-pass. Operate what a static
      scan can't see. An un-operated control is uncovered, not clean.
    - **Dark mode: supported?** Before grading anything as dark-safe, establish
@@ -64,14 +64,14 @@ Run these steps in order, under "Gates" in `SKILL.md`:
    - A finding reads `ERROR <route>:<cell> [<CTL>] …`, where the cell names the
      viewport and theme that produced it.
    - `NOTE` lines carry the third bucket: what axe could not decide, what it
-     found on markup nobody can currently reach, and A11Y-10, which is
+     found on markup nobody can currently reach, and WO-7a, which is
      report-only. Each is an item for the manual accessibility pass in step 1,
      not a gate.
    - When it prints `did not run` — no session, or the driver is not
      provisioned — the controls it names go to manual verification, never a
-     pass, and A11Y-1 and A11Y-3 still block until verified by some path.
-   - It covers no part of A11Y-2 (no axe rule checks a visible focus indicator)
-     and no part of A11Y-11 (that needs interaction, and this check interacts
+     pass, and WP-13a and A11Y-3a still block until verified by some path.
+   - It covers no part of WO-1c (no axe rule checks a visible focus indicator)
+     and no part of A11Y-11c (that needs interaction, and this check interacts
      with nothing). Both stay with the inventory checkoff above.
 4. **Reviewer dispatch** — run the reviewer dispatch in
    `../../../procedures/design-review.md`.

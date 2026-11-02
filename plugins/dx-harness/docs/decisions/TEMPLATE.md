@@ -58,7 +58,7 @@ Tradeoff). A record without this section is incomplete.
 
 List the catalog controls the changed surface pulls in (by id). Note: any surface
 with an async or destructive action inherits the `applies_to: [flow]` controls
-(CMP-2, CMP-3) even as a single page.
+(CMP-2a, CMP-2b, CMP-3a) even as a single page.
 
 ## Waivers granted
 
@@ -78,13 +78,13 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
 
 - **Screenshots:** (paths — width evidence at 360/768/1280, plus one frame per state
   asserted by each in-scope hybrid control, loading included)
-- **REQUIRED when CMP-3 is in scope** (harness rule — see
+- **REQUIRED when CMP-3a is in scope** (harness rule — see
   `docs/catalog-changes/evd-1-async-evidence.md`): the evidence listed above includes a
   loading-state frame, a success-state frame, and an error-state frame — not only the
   initial/empty state. Acceptable substitutes for any one frame: a video walkthrough
   covering all three states, or a named human reviewer's attestation that they witnessed
   the live render of all three. A fourth outcome is valid per state:
-  `N/A — state does not exist: <reason>`, permitted only when CMP-3's "Do not flag"
+  `N/A — state does not exist: <reason>`, permitted only when CMP-3a's "Do not flag"
   clause applies (an instant local operation has no loading state to photograph) — a
   recorded fact, never a pass. Note explicitly which of the four (frame / video /
   attestation / state does not exist) covers each state.
@@ -96,9 +96,9 @@ with an async or destructive action inherits the `applies_to: [flow]` controls
 
   | Control | Method | Evidence |
   |---------|--------|----------|
-  | A11Y-1  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
+  | WP-13a  | manual | measured fg/bg with the picker — 5.1:1 at the smallest text |
   | TOK-1   | script | `checks/token-audit.py` clean |
-  | A11Y-4  | unverified | needs computed layout — flag for a human |
+  | WO-18a  | unverified | needs computed layout — flag for a human |
 
   Method is one of `script` / `manual` / `unverified`. A `manual` row MUST name what was
   checked and how. A `script` row names the script/command. `unverified` says why.

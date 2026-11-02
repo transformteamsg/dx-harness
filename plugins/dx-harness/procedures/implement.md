@@ -46,17 +46,17 @@ Constraints, non-negotiable while building:
   missing manifest and never invent one. Semantic tokens only, no raw colour or
   off-scale spacing/radius (TOK-1..3); the portfolio typefaces only, on-scale sizes
   (TYP-1..3); functional colours from the Radix scales (COL-2).
-- Accessibility: targets at least 24px (A11Y-4), reduced motion respected
-  (A11Y-5), plus the structural controls (A11Y-6, A11Y-7, A11Y-8, A11Y-9, A11Y-10 —
-  semantic headings, lists, tables, and form groups under A11Y-7 in particular).
-- Every async state change picks one announcement channel (A11Y-11), declared per
-  state in the approved plan alongside CMP-3's state enumeration.
-- Anti-slop is standard (SLP-1..11); re-read the SLP block before styling anything.
-- One primary action per view (CMP-5); components at their defaults and the way
-  sibling pages use them (CMP-7); data tables use the semantic table pattern —
-  header row, right-aligned numeric columns with tabular figures (CMP-6).
+- Accessibility: targets at least 24px (WO-18a), reduced motion respected
+  (A11Y-5a), plus the structural controls (WP-1d, WP-6d, WR-1e, WO-8c, WO-7a —
+  semantic headings, lists, tables, and form groups under WP-6d in particular).
+- Every async state change picks one announcement channel (A11Y-11c), declared per
+  state in the approved plan alongside CMP-3a's state enumeration.
+- Anti-slop is standard (COL-3a, COL-4a, CMP-12a to CMP-15a, LAY-8a, LAY-9a, TYP-7a, MOT-4a, and CNT-15a); re-read the anti-slop rules before styling anything.
+- One primary action per view (CMP-5a); components at their defaults and the way
+  sibling pages use them (BD-6c); data tables use the semantic table pattern —
+  header row, right-aligned numeric columns with tabular figures (CMP-6a).
 - When the build writes or changes user-facing text, follow `copy-rules.md` (beside
-  this file) for that user-facing text as you write it, not as a cleanup pass; SLP-9
+  this file) for that user-facing text as you write it, not as a cleanup pass; CNT-15a
   (AI-writing tells) binds all of it.
 - **Make every asserted state reachable for evidence.** If a control claims
   loading/success/error states, the design review must photograph them; build a

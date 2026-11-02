@@ -26,7 +26,7 @@ to pin down which **dimension(s)** are in scope:
 Pair the dimensions with an **ambition level** — the smallest reversible change that
 meets the contract (Phase 4's standing default), a targeted lift of the
 underperforming parts, or a bold reimagining *within the product's existing system*
-(never an invented aesthetic — COL-1, TYP-1, SLP-1 still bind). Standards compliance
+(never an invented aesthetic — COL-1, TYP-1, COL-3a still bind). Standards compliance
 is the floor in every case; this question decides whether the ceiling is in scope
 too. Write the answer into the done-criteria so the design reviewer grades against the
 dimension the builder wanted, not the one the phrase defaulted to.
@@ -61,14 +61,14 @@ Establish the rest, asking the user only what you cannot infer:
    repo has a `DESIGN.md`, load it now — it calibrates colour/tone/motion for
    everything downstream. **Any
    surface with an async or destructive
-   action inherits the `[flow]` controls** (CMP-2, CMP-3) even when it is a single
+   action inherits the `[flow]` controls** (CMP-2a, CMP-2b, CMP-3a) even when it is a single
    page — do not let the page/flow split scope them out.
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the design reviewer
    will later grade against. State the **dimension(s) and ambition** chosen in "Clarify
    the ask" as explicit criteria (e.g. "the surface visibly carries Glow's warmth", not
    just "passes the standards") — otherwise the design reviewer has no way to catch a run that
    delivered compliance when the builder wanted a visual redesign. Include the
-   `intent`-phase controls (CNT-2 naming applies here: name the feature in plain
+   `intent`-phase controls (CNT-2a naming applies here: name the feature in plain
    language now, before a placeholder name spreads).
 5. **Component inventory**: list the surface as a coverage checklist — the route,
    every component it renders (by import name), and every **interactive control**

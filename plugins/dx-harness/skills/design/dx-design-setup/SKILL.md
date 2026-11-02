@@ -34,5 +34,5 @@ sections with them, writes the file, and generates the projection. Full spec:
 
 - Setup touches machine config, labels, signing keys, and the fallback ticket directory
   only. It never edits product code.
-- Second person, plain language, Singapore English, no AI-writing tells. SLP-9 binds
+- Second person, plain language, Singapore English, no AI-writing tells. CNT-15a binds
   this prose too.

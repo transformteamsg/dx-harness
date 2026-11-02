@@ -29,7 +29,7 @@ positive, which is why the role exists separately.
   second read, not a fully independent one; treat split findings and anything not
   mechanically verified as candidates for human review.
 
-## Async evidence gate (mandatory when CMP-3 is in scope)
+## Async evidence gate (mandatory when CMP-3a is in scope)
 
 This is a harness rule (EVD-1, async evidence), not a catalog control. Before
 dispatch, the screenshot
@@ -39,7 +39,7 @@ while only the empty state is ever screenshotted; code-level reachability is not
 perceptibility. Acceptable substitutes for a frame: a video walkthrough that covers
 all three states, or a named human reviewer's attestation that they witnessed the
 live render of all three. One more outcome is valid, per state: `N/A — state does
-not exist: <reason>`, permitted **only** when CMP-3's own "Do not flag" clause
+not exist: <reason>`, permitted **only** when CMP-3a's own "Do not flag" clause
 applies (an instant, < ~100 ms local operation has no loading state to photograph).
 It is a truthful outcome recorded as fact, never a pass. An evidence set that misses this gate goes back to the
 builder; do not dispatch the reviewer on it.

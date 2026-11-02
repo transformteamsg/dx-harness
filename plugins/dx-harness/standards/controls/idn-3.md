@@ -41,7 +41,7 @@ Voice is identity. A teacher recognises a product partly by how it talks to them
 that switches register reads as if a different team wrote it, and on CaseSync a bubbly
 register is not just off-brand but tonally wrong for sensitive casework. The shared
 character keeps the portfolio coherent; the calibrated weight keeps each product itself.
-This is not CNT-2/CNT-3 (plain-language naming, lead-with-purpose) — those are the voice
+This is not CNT-2a/CNT-3a (plain-language naming, lead-with-purpose) — those are the voice
 *mechanics*, the same everywhere; this is the per-product *weighting* of that one voice.
 
 ## How to verify
@@ -64,7 +64,7 @@ finding); calibrated weight within the shared system; a deliberate, reasoned dev
 carrying an inline `dx-waive IDN-3 reason="…"` (L2).
 
 **Deconfliction.** COL-1 is the per-product *colour* register; this is the per-product
-*tone* register — orthogonal (a surface can pass one and fail the other). CNT-2/CNT-3 are
+*tone* register — orthogonal (a surface can pass one and fail the other). CNT-2a/CNT-3a are
 portfolio-wide voice mechanics this control depends on, not restates. The CaseSync row
 here is the calm parent register; IDN-4 hardens CaseSync's sensitivity into a concrete
 prohibition on gamified/celebratory *elements* (not just copy) — this control covers the

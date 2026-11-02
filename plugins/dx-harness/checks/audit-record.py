@@ -547,6 +547,9 @@ def run_self_test():
     on success; prints failures and exits 1. Never touches the real records
     — audits in-memory strings only (assertion-7 cases reference repo paths
     read-only via os.path.exists)."""
+    # The removed controls this self-test names keep their tiers in a fixture
+    # catalogue until #539 retires or narrows this check (#540).
+    checklib.use_self_test_catalog()
     failures = []
     case_count = 0
 

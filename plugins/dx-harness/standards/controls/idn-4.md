@@ -66,7 +66,7 @@ toast is correct; a celebration is not.
 
 **Deconfliction.** IDN-3 (per-product tone) covers CaseSync's *copy* register; this control
 adds the *element*-level prohibition (motion, gamification patterns) that IDN-3's
-`[content]` scope cannot hold — kept as its own control for that reason. MOT-1 bans
+`[content]` scope cannot hold — kept as its own control for that reason. MOT-1b bans
 decorative motion on critical paths portfolio-wide; this control's "no celebratory motion"
-is CaseSync-scoped and broader (copy + playful UI patterns), so it complements MOT-1 rather
+is CaseSync-scoped and broader (copy + playful UI patterns), so it complements MOT-1b rather
 than duplicating it.

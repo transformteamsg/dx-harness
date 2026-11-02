@@ -15,16 +15,16 @@ Needs eslint, eslint-plugin-jsx-a11y, and a TypeScript parser in the target's no
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-2 | L0 | Keyboard reachability: `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`, `no-noninteractive-element-interactions`, `mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`, `anchor-is-valid`, `no-autofocus`, and `no-access-key` | A visible focus indicator (`a11y-static.py`), and focus traversal order |
-| A11Y-3 | L0 | `label-has-associated-control` and `autocomplete-valid` | Placeholder-only labels, cross-file `htmlFor` and `id` association, and icon-only accessible names, because the preset disables `control-has-associated-label` |
-| A11Y-6 | L1 | `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, and `media-has-caption` | Whether an image is informative or decorative, and every image outside JSX |
-| A11Y-8 | L1 | The jsx-a11y aria suite: `aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, and the role-conversion rules | Closed overlays, and ARIA state that must change with the visual state |
+| A11Y-2 | Removed | Keyboard reachability: `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`, `no-noninteractive-element-interactions`, `mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`, `anchor-is-valid`, `no-autofocus`, and `no-access-key` | A visible focus indicator (`a11y-static.py`), and focus traversal order |
+| A11Y-3 | Removed | `label-has-associated-control` and `autocomplete-valid` | Placeholder-only labels, cross-file `htmlFor` and `id` association, and icon-only accessible names, because the preset disables `control-has-associated-label` |
+| A11Y-6 | Removed | `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, and `media-has-caption` | Whether an image is informative or decorative, and every image outside JSX |
+| A11Y-8 | Removed | The jsx-a11y aria suite: `aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, and the role-conversion rules | Closed overlays, and ARIA state that must change with the visual state |
 
 ### `a11y-static.py`
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-2 | L0 | FOCUS: an outline removed with no focus-visible replacement on the same line | Keyboard reachability (`a11y-eslint.py`) and traversal order. Focus styles in a separate stylesheet are flagged as a false positive: confirm with a keyboard |
+| A11Y-2 | Removed | FOCUS: an outline removed with no focus-visible replacement on the same line | Keyboard reachability (`a11y-eslint.py`) and traversal order. Focus styles in a separate stylesheet are flagged as a false positive: confirm with a keyboard |
 
 ### `component-manifest.py`
 
@@ -40,12 +40,12 @@ Every control below misses copy the scan cannot resolve: strings built by concat
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| CNT-1 | L1 | A string that is only a raw error code, and a bare "Something went wrong" with no next step | The full anatomy of an error message: what happened, what it means, and what to do next |
-| CNT-3 | L2 | A user-facing string or prose line whose longest sentence is over 25 words | Strings built by concatenation, and an imported constant at its use site |
-| CNT-5 | L2 | Device-bound verbs such as click, tap, and swipe in multi-word copy | "press" and "see", ambiguous link text, and whether a hit is a UI instruction |
-| CNT-6 | L2 | Sentence-initial empty openers, and the filler words just, really, very, and please | "such", "that", droppable articles and conjunctions, and the clarity exception |
-| CNT-13 | L2 | US spellings and common misspellings, from `cnt-13.md` | None recorded |
-| SLP-9 | L2 | The lint half: the buzzword, AI-vocabulary, filler, and chatbot-artifact lists from `slp-9.md`, and two or more em dashes in one sentence | The structural tells: negative parallelism, forced triads, copula avoidance, significance inflation, redundant label and helper pairs, and em-dash clusters across a paragraph |
+| CNT-1 | Removed | A string that is only a raw error code, and a bare "Something went wrong" with no next step | The full anatomy of an error message: what happened, what it means, and what to do next |
+| CNT-3 | Removed | A user-facing string or prose line whose longest sentence is over 25 words | Strings built by concatenation, and an imported constant at its use site |
+| CNT-5 | Removed | Device-bound verbs such as click, tap, and swipe in multi-word copy | "press" and "see", ambiguous link text, and whether a hit is a UI instruction |
+| CNT-6 | Removed | Sentence-initial empty openers, and the filler words just, really, very, and please | "such", "that", droppable articles and conjunctions, and the clarity exception |
+| CNT-13 | Removed | US spellings and common misspellings, from `spelling.md` | None recorded |
+| SLP-9 | Removed | The lint half: the buzzword, AI-vocabulary, filler, and chatbot-artifact lists from `ai-writing-tells.md`, and two or more em dashes in one sentence | The structural tells: negative parallelism, forced triads, copula avoidance, significance inflation, redundant label and helper pairs, and em-dash clusters across a paragraph |
 
 ### `contrast.py`
 
@@ -53,7 +53,7 @@ Grades A11Y-1 N/A, with an operational ERROR, until the product's DESIGN.md decl
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-1 | L0 | The foreground and background token pairs declared under `## Colour` in DESIGN.md, measured against AA | Any rendered element, any pairing a product uses but did not declare, large-text classification, non-text contrast, and `color-mix` outside OKLab |
+| A11Y-1 | Removed | The foreground and background token pairs declared under `## Colour` in DESIGN.md, measured against AA | Any rendered element, any pairing a product uses but did not declare, large-text classification, non-text contrast, and `color-mix` outside OKLab |
 
 ### `rendered-check.py`
 
@@ -61,15 +61,15 @@ Runs axe on a page that is already open, at 360 and 1280 in each supported theme
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-1 | L0 | axe `color-contrast` in both themes | Items axe reports as incomplete, such as text over a background image or a gradient |
-| A11Y-3 | L0 | axe `label` | Labels on controls behind an interaction |
-| A11Y-4 | L1 | axe `target-size`, enabled by name, at 360 and 1280 | Targets behind an interaction |
-| A11Y-5 | L1 | What still moves under reduced-motion emulation, in one cell at 1280 | Whether an animation is essential, which is judgment |
-| A11Y-6 | L1 | axe `image-alt` and `svg-img-alt` | Whether an image is informative or decorative |
-| A11Y-7 | L1 | axe `list`, `listitem`, and `heading-order` | Whether a heading is descriptive |
-| A11Y-8 | L1 | The axe aria suite from the installed axe, on markup a person can reach | Closed overlays, state changes, and hidden markup, which go to the manual pass |
-| A11Y-9 | L1 | axe `document-title` and `html-has-lang` | Whether a single-page app updates its title for each view |
-| A11Y-10 | L1 | axe `bypass`, report-only: it never fails the run | Whether the skip link comes first |
+| A11Y-1 | Removed | axe `color-contrast` in both themes | Items axe reports as incomplete, such as text over a background image or a gradient |
+| A11Y-3 | Removed | axe `label` | Labels on controls behind an interaction |
+| A11Y-4 | Removed | axe `target-size`, enabled by name, at 360 and 1280 | Targets behind an interaction |
+| A11Y-5 | Removed | What still moves under reduced-motion emulation, in one cell at 1280 | Whether an animation is essential, which is judgment |
+| A11Y-6 | Removed | axe `image-alt` and `svg-img-alt` | Whether an image is informative or decorative |
+| A11Y-7 | Removed | axe `list`, `listitem`, and `heading-order` | Whether a heading is descriptive |
+| A11Y-8 | Removed | The axe aria suite from the installed axe, on markup a person can reach | Closed overlays, state changes, and hidden markup, which go to the manual pass |
+| A11Y-9 | Removed | axe `document-title` and `html-has-lang` | Whether a single-page app updates its title for each view |
+| A11Y-10 | Removed | axe `bypass`, report-only: it never fails the run | Whether the skip link comes first |
 
 ### `structure-scan.py`
 
@@ -77,8 +77,8 @@ Runs axe on a page that is already open, at 360 and 1280 in each supported theme
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-7 | L1 | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Heading hierarchy and list semantics (`rendered-check.py`), styled divs that stand in for a heading, a list, or a table, and `role="grid"` and `role="treegrid"` |
-| CMP-6 | L2 | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Numeric alignment, tabular figures, form grouping, persistent header behaviour, and styled divs that stand in for a table |
+| A11Y-7 | Removed | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Heading hierarchy and list semantics (`rendered-check.py`), styled divs that stand in for a heading, a list, or a table, and `role="grid"` and `role="treegrid"` |
+| CMP-6 | Removed | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Numeric alignment, tabular figures, form grouping, persistent header behaviour, and styled divs that stand in for a table |
 
 ### `token-audit.py`
 
@@ -95,11 +95,11 @@ Runs axe on a page that is already open, at 360 and 1280 in each supported theme
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
 | TYP-1 | L1 | A font family other than Plus Jakarta Sans and Inter, `font-mono` and `font-serif`, and a non-approved generic as the primary family | Font weights |
-| TYP-2 | L1 | Font sizes under 14px, and unitless or em line-heights outside the body band | The 12px label versus 14px body decision, and line-heights in px or % |
+| TYP-2 | Removed | Font sizes under 14px, and unitless or em line-heights outside the body band | The 12px label versus 14px body decision, and line-heights in px or % |
 | TYP-3 | L1 | Sizes off the Tailwind default type scale, read from TYP-3's catalogue entry | Sizes set in a stylesheet the scan cannot see, or composed from variables |
-| TYP-4 | L2 | `text-transform: uppercase` and the `uppercase` utility | All-caps set by a camelCase inline style in JSX |
-| LAY-4 | L2 | A measure cap in `ch` above 80ch | A missing cap, a measure in any unit but `ch`, and a `var()` chain that leaves the file |
-| TYP-6 | L2 | A measure cap in `ch` above 75ch | A missing cap, a measure in any unit but `ch`, and a `var()` chain that leaves the file |
+| TYP-4 | Removed | `text-transform: uppercase` and the `uppercase` utility | All-caps set by a camelCase inline style in JSX |
+| LAY-4 | Removed | A measure cap in `ch` above 80ch | A missing cap, a measure in any unit but `ch`, and a `var()` chain that leaves the file |
+| TYP-6 | Removed | A measure cap in `ch` above 75ch | A missing cap, a measure in any unit but `ch`, and a `var()` chain that leaves the file |
 
 ## Covered by no check
 
@@ -108,49 +108,11 @@ detail file.
 
 | Control | Tier | Check type |
 | --- | --- | --- |
-| A11Y-11 | L1 | hybrid |
-| TYP-5 | L2 | hybrid |
-| CMP-2 | L0 | hybrid |
-| CMP-3 | L1 | hybrid |
-| CMP-4 | L1 | judgment |
-| CMP-5 | L2 | hybrid |
-| CMP-7 | L2 | judgment |
-| CMP-8 | L1 | judgment |
-| CMP-9 | L1 | hybrid |
-| CMP-10 | L1 | hybrid |
-| CMP-11 | L2 | judgment |
-| CNT-2 | L1 | judgment |
-| CNT-4 | L2 | judgment |
-| CNT-7 | L2 | judgment |
-| CNT-8 | L2 | judgment |
-| CNT-9 | L2 | hybrid |
-| CNT-10 | L1 | judgment |
-| CNT-11 | L2 | judgment |
-| CNT-12 | L2 | hybrid |
 | CNT-14 | L2 | judgment |
-| MOT-1 | L2 | hybrid |
-| MOT-2 | L2 | hybrid |
-| MOT-3 | L2 | judgment |
 | IDN-1 | L1 | hybrid |
 | IDN-2 | L1 | hybrid |
 | IDN-3 | L2 | judgment |
 | IDN-4 | L1 | judgment |
-| SLP-1 | L1 | hybrid |
-| SLP-2 | L1 | deterministic |
-| SLP-3 | L1 | deterministic |
-| SLP-4 | L1 | deterministic |
-| SLP-5 | L2 | judgment |
-| SLP-6 | L2 | hybrid |
-| SLP-7 | L2 | judgment |
-| SLP-8 | L1 | deterministic |
-| SLP-10 | L1 | judgment |
-| SLP-11 | L2 | judgment |
-| LAY-1 | L2 | hybrid |
-| LAY-2 | L1 | judgment |
-| LAY-3 | L2 | judgment |
-| LAY-5 | L2 | judgment |
-| LAY-6 | L2 | judgment |
-| LAY-7 | L2 | judgment |
 
 ## Process checks
 
