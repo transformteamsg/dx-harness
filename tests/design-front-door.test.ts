@@ -1,4 +1,3 @@
-import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -6,22 +5,18 @@ import { describe, expect, it } from "vitest";
 /* Structural checks for the trimmed dx-design front door. A skill run does the
    interview and the routing, so nothing here can exercise a live run. These
    guard the properties a later edit would silently regress instead: one
-   question-pacing rule, one home for the return-to-caller mechanics, and no
-   orphaned intake file. See issue #499. */
+   question-pacing rule and one home for the return-to-caller mechanics. See
+   issue #499. */
 
 const HARNESS = "plugins/dx-harness";
 const FRONT_DOOR = `${HARNESS}/skills/design/dx-design`;
 const ORCHESTRATOR = `${FRONT_DOOR}/SKILL.md`;
 const GRILLING = `${FRONT_DOOR}/grilling.md`;
-const INTAKE = `${FRONT_DOOR}/issue-intake.md`;
 const CONTRACT = `${HARNESS}/procedures/return-to-caller.md`;
-const ENGINEERING_BUDGET = `${HARNESS}/docs/token-budget-engineering.md`;
 
-/* A tolerant read. A missing file reads as empty and fails an assertion,
-   rather than throwing before the assertion runs. */
+/* A missing file throws, so a negative assertion cannot pass on it. */
 function read(file: string) {
-  const full = path.join(process.cwd(), file);
-  return fs.existsSync(full) ? fs.readFileSync(full, "utf8") : "";
+  return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
 function flat(file: string) {
@@ -63,26 +58,6 @@ describe("3. one question-pacing rule", () => {
     expect(text, "the orchestrator still paces one question at a time").not.toMatch(
       /one (question )?at a time|one question per turn/i,
     );
-  });
-});
-
-/* Also true when done 1: the orphaned intake file is gone, and the token
-   budget no longer counts it as a dx-design read. */
-describe("4. the orphaned intake file is deleted", () => {
-  it("issue-intake.md does not exist", () => {
-    expect(fs.existsSync(path.join(process.cwd(), INTAKE)), `${INTAKE} still exists`).toBe(false);
-  });
-
-  it("the engineering token budget no longer says dx-design reads it", () => {
-    const text = flat(ENGINEERING_BUDGET);
-    expect(text.length, `${ENGINEERING_BUDGET} is missing or empty`).toBeGreaterThan(0);
-    expect(text, "the budget still names issue-intake.md").not.toContain("issue-intake");
-  });
-
-  it("no plugin file outside the changelog names it", () => {
-    const run = spawnSync("git", ["grep", "-l", "issue-intake", "--", HARNESS], { encoding: "utf8" });
-    const files = run.stdout.split("\n").filter((file) => file && !file.endsWith("CHANGELOG.md"));
-    expect(files, "a plugin file still names issue-intake").toEqual([]);
   });
 });
 

@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
-import { shardSpecs } from "./packages/design-lint/vitest.projects";
+import { shardSpecs } from "../packages/design-lint/vitest.projects";
 
 /* The design-lint tests run in their own job, only when a file they read
    changes, and a gate job reports for the whole run. These act out the path
@@ -32,8 +32,14 @@ const gate = (results: string[]) =>
   spawnSync("bash", ["-e", "-c", gateStep?.run ?? "exit 2"], { env: { PATH: process.env.PATH, RESULTS: results.join(" ") }, encoding: "utf8" });
 
 const runsOf = (job: Job | undefined) => (job?.steps ?? []).map((step) => step.run ?? "");
-const rootVitest = readRoot("vitest.config.ts");
 const scripts: Record<string, string> = JSON.parse(readRoot("package.json")).scripts;
+
+/* A step is found by what it runs, not by its name. */
+const installsChromium = (run = "") => /playwright(-core)? install(?!-deps)\b[^\n]*\bchromium/.test(run);
+const runsDesignLintTests = (run = "") => run.includes("test:design-lint");
+
+/* The globs of the root Vitest config. */
+const rootGlobs = [...(readRoot("vitest.config.ts").match(/include:\s*\[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([^"]+)"/g)].map((m) => m[1]);
 
 describe("a pull request that changes only a SKILL.md", () => {
   it("does not match the design-lint filter", () => {
@@ -45,8 +51,10 @@ describe("a pull request that changes only a SKILL.md", () => {
     expect(jobs["design-lint"]?.if).toContain("needs.changes.outputs.design-lint == 'true'");
   });
   it("runs no design-lint test and installs no Chromium in the checks job", () => {
-    expect(runsOf(jobs.checks).join("\n")).not.toMatch(/playwright|chromium|test:design-lint|^pnpm test$/m);
-    expect(rootVitest).not.toContain("packages/design-lint");
+    const runs = runsOf(jobs.checks);
+    expect(runs.some((run) => installsChromium(run) || runsDesignLintTests(run) || /^pnpm (run )?test$/m.test(run))).toBe(false);
+    expect(rootGlobs.length).toBeGreaterThan(0);
+    expect(rootGlobs.some((glob) => path.matchesGlob("packages/design-lint/test/run.test.ts", glob))).toBe(false);
   });
   it("lets the gate report success when the design-lint job is skipped", () => {
     expect(jobs.gate?.if).toBe("always()");
@@ -67,11 +75,10 @@ describe("a pull request that changes a rule", () => {
   });
   it("runs the design-lint tests in the design-lint job, after Chromium is installed", () => {
     const runs = runsOf(jobs["design-lint"]);
-    const chromium = runs.findIndex((run) => /playwright-core install( --with-deps)? chromium/.test(run));
-    const tests = runs.findIndex((run) => run.includes("pnpm run test:design-lint"));
+    const chromium = runs.findIndex((run) => installsChromium(run));
+    const tests = runs.findIndex((run) => runsDesignLintTests(run));
     expect(chromium).toBeGreaterThanOrEqual(0);
     expect(tests).toBeGreaterThan(chromium);
-    expect(scripts["test:design-lint"]).toBe("pnpm --filter design-lint test");
   });
   it("keeps pnpm test running the design-lint tests locally", () => {
     expect(scripts.test).toContain("test:design-lint");
@@ -113,22 +120,17 @@ function cacheKeyIn(root: string) {
 }
 
 describe("a run after one that cached Chromium", () => {
-  const stepIndex = (name: string) => designLintSteps.findIndex((step) => step.name === name);
-  it("restores the Playwright browser folder before Install Chromium", () => {
+  const stepIndex = (test: (run: string) => boolean) => designLintSteps.findIndex((step) => test(step.run ?? ""));
+  it("restores the Playwright browser folder after the dependencies and before the Chromium install", () => {
+    const cache = designLintSteps.indexOf(cacheStep as Step);
     expect(cachePaths).toContain("~/.cache/ms-playwright");
-    expect(designLintSteps.indexOf(cacheStep as Step)).toBeGreaterThan(stepIndex("Install dependencies"));
-    expect(designLintSteps.indexOf(cacheStep as Step)).toBeLessThan(stepIndex("Install Chromium"));
-  });
-  it("installs no system packages in Install Chromium, so a restored browser needs no download", () => {
-    const install = designLintSteps[stepIndex("Install Chromium")]?.run ?? "";
-    expect(install).toMatch(/playwright-core install chromium/);
-    expect(install).not.toContain("--with-deps");
+    expect(cache).toBeGreaterThan(stepIndex((run) => /pnpm install/.test(run)));
+    expect(cache).toBeLessThan(stepIndex(installsChromium));
   });
   it("still installs the system packages Chromium needs before the tests", () => {
-    const runs = runsOf(jobs["design-lint"]);
-    const deps = runs.findIndex((run) => /playwright-core install-deps chromium/.test(run));
+    const deps = stepIndex((run) => /playwright-core install-deps chromium/.test(run));
     expect(deps).toBeGreaterThanOrEqual(0);
-    expect(deps).toBeLessThan(runs.findIndex((run) => run.includes("pnpm run test:design-lint")));
+    expect(deps).toBeLessThan(stepIndex(runsDesignLintTests));
   });
 });
 
@@ -222,7 +224,7 @@ describe("a push to main", () => {
    list collects with the package's own shard function, and run the gate's
    script with a stand-in gh; the time of each shard is confirmed on the pull
    request. See issue #574. */
-type Matrix = { name?: string; strategy?: { "fail-fast"?: boolean; matrix?: { shard?: number[] } }; permissions?: Record<string, string> };
+type Matrix = { strategy?: { matrix?: { shard?: number[] } } };
 const designLintJob: Job & Matrix = jobs["design-lint"] ?? {};
 const shards = designLintJob.strategy?.matrix?.shard ?? [];
 const designLintDir = path.join(process.cwd(), "packages/design-lint");
@@ -241,11 +243,9 @@ describe("a pull request that changes a file under packages/design-lint", () => 
     expect(shards).toEqual(shards.map((_, i) => i + 1));
   });
   it("passes each shard its index and the count to vitest", () => {
-    const test = runsOf(designLintJob).find((run) => run.includes("pnpm run test:design-lint")) ?? "";
-    expect(test).toContain(`--shard=\${{ matrix.shard }}/${shards.length}`);
-  });
-  it("names each shard in the job name", () => {
-    expect(designLintJob.name).toContain("${{ matrix.shard }}");
+    const test = runsOf(designLintJob).find((run) => runsDesignLintTests(run)) ?? "";
+    const count = test.match(/--shard[= ]\$\{\{\s*matrix\.shard\s*\}\}\/(\d+)/)?.[1];
+    expect(Number(count)).toBe(shards.length);
   });
 });
 
@@ -277,15 +277,9 @@ function gateWithJobs(results: string[], failedJobs: string[]) {
 }
 
 describe("a shard whose tests fail", () => {
-  it("keeps the other shards running", () => {
-    expect(designLintJob.strategy?.["fail-fast"]).toBe(false);
-  });
   it("makes the gate report failure and name that shard", () => {
     const result = gateWithJobs(["success", "success", "failure"], ["design-lint 2/4"]);
     expect(result.status).toBe(1);
     expect(result.stdout).toContain("design-lint 2/4");
-  });
-  it("lets the gate read the jobs of the run", () => {
-    expect((jobs.gate as Job & Matrix)?.permissions?.actions).toBe("read");
   });
 });

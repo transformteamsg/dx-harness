@@ -120,14 +120,7 @@ A product with no `design-lint.config.json` gets every base rule and the placeho
 
 ### Confirmation
 
-`rule-selection-adr.test.ts` checks four things in this record:
-
-- It lists the base rules for each pass.
-- It settles each flag.
-- It names the file that wins.
-- It names the source of a judged rule's title and tier.
-
-The test does not check `in-scope-rules.py`. The tests of #537 confirm that the script follows this record.
+The tests of #537 confirm that `in-scope-rules.py` follows this record.
 
 ## Pros and Cons of the Options
 

@@ -82,7 +82,7 @@ A folder exists only when it holds a rule. A category with no rule yet has no fo
 
 ### Confirmation
 
-`pnpm check` runs `design-catalog-validate.py`, which reads `standards/rules/`. It fails on a file outside a category folder. It also fails on a rule file not named by a kebab-case slug. The error names the file. `rule-file-names.test.ts` confirms that a file named `BD-1a.md` fails.
+`pnpm check` runs `design-catalog-validate.py`, which reads `standards/rules/`. It fails on a file outside a category folder. It also fails on a rule file not named by a kebab-case slug. The error names the file. `tests/rule-file-names.test.ts` confirms that a file named `BD-1a.md` fails.
 
 ## Pros and Cons of the Options
 
