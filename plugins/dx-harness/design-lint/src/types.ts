@@ -100,6 +100,10 @@ export interface RuleModule {
   surface: Surface;
   locate(ctx: RuleContext): Candidate[] | Promise<Candidate[]>;
   decide(candidate: Candidate, params: Params): string | null;
+  /* The parameters that have a value the module cannot use, such as a locale
+     that its formula does not support. The rule reports them as not configured
+     and does not run. */
+  unconfigured?(params: Params): string[];
 }
 
 export interface Config {

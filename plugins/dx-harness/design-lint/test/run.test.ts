@@ -48,6 +48,14 @@ describe("run", () => {
     expect(r.findings).toEqual([]);
   });
 
+  it("reports a value that the module cannot use as not configured and does not run the module", async () => {
+    const picky: RuleModule = { ...longName, unconfigured: (params) => ((params.limit as number) > 1 ? ["limit"] : []) };
+    const r = await run([rule("XX-1a")], [picky], null, options);
+    expect(r.notes).toEqual([{ code: "XX-1a", kind: "not-configured", detail: ["limit"] }]);
+    expect(r.ran).toEqual([]);
+    expect(r.findings).toEqual([]);
+  });
+
   it("skips a surface that was not selected", async () => {
     const r = await run([rule("XX-3a", { surface: "rendered" })], [], null, options);
     expect(r.notes).toEqual([]);

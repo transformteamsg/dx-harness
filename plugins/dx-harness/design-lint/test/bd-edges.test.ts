@@ -2,13 +2,16 @@ import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { lint } from "../src/lint.ts";
 import { bd2a } from "../src/modules/bd-2a.ts";
+import { bd4a } from "../src/modules/bd-4a.ts";
 import { launchBrowser } from "../src/rendered.ts";
 import { loadRules } from "../src/rules/load.ts";
+import { run } from "../src/run.ts";
 import type { Browser } from "playwright-core";
 import { BASE } from "./helpers.ts";
 
 /* Cases of the acceptance criteria that the fixture pairs do not show: a product
-   that is exempt from a rule, and a site that has no search form at all. */
+   that is exempt from a rule, a site that has no search form at all, and a
+   locale that the readability formula does not support. */
 
 const FIXTURES = path.resolve(import.meta.dirname, "../fixtures");
 const { rules } = loadRules(BASE);
@@ -54,5 +57,35 @@ describe.skipIf(shared === null)("a site with no search form", () => {
       browser: shared ?? undefined,
     });
     expect(result.findings.map((f) => f.code)).toEqual(["BD-2a"]);
+  });
+});
+
+/* Issue 521. The readability formula is for English only, so another locale is
+   a value that the rule cannot use. The note comes before the browser starts. */
+describe("BD-4a for a locale that is not English", () => {
+  const rule = rules.find((r) => r.code === "BD-4a");
+  const root = path.join(FIXTURES, "BD-4a/pass");
+  const options = { surfaces: ["rendered" as const], select: ["BD-4a"], ignore: [], ci: false, files: [], root, browser: shared ?? undefined };
+  const config = (locale: string) => ({
+    product: { locale },
+    rules: { "BD-4a": { maxGrade: 10 } },
+    pages: { all: ["/"] },
+    render: { waitUntil: "load" as const },
+  });
+
+  it.each(["zh", "ms-SG"])("reports locale %s as not configured and does not run", async (locale) => {
+    expect(rule).toBeDefined();
+    const result = await run([rule!], [bd4a], config(locale), options);
+    expect(result.notes).toEqual([{ code: "BD-4a", kind: "not-configured", detail: ["locale"] }]);
+    expect(result.ran).toEqual([]);
+  });
+
+  it.each(["en", "en-SG"])("does not report the English locale %s as not configured", async (locale) => {
+    expect(rule).toBeDefined();
+    const result = await run([rule!], [bd4a], config(locale), options);
+    /* The rule ran, or it reached the browser and found none. */
+    const reached = result.ran.includes("BD-4a") || result.notes.some((n) => n.kind === "not-run");
+    expect(reached).toBe(true);
+    expect(result.notes.filter((n) => n.kind === "not-configured")).toEqual([]);
   });
 });
