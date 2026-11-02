@@ -1,4 +1,8 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { browserAvailable } from "../src/rendered.ts";
 import { exitCode } from "../src/report.ts";
 import { run } from "../src/run.ts";
 import type { RuleMeta, RuleModule } from "../src/types.ts";
@@ -101,5 +105,97 @@ describe("a rendered rule on a machine with no browser", () => {
       if (before === undefined) delete process.env.DESIGN_LINT_CHROMIUM;
       else process.env.DESIGN_LINT_CHROMIUM = before;
     }
+  });
+});
+
+/* The rendered rules of a run share one browser. Issue #518. */
+describe("the rendered rules of a run", async () => {
+  /* A missing browser skips on a developer machine, and fails in CI, where a skip would hide a gap. */
+  const skip = !(await browserAvailable()) && !process.env.CI;
+
+  const site = (html: string) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-run-"));
+    fs.writeFileSync(path.join(dir, "index.html"), html);
+    return dir;
+  };
+  const renderedRule = (code: string) => rule(code, { surface: "rendered", parameters: {} });
+  const VIEWPORT = { width: 800, height: 600 };
+  const signal = () => {
+    let fire = () => {};
+    const fired = new Promise<void>((resolve) => (fire = resolve));
+    return { fire, fired };
+  };
+  const within = (p: Promise<void>, ms: number) =>
+    Promise.race([p.then(() => true), new Promise<boolean>((resolve) => setTimeout(() => resolve(false), ms))]);
+
+  it.skipIf(skip)("run at the same time, not one after the other", async () => {
+    const root = site("<!doctype html><title>x</title><p>x</p>");
+    const started = { a: signal(), b: signal() };
+    const saw: string[] = [];
+    const waiter = (code: string, mine: keyof typeof started, other: keyof typeof started): RuleModule => ({
+      code,
+      surface: "rendered",
+      async locate({ rendered }) {
+        await rendered!.open("/", VIEWPORT);
+        started[mine].fire();
+        if (await within(started[other].fired, 5000)) saw.push(code);
+        return [];
+      },
+      decide: () => null,
+    });
+    const r = await run([renderedRule("XX-5a"), renderedRule("XX-5b")], [waiter("XX-5a", "a", "b"), waiter("XX-5b", "b", "a")], null, {
+      ...options,
+      surfaces: ["rendered"],
+      root,
+      waitUntil: "load",
+    });
+    expect(r.ran).toEqual(["XX-5a", "XX-5b"]);
+    /* Each rule saw the other start while it was still running. */
+    expect(saw.sort()).toEqual(["XX-5a", "XX-5b"]);
+  });
+
+  it.skipIf(skip)("do not see what a rule that interacts changed on its own page", async () => {
+    /* A banner that a click dismisses, and that stays dismissed through localStorage, as a cookie banner does. */
+    const root = site(`<!doctype html><title>x</title>
+<div id="banner">Cookies</div><button id="dismiss">Dismiss</button>
+<script>
+  if (localStorage.getItem("dismissed")) document.getElementById("banner").remove();
+  document.getElementById("dismiss").addEventListener("click", () => {
+    localStorage.setItem("dismissed", "1");
+    document.getElementById("banner").remove();
+  });
+</script>`);
+    const clicked = signal();
+    const clicker: RuleModule = {
+      code: "XX-6a",
+      surface: "rendered",
+      async locate({ rendered }) {
+        const page = await rendered!.open("/", VIEWPORT, { fresh: true });
+        await page.click("#dismiss");
+        clicked.fire();
+        await page.close();
+        return [];
+      },
+      decide: () => null,
+    };
+    const reader: RuleModule = {
+      code: "XX-6b",
+      surface: "rendered",
+      async locate({ rendered }) {
+        await clicked.fired;
+        const page = await rendered!.open("/", VIEWPORT);
+        const banner = await page.evaluate(() => document.getElementById("banner") !== null);
+        return banner ? [] : [{ file: "/", line: 0, column: 0 }];
+      },
+      decide: () => "the banner is gone",
+    };
+    const r = await run([renderedRule("XX-6a"), renderedRule("XX-6b")], [clicker, reader], null, {
+      ...options,
+      surfaces: ["rendered"],
+      root,
+      waitUntil: "load",
+    });
+    expect(r.ran).toEqual(["XX-6a", "XX-6b"]);
+    expect(r.findings).toEqual([]);
   });
 });
