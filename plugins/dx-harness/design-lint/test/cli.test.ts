@@ -81,4 +81,10 @@ describe("a finding from a rendered rule", async () => {
     ]);
   });
 
+  it.skipIf(skip)("names an element with no id, class, or role by its tag and its order on the page", () => {
+    const run = lint(`<label>Name <input type="text"></label>\n<form role="search"><input type="search" ${narrow}></form>`);
+    expect(run.stderr).toBe("");
+    expect(run.stdout.trim().split("\n")).toEqual([expect.stringMatching(/^\/ input \(2nd on the page\): BD-2e \[L2\] /)]);
+  });
+
 });
