@@ -50,7 +50,7 @@ The 5 judged rules have no file yet. Each needs a rubric from `dx-design-judge`:
 
 ## Built
 
-All 13 rules have a module in `packages/design-lint/src/modules/tl/`.
+All 13 rules have a module in `plugins/dx-harness/design-lint/src/modules/tl/`.
 
 - `pages` parameter: `TL-2a`, `TL-2b`, `TL-3b`, `TL-4a`, and `TL-4b` gained `pages: null`. `TL-3a` gained `bannerPages: null` instead. `TL-3a` is L0, so the runner ignores a `rules` override of `pages`, and a demo site with shared pages that carry no banner needs a list of its own. `bannerPages` is not in the page-group table, so a product sets it under `product`.
 - `TL-1a` also checks the host of each absolute `<link rel="canonical">`. A fixture pair and a break patch need an input that a file can carry, and `productUrl` is config only. A relative canonical link is skipped. A non-`.gov.sg` `productUrl` is tested in `test/tl-edges.test.ts`.

@@ -26,11 +26,11 @@ The base runs with no domain and no `DESIGN.md`.
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
 | `presets/<name>.md` | One domain preset |
 | `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now. Each catalogue control, mapped to the codes of its rules, or to the reason it does not move |
-| [`packages/design-lint/docs/config.md`](../../../packages/design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
-| [`packages/design-lint/docs/run.md`](../../../packages/design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
-| [`packages/design-lint/docs/testing.md`](../../../packages/design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
-| [`packages/design-lint/docs/building-a-rule.md`](../../../packages/design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
-| `packages/design-lint/` | The linter: 186 of the 187 lint rules have a module, a fixture pair, and a break patch |
+| [`design-lint/docs/config.md`](../design-lint/docs/config.md) | The config file: shape, resolution order, and page groups |
+| [`design-lint/docs/run.md`](../design-lint/docs/run.md) | The `design-lint` command: flags, output, exit codes, and hooks |
+| [`design-lint/docs/testing.md`](../design-lint/docs/testing.md) | How the rules are tested and demonstrated: fixtures, break patches, the demo, and the tracer bullet |
+| [`design-lint/docs/building-a-rule.md`](../design-lint/docs/building-a-rule.md) | How to turn a lint rule file into a working check |
+| `design-lint/` | The linter: 186 of the 187 lint rules have a module, a fixture pair, and a break patch |
 
 ## Categories
 

@@ -53,7 +53,7 @@ jobs:
           # design-lint tests run against, so a change to one runs them too.
           filters: |
             design-lint:
-              - packages/design-lint/**
+              - plugins/dx-harness/design-lint/**
               - plugins/dx-harness/standards/rules/**
               - pnpm-lock.yaml
               - pnpm-workspace.yaml
@@ -135,7 +135,7 @@ jobs:
       # keys the browser cache.
       - name: Read the playwright-core version
         id: playwright
-        working-directory: packages/design-lint
+        working-directory: plugins/dx-harness/design-lint
         run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
 
       # The runner image has the libraries Chromium needs, so install-deps adds

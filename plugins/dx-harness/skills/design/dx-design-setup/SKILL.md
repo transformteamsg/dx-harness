@@ -15,7 +15,7 @@ Keep turns short.
 
 ## Work the setup checklist
 
-Work the checklist in `setup.md`, beside this file, top to bottom. The axe row needs
+Work the checklist in `setup.md`, beside this file, top to bottom. The axe and `design-lint` rows need
 the plugin's own installation directory in `PLUGIN_ROOT`, as an absolute path:
 `${CLAUDE_PLUGIN_ROOT}` on Claude Code, and `../../../` from this file's directory on
 any other host. Every check is idempotent: a re-run detects existing state, repeats

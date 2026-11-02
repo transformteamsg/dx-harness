@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
-import { shardSpecs } from "../packages/design-lint/vitest.projects";
+import { shardSpecs } from "../plugins/dx-harness/design-lint/vitest.projects";
 
 /* The design-lint tests run in their own job, only when a file they read
    changes, and a gate job reports for the whole run. These act out the path
@@ -54,7 +54,7 @@ describe("a pull request that changes only a SKILL.md", () => {
     const runs = runsOf(jobs.checks);
     expect(runs.some((run) => installsChromium(run) || runsDesignLintTests(run) || /^pnpm (run )?test$/m.test(run))).toBe(false);
     expect(rootGlobs.length).toBeGreaterThan(0);
-    expect(rootGlobs.some((glob) => path.matchesGlob("packages/design-lint/test/run.test.ts", glob))).toBe(false);
+    expect(rootGlobs.some((glob) => path.matchesGlob("plugins/dx-harness/design-lint/test/run.test.ts", glob))).toBe(false);
   });
   it("lets the gate report success when the design-lint job is skipped", () => {
     expect(jobs.gate?.if).toBe("always()");
@@ -66,7 +66,7 @@ describe("a pull request that changes only a SKILL.md", () => {
 describe("a pull request that changes a rule", () => {
   it.each([
     "plugins/dx-harness/standards/rules/typ/TYP-1a.md",
-    "packages/design-lint/src/cli.ts",
+    "plugins/dx-harness/design-lint/src/cli.ts",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     ".github/workflows/ci.yml",
@@ -102,7 +102,7 @@ const cacheStep = designLintSteps.find((step) => step.uses?.startsWith("actions/
 const versionStep = designLintSteps.find((step) => step.id !== undefined && cacheStep?.with?.key?.includes(`steps.${step.id}.outputs.`));
 const cachePaths = (cacheStep?.with?.path ?? "").split("\n").map((p) => p.trim()).filter(Boolean);
 const lock: { importers: Record<string, { dependencies: Record<string, { version: string }> }> } = parse(readRoot("pnpm-lock.yaml"));
-const lockedPlaywright = lock.importers["packages/design-lint"].dependencies["playwright-core"].version;
+const lockedPlaywright = lock.importers["plugins/dx-harness/design-lint"].dependencies["playwright-core"].version;
 
 /* Runs the version step in a repository root and renders the cache key from
    what it writes to GITHUB_OUTPUT. */
@@ -204,7 +204,7 @@ describe("a lockfile with a new playwright-core version", () => {
   });
   it("gives the new version a new cache key", () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "ci-cache-"));
-    const playwright = path.join(root, "packages/design-lint/node_modules/playwright-core");
+    const playwright = path.join(root, "plugins/dx-harness/design-lint/node_modules/playwright-core");
     fs.mkdirSync(playwright, { recursive: true });
     fs.writeFileSync(path.join(playwright, "package.json"), JSON.stringify({ name: "playwright-core", version: "9.9.9" }));
     const newKey = cacheKeyIn(root);
@@ -227,7 +227,7 @@ describe("a push to main", () => {
 type Matrix = { strategy?: { matrix?: { shard?: number[] } } };
 const designLintJob: Job & Matrix = jobs["design-lint"] ?? {};
 const shards = designLintJob.strategy?.matrix?.shard ?? [];
-const designLintDir = path.join(process.cwd(), "packages/design-lint");
+const designLintDir = path.join(process.cwd(), "plugins/dx-harness/design-lint");
 
 /* The spec files of one unsharded run, as the project name and the file. */
 function listSpecs() {
@@ -237,7 +237,7 @@ function listSpecs() {
   return specs.map((s) => ({ project: s.projectName, file: path.relative(designLintDir, s.file) }));
 }
 
-describe("a pull request that changes a file under packages/design-lint", () => {
+describe("a pull request that changes a file under plugins/dx-harness/design-lint", () => {
   it("runs the design-lint tests as more than one shard", () => {
     expect(shards.length).toBeGreaterThan(1);
     expect(shards).toEqual(shards.map((_, i) => i + 1));

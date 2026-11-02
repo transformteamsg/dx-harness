@@ -91,7 +91,7 @@ Before you add or change a test, read [the rules for a test](tests/README.md). T
 
 **No git hook runs any of this.** The repository has no `lefthook.yml` and no `.husky/`, so nothing checks your work on commit or on push. CI runs on pushes to `main` and on pull requests targeting `main`, which means an unchecked commit reaches CI before it reaches a reviewer. Run the commands yourself.
 
-CI skips a change that touches only files no check reads, such as `docs/ROADMAP.md` or `review/`. The `paths-ignore` list in `.github/workflows/ci.yml` names them. On a pull request, CI runs the `design-lint` tests only when the change touches `packages/design-lint/`, `plugins/dx-harness/standards/rules/`, the lockfile, the workspace file, or the workflow. A push to `main` always runs them. The `gate` job reports one result for the whole run.
+CI skips a change that touches only files no check reads, such as `docs/ROADMAP.md` or `review/`. The `paths-ignore` list in `.github/workflows/ci.yml` names them. On a pull request, CI runs the `design-lint` tests only when the change touches `plugins/dx-harness/design-lint/`, `plugins/dx-harness/standards/rules/`, the lockfile, the workspace file, or the workflow. A push to `main` always runs them. The `gate` job reports one result for the whole run.
 
 ## Work through an issue
 

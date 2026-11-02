@@ -19,8 +19,7 @@ and both get NOTED and routed.
 - Wording goes to `dx-design-copy`.
 - A review of the whole page with no dimension named goes to `dx-design-critique`.
 
-**Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-design-critique/pass.md):
+**Dimension controls** (the subset for this pass):
 
 - **LAY-1** — the declared column grid and gutter scale (N/A where no grid is
   declared). **LAY-2** — reflow to one column at 320px, no loss. **LAY-3** — fits a
@@ -48,13 +47,4 @@ regions, squint-test, alignment, density, and grouping read, plus the named patt
 (list vs cards, master-detail, wizard presentation, empty-state structure). When the
 product ships one, `.dx/design.json` `layout_system` declares its column grid.
 
-**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
-mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
-token; pass.md defines both and what the token suppresses). Catalogue mechanics
-(filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
-The pass is propose-only: it records findings on the surface's design ticket per
-`../../../procedures/design-tickets.md` and hands accepted ones to dx-design-execute,
-which owns plan approval, implement, design review, and verify
-(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
-`../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
-`../../../procedures/rule-proposal.md`.
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above.

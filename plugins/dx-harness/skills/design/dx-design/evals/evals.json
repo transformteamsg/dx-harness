@@ -1,0 +1,34 @@
+{
+  "skill_name": "dx-design",
+  "notes": "Issue #538 runs design-lint in this skill. Run each case once against 860894fc and once against the #538 branch, in an isolated session that loads one copy of the plugin, at one model for both arms. Use the fixture: A product repository with one static page, index.html, and styles.css. The page has a hint line in #b8b8b8 on white (a WP-13a and A11Y-1 failure), and a link whose text is 'click here' (WO-10c, and the judged rule WO-10d). design-lint.config.json sets serve to '.', pages.all to ['/'], and the WP-13a selectors to empty strings. Deny every install and every remote call. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "improve-two-dimensions-judges-in-context",
+      "prompt": "/dx-harness:dx-design Improve the consent forms page (index.html) — the wording and the visual polish feel off. It is a static page with no server: the folder itself is the site. This is an unattended run: ask me nothing, accept the copy and polish dimensions, stop at plan approval, and change no product file. Name the rules each dimension judged.",
+      "expected_output": "Light triage captures once, judges copy and polish in its own context with pass.md, merges one ranked plan, and stops at plan approval.",
+      "assertions": [
+        {
+          "text": "The transcript reads dx-design-critique/pass.md",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run starts no subagent for the two dimensions",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The reply names rules for copy and for polish",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run stops at plan approval and changes no product file",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}

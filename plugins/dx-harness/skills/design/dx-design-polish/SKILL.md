@@ -15,8 +15,7 @@ structure, wording, motion, and flow are out of scope and get NOTED and routed.
 - A bare "polish the page" or "tidy the page" with no dimension named goes to `dx-design-critique`.
 - Page hierarchy, that is, what draws the eye, goes to `dx-design-pattern`. Polish covers type and weight hierarchy (SLP-6) only.
 
-**Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-design-critique/pass.md):
+**Dimension controls** (the subset for this pass):
 
 - **Tokens** — TOK-1 (no raw colour), TOK-2 (spacing scale), TOK-3 (radius scale).
 - **Type** — TYP-1 (Plus Jakarta Sans / Inter only), TYP-2 (min sizes + line-height),
@@ -29,14 +28,6 @@ structure, wording, motion, and flow are out of scope and get NOTED and routed.
 concentric radius, layered shadows, type polish (`text-wrap`, font-smoothing), image
 edges. It refines these controls; it never replaces them.
 
-**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
-mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
-token; pass.md defines both and what the token suppresses). Card/nested-card
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above. Card/nested-card
 composition (SLP-4/5/11) is a dx-design-pattern matter: note and route it, never a
-polish finding. Catalogue mechanics (filtering, tiers, plain-title naming):
-`../../../procedures/catalogue-mechanics.md`. The pass is propose-only: it records
-findings on the surface's design ticket per `../../../procedures/design-tickets.md`
-and hands accepted ones to dx-design-execute, which owns plan approval, implement,
-design review, and verify (`../../../procedures/plan-approval.md`,
-`../../../procedures/implement.md`, `../../../procedures/design-review.md`).
-Uncovered gaps become rule proposals per `../../../procedures/rule-proposal.md`.
+polish finding.

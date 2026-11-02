@@ -49,14 +49,14 @@ const WRITING_TERMS = [
   "A name that requires explanation has already failed",
 ];
 
-/* Phrases only the review method carries. */
+/* Phrases only the review method carries. The entry modes, with the
+   return-to-caller token, are pass.md's, which the copy skill links (#538). */
 const REVIEW_TERMS = [
   "**Purposeful.**",
   "**Conversational.**",
   "IDN-3 tone register",
   "Mandated programme names",
   "dimension subset",
-  "return-to-caller",
 ];
 
 function linkLines(text: string, name: string) {

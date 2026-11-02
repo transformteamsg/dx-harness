@@ -21,7 +21,7 @@ Work the table top to bottom: run the check; if it passes, move on; if not,
 offer the install, run it (or hand it to the user where marked), and re-run
 the check. Then continue with the tracker and commit-signing steps below.
 
-Both axe-row commands read `PLUGIN_ROOT`, the plugin's own installation
+The axe-row and `design-lint`-row commands read `PLUGIN_ROOT`, the plugin's own installation
 directory, which `SKILL.md` names. Assign it at the front of the same
 command, as `PLUGIN_ROOT="/the/path"; ...`. Unset or empty, the `:?` guard
 aborts with its message and a non-zero exit, and installs nothing.
@@ -34,6 +34,7 @@ aborts with its message and a non-zero exit, and installs nothing.
 | Python 3 + PyYAML | The `checks/*.py` scripts import `yaml` | `python3 -c "import yaml"` | `python3 -m pip install --user pyyaml` |
 | Pillow | The capture step scales each screenshot, and the critique report step crops and annotates screenshots | `python3 -c "import PIL"` | `python3 -m pip install --user Pillow` |
 | axe on Playwright (harness-side) | The rendered check drives axe against the page already open in the capture session | `node -e "require('node:module').createRequire(process.argv[1] + '/').resolve('@axe-core/playwright')" "${PLUGIN_ROOT:?set PLUGIN_ROOT to the plugin directory}"` | `npm install --prefix "${PLUGIN_ROOT:?set PLUGIN_ROOT to the plugin directory}"` — installs into the plugin's own `node_modules` only; nothing is installed into the repo being checked. Missing is not a failure: the rendered check says it did not run and sends its controls to manual verification |
+| `design-lint` (harness-side) | The design skills run it to decide the lint rules | `node "${PLUGIN_ROOT:?set PLUGIN_ROOT to the plugin directory}/design-lint/src/cli.ts" --help` | Node 22.18 or later, then `npm install --omit=dev --prefix "${PLUGIN_ROOT:?set PLUGIN_ROOT to the plugin directory}/design-lint"`. It installs into the plugin's own folder only. Its rendered rules also need a browser: `npx --prefix "${PLUGIN_ROOT:?set PLUGIN_ROOT to the plugin directory}/design-lint" playwright-core install chromium`, or an installed Chrome |
 | `dx-harness` plugin (product repos only) | The harness itself; skills load from the installed `dx-harness` plugin, same as any product repo | ask the user: `/plugin list` shows `dx-harness` | the two commands in the README Install section (`../../../README.md`) |
 
 ## Wire the design-ticket tracker

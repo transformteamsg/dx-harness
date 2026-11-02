@@ -15,8 +15,7 @@ and flow structure are out of scope and get NOTED and routed.
 - Visual styling goes to `dx-design-polish`.
 - A review of the whole page with no dimension named goes to `dx-design-critique`.
 
-**Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-design-critique/pass.md):
+**Dimension controls** (the subset for this pass):
 
 - **MOT-1** — 100–300ms, standard easing, no decorative motion on critical paths.
 - **MOT-2** — motion values come from the declared motion token set; durations and
@@ -32,13 +31,4 @@ easing (entrances `ease-out`, exits `ease-in`, changes `ease-in-out`), press fee
 (`scale(0.96)`, never a bounce), and disciplined `will-change`. Keyboard navigation is
 instant — no animation on tab/arrow movement.
 
-**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
-mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
-token; pass.md defines both and what the token suppresses). Catalogue mechanics
-(filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
-The pass is propose-only: it records findings on the surface's design ticket per
-`../../../procedures/design-tickets.md` and hands accepted ones to dx-design-execute,
-which owns plan approval, implement, design review, and verify
-(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
-`../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
-`../../../procedures/rule-proposal.md`.
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above.

@@ -36,4 +36,4 @@ node_modules/
 plugins/dx-harness/package-lock.json
 
 # design-lint demo working copy
-packages/design-lint/demo/.work/
+plugins/dx-harness/design-lint/demo/.work/

@@ -10,7 +10,7 @@ The design is in `docs/`, and the rules are in `plugins/dx-harness/standards/rul
 - [`docs/config.md`](docs/config.md): the config file and how a rule gets a value.
 - [`docs/testing.md`](docs/testing.md): the fixtures, the break patches, and the demo.
 - [`docs/building-a-rule.md`](docs/building-a-rule.md): how to turn a lint rule file into a working check.
-- [`standards/rules.md`](../../plugins/dx-harness/standards/rules.md): the rule files.
+- [`standards/rules.md`](../standards/rules.md): the rule files.
 
 ## Run it
 
@@ -19,6 +19,8 @@ pnpm --filter design-lint design-lint list
 pnpm --filter design-lint design-lint demo/site --config demo/design-lint.config.json --rendered
 pnpm --filter design-lint demo -- BD-1a
 ```
+
+The package ships inside the `dx-harness` plugin, so an installed plugin carries it. It reads the rule files and the presets from the plugin's own `standards/` folder. From a product repository, run it as `node <plugin>/design-lint/src/cli.ts`, after `npm install --omit=dev --prefix <plugin>/design-lint`. Node 22.18 or later runs the TypeScript source directly.
 
 The last command is the live demo. It breaks one rule on a copy of the site, lints, and restores the site. The rendered rules need a browser: Playwright's Chromium, or an installed Chrome.
 
@@ -61,4 +63,3 @@ A module implements one rule. It has a `code`, a `surface`, a `locate` function 
 - Mixed projects: the JSX and TSX path (`eslint-plugin-jsx-a11y` with ESLint 9) is built, and a source rule that names a jsx-a11y rule checks plain HTML and JSX together. Vue and Svelte templates are not read.
 - A JSON Schema for the config file.
 - A build step. Node strips types only outside `node_modules`, so the package must compile before it is published.
-- Shipping the rule files and the presets inside the package. Today the command reads them from `plugins/dx-harness/standards/rules/` and `plugins/dx-harness/standards/presets/`.

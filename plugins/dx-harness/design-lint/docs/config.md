@@ -30,7 +30,7 @@ Status: draft. A product sets the values that its rules read in one file, `desig
 
 | Key | Holds |
 | --- | --- |
-| `preset` | The domain preset, by name. The command reads it from `plugins/dx-harness/standards/presets/<name>.md`. A name that no file defines stops the command with exit code 2. See [Domain presets](../../../plugins/dx-harness/standards/presets/README.md). |
+| `preset` | The domain preset, by name. The command reads it from `plugins/dx-harness/standards/presets/<name>.md`. A name that no file defines stops the command with exit code 2. See [Domain presets](../../standards/presets/README.md). |
 | `select` | The rules to run, as codes or category prefixes. A `--select` flag overrides it. |
 | `serve` | The directory that the rendered rules serve, relative to the config file. It defaults to the first path that the command receives. |
 | `render` | `waitUntil`, either `networkidle` (the default) or `load`. A static site can use `load`, which is faster. |

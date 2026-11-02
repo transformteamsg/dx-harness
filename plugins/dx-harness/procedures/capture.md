@@ -34,6 +34,7 @@ Record the capture set:
 - The path of each frame, with its width
 - Each width that did not capture, with the error
 - The rendered check output, or the reason it did not run
+- The `design-lint` result, or the reason it did not run
 
 ## Step 3: Scale each frame
 

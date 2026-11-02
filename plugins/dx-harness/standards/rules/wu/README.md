@@ -66,7 +66,7 @@ The 14 judged rules have no file yet. Each needs a rubric from `dx-design-judge`
 
 ## Built
 
-All 22 lint rules have a module. No rule is left unbuilt. The module code is in `packages/design-lint/src/modules/wu/`.
+All 22 lint rules have a module. No rule is left unbuilt. The module code is in `plugins/dx-harness/design-lint/src/modules/wu/`.
 
 - `WU-1a`: the plain HTML part checks that `<html>` has a `lang` value of a well-formed BCP 47 shape. It does not look the language up in the registry, so `lang="xx"` passes in source. `WU-1b` catches that on the rendered page, where axe knows the list. The JSX and TSX part is jsx-a11y `html-has-lang` and `lang`.
 - `WU-1b` and `WU-2a`: added a `pages` parameter, because a rendered rule needs a page list.

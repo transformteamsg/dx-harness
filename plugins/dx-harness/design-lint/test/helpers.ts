@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Finding, RuleMeta } from "../src/types.ts";
 
-export const BASE = path.resolve(import.meta.dirname, "../../../plugins/dx-harness/standards/rules");
+export const BASE = path.resolve(import.meta.dirname, "../../standards/rules");
 
 export interface Expected {
   file: string;

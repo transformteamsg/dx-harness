@@ -40,7 +40,7 @@ A rule file exists only for a lintable rule.
 
 ## Built
 
-Both lint rules have a module in `packages/design-lint/src/modules/uu/`.
+Both lint rules have a module in `plugins/dx-harness/design-lint/src/modules/uu/`.
 
 - Both paths are relative to the project root.
 - `UU-1c` fails a missing file and a file that holds only whitespace. It does not read the content.

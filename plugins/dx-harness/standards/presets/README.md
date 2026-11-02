@@ -43,7 +43,7 @@ The product sets `preset` in `design-lint.config.json`:
 
 If no file defines that preset, the command stops with exit code 2. The `--presets <dir>` flag reads presets from another directory.
 
-For the order in which a rule gets a value, see [How a rule gets a value](../../../../packages/design-lint/docs/config.md#how-a-rule-gets-a-value).
+For the order in which a rule gets a value, see [How a rule gets a value](../../design-lint/docs/config.md#how-a-rule-gets-a-value).
 
 ## The L0 floor
 

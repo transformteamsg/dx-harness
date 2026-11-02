@@ -65,6 +65,7 @@ A pass keeps two entries:
    pattern it serves. Findings are proposals; you change nothing. Anything you notice
    **outside** the dimension is NOTED and routed, never fixed here: "the spacing
    rhythm is a dx-design-pattern matter", "that wording is a dx-design-copy matter".
+   Uncovered gaps become rule proposals per `../../../procedures/rule-proposal.md`.
 4. **Record on the ticket, then ask.** Find or create the surface's design ticket and
    record the findings as a Findings comment, format and conventions per
    `../../../procedures/design-tickets.md` (no tracker wired: use its local-markdown

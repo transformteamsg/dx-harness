@@ -37,7 +37,7 @@ describe("the base-layer README names a home for each lint document", () => {
   const text = fs.existsSync(readme) ? fs.readFileSync(readme, "utf8") : "";
 
   it.each(["building-a-rule.md", "config.md", "run.md", "testing.md"])("links %s, and the file exists", (doc) => {
-    const link = `../../../packages/design-lint/docs/${doc}`;
+    const link = `../design-lint/docs/${doc}`;
     expect(text).toContain(`](${link})`);
     expect(fs.existsSync(path.resolve(path.dirname(readme), link))).toBe(true);
   });
