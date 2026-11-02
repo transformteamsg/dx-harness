@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { calibrate, formatCalibration, loadCorpus, loadVerdicts } from "../src/calibrate.ts";
+import { calibrate, formatCalibration, loadCorpus, loadVerdicts, mergeRecord } from "../src/calibrate.ts";
 import type { CalibrationReport, Verdict } from "../src/calibrate.ts";
 import { loadRules } from "../src/rules/load.ts";
 import { BASE } from "./helpers.ts";
@@ -79,6 +79,16 @@ describe("a calibration run", () => {
     const record: Verdict[] = [{ page: "short-a", code: "BD-5a", at: "5:3", message: "m", verdict: "false", note: "A home page." }];
     fs.writeFileSync(file, JSON.stringify(record));
     expect(loadVerdicts(file)).toEqual(record);
+  });
+
+  it("adds each new finding to the record once, and keeps the verdicts already there", async () => {
+    const corpus = loadCorpus(writeCorpus());
+    const first = await calibrate({ corpus, verdicts: [], rules, surfaces: ["source", "project"] });
+    const judged = [{ ...first.unjudged[0], verdict: "false" as const, note: "kept" }];
+    const record = mergeRecord(judged, first);
+    expect(record).toHaveLength(first.unjudged.length);
+    expect(record[0]).toEqual(judged[0]);
+    expect(record.slice(1).every((v) => v.verdict === null)).toBe(true);
   });
 
   it("rejects a verdict that is not true, false, or null", () => {
