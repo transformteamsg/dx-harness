@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-design-setup",
-  "notes": "Behaviour baseline for the trim in #501. Run each case in an isolated session that loads one copy of the plugin, on a machine where agent-browser is not installed. Run each case three times against the version before #501 (commit d5486fa) and three times against the trimmed version, at one model for both arms. Deny every install, every write, and every remote call, so a run that tries one is visible in the transcript and changes nothing. A run that stops at a question it must ask is a complete and valid outcome. Assertions carry passed=null until a run fills them in.",
+  "notes": "Behaviour baseline for the trim in #501. Run each case in an isolated session that loads one copy of the plugin, on a machine where agent-browser is not installed. Run each case three times against the version before #501 (commit d5486fa) and three times against the trimmed version, at one model for both arms. Deny every install, every write, and every remote call, so a run that tries one is visible in the transcript and changes nothing. A run that stops at a question it must ask is a complete and valid outcome. Assertions carry passed=null until a run fills them in. Issue #538 runs design-lint in this skill. Run each case once against 860894fc and once against the #538 branch, in an isolated session that loads one copy of the plugin, at one model for both arms. Use the fixture: A product repository with one static page, index.html, and styles.css. The page has a hint line in #b8b8b8 on white (a WP-13a and A11Y-1 failure), and a link whose text is 'click here' (WO-10c, and the judged rule WO-10d). design-lint.config.json sets serve to '.', pages.all to ['/'], and the WP-13a selectors to empty strings. Deny every install and every remote call. Assertions carry passed=null until a run fills them in.",
   "evals": [
     {
       "id": 0,
@@ -140,6 +140,34 @@
         },
         {
           "text": "The reply does not give its own walkthrough of the phases or the control catalogue",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run installs nothing",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "unattended-reports-design-lint",
+      "prompt": "/dx-harness:dx-design-setup Set up this machine for the design harness. This is an unattended run: ask me nothing and install nothing. Report the state of every tool on the checklist.",
+      "expected_output": "Run against a plugin copy whose design-lint has no node_modules. The report lists design-lint as missing, not installed, with the npm install command for the plugin's own folder.",
+      "assertions": [
+        {
+          "text": "The report has a design-lint row",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The design-lint row says missing, not installed",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report gives an npm install command whose prefix is the plugin's design-lint folder",
           "passed": null,
           "evidence": ""
         },

@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-design-execute",
-  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in. Issue #500 trimmed the skill without a change to what it does: run all four cases once against d5486fa and once against the trimmed version, and compare the outcome of each case.",
+  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in. Issue #500 trimmed the skill without a change to what it does: run all four cases once against d5486fa and once against the trimmed version, and compare the outcome of each case. Issue #538 runs design-lint in this skill. Run each case once against 860894fc and once against the #538 branch, in an isolated session that loads one copy of the plugin, at one model for both arms. Use the fixture: A product repository with one static page, index.html, and styles.css. The page has a hint line in #b8b8b8 on white (a WP-13a and A11Y-1 failure), and a link whose text is 'click here' (WO-10c, and the judged rule WO-10d). design-lint.config.json sets serve to '.', pages.all to ['/'], and the WP-13a selectors to empty strings. Deny every install and every remote call. Assertions carry passed=null until a run fills them in.",
   "evals": [
     {
       "id": 0,
@@ -99,6 +99,62 @@
         },
         {
           "text": "The transcript shows no Edit or Write tool call on a product file",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "verify-reports-lint-findings",
+      "prompt": "/dx-harness:dx-design-execute The consent forms page (index.html, styles.css) is already built and its plan was approved; the approved plan is \"one page: heading, lede, hint, student list, one reminder button, one link\". Run only the design review phase (verify) on it now. This is an unattended run: ask me nothing, and do not edit any product file. The page is a static site: there is no dev server, and the folder itself is the site. At the end, list each finding with its rule code, and say for each rule whether a script, a linter, or a reviewer decided it.",
+      "expected_output": "Verify runs design-lint, reports the WP-13a finding on .hint from it, runs no contrast.py, and hands the judged rules to the reviewer or names them as not graded.",
+      "assertions": [
+        {
+          "text": "The transcript runs design-lint/src/cli.ts",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report names WP-13a and attributes it to design-lint",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript runs no contrast.py, a11y-eslint.py, a11y-static.py, structure-scan.py, or content-lint.py",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report names WO-10d as a judged rule for the reviewer, or as not graded",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "missing-linter-stops-verify",
+      "prompt": "/dx-harness:dx-design-execute The consent forms page (index.html, styles.css) is already built and its plan was approved; the approved plan is \"one page: heading, lede, hint, student list, one reminder button, one link\". Run only the design review phase (verify) on it now. This is an unattended run: ask me nothing, and do not edit any product file. The page is a static site: there is no dev server, and the folder itself is the site. At the end, list each finding with its rule code, and say for each rule whether a script, a linter, or a reviewer decided it.",
+      "expected_output": "Run against a plugin copy whose design-lint has no node_modules. Verify stops at design-lint, names the missing dependencies and dx-design-setup, and reports the page as not verified.",
+      "assertions": [
+        {
+          "text": "The report says design-lint could not run and names what is missing",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report says the page is not verified",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The report records no lint rule as passed",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript runs none of the retired checks in place of design-lint",
           "passed": null,
           "evidence": ""
         }

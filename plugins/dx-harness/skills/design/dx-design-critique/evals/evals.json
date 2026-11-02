@@ -1,0 +1,34 @@
+{
+  "skill_name": "dx-design-critique",
+  "notes": "Issue #538 runs design-lint in this skill. Run each case once against 860894fc and once against the #538 branch, in an isolated session that loads one copy of the plugin, at one model for both arms. Use the fixture: A product repository with one static page, index.html, and styles.css. The page has a hint line in #b8b8b8 on white (a WP-13a and A11Y-1 failure), and a link whose text is 'click here' (WO-10c, and the judged rule WO-10d). design-lint.config.json sets serve to '.', pages.all to ['/'], and the WP-13a selectors to empty strings. Deny every install and every remote call. Assertions carry passed=null until a run fills them in.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "critique-runs-design-lint",
+      "prompt": "/dx-harness:dx-design-critique Critique the consent forms page in this repository (index.html). It is a static page with no server: the folder itself is the site. This is an unattended run: ask me nothing, use the local markdown fallback for the design ticket, and change no product file. Report each finding with its rule code, and say which tool decided each one.",
+      "expected_output": "The capture step runs design-lint, and the findings cite WP-13a and WO-10c from it. The run takes no contrast.py or content-lint.py path.",
+      "assertions": [
+        {
+          "text": "The transcript runs design-lint/src/cli.ts",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "A finding cites a lint rule and attributes it to design-lint",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript runs no contrast.py or content-lint.py",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "No product file changes",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    }
+  ]
+}
