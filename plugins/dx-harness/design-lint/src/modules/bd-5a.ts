@@ -7,6 +7,19 @@ import type { Candidate, RuleModule } from "../types.ts";
 
 const EXEMPT_AUDIENCES = ["restricted", "beta"];
 
+/* A search result truncates by width, and a Chinese, Japanese, or Korean
+   character is about twice as wide as a Latin one. Fullwidth punctuation is
+   too, and halfwidth katakana is not. */
+const WIDE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303F\uFF01-\uFF60\uFFE0-\uFFE6]/u;
+const HALFWIDTH = /[\uFF61-\uFF9F]/u;
+
+/* The width of a text in Latin characters: a wide character counts as two. */
+export function displayWidth(text: string): number {
+  let width = 0;
+  for (const ch of text) width += WIDE.test(ch) && !HALFWIDTH.test(ch) ? 2 : 1;
+  return width;
+}
+
 export const bd5a: RuleModule = {
   code: "BD-5a",
   surface: "source",
@@ -35,8 +48,12 @@ export const bd5a: RuleModule = {
       const desc = page.els.find((e) => e.tag === "meta" && e.attrs.name?.toLowerCase() === "description");
       const descText = desc?.attrs.content?.trim() ?? "";
       if (!desc || descText === "") out.push(at('No meta description. Add <meta name="description" content="...">.'));
-      else if (descText.length < minDesc || descText.length > maxDesc) {
-        out.push(at(`The meta description is ${descText.length} characters. Keep it between ${minDesc} and ${maxDesc}.`, desc.line, desc.column));
+      else {
+        const width = displayWidth(descText);
+        if (width < minDesc || width > maxDesc) {
+          const size = width === [...descText].length ? `${width} characters` : `${width} characters wide, where a Chinese, Japanese, or Korean character counts as two`;
+          out.push(at(`The meta description is ${size}. Keep it between ${minDesc} and ${maxDesc}.`, desc.line, desc.column));
+        }
       }
 
       const canonical = page.els.find((e) => e.tag === "link" && e.attrs.rel?.toLowerCase().split(/\s+/).includes("canonical"));

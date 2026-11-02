@@ -1,8 +1,11 @@
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { lint } from "../src/lint.ts";
 import { bd2a } from "../src/modules/bd-2a.ts";
 import { bd4a } from "../src/modules/bd-4a.ts";
+import { bd5a } from "../src/modules/bd-5a.ts";
 import { launchBrowser } from "../src/rendered.ts";
 import { loadRules } from "../src/rules/load.ts";
 import { run } from "../src/run.ts";
@@ -87,5 +90,26 @@ describe("BD-4a for a locale that is not English", () => {
     const reached = result.ran.includes("BD-4a") || result.notes.some((n) => n.kind === "not-run");
     expect(reached).toBe(true);
     expect(result.notes.filter((n) => n.kind === "not-configured")).toEqual([]);
+  });
+});
+
+/* Issue 522: the description limit measures width, so the message says so when
+   the description holds a wide character. */
+describe("a Chinese meta description that is too short", () => {
+  it("gets a finding that gives its width", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-bd5a-"));
+    const file = path.join(dir, "index.html");
+    fs.writeFileSync(
+      file,
+      '<html lang="zh"><head><title>了解如何申请社区补助金</title><meta name="description" content="申请社区补助金。"><link rel="canonical" href="/"></head></html>',
+    );
+    const candidates = bd5a.locate({
+      files: [file],
+      root: dir,
+      params: { audience: "public", titleLength: [10, 60], descriptionLength: [50, 160] },
+    }) as Parameters<typeof bd5a.decide>[0][];
+    expect(candidates.map((c) => bd5a.decide(c, {}))).toEqual([
+      "The meta description is 16 characters wide, where a Chinese, Japanese, or Korean character counts as two. Keep it between 50 and 160.",
+    ]);
   });
 });

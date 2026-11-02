@@ -10,6 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { displayWidth } from "../src/modules/bd-5a.ts";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -30,8 +31,8 @@ if (!target || !values.title || !values.description || !values.main) {
 }
 /* BD-5a limits. A page that breaks them would fail a rule that exists. */
 if (values.title.length < 10 || values.title.length > 60) throw new Error(`The title is ${values.title.length} characters. BD-5a needs 10 to 60.`);
-if (values.description.length < 50 || values.description.length > 160) {
-  throw new Error(`The description is ${values.description.length} characters. BD-5a needs 50 to 160.`);
+if (displayWidth(values.description) < 50 || displayWidth(values.description) > 160) {
+  throw new Error(`The description is ${displayWidth(values.description)} characters wide. BD-5a needs 50 to 160.`);
 }
 
 const site = path.resolve(import.meta.dirname, "site");
