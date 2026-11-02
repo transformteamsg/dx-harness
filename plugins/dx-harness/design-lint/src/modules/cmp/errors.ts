@@ -84,6 +84,7 @@ function position(page: RenderedPage, field: string): Promise<ElementRef> {
 export const cmp10a: RuleModule = {
   code: "CMP-10a",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

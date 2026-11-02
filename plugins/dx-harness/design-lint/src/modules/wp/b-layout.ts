@@ -100,6 +100,7 @@ function lossRule(code: string, describe: string, change: (params: Record<string
   return {
     code,
     surface: "rendered",
+    interacts: true,
 
     async locate({ rendered, params }) {
       const out: Candidate[] = [];

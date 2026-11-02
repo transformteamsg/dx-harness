@@ -26,6 +26,7 @@ interface Issue {
 export const wp17a: RuleModule = {
   code: "WP-17a",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
@@ -209,6 +210,7 @@ export const wp17a: RuleModule = {
 export const wp12d: RuleModule = {
   code: "WP-12d",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

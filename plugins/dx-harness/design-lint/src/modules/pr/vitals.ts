@@ -22,6 +22,7 @@ async function origin(rendered: RenderedSession, pagePath: string): Promise<stri
 export const pr7a: RuleModule = {
   code: "PR-7a",
   surface: "rendered",
+  runsAlone: true,
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
     if (!rendered) return out;
@@ -74,6 +75,7 @@ type Metric = "lcp" | "cls" | "tbt";
 export const pr7b: RuleModule = {
   code: "PR-7b",
   surface: "rendered",
+  runsAlone: true,
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
     if (!rendered) return out;
@@ -98,6 +100,7 @@ export const pr7b: RuleModule = {
 export const pr7c: RuleModule = {
   code: "PR-7c",
   surface: "rendered",
+  runsAlone: true,
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
     if (!rendered) return out;
@@ -116,6 +119,7 @@ export const pr7c: RuleModule = {
 export const pr7d: RuleModule = {
   code: "PR-7d",
   surface: "rendered",
+  runsAlone: true,
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
     if (!rendered) return out;

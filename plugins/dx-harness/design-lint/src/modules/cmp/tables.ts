@@ -74,6 +74,7 @@ export const cmp6a: RuleModule = {
 export const cmp6b: RuleModule = {
   code: "CMP-6b",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

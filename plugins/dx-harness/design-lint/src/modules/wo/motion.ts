@@ -14,6 +14,7 @@ interface Moving {
 export const wo5b: RuleModule = {
   code: "WO-5b",
   surface: "rendered",
+  interacts: true,
 
   async locate({ rendered, params }) {
     const out: Candidate[] = [];

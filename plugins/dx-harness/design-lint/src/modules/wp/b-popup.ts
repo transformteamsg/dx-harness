@@ -183,6 +183,7 @@ function popupRule(
   return {
     code,
     surface: "rendered",
+    interacts: true,
 
     async locate({ rendered, params }) {
       const out: Candidate[] = [];

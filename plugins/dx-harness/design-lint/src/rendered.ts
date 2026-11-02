@@ -108,13 +108,94 @@ export async function launchBrowser(): Promise<Browser> {
 }
 
 export interface Session extends RenderedSession {
+  /* A new lane of the session. See startSession. */
+  lane(): Lane;
   close(): Promise<void>;
 }
 
-/* A session serves one directory. It reuses a page that a rule already opened at
-   the same path and size, so the rules of a run load each page once for each
-   size. A rule only reads a page, so sharing is safe. When the caller passes a
-   browser, the session leaves it open. */
+export interface Lane extends RenderedSession {
+  /* Closes the pages that the lane opened with fresh: true. The runner calls it
+     after each rule. */
+  release(): Promise<void>;
+  close(): Promise<void>;
+}
+
+type Viewport = { width: number; height: number };
+
+function startLane(browser: Browser, baseUrl: string, waitUntil: "load" | "networkidle"): Lane {
+  /* One context for each viewport size, shared by every shared page at that size. */
+  const contexts = new Map<string, Promise<BrowserContext>>();
+  const pages = new Map<string, Promise<RenderedPage>>();
+  /* A fresh page has a context of its own, so its storage and cookies reach no other page. */
+  const fresh: BrowserContext[] = [];
+  const newContext = async (viewport: Viewport) => {
+    const context = await browser.newContext({ viewport });
+    await context.addInitScript(installElementNames);
+    return context;
+  };
+  const sharedContext = (viewport: Viewport, key: string) => {
+    let context = contexts.get(key);
+    if (!context) {
+      context = newContext(viewport);
+      contexts.set(key, context);
+    }
+    return context;
+  };
+  const load = async (pagePath: string, viewport: Viewport, key: string, options?: OpenOptions): Promise<RenderedPage> => {
+    let context: BrowserContext;
+    if (options?.fresh) {
+      context = await newContext(viewport);
+      fresh.push(context);
+    } else context = await sharedContext(viewport, key);
+    const page = await context.newPage();
+    if (options?.reducedMotion) await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(`${baseUrl}${pagePath}`, { waitUntil });
+    return {
+      evaluate: (fn, arg) => page.evaluate(fn as (a: unknown) => unknown, arg) as Promise<never>,
+      inject: async (script) => {
+        await page.addScriptTag({ content: script });
+      },
+      press: (k) => page.keyboard.press(k),
+      hover: (selector) => page.hover(selector),
+      click: (selector) => page.click(selector),
+      focus: (selector) => page.focus(selector),
+      screenshot: async (selector) => new Uint8Array(selector ? await page.locator(selector).first().screenshot() : await page.screenshot()),
+      close: async () => {
+        if (!options?.fresh) return;
+        fresh.splice(fresh.indexOf(context), 1);
+        await context.close();
+      },
+    };
+  };
+  return {
+    open(pagePath, viewport, options?: OpenOptions): Promise<RenderedPage> {
+      const key = `${viewport.width}x${viewport.height}`;
+      if (options?.fresh) return load(pagePath, viewport, key, options);
+      const cacheKey = `${key}${options?.reducedMotion ? " reduce" : ""} ${pagePath}`;
+      let cached = pages.get(cacheKey);
+      if (!cached) {
+        cached = load(pagePath, viewport, key, options);
+        pages.set(cacheKey, cached);
+      }
+      return cached;
+    },
+    async release() {
+      await Promise.all(fresh.splice(0).map((c) => c.close()));
+    },
+    async close() {
+      await this.release();
+      await Promise.all([...contexts.values()].map(async (c) => (await c).close()));
+    },
+  };
+}
+
+/* A session serves one directory. Its rules run in lanes, at the same time,
+   in one browser. Each lane has its own contexts and its own shared pages,
+   because two rules must not run on one page at the same time. A lane reuses a
+   page that one of its rules already opened at the same path and size, so the
+   rules of a lane load each page once for each size. A rule only reads a shared
+   page, so sharing in a lane is safe. The session opens pages in a lane of its
+   own. When the caller passes a browser, the session leaves it open. */
 export async function startSession(
   root: string,
   waitUntil: "load" | "networkidle" = "networkidle",
@@ -122,43 +203,17 @@ export async function startSession(
 ): Promise<Session> {
   const browser = shared ?? (await launchBrowser());
   const { server, baseUrl } = await serve(root);
-  /* One context for each viewport size, shared by every page at that size. */
-  const contexts = new Map<string, BrowserContext>();
-  const pages = new Map<string, RenderedPage>();
+  const own = startLane(browser, baseUrl, waitUntil);
+  const lanes: Lane[] = [own];
   return {
-    async open(pagePath, viewport, options?: OpenOptions): Promise<RenderedPage> {
-      const key = `${viewport.width}x${viewport.height}`;
-      const cacheKey = `${key}${options?.reducedMotion ? " reduce" : ""} ${pagePath}`;
-      const cached = options?.fresh ? undefined : pages.get(cacheKey);
-      if (cached) return cached;
-      let context = contexts.get(key);
-      if (!context) {
-        context = await browser.newContext({ viewport });
-        await context.addInitScript(installElementNames);
-        contexts.set(key, context);
-      }
-      const page = await context.newPage();
-      if (options?.reducedMotion) await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.goto(`${baseUrl}${pagePath}`, { waitUntil });
-      const opened: RenderedPage = {
-        evaluate: (fn, arg) => page.evaluate(fn as (a: unknown) => unknown, arg) as Promise<never>,
-        inject: async (script) => {
-          await page.addScriptTag({ content: script });
-        },
-        press: (k) => page.keyboard.press(k),
-        hover: (selector) => page.hover(selector),
-        click: (selector) => page.click(selector),
-        focus: (selector) => page.focus(selector),
-        screenshot: async (selector) => new Uint8Array(selector ? await page.locator(selector).first().screenshot() : await page.screenshot()),
-        close: async () => {
-          if (options?.fresh) await page.close();
-        },
-      };
-      if (!options?.fresh) pages.set(cacheKey, opened);
-      return opened;
+    open: (pagePath, viewport, options) => own.open(pagePath, viewport, options),
+    lane() {
+      const lane = startLane(browser, baseUrl, waitUntil);
+      lanes.push(lane);
+      return lane;
     },
     async close() {
-      for (const c of contexts.values()) await c.close();
+      await Promise.all(lanes.map((lane) => lane.close()));
       if (!shared) await browser.close();
       await new Promise<void>((resolve) => server.close(() => resolve()));
     },

@@ -189,11 +189,13 @@ describe("the rendered rules of a run", async () => {
       },
       decide: () => "the banner is gone",
     };
+    /* One lane, so the two rules share it, as many rules of a real run do. */
     const r = await run([renderedRule("XX-6a"), renderedRule("XX-6b")], [clicker, reader], null, {
       ...options,
       surfaces: ["rendered"],
       root,
       waitUntil: "load",
+      lanes: 1,
     });
     expect(r.ran).toEqual(["XX-6a", "XX-6b"]);
     expect(r.findings).toEqual([]);
