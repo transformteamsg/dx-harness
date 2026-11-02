@@ -47,6 +47,7 @@ Use the helpers that exist:
 | Scan CSS for raw colours | `src/css.ts` |
 | Run axe-core rules in a page | `axeRule(code, ids)` in `src/engines/axe.ts`. See `src/modules/wr-1.ts`. |
 | Run jsx-a11y rules on JSX and TSX | `jsxRule(code, ids)` in `src/engines/jsx-a11y.ts` |
+| Read a Vue or Svelte template | `readTemplate(file)` in `src/templates.ts`. When it returns an error, push `unreadable(file, error)`, and decide it with `unreadableMessage(code, data)`. See `src/modules/bd-6b.ts`. |
 | Open a page in the browser | `rendered.open(path, viewport)`, then `page.evaluate(fn, arg)` |
 | Press a key, hover, click, focus, take a screenshot | `page.press(key)`, `page.hover(sel)`, `page.click(sel)`, `page.focus(sel)`, `page.screenshot(sel?)`. Open the page with `{ fresh: true }`, because these change the page, and the default page is shared with other rules. |
 | Check a rule on HTML and on JSX and TSX | `combineRules(code, [htmlPart, jsxRule(code, ids)])` in `src/engines/combine.ts`. Do this for a source rule that names a jsx-a11y rule, so that it works on a plain HTML project and on a React project. |

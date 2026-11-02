@@ -7,7 +7,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | DSS control | Rule | Check | Surface | Engine | Parameters | Tier |
 | --- | --- | --- | --- | --- | --- | --- |
 | WP-1 Text alternatives for non-text content | [`WP-1a`](text-alternatives.md) Non-text content has a text alternative | lint | rendered | axe `image-alt`, `input-image-alt`, `role-img-alt`, `svg-img-alt`, `object-alt`, `area-alt` | `pages` | |
-| | [`WP-1b`](jsx-image-alt.md) JSX images have alt text | lint | source | jsx-a11y `alt-text` | None | |
+| | [`WP-1b`](jsx-image-alt.md) JSX, Vue, and Svelte images have alt text | lint | source | jsx-a11y `alt-text`, plus custom | None | |
 | | [`WP-1c`](alt-text-length.md) Alt text is within the length limit | lint | rendered | custom | `maxAltLength` (125), `pages` | |
 | | `WP-1d` Alt text is accurate, and decorative content is marked. Lint part: [`WP-1e`](alt-text-not-placeholder.md). | judged | | | | L1 |
 | | [`WP-1e`](alt-text-not-placeholder.md) Alt text is not a file name, an extension, or a placeholder word. Lint part of `WP-1d`. | lint | source | jsx-a11y `img-redundant-alt`; custom | `placeholderWords` | |

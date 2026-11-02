@@ -9,7 +9,7 @@ The category has 19 DSS controls and 57 rules: 41 lintable and 16 judged. The ru
 | Rule | Title | Surface |
 | --- | --- | --- |
 | [WP-1a](text-alternatives.md) | Non-text content has a text alternative | rendered |
-| [WP-1b](jsx-image-alt.md) | JSX images have alt text | source |
+| [WP-1b](jsx-image-alt.md) | JSX, Vue, and Svelte images have alt text | source |
 | [WP-1c](alt-text-length.md) | Alt text is within the length limit | rendered |
 | [WP-1e](alt-text-not-placeholder.md) | Alt text is not a file name, an extension, or a placeholder word | source |
 | [WP-2a](video-captions.md) | Every video has a captions track | rendered |

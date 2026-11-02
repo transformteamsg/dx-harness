@@ -42,6 +42,7 @@ The tests and the typecheck run from the repository root with `pnpm test` and `p
 | `src/engines/combine.ts` | Makes one rule of several checks, such as a plain HTML check and a jsx-a11y check |
 | `src/lint.ts` | The entry point that the command and the tests share |
 | `src/files.ts`, `src/html.ts` | File collection, and HTML parsing with source positions (parse5) |
+| `src/templates.ts` | Reads the template elements and the style blocks of Vue and Svelte files, with source positions, and reports a file that does not parse |
 | `src/project.ts`, `src/forms.ts`, `src/css.ts`, `src/readability.ts` | Helpers that several rules share: pages and links, form controls, raw colours in CSS, and readability |
 | `src/rendered.ts` | The static server and the browser session (playwright-core) |
 | `src/patch.ts` | Applies a break patch |
@@ -60,6 +61,6 @@ A module implements one rule. It has a `code`, a `surface`, a `locate` function 
 - `design-lint init`.
 - ast-grep for the existing locators. `source` rules parse with parse5. The plan also names ast-grep, and no rule uses it yet.
 - The CDP-only adapter. A rendered rule sees only `evaluate`, so the engine can change, but Playwright is called directly.
-- Mixed projects: the JSX and TSX path (`eslint-plugin-jsx-a11y` with ESLint 9) is built, and a source rule that names a jsx-a11y rule checks plain HTML and JSX together. Vue and Svelte templates are not read.
+- Mixed projects: the JSX and TSX path (`eslint-plugin-jsx-a11y` with ESLint 9) is built, and a source rule that names a jsx-a11y rule checks plain HTML and JSX together. `WP-1b` and `BD-6b` also read `.vue` and `.svelte` files. A template that does not parse is reported as unreadable, and the finding blocks. The other source rules do not read Vue or Svelte templates yet.
 - A JSON Schema for the config file.
 - A build step. Node strips types only outside `node_modules`, so the package must compile before it is published.
