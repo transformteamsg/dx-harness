@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -27,6 +28,7 @@ afterAll(async () => {
   await browser?.close();
 }, 60000);
 
+const PACKAGE = path.resolve(import.meta.dirname, "..");
 const FIXTURE = path.resolve(import.meta.dirname, "../fixtures/PR-6b");
 const DEMO = path.resolve(import.meta.dirname, "../demo");
 
@@ -75,5 +77,39 @@ describe.skipIf(!browser)("PR-6b with ci on", () => {
     applyPatch(site, readPatch(path.join(DEMO, "patches/PR-6b.json")));
     const result = await run(site, demoConfig, DEMO, true);
     expect(result.findings.map((f) => [f.code, f.file])).toEqual([["PR-6b", "/pr/performance.html"]]);
+  });
+
+  /* An engine that does not start. The config lists firefox before chromium, and
+     DESIGN_LINT_FIREFOX names an executable that does not exist. PR-6b is tier L2,
+     so its findings warn, but an engine that did not run must not pass. See issue #520. */
+  describe("with an engine that does not start", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pr6b-engine-"));
+    const fixtureConfig = JSON.parse(fs.readFileSync(path.join(FIXTURE, "config.json"), "utf8"));
+    fixtureConfig.rules["PR-6b"].engines = ["firefox", "chromium"];
+    const config = path.join(dir, "design-lint.config.json");
+    fs.writeFileSync(config, JSON.stringify(fixtureConfig));
+    const missing = path.join(dir, "no-such-firefox");
+    const cli = (site: string) =>
+      spawnSync(process.execPath, ["src/cli.ts", path.join(FIXTURE, site), "--rendered", "--ci", "--select", "PR-6b", "--config", config], {
+        cwd: PACKAGE,
+        encoding: "utf8",
+        env: { ...process.env, DESIGN_LINT_FIREFOX: missing },
+      });
+
+    it("reports the engine as not run and does not pass", () => {
+      const run = cli("pass");
+      expect(run.stderr).toBe("");
+      expect(run.stdout).toMatch(/Not run: the engine firefox did not start/);
+      expect(run.stdout).not.toMatch(/In chromium/);
+      expect(run.status).toBe(1);
+    });
+
+    it("still reports the findings of the engines that start", () => {
+      const run = cli("fail");
+      expect(run.stdout).toMatch(/Not run: the engine firefox did not start/);
+      expect(run.stdout).toMatch(/In chromium, loads-without-errors fails/);
+      expect(run.stdout).toMatch(/In chromium, no-horizontal-scroll fails: the page scrolls sideways at 320 px/);
+      expect(run.stdout).toMatch(/In chromium, axe-critical fails: critical axe violations: image-alt/);
+    });
   });
 });
