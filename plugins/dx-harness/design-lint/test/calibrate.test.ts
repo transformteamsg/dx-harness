@@ -88,3 +88,23 @@ describe("a calibration run", () => {
   });
 });
 
+describe("a rule above the limit of false findings", () => {
+  it("is flagged for a lower tier or the judged list", async () => {
+    const report = await runOnce(writeCorpus({ falseShareLimit: 0.25 }), (v) => (v.page === "short-a" ? "false" : "true"));
+    expect(report.rules.find((r) => r.code === "BD-5a")?.flagged).toBe(true);
+    expect(formatCalibration(report).join("\n")).toMatch(/BD-5a.*(lower tier|judged)/);
+  });
+
+  it("is not flagged when its share is at or below the limit", async () => {
+    const report = await runOnce(writeCorpus({ falseShareLimit: 0.5 }), (v) => (v.page === "short-a" ? "false" : "true"));
+    expect(report.rules.find((r) => r.code === "BD-5a")?.flagged).toBe(false);
+  });
+
+  it("is not flagged when no limit is agreed", async () => {
+    const report = await runOnce(writeCorpus(), () => "false");
+    const bd5a = report.rules.find((r) => r.code === "BD-5a");
+    expect(bd5a?.falseShare).toBe(1);
+    expect(bd5a?.flagged).toBe(false);
+  });
+});
+
