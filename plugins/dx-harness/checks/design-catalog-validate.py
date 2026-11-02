@@ -1567,8 +1567,10 @@ def coverage_markdown(checks_dir, controls, base_tiers=None):
 def load_base_tiers(repo_root):
     """{base rule code: tier} from standards/rules/ under `repo_root`, or {}
     when the folder is absent."""
-    rules = checklib.base_rules(os.path.join(repo_root, "standards", "rules"))
-    return {rule["id"]: rule["tier"] for rule in rules if rule.get("tier")}
+    try:
+        return checklib.base_rule_tiers(os.path.join(repo_root, "standards", "rules"))
+    except checklib.RulesUnresolvedError:
+        return {}
 
 
 def write_coverage(repo_root):
