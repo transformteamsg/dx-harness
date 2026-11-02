@@ -102,7 +102,8 @@ has to pass its controls, it only means don't restyle a deliberate choice.
 These rules bind in every phase, including a phase whose file the run has not read:
 
 - Work through the phases in order. Do not skip a gate, even when the request seems simple.
-- Edit no product file before plan approval. Plan approval occurs one time per run, per `../../../procedures/plan-approval.md`, so never stop twice.
+- Edit no product file before plan approval. The one exception is the new `design-lint.config.json` that Phase 1 writes. Plan approval occurs one time per run, per `../../../procedures/plan-approval.md`, so never stop twice.
+- When the ask needs something that a rule on the in-scope list forbids, such as a page that blocks zoom, do not build it as asked. Name the rule in plain words with its code, and offer a version that complies. Build the forbidden version only when the designer chooses it, and only through the waiver path for the rule's tier, per `../../../procedures/plan-approval.md`. An L0 rule has no waiver path, so it is a blocking question.
 - In return-to-caller mode, skip the plan-approval stop only when the payload carries a real approval. Only these forms count as approval:
   - An approved plan.
   - An accepted-findings list from a pass or `dx-design-critique`, for a smaller finding. A whole-page rebuild always stops once at plan approval before any edit, per the pattern pass rules.

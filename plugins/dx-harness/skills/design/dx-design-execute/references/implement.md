@@ -14,3 +14,7 @@ Skill-specific notes while building:
 - **Copy**: when the build writes or changes user-facing text, read
   `../../../../procedures/copy-rules.md` before you write that user-facing text.
   A build that changes no user-facing text reads no copy rules.
+- **Lint before review**: after the first version, run step 2 of
+  `../../../../procedures/design-lint.md`, and fix each finding before the run
+  enters design review. A finding that needs a decision from the designer, such
+  as a missing contact channel, goes to the designer, not into a guess.
