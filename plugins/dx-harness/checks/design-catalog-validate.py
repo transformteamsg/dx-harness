@@ -29,7 +29,8 @@ Validates standards/catalog.yaml for internal consistency:
      folder and takes its slug as its name, per ADR-0002. Every target in
      standards/rules/redirects.yaml exists. Each code under its 'codes'
      map has a row in a MAPPING.md, and each control under 'notMoved' has a
-     reason and no codes (#546). No file remains under the retired
+     reason and no codes (#546). Each generic control in catalog.yaml has
+     an entry under 'codes' or 'notMoved' (#541). No file remains under the retired
      skills/design-restructure/ (#536).
 Exit 0 and print "OK: <n> controls valid" on success.
 Exit 1 and print "ERROR <location>: <message>" lines on failure.
@@ -773,7 +774,43 @@ def rule_redirect_errors(repo_root):
     errors = [f"ERROR {loc}: '{old}' redirects to '{new}', which does not exist"
               for old, new in sorted(files.items(), key=lambda kv: str(kv[0]))
               if not isinstance(new, str) or not os.path.isfile(os.path.join(rules_dir, new))]
-    return errors + rule_code_redirect_errors(rules_dir, data.get("codes", {}), data.get("notMoved", {}))
+    codes, not_moved = data.get("codes", {}), data.get("notMoved", {})
+    return (errors + rule_code_redirect_errors(rules_dir, codes, not_moved)
+            + generic_control_coverage_errors(repo_root, codes, not_moved))
+
+
+# The 13 stack, domain, and product controls stay in catalog.yaml as the
+# placeholder catalogue. The 12 controls that port in full retire to DSS rules,
+# and #540 removes them from catalog.yaml. Every other control is generic.
+PLACEHOLDER_CONTROLS = {
+    "TOK-1", "TOK-2", "TOK-3", "COL-2", "TYP-3", "CMP-1",
+    "CNT-14",
+    "COL-1", "TYP-1", "IDN-1", "IDN-2", "IDN-3", "IDN-4",
+}
+PORTED_CONTROLS = {
+    "A11Y-1", "A11Y-2", "A11Y-4", "A11Y-6", "A11Y-7", "A11Y-8", "A11Y-9", "A11Y-10",
+    "CMP-7", "CNT-1", "CNT-10", "LAY-2",
+}
+
+
+def generic_control_coverage_errors(repo_root, codes, not_moved):
+    """Error lines for each generic control in catalog.yaml with no entry under
+    `codes` or `notMoved` in redirects.yaml (#541)."""
+    path = os.path.join(repo_root, "standards", "catalog.yaml")
+    if not os.path.isfile(path) or not isinstance(codes, dict) or not isinstance(not_moved, dict):
+        return []
+    try:
+        with open(path) as fh:
+            catalog = yaml.safe_load(fh) or {}
+    except yaml.YAMLError:
+        return []
+    controls = catalog.get("controls") if isinstance(catalog, dict) else None
+    ids = [c.get("id") for c in controls or [] if isinstance(c, dict)]
+    return [f"ERROR standards/rules/redirects.yaml: generic control '{cid}' has no entry "
+            f"under 'codes' or 'notMoved'"
+            for cid in ids
+            if isinstance(cid, str) and cid not in PLACEHOLDER_CONTROLS
+            and cid not in PORTED_CONTROLS and cid not in codes and cid not in not_moved]
 
 
 RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
@@ -2958,6 +2995,32 @@ def run_self_test():
             elif bad is not None and not any(
                     e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
                 failures.append(f"FAIL rule not moved: {name}; got {errs!r}")
+
+        catalog = os.path.join(rules_root, "standards", "catalog.yaml")
+        with open(catalog, "w") as fh:
+            fh.write("controls:\n  - id: TOK-1\n  - id: A11Y-1\n  - id: CNT-12\n  - id: CMP-9\n")
+        for name, text, bad in [
+            ("a generic control with a codes entry passes",
+             "files: {}\ncodes:\n  CNT-12: [BD-1a]\nnotMoved:\n  CMP-9: Security.\n", None),
+            ("a generic control with no entry fails",
+             "files: {}\nnotMoved:\n  CMP-9: Security.\n", "generic control 'CNT-12' has no entry"),
+            ("a generic control in neither map fails",
+             "files: {}\ncodes:\n  CNT-12: [BD-1a]\n", "generic control 'CMP-9' has no entry"),
+        ]:
+            case_count += 1
+            rule_errors_for(["bd/viewport-meta.md", "bd/MAPPING.md"])
+            with open(redirects, "w") as fh:
+                fh.write(text)
+            errs = rule_file_errors(rules_root)
+            if bad is None and errs:
+                failures.append(f"FAIL generic control coverage: {name}; got {errs!r}")
+            elif bad is not None and not any(
+                    e.startswith("ERROR standards/rules/redirects.yaml: ") and bad in e for e in errs):
+                failures.append(f"FAIL generic control coverage: {name}; got {errs!r}")
+            elif any("'TOK-1'" in e or "'A11Y-1'" in e for e in errs):
+                failures.append(f"FAIL generic control coverage: {name} flags a placeholder "
+                                f"or ported control; got {errs!r}")
+        os.remove(catalog)
 
         case_count += 1
         rule_errors_for(["bd/viewport-meta.md"])
