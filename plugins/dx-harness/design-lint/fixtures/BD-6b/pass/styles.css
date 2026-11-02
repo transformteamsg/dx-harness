@@ -5,3 +5,7 @@
 a { color: var(--c); }
 .btn { background: var(--d, #fff); }
 .card { padding: 12px 0.75rem; margin: 0 auto; gap: 5%; top: 0; }
+:root { --space-odd: 13px; --radius-odd: 5px; }
+/* dx-tokens */
+.token-sample { padding: 13px; border-radius: 5px; }
+/* /dx-tokens */
