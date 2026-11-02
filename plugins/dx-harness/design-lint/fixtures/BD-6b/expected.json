@@ -33,5 +33,20 @@
     "file": "index.html",
     "line": 9,
     "column": 1
+  },
+  {
+    "file": "Button.vue",
+    "line": 7,
+    "column": 10
+  },
+  {
+    "file": "Badge.svelte",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "file": "Badge.svelte",
+    "line": 4,
+    "column": 21
   }
 ]
