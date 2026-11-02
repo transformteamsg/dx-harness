@@ -8,5 +8,10 @@
     "file": "badtitle.html",
     "line": 5,
     "column": 3
+  },
+  {
+    "file": "shortdesc.html",
+    "line": 6,
+    "column": 3
   }
 ]
