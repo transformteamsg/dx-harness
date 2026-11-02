@@ -143,3 +143,23 @@ describe("BD-6b on an off-scale value", () => {
     expect(palette && bd6b.decide(palette, {})).toMatch(/bg-red-500[\s\S]*bg-primary/);
   });
 });
+
+describe("BD-6b on a site with a theme", () => {
+  const site = (css: string, body: string) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-bd6b-"));
+    fs.writeFileSync(path.join(dir, "theme.css"), css);
+    fs.writeFileSync(path.join(dir, "index.html"), `<html lang="en"><body>${body}</body></html>`);
+    const files = [path.join(dir, "index.html"), path.join(dir, "theme.css")];
+    return bd6b.locate({ files, root: dir, params: {} }) as Parameters<typeof bd6b.decide>[0][];
+  };
+
+  it("does not report a palette class whose colour the theme defines", () => {
+    const found = site("@theme { --color-amber-11: oklch(0.5 0.1 80); --color-teal: oklch(0.6 0.1 180); }", '<p class="bg-amber-11 text-teal-600 border-rose-200">Hi</p>');
+    expect(found.map((c) => bd6b.decide(c, {}))).toEqual([expect.stringMatching(/border-rose-200/)]);
+  });
+
+  it("does not report a length inside calc()", () => {
+    const found = site(".a { margin: calc(100% - 13px) 15px; }", "<p>Hi</p>");
+    expect(found.map((c) => bd6b.decide(c, {}))).toEqual([expect.stringMatching(/Spacing 15px/)]);
+  });
+});
