@@ -4,23 +4,23 @@ Source: the CNT controls of [`catalog.yaml`](../../catalog.yaml), from the DX de
 
 The CNT controls list no "Not required for" text, so no row has an exemption parameter. `CNT-1` and `CNT-10` port to existing rules, and `CNT-14` is domain, so they have no row.
 
-| Control | Rule | Check | Surface | Engine | Parameters |
-| --- | --- | --- | --- | --- | --- |
-| CNT-2 Plain feature and page names | `CNT-2a` Feature and page names use plain language, with no invented portmanteaus and no internal codenames | judged | | | |
-| CNT-3 Second person and active voice | `CNT-3a` Copy speaks to the user as "you" and uses active voice | judged | | | |
-| CNT-4 Faithful real-world content | `CNT-4a` Content that models a real-world artefact is faithful to it, or is labelled illustrative | judged | | | |
-| CNT-5 Device-neutral action words | [`CNT-5a`](device-verbs.md) Action words do not name the input device. Lint part of CNT-5b. | lint | rendered | custom | `deviceVerbs`, `pages` (unset) |
-| | `CNT-5b` Action words name the action in the cases that a word list cannot decide. Lint part: [CNT-5a](device-verbs.md). | judged | | | |
-| CNT-6 No low-information words | [`CNT-6a`](low-information-words.md) Copy has no empty openers and no filler words. Lint part of CNT-6b. | lint | rendered | custom | `openers`, `fillerWords`, `pages` (unset) |
-| | `CNT-6b` Copy has no other low-information words, unless removing them hurts clarity. Lint part: [CNT-6a](low-information-words.md). | judged | | | |
-| CNT-7 Purpose before mechanism | `CNT-7a` Descriptive copy states its purpose for the user before the mechanism | judged | | | |
-| CNT-8 Plain verbs, not nominalisations | `CNT-8a` Copy uses plain action verbs, not nominalised verbs and "to be" constructions | judged | | | |
-| CNT-9 Clear copy | `CNT-9a` Copy has one idea per sentence, no double negatives, and no noun stacks | judged | | | |
-| CNT-11 Established UI terms | `CNT-11a` UI terms match the established word that users meet in other products | judged | | | |
-| CNT-12 Sentence case | [`CNT-12a`](sentence-case.md) Headings, labels, and buttons use sentence case. Lint part of CNT-12b. | lint | rendered | custom | `labelSelector`, `properNouns`, `pages` (unset) |
-| | `CNT-12b` Running prose and the remaining labels use sentence case. Lint part: [CNT-12a](sentence-case.md). | judged | | | |
-| CNT-13 Spelling and Singapore English | [`CNT-13a`](spelling.md) Copy uses British spelling and has no common misspellings. Lint part of CNT-13b. | lint | rendered | custom | `usToUk`, `typos`, `pages` (unset) |
-| | `CNT-13b` Copy has no contextual typos, homophones, or doubled words. Lint part: [CNT-13a](spelling.md). | judged | | | |
+| Control | Rule | Check | Surface | Engine | Parameters | Tier |
+| --- | --- | --- | --- | --- | --- | --- |
+| CNT-2 Plain feature and page names | `CNT-2a` Feature and page names use plain language, with no invented portmanteaus and no internal codenames | judged | | | | L1 |
+| CNT-3 Second person and active voice | `CNT-3a` Copy speaks to the user as "you" and uses active voice | judged | | | | L2 |
+| CNT-4 Faithful real-world content | `CNT-4a` Content that models a real-world artefact is faithful to it, or is labelled illustrative | judged | | | | L2 |
+| CNT-5 Device-neutral action words | [`CNT-5a`](device-verbs.md) Action words do not name the input device. Lint part of CNT-5b. | lint | rendered | custom | `deviceVerbs`, `pages` (unset) | |
+| | `CNT-5b` Action words name the action in the cases that a word list cannot decide. Lint part: [CNT-5a](device-verbs.md). | judged | | | | L2 |
+| CNT-6 No low-information words | [`CNT-6a`](low-information-words.md) Copy has no empty openers and no filler words. Lint part of CNT-6b. | lint | rendered | custom | `openers`, `fillerWords`, `pages` (unset) | |
+| | `CNT-6b` Copy has no other low-information words, unless removing them hurts clarity. Lint part: [CNT-6a](low-information-words.md). | judged | | | | L2 |
+| CNT-7 Purpose before mechanism | `CNT-7a` Descriptive copy states its purpose for the user before the mechanism | judged | | | | L2 |
+| CNT-8 Plain verbs, not nominalisations | `CNT-8a` Copy uses plain action verbs, not nominalised verbs and "to be" constructions | judged | | | | L2 |
+| CNT-9 Clear copy | `CNT-9a` Copy has one idea per sentence, no double negatives, and no noun stacks | judged | | | | L2 |
+| CNT-11 Established UI terms | `CNT-11a` UI terms match the established word that users meet in other products | judged | | | | L2 |
+| CNT-12 Sentence case | [`CNT-12a`](sentence-case.md) Headings, labels, and buttons use sentence case. Lint part of CNT-12b. | lint | rendered | custom | `labelSelector`, `properNouns`, `pages` (unset) | |
+| | `CNT-12b` Running prose and the remaining labels use sentence case. Lint part: [CNT-12a](sentence-case.md). | judged | | | | L2 |
+| CNT-13 Spelling and Singapore English | [`CNT-13a`](spelling.md) Copy uses British spelling and has no common misspellings. Lint part of CNT-13b. | lint | rendered | custom | `usToUk`, `typos`, `pages` (unset) | |
+| | `CNT-13b` Copy has no contextual typos, homophones, or doubled words. Lint part: [CNT-13a](spelling.md). | judged | | | | L2 |
 
 ## Judged reasons
 
@@ -42,7 +42,7 @@ The CNT controls list no "Not required for" text, so no row has an exemption par
 
 SLP is not a category, so each SLP control moves to the category that it grades (ADR-0001 D10). A judged rule has no file.
 
-| Source control | Rule | Check | Surface | Engine | Parameters |
-| --- | --- | --- | --- | --- | --- |
-| SLP-9 Copy carries no AI-writing tells | [`CNT-15a`](ai-writing-tells.md) Copy has no buzzword, filler, chatbot phrase, or em dash chain. | lint | rendered | custom | `pages`, `buzzwords`, `aiVocabulary`, `filler`, `chatbot`, `maxEmDashes` |
-| | `CNT-15b` Copy has no structural tells: negative parallelism, forced triads, copula avoidance, significance inflation, a label and a helper text that say the same thing, or a marketing tone. Lint part: [`CNT-15a`](ai-writing-tells.md). | judged | | | |
+| Source control | Rule | Check | Surface | Engine | Parameters | Tier |
+| --- | --- | --- | --- | --- | --- | --- |
+| SLP-9 Copy carries no AI-writing tells | [`CNT-15a`](ai-writing-tells.md) Copy has no buzzword, filler, chatbot phrase, or em dash chain. | lint | rendered | custom | `pages`, `buzzwords`, `aiVocabulary`, `filler`, `chatbot`, `maxEmDashes` | |
+| | `CNT-15b` Copy has no structural tells: negative parallelism, forced triads, copula avoidance, significance inflation, a label and a helper text that say the same thing, or a marketing tone. Lint part: [`CNT-15a`](ai-writing-tells.md). | judged | | | | L2 |

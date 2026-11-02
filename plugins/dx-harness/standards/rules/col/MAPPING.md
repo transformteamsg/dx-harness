@@ -6,8 +6,8 @@ A judged rule has no file. `dx-design-judge` judges it.
 
 ## From the SLP controls
 
-| Source control | Rule | Check | Surface | Engine | Parameters |
-| --- | --- | --- | --- | --- | --- |
-| SLP-1 No purple gradients, cyan-on-dark theming, or glow accents | [`COL-3a`](purple-gradient-and-glow.md) No purple gradient and no glow shadow. | lint | source | custom | `hueRange`, `minSaturation`, `minGlowBlur` |
-| | `COL-3b` No cyan-on-dark theming, and the palette is a decision, not the default look. Lint part: [`COL-3a`](purple-gradient-and-glow.md). | judged | | | |
-| SLP-2 No gradient text | [`COL-4a`](gradient-text.md) No gradient text | lint | source | custom | |
+| Source control | Rule | Check | Surface | Engine | Parameters | Tier |
+| --- | --- | --- | --- | --- | --- | --- |
+| SLP-1 No purple gradients, cyan-on-dark theming, or glow accents | [`COL-3a`](purple-gradient-and-glow.md) No purple gradient and no glow shadow. | lint | source | custom | `hueRange`, `minSaturation`, `minGlowBlur` | |
+| | `COL-3b` No cyan-on-dark theming, and the palette is a decision, not the default look. Lint part: [`COL-3a`](purple-gradient-and-glow.md). | judged | | | | L1 |
+| SLP-2 No gradient text | [`COL-4a`](gradient-text.md) No gradient text | lint | source | custom | | |

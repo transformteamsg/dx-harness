@@ -4,15 +4,15 @@ Source: [DSS Understand Users](https://info.standards.tech.gov.sg/control-catalo
 
 The DSS page lists no "Not required for" text for UU-1 or UU-2, so no row has an exemption parameter.
 
-| DSS control | Rule | Check | Surface | Engine | Parameters |
-| --- | --- | --- | --- | --- | --- |
-| UU-1 Understand user needs | `UU-1a` Users' needs and context are understood before a solution is chosen | judged | | | |
-| | `UU-1b` Users' needs and context are documented. Lint part: [`UU-1c`](research-record.md). | judged | | | |
-| | [`UU-1c`](research-record.md) A research record exists at the configured path and is not empty. Lint part of `UU-1b`. | lint | project | custom | `researchRecordPath` (unset) |
-| UU-2 Test with users | `UU-2a` Usability testing is run with representative users | out of scope | | | |
-| | `UU-2b` Findings are documented in a structured report ranked by severity. Lint part: [`UU-2d`](findings-report.md). | judged | | | |
-| | `UU-2c` Each finding is remediated or its risk is accepted within the set days | out of scope | | | `uu-2_prm_1` (days, unset) |
-| | [`UU-2d`](findings-report.md) A findings report exists at the configured path and each finding has a severity from the scale. Lint part of `UU-2b`. | lint | project | custom | `findingsReportPath` (unset), `severityField` (`severity`), `severityScale` (`critical`, `high`, `medium`, `low`) |
+| DSS control | Rule | Check | Surface | Engine | Parameters | Tier |
+| --- | --- | --- | --- | --- | --- | --- |
+| UU-1 Understand user needs | `UU-1a` Users' needs and context are understood before a solution is chosen | judged | | | | L2 |
+| | `UU-1b` Users' needs and context are documented. Lint part: [`UU-1c`](research-record.md). | judged | | | | L1 |
+| | [`UU-1c`](research-record.md) A research record exists at the configured path and is not empty. Lint part of `UU-1b`. | lint | project | custom | `researchRecordPath` (unset) | |
+| UU-2 Test with users | `UU-2a` Usability testing is run with representative users | out of scope | | | | |
+| | `UU-2b` Findings are documented in a structured report ranked by severity. Lint part: [`UU-2d`](findings-report.md). | judged | | | | L1 |
+| | `UU-2c` Each finding is remediated or its risk is accepted within the set days | out of scope | | | `uu-2_prm_1` (days, unset) | |
+| | [`UU-2d`](findings-report.md) A findings report exists at the configured path and each finding has a severity from the scale. Lint part of `UU-2b`. | lint | project | custom | `findingsReportPath` (unset), `severityField` (`severity`), `severityScale` (`critical`, `high`, `medium`, `low`) | |
 
 ## Judged and out-of-scope reasons
 

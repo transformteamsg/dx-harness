@@ -27,11 +27,20 @@ const CHECKS_THAT_READ_RULES = [
   "waiver-reconcile.py",
 ];
 
-/* Contract item 1: skills and checks use the same resolution. */
+/* Contract item 1: skills and checks use the same resolution. The list command
+   also lists the base rules (#537), and it scopes the catalogue controls with
+   the resolution that the checks use. */
 describe("a check that reads which rules apply", () => {
-  it("the list command resolves through checklib.resolve_rules", () => {
+  it("the list command resolves through checklib", () => {
     const list = fs.readFileSync(path.join(ROOT, "plugins/dx-harness/scripts/in-scope-rules.py"), "utf8");
-    expect(list).toMatch(/checklib\.resolve_rules\(/);
+    expect(list).toMatch(/checklib\.resolve_in_scope\(/);
+  });
+
+  it("the list scopes the catalogue controls through resolve_rules", () => {
+    const lib = read("checklib.py");
+    const scope = lib.match(/^def resolve_in_scope\([\s\S]*?(?=^def |^class |^# ──)/m)?.[0];
+    expect(scope, "checklib.py has no resolve_in_scope()").toBeDefined();
+    expect(scope).toMatch(/\bresolve_rules\(/);
   });
 
   it("checklib's door for the checks resolves through resolve_rules", () => {

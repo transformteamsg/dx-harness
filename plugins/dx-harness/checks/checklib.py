@@ -840,24 +840,320 @@ def catalog_controls(path=None):
     return controls
 
 
-# ── In-scope rule list ────────────────────────────────────────────────────────
+# ── Base rules ────────────────────────────────────────────────────────────────
 #
-# The rules a design run reads, resolved once here so the list command
-# (scripts/in-scope-rules.py) and the checks select the same slice.
-
-# The rules each pass dimension selects, as its pass SKILL.md names them. The
-# L0 floor is added to every dimension by resolve_rules(), not listed here.
-# The self-test fails when a SKILL.md stops naming one of these ids.
-DIMENSION_RULES = {
-    "copy": [f"CNT-{n}" for n in range(1, 15)] + ["SLP-9", "IDN-3", "IDN-4"],
-    "flow": ["CMP-2", "CMP-3", "CMP-8", "A11Y-2", "A11Y-11", "SLP-10"],
-    "motion": ["MOT-1", "MOT-2", "MOT-3", "A11Y-5", "SLP-8"],
-    "pattern": [f"LAY-{n}" for n in range(1, 8)] + ["TYP-6", "SLP-4", "SLP-5", "SLP-11"],
-    "polish": ["TOK-1", "TOK-2", "TOK-3", "TYP-1", "TYP-2", "TYP-3", "TYP-4", "TYP-5",
-               "COL-1", "COL-2", "SLP-1", "SLP-2", "SLP-3", "SLP-6", "SLP-7"],
-}
+# The base layer in standards/rules/ (ADR-0001, ADR-0002). A lint rule is a
+# file. A judged rule has no file: its row in the MAPPING.md of its category
+# holds its title and its tier (ADR-0003 decision 3). redirects.yaml maps each
+# old catalogue code to the base rules that replace it.
 
 DEFAULT_AUDIENCE = "teachers"
+
+RULES_DIR = os.path.join(os.path.dirname(_CHECKS_DIR), "standards", "rules")
+PRESETS_DIR = os.path.join(os.path.dirname(_CHECKS_DIR), "standards", "presets")
+_RULE_DOCS = {"README.md", "MAPPING.md"}
+_BASE_CODE_RE = re.compile(r"([A-Z][A-Z0-9]*)-(\d+)([a-z])")
+_FRONT_FIELD_RE = re.compile(r"^([A-Za-z_]+):\s*(.*?)\s*$")
+_MD_LINK_RE = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+
+
+def _frontmatter_fields(text):
+    """The one-line `key: value` fields of a `---` frontmatter block, or {}."""
+    if not text.startswith("---\n"):
+        return {}
+    end = text.find("\n---", 4)
+    fields = {}
+    for line in text[4:end if end != -1 else len(text)].splitlines():
+        m = _FRONT_FIELD_RE.match(line)
+        if m and m.group(2):
+            fields[m.group(1)] = _catalog_value(m.group(2))
+    return fields
+
+
+def _code_key(code):
+    m = _BASE_CODE_RE.fullmatch(code)
+    return (m.group(1), int(m.group(2)), m.group(3)) if m else (code, 0, "")
+
+
+def _judged_rows(mapping_path, category):
+    """The judged rules in one MAPPING.md: each row whose Check cell is
+    `judged`, with the title after the code and the tier from the Tier column."""
+    rules = []
+    with open(mapping_path, encoding="utf-8") as fh:
+        columns = None
+        for line in fh:
+            if not line.startswith("|"):
+                columns = None
+                continue
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) > 2 and cells[1] == "Rule" and cells[2] == "Check":
+                columns = {name: i for i, name in enumerate(cells)}
+                continue
+            if columns is None or len(cells) <= columns["Check"]:
+                continue
+            if cells[columns["Check"]] != "judged":
+                continue
+            rule_cell = cells[columns["Rule"]]
+            m = _BASE_CODE_RE.search(rule_cell)
+            if not m:
+                continue
+            tier_at = columns.get("Tier")
+            title = _MD_LINK_RE.sub(r"\1", rule_cell[m.end():]).strip(" `")
+            rules.append({
+                "id": m.group(0), "category": category, "check": "judged",
+                "title": title.rstrip("."),
+                "tier": cells[tier_at] if tier_at is not None and tier_at < len(cells) else "",
+                "detail": mapping_path,
+            })
+    return rules
+
+
+def base_rules(rules_dir=None):
+    """Every base rule, lint and judged, ordered by category folder and code.
+
+    A lint rule takes its code, tier, and check from its frontmatter, its title
+    from its `# <code>: <title>` heading, and its detail path from its file. A
+    judged rule comes from its MAPPING.md row (_judged_rows). A retired row and
+    an out-of-scope row are not rules. Returns [] when the folder cannot be
+    read: a caller that needs the rules treats that as a tool failure.
+    """
+    rules_dir = rules_dir or RULES_DIR
+    rules = []
+    try:
+        categories = sorted(entry for entry in os.listdir(rules_dir)
+                            if not entry.startswith(".")
+                            and os.path.isdir(os.path.join(rules_dir, entry)))
+        for category in categories:
+            folder = os.path.join(rules_dir, category)
+            for name in sorted(os.listdir(folder)):
+                path = os.path.join(folder, name)
+                if not name.endswith(".md"):
+                    continue
+                if name == "MAPPING.md":
+                    rules.extend(_judged_rows(path, category))
+                    continue
+                if name in _RULE_DOCS:
+                    continue
+                with open(path, encoding="utf-8") as fh:
+                    text = fh.read()
+                fields = _frontmatter_fields(text)
+                code = fields.get("code")
+                if not code:
+                    continue
+                heading = re.search(rf"^# {re.escape(code)}:\s*(.+?)\s*$", text, re.MULTILINE)
+                rules.append({
+                    "id": code, "category": category, "tier": fields.get("tier", ""),
+                    "check": fields.get("check", ""),
+                    "title": heading.group(1) if heading else fields.get("slug", ""),
+                    "detail": path,
+                })
+    except OSError:
+        return []
+    rules.sort(key=lambda rule: (rule["category"], _code_key(rule["id"])))
+    return rules
+
+
+def rule_redirects(path=None):
+    """The `codes` map of redirects.yaml: {old catalogue code: [base rule codes]}.
+    Parsed with stdlib regexes; each entry is one `  CODE: [a, b]` line.
+    Returns {} when the file cannot be read."""
+    codes = {}
+    section = None
+    try:
+        with open(path or os.path.join(RULES_DIR, "redirects.yaml"), encoding="utf-8") as fh:
+            for line in fh:
+                top = re.match(r"^([A-Za-z]+):\s*$", line)
+                if top:
+                    section = top.group(1)
+                    continue
+                m = re.match(r"^  ([A-Z][A-Z0-9]*-\d+):\s*(\[.*\])\s*$", line)
+                if section == "codes" and m:
+                    codes[m.group(1)] = _catalog_value(m.group(2))
+    except OSError:
+        return {}
+    return codes
+
+
+def placeholder_controls(controls, redirects):
+    """The catalogue controls that no base rule replaces: the ones that are not
+    a key of the `codes` map in redirects.yaml. These are the stack, domain, and
+    product controls, and any generic control that has not moved yet."""
+    return [c for c in controls if c["id"] not in redirects]
+
+
+class SelectionError(ValueError):
+    """Raised when a product's configuration or its preset cannot be read."""
+
+
+def _selectors(raw, where):
+    if raw is None:
+        return []
+    if not isinstance(raw, list) or not all(isinstance(s, str) for s in raw):
+        raise SelectionError(f"{where} is not a list of rule codes")
+    return raw
+
+
+def _read_config(path, seen=()):
+    """The `select` and `preset` of a design-lint.config.json, with the files it
+    `extends` loaded first, as design-lint loads them. `select` is a union, and
+    `preset` belongs to the last file that sets it."""
+    real = os.path.realpath(path)
+    if real in seen:
+        raise SelectionError(f"{path} extends itself")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            own = json.load(fh)
+    except OSError as exc:
+        raise SelectionError(f"cannot read {path}: {exc.strerror}") from exc
+    except ValueError as exc:
+        raise SelectionError(f"{path} is not valid JSON: {exc}") from exc
+    if not isinstance(own, dict):
+        raise SelectionError(f"{path}: the config is not an object")
+    select, preset = [], None
+    for ref in own.get("extends") or []:
+        target = os.path.join(os.path.dirname(path), ref)
+        if not os.path.isfile(target):
+            raise SelectionError(f"{path}: extends {ref}, which does not exist")
+        base = _read_config(target, seen + (real,))
+        select += [s for s in base["select"] if s not in select]
+        preset = base["preset"] or preset
+    select += [s for s in _selectors(own.get("select"), f"{path}: select") if s not in select]
+    if own.get("preset") is not None:
+        preset = own["preset"]
+    return {"select": select, "preset": preset}
+
+
+def _preset_ignore(name, presets_dir=None):
+    """The `ignore` list of a domain preset's frontmatter, as a flow list or a
+    block list. Raises SelectionError when no file defines the preset."""
+    path = os.path.join(presets_dir or PRESETS_DIR, f"{name}.md")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            text = fh.read()
+    except OSError as exc:
+        raise SelectionError(f"the config names preset {name!r}, and no file defines it "
+                             f"at {path}") from exc
+    end = text.find("\n---", 4) if text.startswith("---\n") else -1
+    lines = text[4:end].splitlines() if end != -1 else []
+    ignore = []
+    for i, line in enumerate(lines):
+        m = re.match(r"^ignore:\s*(.*?)\s*$", line)
+        if not m:
+            continue
+        if m.group(1):
+            ignore = _catalog_value(m.group(1))
+            break
+        for item in lines[i + 1:]:
+            entry = re.match(r"^\s+-\s+(.+?)\s*$", item)
+            if not entry:
+                break
+            ignore.append(entry.group(1).strip("\"'"))
+        break
+    return {"name": name, "file": path, "ignore": ignore if isinstance(ignore, list) else []}
+
+
+def product_selection(repo_root, presets_dir=None):
+    """The rule selection of a product, from the keys design-lint reads
+    (ADR-0003 decision 4): `select` and `preset` in design-lint.config.json at
+    `repo_root`, and `ignore` in that preset. `config` is None when the product
+    has no config file. Raises SelectionError when a file cannot be read."""
+    path = os.path.join(repo_root, "design-lint.config.json")
+    if not os.path.isfile(path):
+        return {"config": None, "select": [], "preset": None, "ignore": []}
+    config = _read_config(path)
+    preset = None
+    if config["preset"] is not None:
+        if not isinstance(config["preset"], str):
+            raise SelectionError(f"{path}: preset is not a name")
+        preset = _preset_ignore(config["preset"], presets_dir)
+    return {"config": path, "select": config["select"], "preset": preset,
+            "ignore": preset["ignore"] if preset else []}
+
+
+def expand_selectors(selectors, known, redirects):
+    """The set of rule codes that `selectors` names. A selector is a rule code,
+    an old catalogue code that redirects.yaml maps, or a category prefix such as
+    `CNT`, as design-lint reads one. Raises UnknownRuleError with each selector
+    that names none of them: a run that guessed past a typo would drop rules."""
+    prefixes = {code.rsplit("-", 1)[0] for code in known}
+    codes, unknown = set(), set()
+    for selector in selectors:
+        if selector in known:
+            codes.add(selector)
+        elif selector in redirects:
+            codes.update(redirects[selector])
+        elif selector in prefixes:
+            codes.update(code for code in known if code.startswith(f"{selector}-"))
+        else:
+            unknown.add(selector)
+    if unknown:
+        raise UnknownRuleError(unknown)
+    return codes
+
+
+def resolve_in_scope(rules, controls, redirects, dimension=None, product=None,
+                     audience=DEFAULT_AUDIENCE, select=(), ignore=()):
+    """The rules on a run's in-scope list (ADR-0003): the base rules, then the
+    placeholder controls of catalog.yaml.
+
+    A placeholder control keeps the product and audience scope of
+    resolve_rules(). With a `dimension`, only that dimension's DIMENSION_RULES
+    stay. A non-empty `select` keeps only the rules it names, and `ignore`
+    removes the rules it names. Every L0 rule stays whatever the filters,
+    because L0 is never scoped out (ADR-0001 decision 2). Raises
+    UnknownRuleError when `select` or `ignore` names a code that no rule,
+    placeholder control, or redirect has.
+    """
+    if dimension is not None and dimension not in DIMENSION_RULES:
+        raise ValueError(f"unknown dimension {dimension!r}")
+    placeholders = resolve_rules(placeholder_controls(controls, redirects),
+                                 product=product, audience=audience)
+    candidates = list(rules) + placeholders
+    known = {c["id"] for c in rules} | {c["id"] for c in placeholder_controls(controls, redirects)}
+    selected = expand_selectors(select, known, redirects) if select else None
+    ignored = expand_selectors(ignore, known, redirects)
+    in_scope = []
+    for c in candidates:
+        if c.get("tier") != "L0":
+            if dimension is not None and c["id"] not in DIMENSION_RULES[dimension]:
+                continue
+            if selected is not None and c["id"] not in selected:
+                continue
+            if c["id"] in ignored:
+                continue
+        in_scope.append(c)
+    return in_scope
+
+
+# ── In-scope rule list ────────────────────────────────────────────────────────
+#
+# The rules a design run reads. The list command (scripts/in-scope-rules.py)
+# resolves the base rules and the placeholder controls with resolve_in_scope().
+# The checks resolve the catalogue with resolve_rules() until #539 moves them.
+
+# The rules each pass dimension selects (ADR-0003 decision 1). A base rule
+# that no row lists is outside every pass. A placeholder control keeps its
+# catalogue code until it leaves catalog.yaml. The L0 floor is added to every
+# dimension by the resolution, not listed here. The self-test fails when a pass
+# SKILL.md stops naming a rule here, directly or through redirects.yaml.
+DIMENSION_RULES = {
+    "copy": ["CNT-2a", "CNT-3a", "CNT-4a", "CNT-5a", "CNT-5b", "CNT-6a", "CNT-6b",
+             "CNT-7a", "CNT-8a", "CNT-9a", "CNT-11a", "CNT-12a", "CNT-12b", "CNT-13a",
+             "CNT-13b", "CNT-15a", "CNT-15b", "WU-10c", "WU-10d", "WU-11a", "WU-11b",
+             "TX-10a", "TX-10b", "WU-8a", "WU-8b", "WU-8c",
+             "CNT-14", "IDN-3", "IDN-4"],
+    "flow": ["CMP-2a", "CMP-2b", "CMP-3a", "CMP-8a", "CMP-8b", "CMP-14a", "WO-1a",
+             "WO-1b", "WO-1c", "WO-13a", "WO-13b", "WR-2a", "WR-2b", "WR-2c", "WO-9c",
+             "A11Y-11a", "A11Y-11b", "A11Y-11c"],
+    "motion": ["MOT-1a", "MOT-1b", "MOT-2a", "MOT-2b", "MOT-3a", "MOT-4a", "A11Y-5a",
+               "A11Y-5b"],
+    "pattern": ["LAY-1a", "LAY-1b", "LAY-3a", "LAY-5a", "LAY-6a", "LAY-7a", "LAY-8a",
+                "TYP-6a", "TYP-6b", "WP-16a", "WP-16b", "BD-1b", "WP-7b", "CMP-13a",
+                "CMP-15a"],
+    "polish": ["TYP-2a", "TYP-2b", "TYP-4a", "TYP-4b", "TYP-5a", "TYP-5b", "TYP-7a",
+               "TYP-7b", "COL-3a", "COL-3b", "COL-4a", "CMP-12a", "LAY-9a",
+               "TOK-1", "TOK-2", "TOK-3", "TYP-1", "TYP-3", "COL-1", "COL-2"],
+}
 
 # A product or audience filter that keeps every scoped control. A check does
 # not know which product or audience it scans for, so a rule scoped to any of
@@ -895,34 +1191,24 @@ def design_rule_codes(text, controls):
     return codes
 
 
-def resolve_rules(controls, dimension=None, phase=None, surface=None,
-                  product=None, audience=DEFAULT_AUDIENCE):
-    """The controls in scope for a run, in catalogue order.
+def resolve_rules(controls, product=None, audience=DEFAULT_AUDIENCE):
+    """The catalogue controls in scope for a product, in catalogue order.
 
-    A control is in scope when its `phase` holds `phase`, its `applies_to`
-    holds `surface`, its `products` is absent or holds `product`, and its
-    `audiences` is absent or holds `audience`. A filter left as None does not
-    narrow. A `products:`-scoped control needs a stated product. ANY_SCOPE as
-    the product or the audience keeps every control scoped to one. With a
-    `dimension`, only that dimension's DIMENSION_RULES stay. Every L0 control
-    is in scope whatever the filters, because L0 is never scoped out.
+    A control is in scope when its `products` is absent or holds `product`, and
+    its `audiences` is absent or holds `audience`. A `products:`-scoped control
+    needs a stated product. ANY_SCOPE as the product or the audience keeps every
+    control scoped to one. Every L0 control is in scope whatever the filters,
+    because L0 is never scoped out. A base rule has no `phase` or `applies_to`
+    to filter on, so neither is a filter here (ADR-0003 decision 2).
     """
-    if dimension is not None and dimension not in DIMENSION_RULES:
-        raise ValueError(f"unknown dimension {dimension!r}")
     selected = []
     for c in controls:
         if c.get("tier") == "L0":
             selected.append(c)
             continue
-        if phase is not None and phase not in c.get("phase", []):
-            continue
-        if surface is not None and surface not in c.get("applies_to", []):
-            continue
         if product is not ANY_SCOPE and "products" in c and product not in c["products"]:
             continue
         if audience is not ANY_SCOPE and "audiences" in c and audience not in c["audiences"]:
-            continue
-        if dimension is not None and c["id"] not in DIMENSION_RULES[dimension]:
             continue
         selected.append(c)
     return selected
@@ -945,8 +1231,7 @@ class RulesUnresolvedError(Exception):
                 f"install and rerun.")
 
 
-def rules_that_apply(path=None, dimension=None, phase=None, surface=None,
-                     product=ANY_SCOPE, audience=ANY_SCOPE):
+def rules_that_apply(path=None, product=ANY_SCOPE, audience=ANY_SCOPE):
     """The rules that apply, from the same resolve_rules() the list command
     (scripts/in-scope-rules.py) uses, so a design skill and a check agree.
     Every check reaches the catalogue through here.
@@ -958,8 +1243,7 @@ def rules_that_apply(path=None, dimension=None, phase=None, surface=None,
     controls = catalog_controls(path)
     if not controls:
         raise RulesUnresolvedError(path or CATALOG_PATH)
-    return resolve_rules(controls, dimension=dimension, phase=phase,
-                         surface=surface, product=product, audience=audience)
+    return resolve_rules(controls, product=product, audience=audience)
 
 
 def rule_tiers(path=None):
@@ -1661,22 +1945,15 @@ def _self_test():
     def _ids(**kw):
         return [c["id"] for c in resolve_rules(_rules, **kw)]
 
-    check_eq("resolve: L0 stays when no filter would keep it",
-             ["A11Y-1"], _ids(phase="plan", surface="content"))
-    check_eq("resolve: a dimension keeps its own rules and L0",
-             ["A11Y-1", "TOK-1"], _ids(dimension="polish"))
     check_eq("resolve: a products-scoped rule needs its product stated",
              ["A11Y-1", "TOK-1", "MOT-1"], _ids())
     check_eq("resolve: a products-scoped rule binds its product",
              ["A11Y-1", "TOK-1", "MOT-1", "IDN-4"], _ids(product="casesync"))
     check_eq("resolve: an audience-scoped rule binds its audience",
-             ["A11Y-1", "CNT-1"], _ids(phase="plan", audience="parents"))
-    raised_dimension = False
-    try:
-        _ids(dimension="spacing")
-    except ValueError:
-        raised_dimension = True
-    check("resolve: an unknown dimension raises, never an empty list", raised_dimension)
+             ["A11Y-1", "TOK-1", "MOT-1", "CNT-1"], _ids(audience="parents"))
+    check_eq("resolve: L0 stays when no product or audience would keep it",
+             ["A11Y-1"], [c["id"] for c in resolve_rules(
+                 [r for r in _rules if r["id"] in ("A11Y-1", "IDN-4")], product="tw")])
 
     check_eq("design codes: a code in a comment or prose like UTF-8 is not named",
              {"TOK-1"},
@@ -1689,18 +1966,111 @@ def _self_test():
     check_eq("design codes: a range naming missing rules raises with each code",
              ["TOK-2", "TOK-3"], unknown_codes)
 
+    # ── base rules and resolve_in_scope ───────────────────────────────────────
+    _base = base_rules()
+    _by_code = {r["id"]: r for r in _base}
+    check("base rules: reads lint rule files and judged MAPPING.md rows",
+          bool(_base) and {"lint", "judged"} <= {r["check"] for r in _base})
+    check_eq("base rules: every rule has a tier", [],
+             [r["id"] for r in _base if r["tier"] not in ("L0", "L1", "L2")])
+    check_eq("base rules: every rule has a title", [], [r["id"] for r in _base if not r["title"]])
+    check_eq("base rules: a judged rule's detail is its MAPPING.md", "MAPPING.md",
+             os.path.basename(_by_code.get("CMP-4a", {}).get("detail", "")))
+    check_eq("base rules: no code twice", len(_base), len(_by_code))
+    check("base rules: an unreadable folder yields [], never a guess",
+          base_rules(os.path.join("no", "such", "rules")) == [])
+    _redirects = rule_redirects()
+    check("redirects: reads the codes map", _redirects.get("CNT-12") == ["CNT-12a", "CNT-12b"])
+    check_eq("redirects: every target is a base rule", [],
+             sorted({c for codes in _redirects.values() for c in codes if c not in _by_code}))
+
+    _fixture_rules = [
+        {"id": "WR-1a", "tier": "L0"}, {"id": "CNT-12a", "tier": "L2"},
+        {"id": "CNT-12b", "tier": "L2"}, {"id": "TYP-2a", "tier": "L1"},
+    ]
+    _fixture_controls = [{"id": "CNT-12", "tier": "L2"}, {"id": "TOK-2", "tier": "L1"},
+                         {"id": "IDN-4", "tier": "L1", "products": ["casesync"]}]
+    _fixture_redirects = {"CNT-12": ["CNT-12a", "CNT-12b"]}
+
+    def _scope(**kw):
+        return [c["id"] for c in resolve_in_scope(_fixture_rules, _fixture_controls,
+                                                  _fixture_redirects, **kw)]
+
+    check_eq("in scope: a redirected control gives way to its rules",
+             ["WR-1a", "CNT-12a", "CNT-12b", "TYP-2a", "TOK-2"], _scope())
+    check_eq("in scope: a placeholder keeps its product scope",
+             ["WR-1a", "CNT-12a", "CNT-12b", "TYP-2a", "TOK-2", "IDN-4"],
+             _scope(product="casesync"))
+    check_eq("in scope: a dimension keeps its own rules and L0",
+             ["WR-1a", "TYP-2a", "TOK-2"], _scope(dimension="polish"))
+    check_eq("in scope: select takes an old code, a prefix, and a rule code",
+             ["WR-1a", "CNT-12a", "CNT-12b", "TOK-2"], _scope(select=["CNT-12", "TOK"]))
+    check_eq("in scope: ignore removes a rule and never an L0 rule",
+             ["WR-1a", "CNT-12b", "TYP-2a", "TOK-2"], _scope(ignore=["CNT-12a", "WR-1a"]))
+    for _key in ("select", "ignore"):
+        _unknown = None
+        try:
+            _scope(**{_key: ["CNT-99"]})
+        except UnknownRuleError as exc:
+            _unknown = exc.codes
+        check_eq(f"in scope: an unknown code in {_key} raises with the code", ["CNT-99"], _unknown)
+    raised_dimension = False
+    try:
+        _scope(dimension="spacing")
+    except ValueError:
+        raised_dimension = True
+    check("in scope: an unknown dimension raises, never an empty list", raised_dimension)
+
+    with tempfile.TemporaryDirectory() as td:
+        presets = os.path.join(td, "presets")
+        os.makedirs(presets)
+        with open(os.path.join(presets, "teacher.md"), "w", encoding="utf-8") as fh:
+            fh.write("---\nname: teacher\nignore:\n  - TX\n  - CNT-12a\n---\n\nProse.\n")
+        with open(os.path.join(td, "base.json"), "w", encoding="utf-8") as fh:
+            json.dump({"select": ["CNT"], "preset": "teacher"}, fh)
+        with open(os.path.join(td, "design-lint.config.json"), "w", encoding="utf-8") as fh:
+            json.dump({"extends": ["base.json"], "select": ["TYP-2a"]}, fh)
+        _selection = product_selection(td, presets)
+        check_eq("selection: extends unions select and carries the preset",
+                 (["CNT", "TYP-2a"], "teacher"),
+                 (_selection["select"], (_selection["preset"] or {}).get("name")))
+        check_eq("selection: reads the preset's ignore block list",
+                 ["TX", "CNT-12a"], _selection["ignore"])
+        with open(os.path.join(td, "design-lint.config.json"), "w", encoding="utf-8") as fh:
+            json.dump({"preset": "glow"}, fh)
+        _missing_preset = None
+        try:
+            product_selection(td, presets)
+        except SelectionError as exc:
+            _missing_preset = str(exc)
+        check("selection: a preset that no file defines raises and names it",
+              _missing_preset is not None and "'glow'" in _missing_preset)
+        with open(os.path.join(td, "design-lint.config.json"), "w", encoding="utf-8") as fh:
+            fh.write("{ not json")
+        _bad_json = None
+        try:
+            product_selection(td, presets)
+        except SelectionError as exc:
+            _bad_json = str(exc)
+        check("selection: a config that is not JSON raises", _bad_json is not None)
+        os.remove(os.path.join(td, "design-lint.config.json"))
+        check_eq("selection: no config file selects nothing", None, product_selection(td)["config"])
+
     # Each dimension's rules against the SKILL.md that names them, so the
-    # list and the pass cannot drift apart.
+    # list and the pass cannot drift apart. A pass SKILL.md names a rule by
+    # its own code, or by the old catalogue code that redirects.yaml maps to it.
     _skills_dir = os.path.join(os.path.dirname(_CHECKS_DIR), "skills", "design")
     for _dimension, _wanted in DIMENSION_RULES.items():
         with open(os.path.join(_skills_dir, f"dx-design-{_dimension}", "SKILL.md"),
                   encoding="utf-8") as fh:
             _named = control_ids_in(fh.read())
+        _reached = _named | {c for old in _named for c in _redirects.get(old, [])}
         check_eq(f"dimension rules: dx-design-{_dimension} names every rule",
-                 [], [c for c in _wanted if c not in _named])
-    check_eq("dimension rules: every id is in the catalogue", [],
+                 [], [c for c in _wanted if c not in _reached])
+    _placeholders = {c["id"] for c in placeholder_controls(catalog_controls(), _redirects)}
+    check_eq("dimension rules: every code is a base rule or a placeholder control", [],
              [c for ids in DIMENSION_RULES.values() for c in ids
-              if c not in rule_tiers()])
+              if c not in _by_code and c not in _placeholders])
 
     raised_layer = False
     try:

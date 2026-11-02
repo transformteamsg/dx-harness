@@ -5,7 +5,7 @@ The base layer of the design standard. Every product follows it. It holds two se
 - **The DSS rules.** Each implements a control of the Digital Service Standards (DSS). Their folders take the nine DSS prefixes, such as `bd/` and `wp/`.
 - **The catalogue rules.** Each comes from a generic control in `catalog.yaml`. Their folders take the catalogue prefixes, such as `cnt/` and `typ/`. The tasks under [#541](https://github.com/transformteamsg/dx-harness/issues/541) write them.
 
-[ADR-0002](../../../docs/adr/0002-rule-categories-and-file-names.md) lists the 17 categories and the file-name convention. The live `dx-design-*` skills and `checks/` do not read these rules yet.
+[ADR-0002](../../../docs/adr/0002-rule-categories-and-file-names.md) lists the 17 categories and the file-name convention. The design skills get their rules from these files through `scripts/in-scope-rules.py`, per [ADR-0003](../../../docs/adr/0003-rule-selection-for-a-design-run.md). The checks in `checks/` do not read them yet.
 
 ## Layers
 
@@ -22,7 +22,7 @@ The base runs with no domain and no `DESIGN.md`.
 | Path | Holds |
 | --- | --- |
 | `rules/<category>/README.md` | One category: the rule index, the decisions, and the open items |
-| `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part |
+| `rules/<category>/MAPPING.md` | For each source control: the rules, the surface, the engine, the parameters, and the judged part. The `Tier` column holds the tier of each judged rule, which has no rule file |
 | `rules/<category>/<slug>.md` | One rule file, named by its `slug` |
 | `presets/<name>.md` | One domain preset |
 | `rules/redirects.yaml` | Each old rule file name, mapped to the file's path now. Each catalogue control, mapped to the codes of its rules, or to the reason it does not move |
