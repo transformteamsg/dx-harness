@@ -52,7 +52,7 @@ The 2 out-of-scope rules are `TX-13b` and `TX-14a`. Both test message delivery, 
 
 ## Built
 
-All 16 lint rules have a module, a fixture pair, and a break patch. The modules are in `packages/design-lint/src/modules/tx/`. Every rule that is not listed below was built as its rule file states.
+All 16 lint rules have a module, a fixture pair, and a break patch. The modules are in `plugins/dx-harness/design-lint/src/modules/tx/`. Every rule that is not listed below was built as its rule file states.
 
 - `TX-3a`, `TX-4a`, `TX-5a`, and `TX-6a` gain the parameter `flowPages`, a product value that lists the pages of a flow in order. The runner does not pass `flows` to a rule, so a rule cannot find the steps without it. A flow has as many steps as `flowPages` has pages. These four rules read only those pages, so a form elsewhere on the site is not a step.
 - `TX-3a` counts a radio group as one control. `stepSelector` and every selector that a project or source rule reads allow one compound selector or a comma list, with no combinator. A rendered rule uses the full CSS selector.

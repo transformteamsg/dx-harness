@@ -17,7 +17,7 @@ The first two layers show that a rule fires and stays quiet when it should. The 
 ## Rule fixtures
 
 ```
-packages/design-lint/fixtures/<CODE>/
+plugins/dx-harness/design-lint/fixtures/<CODE>/
   pass/           a small site that passes the rule
   fail/           a small site that fails it
   expected.json
@@ -34,7 +34,7 @@ packages/design-lint/fixtures/<CODE>/
 ## Site pair
 
 ```
-packages/design-lint/demo/
+plugins/dx-harness/design-lint/demo/
   site/                  the passing site
   patches/<CODE>.json    one break patch for each rule
   demo.ts                the demo script

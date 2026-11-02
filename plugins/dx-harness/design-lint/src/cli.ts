@@ -8,9 +8,9 @@ import { exitCode, formatFinding, formatNote, summariseUnset } from "./report.ts
 import { loadRules } from "./rules/load.ts";
 import type { Surface } from "./types.ts";
 
-/* Until the rule files and the presets ship inside the package, read them from the plugin. */
-const DEFAULT_RULES = path.resolve(import.meta.dirname, "../../../plugins/dx-harness/standards/rules");
-const DEFAULT_PRESETS = path.resolve(import.meta.dirname, "../../../plugins/dx-harness/standards/presets");
+/* The rule files and the presets are the plugin's own, beside this package. */
+const DEFAULT_RULES = path.resolve(import.meta.dirname, "../../standards/rules");
+const DEFAULT_PRESETS = path.resolve(import.meta.dirname, "../../standards/presets");
 
 const USAGE = `design-lint [path...]          Run the source and project rules
 design-lint --rendered         Add the rendered rules

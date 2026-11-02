@@ -1,5 +1,5 @@
 packages:
-  - packages/*
+  - plugins/dx-harness/design-lint
 
 allowBuilds:
   # Its postinstall links the platform binary into place; without it every

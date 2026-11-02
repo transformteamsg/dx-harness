@@ -40,7 +40,7 @@ The 8 judged rules have no file yet. Each needs a rubric from `dx-design-judge`:
 
 ## Built
 
-All 18 lint rules of BD have a linter module in `packages/design-lint/`. Each has a fixture pair and a break patch. See [lint/testing.md](../../../../../packages/design-lint/docs/testing.md).
+All 18 lint rules of BD have a linter module in `plugins/dx-harness/design-lint/`. Each has a fixture pair and a break patch. See [lint/testing.md](../../../design-lint/docs/testing.md).
 
 Decisions that the build forced:
 

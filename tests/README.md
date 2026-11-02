@@ -7,7 +7,7 @@ This folder holds the root Vitest tests. Read this file before you add or change
 | What you test | Where the test goes | How it runs |
 | --- | --- | --- |
 | A skill, a procedure, a script under `plugins/dx-harness/scripts/`, the rule files, or the CI workflow | `tests/` | `pnpm run test:root` |
-| The `design-lint` package | `packages/design-lint/test/` | `pnpm run test:design-lint` |
+| The `design-lint` package | `plugins/dx-harness/design-lint/test/` | `pnpm run test:design-lint` |
 | A check script under `plugins/dx-harness/checks/` | The script's own `--self-test` | `pnpm run test:checks` |
 
 Don't add a test file at the repository root. The root Vitest config includes `tests/**/*.test.ts` only, so a test at the root does not run.
@@ -41,7 +41,7 @@ Before you write a test, look for one that already covers the property:
 
 - `plugins/dx-harness/checks/design-catalog-validate.py` and its `--self-test`
 - The self-tests of the other check scripts
-- `packages/design-lint/test/fixtures.test.ts` and `patches.test.ts`
+- `plugins/dx-harness/design-lint/test/fixtures.test.ts` and `patches.test.ts`
 - `tests/rule-invariants.test.ts` for the rule files, `MAPPING.md`, and `redirects.yaml`
 - `tests/shared-rules-once.test.ts` for a rule stated in one place
 

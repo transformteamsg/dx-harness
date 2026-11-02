@@ -38,7 +38,7 @@ The 8 judged rules have no file. Each needs a rubric from `dx-design-judge`: `CM
 
 ## Built
 
-All 6 lint rules have a module, a fixture pair, and a break patch. The modules are in `packages/design-lint/src/modules/cmp/`. Every rule that is not listed below was built as its rule file states.
+All 6 lint rules have a module, a fixture pair, and a break patch. The modules are in `plugins/dx-harness/design-lint/src/modules/cmp/`. Every rule that is not listed below was built as its rule file states.
 
 - `CMP-2a` activates each destructive button on a page of its own, and replaces `window.confirm` so that a native confirmation answers "cancel". A click that goes to another page passes. The demo sets `pages` for `CMP-2a` alone, because `tx/payment-methods.html` has a remove button that no rule of TX requires to confirm.
 - `CMP-6a` and `CMP-6b` report one finding for each table, on the table. A finding sits at the table's position on the page, because a rendered finding has no source position.

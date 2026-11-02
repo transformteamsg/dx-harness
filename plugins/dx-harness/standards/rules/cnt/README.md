@@ -49,7 +49,7 @@ A rule file exists only for a lintable rule.
 
 ## Built
 
-The four lint rules have modules in `packages/design-lint/src/modules/cnt/`.
+The four lint rules have modules in `plugins/dx-harness/design-lint/src/modules/cnt/`.
 
 - All four read visible text through one shared scan. The scan skips hidden elements, text whose `lang` is not English, and `code`, `pre`, `kbd`, `samp`, `script`, `style`, `noscript`, and `template` content.
 - `CNT-5a` also skips link text.

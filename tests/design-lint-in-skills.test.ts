@@ -18,8 +18,8 @@ const RULES = path.join(PLUGIN, "standards/rules");
 function ruleCodes(): string[] {
   const codes: string[] = [];
   for (const dir of fs.readdirSync(RULES, { withFileTypes: true })) {
-    if (!dir.isDirectory()) continue;
-    for (const file of fs.readdirSync(path.join(RULES, dir.name))) {
+    if (!dir.isDirectory() || dir.name.startsWith(".")) continue;
+    for (const file of fs.readdirSync(path.join(RULES, dir.name)).filter((name) => name.endsWith(".md"))) {
       const text = fs.readFileSync(path.join(RULES, dir.name, file), "utf8");
       const code = /^---\n[\s\S]*?^code: (\S+)$/m.exec(text)?.[1];
       if (code && /^check: lint$/m.test(text)) codes.push(code);

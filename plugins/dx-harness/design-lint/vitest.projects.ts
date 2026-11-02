@@ -9,7 +9,7 @@ declare module "vitest" {
   }
 }
 
-const RULES = path.resolve(import.meta.dirname, "../../plugins/dx-harness/standards/rules");
+const RULES = path.resolve(import.meta.dirname, "../standards/rules");
 
 /* The projects of the design-lint tests. Vitest runs the files of each project
    in a worker of their own, so each category folder gets a project that runs

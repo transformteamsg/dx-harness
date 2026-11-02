@@ -38,7 +38,7 @@ Verify each engine rule name against the installed version:
 
 ## Built
 
-All six lint rules of WR have a linter module in `packages/design-lint/`, with a fixture pair and a break patch each.
+All six lint rules of WR have a linter module in `plugins/dx-harness/design-lint/`, with a fixture pair and a break patch each.
 
 - `WR-1a`, `WR-1b`, and `WR-1c` are sets of axe rules. One wrapper, `src/engines/axe.ts`, injects axe-core, runs the named rules, and turns each failing element into a finding. The other WCAG categories reuse it.
 - `test/axe.test.ts` checks that every axe rule id that a WR rule names exists in the installed axe-core. They all exist in 4.14.0. A rename in a new version fails the test, and the rule does not go silent.

@@ -33,7 +33,7 @@ A rule file exists only for a lintable rule.
 
 ## Built
 
-`LAY-1a` has a module in `packages/design-lint/src/modules/lay/`.
+`LAY-1a` has a module in `plugins/dx-harness/design-lint/src/modules/lay/`.
 
 - It reads `grid-template-columns` in stylesheets, `<style>` elements, and `style` attributes, and Tailwind `grid-cols-N` classes, with or without a variant prefix.
 - It counts `repeat(N, ...)` as N times its tracks, and skips a value with `auto-fill`, `auto-fit`, `var()`, or `subgrid`.

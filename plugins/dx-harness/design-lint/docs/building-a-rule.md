@@ -9,12 +9,12 @@ A rule is done when it has a module, a fixture pair, a break patch, and a passin
 | Piece | Path | Holds |
 | --- | --- | --- |
 | Rule file | `plugins/dx-harness/standards/rules/<cat>/<slug>.md` | The standard. Read it first. Do not change its meaning. |
-| Module | `packages/design-lint/src/modules/<cat>/<name>.ts` | The check |
-| Registration | `packages/design-lint/src/modules/<cat>/index.ts` | The array that lists the modules of the category |
-| Fixtures | `packages/design-lint/fixtures/<CODE>/` | A passing site, a failing site, and the expected findings |
-| Demo pages | `packages/design-lint/demo/site/<cat>/` | Pages that the rule needs on the demo site |
-| Config fragment | `packages/design-lint/demo/config.d/<cat>.json` | The rules to run, the pages, and the parameter values for the demo |
-| Patch | `packages/design-lint/demo/patches/<CODE>.json` | The smallest change that makes the rule fail |
+| Module | `plugins/dx-harness/design-lint/src/modules/<cat>/<name>.ts` | The check |
+| Registration | `plugins/dx-harness/design-lint/src/modules/<cat>/index.ts` | The array that lists the modules of the category |
+| Fixtures | `plugins/dx-harness/design-lint/fixtures/<CODE>/` | A passing site, a failing site, and the expected findings |
+| Demo pages | `plugins/dx-harness/design-lint/demo/site/<cat>/` | Pages that the rule needs on the demo site |
+| Config fragment | `plugins/dx-harness/design-lint/demo/config.d/<cat>.json` | The rules to run, the pages, and the parameter values for the demo |
+| Patch | `plugins/dx-harness/design-lint/demo/patches/<CODE>.json` | The smallest change that makes the rule fail |
 
 The category WP is split in two, so that two people can work at once. WP-1 to WP-9 use `src/modules/wp/a.ts`, `demo/config.d/wp-a.json`, and `demo/site/wp-a/`. WP-10 to WP-19 use `src/modules/wp/b.ts`, `demo/config.d/wp-b.json`, and `demo/site/wp-b/`. For every other category, `<cat>` is the lower-case prefix, and the module file is `src/modules/<cat>/index.ts` or files that it imports.
 
@@ -112,7 +112,7 @@ The patches of one category run against each other in one test. Choose edits tha
 
 ## Check your work
 
-Run these from `packages/design-lint`:
+Run these from `plugins/dx-harness/design-lint`:
 
 ```sh
 pnpm typecheck

@@ -24,7 +24,7 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
 
-  packages/design-lint:
+  plugins/dx-harness/design-lint:
     dependencies:
       axe-core:
         specifier: ^4.14.0

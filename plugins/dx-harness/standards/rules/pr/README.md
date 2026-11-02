@@ -68,7 +68,7 @@ The 5 rules below concern runtime operations, a registry, or a process. A design
 
 ## Built
 
-All 14 lint rules have a module in `packages/design-lint/src/modules/pr/`. No rule is left unbuilt.
+All 14 lint rules have a module in `plugins/dx-harness/design-lint/src/modules/pr/`. No rule is left unbuilt.
 
 - `PR-1b`: the rule file gains `reviewDateFile`, default empty. A break patch edits only files of the site, so a date that lives only in the config cannot be patched. When the file exists and holds `lastReviewDate`, it wins over the config value. The demo sets both to the same date.
 - `PR-2a`, `PR-2d`, `PR-3c`: the rule files gain a `pages` parameter. The source rules check the pages in the list and not every HTML file, so a product with pages that are not public can leave them out. `PR-3c` names the first page in `pages` in its finding. The demo narrows `PR-2a` and `PR-2d` to its own page, because the shared pages carry no WOGAA script. Add the scripts to the shared pages, then remove the narrowing.

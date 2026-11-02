@@ -36,4 +36,4 @@ The three judged rules have no file yet. Each needs a rubric from `dx-design-jud
 
 ## Built
 
-All five lint rules have a module, a fixture pair, and a break patch. The modules are in `packages/design-lint/src/modules/typ/`. The demo page is `demo/site/typ/`.
+All five lint rules have a module, a fixture pair, and a break patch. The modules are in `plugins/dx-harness/design-lint/src/modules/typ/`. The demo page is `demo/site/typ/`.
