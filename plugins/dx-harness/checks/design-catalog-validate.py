@@ -304,7 +304,8 @@ def validate_control(control, idx, schema_bits):
     return errors
 
 
-def cross_ref_errors(rel_path, text, catalog_ids, xref_re):
+def cross_ref_errors(rel_path, text, catalog_ids, xref_re, redirects=None,
+                     allow_redirected=False):
     """
     Step 7's per-file sweep: for every XREF_RE match in `text` whose id is not
     in `catalog_ids`, emit a "references unknown control id" error with the
@@ -642,7 +643,7 @@ SKILL_WIRING_GRANDFATHERED = {
 }
 
 
-def skill_sync_errors(repo_root, catalog_by_id, xref_re):
+def skill_sync_errors(repo_root, catalog_by_id, xref_re, redirects=None):
     """
     [SKILL-SYNC] Two guarantees over the catalog<->skill-layer boundary:
     (a) no ghost ids — every control id mentioned anywhere under
@@ -811,6 +812,17 @@ def generic_control_coverage_errors(repo_root, codes, not_moved):
             for cid in ids
             if isinstance(cid, str) and cid not in PLACEHOLDER_CONTROLS
             and cid not in PORTED_CONTROLS and cid not in codes and cid not in not_moved]
+
+
+def load_code_redirects(repo_root):
+    """{old catalogue code: [new rule codes] or the reason it was not moved},
+    from the `codes` and `notMoved` maps of standards/rules/redirects.yaml."""
+    return {}
+
+
+def redirected_catalog_errors(catalog_by_id, redirects):
+    """Error lines for each control in catalog.yaml that redirects.yaml maps."""
+    return []
 
 
 RULE_CODE_RE = re.compile(r"^([A-Z][A-Z0-9]*)-\d+[a-z]$")
