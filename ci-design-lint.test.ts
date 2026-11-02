@@ -15,7 +15,7 @@ function readRoot(file: string) {
   return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
-type Step = { name?: string; id?: string; "working-directory"?: string; uses?: string; run?: string; with?: Record<string, string>; env?: Record<string, string> };
+type Step = { name?: string; id?: string; if?: string; "working-directory"?: string; uses?: string; run?: string; with?: Record<string, string>; env?: Record<string, string> };
 type Job = { if?: string; needs?: string[]; outputs?: Record<string, string>; steps?: Step[] };
 const ci: { jobs?: Record<string, Job> } = parse(readRoot(".github/workflows/ci.yml"));
 const jobs = ci.jobs ?? {};
@@ -93,6 +93,7 @@ describe("a pull request whose design-lint tests fail", () => {
 const designLintSteps = jobs["design-lint"]?.steps ?? [];
 const cacheStep = designLintSteps.find((step) => step.uses?.startsWith("actions/cache"));
 const versionStep = designLintSteps.find((step) => step.id !== undefined && cacheStep?.with?.key?.includes(`steps.${step.id}.outputs.`));
+const cachePaths = (cacheStep?.with?.path ?? "").split("\n").map((p) => p.trim()).filter(Boolean);
 const lock: { importers: Record<string, { dependencies: Record<string, { version: string }> }> } = parse(readRoot("pnpm-lock.yaml"));
 const lockedPlaywright = lock.importers["packages/design-lint"].dependencies["playwright-core"].version;
 
@@ -114,7 +115,7 @@ function cacheKeyIn(root: string) {
 describe("a run after one that cached Chromium", () => {
   const stepIndex = (name: string) => designLintSteps.findIndex((step) => step.name === name);
   it("restores the Playwright browser folder before Install Chromium", () => {
-    expect(cacheStep?.with?.path).toBe("~/.cache/ms-playwright");
+    expect(cachePaths).toContain("~/.cache/ms-playwright");
     expect(designLintSteps.indexOf(cacheStep as Step)).toBeGreaterThan(stepIndex("Install dependencies"));
     expect(designLintSteps.indexOf(cacheStep as Step)).toBeLessThan(stepIndex("Install Chromium"));
   });
@@ -128,6 +129,69 @@ describe("a run after one that cached Chromium", () => {
     const deps = runs.findIndex((run) => /playwright-core install-deps chromium/.test(run));
     expect(deps).toBeGreaterThanOrEqual(0);
     expect(deps).toBeLessThan(runs.findIndex((run) => run.includes("pnpm run test:design-lint")));
+  });
+});
+
+/* The runner image has the libraries Chromium needs, so install-deps adds only
+   fonts. The cache keeps those fonts with the browser, and a cache hit skips
+   the step. These read the workflow and run the step's script with a stand-in
+   pnpm; the time of a cached run and the browser that starts on it are
+   confirmed on the pull request. See issue #575. */
+const depsStep = designLintSteps.find((step) => /playwright-core install-deps chromium/.test(step.run ?? ""));
+
+/* Runs the system packages step with a pnpm on PATH that adds a font, as
+   install-deps does, and returns the user font folder. */
+function runDepsStep() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "ci-fonts-"));
+  const system = path.join(root, "system");
+  const home = path.join(root, "home");
+  fs.mkdirSync(path.join(system, "truetype/old"), { recursive: true });
+  fs.mkdirSync(home);
+  fs.writeFileSync(path.join(system, "truetype/old/old.ttf"), "old");
+  const bin = path.join(root, "bin");
+  fs.mkdirSync(bin);
+  const pnpm = [
+    "#!/bin/sh",
+    `mkdir -p "${system}/truetype/new"`,
+    `printf new > "${system}/truetype/new/new.ttf"`,
+    `ln -s "${system}/truetype/new/new.ttf" "${system}/truetype/alias.ttf"`,
+  ].join("\n");
+  fs.writeFileSync(path.join(bin, "pnpm"), `${pnpm}\n`, { mode: 0o755 });
+  const step = spawnSync("bash", ["-e", "-c", depsStep?.run ?? "exit 2"], {
+    env: { PATH: `${bin}:${process.env.PATH}`, HOME: home, ...depsStep?.env, SYSTEM_FONTS: system },
+    encoding: "utf8",
+  });
+  expect(step.status, step.stderr).toBe(0);
+  return path.join(home, ".local/share/fonts");
+}
+
+describe("a run after one that cached Chromium and its packages", () => {
+  it("skips the system packages when the cache is restored", () => {
+    expect(cacheStep?.id).toBeDefined();
+    expect(depsStep?.if?.replace(/\s+/g, " ")).toBe(`steps.${cacheStep?.id}.outputs.cache-hit != 'true'`);
+  });
+  it("keeps the fonts that install-deps adds in the browser cache", () => {
+    expect(cachePaths).toEqual(expect.arrayContaining(["~/.cache/ms-playwright", "~/.local/share/fonts"]));
+  });
+  it("gives the cache with the fonts a key apart from the cache without them", () => {
+    expect(cacheStep?.with?.key).not.toBe("playwright-chromium-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}");
+    expect(cacheStep?.with?.key).toContain("fonts");
+  });
+});
+
+describe("a run that does not restore the cache", () => {
+  it("copies the fonts that install-deps adds to the cached font folder", () => {
+    const fonts = runDepsStep();
+    expect(fs.readFileSync(path.join(fonts, "truetype/new/new.ttf"), "utf8")).toBe("new");
+    expect(fs.readFileSync(path.join(fonts, "truetype/alias.ttf"), "utf8")).toBe("new");
+  });
+  it("copies no font that was there before install-deps", () => {
+    const fonts = runDepsStep();
+    expect(fs.existsSync(path.join(fonts, "truetype/new/new.ttf"))).toBe(true);
+    expect(fs.existsSync(path.join(fonts, "truetype/old/old.ttf"))).toBe(false);
+  });
+  it("reads the system fonts from the folder the packages install to", () => {
+    expect(depsStep?.env?.SYSTEM_FONTS).toBe("/usr/share/fonts");
   });
 });
 

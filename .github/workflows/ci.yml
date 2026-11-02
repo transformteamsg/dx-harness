@@ -138,19 +138,38 @@ jobs:
         working-directory: packages/design-lint
         run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
 
+      # The runner image has the libraries Chromium needs, so install-deps adds
+      # only fonts. The cache keeps those fonts in the user font folder, which
+      # fontconfig reads, next to the browser.
       - uses: actions/cache@v6
+        id: browser-cache
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+          path: |
+            ~/.cache/ms-playwright
+            ~/.local/share/fonts
+          key: playwright-chromium-fonts-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
 
       # The design-lint rendered tests drive a browser. The runner has no Chrome.
-      # The browser comes from the cache when the version is unchanged; the
-      # system packages are not in the cache, so their step always runs.
+      # The browser comes from the cache when the version is unchanged.
       - name: Install Chromium
         run: pnpm --filter design-lint exec playwright-core install chromium
 
+      # On a cache miss, install-deps runs with apt, and the step copies each
+      # font file it adds to the user font folder for the cache to save.
       - name: Install Chromium system packages
-        run: pnpm --filter design-lint exec playwright-core install-deps chromium
+        if: steps.browser-cache.outputs.cache-hit != 'true'
+        env:
+          SYSTEM_FONTS: /usr/share/fonts
+        run: |
+          before=$(find "$SYSTEM_FONTS" \( -type f -o -type l \) | sort)
+          pnpm --filter design-lint exec playwright-core install-deps chromium
+          fonts="$HOME/.local/share/fonts"
+          mkdir -p "$fonts"
+          find "$SYSTEM_FONTS" \( -type f -o -type l \) | sort | comm -13 <(printf '%s\n' "$before") - | while read -r file; do
+            target="$fonts/${file#"$SYSTEM_FONTS"/}"
+            mkdir -p "$(dirname "$target")"
+            cp -L "$file" "$target"
+          done
 
       # The package config splits the spec files by project, so the categories
       # spread across the shards.
