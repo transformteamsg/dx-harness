@@ -6,7 +6,7 @@ tier: L1
 check: deterministic
 phase: [implement, verify]
 applies_to: [page, component]
-verify: "Success/warning/danger/info colours resolve to Radix scale tokens, and small functional-colour text on a tint resolves to step-12 (step-11 on a step-3 tint lands ~4.25:1 and fails AA); contrast computed by checks/contrast / verified manually until wired"
+verify: "Success/warning/danger/info colours resolve to Radix scale tokens, and small functional-colour text on a tint resolves to step-12 (step-11 on a step-3 tint lands ~4.25:1 and fails AA); contrast computed by design-lint WP-13b, or verified manually"
 waiver: documented
 fails_when:
   - custom green/red/amber values
@@ -62,7 +62,7 @@ all three under. **Step-12 on the tint clears AA by a wide margin for every scal
 small functional text on a tint uses step-12.
 
 (`#e9f6e9`/`#fff7c2`/`#ffefef` are grass-3/amber-3/red-3; `#203c25`/`#4f3422`/`#641723` are
-grass-12/amber-12/red-12. Recompute with `checks/contrast` if the scale or tint changes.)
+grass-12/amber-12/red-12. Recompute with `design-lint`'s `WP-13b` if the scale or tint changes.)
 
 ## Passes when
 
@@ -82,7 +82,7 @@ grass-12/amber-12/red-12. Recompute with `checks/contrast` if the scale or tint 
 
 For functional chips, badges, and labels with small text on a tinted background, confirm
 the text resolves to step-12 (not step-11) and clears 4.5:1. Compute the ratio with
-`checks/contrast` against the product's tokens, or verify manually and say so. This
+`design-lint`'s `WP-13b` against the product's token pairs, or verify manually and say so. This
 enforces WP-13a (the contrast floor) inside the functional palette — a step-11-on-tint
 chip is the most common way small functional text slips under AA.
 

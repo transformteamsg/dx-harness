@@ -46,7 +46,7 @@ normative source in each section you keep. Template:
 | Section (`## `) | json key | Carries | Cites |
 |---|---|---|---|
 | `Essence` | `essence` | what the product should feel like, one or two sentences | (interview) |
-| `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table, and `pairs` (the declared [foreground, background] token pairs `checks/contrast.py` measures against AA) | COL-1, COL-2, A11Y-1 |
+| `Colour` | `colour` | primary + accent token/hex, usage beyond COL-1's table, and `pairs` (the declared [foreground, background] token pairs; `design-lint`'s `WP-13b` measures them against AA when `design-lint.config.json` sets them as `tokenPairs`) | COL-1, COL-2, A11Y-1 |
 | `Typography` | `typography` | family, base size/leading, scale steps, tabular numerals | TYP controls |
 | `Tokens` | `tokens` | source file, prefix, spacing base, dark-mode strategy (pointers into code; code is the authority) | TOK controls |
 | `Motion` | `motion` | signature moves only (durations, easing) | MOT-1, SLP-8, A11Y-5 |

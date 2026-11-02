@@ -31,4 +31,4 @@ All 4 lint rules have a module, a fixture pair, and a break patch.
 
 ## Open
 
-- The retirement spec retires `checks/rendered-check.py` once `A11Y-5a` exists, and `checks/a11y-eslint.py` once `A11Y-3a` exists. Both scripts still run, because the live `dx-design-*` skills read them.
+- `checks/a11y-eslint.py` retired in [#539](https://github.com/transformteamsg/dx-harness/issues/539). `checks/rendered-check.py` stays for the live page until `design-lint` can open a URL.

@@ -53,6 +53,7 @@
 
 ### Removed
 
+- **Python checks that design-lint covers**: `contrast.py`, `a11y-static.py`, `a11y-eslint.py`, `structure-scan.py`, and `content-lint.py` are deleted with their fixtures and rules, `type-scan.py` narrows to TYP-1 and TYP-3, `detect.py` drops them and its `--tokens` flag, and `rendered-check.py` stays for the live page until `design-lint` can open a URL ([#539](https://github.com/transformteamsg/dx-harness/issues/539)).
 - **House style lint and its mechanics file**: `scripts/house-style-lint.py` and `procedures/house-style-mechanics.md` are deleted. Run against 16 merged artifacts, the lint returned nothing on eight issue bodies and 56 findings on eight request bodies, of which 48 per cent came from one rule firing on eval score cells in tables ([#379](https://github.com/transformteamsg/dx-harness/issues/379)).
 
 ### Fixed

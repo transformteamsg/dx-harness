@@ -25,9 +25,10 @@ Kind Utility: useful first, kind at the surface. Calm tools for busy teachers,
 never playful at the cost of clarity. When unsure, choose the quieter option.
 
 ## Colour
-<!-- Cites: COL-1, COL-2. Values only. `pairs` is machine-read by
-     checks/contrast.py: each [foreground, background] pair of token names is
-     measured against WCAG AA. Omit it and A11Y-1 stays a manual check. -->
+<!-- Cites: COL-1, COL-2. Values only. `pairs` lists each [foreground,
+     background] pair of token names. design-lint's WP-13b measures each pair
+     against WCAG AA when design-lint.config.json sets the same pairs as
+     `tokenPairs`. -->
 - primary: --tw-blue #0064FF
 - accent: none; functional colour comes from the Radix scales
 - pairs: [["--foreground", "--background"], ["--muted-foreground", "--background"]]

@@ -10,11 +10,13 @@ makes checks actually get run ("fast signal without asking an AI").
 
 Profiles
 ────────
-- default = the curated, low-false-positive subset: token-audit, contrast,
-  a11y-static, a11y-eslint, and type-scan's TYP-1 rule only. The noisier rules
-  (TYP-2 size floor, etc.) stay recording-only.
+- default = the curated, low-false-positive subset: token-audit, and type-scan's
+  TYP-1 rule only.
 - `--all` = every page-check script: the curated set with type-scan's full rule set
-  plus content-lint and (when a manifest exists) component-manifest.
+  plus (when a manifest exists) component-manifest.
+
+The generic controls are design-lint rules, so detect runs none of them. See
+procedures/design-lint.md.
 
 Config ignores (`.dx/config.json` at the target repo root)
 ───────────────────────────────────────────────────────────
@@ -55,7 +57,6 @@ Usage
     python3 checks/detect.py --all <path>...     # every page-check script
     python3 checks/detect.py --json <path>...    # machine-readable findings
     python3 checks/detect.py --no-config <path>  # ignore .dx/config.json
-    python3 checks/detect.py --tokens app/globals.css <path>   # contrast token map
     python3 checks/detect.py --self-test
 """
 
@@ -96,10 +97,6 @@ CHECK_TIMEOUT = 180
 # scripts' own recursion, which skips vendor and build output).
 PRUNE_DIRS = {"node_modules", "dist", "build", "out", "coverage", "vendor", "__pycache__"}
 
-# Union of every wrapped check's TARGET_EXTENSIONS (content-lint adds .md/.mdx).
-SCAN_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue",
-                   ".svelte", ".md", ".mdx"}
-
 
 def _load_checklib():
     path = os.path.join(CHECKS_DIR, "checklib.py")
@@ -110,6 +107,9 @@ def _load_checklib():
 
 
 checklib = _load_checklib()
+
+# Union of every wrapped check's TARGET_EXTENSIONS.
+SCAN_EXTENSIONS = checklib.TARGET_EXTENSIONS
 
 
 @functools.lru_cache(maxsize=None)
@@ -122,8 +122,7 @@ def l0_control_ids():
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
 #   ERROR <route>:<cell> [<CTL>] <message>                  (rendered-check)
-# contrast's `ERROR <file>:<line> [A11Y-1] text …` line matches too. Operational
-# ERRORs (path-not-found, unreadable file, --tokens usage) have no <file>:<line>[CTL]
+# Operational ERRORs (path-not-found, unreadable file) have no <file>:<line>[CTL]
 # shape and are kept as control-less findings — never dropped, never a silent pass.
 #
 # The position group is wide rather than digits-only because a rendered finding
@@ -301,12 +300,11 @@ def expand_targets(paths, ignore_globs, repo_root):
 
 # ── Profile / check selection ─────────────────────────────────────────────────
 
-def build_check_specs(all_profile, allow_values=None, tokens_file=None):
+def build_check_specs(all_profile, allow_values=None):
     """Return the ordered list of check specs for the chosen profile. Each spec:
     {"name", "args" (script + flags, before targets), "mode"}. mode "targets"
-    appends the scanned targets; mode "repo" appends `--repo-root <repo_root>`
-    and no targets (contrast grades the declared token pairs, not source files);
-    mode "manifest" runs against `.dx/component-manifest.json`."""
+    appends the scanned targets; mode "manifest" runs against
+    `.dx/component-manifest.json`."""
     allow = list(allow_values or [])
     specs = []
 
@@ -315,27 +313,13 @@ def build_check_specs(all_profile, allow_values=None, tokens_file=None):
         ta += ["--allow", ",".join(allow)]
     specs.append({"name": "token-audit", "args": ta, "mode": "targets"})
 
-    co = ["contrast.py"]
-    if tokens_file:
-        co += ["--tokens", tokens_file]
-    specs.append({"name": "contrast", "args": co, "mode": "repo"})
-
-    specs.append({"name": "a11y-static", "args": ["a11y-static.py"], "mode": "targets"})
-    specs.append({"name": "a11y-eslint", "args": ["a11y-eslint.py"], "mode": "targets"})
-
     if all_profile:
-        # Full rule set — TYP-2 (and the rest) run.
+        # Full rule set: TYP-1 and TYP-3.
         specs.append({"name": "type-scan", "args": ["type-scan.py"], "mode": "targets"})
-        # `structure` stays out of the curated profile: its rule has a known
-        # false-positive class (a header composed at runtime, which it downgrades
-        # to a NOTE) and one repo's worth of calibration behind it, and the
-        # curated profile is the low-false-positive subset.
-        specs.append({"name": "structure", "args": ["structure-scan.py"], "mode": "targets"})
-        specs.append({"name": "content-lint", "args": ["content-lint.py"], "mode": "targets"})
         specs.append({"name": "component-manifest",
                       "args": ["component-manifest.py"], "mode": "manifest"})
     else:
-        # Curated: TYP-1 only — TYP-2 and the noisier rules stay recording-only.
+        # Curated: TYP-1 only. TYP-3 rides --all.
         specs.append({"name": "type-scan",
                       "args": ["type-scan.py", "--rules", "TYP-1"], "mode": "targets"})
 
@@ -449,9 +433,6 @@ def run_checks(specs, targets, ignore_rules, repo_root):
                 continue
             argv = [sys.executable, os.path.join(CHECKS_DIR, spec["args"][0]),
                     manifest, repo_root]
-        elif spec["mode"] == "repo":
-            script = os.path.join(CHECKS_DIR, spec["args"][0])
-            argv = [sys.executable, script] + spec["args"][1:] + ["--repo-root", repo_root]
         else:
             script = os.path.join(CHECKS_DIR, spec["args"][0])
             argv = [sys.executable, script] + spec["args"][1:] + list(targets)
@@ -602,16 +583,6 @@ def print_text_report(findings, results, crashed, ignore_rules,
 
 # ── Entry ──────────────────────────────────────────────────────────────────────
 
-def find_tokens_file(explicit, repo_root):
-    if explicit:
-        return explicit
-    for cand in (os.path.join(repo_root, "app", "globals.css"),
-                 os.path.join(repo_root, "globals.css")):
-        if os.path.isfile(cand):
-            return cand
-    return None
-
-
 def run(argv):
     parser = argparse.ArgumentParser(
         prog="detect.py", add_help=True,
@@ -623,8 +594,6 @@ def run(argv):
     parser.add_argument("--json", action="store_true", help="emit JSON on stdout")
     parser.add_argument("--no-config", action="store_true",
                         help="ignore .dx/config.json")
-    parser.add_argument("--tokens", metavar="CSS",
-                        help="token CSS file for contrast (default: auto-discover app/globals.css)")
     args = parser.parse_args(argv)
 
     targets = args.targets or ["."]
@@ -658,8 +627,7 @@ def run(argv):
     # Only expand + filter targets when ignoreFiles is set; else pass raw targets.
     scan_targets = expand_targets(targets, ignore_files, repo_root) if ignore_files else list(targets)
 
-    tokens_file = find_tokens_file(args.tokens, repo_root)
-    specs = build_check_specs(args.all, allow_values=ignore_values, tokens_file=tokens_file)
+    specs = build_check_specs(args.all, allow_values=ignore_values)
 
     overrides = load_overrides(repo_root)
 
@@ -710,31 +678,25 @@ def run_self_test():
     # 1. Profile selection — curated set + membership.
     curated = build_check_specs(False)
     names_c = [s["name"] for s in curated]
-    check("curated has the five low-FP checks",
-          {"token-audit", "contrast", "a11y-static", "a11y-eslint", "type-scan"}
-          <= set(names_c))
-    check("curated excludes content-lint / component-manifest",
-          "content-lint" not in names_c and "component-manifest" not in names_c)
+    check("curated runs token-audit and type-scan", names_c == ["token-audit", "type-scan"])
 
-    # 1b. contrast runs against the repo, not a file list: it grades the
-    # declared token pairs, so it takes --repo-root and no targets.
-    co_c = next(s for s in curated if s["name"] == "contrast")
-    check("contrast runs in repo mode", co_c["mode"] == "repo")
-    check("a11y-eslint runs over the scanned targets",
-          next(s for s in curated if s["name"] == "a11y-eslint")["mode"] == "targets")
+    # 1b. Every spec names a check script that exists, so a retired check cannot
+    # stay in a profile.
+    for spec in build_check_specs(False) + build_check_specs(True):
+        check(f"{spec['name']} names a check that exists",
+              os.path.isfile(os.path.join(CHECKS_DIR, spec["args"][0])))
 
-    # 2. type-scan curated runs TYP-1 only (TYP-2 excluded).
+    # 2. type-scan curated runs TYP-1 only (TYP-3 excluded).
     ts_c = next(s for s in curated if s["name"] == "type-scan")
     check("curated type-scan restricts to TYP-1",
           "--rules" in ts_c["args"] and "TYP-1" in ts_c["args"])
 
-    # 3. --all includes content-lint + component-manifest and full type-scan.
+    # 3. --all adds component-manifest and the full type-scan.
     allp = build_check_specs(True)
     names_a = [s["name"] for s in allp]
-    check("--all adds content-lint + component-manifest",
-          "content-lint" in names_a and "component-manifest" in names_a)
+    check("--all adds component-manifest", "component-manifest" in names_a)
     ts_a = next(s for s in allp if s["name"] == "type-scan")
-    check("--all type-scan is unrestricted (TYP-2 runs)", "--rules" not in ts_a["args"])
+    check("--all type-scan is unrestricted (TYP-3 runs)", "--rules" not in ts_a["args"])
 
     # 4. ignoreValues feeds token-audit --allow.
     with_allow = build_check_specs(False, allow_values=["amber-11", "sky-9"])

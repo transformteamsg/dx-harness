@@ -26,9 +26,7 @@ package, so each script imports it by path with the same importlib snippet
 their own formatting where they genuinely differ (`token-audit.py`'s
 `[waiver-claimed]` variant, `component-manifest.py` and `detect.py`'s self-test
 tails). `emit_error` also takes an optional `extra=` that fills the second bracket
-(`[A11Y-2][jsx-a11y/interactive-supports-focus]`) — the slot `_FINDING_RE` already
-tolerates and discards, so a finding can name the rule that fired without changing
-the line shape.
+(`[TOK-1][waiver-claimed]`), the slot `_FINDING_RE` already tolerates and discards.
 
 **The position slot takes a cell as well as a line.** A rendered finding has a URL
 and a DOM node where a static one has a file and a line, so `emit_rendered_error`
@@ -43,9 +41,9 @@ selector hash into the line slot was rejected: it asserts a location the check
 cannot see, which is the failure this layer exists to remove. `emit_error` and
 `_FINDING_RE` are one contract in two files — change them together.
 
-checklib also loads the a11y rule map (`load_rule_map`,
-`layer_controls` — see [A11y rule map](#a11y-rule-map-a11y-rule-mapjson--checkseslint)
-below) so the three a11y layers read one file rather than three copies of it.
+checklib also loads the a11y rule map (`load_rule_map`, `layer_controls`; see
+[A11y rule map](#a11y-rule-map-a11y-rule-mapjson) below), which `rendered-check.py`
+reads.
 Every check gets the rules that apply through checklib, with the resolution that
 `scripts/in-scope-rules.py` uses, so a design skill and a check agree on which
 rules apply: `rules_that_apply` for the rules, `rule_tiers` for their tiers
@@ -59,7 +57,7 @@ slash lists expand, "out of scope" excludes its whole segment (and the bullets
 under an out-of-scope label), and an inline "N/A" excludes only the ids in its
 own clause, so exclusion wins without unchecking the in-scope controls named
 beside it. checklib has its own gate:
-`python3 checks/checklib.py --self-test` → `SELF-TEST OK (95 cases)`.
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (115 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -108,45 +106,31 @@ them is where the floor silently stops being enforced.
   recorded pre-swap output per fixture and check. See
   [`fixtures/parity/README.md`](fixtures/parity/README.md).
 
-## A11y rule map: `a11y-rule-map.json` + `checks/eslint/`
+## A11y rule map: `a11y-rule-map.json`
 
-One file maps every accessibility rule the harness runs to exactly one control id:
-`checks/a11y-rule-map.json` (JSON, not YAML — the check scripts are stdlib-only).
+One file maps every accessibility rule that `rendered-check.py` runs to exactly one
+control id: `checks/a11y-rule-map.json` (JSON, not YAML, because the check scripts
+are stdlib-only).
 
-- `rules` — `"<prefix>/<rule>": "<CTL>"`, one control id per rule, never a list. The
-  prefix names the tool the rule belongs to: `jsx-a11y/` for the static lint layer,
-  `axe/` for the rendered check, `dx/` for the rendered check's own bespoke page
-  evaluations. All 31 rules in jsx-a11y's `recommended` preset have a row, so a rule
-  that fires can never be silently dropped; a rule with no row is reported as a
+- `rules`: `"<prefix>/<rule>": "<CTL>"`, one control id per rule, never a list. The
+  prefix names the tool the rule belongs to: `axe/` for the rendered check, and `dx/`
+  for the rendered check's own page evaluations. A rule with no row is reported as a
   misconfiguration, not attributed to a guessed control.
-- `aria_prefix_control` — the control every axe rule id beginning `aria-` maps to
+- `aria_prefix_control`: the control every axe rule id beginning `aria-` maps to
   (A11Y-8). It is one key rather than two dozen rows because the aria suite is
   resolved from the installed axe's `getRules()` at run time: a hardcoded list drifts
   on the next axe minor, and a rule the harness has never seen would otherwise be
   dropped.
-- `layers` — the control ids each layer covers (`eslint-jsx-a11y`,
-  `a11y-static-focus`, `contrast-token-pairs`, `axe-rendered`). A layer that could not
-  run reads its own row to name the controls going to manual verification, so a
+- `layers`: the control ids the `axe-rendered` layer covers. When the layer cannot
+  run, it reads its row to name the controls going to manual verification, so a
   control is never reported as passing by a layer that did not check it.
 
 Per-rule run behaviour stays out of the map: `target-size` being force-enabled,
 `bypass` being report-only and the A11Y-8 visibility demotion all live in the runner,
-so the map keeps one job — rule to control — and one reader per layer.
+so the map keeps one job: rule to control.
 
-Four rows attribute a finding to a control the eslint layer claims **no** coverage
-for: `heading-has-content` and `scope` (A11Y-7, whose static half is the separate
-`structure` check), `html-has-lang` (A11Y-9) and `no-distracting-elements` (A11Y-5).
-They exist so a fired rule is reported honestly; only the `layers` row states
-coverage.
-
-`checks/eslint/jsx-a11y.config.mjs` is the harness-side eslint flat config the lint
-layer runs. It sits in its own subdirectory because a `.mjs` file there is invisible
-to `checklib.TARGET_EXTENSIONS` and to `design-catalog-validate.py`'s `live_checks_count` (which
-counts `checks/*.py`), so it can neither become a scan target nor move a count.
-
-The map's integrity — every mapped control id exists in `standards/catalog.yaml`, all
-31 preset rules present, one control id per rule — is asserted by
-`python3 checks/a11y-eslint.py --self-test`, not by `design-catalog-validate.py`.
+The static accessibility checks are `design-lint` rules. See
+[`procedures/design-lint.md`](../procedures/design-lint.md).
 
 ## Detector — one entry over the checks (built)
 
@@ -157,8 +141,8 @@ or directories (recursive); the default target is `.`. This is the check surface
 wire to (plan 060) — "fast signal without asking an AI".
 
 **Wired as a hook (plan 060, opt-in).** `hooks/design-hook.py` is a consented Claude
-Code PostToolUse hook that runs this detector's **curated profile only** (token-audit,
-contrast, a11y-static, a11y-eslint, TYP-1) on an edited UI file and reminds the agent on new
+Code PostToolUse hook that runs this detector's **curated profile only** (token-audit and
+TYP-1) on an edited UI file and reminds the agent on new
 findings — it never blocks an edit, and its "clean" is the curated subset's clean, not
 a whole-catalog pass. Off by default; install via the snippet in [`../hooks/README.md`](../hooks/README.md).
 
@@ -180,13 +164,11 @@ no parseable `ERROR` line is treated as a crash — detect fails loud rather tha
 silently.
 
 **Profiles.** The default is the **curated, low-false-positive subset**:
-`token-audit`, `contrast`, `a11y-static`, `a11y-eslint`, and `type-scan`'s **TYP-1 rule
-only** (via `type-scan --rules TYP-1`). The noisier rules — TYP-2 size floor and the rest — stay
-recording-only. `--all` runs every page-check script: the curated set with `type-scan`'s
-full rule set (so TYP-2 runs), plus `structure`, `content-lint` and `component-manifest`
-(the last only when a `.dx/component-manifest.json` exists; otherwise it is reported
-skipped). `structure` is in `--all` and not the curated set because its rule has a known
-false-positive class (a header composed at runtime) and one repo's worth of calibration.
+`token-audit`, and `type-scan`'s **TYP-1 rule only** (via `type-scan --rules TYP-1`).
+`--all` runs every page-check script: `token-audit`, `type-scan`'s full rule set (so
+TYP-3 runs), and `component-manifest` (only when a `.dx/component-manifest.json`
+exists; otherwise it is reported skipped). The generic controls are `design-lint`
+rules, so `detect.py` runs none of them.
 
 **Output.** Text mode groups each script's findings under a `── <check> ──` header and
 passes through its `ERROR`/`NOTE` lines. `--json` emits
@@ -200,7 +182,7 @@ dropped or silently passed.
 **Config ignores (`.dx/config.json` at the target repo root).**
 
 ```json
-{"detector": {"ignoreFiles": ["legacy/*"], "ignoreValues": ["amber-11"], "ignoreRules": ["TYP-2"]}}
+{"detector": {"ignoreFiles": ["legacy/*"], "ignoreValues": ["amber-11"], "ignoreRules": ["TYP-3"]}}
 ```
 
 - `ignoreFiles` — glob-filters the scanned targets (drop a legacy folder). Globs match the
@@ -211,8 +193,7 @@ dropped or silently passed.
   operational, control-less findings are never dropped).
 
 `--no-config` bypasses the file entirely. An invalid or wrong-shaped `.dx/config.json` is
-a misconfiguration → exit 1. `--tokens <css>` overrides the contrast token map (default:
-auto-discover `app/globals.css` under the repo root).
+a misconfiguration → exit 1.
 
 **Config ignores complement tier waivers — they never replace them.** A waiver is a
 per-instance control exception with a named approver (the tier-waiver system); a config
@@ -232,8 +213,8 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (80 cases)` — profile
-selection, the 0/2/1 exit mapping (incl. curated excluding TYP-2 / `--all` including it),
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (82 cases)` — profile
+selection, the 0/2/1 exit mapping (incl. curated excluding TYP-3 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing (both the static
 `<file>:<line>` and the rendered `<route>:<cell>` shape, at both of `_FINDING_RE`'s call
 sites), and the JSON shape. The
@@ -324,145 +305,13 @@ hook-ready for V1 (PostToolUse on `docs/decisions/*` edits).
 
 Pass `--repo-root <path>` to audit a consumer repo's `docs/decisions/` (the default roots at the harness).
 
-## A11y lint — jsx-a11y `recommended` (built — static subset)
-
-`python3 checks/a11y-eslint.py [--repo-root <dir>] <path>...` — runs
-eslint-plugin-jsx-a11y's maintained `recommended` preset (31 of its 39 rules) over a
-target repo's `.js`/`.jsx`/`.mjs`/`.cjs`/`.ts`/`.tsx` source and prints every finding
-under the control id its rule maps to. Exit 0 silent (or NOTEs only) on pass; exit 1
-with `ERROR` lines on any violation.
-
-**Nothing is installed or configured in the target repo.** The preset is switched on
-from `checks/eslint/jsx-a11y.config.mjs` with `--no-config-lookup` and the target root
-as CWD, so the target's own eslint config never loads and never changes the result: no
-config file, no plugin entry, no dependency, no lockfile change. eslint, the plugin and
-a TypeScript-capable parser are resolved from the **target's** `node_modules` —
-directly, or through a package that declares them, because pnpm keeps a transitive
-dependency out of the target root. `eslint-config-next` already carries all three.
-
-What this check misses is in [COVERAGE.md](COVERAGE.md).
-
-**Why the preset, not all 39.** The maintainers' preset encodes real ARIA exceptions.
-Measured on this repo: 1 finding under `recommended` against 8 under all 39, and all 7
-extras are deliberately suppressed — 6 by rules the preset disables
-(`prefer-tag-over-role` ×2, `control-has-associated-label` ×3, `label-has-for` ×1) and
-1 by a rule the preset keeps but calibrates with its own options
-(`no-noninteractive-tabindex`, exempted for `role="tabpanel"`). The preset's severities
-and per-rule options are used verbatim; no rule outside it is enabled.
-
-**Findings name the rule:** `ERROR <file>:<line> [<CTL>][jsx-a11y/<rule>] <message> —
-suggest: fix per jsx-a11y/<rule>`, formatted by `checklib.emit_error`, so a finding
-traces back to its row in `a11y-rule-map.json`.
-
-**A layer that did not run does not silently pass.** When eslint or the plugin cannot
-be resolved, when the TypeScript parser is missing and `.ts`/`.tsx` files were in
-scope (the run then covers `.js`/`.jsx` only), or when eslint cannot parse a file, the
-check says so and names A11Y-2, A11Y-3, A11Y-6 and A11Y-8 as going to manual
-verification, adding that A11Y-2 and A11Y-3 are L0 and block until verified by some
-path. The coverage gap is an operational `ERROR` (exit 1), followed by explanatory
-`NOTE`s where applicable, so `detect.py` cannot grade an incomplete run clean. A rule
-that fires with no row in the map, an unreadable map, an eslint crash and a timeout are
-operational `ERROR`s too. These lines carry no `<file>:<line> [<CTL>]` shape, so the
-detector keeps them as control-less findings. When the given paths contain no lintable
-source at all, the layer prints a NOTE and exits 0 because it had nothing in scope.
-
-**Self-test:** `python3 checks/a11y-eslint.py --self-test` → `SELF-TEST OK (46 cases)`
-(includes the `fixtures/a11y-eslint/` pass/fail files, and `preset-disabled-pass.tsx`
-which proves the three rules the maintainers switch off stay off). The fixture cases
-need the target toolchain; where it cannot be resolved they assert the honest skip path
-instead, so the case count never depends on the environment.
-
-## A11y focus scan (built — one bespoke rule)
-
-`python3 checks/a11y-static.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the one accessibility rule no maintained tool provides: a focus outline removed with no visible replacement. Accepts files or directories (recursive). Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
-
-**Rule:**
-
-- **FOCUS (A11Y-2, L0):** A class string or CSS rule containing an outline-removal token (`outline-none`, `outline-0`, `focus:outline-none`, or CSS `outline: none/0`) with no focus-visible replacement (`focus-visible:outline`, `focus-visible:ring`, `focus-visible:border`, `focus-visible:shadow`, or CSS `:focus-visible { … outline|box-shadow|border … }`) on the same line.
-
-**Why one rule.** 0 of axe's 105 rules and none of jsx-a11y's 39 check for a visible focus indicator, so FOCUS stays bespoke. The KBD rule (a click handler on a non-focusable element) and the NAME rule (an icon-only button with no accessible name) were **deleted** because their line-local regexes could not make reliable ARIA judgments. jsx-a11y's maintained preset replaces KBD and checks label association, but deliberately leaves `control-has-associated-label` disabled; icon-only accessible-name judgment therefore stays rendered/manual. This check no longer covers A11Y-3 at all, and covers only the focus half of A11Y-2.
-
-What this check misses is in [COVERAGE.md](COVERAGE.md).
-
-**Known false positive:** focus styles provided by a shared stylesheet: if `outline-none` appears in JSX but the `:focus-visible` recovery lives in a separate CSS file, the FOCUS rule will flag it. Cross-file CSS resolution needs a browser or axe-core, and this false-positive class is **accepted** rather than answered with a new dependency (`stylelint-a11y` was declined). Confirm the rendered element with a keyboard before treating a flag as a bug.
-
-**Waiver suppression:** A11Y-2 is L0 — never waivable. This script does not parse `dx-waive` markers; every violation is a hard ERROR.
-
-**Self-test:** `python3 checks/a11y-static.py --self-test` → `SELF-TEST OK (14 cases)` (includes the `fixtures/a11y-static/` pass/fail files, a case proving the deleted rules leave no coverage claim behind, and two that hold the docstring's load-bearing paragraphs in place).
-
-## Contrast on declared token pairs (built — honest-inert)
-
-`python3 checks/contrast.py [--tokens <globals.css>] [--repo-root <dir>]` — answers the
-one part of A11Y-1 no rendered page can: do the design system's **declared** foreground
-and background token combinations clear WCAG AA? A declared pair is a design-system
-statement, measurable before anything renders; a rendered scan only ever sees the pairings
-a page happens to use. Exit 0 on pass or NOTEs-only; exit 1 with `ERROR` lines on any
-sub-AA declared pair.
-
-**Where the pairs come from:** `- pairs: [["--foreground", "--background"], …]` under
-`## Colour` in the product's DESIGN.md, projected into `.dx/design.json` as
-`colour.pairs` by `scripts/generate-design-json.py` (its existing `- key: [json array]`
-parse already handles it — the generator needed no change). Each name resolves as a
-custom property (`--foo`) or as a Tailwind utility name (`foo`, through the `@theme`
-alias).
-
-**Honest-inert until pairs are declared.** Nothing declares pairs today, so with no
-`colour.pairs` (or no `.dx/design.json` at all) the check grades A11Y-1 **N/A**, prints a
-control-less operational `ERROR`, exits 1, and names A11Y-1 as going to manual
-verification — adding that A11Y-1 is L0 and blocks until verified by some path. The
-error keeps `detect.py` from grading the incomplete run clean. It never reports A11Y-1
-as passing on the strength of a check that had nothing to measure. Same shape as CMP-1 with
-`coverage: "complete"` and IDN-1/IDN-2 with the approved-asset registry.
-
-**Token resolution (`--tokens <file>`, else `Tokens.source` in `.dx/design.json`):** the
-colour map is built from a product's CSS token file (for this repo's own site,
-`../app/globals.css` from `harness/`). It resolves direct hex, `var(--other)` chains
-(transitively, cycle-safe), `color-mix(in oklab, var(--a) p%, <b>)` (mixed in OKLab per
-the CSS spec), and `@theme inline` aliases (`--color-foo: var(--bar)`). An unresolved
-token stays unresolved — never guessed: the pair becomes an operational `ERROR` naming
-the token and goes to manual verification. A malformed declared pair is an operational
-ERROR for the same reason. `detect.py`'s auto-discovery of `app/globals.css` still
-supplies `--tokens` when it runs the check.
-
-**Thresholds (unchanged):** ratio `< 3.0` → ERROR (fails even large text);
-`3.0 ≤ ratio < 4.5` → ERROR noting it passes only as large text (≥24px / 18.66px bold —
-confirm the size); `≥ 4.5` → clean. A finding points at the line in the token CSS where
-the foreground token is declared, so it is navigable:
-`ERROR app/globals.css:42 [A11Y-1] declared pair --foreground (#18181b) on --tw-blue
-(#0064ff) = 3.60:1 (below 4.5:1) — suggest: …`.
-
-**What replaced the line-local source scan, and why.** The old ERROR path paired a text
-colour and a background colour found on the same line of source. Its colour maths was
-sound — the Tailwind opacity compositing added for #122 works, and its last finding on
-this repo was a real composited pair at 4.29:1, not a colour compared with itself. Two
-limits ended it anyway: a line-local scan **cannot see an inherited or computed
-background** (a rule setting only a text colour was never a candidate, which this file's
-own docstring called the largest false-negative surface), and axe's `color-contrast` on a
-rendered page answers that question on computed colours and is strictly better at it. Two
-layers disagreeing about one L0 control is worse than one layer that is right. Deleted
-with it: the Tailwind and CSS pairing regexes, `_classify_tw_value`, `_looks_like_colour`,
-`_check_line`, `check_file` and `scan_paths`. **Kept:** `TokenResolver` (with `resolve`,
-`_resolve_value`, `resolve_utility`, `resolve_colour_expr`, `page_base`), the OKLab
-`color-mix` maths, `_parse_tw_alpha`, `_composite`, `_band`, `_verdict_line` and the
-`--tokens` flag — the resolver surface another build reuses verbatim.
-
-What this check misses is in [COVERAGE.md](COVERAGE.md).
-
-Path arguments are no longer scanned. A path on the command line only locates the repo
-root (and says so in a `NOTE`); `detect.py` passes `--repo-root` instead of targets.
-
-**Self-test:** `python3 checks/contrast.py --self-test` → `SELF-TEST OK (45 cases)`
-(path-independent; builds throwaway product repos in a tempdir). It includes a case
-asserting the resolver surface survives, and one proving a source file holding a
-deliberately bad pairing is not scanned.
-
 ## Rendered check — axe on the open page (built — rendered subset)
 
 `python3 checks/rendered-check.py [--session <name>] [--url <url>] [--viewports 360,1280]
 [--themes auto|light|dark|both] [--json]` — runs axe against a page that is **already
 open**, plus the harness's own page evaluations for the rules no maintained tool
-provides. This is the rendered half of the accessibility stack; the static half is
-`a11y-eslint` and `a11y-static` above. Exit 0 on a clean run or NOTEs only; exit 1 with
+provides. The static accessibility checks are `design-lint` rules. Exit 0 on a clean
+run or NOTEs only; exit 1 with
 `ERROR` lines on any violation or malformed waiver marker.
 
 **The harness never boots the target app.** No dev server, no static export, no jsdom,
@@ -625,144 +474,24 @@ separately, and an L0 id refused).
 
 **Self-test:** `python3 checks/reaudit-scope.py --self-test` → `SELF-TEST OK (8 cases)`.
 
-## Content lint (built — static subset)
-
-`python3 checks/content-lint.py <path>...` — scans `.mdx`, `.md`, `.tsx`, `.jsx`, `.ts`, `.js`, `.vue`, `.svelte`, `.css`, and `.html` files for the statically-resolvable subset of CNT-1, CNT-3, CNT-5, CNT-6, CNT-13, and the deterministic (lint) half of SLP-9. Accepts files or directories (recursive). Skips generated files (a `.generated.` / `.gen.` name, or an `@generated` / `auto-generated` / `generated by` banner in the first five lines) and test files (a `.test.` / `.spec.` name, or a `tests`, `test`, `__tests__`, `__mocks__` or `e2e` parent directory): neither holds copy addressed to a user. Exit 0 silent on pass; exit 1 with `ERROR` lines on failure.
-
-**Single-source word lists:** the SLP-9 buzzword, AI-vocabulary, filler, and chatbot-artifact lists are **read at runtime** from `standards/controls/slp-9.md` (resolved relative to the check, from the `<!-- dx-sync:slp9-buzzwords -->` marked span and the named bullets in "How to verify") — never embedded as a third copy, so the lint and the catalog cannot diverge. The CNT-5 device-verb list is read the same way from `cnt-5.md` (`<!-- dx-sync:cnt5-verbs -->`), the CNT-6 opener/filler lists from `cnt-6.md` (`<!-- dx-sync:cnt6-openers -->`, `<!-- dx-sync:cnt6-filler -->`), and the CNT-13 spelling maps from `cnt-13.md` (`<!-- dx-sync:cnt13-usuk -->`, `<!-- dx-sync:cnt13-typos -->`). If a file cannot be found or parsed, the check falls back to a small embedded copy and prints a `NOTE` saying so — never silently.
-
-**Scope: what a rule body ever sees.** Code and markup lines go through two passes before any CNT rule runs, which is what keeps the prose rules off Tailwind class names.
-
-1. **Mask.** Class values, style values, class-builder calls (`cn`, `clsx`, `classNames`, `twMerge`, `cva`), known stylesheet/query tagged templates (`css`, `styled.*`, `gql`, `graphql`, `sql`, `keyframes`, `createGlobalStyle`, `injectGlobal`), module paths, equality and `case` operands, and non-rendering attribute values (`key`, `id`, `htmlFor`, `href`, `src`, `to`, `type`, `role`, `name`, `data-*`, and identifier-valued `aria-*` attributes) are replaced by spaces of the same length. Human-readable ARIA strings and templates with unknown or localisation/rendering tags remain in scope. Offsets survive, so the line a finding names survives. A class value cannot reach a rule body by any route: attribute, object key, builder argument, Vue or Svelte `class:` directive, template literal, or a value the formatter wrapped across lines. In `.css` the same applies to an at-rule prelude, so an `@media (orientation: landscape)` condition and an `@apply` class list are not read as prose.
-2. **Extract.** What is left is collected as strings tagged with an origin: `jsx_text` (an element's text child), `prop:<name>` (a rendering prop, by allowlist: `title`, `label`, `aria-label`, `aria-braillelabel`, `aria-brailleroledescription`, `aria-description`, `aria-placeholder`, `aria-roledescription`, `aria-valuetext`, `placeholder`, `alt`, `description`, `heading`, `subtitle`, `caption`, `summary`, `legend`, `tooltip`, `helperText`, `errorMessage`, `emptyMessage`, `confirmLabel`, `cancelLabel`), `template_segment` (one static run of a template literal, split on `${…}`), `literal` (a bare string literal anywhere else), or `mdx_prose`. Markdown keeps its prose-line path unchanged.
-
-The SLP-9 half scans the masked **line**, not only the extracted strings: a buzzword in a shipped identifier is still a tell, and masking is what removes its class-name findings. CNT-1's raw-code half reads the origin, and only runs where an all-caps token cannot be a wordmark (see its rule below).
-
-**Rules:**
-
-- **SLP-9 (L2, lint half):** a word-boundaried, case-insensitive hit on the buzzword or AI-vocabulary list; a hit on the filler or chatbot-artifact phrase lists; or two or more em dashes inside one sentence. Markdown table rows (lines starting `|`) are skipped for the em-dash rule — those dashes are structural per SLP-9's "Do not flag" list.
-- **CNT-3 (L2):** a user-facing string (any origin above) or MDX/MD prose line whose longest sentence exceeds 25 words. Words either side of an interpolation are never joined into one sentence.
-- **CNT-1 (L1):** a user-facing string that is *only* a raw error code (`ERR_SYNC_500`, `0x…`, an all-caps token), or the bare literal "Something went wrong" with no actionable next step on the same or next line. Conservative — when unsure, does not flag. The raw-code half runs on origins `literal` and `mdx_prose` only, where "this string is nothing but a code" is decidable; in rendered text an all-caps token is as likely a wordmark, a badge or an acronym, so the full error anatomy stays with the evaluator. The "Something went wrong" half is unambiguous prose and runs on every origin.
-- **CNT-5 (L2):** a device-bound action verb (click/tap/swipe and inflections) inside a multi-word user-facing string or MDX prose line. Bare event names and identifiers (`onClick`, `addEventListener("click", …)`) are not copy and are not flagged.
-- **CNT-6 (L2):** a sentence-*initial* empty opener ("There is", "There are", "It is", "This is") or a safe-subset filler word (just, really, very, please) in a multi-word user-facing string or MDX prose line. "In order to" is deliberately NOT in the CNT-6 lists — SLP-9's filler-phrase rule owns it, so one token never fires two controls. A template segment that follows an interpolation is not a sentence start, so the opener rule skips its first sentence and checks the rest.
-- **CNT-13 (L2):** a US spelling or common misspelling in a multi-word user-facing string or MDX prose line, read from `cnt-13.md`, with the British or corrected spelling as the suggestion. A bare one-word identifier is not flagged.
-
-What this check misses is in [COVERAGE.md](COVERAGE.md).
-
-**L2 waiver behaviour:** `content-lint` honours an inline `dx-waive <CTL-ID> reason="..."`
-comment, which the "Waiver handling" rule above requires of every check. An **L2** control
-(CNT-3, CNT-5, CNT-6, CNT-13, SLP-9) is downgraded to `NOTE <file>:<line> [CTL-ID][waived]
-<found> — rationale waiver at the deviation site` and does not fail the run: an L2 waiver is
-`rationale`, so the reason at the site is the whole requirement. An **L1** control (CNT-1)
-prints `ERROR ... [CNT-1][waiver-claimed] ... — verify approver in decision record` and still
-exits 1, exactly as `token-audit` does. **L0** is untouched. Tiers come from
-`checklib.rule_tiers()` at runtime, so a tier that moves in the catalogue moves here with no
-edit; a catalogue that cannot be read stops the check with an `ERROR` and exit 1. A marker covers its own line and the block it introduces — the following lines
-indented at least as far, stopping at the next marker or the first line indented less — which
-is how the markers are authored in `components/compare.tsx`.
-
-**Self-test:** `python3 checks/content-lint.py --self-test` → `SELF-TEST OK (119 cases)` (includes the `fixtures/content-lint/` pass/fail files, the runtime-coupling case, the loud-fallback case, the file-skip cases with their paired negatives, the regex-literal desync case, the bold-lead-in splitter case, the frontmatter cases, and one case per waiver tier).
-
 ## Type scan (built — static subset)
 
-`python3 checks/type-scan.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the statically-resolvable subset of TYP-1, TYP-2, TYP-3, TYP-4, LAY-4, and TYP-6. Accepts files or directories (recursive). Exit 0 on pass; exit 1 with `ERROR` lines on failure (`NOTE` lines for unresolvable cases do not, on their own, fail the run).
+`python3 checks/type-scan.py <path>...` — scans `.css`, `.html`, `.jsx`, `.tsx`, `.js`, `.ts`, `.vue`, and `.svelte` files for the statically-resolvable subset of TYP-1 and TYP-3, the typeface and type-scale controls that stay with the placeholder catalogue. Accepts files or directories (recursive). Exit 0 on pass; exit 1 with `ERROR` lines on failure. The generic typography controls (TYP-2, TYP-4, TYP-6, and LAY-4) are `design-lint` rules in `standards/rules/typ/`.
 
 **Rules:**
 
 - **TYP-1 fonts (L1):** a CSS `font-family:` or Tailwind `font-[…]` arbitrary value naming a typeface other than Plus Jakarta Sans or Inter; the named Tailwind family utilities `font-mono` / `font-serif` (which resolve to a third default typeface stack — but **never** the weight utilities `font-semibold` / `font-bold` / …, which are not a typeface choice); and a non-approved generic — `monospace` / `serif` / `ui-monospace` / `ui-serif` — used as the **primary** CSS `font-family`. Allowed: the token names `font-display` / `font-body` / `font-sans` / `--font-display` / `--font-body`, the sans fallbacks `sans-serif` / `system-ui` / `ui-sans-serif`, and any utility a project sanctions by adding it to `ALLOWED_FONT_TOKENS`.
-- **TYP-2 size floor (L1):** a `font-size:` or `text-[Npx]`/`text-[Nrem]` with `N < 14` (rem values are converted at ×16 before judging). The suggest text carries the 12/14 ambiguity (labels may go to 12px; body floor is 14px) since label-vs-body context needs rendered layout.
-- **TYP-2 line-height (L1):** an explicit unitless / em `line-height:` or `leading-[N]` clearly outside the 1.5–1.6 body band (judged with a generous 1.4–1.7 tolerance). px / % line-heights are NOT judged — the ratio needs the font size.
 - **TYP-3 on-scale (L1):** a `text-[Npx]`/`text-[Nrem]` or `font-size:Npx`/`Nrem` whose size (rem converted at ×16) is not on the **Tailwind default type scale `{128,96,72,60,48,36,30,24,20,18,16,14,12}`**. A fractional-pixel size is off-scale by definition, even when its rounded value happens to be in the set. The scale is read at runtime from TYP-3's catalog `verify` field (`Sizes in {…}; checks/type-scan`) so it cannot drift; the same set is the embedded fallback if that field cannot be parsed. A catalog that cannot be read stops the check with an `ERROR` and exit 1.
-- **TYP-4 all-caps (L2):** a `text-transform: uppercase` declaration or an `uppercase` Tailwind utility (matched as a class token — inside a class/className attr or a class-list-shaped string). Text is never set in all-caps, at any length — short labels included (HF-20). The English word "uppercase" in body text, and genuine acronyms (literal capitals, not a transform), are not flagged.
-- **LAY-4 + TYP-6 measure (both L2):** a line-measure cap **already written in `ch`** that runs past its control's ceiling: above **80ch** for LAY-4, above **75ch** for TYP-6. One rule body, two thresholds, read at runtime from the two controls' catalog **titles** ("never above 80ch", "roughly 45-75 characters per line") so they cannot drift; the same numbers are the embedded fallback if those titles cannot be parsed. Both ceilings are tested for every cap, so a cap above 80ch reports twice, once `[LAY-4]` and once `[TYP-6]`, the way one font size already reports under both TYP-2 and TYP-3. Two findings is deliberate: it keeps the two controls independently selectable with `--rules` and independently waivable. Each ceiling is **exclusive**: 80ch reports TYP-6 only, 75ch reports nothing. Forms read: `max-w-[Nch]`, the arbitrary property `[max-width:Nch]`, a CSS `max-width: Nch` (in a stylesheet, a `<style>` block, a `style="…"` attribute, or a styled-components body), a JSX `style={{ maxWidth: 'Nch' }}`, and a `var()` whose custom property is defined in the **same file**, resolved and reported at the use site. A cap **below 45ch** is a heading, a label, or small print, never running text, so it is never flagged. That floor is measured **by value, not by element**, because a 44ch `text-sm` caption on a `<p>` is genuine narrow prose.
-
-**TYP-3 scope decision:** TYP-3 **is** implemented (the preferred path) — the allowed scale is sourced live from the catalog `verify` field, not invented.
-
-**LAY-4 / TYP-6 scope decision:** a missing cap is **never** flagged. The built half is each control's *second* `fails_when` only: a **disallow** rule over caps already present. Each control's first `fails_when` ("no max-width and spans the full viewport") is **presence-requiring**, and a presence-requiring static rule either flags every paragraph or proves nothing, because deciding which block is running prose is the judgment half. An element with no cap produces no `ERROR` and no `NOTE`; that silence is the contract, and it is what separates this rule from TYP-5's accepted gap. Merging the two controls is deliberately **not** done here: the near-duplicate numbers (80 vs 75 ceiling, ~66 vs 40-60 target) are known, and whether to merge them is an open catalogue question.
 
 What this check misses is in [COVERAGE.md](COVERAGE.md).
 
 **Matching engine:** candidates come from ast-grep through `checklib.astgrep_scan`
-(see "The ast-grep front end" above). The type scale, both floors, the line-height
-band and per-rule selection are unchanged Python. TYP-2's band stays body-scoped,
-but ancestry answers "am I inside an `h1` to `h6` rule" now, which retired the
-hand-rolled CSS brace state machine and the heading-tag line regex. The measure
-rule was written against this front end from the start, and its candidates sit on
-their own `measure` surface rather than the `code` surface the four typography
-rules read, so adding it changed nothing about what TYP-1 to TYP-4 decide.
+(see "The ast-grep front end" above). The type scale and per-rule selection are Python.
 
-**Per-rule selection:** `--rules` accepts `TYP-1`, `TYP-2`, `TYP-3`, `TYP-4`,
-`LAY-4`, and `TYP-6`. `detect.py`'s curated implement-phase profile still runs
-`--rules TYP-1` and is unchanged: the two measure rules ride `--all` and the
-verify-phase gate, and the measure rule (its `NOTE` lines included) does not run
-at all when `--rules` selects neither of its controls.
+**Per-rule selection:** `--rules` accepts `TYP-1` and `TYP-3`. `detect.py`'s curated
+implement-phase profile runs `--rules TYP-1`.
 
-**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (107 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
-
-## Structure scan (built: one rule, two control ids)
-
-`python3 checks/structure-scan.py [--rules A11Y-7,CMP-6] <path>...` runs the static
-structure walk. It scans `.tsx`, `.jsx`, `.js`, `.ts` and `.html` for one sub-rule:
-a `<table>` or a `role="table"` element whose subtree holds no `<th>` and no
-`role="columnheader"`. Accepts files or directories (recursive). Exit 0 silent on
-pass; exit 1 with `ERROR` lines on any violation (`NOTE` lines alone do not fail).
-
-The check is named `structure` (what `detect.py` prints, and what prefixes every
-operational `ERROR`); the file is `structure-scan.py`, because every scan script in
-this layer is `*-scan.py`.
-
-**One detection, two control ids: A11Y-7 (L1) and CMP-6 (L2).** Both controls fail in
-the same shape and are decided by the same walk, so one check carries both. One
-detected element prints **two** `ERROR` lines at the same file and line, `[A11Y-7]`
-first then `[CMP-6]`, never a compound `[A11Y-7, CMP-6]` bracket, because
-`detect.py`'s `_FINDING_RE` captures one control per line. Attribution lives in the
-script's `RULE_CONTROLS` table and nowhere else. Reporting under CMP-6 alone was
-rejected: the tiers differ (an L1 failure loops the agent back to implement, an L2
-does not) and so do the waiver classes (documented vs rationale), so which id a
-finding lands under changes what happens next. The sub-rule is **not** in
-`a11y-rule-map.json`: that file maps one axe or jsx-a11y rule to exactly one control
-id and refuses a list, and CMP-6 is not an accessibility control.
-
-**A dynamically composed header is a `NOTE`, not an `ERROR`.** The header region is
-the `<thead>` subtree if present, else the first `<tr>` subtree, else the whole
-matched subtree. When that region holds a component element or a JSX expression
-container (`<thead><HeaderRow columns={columns} /></thead>`), the finding downgrades
-to one `NOTE` per control id and the run still exits 0. That is the one
-false-positive class calibration found, and a check never blocks on a guess.
-
-**`.vue` and `.svelte` are counted, never scanned.** They are not ast-grep languages
-at 0.44.1, and although `sgconfig.yml` routes them to the html rules, a single-file
-component composes its table from directives and slots that grammar reads as plain
-text. The run prints one `NOTE` naming how many files it could not parse and sends
-A11Y-7 and CMP-6 to manual verification for them, so a layer that did not run never
-reads as a pass.
-
-What this check misses is in [COVERAGE.md](COVERAGE.md).
-
-Note that the shipped rule catches a case neither control's `fails_when` list names
-literally: both lists describe divs used *instead of* a table, and this rule catches a
-real table *missing* its `<th>`. The div case is the judgment above. Do not widen the
-rule to close that gap.
-
-**Per-rule selection:** `--rules A11Y-7` prints the A11Y-7 half only, `--rules CMP-6`
-the CMP-6 half only, parsed exactly as `type-scan`'s flag is. Unknown ids are a usage
-error (exit 1).
-
-**Waiver suppression:** none. This script does not parse `dx-waive` markers, for the
-reason `a11y-static.py` records: waiver parsing inside a partial check manufactures a
-false sense of coverage. `waiver-reconcile.py` reconciles recorded waivers, and the two
-controls' waiver classes differ, so one suppression must never mute both.
-
-**Matching engine:** ast-grep through `checklib.astgrep_scan`, with two rule bodies per
-sub-rule (one per grammar) in `checks/rules/structure/`. In `tsx` the kinds are
-`jsx_element` / `jsx_opening_element` / `jsx_attribute`; in `html` they are `element` /
-`start_tag` / `tag_name` / `attribute`. One body cannot serve both.
-
-**Self-test:** `python3 checks/structure-scan.py --self-test` → `SELF-TEST OK (62 cases)`
-(includes the `fixtures/structure-scan/` pass/fail files, which carry a regression
-fixture for every exclusion above, the two-lines-one-id output contract, the `NOTE`
-downgrade (and the mapped-body cell interpolation that must never be mistaken for one), the
-`.vue`/`.svelte` count, and the ast-grep provisioning contract).
+**Self-test:** `python3 checks/type-scan.py --self-test` → `SELF-TEST OK (59 cases)` (includes the `fixtures/parity/` corpus and the ast-grep provisioning contract).
 
 ## Component manifest (built)
 
@@ -775,63 +504,26 @@ What this check misses is in [COVERAGE.md](COVERAGE.md).
 **Self-test:** `python3 checks/component-manifest.py --self-test` → `SELF-TEST OK (11 cases)`.
 
 Wiring (V1): run as a PostToolUse hook on file edits during the implement phase
-(fast subset: token-audit, type-scan, content-lint) and as the verify-phase gate
-(full suite). L0 failures block; L1 failures loop the agent back to implement.
+(fast subset: token-audit, type-scan) and as the verify-phase gate (full suite).
+L0 failures block; L1 failures loop the agent back to implement.
 
-Wiring status (plan 069): in this repository, `pnpm check` runs the Python gate through
-`check:python`: `design-catalog-validate.py`, `token-audit.py` over `app components lib`,
-`a11y-static.py`, `type-scan.py` over `app components`, and `structure-scan.py` over
-`app components lib`. `.github/workflows/ci.yml` runs `pnpm check` as its `Standards
-gate` step. Each script's `--self-test` run is in `test:checks`, which `pnpm test`
-calls, so CI runs the self-tests in its `Test` step. CI gets ast-grep from the pinned
-devDependency and PyYAML from its `Install PyYAML` step, because the checks layer
-reaches both with `subprocess`; the self-tests are what put the ast-grep provisioning
-contract and the `fixtures/parity/` corpus in CI rather than leaving them to a dev
-machine.
-`type-scan` was wired in once its tree went clean (plan 068's Tailwind default type
-scale migration removed the sub-14px `text-[11/12/13px]` labels and tight
-`leading-[…]` headings it flagged). `structure-scan` was wired in on the same rule:
-it reports zero findings over `app components lib`, where the repo's one real table
-(`components/foundations/token-table.tsx`) carries its `<th>` elements.
+Wiring status: `pnpm check` runs `design-catalog-validate.py`. Each script's
+`--self-test` run is in `test:checks`, which `pnpm test` calls, so CI runs the
+self-tests in its `Test` step. CI gets ast-grep from the pinned devDependency and
+PyYAML from its `Install PyYAML` step, because the checks layer reaches both with
+`subprocess`; the self-tests are what put the ast-grep provisioning contract and the
+`fixtures/parity/` corpus in CI rather than leaving them to a dev machine.
 
-`content-lint.py` is **wired**: it runs in `check:python` over `app components content
-lib`, and its self-test runs in `test:checks`. Getting there took four scope fixes and one policy fix.
-Generated and test files are skipped; CNT-1's raw-code pattern no longer reads every
-three-letter acronym as an error code; a utility-class list in a module constant is no
-longer read as prose; a regex literal is masked, which stops a backtick inside one from
-opening a template literal that swallowed 219 lines of `lib/markdown-twin.ts`; and the
-sentence splitter now sees a terminator that sits inside markdown emphasis. The prose
-`content/` reported was then rewritten. The policy fix is the waiver handling below.
+`component-manifest.py` stays **manual**. It is on the `WIRING_EXEMPT` list in
+`checks/design-catalog-validate.py`, with a one-line reason: it targets a product's
+`.dx/component-manifest.json`, which this repo (the harness itself) does not have, so
+wiring it here would have nothing to check.
 
-`contrast.py` and `component-manifest.py` stay **manual** — each is
-on the `WIRING_EXEMPT` list in `checks/design-catalog-validate.py`, with a one-line reason.
-`contrast` is exempt for a different
-reason since it became a token-pair check: it is **honest-inert** until a product
-declares `colour.pairs` in DESIGN.md, and this repo declares none, so it emits an
-operational ERROR that blocks for manual A11Y-1 verification. Build wiring is deferred
-to the catalogue recount; the design verification path runs it through `detect.py` now.
-`component-manifest` targets a product's
-`.dx/component-manifest.json`, which this repo (the harness/site itself) does not
-have — wiring it here would have nothing to check.
-
-`rendered-check.py` is **not wired**, and it is deliberately **not** on `WIRING_EXEMPT`
-either, for both of the reasons that can make an exemption wrong. It cannot run in
-`pnpm check` or CI at all, because it needs a page that is already open and neither has one —
-`[WIRING-SYNC]` can never be satisfied by a rendered check. And no control names it in a
-`script:` field yet (the A11Y recount is a separate change), so an exemption today would
-be a **dead exemption**, which is itself an error. The exemption and the `script:` claim
-have to land in the same commit. Run it from verify's step 3, with the capture session
-still open, or from `dx-design-critique` against a URL the person supplies.
-
-`a11y-eslint.py` is **not wired** either, for the second of those two reasons: no control
-names it in a `script:` field yet, so `[WIRING-SYNC]` has nothing to ask of it. It stays
-unwired on its own merit too: on this tree the layer reports one finding,
-`jsx-a11y/interactive-supports-focus` at `components/diagrams/orbit-loop.tsx:319`
-("Elements with the 'tablist' interactive role must be focusable"), on a tablist whose
-tabs carry the roving `tabIndex` and whose arrow keys are handled on the container. That
-belongs to the manual A11Y-2 pass, and per the harness rule a failing check is never
-wired into the build. Run it from the design skills' verify step
-(`skills/design/dx-design-execute/verify.md`) and through `detect.py`'s curated profile.
+`rendered-check.py` is **not wired**. It cannot run in `pnpm check` or CI, because it
+needs a page that is already open and neither has one, so `[WIRING-SYNC]` can never be
+satisfied by a rendered check. It stays until `design-lint` can open a live page. Run
+it from verify's step 3, with the capture session still open, or from
+`dx-design-critique` against a URL the person supplies.
 
 The `[WIRING-SYNC]` check in `design-catalog-validate.py` now enforces this list: a control claiming
 `enforced: script|partial` via a `script:` field must run from a `package.json` script or CI, or be on

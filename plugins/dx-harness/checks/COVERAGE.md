@@ -9,23 +9,6 @@ each check, and how it works inside, is in [README.md](README.md).
 
 ## Rule checks
 
-### `a11y-eslint.py`
-
-Needs eslint, eslint-plugin-jsx-a11y, and a TypeScript parser in the target's node_modules. When they cannot be resolved, every control below goes to manual verification.
-
-| Control | Tier | Covers | Misses |
-| --- | --- | --- | --- |
-| A11Y-2 | Removed | Keyboard reachability: `click-events-have-key-events`, `no-static-element-interactions`, `interactive-supports-focus`, `no-noninteractive-element-interactions`, `mouse-events-have-key-events`, `no-noninteractive-tabindex`, `tabindex-no-positive`, `anchor-is-valid`, `no-autofocus`, and `no-access-key` | A visible focus indicator (`a11y-static.py`), and focus traversal order |
-| A11Y-3 | Removed | `label-has-associated-control` and `autocomplete-valid` | Placeholder-only labels, cross-file `htmlFor` and `id` association, and icon-only accessible names, because the preset disables `control-has-associated-label` |
-| A11Y-6 | Removed | `alt-text`, `img-redundant-alt`, `anchor-has-content`, `iframe-has-title`, and `media-has-caption` | Whether an image is informative or decorative, and every image outside JSX |
-| A11Y-8 | Removed | The jsx-a11y aria suite: `aria-props`, `aria-role`, `role-has-required-aria-props`, `role-supports-aria-props`, `no-redundant-roles`, and the role-conversion rules | Closed overlays, and ARIA state that must change with the visual state |
-
-### `a11y-static.py`
-
-| Control | Tier | Covers | Misses |
-| --- | --- | --- | --- |
-| A11Y-2 | Removed | FOCUS: an outline removed with no focus-visible replacement on the same line | Keyboard reachability (`a11y-eslint.py`) and traversal order. Focus styles in a separate stylesheet are flagged as a false positive: confirm with a keyboard |
-
 ### `component-manifest.py`
 
 Also validates `.dx/component-manifest.json` against its spec.
@@ -33,27 +16,6 @@ Also validates `.dx/component-manifest.json` against its spec.
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
 | CMP-1 | L1 | With `coverage: "complete"` in the manifest, a component import in changed source that resolves outside the manifest | Every import when the manifest's coverage is partial or absent. A barrel re-export can give a false hit |
-
-### `content-lint.py`
-
-Every control below misses copy the scan cannot resolve: strings built by concatenation, a constant at its use site, markup whose tags or quotes do not balance, and text in `.html` `<script>` and `<style>` blocks. Whether a string is user-facing is a heuristic.
-
-| Control | Tier | Covers | Misses |
-| --- | --- | --- | --- |
-| CNT-1 | Removed | A string that is only a raw error code, and a bare "Something went wrong" with no next step | The full anatomy of an error message: what happened, what it means, and what to do next |
-| CNT-3 | Removed | A user-facing string or prose line whose longest sentence is over 25 words | Strings built by concatenation, and an imported constant at its use site |
-| CNT-5 | Removed | Device-bound verbs such as click, tap, and swipe in multi-word copy | "press" and "see", ambiguous link text, and whether a hit is a UI instruction |
-| CNT-6 | Removed | Sentence-initial empty openers, and the filler words just, really, very, and please | "such", "that", droppable articles and conjunctions, and the clarity exception |
-| CNT-13 | Removed | US spellings and common misspellings, from `spelling.md` | None recorded |
-| SLP-9 | Removed | The lint half: the buzzword, AI-vocabulary, filler, and chatbot-artifact lists from `ai-writing-tells.md`, and two or more em dashes in one sentence | The structural tells: negative parallelism, forced triads, copula avoidance, significance inflation, redundant label and helper pairs, and em-dash clusters across a paragraph |
-
-### `contrast.py`
-
-Grades A11Y-1 N/A, with an operational ERROR, until the product's DESIGN.md declares colour pairs.
-
-| Control | Tier | Covers | Misses |
-| --- | --- | --- | --- |
-| A11Y-1 | Removed | The foreground and background token pairs declared under `## Colour` in DESIGN.md, measured against AA | Any rendered element, any pairing a product uses but did not declare, large-text classification, non-text contrast, and `color-mix` outside OKLab |
 
 ### `rendered-check.py`
 
@@ -71,15 +33,6 @@ Runs axe on a page that is already open, at 360 and 1280 in each supported theme
 | A11Y-9 | Removed | axe `document-title` and `html-has-lang` | Whether a single-page app updates its title for each view |
 | A11Y-10 | Removed | axe `bypass`, report-only: it never fails the run | Whether the skip link comes first |
 
-### `structure-scan.py`
-
-`.vue` and `.svelte` files are counted, not scanned, and both controls go to manual verification for them.
-
-| Control | Tier | Covers | Misses |
-| --- | --- | --- | --- |
-| A11Y-7 | Removed | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Heading hierarchy and list semantics (`rendered-check.py`), styled divs that stand in for a heading, a list, or a table, and `role="grid"` and `role="treegrid"` |
-| CMP-6 | Removed | A `<table>` or `role="table"` element with no `<th>` and no `role="columnheader"` | Numeric alignment, tabular figures, form grouping, persistent header behaviour, and styled divs that stand in for a table |
-
 ### `token-audit.py`
 
 | Control | Tier | Covers | Misses |
@@ -95,11 +48,7 @@ Runs axe on a page that is already open, at 360 and 1280 in each supported theme
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
 | TYP-1 | L1 | A font family other than Plus Jakarta Sans and Inter, `font-mono` and `font-serif`, and a non-approved generic as the primary family | Font weights |
-| TYP-2 | Removed | Font sizes under 14px, and unitless or em line-heights outside the body band | The 12px label versus 14px body decision, and line-heights in px or % |
 | TYP-3 | L1 | Sizes off the Tailwind default type scale, read from TYP-3's catalogue entry | Sizes set in a stylesheet the scan cannot see, or composed from variables |
-| TYP-4 | Removed | `text-transform: uppercase` and the `uppercase` utility | All-caps set by a camelCase inline style in JSX |
-| LAY-4 | Removed | A measure cap in `ch` above 80ch | A missing cap, a measure in any unit but `ch`, and a `var()` chain that leaves the file |
-| TYP-6 | Removed | A measure cap in `ch` above 75ch | A missing cap, a measure in any unit but `ch`, and a `var()` chain that leaves the file |
 
 ## Covered by no check
 

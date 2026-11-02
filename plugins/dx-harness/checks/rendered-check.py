@@ -2,9 +2,9 @@
 """
 Rendered check — checks/rendered-check.py
 Runs axe against a page that is ALREADY OPEN, plus the harness's own page
-evaluations for the rules no maintained tool provides. This is the rendered
-half of the accessibility stack; the static half is `a11y-eslint.py`'s
-jsx-a11y preset and `a11y-static.py`'s bespoke FOCUS rule.
+evaluations for the rules no maintained tool provides. The static
+accessibility checks are design-lint rules. This check stays for the live page
+until design-lint can open a URL (#539).
 
 The harness never boots the target app
 ──────────────────────────────────────

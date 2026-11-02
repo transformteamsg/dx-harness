@@ -35,15 +35,13 @@ import tempfile
 
 _CHECKS_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# The 8 extensions the general lint-style checks scan. content-lint.py scans
-# prose too and keeps its own, larger set — it uses iter_target_files() with
-# extensions=<its own set>, not this default.
+# The 8 extensions the general lint-style checks scan.
 TARGET_EXTENSIONS = {".css", ".html", ".jsx", ".tsx", ".js", ".ts", ".vue", ".svelte"}
 
-# The one rule -> control-id mapping file for the accessibility layers. Every
-# check that reports an a11y finding resolves its control id through it, and
-# every layer that could not run reads its own `layers` row to name the
-# controls going to manual verification.
+# The one rule -> control-id mapping file for the rendered accessibility layer.
+# rendered-check.py resolves each axe finding's control id through it, and reads
+# its own `layers` row to name the controls going to manual verification when it
+# cannot run.
 RULE_MAP_FILENAME = "a11y-rule-map.json"
 
 # Unified, stricter skip policy (component-manifest.py's set). Most scripts
@@ -758,9 +756,8 @@ def emit_error(rel, lineno, ctl, found, suggest, extra=None):
     them together.
 
     `extra` fills the optional second bracket — `[{ctl}][{extra}]` — which
-    `_FINDING_RE` already tolerates and discards. a11y-eslint.py names the
-    jsx-a11y rule that fired there, so a finding traces back to its mapping
-    row; token-audit.py's `[waiver-claimed]` uses the same slot.
+    `_FINDING_RE` already tolerates and discards. token-audit.py's
+    `[waiver-claimed]` uses it.
 
     `lineno` is a 1-based source line for a static check. A rendered check has
     no source line, so the slot carries a run-matrix cell instead — see
@@ -1914,8 +1911,8 @@ def _self_test():
         all(isinstance(v, str) for v in rule_map["rules"].values()),
     )
     check(
-        "layer_controls: the eslint layer names its controls",
-        layer_controls("eslint-jsx-a11y", rule_map) == ["A11Y-2", "A11Y-3", "A11Y-6", "A11Y-8"],
+        "layer_controls: the rendered layer names its controls",
+        layer_controls("axe-rendered", rule_map)[:2] == ["A11Y-1", "A11Y-3"],
     )
     check(
         "rule_tiers: reads a rule's tier without yaml",
