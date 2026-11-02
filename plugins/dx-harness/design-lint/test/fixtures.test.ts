@@ -119,6 +119,12 @@ for (const code of fs.readdirSync(FIXTURES).filter((name) => !name.startsWith(".
       const result = await run("fail");
       expect(compare(result.findings, path.join(dir, "fail"), rules, expected, code)).toEqual({ missing: [], extra: [] });
       expect(result.notes).toEqual([]);
+      /* A rendered finding at a page path, not at a file of the site, names its
+         element or has no position at all. A box position must not print as a
+         line and a column. See issue #519. */
+      const atPage = result.findings.filter((f) => meta?.surface === "rendered" && !f.file.startsWith(dir));
+      const unnamed = atPage.filter((f) => !f.element && (f.line !== 0 || f.column !== 0));
+      expect(unnamed.map((f) => `${f.file}:${f.line}:${f.column}`)).toEqual([]);
     });
   });
 }
