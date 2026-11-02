@@ -47,7 +47,7 @@ Decisions that the build forced:
 - `BD-2c`, `BD-2d`, and `BD-2e` run only when the site has a search form. A site with none gets one finding from `BD-2a`, not one from each page.
 - `BD-1b`, `BD-4a`, and `BD-4b` gained a `pages` parameter. A rendered rule cannot load a page without a list.
 - `BD-8a` gained a default for `accountSelector`, `[data-account-name]`. A product with no sign-in lists no authenticated pages and needs no config for this rule.
-- `BD-6b` ports only the raw colour part of TOK-1. TOK-2, TOK-3, and COL-2 are not ported.
+- `BD-6b` ports TOK-1, TOK-2, TOK-3, and COL-2. The allow list and the waiver comments of `token-audit.py` are not ported.
 - A break patch can name other rules that it also breaks. The patch of `BD-2d` also breaks `BD-2e`, because the moved form is a later tab stop. The patch of `BD-2a` is marked exclusive, because it removes the search form that the other search patches need.
 
 ## Open
