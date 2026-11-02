@@ -129,4 +129,17 @@ describe("BD-6b on an off-scale value", () => {
     expect(spacing?.message).toMatch(/var\(--space-/);
     expect(spacing?.message).toMatch(/\b12px\b/);
   });
+
+  it("names a radius token and the nearest radius value", () => {
+    const radius = messages().find((m) => m.line === 7);
+    expect(radius?.message).toMatch(/var\(--radius-/);
+    expect(radius?.message).toMatch(/\b8px\b/);
+  });
+
+  it("names a palette class and a semantic class to use", () => {
+    const files = [path.join(FIXTURES, "BD-6b/fail/index.html")];
+    const candidates = bd6b.locate({ files, root: path.join(FIXTURES, "BD-6b/fail"), params: {} }) as Parameters<typeof bd6b.decide>[0][];
+    const palette = candidates.find((c) => c.line === 9);
+    expect(palette && bd6b.decide(palette, {})).toMatch(/bg-red-500[\s\S]*bg-primary/);
+  });
 });
