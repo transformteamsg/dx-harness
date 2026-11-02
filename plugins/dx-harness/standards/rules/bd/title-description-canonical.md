@@ -26,6 +26,8 @@ Fails a page when any of these holds:
 - The page has no `<meta name="description">`, or its length is outside `descriptionLength`.
 - The page has no `<link rel="canonical">`.
 
+The length of the description is its width, which is what a search result truncates by. A Chinese, Japanese, or Korean character counts as two, and so does fullwidth punctuation. Every other character counts as one.
+
 Skips when `audience` is `restricted` or `beta`. When `audience` is unset, the rule reports "not configured" and does not pass.
 
 ## Recommendations

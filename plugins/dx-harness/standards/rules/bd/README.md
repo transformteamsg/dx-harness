@@ -63,6 +63,6 @@ Decisions that the build forced:
 - `BD-5b`: the lint part (unique, non-generic page titles) is `WO-8d` in the WO category.
 - `BD-1d`: added as lint at tier L2 during the review of the judged rules. It finds candidates by comparing the page at the mobile and desktop widths. `BD-1c` stays judged for the quality of the explanation.
 - `BD-2d` and `BD-2e`: added as lint for `BD-2b`. `BD-2d` is deterministic at tier L1. `BD-2e` rests on usability guidance, not on the DSS, so it is L2. The width of 27 characters is attributed to the Nielsen Norman Group in secondary sources. Verify it against NN/g.
-- `BD-5a`: the length limits count characters. A Chinese title or description packs more into each character, so the limits suit English. The Chinese demo page needed a longer description to pass.
+- `BD-5a`: the description limit measures width, so a Chinese, Japanese, or Korean character counts as two. The title limit still counts characters, so a short Chinese title can fail it.
 - `BD-4a`: a locale that is not English skips the rule with no note. The rule text says that it reports "not configured". The module does not yet.
 - `BD-1d`, `BD-2e`, and `BD-4a` are heuristics that were tuned on the demo site only. They need the calibration corpus before the thresholds can be trusted.
