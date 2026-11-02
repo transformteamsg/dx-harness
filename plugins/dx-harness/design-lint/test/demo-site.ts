@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterAll, expect } from "vitest";
 import { loadConfig } from "../src/config.ts";
 import { fileForPath } from "../src/project.ts";
-import type { Config } from "../src/types.ts";
+import type { Config, Finding } from "../src/types.ts";
 import { lint } from "../src/lint.ts";
 import { applyPatch, patchedConfig, readPatch } from "../src/patch.ts";
 import type { Patch } from "../src/patch.ts";
@@ -12,6 +12,7 @@ import { launchBrowser } from "../src/rendered.ts";
 import type { Browser } from "playwright-core";
 import { loadRules } from "../src/rules/load.ts";
 import { BASE, compare } from "./helpers.ts";
+import type { Expected } from "./helpers.ts";
 
 /* The demo site passes every rule that exists. Each break patch makes one rule
    fail, and the failing site is the passing site with every patch applied. A test
@@ -81,15 +82,15 @@ export const everyCode = patches.map((p) => p.code);
    (WP-6a, WP-6b, and WP-6c for a patch of WP-6b), and any rule that its
    expectations name, on the pages that the edited files make, and the first page.
    It expects exactly the findings of the patch, so a patch that breaks a second
-   rule of its control shows up. A patch that breaks a rule of another control or
-   category does not show up here: running every rule on every patch took over 20
-   minutes and overloaded the machine, and running a whole category timed out for
-   the large ones. The
-   other pages already pass, and the tests of the failing site run every rule on
-   every page once, with and without every patch. This keeps the time of a patch
-   test at a few seconds, however many pages and rules the site has. An edit to a
-   file that is not a page, such as a stylesheet, can change any page, so it keeps
-   every page. */
+   rule of its control shows up. A second run checks the source and project rules
+   of the other controls on the whole site, which cost little, so a patch that
+   breaks one of them shows up too (#517). It leaves out the rendered rules of the
+   other controls: running every rule on every page for each patch took over 20
+   minutes and overloaded the machine. The other pages already pass, and the tests of the failing site run
+   every rule on every page once, with and without every patch. This keeps the time
+   of a patch test at a few seconds, however many pages and rules the site has. An
+   edit to a file that is not a page, such as a stylesheet, can change any page, so
+   it keeps every page. */
 /* WP-6b belongs to the control WP-6. */
 const control = (code: string) => code.replace(/[a-z]$/, "");
 const codesOf = (patch: Patch) => [
@@ -98,6 +99,39 @@ const codesOf = (patch: Patch) => [
     ...patch.expect.map((e) => e.code ?? patch.code),
   ]),
 ];
+
+/* The findings of other controls that a patch makes today. Each is a break that
+   the patch is not meant to make, and the patch stays as it is until it is fixed.
+   A known finding that no longer appears fails the test, so remove it from here
+   when the patch is fixed. */
+const KNOWN_OTHER_CONTROLS: Record<string, Expected[]> = {
+  "BD-2a": [{ file: ".", line: 1, column: 1, code: "WO-11b" }],
+  "COL-3a": [
+    { file: "slp/index.html", line: 26, column: 5, code: "BD-6b" },
+    { file: "slp/index.html", line: 26, column: 5, code: "BD-6b" },
+  ],
+  "COL-4a": [
+    { file: "slp/index.html", line: 27, column: 5, code: "BD-6b" },
+    { file: "slp/index.html", line: 27, column: 5, code: "BD-6b" },
+  ],
+  "MOT-4a": [{ file: "slp/index.html", line: 31, column: 43, code: "MOT-1a" }],
+  "TL-2a": [{ file: "tl/privacy.html", line: 22, column: 42, code: "WU-8a" }],
+  "TYP-2a": [{ file: "typ/typ.css", line: 3, column: 13, code: "WP-14b" }],
+  "WO-7a": [{ file: "wo/list.html", line: 1, column: 1, code: "WU-7a" }],
+  "WP-10b": [
+    { file: "wp-b/Contact.tsx", line: 5, column: 5, code: "TX-6a" },
+    { file: "wp-b/Contact.tsx", line: 5, column: 5, code: "WU-14b" },
+  ],
+  "WR-1a": [{ file: "wp-a/structure.html", line: 45, column: 7, code: "WU-8a" }],
+};
+
+/* The findings of the rules of the other controls that run on the source and the
+   project, on the whole site. */
+async function otherControls(patch: Patch, site: string): Promise<Finding[]> {
+  const own = new Set(codesOf(patch));
+  const codes = everyCode.filter((code) => !own.has(code) && rules.find((r) => r.code === code)?.surface !== "rendered");
+  return (await run(site, codes, patchedConfig(config, patch))).findings;
+}
 
 function scoped(changed: string[], site: string): Config {
   /* No page changed, as when a patch sets a config value, or a file that is not a page changed. */
@@ -119,7 +153,9 @@ function scoped(changed: string[], site: string): Config {
 export async function checkPatch(patch: Patch): Promise<void> {
   const site = copySite();
   const changed = applyPatch(site, patch);
-  const result = await run(site, codesOf(patch), patchedConfig(scoped(changed, site), patch));
-  const { missing, extra } = compare(result.findings, site, rules, patch.expect, patch.code);
+  const own = await run(site, codesOf(patch), patchedConfig(scoped(changed, site), patch));
+  const findings = [...own.findings, ...(await otherControls(patch, site))];
+  const expected = [...patch.expect, ...(KNOWN_OTHER_CONTROLS[patch.code] ?? [])];
+  const { missing, extra } = compare(findings, site, rules, expected, patch.code);
   expect({ missing, extra }, `${patch.code}: missing ${JSON.stringify(missing)}, extra ${JSON.stringify(extra)}`).toEqual({ missing: [], extra: [] });
 }

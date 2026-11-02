@@ -73,6 +73,17 @@ describe("a break patch", () => {
     await expect(checkPatch({ ...patch, expect: [] })).rejects.toThrow(new RegExp(`${patch.code}[\\s\\S]*${finding.file}`));
   });
 
+  /* Issue #517: the test of a patch runs rules outside the control of the patch. */
+  it("names the finding of a rule of another control that it does not expect", async () => {
+    const control = (code: string) => code.replace(/[a-z]$/, "");
+    const other = (patch: (typeof patches)[number]) => patch.expect.filter((e) => e.code !== undefined && control(e.code) !== control(patch.code));
+    const patch = patches.find((p) => other(p).length > 0 && [p.code, ...p.expect.map((e) => e.code ?? p.code)].every((c) => !needsBrowser(c)));
+    expect(patch, "a source-only patch that expects a finding of another control").toBeDefined();
+    const extra = other(patch!)[0];
+    const expectOnlyOwn = { ...patch!, expect: patch!.expect.filter((e) => !other(patch!).includes(e)) };
+    await expect(checkPatch(expectOnlyOwn)).rejects.toThrow(new RegExp(`${patch!.code}: [\\s\\S]*extra [\\s\\S]*${extra.code}`));
+  });
+
   it("fails when the text to replace is not found exactly once", () => {
     const site = copySite();
     const bad = { ...patches[0], edits: [{ file: "index.html", find: "this text is not on the page", replace: "" }] };
