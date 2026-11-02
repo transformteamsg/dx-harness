@@ -33,6 +33,8 @@ export const wp3a: RuleModule = {
 };
 ```
 
+A module can also have an `unconfigured` function. It takes the resolved parameters and returns the names of the ones that have a value the module cannot use, such as a locale that its formula does not support. The runner reports those names as not configured and does not run the module.
+
 A `Candidate` has `file`, `line`, `column`, and `data`. A rendered rule reports the page path as the file, and the position of the element as the line and column.
 
 Use the helpers that exist:

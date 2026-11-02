@@ -2,8 +2,8 @@ import { fleschKincaid, wordCount } from "../readability.ts";
 import type { Candidate, RuleModule } from "../types.ts";
 
 /* BD-4a: the readability grade of each text block is at or below the limit. The
-   formula is for English, so another locale is skipped. It finds candidates and
-   does not decide. */
+   formula is for English, so another locale is not configured. It finds
+   candidates and does not decide. */
 
 const VIEWPORT = { width: 1280, height: 800 };
 const MIN_WORDS = 20;
@@ -12,9 +12,11 @@ export const bd4a: RuleModule = {
   code: "BD-4a",
   surface: "rendered",
 
+  unconfigured: (params) => (/^en/i.test(String(params.locale)) ? [] : ["locale"]),
+
   async locate({ rendered, params }) {
     const out: Candidate[] = [];
-    if (!rendered || !/^en/i.test(String(params.locale))) return out;
+    if (!rendered) return out;
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
       const blocks = await page.evaluate(

@@ -66,11 +66,12 @@ export async function run(
       ...skippedPresetLines,
     ];
     if (skippedLines.length > 0) result.notes.push({ code: rule.code, kind: "skipped", detail: skippedLines });
+    const module = byCode.get(rule.code);
+    if (unset.length === 0 && module?.unconfigured) unset.push(...module.unconfigured(values));
     if (unset.length > 0) {
       result.notes.push({ code: rule.code, kind: "not-configured", detail: unset });
       continue;
     }
-    const module = byCode.get(rule.code);
     if (!module) {
       result.notes.push({ code: rule.code, kind: "no-module", detail: [] });
       result.skipped.push(rule.code);
