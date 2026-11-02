@@ -22,10 +22,12 @@ The parse is deterministic (stdlib only):
   - Guardrails: each bullet projects as one string in a list (bullets there are
     instructions, not fields, so a colon inside one never splits it).
   - Overrides: one structured line per standing override:
-      - <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
-    The generator validates every line against `standards/catalog.yaml` (ships with the
-    harness beside this script): the control id must exist, the stated tier must match
-    the catalogue tier, L0 lines are always rejected, L1 needs a named approver,
+      - <RULE-CODE> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
+    The generator validates every line against the rules a design run lists (they
+    ship with the harness beside this script): the code must name a base rule in
+    `standards/rules/` or a placeholder control in `standards/catalog.yaml`, an old
+    catalogue code that `redirects.yaml` maps is rejected with its new codes, the
+    stated tier must match the rule's tier, L0 lines are always rejected, L1 needs a named approver,
     L1 and L2 both need a reason, and one control id may appear on at most one line
     (duplicate lines have no deterministic meaning downstream). One rejected line
     stops the write (exit 3).
@@ -42,12 +44,13 @@ Exit codes:
   1  no DESIGN.md (nothing to generate - portfolio defaults apply; not a failure)
   2  --check: .dx/design.json is stale vs DESIGN.md or the catalogue version
   3  the Overrides section did not validate; nothing was written
-  4  the control catalogue is missing or unreadable (a tool failure: override
+  4  the control catalogue or the base rules are missing or unreadable (a tool failure: override
      validation and catalog_version stamping were not possible)
 """
 
 import argparse
 import datetime
+import importlib.util
 import json
 import os
 import re
@@ -59,6 +62,17 @@ GENERATED_FROM = "DESIGN.md"
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CATALOG_PATH = os.path.join(os.path.dirname(SCRIPT_DIR), "standards", "catalog.yaml")
+
+
+def _load_checklib():
+    path = os.path.join(os.path.dirname(SCRIPT_DIR), "checks", "checklib.py")
+    spec = importlib.util.spec_from_file_location("_dx_checklib", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+checklib = _load_checklib()
 
 # Canonical heading -> json key (lower-cased lookup). Unknown headings are slugified.
 SECTION_MAP = {
@@ -83,15 +97,15 @@ FIELD_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*:\s+(.+?)\s*$")
 BULLET_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*$")
 COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 
-# Overrides line grammar: - <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
+# Overrides line grammar: - <RULE-CODE> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]
 OVERRIDE_RE = re.compile(
-    r"^\s*[-*]\s+(?P<id>[A-Z][A-Z0-9]*-\d+)\s*\((?P<tier>[^)]+)\)\s*:\s*(?P<rest>.+?)\s*$"
+    r"^\s*[-*]\s+(?P<id>[A-Z][A-Z0-9]*-\d+[a-z]?)\s*\((?P<tier>[^)]+)\)\s*:\s*(?P<rest>.+?)\s*$"
 )
 # The reason separator: a spaced hyphen (canonical) or a spaced en/em dash (legacy files).
 REASON_SPLIT_RE = re.compile(r"\s+[-–—]\s+reason:\s*")
 APPROVER_SPLIT_RE = re.compile(r"\s*;\s*approver:\s*")
 
-OVERRIDE_GRAMMAR = "- <CONTROL-ID> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]"
+OVERRIDE_GRAMMAR = "- <RULE-CODE> (<tier>): <adjusted rule> - reason: <why>[; approver: <name>]"
 
 
 class OverridesError(ValueError):
@@ -260,34 +274,60 @@ def parse_overrides(body):
     return items, errors
 
 
-def validate_against_catalog(items, controls):
-    """Check every override's control id exists in the catalogue and its stated tier
-    matches the catalogue tier. Returns a list of error strings."""
+def validate_against_catalog(items, controls, redirects=None):
+    """Check every override names a rule that a design run lists: a base rule, or
+    a placeholder control in the catalogue. Its stated tier must match the rule's
+    tier. An old catalogue code that `redirects` maps to base rules is rejected
+    with the codes to name instead. Returns a list of error strings."""
     errors = []
+    redirects = redirects or {}
     for it in items:
         cat_tier = controls.get(it["control"])
-        if cat_tier is None:
+        if it["control"] in redirects:
             errors.append(
-                f'unknown control id "{it["control"]}": it is not in '
-                f"standards/catalog.yaml. Check the id there and fix the line."
+                f'{it["control"]} is an old catalogue code. Base rules replace it: '
+                f'{", ".join(redirects[it["control"]])}. Name the rule that the override '
+                f"adjusts, with its tier, and fix the line."
+            )
+        elif cat_tier is None:
+            errors.append(
+                f'unknown rule code "{it["control"]}": it is not a base rule in '
+                f"standards/rules/ or a control in standards/catalog.yaml. Check the "
+                f"code and fix the line."
             )
         elif cat_tier == "L0":
             errors.append(
-                f"{it['control']} is an L0 control and can never be overridden. "
+                f"{it['control']} is an L0 rule and can never be overridden. "
                 f"Remove this line. If the rule seems wrong, start a rule proposal."
             )
         elif cat_tier != it["tier"]:
             errors.append(
-                f"{it['control']} is tier {cat_tier} in standards/catalog.yaml, "
-                f"not {it['tier']}. State the catalogue tier."
+                f"{it['control']} is tier {cat_tier}, not {it['tier']}. State the "
+                f"rule's tier."
             )
     return errors
 
 
-def load_catalog(path=None):
-    """Line-parse `standards/catalog.yaml` (stdlib only, no PyYAML): meta.version plus
-    a {control id: tier} map. Raises OSError when the file is unreadable."""
-    path = path or CATALOG_PATH
+def load_catalog(path=None, rules_dir=None):
+    """meta.version from `standards/catalog.yaml`, a {rule code: tier} map, and the
+    `codes` map of redirects.yaml. The map holds every base rule in
+    `standards/rules/` and every catalogue control that no base rule replaces.
+    Stdlib only, no PyYAML. Raises OSError when the catalogue or the base rules
+    cannot be read."""
+    catalog = _load_catalog_file(path or CATALOG_PATH)
+    rules = checklib.base_rules(rules_dir)
+    if not rules:
+        raise OSError(f"cannot read the base rules at {rules_dir or checklib.RULES_DIR}")
+    redirects = checklib.rule_redirects(
+        os.path.join(rules_dir, "redirects.yaml") if rules_dir else None)
+    controls = {cid: tier for cid, tier in catalog["controls"].items() if cid not in redirects}
+    controls.update({rule["id"]: rule["tier"] for rule in rules})
+    return {"version": catalog["version"], "controls": controls, "redirects": redirects}
+
+
+def _load_catalog_file(path):
+    """Line-parse `standards/catalog.yaml`: meta.version plus a {control id: tier}
+    map. Raises OSError when the file is unreadable."""
     version = None
     controls = {}
     in_meta = False
@@ -333,7 +373,7 @@ def split_sections(text):
     return sections
 
 
-def parse_sections(text, controls=None):
+def parse_sections(text, controls=None, redirects=None):
     """Map DESIGN.md -> {json_key: value} for every non-empty section. Raises
     OverridesError (carrying every error) when an Overrides line is rejected;
     pass `controls` (a {control id: tier} map) to also validate ids and tiers
@@ -346,7 +386,7 @@ def parse_sections(text, controls=None):
             items, errs = parse_overrides(strip_comments(body))
             errors.extend(errs)
             if controls is not None:
-                errors.extend(validate_against_catalog(items, controls))
+                errors.extend(validate_against_catalog(items, controls, redirects))
             if items:
                 result["overrides"] = items
         elif key == "guardrails":
@@ -375,7 +415,8 @@ def build_document(text, *, now=None, catalog=None):
     }
     if catalog.get("version"):
         doc["catalog_version"] = catalog["version"]
-    doc.update(parse_sections(text, controls=catalog.get("controls")))
+    doc.update(parse_sections(text, controls=catalog.get("controls"),
+                              redirects=catalog.get("redirects")))
     return doc
 
 
@@ -447,7 +488,7 @@ def main(argv=None):
     try:
         catalog = load_catalog()
     except OSError as exc:
-        print(f"cannot read the control catalogue at {CATALOG_PATH}: {exc}. "
+        print(f"cannot read the control catalogue at {CATALOG_PATH} or the base rules: {exc}. "
               f"Override validation and catalog_version stamping need it; "
               f"fix the harness install and rerun.")
         return 4
@@ -513,9 +554,9 @@ def run_self_test():
         with contextlib.redirect_stdout(io.StringIO()):
             return fn(*a, **k)
 
-    def overrides_errors(text, controls=None):
+    def overrides_errors(text, controls=None, redirects=None):
         try:
-            parse_sections(text, controls=controls)
+            parse_sections(text, controls=controls, redirects=redirects)
         except OverridesError as exc:
             return exc.errors
         return []
@@ -582,7 +623,9 @@ def run_self_test():
 
     # 10. build_document adds the header keys and stamps catalog_version
     fake_catalog = {"version": "9.9", "controls": {"TOK-1": "L1", "MOT-1": "L2",
-                                                   "CMP-7": "L2", "A11Y-1": "L0"}}
+                                                   "CMP-7": "L2", "A11Y-1": "L0",
+                                                   "CNT-12a": "L2"},
+                    "redirects": {"CNT-12": ["CNT-12a", "CNT-12b"]}}
     doc = build_document(sample, catalog=fake_catalog)
     check("document header keys",
           doc["generated_from"] == "DESIGN.md" and "generated_at" in doc)
@@ -615,6 +658,7 @@ def run_self_test():
 
     # ── Overrides parsing and tier validation ─────────────────────────────────
     controls = fake_catalog["controls"]
+    redirects = fake_catalog["redirects"]
 
     # 15. a valid L2 line (reason, no approver) parses
     ok_l2 = parse_sections(
@@ -667,11 +711,22 @@ def run_self_test():
                             controls=controls)
     check("L2 without reason rejected", any("needs a reason" in e for e in errs))
 
-    # 21. an unknown control id is rejected with a catalogue pointer
+    # 21. an unknown code is rejected with a pointer to both sources
     errs = overrides_errors("## Overrides\n- ZZZ-9 (L2): whatever - reason: because\n",
                             controls=controls)
-    check("unknown control id rejected",
-          any('unknown control id "ZZZ-9"' in e and "catalog.yaml" in e for e in errs))
+    check("unknown rule code rejected",
+          any('unknown rule code "ZZZ-9"' in e and "standards/rules/" in e for e in errs))
+
+    # 21b. a base rule code, with its letter, parses
+    base = parse_sections("## Overrides\n- CNT-12a (L2): title case in the nav - reason: brand\n",
+                          controls=controls, redirects=redirects)
+    check("base rule override parses", base.get("overrides", [{}])[0].get("control") == "CNT-12a")
+
+    # 21c. an old catalogue code is rejected, and the error names its new codes
+    errs = overrides_errors("## Overrides\n- CNT-12 (L2): title case - reason: brand\n",
+                            controls=controls, redirects=redirects)
+    check("old catalogue code rejected with its new codes",
+          any("CNT-12 is an old catalogue code" in e and "CNT-12a, CNT-12b" in e for e in errs))
 
     # 22. a stated tier that contradicts the catalogue is rejected
     errs = overrides_errors("## Overrides\n- CMP-7 (L1): calendar variant "
@@ -682,7 +737,7 @@ def run_self_test():
     # 23. a malformed line names itself and shows the grammar
     errs = overrides_errors("## Overrides\nnot an override line\n", controls=controls)
     check("malformed line rejected with grammar",
-          any("cannot parse" in e and "<CONTROL-ID>" in e for e in errs))
+          any("cannot parse" in e and "<RULE-CODE>" in e for e in errs))
 
     # 23b. duplicate control ids are rejected (no deterministic meaning downstream)
     errs = overrides_errors("## Overrides\n"
@@ -703,7 +758,11 @@ def run_self_test():
     # 25. the real catalogue parses: version present, A11Y-1 is L0
     real = load_catalog()
     check("real catalogue has a version", bool(real.get("version")))
-    check("real catalogue maps A11Y-1 to L0", real["controls"].get("A11Y-1") == "L0")
+    check("real rules map an L0 base rule to L0", real["controls"].get("WR-1a") == "L0")
+    check("real rules map a judged base rule", real["controls"].get("CMP-4a") in ("L1", "L2"))
+    check("real rules keep a placeholder control", real["controls"].get("TOK-2") == "L1")
+    check("real rules drop a control that base rules replace",
+          "CNT-12" not in real["controls"] and real["redirects"].get("CNT-12"))
 
     # 11. missing DESIGN.md -> exit 1
     with tempfile.TemporaryDirectory() as td:
