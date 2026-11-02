@@ -57,7 +57,7 @@ slash lists expand, "out of scope" excludes its whole segment (and the bullets
 under an out-of-scope label), and an inline "N/A" excludes only the ids in its
 own clause, so exclusion wins without unchecking the in-scope controls named
 beside it. checklib has its own gate:
-`python3 checks/checklib.py --self-test` → `SELF-TEST OK (115 cases)`.
+`python3 checks/checklib.py --self-test` → `SELF-TEST OK (116 cases)`.
 
 ### The ast-grep front end: one door, one version floor
 
@@ -112,21 +112,23 @@ One file maps every accessibility rule that `rendered-check.py` runs to exactly 
 control id: `checks/a11y-rule-map.json` (JSON, not YAML, because the check scripts
 are stdlib-only).
 
-- `rules`: `"<prefix>/<rule>": "<CTL>"`, one control id per rule, never a list. The
-  prefix names the tool the rule belongs to: `axe/` for the rendered check, and `dx/`
-  for the rendered check's own page evaluations. A rule with no row is reported as a
-  misconfiguration, not attributed to a guessed control.
-- `aria_prefix_control`: the control every axe rule id beginning `aria-` maps to
-  (A11Y-8). It is one key rather than two dozen rows because the aria suite is
-  resolved from the installed axe's `getRules()` at run time: a hardcoded list drifts
-  on the next axe minor, and a rule the harness has never seen would otherwise be
-  dropped.
-- `layers`: the control ids the `axe-rendered` layer covers. When the layer cannot
-  run, it reads its row to name the controls going to manual verification, so a
-  control is never reported as passing by a layer that did not check it.
+- `rules`: `"<prefix>/<rule>": "<CODE>"`, one base rule code per rule, never a list.
+  The code is the base rule in `standards/rules/` whose `engine:` field names that axe
+  rule. The prefix names the tool the rule belongs to: `axe/` for the rendered check,
+  and `dx/` for the rendered check's own page evaluations. A rule with no row is
+  reported as a misconfiguration, not attributed to a guessed code.
+- `aria_prefix_control`: the base rule that an axe rule id beginning `aria-` maps to
+  when it has no row of its own (WR-1c). The aria suite is resolved from the installed
+  axe's `getRules()` at run time, so a rule the harness has never seen is still
+  reported.
+- `layers`: the base rule codes the `axe-rendered` layer covers. When the layer cannot
+  run, it reads its row to name the rules going to manual verification, so a rule is
+  never reported as passing by a layer that did not check it.
+
+The tier of each code comes from its rule file through `checklib.base_rule_tiers()`.
 
 Per-rule run behaviour stays out of the map: `target-size` being force-enabled,
-`bypass` being report-only and the A11Y-8 visibility demotion all live in the runner,
+`bypass` being report-only and the aria visibility demotion all live in the runner,
 so the map keeps one job: rule to control.
 
 The static accessibility checks are `design-lint` rules. See
@@ -213,7 +215,7 @@ coverage and the always-manual gaps are in the sections below.
 generator in `--check` mode; a stale `design.json` (generator exit 2) is surfaced as a
 finding (exit 2), never a crash.
 
-**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (82 cases)` — profile
+**Self-test:** `python3 checks/detect.py --self-test` → `SELF-TEST OK (83 cases)` — profile
 selection, the 0/2/1 exit mapping (incl. curated excluding TYP-3 / `--all` including it),
 each ignore type, invalid-config → exit 1, `ERROR`-line parsing (both the static
 `<file>:<line>` and the rendered `<route>:<cell>` shape, at both of `_FINDING_RE`'s call
@@ -230,7 +232,7 @@ The validator also enforces a **fragment-parity** sub-check via `<!-- dx-sync:�
 
 The validator also checks each file under `standards/rules/`, per [ADR-0002](../../../docs/adr/0002-rule-categories-and-file-names.md). A file must sit in a category folder, such as `bd/` or `cmp/`, and a rule file must take its kebab-case slug as its name. A file named by its code, such as `BD-1a.md`, fails, and the error names the file. A category folder can also hold `README.md` and `MAPPING.md`, and `redirects.yaml` sits at the top. In `redirects.yaml`, each code under `codes` must have a row in the `MAPPING.md` of its category. A control under `notMoved` needs a reason and no codes. Each generic control in `catalog.yaml` needs an entry under `codes` or `notMoved`, and the error names a control that has neither. The 13 placeholder controls and the 12 controls that port in full need no entry. With no `standards/rules/` folder, the check has nothing to read and passes.
 
-**Self-test:** `python3 checks/design-catalog-validate.py --self-test` → `SELF-TEST OK (141 cases)`.
+**Self-test:** `python3 checks/design-catalog-validate.py --self-test` → `SELF-TEST OK (142 cases)`.
 
 **Enforcement coverage (`enforced:` / `script:`).** Two OPTIONAL per-control catalog
 fields make the built/unbuilt boundary machine-readable instead of living in prose
@@ -337,15 +339,15 @@ reduced-motion cell at 1280 in the default theme:
 | `1280-light` | 1280 | light | default | all mapped rules |
 | `360-dark` | 360 | dark | default | `color-contrast` in dark, all mapped rules |
 | `1280-dark` | 1280 | dark | default | `color-contrast` in dark, all mapped rules |
-| `1280-reduced-motion` | 1280 | default | `reduced-motion` | A11Y-5 only |
+| `1280-reduced-motion` | 1280 | default | `reduced-motion` | A11Y-5a only |
 
 Each cell scrolls to the document end in viewport-height steps and back to the top
 before axe runs, because axe skips what is outside the viewport. `target-size` is
-enabled **by name** — axe ships it off, Lighthouse re-enables it, and A11Y-4 has no other
+enabled **by name** — axe ships it off, Lighthouse re-enables it, and WO-18a has no other
 coverage — and the run names its rules rather than taking a `runOnly` tag shortcut,
 which would silently drop mapped ones. The aria suite comes from the installed axe's
 `getRules()` at run time, so a rule the harness has never seen is still reported under
-A11Y-8 with no harness edit. Where a product has no dark mode (no theme toggle, no
+WR-1c with no harness edit. Where a product has no dark mode (no theme toggle, no
 `.dark` or `[data-theme="dark"]` layer), the dark cells record `N/A, product has no dark
 mode` — the same truthful outcome verify records, never a pass.
 
@@ -356,29 +358,30 @@ counted once per cell and never printed per node, because a per-node pass list i
 reading "axe found nothing" as "this control is met". `incomplete` is the third bucket:
 it rides the `NOTE` channel, naming the control, the rule and the DOM node as an item
 for the manual accessibility pass. It gates nothing and is dropped by nothing. Two more
-things land there. An A11Y-8 finding on markup a person cannot currently reach —
+things land there. An aria finding (WR-1b or WR-1c) on markup a person cannot currently reach —
 `hidden`, `aria-hidden="true"`, `display: none` or `visibility: hidden` on the node or an
 ancestor — is demoted rather than gated on, which is what "visible components only"
-means for a runner that clicks nothing. And `bypass` is report-only, so A11Y-10 never
+means for a runner that clicks nothing. And `bypass` is report-only, so WO-7a never
 contributes to a non-zero exit; skip-link-first confirmation stays with the manual pass.
 Where every rule mapped to a control came back `inapplicable`, that control records N/A
 with the reason.
 
-**The finding line names a page and a cell.** `ERROR <route>:<cell> [<CTL>][<rule>] …` —
-see the position-slot paragraph under `checklib.py` above.
+**The finding line names a page, a cell, a base rule, and its tier.**
+`ERROR <route>:<cell> [<CODE>][<rule>] <tier>: …` — see the position-slot paragraph
+under `checklib.py` above.
 
 **The `data-dx-waive` DOM marker.** The rendered analogue of the inline `dx-waive`
 comment, for a layer whose findings have no source file to carry one:
 
 ```html
-<div data-dx-waive="SLP-4 SLP-6 reason=quarantined anti-specimen">
+<div data-dx-waive="CMP-13a TYP-7a reason=quarantined anti-specimen">
 ```
 
 The runner skips that element's subtree for the named controls only. It is element
 scoped permanently — a per-URL ignore list would exempt a whole page and hide real
 regressions elsewhere on it, a register-scoped exemption would make a permanent blind
 spot, and it never becomes a `detector.ignoreRules`, `ignoreFiles` or `ignoreValues`
-entry. Grammar: one or more uppercase `[A-Z0-9]+-\d+` ids, then the literal `reason=`,
+entry. Grammar: one or more base rule codes, `[A-Z0-9]+-\d+[a-z]?`, then the literal `reason=`,
 then free text to the end of the value. No quotes around the reason (the inline form's
 `reason="…"` cannot survive inside a JSX attribute that is itself double quoted), and the
 reason is **required** where it is optional inline, because a rendered waiver has no
@@ -392,7 +395,9 @@ Two deliberate divergences, said out loud so the conventions do not drift silent
   still fail this repo on its own teaching exhibit, which is the problem the marker
   exists to solve.
 - **An L0 id in a marker is an ERROR and suppresses nothing.** The inline path already
-  refuses an L0 waiver, and the DOM form must not become the way around it. An unknown
+  refuses an L0 waiver, and the DOM form must not become the way around it. A removed
+  catalogue code, such as A11Y-1, is an ERROR that names the base rules `redirects.yaml`
+  maps it to. An unknown
   id, a missing reason and an unparseable value are each their own ERROR too, and a
   broken marker suppresses nothing rather than guessing which way to fail. Every
   honoured marker prints a `NOTE` naming the element, the ids and the reason.
@@ -407,7 +412,8 @@ unprovisioned driver, a refused CDP connection or an axe that threw are all the 
 class: `NOTE` lines naming the failure and every control going to manual verification,
 then **exit 0**. That shape is forced by `detect.py`, which reads exit 1 with no `ERROR`
 line as a crash — reporting an uncovered layer as harness breakage would be worse than
-useless. A11Y-1 and A11Y-3 are L0 and still block until verified by some path.
+useless. The note names the L0 base rules it covers, such as WR-1a, which still block
+until verified by some path.
 
 **The harness-side Node dependency.** `@axe-core/playwright` (which brings its own
 `axe-core`) and `playwright-core` are declared in `plugins/dx-harness/package.json` and
@@ -430,7 +436,7 @@ A11Y-10 all stay or become `enforced: partial` with `checks/rendered-check.py` a
 available and every one keeps a manual remainder. A11Y-5 in particular stays `partial`
 and gains both keys, which it has neither of today.
 
-**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (149
+**Self-test:** `python3 checks/rendered-check.py --self-test` → `SELF-TEST OK (175
 cases)` — the matrix, the job the driver reads, the finding shape against `detect.py`'s
 real `_FINDING_RE`, the three buckets, the marker grammar and its four error cases, the
 did-not-run paths, and a set of cases that read the driver's source with its comments

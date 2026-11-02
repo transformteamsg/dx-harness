@@ -19,19 +19,21 @@ Also validates `.dx/component-manifest.json` against its spec.
 
 ### `rendered-check.py`
 
-Runs axe on a page that is already open, at 360 and 1280 in each supported theme, plus one reduced-motion cell. With no open session, every control below goes to manual verification. It clicks nothing, so anything behind an interaction stays manual.
+Runs axe on a page that is already open, at 360 and 1280 in each supported theme, plus one reduced-motion cell. Each finding names the base rule below and its tier. With no open session, every rule below goes to manual verification. It clicks nothing, so anything behind an interaction stays manual.
 
 | Control | Tier | Covers | Misses |
 | --- | --- | --- | --- |
-| A11Y-1 | Removed | axe `color-contrast` in both themes | Items axe reports as incomplete, such as text over a background image or a gradient |
-| A11Y-3 | Removed | axe `label` | Labels on controls behind an interaction |
-| A11Y-4 | Removed | axe `target-size`, enabled by name, at 360 and 1280 | Targets behind an interaction |
-| A11Y-5 | Removed | What still moves under reduced-motion emulation, in one cell at 1280 | Whether an animation is essential, which is judgment |
-| A11Y-6 | Removed | axe `image-alt` and `svg-img-alt` | Whether an image is informative or decorative |
-| A11Y-7 | Removed | axe `list`, `listitem`, and `heading-order` | Whether a heading is descriptive |
-| A11Y-8 | Removed | The axe aria suite from the installed axe, on markup a person can reach | Closed overlays, state changes, and hidden markup, which go to the manual pass |
-| A11Y-9 | Removed | axe `document-title` and `html-has-lang` | Whether a single-page app updates its title for each view |
-| A11Y-10 | Removed | axe `bypass`, report-only: it never fails the run | Whether the skip link comes first |
+| WP-13a | L1 | axe `color-contrast` in both themes | Items axe reports as incomplete, such as text over a background image or a gradient |
+| WR-1a | L0 | axe `label` and the axe `aria-*-name` rules | Names and labels on controls behind an interaction |
+| WO-18a | L1 | axe `target-size`, enabled by name, at 360 and 1280 | Targets behind an interaction |
+| A11Y-5a | L1 | What still moves under reduced-motion emulation, in one cell at 1280 | Whether an animation is essential, which is A11Y-5b |
+| WP-1a | L1 | axe `image-alt` and `svg-img-alt` | Whether an image is informative or decorative |
+| WP-6a | L1 | axe `list`, `listitem`, and `heading-order` | Whether a heading is descriptive |
+| WR-1b | L0 | The axe role rules, such as `aria-roles` and `aria-required-attr`, on markup a person can reach | Closed overlays, state changes, and hidden markup, which go to the manual pass |
+| WR-1c | L0 | The axe attribute rules, such as `aria-valid-attr`, and any other `aria-` rule in the installed axe, on markup a person can reach | Closed overlays, state changes, and hidden markup, which go to the manual pass |
+| WO-8a | L1 | axe `document-title` | Whether a single-page app updates its title for each view |
+| WU-1b | L0 | axe `html-has-lang` | Whether the declared language is the right one |
+| WO-7a | L1 | axe `bypass`, report-only: it never fails the run | Whether the skip link comes first |
 
 ### `token-audit.py`
 

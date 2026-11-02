@@ -192,7 +192,7 @@ function collectMarkersJs(attribute) {
 /**
  * For each axe node target, whether a person can currently reach it: `hidden`,
  * `aria-hidden="true"`, `display: none` or `visibility: hidden` on the node or
- * any ancestor. The runner demotes an A11Y-8 finding on unreachable markup
+ * any ancestor. The runner demotes an aria finding on unreachable markup
  * into the incomplete bucket rather than gating on it.
  */
 function nodeReachabilityJs(targets) {
@@ -321,7 +321,7 @@ async function main() {
     const forceEnabled = {};
     for (const id of job.forceEnable || []) forceEnabled[id] = { enabled: true };
 
-    // The reduced-motion cell decides A11Y-5 only, so it skips axe rather than
+    // The reduced-motion cell decides A11Y-5a only, so it skips axe rather than
     // reporting every other control's findings a second time.
     const results = job.runAxe === false
       ? { violations: [], incomplete: [], passes: [], inapplicable: [], testEngine: null }
