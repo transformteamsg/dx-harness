@@ -63,9 +63,6 @@ function declaredControls(script: string): string[] {
 /* The controls that a base rule replaces: the keys of `codes` in redirects.yaml. */
 const replaced = new Set(Object.keys(parse(fs.readFileSync(path.join(RULES, "redirects.yaml"), "utf8")).codes ?? {}));
 
-/* rendered-check.py stays for the live page until design-lint can open one, by
-   the decision recorded on #538. */
-const KEPT_FOR_THE_LIVE_PAGE = new Set(["rendered-check.py"]);
 const CHECKS = fs.readdirSync(path.join(PLUGIN, "checks")).filter((file) => file.endsWith(".py"));
 
 describe("a design run decides the replaced controls with design-lint", () => {
@@ -99,14 +96,14 @@ describe("a design run decides the replaced controls with design-lint", () => {
 });
 
 /* A check retires when a base rule replaces every control it decides, and a
-   check that stays decides no replaced control. rendered-check.py is the one
-   exception, above. See issue #539. */
+   check that stays decides no replaced control. rendered-check.py stays for
+   the live page, so it reports the base rules instead. See issues #539 and
+   #589. */
 describe("a check that design-lint replaces", () => {
   it("no check that stays decides a control that a base rule replaces", () => {
     expect(replaced.size).toBeGreaterThan(0);
-    const checks = CHECKS.filter((file) => !KEPT_FOR_THE_LIVE_PAGE.has(file));
-    expect(checks.length).toBeGreaterThan(0);
-    const offenders = checks.flatMap((file) =>
+    expect(CHECKS.length).toBeGreaterThan(0);
+    const offenders = CHECKS.flatMap((file) =>
       declaredControls(path.join(PLUGIN, "checks", file))
         .filter((id) => replaced.has(id))
         .map((id) => `${file} decides ${id}`),

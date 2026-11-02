@@ -1004,6 +1004,16 @@ def rule_redirects(path=None):
     return codes
 
 
+def base_rule_tiers(rules_dir=None):
+    """{base rule code: tier} for every base rule in standards/rules/ that has
+    a tier. Raises RulesUnresolvedError when the rules cannot be read, never
+    an empty map."""
+    rules = base_rules(rules_dir)
+    if not rules:
+        raise RulesUnresolvedError(rules_dir or RULES_DIR)
+    return {rule["id"]: rule["tier"] for rule in rules if rule.get("tier")}
+
+
 def placeholder_controls(controls, redirects):
     """The catalogue controls that no base rule replaces: the ones that are not
     a key of the `codes` map in redirects.yaml. These are the stack, domain, and
@@ -1911,9 +1921,17 @@ def _self_test():
         all(isinstance(v, str) for v in rule_map["rules"].values()),
     )
     check(
-        "layer_controls: the rendered layer names its controls",
-        layer_controls("axe-rendered", rule_map)[:2] == ["A11Y-1", "A11Y-3"],
+        "layer_controls: the rendered layer names base rules that have a tier",
+        bool(layer_controls("axe-rendered", rule_map))
+        and set(layer_controls("axe-rendered", rule_map)) <= set(base_rule_tiers()),
     )
+    _no_rules = None
+    try:
+        base_rule_tiers(os.path.join("no", "such", "rules"))
+    except RulesUnresolvedError as exc:
+        _no_rules = exc
+    check("base_rule_tiers: an unreadable rules folder raises, never an empty map",
+          _no_rules is not None)
     check(
         "rule_tiers: reads a rule's tier without yaml",
         rule_tiers(SELF_TEST_CATALOG_PATH).get("A11Y-2") == "L0"

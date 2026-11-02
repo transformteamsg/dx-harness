@@ -48,7 +48,7 @@ describe("a check that reads which rules apply", () => {
 
   it.each(CHECKS_THAT_READ_RULES)("%s gets its rules from the shared resolution", (file) => {
     const source = read(file);
-    expect(source).toMatch(/checklib\.(rules_that_apply|rule_tiers|rule_categories)\(/);
+    expect(source).toMatch(/checklib\.(rules_that_apply|rule_tiers|base_rule_tiers|rule_categories)\(/);
   });
 
   it.each(CHECKS_THAT_READ_RULES)("%s has no catalogue reader of its own", (file) => {

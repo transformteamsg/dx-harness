@@ -1,23 +1,43 @@
 {
   "version": 1,
   "rules": {
-    "axe/color-contrast": "A11Y-1",
-    "axe/label": "A11Y-3",
-    "axe/target-size": "A11Y-4",
-    "axe/image-alt": "A11Y-6",
-    "axe/svg-img-alt": "A11Y-6",
-    "axe/list": "A11Y-7",
-    "axe/listitem": "A11Y-7",
-    "axe/heading-order": "A11Y-7",
-    "axe/document-title": "A11Y-9",
-    "axe/html-has-lang": "A11Y-9",
-    "axe/bypass": "A11Y-10",
+    "axe/color-contrast": "WP-13a",
+    "axe/label": "WR-1a",
+    "axe/target-size": "WO-18a",
+    "axe/image-alt": "WP-1a",
+    "axe/svg-img-alt": "WP-1a",
+    "axe/list": "WP-6a",
+    "axe/listitem": "WP-6a",
+    "axe/heading-order": "WP-6a",
+    "axe/document-title": "WO-8a",
+    "axe/html-has-lang": "WU-1b",
+    "axe/bypass": "WO-7a",
 
-    "dx/reduced-motion": "A11Y-5"
+    "axe/aria-command-name": "WR-1a",
+    "axe/aria-input-field-name": "WR-1a",
+    "axe/aria-toggle-field-name": "WR-1a",
+    "axe/aria-dialog-name": "WR-1a",
+    "axe/aria-meter-name": "WR-1a",
+    "axe/aria-progressbar-name": "WR-1a",
+    "axe/aria-tooltip-name": "WR-1a",
+    "axe/aria-treeitem-name": "WR-1a",
+    "axe/aria-roles": "WR-1b",
+    "axe/aria-allowed-role": "WR-1b",
+    "axe/aria-required-attr": "WR-1b",
+    "axe/aria-required-children": "WR-1b",
+    "axe/aria-required-parent": "WR-1b",
+    "axe/aria-valid-attr": "WR-1c",
+    "axe/aria-valid-attr-value": "WR-1c",
+    "axe/aria-allowed-attr": "WR-1c",
+    "axe/aria-prohibited-attr": "WR-1c",
+    "axe/aria-hidden-body": "WR-1c",
+    "axe/aria-hidden-focus": "WR-1c",
+
+    "dx/reduced-motion": "A11Y-5a"
   },
-  "aria_prefix_control": "A11Y-8",
+  "aria_prefix_control": "WR-1c",
   "layers": {
-    "axe-rendered": ["A11Y-1", "A11Y-3", "A11Y-4", "A11Y-5", "A11Y-6",
-                     "A11Y-7", "A11Y-8", "A11Y-9", "A11Y-10"]
+    "axe-rendered": ["WP-13a", "WR-1a", "WO-18a", "A11Y-5a", "WP-1a", "WP-6a",
+                     "WR-1b", "WR-1c", "WO-8a", "WU-1b", "WO-7a"]
   }
 }

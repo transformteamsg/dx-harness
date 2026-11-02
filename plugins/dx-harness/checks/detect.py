@@ -122,6 +122,8 @@ def l0_control_ids():
 #   ERROR <file>:<line> [<CTL>] <message>
 #   ERROR <file>:<line> [<CTL>][waiver-claimed] <message>   (token-audit)
 #   ERROR <route>:<cell> [<CTL>] <message>                  (rendered-check)
+# <CTL> is a catalogue control such as TOK-1 or a base rule code such as
+# WP-13a, whose lowercase suffix the control group accepts.
 # Operational ERRORs (path-not-found, unreadable file) have no <file>:<line>[CTL]
 # shape and are kept as control-less findings — never dropped, never a silent pass.
 #
@@ -133,7 +135,7 @@ def l0_control_ids():
 # together (checklib.py's emit_error docstring says so too).
 _FINDING_RE = re.compile(
     r"^ERROR\s+(?P<file>.+?):(?P<pos>[^\s\[]+)\s+"
-    r"\[(?P<control>[A-Z0-9-]+)\](?:\[[^\]]*\])?\s+(?P<message>.*)$"
+    r"\[(?P<control>[A-Z0-9][A-Za-z0-9-]*)\](?:\[[^\]]*\])?\s+(?P<message>.*)$"
 )
 
 TRACEBACK_MARKER = "Traceback (most recent call last)"
@@ -752,6 +754,10 @@ def run_self_test():
         "ERROR /standards:1280-light [A11Y-4] target-size at .chip — suggest: widen to 24px"])
     check("a rendered finding is not control-less",
           p6[0]["control"] == "A11Y-4" and p6[0]["position"] == "1280-light")
+    p7 = parse_findings("rendered-check", [
+        "ERROR /standards:1280-light [WP-13a][color-contrast] L1: color-contrast at .card > p"])
+    check("a rendered finding under a base rule code keeps the code",
+          p7[0]["control"] == "WP-13a" and p7[0]["position"] == "1280-light")
 
     # 7c. The widened position group changes no existing shape: every ERROR
     # line the wrapped checks emit today still parses the same way.

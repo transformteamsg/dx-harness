@@ -1491,23 +1491,22 @@ def _script_names(control):
     return [os.path.basename(s) for s in scripts if isinstance(s, str)]
 
 
-def coverage_markdown(checks_dir, controls, redirects=None):
-    """(COVERAGE.md text, errors) from the declarations in `checks_dir` and the
-    catalogue `controls`. On any error the text is empty. A catalogue `script:`
+def coverage_markdown(checks_dir, controls, base_tiers=None):
+    """(COVERAGE.md text, errors) from the declarations in `checks_dir`, the
+    catalogue `controls`, and `base_tiers`, the {base rule code: tier} map of
+    standards/rules/. On any error the text is empty. A catalogue `script:`
     claim that the named check does not declare is listed, not failed: the
-    declaration is what the check decides. A declared control that
-    `redirects` maps has left the catalogue; its tier reads "Removed" until
-    #539 retires or narrows the check."""
+    declaration is what the check decides."""
     declarations, errors = read_check_coverage(checks_dir)
     by_id = {c["id"]: c for c in controls if isinstance(c, dict) and "id" in c}
-    for cid in redirects or {}:
-        by_id.setdefault(cid, {"id": cid, "tier": "Removed"})
+    for code, tier in (base_tiers or {}).items():
+        by_id.setdefault(code, {"id": code, "tier": tier})
     rule_checks = {f: d for f, d in declarations.items() if d["kind"] == "rule"}
     for fname, decl in rule_checks.items():
         for cid in decl["controls"]:
             if cid not in by_id:
-                errors.append(f"ERROR checks/{fname}: COVERAGE names {cid}, "
-                              f"which the catalogue does not have")
+                errors.append(f"ERROR checks/{fname}: COVERAGE names {cid}, which is "
+                              f"neither a catalogue control nor a base rule with a tier")
     if errors:
         return "", errors
 
@@ -1565,12 +1564,21 @@ def coverage_markdown(checks_dir, controls, redirects=None):
     return "\n".join(lines) + "\n", []
 
 
+def load_base_tiers(repo_root):
+    """{base rule code: tier} from standards/rules/ under `repo_root`, or {}
+    when the folder is absent."""
+    try:
+        return checklib.base_rule_tiers(os.path.join(repo_root, "standards", "rules"))
+    except checklib.RulesUnresolvedError:
+        return {}
+
+
 def write_coverage(repo_root):
     """Write checks/COVERAGE.md and return the error lines (empty on success)."""
     with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
         controls = yaml.safe_load(fh)["controls"]
     checks_dir = os.path.join(repo_root, "checks")
-    text, errors = coverage_markdown(checks_dir, controls, load_code_redirects(repo_root))
+    text, errors = coverage_markdown(checks_dir, controls, load_base_tiers(repo_root))
     if errors:
         return errors
     with open(os.path.join(checks_dir, COVERAGE_FILENAME), "w", encoding="utf-8") as fh:
@@ -1584,7 +1592,7 @@ def coverage_drift_errors(repo_root):
     with open(os.path.join(repo_root, "standards", "catalog.yaml")) as fh:
         controls = yaml.safe_load(fh)["controls"]
     checks_dir = os.path.join(repo_root, "checks")
-    text, errors = coverage_markdown(checks_dir, controls, load_code_redirects(repo_root))
+    text, errors = coverage_markdown(checks_dir, controls, load_base_tiers(repo_root))
     if errors:
         return errors
     try:
@@ -2701,6 +2709,34 @@ def run_self_test():
     coverage_case("coverage: a check that names an unknown control fails",
                   {"fake-scan.py": rule_check_source.replace('"TOK-2"', '"TOK-9"')},
                   coverage_controls, names_script("fake-scan.py", "TOK-9"))
+    def lists_base_rule_tier(text, errs):
+        if errs:
+            return f"want no errors for a declared base rule; got {errs!r}"
+        if "| WP-13a | L1 |" not in text:
+            return f"want WP-13a listed with its rule file tier; got:\n{text}"
+        return None
+
+    def base_rule_case():
+        nonlocal case_count
+        case_count += 1
+        tmp_checks = tempfile.mkdtemp(prefix="validate-selftest-coverage-base-")
+        try:
+            with open(os.path.join(tmp_checks, "fake-scan.py"), "w", encoding="utf-8") as fh:
+                fh.write(rule_check_source.replace('"TOK-2"', '"WP-13a"'))
+            text, errs = coverage_markdown(tmp_checks, coverage_controls, {"WP-13a": "L1"})
+            problem = lists_base_rule_tier(text, errs)
+            if problem:
+                failures.append(f"FAIL coverage: a declared base rule takes its tier from "
+                                f"standards/rules/: {problem}")
+            _, unknown_errs = coverage_markdown(tmp_checks, coverage_controls, {})
+            if not any("WP-13a" in e for e in unknown_errs):
+                failures.append(f"FAIL coverage: a base rule with no tier fails and is named; "
+                                f"got {unknown_errs!r}")
+        finally:
+            shutil.rmtree(tmp_checks, ignore_errors=True)
+
+    base_rule_case()
+
     def lists_disagreement(text, errs):
         if errs:
             return f"want no errors; a disagreement is listed, not failed; got {errs!r}"
@@ -2829,7 +2865,7 @@ def run_self_test():
         with open(os.path.join(REPO_ROOT, "standards", "catalog.yaml")) as fh:
             live_controls = yaml.safe_load(fh)["controls"]
         _live_text, live_errs = coverage_markdown(_CHECKS_DIR, live_controls,
-                                                  load_code_redirects(REPO_ROOT))
+                                                  load_base_tiers(REPO_ROOT))
         if live_errs:
             failures.append(f"FAIL coverage: every live check declares its coverage: {live_errs!r}")
     except Exception as exc:
