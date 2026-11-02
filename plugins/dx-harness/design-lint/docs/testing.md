@@ -118,4 +118,3 @@ Each gets a fixture pair, a break patch, a test, and a step in the demo.
 - A pinned Chromium could not be downloaded in the first build session. The local run used the installed Chrome. Run the tests with the pinned build before you rely on a rendered pass.
 - A patch can already replace a CSS file, as the `BD-1b` patch does. A patch that must change layout through script is not tried.
 - The overlay page for the demo.
-- A rendered finding has the element position as its line and column, for example `/:235:16`. This reads oddly next to a source finding. Decide whether to name the element instead.
