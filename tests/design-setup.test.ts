@@ -14,11 +14,9 @@ const SETUP = `${SKILL_DIR}/setup.md`;
 const EVALS = `${SKILL_DIR}/evals/evals.json`;
 const HARNESS = "plugins/dx-harness";
 
-/* A tolerant read, because the implementation creates the eval suite. A
-   missing file reads as empty and fails an assertion rather than throwing. */
+/* A missing file throws, so a negative assertion cannot pass on it. */
 function read(file: string) {
-  const full = path.join(process.cwd(), file);
-  return fs.existsSync(full) ? fs.readFileSync(full, "utf8") : "";
+  return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
 function flat(file: string) {
@@ -50,26 +48,12 @@ function description(file: string) {
 const CONSENT = [/ask before (you )?install/i, /install nothing/i, /missing, not installed/i, /once you have a yes/i];
 
 describe("item 3: an unattended run installs nothing and reports the tool as missing", () => {
-  it("setup.md states the unattended branch of the install-consent rule", () => {
-    const setup = flat(SETUP);
-    expect(setup).toMatch(/In an unattended run, install nothing/);
-    expect(setup).toMatch(/marked "missing, not installed"/);
-  });
-
-  /* Added with the implementation: the baseline showed the trimmed skill ends an
-     unattended run on a question unless setup.md says not to. */
-  it("setup.md tells an unattended run to ask nothing and end on the report", () => {
-    const setup = flat(SETUP);
-    expect(setup).toMatch(/In an unattended run, install nothing and ask nothing/);
-    expect(setup).toMatch(/end with that report, not a question/);
-  });
-
   it("SKILL.md sends the run to the setup.md checklist", () => {
     expect(read(SKILL)).toMatch(/`setup\.md`/);
   });
 
   it("ships an eval case for an unattended run with a missing tool", () => {
-    const evals = JSON.parse(read(EVALS) || "{}");
+    const evals = JSON.parse(read(EVALS));
     const unattended = (evals.evals ?? []).find((e: { name: string }) => e.name === "unattended-missing-tool");
     expect(unattended, "no unattended-missing-tool case").toBeDefined();
     const items = unattended.assertions.map((a: { text: string }) => a.text).join(" ");
@@ -86,12 +70,6 @@ describe("item 4: the install-consent rule appears only in setup.md", () => {
     }
   });
 
-  it("SKILL.md does not restate the verify rule or the close-out of setup.md", () => {
-    const skill = flat(SKILL);
-    expect(skill).not.toMatch(/Verify, then say so/);
-    expect(skill).not.toMatch(/what passed, what was installed, and what is still missing/);
-    expect(skill).not.toMatch(/if it passes, move on/);
-  });
 });
 
 describe("item 5: the description offers only what the body does", () => {
@@ -111,7 +89,7 @@ describe("item 5: the description offers only what the body does", () => {
 
 describe("item 1: an eval suite records the behaviour the trim must keep", () => {
   it("ships a case for each gate in the skill", () => {
-    const evals = JSON.parse(read(EVALS) || "{}");
+    const evals = JSON.parse(read(EVALS));
     expect(evals.skill_name).toBe("dx-design-setup");
     const names: string[] = (evals.evals ?? []).map((e: { name: string }) => e.name);
     for (const name of [

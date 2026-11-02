@@ -27,12 +27,9 @@ const CRITIQUE = `${DESIGN}/dx-design-critique/critique.md`;
 const VALIDATE = path.join(ROOT, HARNESS, "checks/design-catalog-validate.py");
 const CHECKS_README = `${HARNESS}/checks/README.md`;
 
-/* A tolerant read, because the implementation half creates the contract. A
-   missing file reads as empty and fails an assertion, rather than throwing
-   before the assertion runs. */
+/* A missing file throws, so a negative assertion cannot pass on it. */
 function read(file: string) {
-  const full = path.join(ROOT, file);
-  return fs.existsSync(full) ? fs.readFileSync(full, "utf8") : "";
+  return fs.readFileSync(path.join(ROOT, file), "utf8");
 }
 
 function flat(file: string) {
@@ -254,5 +251,16 @@ describe("4. the sync checks for the removed copies are gone", () => {
   it("the validator passes", () => {
     const run = spawnSync("python3", [VALIDATE], { cwd: ROOT, encoding: "utf8" });
     expect(run.status, `${run.stdout}${run.stderr}`).toBe(0);
+  });
+});
+
+/* The pattern pass judges the line measure under LAY-4 and TYP-6, which state
+   different numbers. The skill states one range, so a run never picks between
+   two. See issue #503. */
+describe("the pattern skill states one line-length measure", () => {
+  it("states neither the 40–60 target nor the 80ch ceiling", () => {
+    const text = flat(PATTERN);
+    expect(text, "the skill keeps the 40–60 target").not.toMatch(/40\s*[–-]\s*60/);
+    expect(text, "the skill keeps LAY-4's 80ch ceiling").not.toMatch(/\b80\s*ch\b/);
   });
 });

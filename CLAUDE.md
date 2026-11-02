@@ -34,6 +34,7 @@ Spelling is Commonwealth English in all prose. Write `colour`, `behaviour`, `cat
 ## Verify
 
 - After a change, run `pnpm test` and `pnpm check`. CI runs the same commands, plus `pnpm typecheck`.
+- Before you add or change a test, read `tests/README.md`. It says where a test goes and which tests not to write.
 
 ## Agent skills
 

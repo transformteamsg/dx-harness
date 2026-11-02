@@ -8,7 +8,7 @@ import { loadRules } from "../src/rules/load.ts";
 import { launchBrowser } from "../src/rendered.ts";
 import { modules } from "../src/registry.ts";
 import type { Browser } from "playwright-core";
-import { BASE, compare } from "./helpers.ts";
+import { BASE, compare, missingFixturePairs } from "./helpers.ts";
 import type { Expected } from "./helpers.ts";
 
 /* Each directory under fixtures/ holds a site that passes one rule, a site that
@@ -32,28 +32,45 @@ const browser = shared !== null;
    category README records as not built. WP-15a needs OCR, and no OCR library
    is installed. */
 const UNBUILT = ["WP-15a"];
-const unproven = (codes: string[]) =>
-  codes.filter(
-    (code) => !UNBUILT.includes(code) && !["pass", "fail", "expected.json"].every((part) => fs.existsSync(path.join(FIXTURES, code, part))),
-  );
 
+/* This file runs each fixture directory that exists, so a lint rule with no
+   fixture pair would pass without a word. This guard names it. */
 describe("every lint rule", () => {
-  it("has a fixture pair", () => {
-    expect(unproven(rules.map((r) => r.code))).toEqual([]);
+  it.each(rules.map((r) => r.code).filter((code) => !UNBUILT.includes(code)))("%s has a fixture pair", (code) => {
+    const rule = rules.find((r) => r.code === code)!;
+    expect(missingFixturePairs([rule], FIXTURES)).toEqual([]);
   });
 
-  it("is named when it has no fixture pair", () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-"));
-    fs.mkdirSync(path.join(dir, "mot"));
-    fs.writeFileSync(
-      path.join(dir, "mot", "a-new-rule.md"),
-      "---\ncode: MOT-9a\nslug: a-new-rule\ncontrol: MOT-9\ntier: L2\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# MOT-9a: a new rule\n",
-    );
-    expect(unproven(loadRules(dir).rules.map((r) => r.code))).toEqual(["MOT-9a"]);
-  });
-
-  it("is built when it is not on the unbuilt list", () => {
+  it("lists only rules that exist and are not built as exceptions", () => {
+    for (const code of UNBUILT) expect(rules.map((r) => r.code)).toContain(code);
     expect(UNBUILT.filter((code) => modules.some((m) => m.code === code))).toEqual([]);
+  });
+});
+
+describe("a new lint rule with no fixture pair", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-pairs-"));
+  fs.mkdirSync(path.join(dir, "rules", "lay"), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "rules", "lay", "a-title.md"),
+    "---\ncode: LAY-9a\nslug: a-title\ncontrol: LAY-9\ntier: L2\ncheck: lint\nsurface: source\nengine: custom\nparameters: {}\n---\n\n# LAY-9a: a title\n",
+  );
+  const fixtures = path.join(dir, "fixtures");
+  fs.mkdirSync(path.join(fixtures, "LAY-8a", "pass"), { recursive: true });
+  const loaded = loadRules(path.join(dir, "rules")).rules;
+
+  it("is named by the guard", () => {
+    expect(missingFixturePairs(loaded, fixtures)).toEqual(["LAY-9a"]);
+  });
+
+  it("is named when its fixture directory has no fail site", () => {
+    fs.mkdirSync(path.join(fixtures, "LAY-9a", "pass"), { recursive: true });
+    fs.writeFileSync(path.join(fixtures, "LAY-9a", "expected.json"), "[]\n");
+    expect(missingFixturePairs(loaded, fixtures)).toEqual(["LAY-9a"]);
+  });
+
+  it("is not named once the pair is complete", () => {
+    fs.mkdirSync(path.join(fixtures, "LAY-9a", "fail"), { recursive: true });
+    expect(missingFixturePairs(loaded, fixtures)).toEqual([]);
   });
 });
 

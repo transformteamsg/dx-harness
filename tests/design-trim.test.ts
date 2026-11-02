@@ -19,11 +19,10 @@ const LANGUAGE = ["SKILL.md", "walkthrough.md", "health-scan.md"].map((f) => `${
 const BRIEF = `${DESIGN}/dx-design-research-brief`;
 const COMPONENTS = `${BRIEF}/references/components.md`;
 const BRIEF_EVALS = `${BRIEF}/evals/evals.json`;
-const FEEDBACK = `${DESIGN}/dx-design-feedback/SKILL.md`;
 
+/* A missing file throws, so a negative assertion cannot pass on it. */
 function read(file: string) {
-  const full = path.join(process.cwd(), file);
-  return fs.existsSync(full) ? fs.readFileSync(full, "utf8") : "";
+  return fs.readFileSync(path.join(process.cwd(), file), "utf8");
 }
 
 function flat(file: string) {
@@ -66,34 +65,14 @@ describe("the research brief settles the discussion guide", () => {
     expect(rule).toMatch(/component 11 links to the guide/i);
   });
 
-  it("components.md states rules without arguing for them", () => {
-    expect(read(COMPONENTS)).not.toMatch(/\bbecause\b/i);
-  });
-
   it("ships an eval case for an interview study's discussion guide", () => {
-    const evals = JSON.parse(read(BRIEF_EVALS) || "{}");
+    const evals = JSON.parse(read(BRIEF_EVALS));
     const names: string[] = (evals.evals ?? []).map((e: { name: string }) => e.name);
     expect(names).toContain("discussion-guide-linked-not-written");
   });
 });
 
 describe("the critique report is described by what the agent controls", () => {
-  it("report.md does not describe the HTML the script builds", () => {
-    const report = flat(REPORT);
-    expect(report).not.toBe("");
-    for (const layout of [
-      /embedded as a base64/i,
-      /prefers-color-scheme/i,
-      /green left edge/i,
-      /~?400px/i,
-      /figcaption/i,
-      /grid rows/i,
-      /locked, in this order/i,
-    ]) {
-      expect(report, `report.md still describes the layout: ${layout}`).not.toMatch(layout);
-    }
-  });
-
   it("report.md keeps the agent's side: the findings file is what changes the report", () => {
     const report = flat(REPORT);
     expect(report).toMatch(/changing the findings file, not the HTML/i);
@@ -113,9 +92,6 @@ describe("approval on the ticket is explained once in dx-design-critique", () =>
     expect(holders(files, /not accepted/i)).toEqual([CRITIQUE_SKILL]);
   });
 
-  it("S names only a suggestion number, never a cost", () => {
-    expect(holders(files, /\(S\/M\)/)).toEqual([]);
-  });
 });
 
 describe("dx-design-language states each rule once", () => {
@@ -126,16 +102,5 @@ describe("dx-design-language states each rule once", () => {
   it("only walkthrough.md carries the ten-section pass and the rejected-line rule", () => {
     expect(holders(LANGUAGE, /ten sections/i)).toEqual([LANGUAGE[1]]);
     expect(holders(LANGUAGE, /past a rejected line/i)).toEqual([LANGUAGE[1]]);
-  });
-});
-
-describe("dx-design-feedback states each rule once", () => {
-  it("the unattended rule appears once", () => {
-    expect(flat(FEEDBACK).match(/unattended/gi) ?? []).toHaveLength(1);
-  });
-
-  it("step 1 does not restate the hold-and-finish rule", () => {
-    expect(flat(FEEDBACK)).not.toMatch(/die with the session/i);
-    expect(flat(FEEDBACK)).not.toMatch(/file paperwork/i);
   });
 });

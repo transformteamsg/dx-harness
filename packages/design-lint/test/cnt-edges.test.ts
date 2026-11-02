@@ -29,7 +29,10 @@ function page(main: string) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Home</title></head><body><main>${main}</main></body></html>`;
 }
 
+/* A rendered rule with no browser finds nothing, so a case that expects no
+   finding would pass without a run. Each rendered case stops here instead. */
 async function run(code: string, main: string, params: Record<string, unknown> = {}) {
+  if (shared === null) throw new Error("no browser started, so the rendered case cannot run");
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cnt-"));
   fs.writeFileSync(path.join(dir, "index.html"), page(main));
   const result = await lint({
@@ -41,7 +44,7 @@ async function run(code: string, main: string, params: Record<string, unknown> =
     select: [code],
     ignore: [],
     ci: false,
-    browser: shared ?? undefined,
+    browser: shared,
   });
   return result.findings.map((f) => f.message);
 }
