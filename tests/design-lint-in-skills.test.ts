@@ -129,3 +129,46 @@ describe("design-lint inside the plugin", () => {
     expect(listed).toEqual(codes);
   });
 });
+
+/* dx-design-execute builds a new page from the base rules. In a project with no
+   design-lint.config.json it asks for the service type before it writes one.
+   See issue #509. */
+describe("dx-design-execute builds from the base rules", () => {
+  const EXECUTE = path.join(PLUGIN, "skills/design/dx-design-execute");
+
+  /* The serviceType values that a rule file reads, from the rule files. */
+  function serviceTypes(): string[] {
+    const values = new Set<string>();
+    for (const dir of fs.readdirSync(RULES, { withFileTypes: true })) {
+      if (!dir.isDirectory()) continue;
+      for (const file of fs.readdirSync(path.join(RULES, dir.name)).filter((name) => name.endsWith(".md"))) {
+        const text = fs.readFileSync(path.join(RULES, dir.name, file), "utf8");
+        for (const sentence of text.matchAll(/`serviceType` is ([^.\n]*)/g)) {
+          for (const value of sentence[1].matchAll(/`([a-z][a-z-]*)`/g)) values.add(value[1]);
+        }
+      }
+    }
+    return [...values].sort();
+  }
+
+  /* A value that the question does not offer is a service type that a designer
+     cannot record, so the rules that read it never apply. */
+  it("asks for the service type with every value that a rule file reads", () => {
+    const values = serviceTypes();
+    expect(values.length).toBeGreaterThan(0);
+    const files = [path.join(EXECUTE, "SKILL.md"), ...fs.readdirSync(path.join(EXECUTE, "references")).map((f) => path.join(EXECUTE, "references", f))];
+    const asking = files.filter((file) => /`serviceType`/.test(fs.readFileSync(file, "utf8")));
+    expect(asking.length, "no dx-design-execute file names serviceType").toBeGreaterThan(0);
+    const text = asking.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+    const missing = values.filter((value) => !text.includes(`\`${value}\``));
+    expect(missing).toEqual([]);
+  });
+
+  it("ships an eval case for each base-rule behaviour", () => {
+    const evals = JSON.parse(fs.readFileSync(path.join(EXECUTE, "evals/evals.json"), "utf8"));
+    const names: string[] = (evals.evals ?? []).map((e: { name: string }) => e.name);
+    for (const name of ["new-page-reads-base-rules-first", "forbidden-request-is-flagged", "no-config-asks-service-type"]) {
+      expect(names, name).toContain(name);
+    }
+  });
+});

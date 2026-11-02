@@ -63,6 +63,14 @@ Establish the rest, asking the user only what you cannot infer:
    surface with an async or destructive
    action inherits the `[flow]` controls** (CMP-2a, CMP-2b, CMP-3a) even when it is a single
    page — do not let the page/flow split scope them out.
+   **Lint config**: on a new page or flow, when the product root has no
+   `design-lint.config.json`, ask for the service type. Offer `website`,
+   `transactional`, `search-service`, `mobile-app`, and `single-page`, with
+   `website` as the default. Write the answer as `serviceType` under `product`
+   in a new `design-lint.config.json` at the product root. Then run step 1 and
+   step 2 of `../../../../procedures/design-lint.md`, and show the person the
+   values that are still unset, from its summary. Do not find the pages or ask
+   for other values: `design-lint init` owns that.
 4. **Done-criteria**: write a short sprint contract — the 3–6 statements the design reviewer
    will later grade against. State the **dimension(s) and ambition** chosen in "Clarify
    the ask" as explicit criteria (e.g. "the surface visibly carries Glow's warmth", not

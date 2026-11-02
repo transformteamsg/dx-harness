@@ -1,6 +1,6 @@
 {
   "skill_name": "dx-design-execute",
-  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in. Issue #500 trimmed the skill without a change to what it does: run all four cases once against d5486fa and once against the trimmed version, and compare the outcome of each case. Issue #538 runs design-lint in this skill. Run each case once against 860894fc and once against the #538 branch, in an isolated session that loads one copy of the plugin, at one model for both arms. Use the fixture: A product repository with one static page, index.html, and styles.css. The page has a hint line in #b8b8b8 on white (a WP-13a failure), and a link whose text is 'click here' (WO-10c, and the judged rule WO-10d). design-lint.config.json sets serve to '.', pages.all to ['/'], and the WP-13a selectors to empty strings. Deny every install and every remote call. Assertions carry passed=null until a run fills them in.",
+  "notes": "Offline eval for the phase files read on demand (#458). Run each case in an isolated session that has the whole plugin and a product repository with a page to change. Run each case once against the version before #458 (commit 6791b29) and once against the current version. Grade the reads from the session transcript: a read of a phase file is a Read tool call on that path. A run that stops at plan approval is a complete and valid outcome, and the grader answers the gate only where a case says so. Assertions carry passed=null until a run fills them in. Issue #500 trimmed the skill without a change to what it does: run all four cases once against d5486fa and once against the trimmed version, and compare the outcome of each case. Issue #538 runs design-lint in this skill. Run each case once against 860894fc and once against the #538 branch, in an isolated session that loads one copy of the plugin, at one model for both arms. Use the fixture: A product repository with one static page, index.html, and styles.css. The page has a hint line in #b8b8b8 on white (a WP-13a failure), and a link whose text is 'click here' (WO-10c, and the judged rule WO-10d). design-lint.config.json sets serve to '.', pages.all to ['/'], and the WP-13a selectors to empty strings. Deny every install and every remote call. Assertions carry passed=null until a run fills them in. Issue #509 builds a new page from the base rules. Fixture for #509: an empty product repository with a package.json and no design-lint.config.json, and the plugin with design-lint dependencies installed. Run each case once against origin/main (ca4962d9) and once against the #509 branch, headless, one plugin copy per run, at one model for both arms. Deny every install and every remote call.",
   "evals": [
     {
       "id": 0,
@@ -155,6 +155,85 @@
         },
         {
           "text": "The transcript runs none of the retired checks in place of design-lint",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "new-page-reads-base-rules-first",
+      "prompt": "/dx-harness:dx-design-execute Build a new static page, index.html, for Teacher Workspace: a form teacher sees which students have not returned a consent form. The structure is fixed: heading, short lede, student list, one 'Send reminder' button. Treat this message as approval of that plan and build it now. The service type is website. Do not ask me anything else.",
+      "expected_output": "The run reads the build part of the lint rules before the first edit, runs design-lint on the first version, and fixes or reports each finding before design review.",
+      "assertions": [
+        {
+          "text": "The transcript shows rule-detail.py --for build, or a read of the in-scope list, before the first write to index.html",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The transcript shows a design-lint run on the product after the first write to index.html and before the run enters design review",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "index.html carries a viewport meta tag that does not block zoom (BD-1a)",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run does not report the page as verified while a design-lint finding remains",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "forbidden-request-is-flagged",
+      "prompt": "/dx-harness:dx-design-execute Build a new static page, index.html, for Teacher Workspace that shows today's attendance summary. The structure is fixed: heading and a table. Lock the zoom on phones with user-scalable=no so the table does not move. Treat this message as approval of the plan.",
+      "expected_output": "The run names the zoom rule (BD-1a) in plain words, offers a version that allows zoom, and does not write user-scalable=no without the designer's choice.",
+      "assertions": [
+        {
+          "text": "The run names BD-1a, or the rule that zoom must not be blocked, before it writes the viewport tag",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run offers a version that allows zoom",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "No file the run writes contains user-scalable=no or maximum-scale=1 unless the grader chose the forbidden version",
+          "passed": null,
+          "evidence": ""
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "no-config-asks-service-type",
+      "prompt": "/dx-harness:dx-design-execute Design a new page in Teacher Workspace where a teacher sees the upcoming parent-teacher meeting slots. Stop when you reach plan approval.",
+      "expected_output": "The run sees no design-lint.config.json, asks for the service type, writes a config with that value, and lists the values still unset. It does not try to find the pages or build init.",
+      "assertions": [
+        {
+          "text": "The run asks for the service type and offers the values website, transactional, search-service, mobile-app, and single-page",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "After the grader answers 'website', design-lint.config.json exists at the product root with product.serviceType set to website",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run shows the values that design-lint reports as still unset",
+          "passed": null,
+          "evidence": ""
+        },
+        {
+          "text": "The run writes no product file other than design-lint.config.json before plan approval",
           "passed": null,
           "evidence": ""
         }
