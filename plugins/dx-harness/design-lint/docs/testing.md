@@ -95,9 +95,64 @@ A later stage is a local page that shows both sites with the findings drawn over
 
 ## Calibration corpus
 
-A folder of real pages and a recorded result for each. A run reports each finding on a corpus page, and a person marks it as a true finding or a false one. The share of false findings, by rule, sets the tier: a rule with many false findings is L2, or goes back to judged.
+A list of real pages, and a record of a person's verdict on each finding. The run lints each page with the L2 rules and prints, for each rule, the findings, the false ones, the findings with no verdict, and the share of false findings. A later change uses the shares to set the tiers: a rule with many false findings moves to a lower tier, or goes back to judged.
 
-The source of the pages is not decided.
+```
+plugins/dx-harness/design-lint/calibration/
+  corpus.json      the pages, the config they run with, and the limit of false findings
+  verdicts.json    the verdict record
+  run.ts           the command
+```
+
+```sh
+pnpm --filter design-lint calibrate
+pnpm --filter design-lint calibrate -- --record
+pnpm --filter design-lint calibrate -- --corpus <file> --verdicts <file> --no-rendered
+```
+
+`--record` adds each new finding to the verdict record with a verdict of `null`. A person then sets each verdict to `"true"` or `"false"`, and can add a `note`. `--no-rendered` runs the source and project rules only, for a machine with no browser.
+
+### The corpus
+
+```json
+{
+  "config": { "product": { "audience": "public", "serviceType": "website" } },
+  "falseShareLimit": null,
+  "pages": [
+    { "id": "gov-uk-home", "url": "https://www.gov.uk/" },
+    { "id": "saved-page", "file": "pages/saved-page.html" }
+  ]
+}
+```
+
+| Key | Holds |
+| --- | --- |
+| `config` | The design-lint config that each page runs with. `select` limits the rules. Without it, the run selects every L2 rule. |
+| `falseShareLimit` | The share of false findings, from 0 to 1, above which the report flags a rule for a lower tier or for the judged list. `null` means that no limit is agreed, and no rule is flagged. |
+| `pages` | Each page has a unique `id` and one of `url` or `file`. A `file` is relative to the corpus file. |
+
+The run fetches a `url` page once and saves it as `index.html`, with a `<base>` element so that its styles, scripts, and images load from the origin. The rendered rules see the page at `/`. A page that does not load is reported with its error, and the run continues with the next page.
+
+The pages in `corpus.json` are a placeholder of four public pages. The team replaces them with the pages it chooses. A saved `file` page gives the same markup on each run, and a live `url` page can change.
+
+### The verdict record
+
+```json
+[
+  {
+    "page": "gov-uk-home",
+    "code": "WU-8a",
+    "at": "415:7",
+    "message": "This control is named ...",
+    "verdict": "false",
+    "note": "The two links go to different places on the page."
+  }
+]
+```
+
+`page`, `code`, `at`, and `message` identify a finding. `at` is `line:column` for a source or project finding, and the element name, or `page`, for a rendered finding. `verdict` is `"true"`, `"false"`, or `null`. A finding with a `null` verdict, or with no entry, counts as unjudged, and the share of false findings counts only the judged findings. When a page or a rule changes, a finding can get a new `at` or `message`, and it shows as unjudged again.
+
+A rule that gives no verdict on a page, because it is not configured or did not run, is listed with the reason.
 
 ## Tracer bullet
 
@@ -113,7 +168,8 @@ Each gets a fixture pair, a break patch, a test, and a step in the demo.
 
 ## Open
 
-- Where the calibration corpus comes from. Pages from the portfolio products are one source. Public pages are another.
+- Which pages the calibration corpus holds. Pages from the portfolio products are one source. Public pages are another.
+- The limit of false findings, and the tier that each rule moves to.
 - CI runs `playwright-core install --with-deps chromium`. The step is not tested on the runner yet. The rendered tests fail in CI when no browser exists, and skip on a developer machine.
 - A pinned Chromium could not be downloaded in the first build session. The local run used the installed Chrome. Run the tests with the pinned build before you rely on a rendered pass.
 - A patch can already replace a CSS file, as the `BD-1b` patch does. A patch that must change layout through script is not tried.

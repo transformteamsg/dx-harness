@@ -8,7 +8,7 @@ The design is in `docs/`, and the rules are in `plugins/dx-harness/standards/rul
 
 - [`docs/run.md`](docs/run.md): the command, the output, and the exit codes.
 - [`docs/config.md`](docs/config.md): the config file and how a rule gets a value.
-- [`docs/testing.md`](docs/testing.md): the fixtures, the break patches, and the demo.
+- [`docs/testing.md`](docs/testing.md): the fixtures, the break patches, the demo, and the calibration run.
 - [`docs/building-a-rule.md`](docs/building-a-rule.md): how to turn a lint rule file into a working check.
 - [`standards/rules.md`](../standards/rules.md): the rule files.
 
@@ -51,6 +51,7 @@ The tests and the typecheck run from the repository root with `pnpm test` and `p
 | `src/cli.ts` | The command |
 | `docs/` | The design of the command, the config, the tests, and how to build a rule |
 | `fixtures/<CODE>/` | A passing site, a failing site, and the expected findings, for one rule |
+| `calibration/` | The calibration corpus, the verdict record, and the command that measures the false findings of the L2 rules |
 | `demo/` | The passing site, the break patches, the demo script, and its config. `demo/config.d/` holds one config fragment for each category, and `demo/new-page.ts` makes a page that passes every rule |
 
 ## A rule module

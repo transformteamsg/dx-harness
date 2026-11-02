@@ -1,0 +1,15 @@
+{
+  "config": {
+    "product": {
+      "audience": "public",
+      "serviceType": "website"
+    }
+  },
+  "falseShareLimit": null,
+  "pages": [
+    { "id": "gov-uk-home", "url": "https://www.gov.uk/" },
+    { "id": "w3c-wai-home", "url": "https://www.w3.org/WAI/" },
+    { "id": "mdn-html", "url": "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+    { "id": "wikipedia-singapore", "url": "https://en.wikipedia.org/wiki/Singapore" }
+  ]
+}
