@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import { elements, matches } from "../../html.ts";
 import { fileForPath } from "../../project.ts";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { isGovSg, VIEWPORT } from "./shared.ts";
 
 /* TL-3: the Official Government Banner. Both rules apply to a .gov.sg host and
@@ -20,7 +21,7 @@ export const tl3a: RuleModule = {
       const page = await rendered.open(pagePath, VIEWPORT);
       const data = await page.evaluate((sel: string) => {
         const banner = document.querySelector(sel);
-        if (!banner) return { found: false, first: false, visible: false, top: 0, left: 0 };
+        if (!banner) return { found: false, first: false, visible: false, element: null as ElementRef | null };
         const skip = ["SCRIPT", "STYLE", "LINK", "META", "TEMPLATE", "NOSCRIPT"];
         const rendered = (e: any) => !skip.includes(e.tagName) && getComputedStyle(e).display !== "none";
         /* The banner is first when it is the first rendered child at every level from the body down. */
@@ -38,9 +39,9 @@ export const tl3a: RuleModule = {
         const r = banner.getBoundingClientRect();
         const st = getComputedStyle(banner);
         const visible = r.height > 0 && r.width > 0 && r.top <= 1 && st.visibility !== "hidden" && Number(st.opacity) > 0;
-        return { found: true, first, visible, top: Math.round(r.top + window.scrollY), left: Math.round(r.left) };
+        return { found: true, first, visible, element: window.__designLint.element(banner) as ElementRef | null };
       }, String(params.bannerSelector));
-      out.push({ file: pagePath, line: data.top, column: data.left, data });
+      out.push(data.element ? atElement(pagePath, data.element, data) : { file: pagePath, line: 0, column: 0, data });
     }
     return out;
   },

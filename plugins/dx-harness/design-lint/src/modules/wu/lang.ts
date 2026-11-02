@@ -5,7 +5,8 @@ import { combineRules } from "../../engines/combine.ts";
 import { jsxRule } from "../../engines/jsx-a11y.ts";
 import { isHtml } from "../../files.ts";
 import { elements } from "../../html.ts";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 /* The language rules of WU: WU-1a, WU-1b, WU-1d, WU-2a, and WU-2c. */
 
@@ -113,8 +114,7 @@ export const wu1d: RuleModule = {
 const VIEWPORT = { width: 1280, height: 800 };
 
 interface Block {
-  top: number;
-  left: number;
+  element: ElementRef;
   script: string;
   pageLang: string;
 }
@@ -176,12 +176,11 @@ export const wu2c: RuleModule = {
           if (letters < minCharacters) continue;
           const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
           if (!top || expected.includes(top[0])) continue;
-          const r = el.getBoundingClientRect();
-          found.push({ top: Math.round(r.top), left: Math.round(r.left), script: top[0], pageLang });
+          found.push({ element: window.__designLint.element(el), script: top[0], pageLang });
         }
         return found;
       }, params.minCharacters as number);
-      for (const b of blocks) out.push({ file: pagePath, line: b.top, column: b.left, data: b });
+      for (const b of blocks) out.push(atElement(pagePath, b.element, b));
     }
     return out;
   },

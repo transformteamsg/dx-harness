@@ -1,5 +1,6 @@
 import { SEARCH_EXEMPT, hasSearch, readPages } from "../project.ts";
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* BD-2d: the search form is on every page, in the header, in the same place.
    Applies only when the site has a search form. */
@@ -22,11 +23,11 @@ export const bd2d: RuleModule = {
           const el: any = document.querySelector(arg.search);
           if (!el) return null;
           const r = el.getBoundingClientRect();
-          return { inHeader: Boolean(el.closest(arg.header)), x: Math.round(r.left), y: Math.round(r.top) };
+          return { inHeader: Boolean(el.closest(arg.header)), x: Math.round(r.left), y: Math.round(r.top), element: window.__designLint.element(el) as ElementRef };
         },
         { search: String(params.searchSelector), header: String(params.headerSelector) },
       );
-      const at = (message: string): Candidate => ({ file: pagePath, line: found?.y ?? 1, column: found?.x ?? 1, data: { message } });
+      const at = (message: string): Candidate => (found ? atElement(pagePath, found.element, { message }) : { file: pagePath, line: 0, column: 0, data: { message } });
       if (!found) {
         out.push(at("The page has no search form."));
         continue;

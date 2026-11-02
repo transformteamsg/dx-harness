@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { rel, VIEWPORT } from "./shared.ts";
 
 /* TL-2: the logo. TL-2a checks position and link, TL-2b checks rendering, and
@@ -23,7 +24,7 @@ export const tl2a: RuleModule = {
       const data = await page.evaluate(
         (arg: { sel: string; home: string; half: string }) => {
           const el = document.querySelector(arg.sel);
-          if (!el) return { found: false, top: 0, left: 0, inHalf: false, linkPath: null as string | null };
+          if (!el) return { found: false, top: 0, left: 0, inHalf: false, linkPath: null as string | null, element: null as ElementRef | null };
           const norm = (p: string) => p.replace(/index\.html$/, "");
           const r = el.getBoundingClientRect();
           const a = el.closest("a[href]");
@@ -35,11 +36,12 @@ export const tl2a: RuleModule = {
             left: Math.round(r.left),
             inHalf: half,
             linkPath: a ? norm(new URL(a.getAttribute("href"), window.location.href).pathname) : null,
+            element: window.__designLint.element(el) as ElementRef | null,
           };
         },
         { sel: String(params.logoSelector), home: String(params.homepagePath), half: String(params.logoHalf) },
       );
-      out.push({ file: pagePath, line: data.top, column: data.left, data });
+      out.push(data.element ? atElement(pagePath, data.element, data) : { file: pagePath, line: 0, column: 0, data });
     }
     return out;
   },
@@ -66,7 +68,7 @@ export const tl2b: RuleModule = {
       const page = await rendered.open(pagePath, VIEWPORT);
       const data = await page.evaluate((sel: string) => {
         const el = document.querySelector(sel);
-        if (!el) return { found: false, isImg: false, top: 0, left: 0, rw: 0, rh: 0, nw: 0, nh: 0, svg: false, fit: "fill" };
+        if (!el) return { found: false, isImg: false, top: 0, left: 0, rw: 0, rh: 0, nw: 0, nh: 0, svg: false, fit: "fill", element: null as ElementRef | null };
         const r = el.getBoundingClientRect();
         return {
           found: true,
@@ -79,9 +81,10 @@ export const tl2b: RuleModule = {
           nh: el.naturalHeight || 0,
           svg: /\.svg(\?|#|$)/i.test(el.currentSrc || el.src || ""),
           fit: getComputedStyle(el).objectFit,
+          element: window.__designLint.element(el) as ElementRef | null,
         };
       }, String(params.logoSelector));
-      out.push({ file: pagePath, line: data.top, column: data.left, data });
+      out.push(data.element ? atElement(pagePath, data.element, data) : { file: pagePath, line: 0, column: 0, data });
     }
     return out;
   },

@@ -1,7 +1,8 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 /* CMP-13a, TYP-7a, and CNT-15a: the rendered rules of the SLP controls. A finding
-   is at the top and the left of the element, on the page path. */
+   names the element, on the page path. */
 
 const VIEWPORT = { width: 1280, height: 800 };
 
@@ -34,23 +35,21 @@ export const cmp13a: RuleModule = {
           const background = s.backgroundImage !== "none" || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(s.backgroundColor);
           return (bordered || shadow) && radius && background;
         };
-        const found: { tag: string; outer: string; top: number; left: number }[] = [];
+        const found: { tag: string; outer: string; element: ElementRef }[] = [];
         const cards = ([...document.body.querySelectorAll("*")] as any[]).filter(isCard);
         for (const card of cards) {
           const outer = cards.find((c) => c !== card && c.contains(card));
           if (!outer) continue;
-          const r = card.getBoundingClientRect();
-          found.push({ tag: card.tagName.toLowerCase(), outer: outer.tagName.toLowerCase(), top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) });
+          found.push({ tag: card.tagName.toLowerCase(), outer: outer.tagName.toLowerCase(), element: window.__designLint.element(card) });
         }
         return found;
       }, String(params.ignoreSelector ?? ""));
       for (const h of hits) {
-        out.push({
-          file: pagePath,
-          line: h.top,
-          column: h.left,
-          data: { message: `The card <${h.tag}> sits inside the card <${h.outer}>. Flatten the inner card, and group its content with spacing, a heading, and a divider.` },
-        });
+        out.push(
+          atElement(pagePath, h.element, {
+            message: `The card <${h.tag}> sits inside the card <${h.outer}>. Flatten the inner card, and group its content with spacing, a heading, and a divider.`,
+          }),
+        );
       }
     }
     return out;
@@ -73,7 +72,7 @@ export const typ7a: RuleModule = {
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
       const sizes = await page.evaluate((ignore: string) => {
-        const first = new Map<number, { top: number; left: number }>();
+        const first = new Map<number, { element: ElementRef }>();
         const walker = document.createTreeWalker(document.body, 4);
         let node: any;
         while ((node = walker.nextNode())) {
@@ -83,8 +82,7 @@ export const typ7a: RuleModule = {
           if (ignore && parent.closest(ignore)) continue;
           const size = Math.round(parseFloat(getComputedStyle(parent).fontSize) * 100) / 100;
           if (!first.has(size)) {
-            const r = parent.getBoundingClientRect();
-            first.set(size, { top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) });
+            first.set(size, { element: window.__designLint.element(parent) });
           }
         }
         return [...first.entries()].map(([size, at]) => ({ size, ...at }));
@@ -94,12 +92,11 @@ export const typ7a: RuleModule = {
         const [small, large] = [sizes[i - 1], sizes[i]];
         const ratio = large.size / small.size;
         if (ratio < minRatio) {
-          out.push({
-            file: pagePath,
-            line: large.top,
-            column: large.left,
-            data: { message: `The text sizes ${large.size}px and ${small.size}px differ by ${ratio.toFixed(3)}, less than ${minRatio}. Use sizes further apart, or one size for both.` },
-          });
+          out.push(
+            atElement(pagePath, large.element, {
+              message: `The text sizes ${large.size}px and ${small.size}px differ by ${ratio.toFixed(3)}, less than ${minRatio}. Use sizes further apart, or one size for both.`,
+            }),
+          );
         }
       }
     }
@@ -126,7 +123,7 @@ export const cnt15a: RuleModule = {
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
       const hits = await page.evaluate((a: { words: string[]; phrases: string[]; maxEmDashes: number }) => {
-        const found: { kind: string; text: string; top: number; left: number }[] = [];
+        const found: { kind: string; text: string; element: ElementRef }[] = [];
         const walker = document.createTreeWalker(document.body, 4);
         let node: any;
         while ((node = walker.nextNode())) {
@@ -134,8 +131,7 @@ export const cnt15a: RuleModule = {
           if (!parent || /^(script|style|noscript)$/i.test(parent.tagName) || !parent.checkVisibility()) continue;
           const text: string = node.textContent || "";
           const low = text.toLowerCase();
-          const r = parent.getBoundingClientRect();
-          const at = { top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) };
+          const at = { element: window.__designLint.element(parent) as ElementRef };
           for (const m of low.match(/[a-z][a-z'-]*/g) || []) if (a.words.includes(m)) found.push({ kind: "word", text: m, ...at });
           for (const p of a.phrases) if (low.includes(p)) found.push({ kind: "phrase", text: p, ...at });
           for (const s of text.split(/(?<=[.!?])\s+/)) {
@@ -151,7 +147,7 @@ export const cnt15a: RuleModule = {
             : h.kind === "phrase"
               ? `The copy uses the phrase "${h.text}". Remove it, or say the thing directly.`
               : `The sentence "${h.text}" has more than ${arg.maxEmDashes} em dash. Split it into separate sentences.`;
-        out.push({ file: pagePath, line: h.top, column: h.left, data: { message: text } });
+        out.push(atElement(pagePath, h.element, { message: text }));
       }
     }
     return out;

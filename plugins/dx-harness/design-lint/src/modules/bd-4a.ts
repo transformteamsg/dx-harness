@@ -1,5 +1,6 @@
 import { fleschKincaid, wordCount } from "../readability.ts";
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* BD-4a: the readability grade of each text block is at or below the limit. The
    formula is for English, so another locale is not configured. It finds
@@ -24,14 +25,13 @@ export const bd4a: RuleModule = {
           Array.from(document.querySelectorAll(arg.content))
             .filter((el: any) => el.checkVisibility() && !(arg.skip && el.closest(arg.skip)))
             .map((el: any) => {
-              const r = el.getBoundingClientRect();
-              return { text: (el.innerText || "").trim(), top: Math.round(r.top), left: Math.round(r.left) };
+              return { text: (el.innerText || "").trim(), element: window.__designLint.element(el) as ElementRef };
             }),
         { content: String(params.contentSelector), skip: String(params.exemptSelector) },
       );
       for (const b of blocks) {
         if (wordCount(b.text) < MIN_WORDS) continue;
-        out.push({ file: pagePath, line: b.top, column: b.left, data: { grade: fleschKincaid(b.text), max: params.maxGrade } });
+        out.push(atElement(pagePath, b.element, { grade: fleschKincaid(b.text), max: params.maxGrade }));
       }
     }
     return out;

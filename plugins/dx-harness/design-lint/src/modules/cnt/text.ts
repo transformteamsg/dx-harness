@@ -1,4 +1,4 @@
-import type { RenderedSession } from "../../types.ts";
+import type { ElementRef, RenderedSession } from "../../types.ts";
 
 /* The visible English copy of rendered pages, shared by the CNT rules. Text in
    code, scripts, and templates is not copy. */
@@ -10,6 +10,7 @@ export interface TextBlock {
   text: string;
   top: number;
   left: number;
+  element: ElementRef;
 }
 
 export interface ScanOptions {
@@ -30,9 +31,9 @@ function scan(opts: ScanOptions) {
   };
   const box = (el: any) => {
     const r = el.getBoundingClientRect();
-    return { top: Math.round(r.top), left: Math.round(r.left) };
+    return { top: Math.round(r.top), left: Math.round(r.left), element: window.__designLint.element(el) as ElementRef };
   };
-  const out: { text: string; top: number; left: number }[] = [];
+  const out: { text: string; top: number; left: number; element: ElementRef }[] = [];
   if (opts.selector) {
     for (const el of Array.from(document.querySelectorAll(opts.selector)) as any[]) {
       if (el.closest(skip) || !el.checkVisibility() || !english(el)) continue;

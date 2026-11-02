@@ -1,4 +1,4 @@
-import type { RenderedPage, RenderedSession } from "../../types.ts";
+import type { ElementRef, RenderedPage, RenderedSession } from "../../types.ts";
 
 /* One lab measurement of a page, shared by PR-7b, PR-7c, and PR-7d. It uses
    browser APIs only: a PerformanceObserver for LCP and layout shifts, long tasks
@@ -11,8 +11,7 @@ export interface ImageInfo {
   bytes: number | null;
   naturalWidth: number;
   renderedWidth: number;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 export interface Metrics {
@@ -69,15 +68,13 @@ function collect(settleMs: number): Promise<Metrics> {
             }
           })();
           const ext = (path.match(/\.([a-z0-9]+)$/i)?.[1] ?? "").toLowerCase();
-          const b = img.getBoundingClientRect();
           return {
             src: img.getAttribute("src") ?? src,
             format: ext === "jpeg" ? "jpg" : ext,
             bytes: bySrc.has(src) ? bySrc.get(src)! : null,
             naturalWidth: img.complete ? img.naturalWidth : 0,
             renderedWidth: Math.round(img.clientWidth),
-            top: Math.round(b.top),
-            left: Math.round(b.left),
+            element: window.__designLint.element(img),
           };
         });
         resolve({ lcp, cls: Math.round(cls * 1000) / 1000, tbt: Math.round(tbt), bytes, images });

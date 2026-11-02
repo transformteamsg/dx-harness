@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* BD-1b: no horizontal scroll at each viewport width. A rendered rule: it
    loads each page at each width and measures the document. */
@@ -9,8 +10,7 @@ interface Overflow {
   scrollWidth: number;
   clientWidth: number;
   widest: string;
-  top: number;
-  left: number;
+  element: ElementRef | null;
 }
 
 export const bd1b: RuleModule = {
@@ -35,7 +35,6 @@ export const bd1b: RuleModule = {
               widest = el;
             }
           }
-          const box = widest ? widest.getBoundingClientRect() : { top: 0, left: 0 };
           const name = widest
             ? widest.tagName.toLowerCase() + (widest.className ? `.${String(widest.className).trim().split(/\s+/).join(".")}` : "")
             : "document";
@@ -43,17 +42,12 @@ export const bd1b: RuleModule = {
             scrollWidth: root.scrollWidth,
             clientWidth: root.clientWidth,
             widest: name,
-            top: Math.round(box.top),
-            left: Math.round(box.left),
+            element: widest ? window.__designLint.element(widest) : null,
           };
         });
         if (result) {
-          out.push({
-            file: pagePath,
-            line: result.top,
-            column: result.left,
-            data: { width, ...result },
-          });
+          const data = { width, ...result };
+          out.push(result.element ? atElement(pagePath, result.element, data) : { file: pagePath, line: 0, column: 0, data });
         }
       }
     }

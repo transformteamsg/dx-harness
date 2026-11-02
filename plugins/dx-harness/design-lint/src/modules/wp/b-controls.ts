@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 /* WP-17a and WP-12d: rendered checks that read computed styles and the tab order. */
 
@@ -6,8 +7,7 @@ const VIEWPORT = { width: 1280, height: 800 };
 
 interface Issue {
   message: string;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 /* WP-17a. The boundary of a control is its border or its fill, tested against the
@@ -117,8 +117,7 @@ export const wp17a: RuleModule = {
         const issues: Issue[] = [];
         const seen = new Set<any>();
         const report = (el: any, message: string) => {
-          const r = el.getBoundingClientRect();
-          issues.push({ message, top: Math.round(r.top), left: Math.round(r.left) });
+          issues.push({ message, element: window.__designLint.element(el) as ElementRef });
         };
         const visible = (el: any) => {
           const r = el.getBoundingClientRect();
@@ -192,7 +191,7 @@ export const wp17a: RuleModule = {
         }
         return issues;
       }, arg);
-      for (const i of issues) out.push({ file: pagePath, line: i.top, column: i.left, data: { message: i.message } });
+      for (const i of issues) out.push(atElement(pagePath, i.element, { message: i.message }));
     }
     return out;
   },
@@ -222,8 +221,7 @@ export const wp12d: RuleModule = {
         const el: any = Array.from(document.querySelectorAll("audio[autoplay], video[autoplay]")).find((m: any) => !m.muted && !m.hasAttribute("muted"));
         if (!el) return null;
         el.setAttribute("data-dxl-autoplay", "");
-        const r = el.getBoundingClientRect();
-        return { top: Math.round(r.top), left: Math.round(r.left) };
+        return { element: window.__designLint.element(el) as ElementRef };
       });
       if (!audio) continue;
       let found = false;
@@ -237,7 +235,7 @@ export const wp12d: RuleModule = {
           return w.some((word) => name.includes(word));
         }, words);
       }
-      if (!found) out.push({ file: pagePath, line: audio.top, column: audio.left, data: { max, words } });
+      if (!found) out.push(atElement(pagePath, audio.element, { max, words }));
     }
     return out;
   },

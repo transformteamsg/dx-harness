@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, message } from "./util.ts";
 
 /* WO-5b: moving content that runs longer than maxAutoSeconds has a control.
@@ -7,8 +8,7 @@ import { VIEWPORT, message } from "./util.ts";
 
 interface Moving {
   what: string;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 export const wo5b: RuleModule = {
@@ -29,15 +29,11 @@ export const wo5b: RuleModule = {
           (arg: { seconds: number; names: string[] }): Promise<{ moving: Moving[]; control: boolean }> =>
             new Promise((resolve) => {
               const moving: Moving[] = [];
-              const spot = (el: any): { top: number; left: number } => {
-                const r = el.getBoundingClientRect();
-                return { top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX) };
-              };
               const seen = new Set<any>();
               const note = (el: any, what: string) => {
                 if (!el || seen.has(el)) return;
                 seen.add(el);
-                moving.push({ what, ...spot(el) });
+                moving.push({ what, element: window.__designLint.element(el) });
               };
               const slide = "[aria-roledescription=carousel], [class*=carousel], [class*=slider], [class*=swiper], [data-carousel]";
               const observer = new window.MutationObserver((records: any[]) => {
@@ -74,7 +70,7 @@ export const wo5b: RuleModule = {
     );
     for (const r of results) {
       if (r.control) continue;
-      for (const m of r.moving) out.push({ file: r.pagePath, line: m.top, column: m.left, data: { message: `${m.what} The page has no ${(params.pauseControlNames as string[]).join(", ")} control. Let users pause, stop, or hide it.` } });
+      for (const m of r.moving) out.push(atElement(r.pagePath, m.element, { message: `${m.what} The page has no ${(params.pauseControlNames as string[]).join(", ")} control. Let users pause, stop, or hide it.` }));
     }
     return out;
   },

@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* WR-2b: live region values are valid. This module checks the live-region
    attributes only. WR-1c covers the general validity of ARIA attributes, so a
@@ -8,8 +9,7 @@ const VIEWPORT = { width: 1280, height: 800 };
 
 interface Issue {
   message: string;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 export const wr2b: RuleModule = {
@@ -25,8 +25,7 @@ export const wr2b: RuleModule = {
       const issues = await page.evaluate((allowedLive: string[]): Issue[] => {
         const found: Issue[] = [];
         const add = (el: any, message: string) => {
-          const r = el.getBoundingClientRect();
-          found.push({ message, top: Math.round(r.top), left: Math.round(r.left) });
+          found.push({ message, element: window.__designLint.element(el) });
         };
         for (const el of Array.from(document.querySelectorAll("[aria-live], [aria-atomic], [aria-relevant], [aria-busy], [role=alert], [role=status]")) as any[]) {
           const live = el.getAttribute("aria-live");
@@ -46,7 +45,7 @@ export const wr2b: RuleModule = {
         }
         return found;
       }, allowed);
-      for (const i of issues) out.push({ file: pagePath, line: i.top, column: i.left, data: { message: i.message } });
+      for (const i of issues) out.push(atElement(pagePath, i.element, { message: i.message }));
     }
     return out;
   },

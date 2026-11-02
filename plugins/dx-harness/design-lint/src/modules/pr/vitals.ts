@@ -1,5 +1,5 @@
 import type { Candidate, RenderedSession, RuleModule } from "../../types.ts";
-import { launchBrowser } from "../../rendered.ts";
+import { atElement, launchBrowser } from "../../rendered.ts";
 import { measure, VIEWPORT } from "./measure.ts";
 
 /* PR-7a to PR-7d. The measurements are lab figures from a headless Chromium on a
@@ -124,12 +124,12 @@ export const pr7d: RuleModule = {
     for (const pagePath of params.pages as string[]) {
       for (const img of (await measure(rendered, pagePath)).images) {
         if (img.format === "svg") continue;
-        const at = { file: pagePath, line: img.top, column: img.left };
-        if (!formats.includes(img.format)) out.push({ ...at, data: { src: img.src, problem: `uses the format "${img.format || "unknown"}", not one of ${formats.join(", ")}` } });
+        const at = (data: unknown) => atElement(pagePath, img.element, data);
+        if (!formats.includes(img.format)) out.push(at({ src: img.src, problem: `uses the format "${img.format || "unknown"}", not one of ${formats.join(", ")}` }));
         if (img.naturalWidth > 0 && img.renderedWidth > 0 && img.naturalWidth > 2 * img.renderedWidth) {
-          out.push({ ...at, data: { src: img.src, problem: `is ${img.naturalWidth} px wide and shown at ${img.renderedWidth} px, more than twice its display size` } });
+          out.push(at({ src: img.src, problem: `is ${img.naturalWidth} px wide and shown at ${img.renderedWidth} px, more than twice its display size` }));
         }
-        if (img.bytes !== null && img.bytes > max) out.push({ ...at, data: { src: img.src, problem: `is ${img.bytes} bytes, above the limit of ${max} bytes` } });
+        if (img.bytes !== null && img.bytes > max) out.push(at({ src: img.src, problem: `is ${img.bytes} bytes, above the limit of ${max} bytes` }));
       }
     }
     return out;

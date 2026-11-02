@@ -23,7 +23,7 @@ export const bd2c: RuleModule = {
           }),
         String(params.searchSelector),
       );
-      if (!visible) out.push({ file: pagePath, line: 1, column: 1 });
+      if (!visible) out.push({ file: pagePath, line: 0, column: 0 });
     }
     return out;
   },

@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import { isHtml } from "../../files.ts";
 import { elements } from "../../html.ts";
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, message } from "./util.ts";
 
 /* The rules of A11Y-11: one channel for each state change. */
@@ -52,10 +53,10 @@ export const a11y11b: RuleModule = {
     for (const action of params.actions as Action[]) {
       const page = await rendered.open(action.page, VIEWPORT, { fresh: true });
       await page.focus(action.click);
-      const at = await page.evaluate((selector: string) => {
-        const r = document.querySelector(selector)!.getBoundingClientRect();
-        return { top: Math.round(r.top), left: Math.round(r.left) };
-      }, action.click);
+      const at = (await page.evaluate(
+        (selector: string) => window.__designLint.element(document.querySelector(selector)),
+        action.click,
+      )) as ElementRef;
       await page.click(action.click);
       const lost = await page.evaluate((): string | null => {
         const a = document.activeElement as any;
@@ -67,12 +68,7 @@ export const a11y11b: RuleModule = {
         return null;
       });
       if (lost) {
-        out.push({
-          file: action.page,
-          line: at.top,
-          column: at.left,
-          data: { message: `After a click on ${action.click}, ${lost}. Move focus to the new content, or to the next control.` },
-        });
+        out.push(atElement(action.page, at, { message: `After a click on ${action.click}, ${lost}. Move focus to the new content, or to the next control.` }));
       }
     }
     return out;

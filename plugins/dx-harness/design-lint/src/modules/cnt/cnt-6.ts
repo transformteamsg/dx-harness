@@ -1,3 +1,4 @@
+import { atElement } from "../../rendered.ts";
 import type { Candidate, RuleModule } from "../../types.ts";
 import { visibleText, wordsPattern } from "./text.ts";
 
@@ -17,10 +18,10 @@ export const cnt6a: RuleModule = {
     const fill = filler.length > 0 ? wordsPattern(filler) : null;
     for (const b of await visibleText(rendered, params.pages as string[])) {
       for (const sentence of b.text.split(/(?<=[.!?])\s+/)) {
-        const at = { file: b.page, line: b.top, column: b.left };
+        const at = (data: unknown) => atElement(b.page, b.element, data);
         const start = opener?.exec(sentence);
-        if (start) out.push({ ...at, data: { kind: "opener", word: start[0] } });
-        for (const m of fill ? sentence.matchAll(fill) : []) out.push({ ...at, data: { kind: "filler", word: m[0] } });
+        if (start) out.push(at({ kind: "opener", word: start[0] }));
+        for (const m of fill ? sentence.matchAll(fill) : []) out.push(at({ kind: "filler", word: m[0] }));
       }
     }
     return out;

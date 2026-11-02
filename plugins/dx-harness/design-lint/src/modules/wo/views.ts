@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, message } from "./util.ts";
 
 /* WO-8b: each view of a single-page application sets its own title. `spaRoutes`
@@ -61,8 +62,8 @@ export const wo10a: RuleModule = {
     if (!rendered) return out;
     for (const pagePath of params.pages as string[]) {
       const page = await rendered.open(pagePath, VIEWPORT);
-      const found = await page.evaluate((): { top: number; left: number; title: string }[] => {
-        const list: { top: number; left: number; title: string }[] = [];
+      const found = await page.evaluate((): { element: ElementRef; title: string }[] => {
+        const list: { element: ElementRef; title: string }[] = [];
         for (const a of Array.from(document.querySelectorAll("a[href]")) as any[]) {
           const title = (a.getAttribute("title") ?? "").trim();
           if (title === "") continue;
@@ -70,12 +71,11 @@ export const wo10a: RuleModule = {
           const labelled = (a.getAttribute("aria-label") ?? "").trim() !== "" || (a.getAttribute("aria-labelledby") ?? "").trim() !== "";
           const alt = Array.from(a.querySelectorAll("img[alt]")).some((i: any) => i.getAttribute("alt").trim() !== "");
           if (text !== "" || labelled || alt) continue;
-          const r = a.getBoundingClientRect();
-          list.push({ top: Math.round(r.top + window.scrollY), left: Math.round(r.left + window.scrollX), title });
+          list.push({ element: window.__designLint.element(a), title });
         }
         return list;
       });
-      for (const f of found) out.push({ file: pagePath, line: f.top, column: f.left, data: { message: `The link has no text and no label. Its name comes only from title="${f.title}". Add link text or an aria-label.` } });
+      for (const f of found) out.push(atElement(pagePath, f.element, { message: `The link has no text and no label. Its name comes only from title="${f.title}". Add link text or an aria-label.` }));
     }
     return out;
   },

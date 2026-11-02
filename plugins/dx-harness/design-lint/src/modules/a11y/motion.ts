@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 import { VIEWPORT, message } from "./util.ts";
 
 /* A11Y-5a: no animation runs when the user asks for reduced motion. A port of
@@ -8,8 +9,7 @@ import { VIEWPORT, message } from "./util.ts";
 
 interface Issue {
   message: string;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 export const a11y5a: RuleModule = {
@@ -42,13 +42,12 @@ export const a11y5a: RuleModule = {
           const looping = timing.iterations === Infinity ? "a looping " : "an ";
           found.push({
             message: `The <${el.tagName.toLowerCase()}> runs ${looping}animation of ${duration}ms under prefers-reduced-motion: reduce. Stop it in @media (prefers-reduced-motion: reduce), or name it in essentialSelectors.`,
-            top: Math.round(r.top),
-            left: Math.round(r.left),
+            element: window.__designLint.element(el),
           });
         }
         return found;
       }, arg);
-      for (const i of issues) out.push({ file: pagePath, line: i.top, column: i.left, data: { message: i.message } });
+      for (const i of issues) out.push(atElement(pagePath, i.element, { message: i.message }));
     }
     return out;
   },

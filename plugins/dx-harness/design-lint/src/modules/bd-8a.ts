@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../types.ts";
+import { atElement } from "../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../types.ts";
 
 /* BD-8a: the account identifier is visible in the header of each authenticated
    page. A product with no sign-in lists no authenticated pages, so nothing runs. */
@@ -25,6 +26,7 @@ export const bd8a: RuleModule = {
           inHeader: Boolean(el.closest("header, [role=banner]")),
           top: Math.round(r.top),
           left: Math.round(r.left),
+          element: window.__designLint.element(el) as ElementRef,
         };
       }, String(params.accountSelector));
       let message: string | null = null;
@@ -32,7 +34,7 @@ export const bd8a: RuleModule = {
       else if (!found.visible) message = "The account name is hidden. Show who is signed in.";
       else if (found.text === "") message = "The account name is empty.";
       else if (!found.inHeader && found.top > TOP_LIMIT) message = "The account name is not in the header or near the top of the page.";
-      if (message) out.push({ file: pagePath, line: found?.top ?? 1, column: found?.left ?? 1, data: { message } });
+      if (message) out.push(found ? atElement(pagePath, found.element, { message }) : { file: pagePath, line: 0, column: 0, data: { message } });
     }
     return out;
   },

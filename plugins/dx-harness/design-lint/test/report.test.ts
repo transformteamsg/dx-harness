@@ -21,6 +21,17 @@ describe("formatFinding", () => {
   });
 });
 
+describe("formatFinding for a rendered finding", () => {
+  const rendered = { ...finding("L2"), code: "BD-2e", file: "/", line: 120, column: 40, message: "The search input is too narrow." };
+  it("names the page and the element, not the box position", () => {
+    const element = { name: "input.search-box", top: 120, left: 40, width: 59, height: 21 };
+    expect(formatFinding({ ...rendered, element })).toBe("/ input.search-box: BD-2e [L2] The search input is too narrow.");
+  });
+  it("names the page only for a finding about the whole page", () => {
+    expect(formatFinding({ ...rendered, line: 0, column: 0 })).toBe("/: BD-2e [L2] The search input is too narrow.");
+  });
+});
+
 describe("formatNote", () => {
   it("names the kind and the detail", () => {
     const n: Note = { code: "BD-4a", kind: "not-configured", detail: ["maxGrade", "locale"] };

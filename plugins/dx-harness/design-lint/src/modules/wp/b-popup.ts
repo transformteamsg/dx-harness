@@ -1,4 +1,5 @@
-import type { Candidate, RenderedPage, RenderedSession, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RenderedPage, RenderedSession, RuleModule } from "../../types.ts";
 
 /* WP-19a, WP-19b, and WP-19e: scripted tests of content that appears on hover or
    focus. Each test runs on a page of its own, because the tests press keys, move
@@ -107,10 +108,6 @@ function library() {
       const el: any = document.querySelector(`[data-dxl-trigger="${i}"]`);
       return el.tagName.toLowerCase() + (el.id ? `#${el.id}` : el.getAttribute("data-tooltip") !== null ? "[data-tooltip]" : "");
     },
-    position(i: number): { top: number; left: number } {
-      const r = (document.querySelector(`[data-dxl-trigger="${i}"]`) as any).getBoundingClientRect();
-      return { top: Math.round(r.top), left: Math.round(r.left) };
-    },
   };
 }
 const LIBRARY = `(${String(library)})()`;
@@ -123,7 +120,6 @@ type Lib = {
   anyVisible(keys: string[]): boolean;
   hasCloseControl(keys: string[]): boolean;
   label(i: number): string;
-  position(i: number): { top: number; left: number };
 };
 declare global {
   interface Window {
@@ -202,12 +198,13 @@ function popupRule(
           const info = await where.evaluate(
             (a: { s: string; i: number }) => {
               window.__dxl.mark(a.s);
-              return { label: window.__dxl.label(a.i), ...window.__dxl.position(a.i) };
+              const el = document.querySelector(`[data-dxl-trigger="${a.i}"]`);
+              return { label: window.__dxl.label(a.i), element: window.__designLint.element(el) as ElementRef };
             },
             { s: selector, i },
           ).catch(() => null);
-          const lib = info ?? { label: `trigger ${i}`, top: 0, left: 0 };
-          out.push({ file: pagePath, line: lib.top, column: lib.left, data: { message: `${lib.label}: ${problems.join(" ")}` } });
+          const message = `${info?.label ?? `trigger ${i}`}: ${problems.join(" ")}`;
+          out.push(info ? atElement(pagePath, info.element, { message }) : { file: pagePath, line: 0, column: 0, data: { message } });
         }
       }
       return out;

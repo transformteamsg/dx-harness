@@ -1,4 +1,5 @@
-import type { Candidate, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RuleModule } from "../../types.ts";
 
 /* WP-10c, WP-10d, and WP-11b: three rendered checks on form controls and error
    states. Each reads the computed page, so a control that a script adds is
@@ -8,8 +9,7 @@ const VIEWPORT = { width: 1280, height: 800 };
 
 interface Issue {
   message: string;
-  top: number;
-  left: number;
+  element: ElementRef;
 }
 
 async function eachPage<A>(
@@ -20,7 +20,7 @@ async function eachPage<A>(
   if (!ctx.rendered) return out;
   for (const pagePath of ctx.params.pages as string[]) {
     const page = await ctx.rendered.open(pagePath, VIEWPORT);
-    for (const i of await find(page)) out.push({ file: pagePath, line: i.top, column: i.left, data: { message: i.message } });
+    for (const i of await find(page)) out.push(atElement(pagePath, i.element, { message: i.message }));
   }
   return out;
 }
@@ -52,11 +52,9 @@ export const wp10c: RuleModule = {
           const attr = (el.getAttribute("autocomplete") ?? "").trim().toLowerCase();
           const got = attr.split(/\s+/).pop() ?? "";
           if (got === want) continue;
-          const r = el.getBoundingClientRect();
           found.push({
             message: attr === "" ? `The input "${key}" has no autocomplete. Add autocomplete="${want}".` : `The input "${key}" has autocomplete="${attr}". Use autocomplete="${want}".`,
-            top: Math.round(r.top),
-            left: Math.round(r.left),
+            element: window.__designLint.element(el) as ElementRef,
           });
         }
         return found;
@@ -127,11 +125,9 @@ export const wp10d: RuleModule = {
             const distinct = legends.every((l) => l !== null) && new Set(legends).size === legends.length && new Set(fieldsets).size === fieldsets.length;
             if (distinct) continue;
             for (const el of same.slice(1)) {
-              const r = el.getBoundingClientRect();
               found.push({
                 message: `Two controls in one form are named "${name}". Give each a distinct label, or put each in its own fieldset with a different legend.`,
-                top: Math.round(r.top),
-                left: Math.round(r.left),
+                element: window.__designLint.element(el) as ElementRef,
               });
             }
           }
@@ -172,8 +168,7 @@ export const wp11b: RuleModule = {
           const name = el.tagName.toLowerCase() + (el.id ? `#${el.id}` : el.className ? `.${String(el.className).trim().split(/\s+/).join(".")}` : "");
           found.push({
             message: `The error state ${name} has no text and no icon. Add a message, or an icon with a text alternative.`,
-            top: Math.round(r.top),
-            left: Math.round(r.left),
+            element: window.__designLint.element(el) as ElementRef,
           });
         }
         return found;

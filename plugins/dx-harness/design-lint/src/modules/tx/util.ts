@@ -1,4 +1,5 @@
-import type { Candidate, RenderedPage, RenderedSession } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RenderedPage, RenderedSession } from "../../types.ts";
 
 /* Helpers that the TX modules share. */
 
@@ -13,7 +14,7 @@ export const pattern = (p: string): RegExp => new RegExp(p, "i");
 export const unique = (...lists: unknown[]): string[] => [...new Set(lists.flatMap(strings))];
 
 /* Opens each page and collects facts with probe. The finding sits on the main
-   element, because a rendered finding has no source position. A rule decides
+   element, by its name, because a rendered finding has no source position. A rule decides
    from the facts, so that the policy stays in decide. */
 export async function perPage(
   rendered: RenderedSession | undefined,
@@ -25,12 +26,8 @@ export async function perPage(
   for (const pagePath of pages) {
     const page = await rendered.open(pagePath, VIEWPORT);
     const facts = await probe(page);
-    const at = await page.evaluate(() => {
-      const el = document.querySelector("main") ?? document.body;
-      const r = el.getBoundingClientRect();
-      return { top: Math.round(r.top), left: Math.round(r.left) };
-    });
-    out.push({ file: pagePath, line: at.top, column: at.left, data: facts });
+    const at = await page.evaluate((): ElementRef => window.__designLint.element(document.querySelector("main") ?? document.body));
+    out.push(atElement(pagePath, at, facts));
   }
   return out;
 }

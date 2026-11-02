@@ -1,4 +1,5 @@
-import type { Candidate, RenderedPage, RuleModule } from "../../types.ts";
+import { atElement } from "../../rendered.ts";
+import type { Candidate, ElementRef, RenderedPage, RuleModule } from "../../types.ts";
 
 /* WP-14a, WP-16a, and WP-18b: rendered checks on how the layout holds when the
    text grows, the spacing changes, or the window narrows. WP-14a and WP-18b share
@@ -14,6 +15,7 @@ export interface Loss {
   what: string;
   top: number;
   left: number;
+  element: ElementRef;
 }
 
 /* Runs in the page. It is passed to the page as source, so it uses nothing from
@@ -33,9 +35,9 @@ function measureLoss(): Loss[] {
       const clipX = ["hidden", "clip"].includes(cs.overflowX);
       const clipY = ["hidden", "clip"].includes(cs.overflowY);
       if (cs.textOverflow === "ellipsis" && el.scrollWidth > el.clientWidth + 1) {
-        out.push({ key: `${i}:truncated`, kind: "truncated", what: label(el), top: Math.round(r.top), left: Math.round(r.left) });
+        out.push({ key: `${i}:truncated`, kind: "truncated", what: label(el), top: Math.round(r.top), left: Math.round(r.left), element: window.__designLint.element(el) });
       } else if ((clipX && el.scrollWidth > el.clientWidth + 1) || (clipY && el.scrollHeight > el.clientHeight + 1)) {
-        out.push({ key: `${i}:clipped`, kind: "clipped", what: label(el), top: Math.round(r.top), left: Math.round(r.left) });
+        out.push({ key: `${i}:clipped`, kind: "clipped", what: label(el), top: Math.round(r.top), left: Math.round(r.left), element: window.__designLint.element(el) });
       }
       /* The box of the text itself, from a range over the text nodes. */
       const range = document.createRange();
@@ -45,7 +47,7 @@ function measureLoss(): Loss[] {
     }
     const control = el.matches("a[href], button, input:not([type=hidden]), select, textarea, [role=button]");
     if (control && (r.right > window.innerWidth + 1 || r.left < -1)) {
-      out.push({ key: `${i}:outside`, kind: "outside", what: label(el), top: Math.round(r.top), left: Math.round(r.left) });
+      out.push({ key: `${i}:outside`, kind: "outside", what: label(el), top: Math.round(r.top), left: Math.round(r.left), element: window.__designLint.element(el) });
     }
   });
   /* Two text boxes overlap when they share a quarter of the smaller one. */
@@ -59,7 +61,7 @@ function measureLoss(): Loss[] {
       if (w <= 1 || h <= 1) continue;
       const small = Math.min((x.rect.right - x.rect.left) * (x.rect.bottom - x.rect.top), (y.rect.right - y.rect.left) * (y.rect.bottom - y.rect.top));
       if (w * h > small * 0.25) {
-        out.push({ key: `${x.i}-${y.i}:overlap`, kind: "overlapped", what: `${label(x.el)} and ${label(y.el)}`, top: Math.round(x.rect.top), left: Math.round(x.rect.left) });
+        out.push({ key: `${x.i}-${y.i}:overlap`, kind: "overlapped", what: `${label(x.el)} and ${label(y.el)}`, top: Math.round(x.rect.top), left: Math.round(x.rect.left), element: window.__designLint.element(x.el) });
       }
     }
   }
@@ -106,7 +108,7 @@ function lossRule(code: string, describe: string, change: (params: Record<string
       for (const pagePath of params.pages as string[]) {
         for (const width of widths(params)) {
           for (const l of await lossAfter(rendered, pagePath, width, c)) {
-            out.push({ file: pagePath, line: l.top, column: l.left, data: { ...l, width } });
+            out.push(atElement(pagePath, l.element, { ...l, width }));
           }
         }
       }
@@ -167,9 +169,9 @@ export const wp16a: RuleModule = {
         if (exempt !== "" && right <= root.clientWidth + 1) return null;
         const box = widest ? widest.getBoundingClientRect() : { top: 0, left: 0 };
         const name = widest ? widest.tagName.toLowerCase() + (widest.className && typeof widest.className === "string" ? `.${widest.className.trim().split(/\s+/).join(".")}` : "") : "document";
-        return { scrollWidth: root.scrollWidth, widest: name, top: Math.round(box.top), left: Math.round(box.left) };
+        return { scrollWidth: root.scrollWidth, widest: name, top: Math.round(box.top), left: Math.round(box.left), element: widest ? (window.__designLint.element(widest) as ElementRef) : null };
       }, String(params.twoDimensionalSelector));
-      if (result) out.push({ file: pagePath, line: result.top, column: result.left, data: { width, ...result } });
+      if (result) out.push(result.element ? atElement(pagePath, result.element, { width, ...result }) : { file: pagePath, line: 0, column: 0, data: { width, ...result } });
     }
     return out;
   },
