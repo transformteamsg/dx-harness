@@ -16,8 +16,7 @@ and routed).
 - How a page is structured goes to `dx-design-pattern`. How the steps behave stays here.
 - A review of the whole page with no dimension named goes to `dx-design-critique`.
 
-**Dimension controls** (the subset for this pass; procedure and loading rules:
-../dx-design-critique/pass.md):
+**Dimension controls** (the subset for this pass):
 
 - **CMP-2** — destructive actions show consequences and offer undo/confirm (L0).
 - **CMP-3** — every async transaction has loading, success, and error states.
@@ -34,13 +33,4 @@ entry points, the done state, every exit (back/cancel/abandon), and what happens
 teacher's work on interruption, partial completion, and resume. Escapability is
 structure, not polish.
 
-**Procedure:** follow `../dx-design-critique/pass.md` with the subset above, in either entry
-mode (called directly, or dispatched by the orchestrator with the `return-to-caller`
-token; pass.md defines both and what the token suppresses). Catalogue mechanics
-(filtering, tiers, plain-title naming): `../../../procedures/catalogue-mechanics.md`.
-The pass is propose-only: it records findings on the surface's design ticket per
-`../../../procedures/design-tickets.md` and hands accepted ones to dx-design-execute,
-which owns plan approval, implement, design review, and verify
-(`../../../procedures/plan-approval.md`, `../../../procedures/implement.md`,
-`../../../procedures/design-review.md`). Uncovered gaps become rule proposals per
-`../../../procedures/rule-proposal.md`.
+**Procedure:** follow `../dx-design-critique/pass.md` with the subset above.
