@@ -84,8 +84,10 @@ Run these before you push. CI runs the same set, so a green local run predicts a
 | Command | What it covers |
 | --- | --- |
 | `pnpm typecheck` | `tsc --noEmit` over the tests |
-| `pnpm test` | The root Vitest tests (`test:root`), the `design-lint` tests (`test:design-lint`), then every check script's own self-test (`test:checks`) |
+| `pnpm test` | The root Vitest tests in `tests/` (`test:root`), the `design-lint` tests (`test:design-lint`), then every check script's own self-test (`test:checks`) |
 | `pnpm check` | The standards gate: `design-catalog-validate.py`, which checks the control catalogue and the plugin files that restate it |
+
+Before you add or change a test, read [the rules for a test](tests/README.md). They say where a test goes and what makes a test worth keeping.
 
 **No git hook runs any of this.** The repository has no `lefthook.yml` and no `.husky/`, so nothing checks your work on commit or on push. CI runs on pushes to `main` and on pull requests targeting `main`, which means an unchecked commit reaches CI before it reaches a reviewer. Run the commands yourself.
 
