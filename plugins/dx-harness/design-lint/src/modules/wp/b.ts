@@ -5,12 +5,12 @@ import { axeRuleWith } from "./b-axe.ts";
 import { wp12d, wp17a } from "./b-controls.ts";
 import { wp10c, wp10d, wp11b } from "./b-forms.ts";
 import { wp14a, wp16a, wp18b } from "./b-layout.ts";
+import { wp15a } from "./b-ocr.ts";
 import { wp19a, wp19b, wp19e } from "./b-popup.ts";
 import { wp12b, wp14b, wp18c, wp19c } from "./b-source.ts";
 import { wp13b, wp17c } from "./b-tokens.ts";
 
-/* The rule modules of WP-10 to WP-19. WP-15a is not built: it needs OCR, and no
-   OCR library is installed. test/wp-b-axe.test.ts checks the engine rule ids. */
+/* The rule modules of WP-10 to WP-19. test/wp-b-axe.test.ts checks the engine rule ids. */
 
 export const WP_B_AXE_IDS: Record<string, string[]> = {
   "WP-10a": ["autocomplete-valid"],
@@ -54,6 +54,7 @@ export const wpBModules: RuleModule[] = [
   wp13b,
   wp14a,
   wp14b,
+  wp15a,
   wp16a,
   wp17a,
   wp17c,

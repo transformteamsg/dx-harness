@@ -2,7 +2,7 @@
 
 A linter for the design standard of `dx-harness`. It enforces the lintable rules of the base layer.
 
-Status: 179 of the 180 lint rules have a module, a fixture pair, and a break patch. The package loads the rule files, resolves their parameters from a config file, runs the rule modules, and reports. One lint rule has none: `WP-15a` needs an OCR library that the package does not have. Four more, `WO-9a`, `WO-12a`, `WO-12b`, and `WO-12c`, are retired because another rule already runs the same check, so they are not counted. A run shows a lint rule with no module as "no linter module yet".
+Status: every lint rule has a module, a fixture pair, and a break patch. The package loads the rule files, resolves their parameters from a config file, runs the rule modules, and reports. Four rules, `WO-9a`, `WO-12a`, `WO-12b`, and `WO-12c`, are retired because another rule already runs the same check, so they are not counted. A run shows a lint rule with no module as "no linter module yet".
 
 The design is in `docs/`, and the rules are in `plugins/dx-harness/standards/rules/`:
 
@@ -58,7 +58,7 @@ A module implements one rule. It has a `code`, a `surface`, a `locate` function 
 ## Not built yet
 
 - `design-lint init`.
-- The module of `WP-15a`, which needs an OCR library. `source` rules parse with parse5. The plan also names ast-grep for the existing locators, and no rule uses it yet.
+- ast-grep for the existing locators. `source` rules parse with parse5. The plan also names ast-grep, and no rule uses it yet.
 - The CDP-only adapter. A rendered rule sees only `evaluate`, so the engine can change, but Playwright is called directly.
 - Mixed projects: the JSX and TSX path (`eslint-plugin-jsx-a11y` with ESLint 9) is built, and a source rule that names a jsx-a11y rule checks plain HTML and JSX together. Vue and Svelte templates are not read.
 - A JSON Schema for the config file.

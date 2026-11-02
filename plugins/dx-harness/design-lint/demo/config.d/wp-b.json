@@ -13,6 +13,7 @@
     "WP-13b",
     "WP-14a",
     "WP-14b",
+    "WP-15a",
     "WP-16a",
     "WP-17a",
     "WP-17c",
@@ -84,6 +85,11 @@
       "pages": [
         "/wp-b/text.html",
         "/wp-b/forms.html"
+      ]
+    },
+    "WP-15a": {
+      "pages": [
+        "/wp-b/text.html"
       ]
     },
     "WP-16a": {

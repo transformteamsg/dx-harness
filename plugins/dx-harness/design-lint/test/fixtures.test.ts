@@ -29,9 +29,8 @@ const browser = shared !== null;
 
 /* A lint rule proves itself with a fixture pair (lint/testing.md), and a rule
    file with no pair fails here by name. The one exception is a rule that its
-   category README records as not built. WP-15a needs OCR, and no OCR library
-   is installed. */
-const UNBUILT = ["WP-15a"];
+   category README records as not built. No rule is unbuilt now. */
+const UNBUILT: string[] = [];
 
 /* This file runs each fixture directory that exists, so a lint rule with no
    fixture pair would pass without a word. This guard names it. */

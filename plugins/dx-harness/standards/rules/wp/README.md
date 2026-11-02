@@ -74,7 +74,6 @@ The 16 judged rules have no file yet. Each needs a rubric from `dx-design-judge`
 - Verify against the installed version of eslint-plugin-jsx-a11y: `alt-text`, `media-has-caption`, `autocomplete-valid`, `tabindex-no-positive`, and the ARIA rule names in `WP-6b`.
 - `WP-17a` has no engine rule. Check whether a current axe release adds a non-text contrast rule before a custom rule is written.
 - `WP-6c`: if the installed axe has no `fieldset-legend` rule, the check becomes custom.
-- `WP-15a`: check that a Node OCR library, such as `tesseract.js`, runs inside the linter and gives results that are stable across runs.
 - `WP-8a`: the word lists suit English only. A rule for other locales needs other lists.
 - `WP-7b`: check that visual order measured from layout boxes is stable across browsers.
 
@@ -114,9 +113,9 @@ No rule of WP-1 to WP-9 is left unbuilt.
 
 ## Built (WP-10 to WP-19)
 
-23 of 24 rules have a module, a fixture pair, and a break patch. `WP-15a` is not built. The modules are in `src/modules/wp/b.ts` and the files `b-*.ts` beside it. Every rendered rule of the set gained a `pages` parameter, and `WP-19e` gained `waitMs` (3000).
+All 24 rules have a module, a fixture pair, and a break patch. The modules are in `src/modules/wp/b.ts` and the files `b-*.ts` beside it. Every rendered rule of the set gained a `pages` parameter, and `WP-19e` gained `waitMs` (3000).
 
-- `WP-15a`: not built. It needs OCR, no OCR library is installed, and a check that guesses at text in an image is not honest. The rule file says so. The rule has no module, so a run reports "no linter module yet".
+- `WP-15a`: OCR through `tesseract.js`, with the English data from `@tesseract.js-data/eng`, read from disk. The rule file records why this library. OCR that cannot start, or a language with no data, is a "not run" finding that blocks, as in `PR-6b`. A word counts at a confidence of `minConfidence` or more. The text of an element with a background image is hidden before OCR reads the image. In the demo, the logo is exempt through `data-image-of-text`, and the break patch removes that attribute.
 - `WP-10a`, `WP-11a`, `WP-18a`: pure axe. `WP-10b`: JSX and TSX through `jsxRule` only. `WP-10a` covers plain HTML, so a plain HTML part would report one fault twice.
 - `WP-12a`: axe `no-autoplay-audio` is a review-on-fail rule. It reports a failure as "incomplete", so the module counts an incomplete result as a failure when the media has a known length. The module waits for the metadata of autoplay media first. The demo and fixtures use a `data:` URI for audio, because the demo server sends a `.wav` file as `application/octet-stream`, which the browser refuses.
 - `WP-13a`, `WP-12a`: axe options go through `axe.configure` from the rule parameters, in `b-axe.ts`, and axe is reset after the run. The shared wrapper in `engines/axe.ts` has no options. The two exemption selectors become axe `exclude` entries. A colour that axe cannot read stays "incomplete" and passes.

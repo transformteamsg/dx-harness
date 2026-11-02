@@ -37,7 +37,13 @@ A rule that cannot run prints a note, not a finding:
 
 ```
 note: BD-4a not configured: maxGrade, locale
-note: WP-15a not run: OCR is not installed
+note: WP-12a not run: no browser found
+```
+
+A rule whose own engine cannot start prints a finding that starts with "Not run" and says why. Examples are a browser engine of `PR-6b` and the OCR of `WP-15a`. This finding blocks at every tier:
+
+```
+/: WP-15a [L2] Not run: OCR did not start (no language data installed for fra. Install @tesseract.js-data/fra, ...). A page that did not run does not pass.
 ```
 
 When the domain preset tries to override or ignore an L0 rule, the rule runs, and a note names each line of the preset that it skipped. This note does not change the exit code:
