@@ -230,6 +230,30 @@ describe("3. a skill that needs a new payload field adds it to the contract", ()
   });
 });
 
+/* The five passes each carried a copy of the procedure block that pass.md
+   holds. pass.md is the one copy, and each pass names it. See issues #504
+   and #538. */
+describe("the pass procedure is stated once, in pass.md", () => {
+  const PASSES = ["copy", "pattern", "polish", "flow", "motion"].map((p) => `${DESIGN}/dx-design-${p}/SKILL.md`);
+
+  it("pass.md sends an uncovered gap to a rule proposal", () => {
+    expect(flat(PASS)).toMatch(/rule-proposal\.md/);
+  });
+
+  it("only pass.md says where accepted findings go and who owns the back half", () => {
+    expect(holders(/plan approval, implement, design review, and verify/i), "the back half has more than one copy").toEqual([PASS]);
+  });
+
+  it("only pass.md says an uncovered gap becomes a rule proposal", () => {
+    const gap = /Uncovered gaps become rule proposals/i;
+    expect(holders(gap), "the gap rule has more than one copy").toEqual([PASS]);
+  });
+
+  it.each(PASSES)("%s names pass.md once", (file) => {
+    expect(read(file).match(/pass\.md/g) ?? [], `${file} does not name pass.md exactly once`).toHaveLength(1);
+  });
+});
+
 /* Also true when done: the validator passes, and each dx-sync check whose
    copies are gone goes with them. The validator run itself is in
    grading-text.test.ts. */
