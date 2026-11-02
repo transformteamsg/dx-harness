@@ -39,15 +39,15 @@ function section(file: string, heading: string) {
 
 const LIST = "The in-scope list";
 
-/* The files a run starts from, and the flags each one passes. A build covers
-   every phase and every surface, so it narrows by product and audience only.
-   A pass narrows to its dimension. */
+/* The files a run starts from, and the flags each one passes. A build and a
+   critique narrow by product and audience only. A pass narrows to its
+   dimension. No file passes --phase or --surface, which ADR-0003 retires. */
 const STARTERS = [
   { file: `${HARNESS}/skills/design/dx-design-execute/SKILL.md`, flags: ["--product", "--audience"], not: ["--phase", "--surface", "--dimension"] },
-  { file: `${HARNESS}/skills/design/dx-design-critique/SKILL.md`, flags: ["--phase verify", "--product", "--audience"], not: ["--dimension"] },
-  { file: `${HARNESS}/skills/design/dx-design-critique/pass.md`, flags: ["--dimension", "--phase verify"], not: [] },
-  { file: `${HARNESS}/procedures/capture.md`, flags: ["--dimension", "--phase verify"], not: [] },
-  { file: `${HARNESS}/skills/design/dx-design-language/SKILL.md`, flags: ["--product"], not: ["--dimension"] },
+  { file: `${HARNESS}/skills/design/dx-design-critique/SKILL.md`, flags: ["--product", "--audience"], not: ["--phase", "--surface", "--dimension"] },
+  { file: `${HARNESS}/skills/design/dx-design-critique/pass.md`, flags: ["--dimension"], not: ["--phase", "--surface"] },
+  { file: `${HARNESS}/procedures/capture.md`, flags: ["--dimension"], not: ["--phase", "--surface"] },
+  { file: `${HARNESS}/skills/design/dx-design-language/SKILL.md`, flags: ["--product"], not: ["--phase", "--surface", "--dimension"] },
 ];
 
 /* The files that use a list a run already has. */
@@ -83,10 +83,10 @@ describe("1. a run reads only the rules on its list", () => {
     expect(flat(file)).toMatch(/in-scope list/i);
   });
 
-  it("the reviewer grades the judgment and hybrid rules on the list it receives", () => {
+  it("the reviewer grades the judged rules on the list it receives", () => {
     const agent = flat(`${HARNESS}/agents/dx-design-review.md`);
     expect(agent).toMatch(/in-scope list/i);
-    expect(agent).toMatch(/`check: judgment` or `check: hybrid`/);
+    expect(agent).toMatch(/`judged`/);
   });
 });
 
@@ -96,8 +96,8 @@ describe("2. a run reports the selection it applied", () => {
     expect(list).toMatch(/report (its|the) `Selection:` line to the person/i);
   });
 
-  it("reports it also when the product has no DESIGN.md", () => {
-    expect(section(MECHANICS, LIST)).toMatch(/no `DESIGN\.md`/);
+  it("reports it also when the product has no configuration", () => {
+    expect(section(MECHANICS, LIST)).toMatch(/no `design-lint\.config\.json`/);
   });
 
   it.each(STARTERS)("$file reports the selection", ({ file }) => {

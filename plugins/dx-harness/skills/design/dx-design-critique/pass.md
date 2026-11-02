@@ -51,9 +51,8 @@ A pass keeps two entries:
      <harness>/scripts/rule-detail.py <detail path> --for review`, and load the pass's named reference files. The
      pass reads no other rules, and it does not open the catalogue.
    - **Direct**: get the pass's in-scope list with `python3
-     <harness>/scripts/in-scope-rules.py <repo-root> --dimension <pass> --phase
-     verify`, where `<harness>` is the absolute path three levels above this file
-     and `<pass>` is the dimension of the SKILL.md that sent you here. Report the
+     <harness>/scripts/in-scope-rules.py <repo-root> --dimension <pass>`, where
+     `<harness>` is the absolute path three levels above this file and `<pass>` is the dimension of the SKILL.md that sent you here. Report the
      `Selection:` line to the person. When the command exits with an error, stop
      before you judge anything, and show the error. Read each listed rule's
      `--for review` part when it has a detail, and load the pass's named reference files, nothing wider.

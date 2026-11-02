@@ -51,7 +51,7 @@ names the install step. No agent judges from a capture the run could not scale.
 ## Step 4: Resolve the rules once
 
 Get the in-scope list from `<harness>/scripts/in-scope-rules.py` once for each
-dimension in the run, with `--dimension <pass> --phase verify`, per
+dimension in the run, with `--dimension <pass>`, per
 `catalogue-mechanics.md`, beside this file. Each list is that dimension's subset.
 
 Report each `Selection:` line to the person. When the command exits with an error,

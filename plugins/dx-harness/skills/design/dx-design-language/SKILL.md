@@ -25,8 +25,10 @@ sections and fix-todos are filed. The full DESIGN.md spec is
 `python3 <harness>/scripts/in-scope-rules.py <repo-root> --product <product>`. Get it
 when the session first needs a rule id or tier, and report the `Selection:` line to
 the person. When the command exits with an error, stop and show the error. An
-unknown rule code in `DESIGN.md` is the one error this skill fixes: correct the code
-with the person, then get the list again.
+unknown rule code in `design-lint.config.json` is the one error this skill fixes:
+correct the code with the person, then get the list again. `DESIGN.md` selects no
+rules, per ADR-0003: when the list notes a selection key in its frontmatter, move
+that selection to `design-lint.config.json` with the person.
 
 **Path resolution for commands.** The `../../../` paths above resolve from this
 skill file's own directory (the harness install), never from the product repo.

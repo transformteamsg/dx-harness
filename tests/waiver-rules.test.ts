@@ -72,9 +72,10 @@ describe("1. a build with no waiver never reads the waiver rules", () => {
     expect(always.map(({ at }) => at)).toEqual([]);
   });
 
-  it("answers applicability from the scope fields and DESIGN.md", () => {
+  /* ADR-0003 moves the rule selection from DESIGN.md to design-lint.config.json. */
+  it("answers applicability from the product configuration", () => {
     const mechanics = read(MECHANICS).replace(/\s+/g, " ");
-    expect(mechanics).toMatch(/applicability comes from the catalogue's scope fields and the product's DESIGN\.md/i);
+    expect(mechanics).toMatch(/applicability comes from the product's `design-lint\.config\.json`/i);
   });
 });
 
