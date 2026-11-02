@@ -13,11 +13,13 @@
   },
   "dependencies": {
     "@tesseract.js-data/eng": "1.0.0",
+    "@vue/compiler-dom": "^3.5.44",
     "axe-core": "^4.14.0",
     "eslint": "^9.39.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "parse5": "^8.0.1",
     "playwright-core": "^1.64.1",
+    "svelte": "^5.57.2",
     "tesseract.js": "7.0.0",
     "typescript-eslint": "^8.71.2",
     "yaml": "^2.9.0"

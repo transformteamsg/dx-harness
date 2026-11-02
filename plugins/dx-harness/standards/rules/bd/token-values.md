@@ -19,7 +19,7 @@ Colour, spacing, and radius values come from the tokens of the design system, no
 
 Runs the ported token rules from `plugins/dx-harness/checks/token-audit.py` (TOK-1, TOK-2, TOK-3, COL-2). A finding from any of them is a finding of `BD-6b`. The scales and the allowed values are the parameters of those rules, and this rule adds none.
 
-Status of the port: TOK-1, TOK-2, TOK-3, and COL-2 are ported. The check scans `.css` files, `<style>` blocks, `style` attributes, and `class` attributes:
+Status of the port: TOK-1, TOK-2, TOK-3, and COL-2 are ported. The check scans `.css` files, `<style>` blocks, `style` attributes, and `class` attributes, in HTML files and in `.vue` and `.svelte` files. A bound `style` or `class` is not read. A template that does not parse is a finding, because the check could not read it:
 
 - A raw colour value is a finding.
 - A `px` or `rem` spacing value that is not on the spacing scale is a finding. The scale is 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 80, 96, 112, and 128 pixels, at 16 pixels to the `rem`.

@@ -10,6 +10,7 @@ import type { AxeNode } from "../../engines/axe.ts";
 import type { HtmlElement } from "../../html.ts";
 import type { Candidate, Params, RenderedPage, RuleContext, RuleModule, ElementRef } from "../../types.ts";
 import { asHtml, JSX_FILE, jsxElements } from "./a-jsx.ts";
+import { isTemplate, missingAlt, readTemplate, unreadable, unreadableMessage } from "../../templates.ts";
 import type { JsxEl } from "./a-jsx.ts";
 
 /* The rule modules of WP-1 to WP-9. The ids that a rule names in an engine are
@@ -166,7 +167,29 @@ function jsxRuleWithSkip(code: string, ids: string[], skip: (params: Params) => 
 /* ---------- WP-1: text alternatives ---------- */
 
 export const wp1a = axeRule("WP-1a", WP_AXE_IDS["WP-1a"]);
-export const wp1b = jsxRule("WP-1b", WP_JSX_IDS["WP-1b"]);
+/* WP-1b reads the Vue and Svelte templates too. jsx-a11y reads JSX only, so
+   the template part applies the same checks to the template elements. */
+const wp1bTemplate: RuleModule = {
+  code: "WP-1b",
+  surface: "source",
+  locate({ files }) {
+    const out: Candidate[] = [];
+    for (const file of files.filter(isTemplate)) {
+      const template = readTemplate(file);
+      if (template.error) {
+        out.push(unreadable(file, template.error));
+        continue;
+      }
+      for (const el of template.elements) {
+        const message = missingAlt(el);
+        if (message) out.push({ file, line: el.line, column: el.column, data: { message } });
+      }
+    }
+    return out;
+  },
+  decide: (c) => unreadableMessage("WP-1b", c.data) ?? msg(c),
+};
+export const wp1b = combineRules("WP-1b", [jsxRule("WP-1b", WP_JSX_IDS["WP-1b"]), wp1bTemplate]);
 
 /* WP-1c: the length of the alt text. A file name in the alt text is WP-1e's, so
    that one fault is not reported twice. */

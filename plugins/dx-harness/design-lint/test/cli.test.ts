@@ -97,3 +97,20 @@ describe("a finding from a rendered rule", async () => {
     expect(element.width as number).toBeGreaterThan(0);
   });
 });
+
+/* A Vue or Svelte template that does not parse is not a pass. The rule that
+   reads the file reports it as unreadable, and the command exits non-zero. See
+   issue #515. */
+describe("a template that does not parse", () => {
+  it.each([
+    ["Broken.svelte", "<script>\n  let a = 1;\n</script>\n\n<div>\n  {#if a}\n    <p>Open</p>\n</div>\n"],
+    ["Broken.vue", "<template>\n  <div>\n    <img src=\"a.png\" alt=\"A\"\n</template>\n"],
+  ])("reports %s as unreadable and exits non-zero", (name, source) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-template-"));
+    fs.writeFileSync(path.join(dir, name), source);
+    const run = spawnSync(process.execPath, ["src/cli.ts", dir, "--select", "WP-1b"], { cwd: PACKAGE, encoding: "utf8" });
+    expect(run.stderr).toBe("");
+    expect(run.stdout).toMatch(new RegExp(`${name.replace(".", "\\.")}:\\d+:\\d+: WP-1b \\[L1\\] .*unreadable`));
+    expect(run.status).not.toBe(0);
+  });
+});
