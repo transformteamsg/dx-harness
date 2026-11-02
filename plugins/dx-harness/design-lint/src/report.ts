@@ -33,13 +33,18 @@ export function exitCode(findings: Finding[], notes: Note[], tiers: Map<string, 
   return 0;
 }
 
-/* One summary of the rules that need configuration, grouped by rule. */
-export function summariseUnset(notes: Note[], rules: RuleMeta[]): string[] {
+/* One summary of the rules that need configuration, grouped by rule. The advice
+   follows the count on the first line. */
+export function summariseUnset(
+  notes: Note[],
+  rules: RuleMeta[],
+  advice = "Run design-lint init, or set these values:",
+): string[] {
   const missing = notes.filter((n) => n.kind === "not-configured");
   if (missing.length === 0) return [];
   const known = new Set(rules.map((r) => r.code));
   const noun = missing.length === 1 ? "rule needs" : "rules need";
-  const lines = [`${missing.length} ${noun} configuration. Run design-lint init, or set these values:`];
+  const lines = [`${missing.length} ${noun} configuration. ${advice}`];
   const shown = missing.filter((m) => known.has(m.code));
   const width = Math.max(8, ...shown.map((n) => n.code.length + 1));
   for (const n of shown) {

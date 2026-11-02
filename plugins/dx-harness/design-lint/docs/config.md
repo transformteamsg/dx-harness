@@ -86,4 +86,3 @@ Selectors, thresholds, and file globs stay per rule. A product sets them under `
 
 - The list of keys in `product` is a first pass from the parameters that default to `null`. Review it against the rule files.
 - A rule file can name a page parameter that has no group yet. The schema needs a check for this.
-- A single-page prototype lists one page. Decide whether `pages.all` defaults to the pages that `design-lint init` finds.
