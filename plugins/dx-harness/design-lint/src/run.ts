@@ -96,6 +96,7 @@ export async function run(
           file: candidate.file,
           line: candidate.line,
           column: candidate.column,
+          ...(candidate.element ? { element: candidate.element } : {}),
           message,
           ...(candidate.notRun ? { notRun: true as const } : {}),
         });
