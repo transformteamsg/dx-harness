@@ -14,5 +14,5 @@
     "erasableSyntaxOnly": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "test", "demo/*.ts"]
+  "include": ["src", "test", "demo/*.ts", "calibration/*.ts"]
 }

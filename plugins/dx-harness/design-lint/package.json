@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "demo": "node demo/demo.ts",
-    "new-page": "node demo/new-page.ts"
+    "new-page": "node demo/new-page.ts",
+    "calibrate": "node calibration/run.ts"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "1.0.0",
