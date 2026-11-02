@@ -2,3 +2,5 @@ a {
   color: #ff0000;
 }
 .btn { background: rgb(1, 2, 3); }
+.card { padding: 13px var(--space-4); }
+.note { margin: 0 1.1rem; }

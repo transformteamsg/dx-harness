@@ -4,3 +4,4 @@
 /* /dx-tokens */
 a { color: var(--c); }
 .btn { background: var(--d, #fff); }
+.card { padding: 12px 0.75rem; margin: 0 auto; gap: 5%; top: 0; }
