@@ -77,11 +77,18 @@ The summary groups by rule and lists each unset parameter once.
 
 ## `design-lint init`
 
-1. Find the pages: from the file tree for static HTML, or from the router for a framework project.
-2. Ask for the values that cannot be found: `serviceType` first.
-3. Write `design-lint.config.json` and report what is still unset.
+```
+design-lint init [dir] [--config <file>]
+```
 
-`design-lint init` never overwrites a value that the config already holds.
+1. Find the pages: every HTML file under `dir`, which defaults to the current directory. A file named `index.html` stands for its folder, and the home page comes first. The pages go in `pages.all`.
+2. If it finds no pages, it says so and asks for a list of page paths, separated by commas or spaces. A blank answer leaves `pages.all` unset.
+3. Ask for `serviceType`. A blank answer leaves it unset.
+4. Write `design-lint.config.json` and list each rule that still has an unset value.
+
+`design-lint init` never overwrites a value that the config already holds. It asks only for a value that the config, or a file that it extends, does not set, and adds only the missing keys to the file.
+
+The first version reads static HTML files only. For a framework project with a router, such as Next.js or Vite, it finds no pages and asks for the list.
 
 ## Hooks
 

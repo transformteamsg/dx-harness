@@ -47,6 +47,7 @@ The tests and the typecheck run from the repository root with `pnpm test` and `p
 | `src/rendered.ts` | The static server and the browser session (playwright-core) |
 | `src/patch.ts` | Applies a break patch |
 | `src/report.ts` | Formats findings and notes, and picks the exit code |
+| `src/init.ts` | `design-lint init`: finds the pages, asks for the values, and writes the config |
 | `src/cli.ts` | The command |
 | `docs/` | The design of the command, the config, the tests, and how to build a rule |
 | `fixtures/<CODE>/` | A passing site, a failing site, and the expected findings, for one rule |

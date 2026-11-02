@@ -1,6 +1,9 @@
 import path from "node:path";
+import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";
 import { loadConfig, resolveParameters } from "./config.ts";
+import { init } from "./init.ts";
+import type { Ask } from "./init.ts";
 import { lint } from "./lint.ts";
 import { loadPreset } from "./preset.ts";
 import { modules } from "./registry.ts";
@@ -16,7 +19,7 @@ const USAGE = `design-lint [path...]          Run the source and project rules
 design-lint --rendered         Add the rendered rules
 design-lint --ci               Add the rules that run only in CI
 design-lint list               List the rules and their status
-design-lint init               Write design-lint.config.json (not built yet)
+design-lint init [dir]         Find the pages and write design-lint.config.json
 
 Options: --json  --select <code|category>  --ignore <code|category>
          --config <file>  --rules <dir>  --presets <dir>  --help`;
@@ -43,15 +46,27 @@ async function main(argv: string[]): Promise<number> {
   }
 
   const [first, ...rest] = positionals;
-  if (first === "init") {
-    console.error("design-lint init is not built yet.");
-    return 2;
-  }
-
   const { rules, errors } = loadRules(values.rules);
   if (errors.length > 0) {
     for (const e of errors) console.error(`error: ${e}`);
     return 2;
+  }
+
+  if (first === "init") {
+    const lines = createInterface({ input: process.stdin });
+    try {
+      await init({
+        root: path.resolve(rest[0] ?? "."),
+        configFile: path.resolve(values.config),
+        rules,
+        presets: values.presets,
+        ask: asker(lines),
+        print: (line) => console.log(line),
+      });
+    } finally {
+      lines.close();
+    }
+    return 0;
   }
   const config = loadConfig(values.config);
   const preset = config?.preset ? loadPreset(config.preset, values.presets) : null;
@@ -102,6 +117,30 @@ async function main(argv: string[]): Promise<number> {
   const pending = result.notes.filter((n) => n.kind === "no-module").length;
   if (pending > 0) console.log(`note: ${pending} rules have no linter module yet`);
   return code;
+}
+
+/* Each answer is one line of stdin. Lines that arrive before their question,
+   as from a pipe, wait in a queue. At the end of the input, an answer is blank. */
+function asker(lines: ReturnType<typeof createInterface>): Ask {
+  const queue: string[] = [];
+  const waiting: ((line: string) => void)[] = [];
+  let ended = false;
+  lines.on("line", (line) => (waiting.length > 0 ? waiting.shift()!(line) : queue.push(line)));
+  lines.on("close", () => {
+    ended = true;
+    for (const resolve of waiting.splice(0)) resolve("");
+  });
+  /* A terminal echoes the answer and its line break. A pipe does not. */
+  const echo = (answer: string) => {
+    if (!process.stdin.isTTY) process.stdout.write("\n");
+    return answer;
+  };
+  return async (question) => {
+    process.stdout.write(question);
+    if (queue.length > 0) return echo(queue.shift()!);
+    if (ended) return echo("");
+    return echo(await new Promise<string>((resolve) => waiting.push(resolve)));
+  };
 }
 
 main(process.argv.slice(2)).then(
