@@ -752,6 +752,10 @@ def run_self_test():
         "ERROR /standards:1280-light [A11Y-4] target-size at .chip — suggest: widen to 24px"])
     check("a rendered finding is not control-less",
           p6[0]["control"] == "A11Y-4" and p6[0]["position"] == "1280-light")
+    p7 = parse_findings("rendered-check", [
+        "ERROR /standards:1280-light [WP-13a][color-contrast] L1: color-contrast at .card > p"])
+    check("a rendered finding under a base rule code keeps the code",
+          p7[0]["control"] == "WP-13a" and p7[0]["position"] == "1280-light")
 
     # 7c. The widened position group changes no existing shape: every ERROR
     # line the wrapped checks emit today still parses the same way.

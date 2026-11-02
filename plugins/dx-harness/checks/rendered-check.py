@@ -932,9 +932,6 @@ def _violation(rule_id, selector, help_text="fix it"):
 
 
 def run_self_test():
-    # The removed controls this self-test names keep their tiers in a fixture
-    # catalogue until #539 retires or narrows this check (#540).
-    checklib.use_self_test_catalog()
     failures = []
     case_count = 0
 
@@ -946,7 +943,16 @@ def run_self_test():
 
     rule_map = checklib.load_rule_map()
     controls = checklib.layer_controls(LAYER, rule_map)
-    tiers = checklib.rule_tiers()
+    # The tiers and the redirects come from the rule files and redirects.yaml
+    # directly, not through the check's own lookup, so a case can catch the
+    # check reading the wrong source.
+    base = {r["id"]: r for r in checklib.base_rules()}
+    tiers = {code: r["tier"] for code, r in base.items() if r.get("tier")}
+    redirects = checklib.rule_redirects()
+    check("the base rules have tiers to check against", True, bool(tiers))
+    check("redirects.yaml maps old codes to check against", True, bool(redirects))
+    removed_code_re = re.compile(r"\b(?:%s)(?![0-9a-z])" % "|".join(
+        re.escape(code) for code in sorted(redirects, key=len, reverse=True)))
     detect = _load_detect()
 
     # ── the run matrix covers every shape the spec fixed ───────────────────────
@@ -1014,14 +1020,27 @@ def run_self_test():
     check("one violated node becomes one finding", 1, len(errors))
     parsed = detect._FINDING_RE.match(errors[0])
     check("the finding matches detect's finding shape", True, parsed is not None)
-    check("the finding carries its control id", "A11Y-1", parsed.group("control"))
-    check("the route rides the file half", "/standards/slop", parsed.group("file"))
-    check("the cell rides the position half", "1280-dark", parsed.group("pos"))
+    check("the finding names the base rule for contrast", "WP-13a",
+          parsed.group("control") if parsed else None)
+    check("WP-13a has a tier in its rule file", True, bool(tiers.get("WP-13a")))
+    check("the finding carries the tier from the rule file", True,
+          bool(parsed) and parsed.group("message").startswith(f"{tiers.get('WP-13a')}: "))
+    check("the finding names no removed catalogue code", [],
+          removed_code_re.findall(errors[0]))
+    contrast_records = [r for r in payload_records(payload, rule_map, controls)
+                        if r["rule"] == "color-contrast"]
+    check("the record carries the base rule and its tier",
+          [("WP-13a", tiers.get("WP-13a"))],
+          [(r["control"], r.get("tier")) for r in contrast_records])
+    check("the route rides the file half", "/standards/slop",
+          parsed.group("file") if parsed else None)
+    check("the cell rides the position half", "1280-dark",
+          parsed.group("pos") if parsed else None)
     check("the finding names the axe rule that fired", True,
           "[color-contrast]" in errors[0])
     check("the finding names the DOM node", True, ".card > p" in errors[0])
-    check("detect keeps the control id and asserts no source line",
-          ("A11Y-1", None, "1280-dark"),
+    check("detect keeps the base rule code and asserts no source line",
+          ("WP-13a", None, "1280-dark"),
           (lambda f: (f["control"], f["line"], f["position"]))(
               detect.parse_findings("rendered-check", errors)[0]))
 
@@ -1031,7 +1050,7 @@ def run_self_test():
         rule_map, "1280-dark")
     light_clean, _ = translate_violations(
         _axe_payload(cell="1280-light"), rule_map, "1280-light")
-    check("the dark cell reports A11Y-1", True, any("[A11Y-1]" in e for e in dark_only))
+    check("the dark cell reports WP-13a", True, any("[WP-13a]" in e for e in dark_only))
     check("the light cell reports nothing", [], light_clean)
     check("the finding names the cell that produced it", True,
           ":1280-dark " in dark_only[0])
@@ -1040,17 +1059,17 @@ def run_self_test():
     targets, _ = translate_violations(
         _axe_payload(cell="360-light", violations=[_violation("target-size", "button.chip")]),
         rule_map, "360-light")
-    check("target-size is reported under A11Y-4", True, "[A11Y-4]" in targets[0])
+    check("target-size is reported under WO-18a", True, "[WO-18a]" in targets[0])
     check("it is reported from the 360 cell", True, ":360-light " in targets[0])
 
     # ── the aria suite tracks the installed axe ───────────────────────────────
     unseen = _axe_payload(violations=[_violation("aria-brand-new-rule", "div")],
                           aria_rules=["aria-brand-new-rule"])
     aria_errors, _ = translate_violations(unseen, rule_map, unseen["cell"])
-    check("an aria rule the harness has never seen still maps to A11Y-8",
-          True, "[A11Y-8]" in aria_errors[0])
-    check("no hardcoded aria list exists to drift", "A11Y-8",
-          rule_map.get("aria_prefix_control"))
+    aria_fallback = rule_map.get("aria_prefix_control")
+    check("the aria fallback is a base rule with a tier", True, aria_fallback in tiers)
+    check("an aria rule the harness has never seen still maps to the aria fallback",
+          True, f"[{aria_fallback}]" in aria_errors[0])
     check("an unmapped non-aria rule is a misconfiguration, not a guess",
           (1, None),
           (lambda e: (len(e), detect._FINDING_RE.match(e[0])))(
@@ -1058,14 +1077,14 @@ def run_self_test():
                   _axe_payload(violations=[_violation("region", "main")]),
                   rule_map, "1280-light")[0]))
 
-    # ── the reduced-motion evaluation is A11Y-5's only coverage ───────────────
+    # ── the reduced-motion evaluation is A11Y-5a's only coverage ──────────────
     motion = _axe_payload(cell=REDUCED_MOTION_CELL, evaluation_findings=[
         {"rule": "dx/reduced-motion", "selector": ".hero__orb",
          "message": "animation still running under prefers-reduced-motion (looping)",
          "failed": False}])
     motion_errors, _ = translate_violations(motion, rule_map, motion["cell"])
-    check("a still-running animation is reported under A11Y-5",
-          True, "[A11Y-5]" in motion_errors[0])
+    check("a still-running animation is reported under A11Y-5a",
+          True, "[A11Y-5a]" in motion_errors[0])
     check("the finding names the element that is still moving",
           True, ".hero__orb" in motion_errors[0])
     check("it is reported from the reduced-motion cell",
@@ -1086,12 +1105,12 @@ def run_self_test():
     check("a failed evaluation raises no ERROR", [], failed_errors)
     check("it is carried to the manual pass as one NOTE instead", 1, len(failed_notes))
     check("the NOTE names the control and the failure", True,
-          "[A11Y-5]" in failed_notes[0]
+          "[A11Y-5a]" in failed_notes[0]
           and "page evaluation failed to run" in failed_notes[0]
           and "TimeoutError" in failed_notes[0])
     failed_records = payload_records(failed_eval, rule_map, controls)
     check("its record is not-run, naming the control for manual verification",
-          [("A11Y-5", "not-run")],
+          [("A11Y-5a", "not-run")],
           [(r["control"], r["outcome"]) for r in failed_records
            if r["rule"] == "dx/reduced-motion"])
     check("a failed evaluation's record never claims a pass", set(),
@@ -1106,7 +1125,7 @@ def run_self_test():
     check("an incomplete result raises no ERROR", [], inc_errors)
     check("it prints as one NOTE", 1, len(inc_notes))
     check("the NOTE names the control, the rule and the selector", True,
-          "[A11Y-1]" in inc_notes[0] and "[color-contrast]" in inc_notes[0]
+          "[WP-13a]" in inc_notes[0] and "[color-contrast]" in inc_notes[0]
           and ".hero > p" in inc_notes[0])
     check("the NOTE sends it to the manual accessibility pass", True,
           "manual accessibility pass" in inc_notes[0])
@@ -1116,7 +1135,7 @@ def run_self_test():
           incomplete_payload["passes_count"])
     inc_records = payload_records(incomplete_payload, rule_map, controls)
     check("its record is an incomplete outcome, never a pass",
-          [("A11Y-1", "incomplete")],
+          [("WP-13a", "incomplete")],
           [(r["control"], r["outcome"]) for r in inc_records
            if r["rule"] == "color-contrast"])
     check("no record anywhere claims a pass", set(),
@@ -1128,7 +1147,7 @@ def run_self_test():
     check("it says a pass here is not a control met", True,
           "not a control met" in counted[0])
 
-    # ── A11Y-8 on markup a person cannot reach is demoted, not gated ─────────
+    # ── an aria finding on markup a person cannot reach is demoted, not gated ─
     hidden_node = {"target": ["#closed-menu > button"], "html": "<button/>"}
     hidden_payload = _axe_payload(
         violations=[{"id": "aria-required-attr", "help": "needs attrs",
@@ -1136,7 +1155,7 @@ def run_self_test():
         hidden_nodes=[node_key(hidden_node)])
     hidden_errors, hidden_demoted = translate_violations(
         hidden_payload, rule_map, hidden_payload["cell"])
-    check("an A11Y-8 finding in a hidden subtree raises no ERROR", [], hidden_errors)
+    check("an aria finding in a hidden subtree raises no ERROR", [], hidden_errors)
     check("it moves into the incomplete bucket instead", 1, len(hidden_demoted))
     check("the NOTE says why it was demoted", True,
           any("cannot currently reach" in n for n in
@@ -1153,10 +1172,10 @@ def run_self_test():
     bypass_payload = _axe_payload(violations=[_violation("bypass", "body")])
     bypass_errors, bypass_demoted = translate_violations(
         bypass_payload, rule_map, bypass_payload["cell"])
-    check("A11Y-10 raises no ERROR and so cannot make the exit non-zero",
+    check("WO-7a raises no ERROR and so cannot make the exit non-zero",
           [], bypass_errors)
-    check("A11Y-10 is still reported, as a report-only NOTE", True,
-          any("[A11Y-10]" in n for n in translate_incomplete(
+    check("WO-7a is still reported, as a report-only NOTE", True,
+          any("[WO-7a]" in n for n in translate_incomplete(
               bypass_payload, rule_map, bypass_payload["cell"], bypass_demoted)))
     check("the NOTE leaves skip-link-first confirmation with the manual pass",
           True, any("manual pass" in n for n in translate_incomplete(
@@ -1167,28 +1186,34 @@ def run_self_test():
     na_notes = inapplicable_notes(na_payload, rule_map, controls, "1280-light")
     check("a control whose every rule was inapplicable records N/A", 1, len(na_notes))
     check("the N/A names the control and the reason", True,
-          "[A11Y-6]" in na_notes[0] and "inapplicable" in na_notes[0])
+          "[WP-1a]" in na_notes[0] and "inapplicable" in na_notes[0])
     check("the N/A says it is not a pass", True, "not reported as passing" in na_notes[0])
     check("a control with a rule that did apply records no N/A", [],
           inapplicable_notes(_axe_payload(inapplicable=["image-alt"]),
                              rule_map, controls, "1280-light"))
 
     # ── the DOM marker's grammar ─────────────────────────────────────────────
-    check("one id and a reason parse", (["SLP-4"], "quarantined anti-specimen"),
-          parse_dom_waiver("SLP-4 reason=quarantined anti-specimen"))
+    def parsed_or_error(value):
+        try:
+            return parse_dom_waiver(value)
+        except MarkerError as exc:
+            return (f"MarkerError: {exc}", None)
+
+    check("one id and a reason parse", (["CMP-13a"], "quarantined anti-specimen"),
+          parsed_or_error("CMP-13a reason=quarantined anti-specimen"))
     check("several ids ride one attribute, since HTML forbids a duplicate",
-          (["SLP-4", "SLP-6"], "quarantined anti-specimen"),
-          parse_dom_waiver("SLP-4 SLP-6 reason=quarantined anti-specimen"))
+          (["CMP-13a", "TYP-7a"], "quarantined anti-specimen"),
+          parsed_or_error("CMP-13a TYP-7a reason=quarantined anti-specimen"))
     check("the reason runs verbatim to the end of the value",
           "the before panel of the standards demo, reason= and all",
-          parse_dom_waiver("SLP-4 reason=the before panel of the standards demo, "
-                           "reason= and all")[1])
-    check("ids are de-duplicated, order preserved", ["SLP-6", "SLP-4"],
-          parse_dom_waiver("SLP-6 SLP-4 SLP-6 reason=x")[0])
-    for bad, why in [("SLP-4", "no reason at all"),
-                     ("SLP-4 reason=", "an empty reason"),
+          parsed_or_error("CMP-13a reason=the before panel of the standards demo, "
+                          "reason= and all")[1])
+    check("ids are de-duplicated, order preserved", ["TYP-7a", "CMP-13a"],
+          parsed_or_error("TYP-7a CMP-13a TYP-7a reason=x")[0])
+    for bad, why in [("CMP-13a", "no reason at all"),
+                     ("CMP-13a reason=", "an empty reason"),
                      ("reason=x", "no control id"),
-                     ("slp-4 reason=x", "a lowercase id")]:
+                     ("cmp-13a reason=x", "a lowercase id")]:
         raised = False
         try:
             parse_dom_waiver(bad)
@@ -1206,16 +1231,16 @@ def run_self_test():
              "nodes": [inside, outside]},
         ],
         waived=[{"selector": ".exhibit",
-                 "value": "SLP-4 SLP-6 reason=quarantined anti-specimen",
+                 "value": "CMP-13a TYP-7a reason=quarantined anti-specimen",
                  "contains": [node_key(inside)]}])
     suppression, marker_errors, marker_notes = read_markers(exhibit, tiers, "1280-light")
     check("a well-formed marker raises no ERROR", [], marker_errors)
     check("it records a NOTE naming the element, the ids and the reason", True,
           len(marker_notes) == 1 and ".exhibit" in marker_notes[0]
-          and "SLP-4, SLP-6" in marker_notes[0]
+          and "CMP-13a, TYP-7a" in marker_notes[0]
           and "quarantined anti-specimen" in marker_notes[0])
     check("it waives its named controls for its own subtree only",
-          {node_key(inside): {"SLP-4", "SLP-6"}}, suppression)
+          {node_key(inside): {"CMP-13a", "TYP-7a"}}, suppression)
     exhibit_errors, _ = translate_violations(exhibit, rule_map, "1280-light", suppression)
     check("a contrast violation inside the marked subtree is still reported",
           True, any(".exhibit p" in e for e in exhibit_errors))
@@ -1227,10 +1252,10 @@ def run_self_test():
         waived=exhibit["waived"])
     supp2, _, _ = read_markers(waived_finding, tiers, "1280-light")
     check("the marker's own controls are the ones it suppresses",
-          {"SLP-4", "SLP-6"}, supp2[node_key(inside)])
+          {"CMP-13a", "TYP-7a"}, supp2.get(node_key(inside)))
     waived_record_payload = _axe_payload(
         violations=[{"id": "target-size", "help": "x", "nodes": [inside]}],
-        waived=[{"selector": ".exhibit", "value": "A11Y-4 reason=fixture",
+        waived=[{"selector": ".exhibit", "value": "WO-18a reason=fixture",
                  "contains": [node_key(inside)]}])
     record_suppression, _, _ = read_markers(waived_record_payload, tiers,
                                              "1280-light")
@@ -1242,35 +1267,73 @@ def run_self_test():
     # ── a nested marker's ids union with the enclosing one's ─────────────────
     nested = _axe_payload(
         violations=[{"id": "color-contrast", "help": "c", "nodes": [inside]}],
-        waived=[{"selector": ".exhibit", "value": "SLP-4 reason=outer",
+        waived=[{"selector": ".exhibit", "value": "CMP-13a reason=outer",
                  "contains": [node_key(inside)]},
-                {"selector": ".exhibit .inner", "value": "SLP-6 reason=inner",
+                {"selector": ".exhibit .inner", "value": "TYP-7a reason=inner",
                  "contains": [node_key(inside)]}])
     nested_supp, _, _ = read_markers(nested, tiers, "1280-light")
     check("a nested marker unions rather than replaces",
-          {"SLP-4", "SLP-6"}, nested_supp[node_key(inside)])
+          {"CMP-13a", "TYP-7a"}, nested_supp.get(node_key(inside)))
+
+    # ── a marker that names a base rule waives that rule's finding ───────────
+    check("WO-18a is waivable, so the case below tests the waiver", True,
+          tiers.get("WO-18a") in ("L1", "L2"))
+    base_marker = _axe_payload(
+        violations=[{"id": "target-size", "help": "x", "nodes": [inside, outside]}],
+        waived=[{"selector": ".exhibit", "value": "WO-18a reason=a fixed-size control",
+                 "contains": [node_key(inside)]}])
+    base_supp, base_errors, base_notes = read_markers(base_marker, tiers, "1280-light")
+    check("a marker naming a base rule raises no ERROR", [], base_errors)
+    check("it records the honoured marker", 1, len(base_notes))
+    base_findings, _ = translate_violations(base_marker, rule_map, "1280-light", base_supp)
+    check("the finding for that rule on that element is waived", [],
+          [e for e in base_findings if ".exhibit p" in e])
+    check("the same rule on another element is still reported", 1,
+          len([e for e in base_findings if ".sibling p" in e]))
+
+    # ── a marker that names a removed code is redirected, never honoured ─────
+    removed_marker = _axe_payload(
+        violations=[{"id": "color-contrast", "help": "c", "nodes": [inside]}],
+        waived=[{"selector": ".exhibit", "value": "A11Y-1 reason=an old marker",
+                 "contains": [node_key(inside)]}])
+    removed_supp, removed_errors, removed_notes = read_markers(
+        removed_marker, tiers, "1280-light")
+    check("redirects.yaml maps A11Y-1 to base rules", True, bool(redirects.get("A11Y-1")))
+    check("a removed code in a marker is one ERROR", 1, len(removed_errors))
+    check("the ERROR names every base rule redirects.yaml maps it to", [],
+          [code for code in redirects.get("A11Y-1", [])
+           if not any(code in e for e in removed_errors)])
+    check("the ERROR is not an unknown-id error", [],
+          [e for e in removed_errors if "unknown control id" in e])
+    check("it waives nothing", {}, removed_supp)
+    check("it records no honoured marker", [], removed_notes)
+    removed_findings, _ = translate_violations(removed_marker, rule_map, "1280-light",
+                                               removed_supp)
+    check("contrast is still reported on that subtree", 1, len(removed_findings))
 
     # ── an L0 id in a marker is refused ──────────────────────────────────────
+    check("WR-1a is L0, so the case below tests the L0 refusal", "L0", tiers.get("WR-1a"))
     l0_marker = _axe_payload(
-        violations=[{"id": "color-contrast", "help": "c", "nodes": [inside]}],
-        waived=[{"selector": ".exhibit", "value": "A11Y-1 reason=looks fine to me",
+        violations=[{"id": "label", "help": "c", "nodes": [inside]}],
+        waived=[{"selector": ".exhibit", "value": "WR-1a reason=looks fine to me",
                  "contains": [node_key(inside)]}])
     l0_supp, l0_errors, l0_notes = read_markers(l0_marker, tiers, "1280-light")
     check("an L0 id in a marker is one ERROR", 1, len(l0_errors))
     check("the ERROR says L0 is never waivable", True,
           "L0 is never waivable" in l0_errors[0])
-    check("the ERROR keeps the parseable finding shape", "A11Y-1",
-          detect._FINDING_RE.match(l0_errors[0]).group("control"))
+    check("the ERROR keeps the parseable finding shape", "WR-1a",
+          (lambda m: m.group("control") if m else None)(
+              detect._FINDING_RE.match(l0_errors[0])))
     check("it suppresses nothing", {}, l0_supp)
     check("it records no honoured marker", [], l0_notes)
     l0_findings, _ = translate_violations(l0_marker, rule_map, "1280-light", l0_supp)
-    check("contrast is still checked on that subtree", 1, len(l0_findings))
+    check("the label rule is still checked on that subtree", 1, len(l0_findings))
 
     # ── a malformed or unknown-id marker fails loudly ────────────────────────
     broken = _axe_payload(waived=[
-        {"selector": ".a", "value": "SLP-4", "contains": []},
+        {"selector": ".a", "value": "CMP-13a", "contains": []},
         {"selector": ".b", "value": "ZZZ-9 reason=x", "contains": []},
-        {"selector": ".c", "value": "SLP-4 reason=", "contains": []},
+        {"selector": ".c", "value": "CMP-13a reason=", "contains": []},
     ])
     broken_supp, broken_errors, _ = read_markers(broken, tiers, "1280-light")
     check("each broken marker produces its own ERROR", 3, len(broken_errors))
@@ -1297,9 +1360,12 @@ def run_self_test():
     check("no page open says out loud that nothing passed", True,
           any("not reported as passing" in ln for ln in lines))
     check("no page open keeps no records", [], records)
-    l0 = checklib.l0_subset(controls, tiers)
-    check("the L0 controls it covers still block", True,
-          bool(l0) and any("block until" in ln for ln in lines))
+    l0 = [code for code in controls if tiers.get(code) == "L0"]
+    check("the layer covers L0 base rules", True, bool(l0))
+    blocking = [ln for ln in lines if "block until" in ln]
+    check("no page open names every L0 base rule it could not check as blocking",
+          [], [code for code in l0 if not any(
+              re.search(rf"\b{re.escape(code)}\b", ln) for ln in blocking)])
 
     # ── a standalone run that was given a URL but has no open page ───────────
     # The person is asked for the URL by the skill; the runner still attaches
@@ -1449,19 +1515,42 @@ def run_self_test():
           True, "failure(job," in driver_code and "process.exit" not in driver_code)
 
     # ── the rule map's own integrity for this layer ───────────────────────────
-    catalog_ids = set(tiers)
-    check("every axe row maps to a real control", set(),
-          {c for r, c in rule_map["rules"].items() if r.startswith("axe/")} - catalog_ids)
-    check("this layer's controls are all in the catalogue", set(),
-          set(controls) - catalog_ids)
-    check("A11Y-2 is not claimed: no axe rule checks a visible focus indicator",
-          False, "A11Y-2" in controls)
-    check("A11Y-11 is not claimed: it needs interaction", False, "A11Y-11" in controls)
+    check("every row maps to a base rule with a tier", set(),
+          set(rule_map["rules"].values()) - set(tiers))
+    check("this layer's codes all have a tier in standards/rules/", set(),
+          set(controls) - set(tiers))
+    check("the layer names no removed catalogue code", [],
+          removed_code_re.findall(" ".join(controls)))
+    # Each axe row maps to the base rule whose `engine:` field names that axe
+    # rule, read from the rule files rather than from the map under test.
+    engines = {}
+    for code, rule in base.items():
+        if rule.get("check") != "lint":
+            continue
+        with open(rule["detail"], encoding="utf-8") as fh:
+            engine = str(checklib._frontmatter_fields(fh.read()).get("engine", ""))
+        if engine.startswith("axe"):
+            for name in re.findall(r"[a-z][a-z0-9-]+", engine[len("axe"):]):
+                engines.setdefault(name, set()).add(code)
+    axe_rows = {r[len("axe/"):]: c for r, c in rule_map["rules"].items()
+                if r.startswith("axe/")}
+    check("the map has axe rows to check", True, bool(axe_rows))
+    check("each axe row maps to the base rule whose engine names that axe rule", {},
+          {r: c for r, c in axe_rows.items() if c not in engines.get(r, set())})
+    check("WO-1c is not claimed: no axe rule checks a visible focus indicator",
+          False, "WO-1c" in controls)
+    check("A11Y-11c is not claimed: it needs interaction", False, "A11Y-11c" in controls)
     check("every control this layer claims has at least one rule or evaluation",
           set(),
           set(controls) - ({c for r, c in rule_map["rules"].items()
                             if r.startswith(("axe/", "dx/"))}
                            | {rule_map.get("aria_prefix_control")}))
+
+    check("every code in COVERAGE has a tier in standards/rules/", [],
+          codes_without_tier(COVERAGE, tiers))
+    check("the coverage guard names a code that has no tier", ["XX-1a"],
+          codes_without_tier({"controls": {"WP-13a": {}, "XX-1a": {}}}, tiers))
+    check("the coverage guard has codes to read", True, bool(COVERAGE["controls"]))
 
     checklib.report_self_test(failures, case_count)
 
