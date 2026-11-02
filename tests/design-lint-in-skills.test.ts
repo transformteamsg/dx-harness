@@ -105,6 +105,24 @@ describe("a design run decides the replaced controls with design-lint", () => {
   );
 });
 
+/* A check retires when a base rule replaces every control it decides, and a
+   check that stays decides no replaced control. rendered-check.py is the one
+   exception, above. See issue #539. */
+describe("a check that design-lint replaces", () => {
+  it("no check that stays decides a control that a base rule replaces", () => {
+    const checks = fs
+      .readdirSync(path.join(PLUGIN, "checks"))
+      .filter((file) => file.endsWith(".py") && !KEPT_FOR_THE_LIVE_PAGE.has(file));
+    expect(checks.length).toBeGreaterThan(0);
+    const offenders = checks.flatMap((file) =>
+      declaredControls(path.join(PLUGIN, "checks", file))
+        .filter((id) => replaced.has(id))
+        .map((id) => `${file} decides ${id}`),
+    );
+    expect(offenders).toEqual([]);
+  });
+});
+
 describe("design-lint inside the plugin", () => {
   it("ships in the plugin folder", () => {
     expect(fs.existsSync(CLI), `${CLI} does not exist`).toBe(true);
