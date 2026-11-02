@@ -19,7 +19,14 @@ Colour, spacing, and radius values come from the tokens of the design system, no
 
 Runs the ported token rules from `plugins/dx-harness/checks/token-audit.py` (TOK-1, TOK-2, TOK-3, COL-2). A finding from any of them is a finding of `BD-6b`. The scales and the allowed values are the parameters of those rules, and this rule adds none.
 
-Status of the port: only the raw colour part of TOK-1 is ported. It scans `.css` files, `<style>` blocks, and `style` attributes, and skips custom property definitions and `var()` values. TOK-2, TOK-3, and COL-2 are not ported yet.
+Status of the port: TOK-1, TOK-2, TOK-3, and COL-2 are ported. The check scans `.css` files, `<style>` blocks, `style` attributes, and `class` attributes:
+
+- A raw colour value is a finding.
+- A `px` or `rem` spacing value that is not on the spacing scale is a finding. The scale is 0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 80, 96, 112, and 128 pixels, at 16 pixels to the `rem`.
+- A `px` or `rem` radius value that is not on the radius scale is a finding. The scale is 0, 2, 4, 6, 8, 12, 16, 24, and 9999 pixels.
+- A Tailwind palette class, such as `bg-red-500`, is a finding, unless the theme defines its colour as a `--color-<name>` token.
+
+The check skips custom property definitions, the region between `/* dx-tokens */` and `/* /dx-tokens */`, `var()` values, and lengths inside `calc()`. The allow list and the waiver comments of `token-audit.py` are not ported.
 
 ## Recommendations
 

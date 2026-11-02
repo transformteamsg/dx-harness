@@ -11,6 +11,18 @@
   "expect": [
     {
       "file": "/wo/controls.html"
+    },
+    {
+      "file": "wo/controls.html",
+      "line": 39,
+      "column": 5,
+      "code": "BD-6b"
+    },
+    {
+      "file": "wo/controls.html",
+      "line": 40,
+      "column": 5,
+      "code": "BD-6b"
     }
   ]
 }

@@ -24,7 +24,7 @@ A parameter that the table lists as an exemption comes from the DSS "Not require
 | BD-5 Search engine optimisation | [`BD-5a`](title-description-canonical.md) Title, meta description, and canonical link are present and within length | lint | source | custom, or a Lighthouse SEO audit | `titleLength`, `descriptionLength`, `audience` | |
 | | `BD-5b` The title and abstract are informative and relevant. Lint part: [`WO-8d`](../wo/page-titles-unique.md). | judged | | | | L1 |
 | BD-6 Consistent UI design | [`BD-6a`](design-system-imported.md) The declared design system is imported | lint | project | custom | `designSystem` | |
-| | [`BD-6b`](token-values.md) Values come from tokens, not raw values | lint | source | ported TOK rules | Set by the TOK rules. Only the raw colour part of TOK-1 is ported | |
+| | [`BD-6b`](token-values.md) Values come from tokens, not raw values | lint | source | ported TOK rules | Set by the TOK rules | |
 | | `BD-6c` Consistency that tokens cannot show | judged | | | | L2 |
 | BD-7 Mandatory and optional fields | [`BD-7a`](required-field-markers.md) Every `required` control has a visible marker and a programmatic marker | lint | source | custom, with axe `label` as support | `mandatoryMarker`, `optionalLabel`, `loginException` | |
 | | [`BD-7b`](one-marker-style.md) One marker style across the project | lint | project | custom | `mandatoryMarker` | |

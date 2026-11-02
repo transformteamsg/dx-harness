@@ -6,6 +6,7 @@ import { lint } from "../src/lint.ts";
 import { bd2a } from "../src/modules/bd-2a.ts";
 import { bd4a } from "../src/modules/bd-4a.ts";
 import { bd5a } from "../src/modules/bd-5a.ts";
+import { bd6b } from "../src/modules/bd-6b.ts";
 import { launchBrowser } from "../src/rendered.ts";
 import { loadRules } from "../src/rules/load.ts";
 import { run } from "../src/run.ts";
@@ -111,5 +112,54 @@ describe("a Chinese meta description that is too short", () => {
     expect(candidates.map((c) => bd5a.decide(c, {}))).toEqual([
       "The meta description is 16 characters wide, where a Chinese, Japanese, or Korean character counts as two. Keep it between 50 and 160.",
     ]);
+  });
+});
+
+/* Issue 514: a finding for an off-scale value names the token to use and the
+   nearest value on the scale. */
+describe("BD-6b on an off-scale value", () => {
+  const messages = () => {
+    const files = [path.join(FIXTURES, "BD-6b/fail/styles.css")];
+    const candidates = bd6b.locate({ files, root: path.join(FIXTURES, "BD-6b/fail"), params: {} }) as Parameters<typeof bd6b.decide>[0][];
+    return candidates.map((c) => ({ line: c.line, message: bd6b.decide(c, {}) }));
+  };
+
+  it("names a spacing token and the nearest spacing value", () => {
+    const spacing = messages().find((m) => m.line === 5);
+    expect(spacing?.message).toMatch(/var\(--space-/);
+    expect(spacing?.message).toMatch(/\b12px\b/);
+  });
+
+  it("names a radius token and the nearest radius value", () => {
+    const radius = messages().find((m) => m.line === 7);
+    expect(radius?.message).toMatch(/var\(--radius-/);
+    expect(radius?.message).toMatch(/\b8px\b/);
+  });
+
+  it("names a palette class and a semantic class to use", () => {
+    const files = [path.join(FIXTURES, "BD-6b/fail/index.html")];
+    const candidates = bd6b.locate({ files, root: path.join(FIXTURES, "BD-6b/fail"), params: {} }) as Parameters<typeof bd6b.decide>[0][];
+    const palette = candidates.find((c) => c.line === 9);
+    expect(palette && bd6b.decide(palette, {})).toMatch(/bg-red-500[\s\S]*bg-primary/);
+  });
+});
+
+describe("BD-6b on a site with a theme", () => {
+  const site = (css: string, body: string) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "design-lint-bd6b-"));
+    fs.writeFileSync(path.join(dir, "theme.css"), css);
+    fs.writeFileSync(path.join(dir, "index.html"), `<html lang="en"><body>${body}</body></html>`);
+    const files = [path.join(dir, "index.html"), path.join(dir, "theme.css")];
+    return bd6b.locate({ files, root: dir, params: {} }) as Parameters<typeof bd6b.decide>[0][];
+  };
+
+  it("does not report a palette class whose colour the theme defines", () => {
+    const found = site("@theme { --color-amber-11: oklch(0.5 0.1 80); --color-teal: oklch(0.6 0.1 180); }", '<p class="bg-amber-11 text-teal-600 border-rose-200">Hi</p>');
+    expect(found.map((c) => bd6b.decide(c, {}))).toEqual([expect.stringMatching(/border-rose-200/)]);
+  });
+
+  it("does not report a length inside calc()", () => {
+    const found = site(".a { margin: calc(100% - 13px) 15px; }", "<p>Hi</p>");
+    expect(found.map((c) => bd6b.decide(c, {}))).toEqual([expect.stringMatching(/Spacing 15px/)]);
   });
 });
