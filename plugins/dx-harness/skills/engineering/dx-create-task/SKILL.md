@@ -51,11 +51,13 @@ Only for a design task, or an engineering task that changes user-facing UI: deci
 
 ### Step 4: Preview and confirm
 
-Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block, including the `Part of #NNN` line linking it to the parent, and ask for confirmation before creating the issue.
+The title starts with an imperative verb and names the outcome of the slice, with no commit prefix, for example `Add a retry to the nightly export job`. Count its characters, spaces included:
+
+- **Over 70 characters, and you drafted it**: shorten it to 70 or fewer before the preview, and keep the outcome it names.
+
+Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the title and the complete issue body in a markdown code block, including the `Part of #NNN` line linking it to the parent, and ask for confirmation before creating the issue.
 
 ### Step 5: Create the issue and link it to the parent
-
-The title starts with an imperative verb and names the outcome of the slice, with no commit prefix, for example `Add a retry to the nightly export job`.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 

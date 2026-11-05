@@ -162,7 +162,11 @@ Decide whether this story can go to an engineer, or needs a designer before impl
 Where the routing table cannot be read, say so and treat the story as "can defer" rather than guessing at the table's contents.
 
 ## 7. Preview and confirm
-Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete body in a markdown code block.
+The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Show overdue assignments on the dashboard`. Count its characters, spaces included:
+
+- Over 70 characters, and you drafted it -> shorten it to 70 or fewer before the preview, and keep the outcome it names
+
+Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the title and the complete body in a markdown code block.
 
 - Open questions is non-empty -> the callout below, then ask for confirmation
 - Open questions is `None` -> ask for confirmation
@@ -172,8 +176,6 @@ This story has **<number>** open question(s) still unresolved: <list>. You can c
 ```
 
 ## 8. Create the issue
-The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Show overdue assignments on the dashboard`.
-
 Write the confirmed body to a temp file and create the issue with `--body-file`, never an inline `--body`.
 
 Ensure the shape label and the usage-tracking label exist, plus the routing label where Step 6 flagged design routing.
