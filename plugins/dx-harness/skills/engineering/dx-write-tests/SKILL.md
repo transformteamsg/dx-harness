@@ -27,7 +27,7 @@ whoever wrote the issue.
 
 You are about to commit. Run `git status` and `git branch --show-current`.
 
-- **On the repository's default branch**: create a branch before writing anything. Take the type from the issue title prefix and a kebab-case summary after it, following the repository's own naming convention.
+- **On the repository's default branch**: create a branch before writing anything. Take the type from the shape: `feat` for a story, `fix` for a bug, and the type that fits the change for a chore or a task. Follow it with a kebab-case summary of the title, in the repository's own naming convention.
 - **On a branch that already carries a coverage declaration**: a test half has run here before. Read it with the command in [../../../procedures/commit-discipline.md](../../../procedures/commit-discipline.md), say which items it already covers, and ask whether you are adding to it or replacing it. Do not silently write a second set of tests for the same item.
 
 ## Step 3: Judge each contract item
