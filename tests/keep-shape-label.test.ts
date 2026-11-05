@@ -72,3 +72,11 @@ describe("a task filed by dx-create-task", () => {
   });
 });
 
+describe("a chore filed by dx-create-chore", () => {
+  it("keeps chore and loses Feature when a bot adds Feature next to it", async () => {
+    const writes = await run({ action: "labeled", label: "Feature", labelsAfter: ["chore", "skill:dx-create-chore", "Feature"], sender: appBot });
+    expect(writes.removed).toEqual(["Feature"]);
+    expect(writes.added).toEqual([]);
+  });
+});
+
