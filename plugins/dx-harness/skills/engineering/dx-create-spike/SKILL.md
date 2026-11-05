@@ -38,9 +38,13 @@ Draft each item below from what the request gives, and ask in one message for th
 
 ### Step 3: Preview and confirm
 
-Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Render the title and the complete body in a markdown code block, and ask for confirmation before you create the issue.
+The title takes the form `<verb> <thing> <context>`, with no commit prefix, for example `Compare PDF libraries for the marks export` or `Measure queue throughput for daily submissions`. Count its characters, spaces included, with `printf '%s' "<title>" | wc -m`, not by eye. Count again after each change to the title:
 
-The title takes the form `<verb> <thing> <context>`, with no commit prefix, for example `Compare PDF libraries for the marks export` or `Measure queue throughput for daily submissions`.
+- **70 characters or fewer**: keep the title unchanged.
+- **Over 70 characters, and you drafted it**: shorten it to 70 or fewer before the preview, and keep the question it names.
+- **Over 70 characters, and the person supplied it**: propose a shorter title, say that theirs is over the 70-character limit, and file the title the person confirms.
+
+Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Render the title and the complete body in a markdown code block, and ask for confirmation before you create the issue.
 
 ### Step 4: Create the issue
 
