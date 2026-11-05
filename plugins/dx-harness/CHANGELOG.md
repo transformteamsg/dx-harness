@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- **New skill `dx-create-spike`**: it files a time-boxed investigation as an issue with the `spike` label and a `<verb> <thing> <context>` title, asks for the question when the request names only a topic, and `dx-create-issue` hands an investigation to it ([#606](https://github.com/transformteamsg/dx-harness/issues/606)).
+
 ## 0.8.0 (2026-11-03)
 
 ### Added

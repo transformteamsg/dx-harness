@@ -21,6 +21,7 @@ code ships, and `dx-create-pr` answers to it in the sections it writes.
 | `/dx-harness:dx-create-story` | Creates a user-facing story issue ("As a [persona], I want..."). |
 | `/dx-harness:dx-create-task` | Creates a single-discipline slice of a story or chore, engineering or design, linked as a sub-issue. |
 | `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
+| `/dx-harness:dx-create-spike` | Creates a spike issue: a time-boxed investigation that answers one question before the team commits to work. |
 | `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
 | `/dx-harness:dx-create-adr` | Records an architecture decision as a numbered MADR file, seeding the ADR directory on first use. |
 | `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |

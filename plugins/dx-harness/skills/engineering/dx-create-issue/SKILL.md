@@ -13,6 +13,7 @@ Use this skill when you hear:
 Read the request before asking. Check these in order and take the first that fits. Where one settles the issue type, say which type and why in one line, then go to Step 5.
 - Describes more than one piece of work -> Step 4b
 - Names the type ("create a bug for the mark total") -> that type
+- Asks for an investigation that answers a question before the team commits to work ("find out whether the queue can hold a day of submissions", "compare PDF libraries for the export") -> 🔬 Spike. A request to find the cause of something behaving wrongly is a 🐞 Bug, not a spike
 - Names a parent issue ("part of #142", "under the login flow story") -> 🔨 Task
 - Describes something that already exists but is behaving wrongly, including too slowly -> 🐞 Bug
 - Names who benefits and what they get from something that does not exist yet ("so teachers can download their marks", "As a parent, I can see my child's results") -> 📖 Story
@@ -142,8 +143,9 @@ Load the selected skill. Run one skill per confirmed issue.
 | Task | dx-create-task |
 | Bug | dx-create-bug |
 | Chore | dx-create-chore |
+| Spike | dx-create-spike |
 
 ## Rules
 - Do not file issues or run `gh`
-- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore
+- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore, 🔬 Spike
 - Carry the scope, parent number, links and exclusions across on handoff, so the user does not repeat themselves
