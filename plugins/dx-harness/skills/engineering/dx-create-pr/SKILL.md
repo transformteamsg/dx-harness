@@ -51,20 +51,20 @@ Never write a template file into the repository, on either path. Do not offer to
 
 ### Step 3: Find the issue the branch tracks
 
-The issue supplies the title and the acceptance criteria the test plan answers to, so establish it before writing anything. Look in this order, and stop at the first that gives an answer:
+The issue supplies the acceptance criteria the test plan answers to, so establish it before writing anything. Look in this order, and stop at the first that gives an answer:
 
 1. The number the developer gave you, if they gave one.
 2. A number in the branch name, which on GitLab is the leading number in a `123-slug` branch.
 3. A `Closes #NNN` or `Part of #NNN` line in the commits on the branch.
 4. Ask the developer, naming what you already looked at.
 
-Once you have a number, read the issue so the title is exact and the criteria are the real ones:
+Once you have a number, read the issue so the criteria are the real ones:
 
 ```sh
 gh issue view <number> --json number,title,body,state
 ```
 
-- **If the issue exists**: use its title verbatim as the request title, and take the acceptance criteria for the test plan from its body.
+- **If the issue exists**: take the acceptance criteria for the test plan from its body.
 - **If no issue tracks this branch**: say so and continue. Open the request without a `Closes` line, and describe it from the commits instead. An untracked branch still gets a usable description, so this is not a reason to stop or to leave sections empty.
 - **If the command fails**: follow the failure handling in the shared mechanics. Without `gh` you cannot read the issue, so ask the developer to paste its title and acceptance criteria, and say that you could not verify them.
 
@@ -110,10 +110,10 @@ Follow the shared mechanics for the label, the body file, and the failure cases.
 ```sh
 gh label create "skill:dx-create-pr" --color ededed --description "Opened with the dx-create-pr skill" 2>/dev/null || true
 
-gh pr create --draft --title "<issue title verbatim>" --body-file <path> --label "skill:dx-create-pr"
+gh pr create --draft --title "<title from the branch commits>" --body-file <path> --label "skill:dx-create-pr"
 ```
 
-The title must match the issue title exactly, because it becomes the squash-merge commit message on the default branch.
+Build the title from the commits on the branch, in the repository's commit convention. Where the repository has none, use `<type>(<scope>): <description>`. Where the branch has one commit, use its subject line. Where it has more, write one subject that covers them: the type of the main change, and the scope they share. Do not copy the issue title.
 
 **Updating a request that is already open.** Rewrite the sections the new commits changed, which is normally Summary, Changes, and Test plan. Leave a section that is still accurate exactly as it is: an unnecessary rewrite costs a reviewer a re-read and buries the part that did change. Preserve any named section a calling skill added, and preserve edits a human made to the body, unless the developer asks you to replace them.
 
@@ -121,7 +121,7 @@ The title must match the issue title exactly, because it becomes the squash-merg
 gh pr edit <number> --body-file <path>
 ```
 
-Report which request you updated, by number and URL, and say what changed in the body. Do not change the title of an open request unless the issue title itself changed, and say so when you do.
+Report which request you updated, by number and URL, and say what changed in the body. Rebuild the title only when the new commits change what the branch does, and say so when you do.
 
 ### Step 6: Mark it ready for review only when asked
 
@@ -147,7 +147,7 @@ That is the whole extension point. A calling skill that finds the shared section
 
 - Check for an open request on the branch before opening one. Update the existing request instead, and say which one you updated.
 - Every request opens as a draft. Only Step 6 takes one out of draft, and only when the developer asks.
-- The title of a tracked request matches the issue title verbatim, because it becomes the squash-merge commit message.
+- The title follows the repository's commit convention and covers the commits on the branch. It never copies the issue title.
 - Never leave a comment placeholder from the template in a submitted body.
 - Keep the body to roughly one screen. It orients a reviewer, so do not restate the issue or the diff, and do not report checks you already ran.
 - Report in the platform's own vocabulary. A GitLab repository has merge requests, not pull requests.
