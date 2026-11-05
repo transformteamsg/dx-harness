@@ -165,6 +165,7 @@ Where the routing table cannot be read, say so and treat the story as "can defer
 The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Show overdue assignments on the dashboard`. Count its characters, spaces included:
 
 - Over 70 characters, and you drafted it -> shorten it to 70 or fewer before the preview, and keep the outcome it names
+- Over 70 characters, and the person supplied it -> propose a shorter title, say that theirs is over the 70-character limit, and file the title the person confirms
 
 Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the title and the complete body in a markdown code block.
 

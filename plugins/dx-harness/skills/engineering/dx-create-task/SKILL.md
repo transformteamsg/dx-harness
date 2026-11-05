@@ -54,6 +54,7 @@ Only for a design task, or an engineering task that changes user-facing UI: deci
 The title starts with an imperative verb and names the outcome of the slice, with no commit prefix, for example `Add a retry to the nightly export job`. Count its characters, spaces included:
 
 - **Over 70 characters, and you drafted it**: shorten it to 70 or fewer before the preview, and keep the outcome it names.
+- **Over 70 characters, and the user supplied it**: propose a shorter title, say that theirs is over the 70-character limit, and file the title the user confirms.
 
 Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the title and the complete issue body in a markdown code block, including the `Part of #NNN` line linking it to the parent, and ask for confirmation before creating the issue.
 
