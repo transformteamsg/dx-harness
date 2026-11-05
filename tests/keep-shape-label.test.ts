@@ -80,3 +80,9 @@ describe("a chore filed by dx-create-chore", () => {
   });
 });
 
+describe("an issue filed with no shape label", () => {
+  it("loses Feature when a bot adds it", async () => {
+    const writes = await run({ action: "labeled", label: "Feature", labelsAfter: ["Feature"], sender: appBot });
+    expect(writes.removed).toEqual(["Feature"]);
+  });
+});
