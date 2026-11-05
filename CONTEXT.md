@@ -66,7 +66,11 @@ _Avoid_: Precedence override, truth source
 
 **Issue shape**:
 Which of the four kinds a piece of work is: a story (someone outside the team observes a new capability), a task (one discipline's slice of something already tracked, with no persona of its own), a chore (nothing a user observes changes), or a bug (something already built behaves wrongly). The shape decides which skill does the intake, because each shape needs different questions. `dx-create-issue` owns this one decision and nothing else.
-_Avoid_: Issue type, ticket type, epic, subtask
+_Avoid_: Issue type, ticket type, subtask
+
+**Epic**:
+An issue that tracks one outcome too large for one story, which several stories and chores deliver and which links to them as native GitHub sub-issues. An epic is not an issue shape: it carries no acceptance criteria of its own, and its progress comes from its sub-issues. `dx-create-issue` routes multi-story work to `dx-create-epic`, which files the epic and links the issues that already exist.
+_Avoid_: Initiative, theme, umbrella story
 
 **Slice**:
 One discipline's deliverable piece of a tracked story or chore, filed as a task and linked to its parent as a native GitHub sub-issue so the parent's progress reflects it. A slice never stands alone: work with no parent is a story or a chore. `dx-split-issue` proposes how to cut an existing issue into slices; `dx-create-task` files each one.

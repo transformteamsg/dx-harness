@@ -17,12 +17,13 @@ code ships, and `dx-create-pr` answers to it in the sections it writes.
 | Skill | What it does |
 |---|---|
 | `/dx-harness:dx-code-review` | Reviews code changes — inline PR comments or local branch review. |
-| `/dx-harness:dx-create-issue` | Front door for issue creation: works out the shape, then hands off to one of the four below. |
+| `/dx-harness:dx-create-issue` | Front door for issue creation: works out the shape, then hands off to one of the six below. |
 | `/dx-harness:dx-create-story` | Creates a user-facing story issue ("As a [persona], I want..."). |
 | `/dx-harness:dx-create-task` | Creates a single-discipline slice of a story or chore, engineering or design, linked as a sub-issue. |
 | `/dx-harness:dx-create-chore` | Creates a chore issue: maintenance, config, tooling, infrastructure, no user-observable change. |
 | `/dx-harness:dx-create-spike` | Creates a spike issue: a time-boxed investigation that answers one question before the team commits to work. |
 | `/dx-harness:dx-create-bug` | Creates a bug report with reproduction steps and an expected-versus-actual delta. |
+| `/dx-harness:dx-create-epic` | Creates an epic for one outcome that several stories and chores deliver, and links the named issues as sub-issues. |
 | `/dx-harness:dx-create-adr` | Records an architecture decision as a numbered MADR file, seeding the ADR directory on first use. |
 | `/dx-harness:dx-split-issue` | Cuts an issue that turned out too big into task sub-issues, leaving the parent open to track them. |
 | `/dx-harness:dx-implement-issue` | Front door for building an issue: reads it, plans, then runs the two halves below in order. |

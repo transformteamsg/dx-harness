@@ -11,6 +11,7 @@ Use this skill when you hear:
 
 ## 1. Ask user to select issue type
 Read the request before asking. Check these in order and take the first that fits. Where one settles the issue type, say which type and why in one line, then go to Step 5.
+- Describes one outcome too large for one story, which several stories or chores deliver together ("everything for parent sign-in", "the whole marks export, CSV and PDF") -> ⚡ Epic
 - Describes more than one piece of work -> Step 4b
 - Names the type ("create a bug for the mark total") -> that type
 - Asks for an investigation that answers a question before the team commits to work ("find out whether the queue can hold a day of submissions", "compare PDF libraries for the export") -> 🔬 Spike. A request to find the cause of something behaving wrongly is a 🐞 Bug, not a spike
@@ -47,7 +48,7 @@ Examples:
 ```
 "X doesn't work" often means X was never built, which is a story or a task.
 
-Q2: If yes, go to Step 4a with 'Story' selected.
+Q2: If yes, go to Step 4a with 'Story' selected. Where several stories or chores deliver that value together, go to Step 4a with 'Epic' selected instead.
 ```
 Does it deliver value to the user directly?
 Examples:
@@ -144,8 +145,9 @@ Load the selected skill. Run one skill per confirmed issue.
 | Bug | dx-create-bug |
 | Chore | dx-create-chore |
 | Spike | dx-create-spike |
+| Epic | dx-create-epic |
 
 ## Rules
 - Do not file issues or run `gh`
-- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore, 🔬 Spike
+- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore, 🔬 Spike, ⚡ Epic
 - Carry the scope, parent number, links and exclusions across on handoff, so the user does not repeat themselves
