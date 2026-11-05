@@ -23,7 +23,7 @@ The canonical structure is in [references/issue-template.md](references/issue-te
 
 Ask for the following. Do not invent answers: ask if the author has not provided them. Reproduction details in particular are worth pressing on, since a vague report costs the fixer more time than it saved the reporter.
 
-1. **Scope**: what area of the codebase does this touch (for example `auth`, `session`, or `catalogue`)? This becomes the backticked scope in the title.
+1. **Scope**: what area of the codebase does this touch (for example `auth`, `session`, or `catalogue`)?
 2. **Summary**: one sentence naming what is broken and where.
 3. **Steps to reproduce**: a numbered path from a state anyone can reach to the moment it fails. If the author gives you a rough description, turn it into concrete numbered steps and read them back to confirm. Watch for missing preconditions: a specific account, role, feature flag, or seeded data that the author has and a fixer will not.
 4. **Expected behaviour**: what should have happened at the final step.
@@ -73,7 +73,7 @@ Ask for confirmation either way. An intermittent bug with thin detail is still w
 
 ### Step 3: Create the issue
 
-The title must follow the commit convention from CLAUDE.md: `fix(<scope>): <short description>` using backticks around the scope. Describe the defect, not the fix: the person reading the backlog knows what is broken, not yet how it will be repaired.
+The title names the broken thing and the symptom, not the fix, with no commit prefix, for example `Login fails with blank screen after OTP entry`.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
@@ -126,4 +126,3 @@ Most repositories already have a `bug` label, because GitHub creates one by defa
 - Describe the defect, never the presumed fix. A report that says "the session cache needs clearing" hides what was actually observed, and it may be wrong about the cause.
 - Confirm the behaviour existed before filing a regression against it. Verify in the code and history, not from the report's framing.
 - Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
-- The PR that fixes this issue will squash-merge using its title as the commit message, so the title must be a valid commit message.

@@ -33,7 +33,7 @@ The canonical structure is in [references/issue-template.md](references/issue-te
 
 Ask for the following. Do not invent answers: ask if the author has not provided them.
 
-1. **Scope**: what area does this touch (for example `deps`, `ci`, `session`, `eslint`, or for infrastructure work `infra`, `deploy`, `terraform`, `env`)? This becomes the backticked scope in the title.
+1. **Scope**: what area does this touch (for example `deps`, `ci`, `session`, `eslint`, or for infrastructure work `infra`, `deploy`, `terraform`, `env`)?
 2. **What is changing**: the concrete change. Be specific: which package and version, which file or symbol renamed to what, which config key, which resource in which environment. "Bump `next` from 15.1 to 15.3", not "update dependencies". "Give the API a staging environment on ECS behind an ALB", not "set up staging".
 3. **Why**: the reason to do this now. A security advisory, a deprecation, unblocking another change, removing a maintenance burden, correcting drift, giving the team somewhere to test before production. If the honest answer is "no particular reason yet", that is worth surfacing: it may belong in the icebox rather than as an actionable issue.
 4. **Done when**: at least one observable, independently checkable condition. Each item should be something a reviewer can confirm true or false by looking, not a restatement of the task. Prefer verifiable end states ("`pnpm build` passes with no deprecation warnings for `X`", "no references to `oldName` remain: `grep -r oldName` is empty") over effort descriptions ("updated the code").
@@ -80,7 +80,7 @@ Before rendering the body, apply the "Before you post it" checks in [House style
 
 ### Step 3: Create the issue
 
-The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <short description>` with backticks around the scope. Chores usually take the `chore` type (for example ``chore(`deps`): bump next from 15.1 to 15.3``), but use the type that matches the change: a build or tooling change may be `build` or `ci`, a pure refactor `refactor`, infrastructure work `chore` or `infra` if the repo's convention has it. The scope is the area from Step 1.
+The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Bump next from 15.1 to 15.3`.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline: an inline `--body "..."` would let the shell interpret backticks as command substitution. Write the confirmed body to a temp file and create the issue with `--body-file`.
 
@@ -136,4 +136,3 @@ If label creation is refused outright because the token cannot write labels, cre
 - Decide chore or task on whether something bigger already tracks the work, never on the technology it touches. Infrastructure and deployment work can be either.
 - An umbrella chore hands its pieces to `dx-create-task` as sub-issues instead of swelling into one long done-when list that no single PR can close.
 - Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
-- The PR that implements this issue will squash-merge using its title as the commit message, so the title must be a valid commit message.

@@ -56,15 +56,17 @@ Report:
 
 ## Step 3: Create the branch
 
-Derive the branch name from the issue title, following the repository's own naming
-convention:
+Derive the branch name from the issue shape and title, following the repository's
+own naming convention:
 
 ```
 <type>/<short-description>
 ```
 
-`<type>` matches the issue title prefix, such as `feat`, `fix`, `docs`, `refactor`,
-`chore`, or `test`, and `<short-description>` is a kebab-case summary. Then:
+`<type>` comes from the shape Step 1 read: `feat` for a story, `fix` for a bug, and
+the type that fits the change for a chore or a task, such as `chore`, `docs`,
+`refactor`, or `test`. `<short-description>` is a kebab-case summary of the title.
+Then:
 
 ```
 git checkout -b <branch-name>
@@ -112,7 +114,7 @@ body template, the draft state, the difference between a pull request and a GitL
 merge request, and the check for a request already open on the branch. Run
 [../dx-create-pr/SKILL.md](../dx-create-pr/SKILL.md) and pass it:
 
-- The issue number, so the title matches the issue title verbatim and the body carries a `Closes` line. If Step 1 worked from a pasted markdown body, say there is no issue number
+- The issue number, so the body carries a `Closes` line. If Step 1 worked from a pasted markdown body, say there is no issue number
 - The contract items the two halves covered, and the test that covers each, so its test plan names them
 - The manual items from the coverage declaration, in the words the test half wrote, for its Manual verification section
 - The surface assessment, as a named section headed `Surfaces`, so a reviewer reads which surfaces the branch touches and which one it left alone on purpose
