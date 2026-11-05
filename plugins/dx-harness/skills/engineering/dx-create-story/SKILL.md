@@ -39,7 +39,7 @@ Where the gate stops the run, do not gather the remaining fields and do not read
 ## 2. Gather the story
 Ask for each field below. Do not invent an answer: ask where the author has not given one.
 
-1. **Scope**: which part of the product this touches (`dashboard`, `login`, `profile`). This becomes the backticked scope in the title.
+1. **Scope**: which part of the product this touches (`dashboard`, `login`, `profile`).
 2. **Background**: the problem this solves, how often it affects users, and links to specs, threads, or recordings.
 3. **Open questions**: anything about these requirements still unclear or undecided, such as an ambiguous edge case, an unsettled policy, or a dependency on someone else's decision. Record these rather than guessing. Where nothing is unresolved, record `None`.
 4. **Acceptance criteria**: three kinds of scenario, named outcome-first ("Assignment is created", not "Create assignment").
@@ -172,7 +172,7 @@ This story has **<number>** open question(s) still unresolved: <list>. You can c
 ```
 
 ## 8. Create the issue
-The title follows the commit convention: `feat(<scope>): <short description>`, with backticks around the scope.
+The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Show overdue assignments on the dashboard`.
 
 Write the confirmed body to a temp file and create the issue with `--body-file`, never an inline `--body`.
 
@@ -223,4 +223,3 @@ Then tell the author that delivery work is tracked as `dx-create-task` issues li
 - Link a blocker or a dependent with GitHub's Relationships panel, never as a line in the body, so the link stays accurate as issues move and close
 - Pick one term per concept and hold it across every scenario, so always "customer" and never "user" alongside it
 - Do not use an em dash in the title or the body. Use a colon, parentheses, or separate sentences
-- The pull request that implements this issue squash-merges using its title as the commit message, so the title must be a valid commit message

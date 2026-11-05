@@ -55,7 +55,7 @@ Before rendering the body, apply the "Before you post it" checks in [House style
 
 ### Step 5: Create the issue and link it to the parent
 
-The title must follow the commit convention from CLAUDE.md: `<type>(<scope>): <short description>` using backticks around the scope. Pick the type (`feat`, `fix`, `chore`, `refactor`, `docs`) that matches what the task actually does; it does not have to match the parent's type. For a design task, pick the type that fits the tracked deliverable (`design` if the repo's convention allows it, otherwise `feat` for new UI or `docs` for design documentation), and keep the title a valid commit message so the implementing PR can reuse it.
+The title starts with an imperative verb and names the outcome of the slice, with no commit prefix, for example `Add a retry to the nightly export job`.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline (an inline `--body "..."` would let the shell interpret backticks as command substitution). Write the confirmed body to a temp file and create the issue with `--body-file`.
 
@@ -110,4 +110,3 @@ If label creation is refused outright because the token cannot write labels, cre
 - Attach design context to the issue, never commit it to the repository. Recordings go up as GIFs under 10 MB.
 - Pick one term per concept and use it consistently across all scenarios or checklist items.
 - Do not use em-dashes (`—`) in the issue title or body. Use colons, parentheses, or separate sentences instead.
-- The PR that implements this issue will squash-merge using its title as the commit message, so titles must be valid commit messages.
