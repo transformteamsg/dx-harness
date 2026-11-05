@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- **New skill `dx-create-epic`**: it files an epic with the `epic` label and an outcome title, links the open stories and chores you name as sub-issues, names each issue it skips and why, and `dx-create-issue` hands large multi-story work to it ([#607](https://github.com/transformteamsg/dx-harness/issues/607)).
+
 ## 0.8.0 (2026-11-03)
 
 ### Added
