@@ -1,5 +1,13 @@
 name: Keep shape label
 
+# Each issue keeps the one shape label that the dx-create-* skills set: story,
+# task, chore, or bug. When a bot removes a shape label, this adds it back.
+# When a bot adds Feature, this removes it, whatever other labels the issue has.
+# A label change by a person is left alone. See issue #609.
+#
+# A label change made with this workflow's own GITHUB_TOKEN starts no workflow
+# run, and the script also ignores github-actions[bot], so the workflow never
+# reacts to its own writes.
 on:
   issues:
     types: [labeled, unlabeled]
@@ -12,6 +20,31 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     steps:
+      # The tests in tests/keep-shape-label.test.ts run this script.
       - uses: actions/github-script@v9
         with:
-          script: ""
+          script: |
+            const shapeLabels = ["story", "task", "chore", "bug"];
+            const { action, label, sender } = context.payload;
+            if (sender.type !== "Bot" || sender.login === "github-actions[bot]") {
+              core.info(`Left alone: ${sender.login} changed ${label.name}.`);
+              return;
+            }
+
+            const issue = { owner: context.repo.owner, repo: context.repo.repo, issue_number: context.payload.issue.number };
+            // GitHub matches label names without regard to case.
+            const labelName = label.name.toLowerCase();
+
+            if (action === "unlabeled" && shapeLabels.includes(labelName)) {
+              await github.rest.issues.addLabels({ ...issue, labels: [label.name] });
+              core.notice(`Added back ${label.name}, which ${sender.login} removed.`);
+            } else if (action === "labeled" && labelName === "feature") {
+              try {
+                await github.rest.issues.removeLabel({ ...issue, name: label.name });
+                core.notice(`Removed ${label.name}, which ${sender.login} added.`);
+              } catch (error) {
+                // 404: the label is already off the issue.
+                if (error.status !== 404) throw error;
+                core.info(`${label.name} is already off the issue.`);
+              }
+            }
