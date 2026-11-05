@@ -27,7 +27,7 @@ const appBot: Sender = { type: "Bot", login: "some-app[bot]" };
 
 /* Runs the script the way actions/github-script does, and returns the label
    writes it made. */
-async function run(event: LabelEvent) {
+async function run(event: LabelEvent, removeError?: { status: number }) {
   const added: string[] = [];
   const removed: string[] = [];
   const github = {
@@ -37,6 +37,7 @@ async function run(event: LabelEvent) {
           added.push(...labels);
         },
         removeLabel: async ({ name }: { name: string }) => {
+          if (removeError) throw Object.assign(new Error(`status ${removeError.status}`), removeError);
           removed.push(name);
         },
       },
@@ -84,5 +85,33 @@ describe("an issue filed with no shape label", () => {
   it("loses Feature when a bot adds it", async () => {
     const writes = await run({ action: "labeled", label: "Feature", labelsAfter: ["Feature"], sender: appBot });
     expect(writes.removed).toEqual(["Feature"]);
+  });
+});
+
+describe("a label change the workflow leaves alone", () => {
+  it.each([
+    ["a person", { type: "User", login: "a-person" }],
+    ["the workflow's own token", { type: "Bot", login: "github-actions[bot]" }],
+  ] as const)("makes no write when %s removes task or adds Feature", async (_who, sender) => {
+    const unlabeled = await run({ action: "unlabeled", label: "task", labelsAfter: [], sender });
+    const labeled = await run({ action: "labeled", label: "Feature", labelsAfter: ["Feature"], sender });
+    expect([...unlabeled.added, ...unlabeled.removed, ...labeled.added, ...labeled.removed]).toEqual([]);
+  });
+  it("makes no write when a bot removes a label that is not a shape label", async () => {
+    const writes = await run({ action: "unlabeled", label: "priority: medium", labelsAfter: ["task"], sender: appBot });
+    expect(writes).toEqual({ added: [], removed: [] });
+  });
+  it("adds back a shape label whatever its case", async () => {
+    const writes = await run({ action: "unlabeled", label: "Task", labelsAfter: [], sender: appBot });
+    expect(writes.added).toEqual(["Task"]);
+  });
+});
+
+describe("a Feature label that is already off the issue", () => {
+  it("does not fail the run when the removal returns 404", async () => {
+    await expect(run({ action: "labeled", label: "Feature", labelsAfter: [], sender: appBot }, { status: 404 })).resolves.toEqual({ added: [], removed: [] });
+  });
+  it("fails the run on any other error", async () => {
+    await expect(run({ action: "labeled", label: "Feature", labelsAfter: ["Feature"], sender: appBot }, { status: 403 })).rejects.toThrow("status 403");
   });
 });
