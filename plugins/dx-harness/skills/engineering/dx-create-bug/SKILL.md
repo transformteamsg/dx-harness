@@ -65,6 +65,7 @@ gh issue list --state open --json number,title,body --limit 100
 
 The title names the broken thing and the symptom, not the fix, with no commit prefix, for example `Login fails with blank screen after OTP entry`. Count its characters, spaces included:
 
+- **70 characters or fewer**: keep the title unchanged.
 - **Over 70 characters, and you drafted it**: shorten it to 70 or fewer before the preview, and keep the broken thing and the symptom it names.
 - **Over 70 characters, and the author supplied it**: propose a shorter title, say that theirs is over the 70-character limit, and file the title the author confirms.
 

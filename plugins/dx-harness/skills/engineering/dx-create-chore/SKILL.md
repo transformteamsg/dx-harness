@@ -78,6 +78,7 @@ gh issue list --state open --json number,title,body --limit 100
 
 The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Bump next from 15.1 to 15.3`. Count its characters, spaces included:
 
+- **70 characters or fewer**: keep the title unchanged.
 - **Over 70 characters, and you drafted it**: shorten it to 70 or fewer before the preview, and keep the outcome it names.
 - **Over 70 characters, and the author supplied it**: propose a shorter title, say that theirs is over the 70-character limit, and file the title the author confirms.
 
