@@ -15,7 +15,7 @@ Infer the repo from `git remote -v` — `gh` does this automatically when run in
 
 ## Shape labels
 
-Each of the four issue shapes has a label, applied by the `dx-create-*` skill that files the issue. Anyone with write access can create these, which is why they are labels rather than GitHub's native issue types: a type has to be added by an organisation owner.
+Each issue shape has a label, applied by the `dx-create-*` skill that files the issue. Anyone with write access can create these, which is why they are labels rather than GitHub's native issue types: a type has to be added by an organisation owner.
 
 | Shape | Label | Colour |
 | --- | --- | --- |
@@ -23,6 +23,7 @@ Each of the four issue shapes has a label, applied by the `dx-create-*` skill th
 | Task | `task` | `#1d76db` |
 | Chore | `chore` | `#fbca04` |
 | Bug | `bug` | `#d73a4a` |
+| Spike | `spike` | `#c5def5` |
 
 Filter by shape with `gh issue list --label "chore"`. Label filters are exact, so that query never pulls in the `skill:dx-create-chore` label sitting next to it.
 

@@ -14,6 +14,7 @@ Read the request before asking. Check these in order and take the first that fit
 - Describes one outcome too large for one story, which several stories or chores deliver together ("everything for parent sign-in", "the whole marks export, CSV and PDF") -> ⚡ Epic
 - Describes more than one piece of work -> Step 4b
 - Names the type ("create a bug for the mark total") -> that type
+- Asks for an investigation that answers a question before the team commits to work ("find out whether the queue can hold a day of submissions", "compare PDF libraries for the export") -> 🔬 Spike. A request to find the cause of something behaving wrongly is a 🐞 Bug, not a spike
 - Names a parent issue ("part of #142", "under the login flow story") -> 🔨 Task
 - Describes something that already exists but is behaving wrongly, including too slowly -> 🐞 Bug
 - Names who benefits and what they get from something that does not exist yet ("so teachers can download their marks", "As a parent, I can see my child's results") -> 📖 Story
@@ -143,9 +144,10 @@ Load the selected skill. Run one skill per confirmed issue.
 | Task | dx-create-task |
 | Bug | dx-create-bug |
 | Chore | dx-create-chore |
+| Spike | dx-create-spike |
 | Epic | dx-create-epic |
 
 ## Rules
 - Do not file issues or run `gh`
-- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore, ⚡ Epic
+- Pair each issue type with its emoji everywhere the user sees it: 📖 Story, 🔨 Task, 🐞 Bug, 🔧 Chore, 🔬 Spike, ⚡ Epic
 - Carry the scope, parent number, links and exclusions across on handoff, so the user does not repeat themselves

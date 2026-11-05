@@ -76,11 +76,15 @@ gh issue list --state open --json number,title,body --limit 100
 
 ### Step 2: Preview and confirm
 
-Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the complete issue body in a markdown code block and ask for confirmation before creating it.
+The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Bump next from 15.1 to 15.3`. Count its characters, spaces included:
+
+- **70 characters or fewer**: keep the title unchanged.
+- **Over 70 characters, and you drafted it**: shorten it to 70 or fewer before the preview, and keep the outcome it names.
+- **Over 70 characters, and the author supplied it**: propose a shorter title, say that theirs is over the 70-character limit, and file the title the author confirms.
+
+Before rendering the body, apply the "Before you post it" checks in [House style](../../../procedures/house-style.md) and cut anything that fails them. Then render the title and the complete issue body in a markdown code block and ask for confirmation before creating it.
 
 ### Step 3: Create the issue
-
-The title starts with an imperative verb and names the outcome, with no commit prefix, for example `Bump next from 15.1 to 15.3`.
 
 The body is markdown containing backticks and other shell-special characters, so pass it via a file rather than inline: an inline `--body "..."` would let the shell interpret backticks as command substitution. Write the confirmed body to a temp file and create the issue with `--body-file`.
 
