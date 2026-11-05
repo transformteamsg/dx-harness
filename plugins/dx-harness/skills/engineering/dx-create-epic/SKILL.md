@@ -44,6 +44,12 @@ Check these in order, and the first that fits decides the issue:
 Where `gh` reports "command not found" or "'gh' is not recognized", go to Step 4. Where it fails any other way, surface the error and stop.
 
 ## 3. Preview and confirm
+Write the title as an imperative verb followed by the outcome, with no commit prefix, for example `Let teachers export marks as CSV and PDF`. Count its characters, spaces included, with `printf '%s' "<title>" | wc -m`, not by eye. Count again after each change to the title:
+
+- 70 characters or fewer -> keep the title unchanged
+- Over 70 characters, and you drafted it -> shorten it to 70 or fewer before the preview, and keep the outcome it names
+- Over 70 characters, and the person supplied it -> propose a shorter title, say that theirs is over the 70-character limit, and file the title the person confirms
+
 Apply the "Before you post it" checks in [House style](../../../procedures/house-style.md). Then show the title, the body, and the sub-issue plan, and ask for confirmation:
 
 ```
@@ -54,8 +60,6 @@ Apply the "Before you post it" checks in [House style](../../../procedures/house
 **Sub-issues to link:** #<number> <title>, ...
 **Skipped:** #<number>: <reason>, ...
 ```
-
-Write the title as an imperative verb followed by the outcome, with no commit prefix, for example `Let teachers export marks as CSV and PDF`.
 
 A change to the title or the body goes back to the top of Step 3. A confirmation goes to Step 4.
 
