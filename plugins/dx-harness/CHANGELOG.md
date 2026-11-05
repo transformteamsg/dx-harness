@@ -2,10 +2,17 @@
 
 ## Unreleased
 
+## 0.9.0 (2026-11-05)
+
 ### Added
 
 - **New skill `dx-create-spike`**: it files a time-boxed investigation as an issue with the `spike` label and a `<verb> <thing> <context>` title of 70 characters or fewer, asks for the question when the request names only a topic, and `dx-create-issue` hands an investigation to it ([#606](https://github.com/transformteamsg/dx-harness/issues/606)).
 - **New skill `dx-create-epic`**: it files an epic with the `epic` label and an outcome title of 70 characters or fewer, links the open stories and chores you name as sub-issues, names each issue it skips and why, and `dx-create-issue` hands large multi-story work to it ([#607](https://github.com/transformteamsg/dx-harness/issues/607)).
+
+### Changed
+
+- **Titles without a commit prefix**: `dx-create-bug`, `dx-create-chore`, `dx-create-story`, and `dx-create-task` write issue titles with no commit prefix, and `dx-create-pr` builds the pull request title from the branch commits in the repository's commit convention instead of copying the issue title ([#440](https://github.com/transformteamsg/dx-harness/issues/440)).
+- **Issue titles of 70 characters**: `dx-create-bug`, `dx-create-chore`, `dx-create-story`, and `dx-create-task` show the title in the preview and keep it to 70 characters or fewer, and propose a shorter title when the title the author supplied is longer ([#608](https://github.com/transformteamsg/dx-harness/issues/608)).
 
 ## 0.8.0 (2026-11-03)
 
